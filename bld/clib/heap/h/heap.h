@@ -47,8 +47,7 @@
    !defined(__OS2__) &&                 \
    !defined(__NT__) &&                  \
    !defined(__OSI__) &&                 \
-   !defined(__QNX__) &&                 \
-   !defined(__LINUX__)
+   !defined(__QNX__)
 #define __DOS_EXT__
 #endif
 #endif

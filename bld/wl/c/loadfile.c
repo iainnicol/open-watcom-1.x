@@ -141,9 +141,6 @@ extern void FiniLoadFile( void )
     DoCVPack();
 }
 
-#if _OS == LINUX
-static void DoCVPack( void ) {}
-#else
 static void DoCVPack( void )
 /**************************/
 {
@@ -163,7 +160,6 @@ static void DoCVPack( void )
         }
     }
 }
-#endif
 
 static seg_leader * FindStack( class_entry *class )
 /*************************************************/
@@ -675,8 +671,6 @@ static void ExecWlib( void )
     }
     _LnkFree( cmdline );
 }
-#elif _OS == LINUX
-static void ExecWlib( void ) {}
 #else
 static void ExecWlib( void )
 /**************************/
