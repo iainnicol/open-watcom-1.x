@@ -8,7 +8,7 @@ proc1:
     push        ebp
     mov         ebp,esp
     sub         esp,8
-    pushw       bx
+    push        bx
     mov         bx,word ptr 0cH[ebp]
     mov         word ptr -4[ebp],bx
     mov         bx,word ptr 10H[ebp]

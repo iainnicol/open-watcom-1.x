@@ -15,8 +15,8 @@ proc_both:
     push        bp
     mov         bp,sp
     push        es
-    pushd       edi
-    pushd       ebx
+    push        edi
+    push        ebx
     les         di,dword ptr 8[bp]
     movzx       edi,di
     movzx       ebx,word ptr 6[bp]

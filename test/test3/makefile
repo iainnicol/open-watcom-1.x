@@ -10,6 +10,7 @@ mseg &
 opi8u &
 plsintr &
 proccall &
+push &
 retiret &
 seg16 &
 segatrep &
@@ -19,7 +20,6 @@ tbyte &
 testequ
 
 dev_objs = &
-irpexitm &
-push
+irpexitm
 
 !include ../test.mif

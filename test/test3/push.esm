@@ -1,13 +1,13 @@
 .387
 .386p
-_C16		SEGMENT	PARA PRIVATE USE16 'CODE'
-		ASSUME CS:_C16, DS:DGROUP, SS:DGROUP
+_c16		SEGMENT	PARA PRIVATE USE16 'CODE'
+		ASSUME CS:_c16, DS:DGROUP, SS:DGROUP
     push        7fH
     push        0ffH
     push        7fffH
     push        0ffffH
-    pushd       7fffffffH
-    push        0ffffH
+    push        7fffffffH
+    push        0ffffffffH
     push        7fH
     push        0ffH
     push        7fffH
@@ -18,11 +18,11 @@ _C16		SEGMENT	PARA PRIVATE USE16 'CODE'
     pushd       0ffH
     pushd       7fffH
     pushd       0ffffH
-    pushd       7fffffffH
-    pushd       0ffffffffH
-_C16		ENDS
-_C32		SEGMENT	PARA PRIVATE USE32 'CODE'
-		ASSUME CS:_C32, DS:DGROUP, SS:DGROUP
+    push        7fffffffH
+    push        0ffffffffH
+_c16		ENDS
+_c32		SEGMENT	PARA PRIVATE USE32 'CODE'
+		ASSUME CS:_c32, DS:DGROUP, SS:DGROUP
     push        7fH
     push        0ffH
     push        7fffH
@@ -41,5 +41,5 @@ _C32		SEGMENT	PARA PRIVATE USE32 'CODE'
     push        0ffffH
     push        7fffffffH
     push        0ffffffffH
-_C32		ENDS
+_c32		ENDS
 		END
