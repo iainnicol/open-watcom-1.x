@@ -15,6 +15,7 @@ bitwise &
 bunk &
 c &
 dasm &
+data &
 dup &
 enter &
 fadd &
@@ -24,24 +25,33 @@ help &
 imul &
 j2 &
 jmp &
+jmptst &
 jnk &
 label &
 new &
 old1 &
+old2 &
 ptrtest &
 reljmp &
 reljmp16 &
 scal &
+set386 &
+setjmp &
 struct &
 stupid &
 t &
 t01 &
+t02 &
 t03 &
+t04 &
+t05 &
 t06 &
 t07 &
 t08 &
 t09 &
 t10 &
+t11 &
+t12 &
 t13 &
 t14 &
 t15 &
@@ -51,6 +61,7 @@ t18 &
 t19 &
 t20 &
 t21 &
+t22 &
 t23 &
 t24 &
 t25 &
@@ -70,27 +81,14 @@ t38 &
 t39 &
 t51 &
 test &
-timer
-
-dev_objs = &
-data &
-jmptst &
-old2 &
-set386 &
-setjmp &
-t02 &
-t04 &
-t05 &
-t11 &
-t12 &
-t22 &
+timer &
 tmp
 
 !ifndef asm
-asm=wasm -q -zld
+asm=wasm -q
 !endif
 
-all : $(cmd_file) $(objs) $(dev_objs)
+all : $(cmd_file) $(objs)
 	@call $(cmd_file)
 
 $(cmd_file) : .SYMBOLIC
@@ -106,38 +104,14 @@ $(objs) : .SYMBOLIC
 	@%append $(cmd_file) :next$^@a
 	@%append $(cmd_file) type $^@.tmp
 	@%append $(cmd_file) :next$^@c
-	@%append $(cmd_file) @if not exist $^@.obj goto next$^@d
 	@%append $(cmd_file) @wdis -l=$^@.dis -a $^@.obj
 	@%append $(cmd_file) @if not exist $^@.esm goto next$^@b
         @%append $(cmd_file) @diff -b $^@.dis $^@.esm
 	@%append $(cmd_file) :next$^@b
 	@%append $(cmd_file) @dmpobj -q -l -rec=FIXUPP $^@.obj
-	@%append $(cmd_file) @if not exist $^@.emp goto next$^@d
+	@%append $(cmd_file) @if not exist $^@.emp goto next$^@c
         @%append $(cmd_file) @diff -b $^@.lst $^@.emp
-	@%append $(cmd_file) :next$^@d
-
-$(dev_objs) : .SYMBOLIC
-	@%append $(cmd_file) @echo .
-	@%append $(cmd_file) @echo ==============================================================
-	@%append $(cmd_file) @echo DEVELOPMENT - $^@.asm 
-	@%append $(cmd_file) @echo ==============================================================
-	@%append $(cmd_file) @echo .
-	@%append $(cmd_file) @$(asm) $(asm_flags_$^@) $^@.asm >$^@.tmp 2>&1
-	@%append $(cmd_file) @if not exist $^@.chk goto next$^@a
-        @%append $(cmd_file) @diff -b $^@.tmp $^@.chk
-	@%append $(cmd_file) goto next$^@c
-	@%append $(cmd_file) :next$^@a
-	@%append $(cmd_file) type $^@.tmp
 	@%append $(cmd_file) :next$^@c
-	@%append $(cmd_file) @if not exist $^@.obj goto next$^@d
-	@%append $(cmd_file) @wdis -l=$^@.dis -a $^@.obj
-	@%append $(cmd_file) @if not exist $^@.esm goto next$^@b
-        @%append $(cmd_file) @diff -b $^@.dis $^@.esm
-	@%append $(cmd_file) :next$^@b
-	@%append $(cmd_file) @dmpobj -q -l -rec=FIXUPP $^@.obj
-	@%append $(cmd_file) @if not exist $^@.emp goto next$^@d
-        @%append $(cmd_file) @diff -b $^@.lst $^@.emp
-	@%append $(cmd_file) :next$^@d
 
 clean : .SYMBOLIC
 	rm -f *.obj *.err *.dis *.lst *.tmp test_tmp.cmd mem.trk

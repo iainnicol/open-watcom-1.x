@@ -56,7 +56,7 @@ componentsmmpm2 =    &
 .def .asm : ../$(srcdir)
 
 .def.lbc:
-        $(vi) -s ../def2lbc.vi -p"$*" ../$(srcdir)/$[.
+        vi -q -d -i -s ../def2lbc.vi -p"$*" ../$(srcdir)/$[.
 
 .lbc.lib:
         $(librarian) -b -c -n -io -ii -p=32 $@ @$<

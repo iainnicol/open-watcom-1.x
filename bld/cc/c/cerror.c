@@ -49,7 +49,6 @@ static void CMsgInfo( cmsg_info *info, msg_codes msgnum, va_list args ){
     char        *fname;
     unsigned    line;
     char const  *msgstr;
-    int         charsWritten;
 
     info->msgnum = msgnum;
 //  CMsgSetClass( info, msgnum );
@@ -76,10 +75,7 @@ static void CMsgInfo( cmsg_info *info, msg_codes msgnum, va_list args ){
         }
     }
     msgstr = CGetMsgStr( msgnum );
-    charsWritten = _vsnprintf( info->msgtxt,MAX_MSG_LEN, msgstr, args );
-    if(-1 == charsWritten){  /* did we overflow? */
-        info->msgtxt[MAX_MSG_LEN-1] = '\0';
-    }
+    _vsnprintf( info->msgtxt,MAX_MSG_LEN, msgstr, args );
     info->line = line;
     info->fname = fname;
 }
