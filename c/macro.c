@@ -678,23 +678,17 @@ int MacroDef( int i, bool hidden )
     }
     name = AsmBuffer[i]->string_ptr;
     currproc = (dir_node *)AsmGetSymbol( name );
-    if( Parse_Pass == PASS_1 ) {
-        if( currproc == NULL ) {
-            currproc = dir_insert( name, TAB_MACRO );
-            name = get_curr_filename();
-            currproc->e.macroinfo->filename = AsmAlloc( strlen( name ) + 1 );
-            strcpy( currproc->e.macroinfo->filename, name );
-            currproc->e.macroinfo->hidden = hidden;
-        } else {
-            AsmError( PROC_ALREADY_DEFINED );
-            return( ERROR );
-        }
-    }
-    if( currproc != NULL ) {
-        return( macro_exam( i ) );
-    } else {
+    if( currproc == NULL ) {
+        currproc = dir_insert( name, TAB_MACRO );
+        name = get_curr_filename();
+        currproc->e.macroinfo->filename = AsmAlloc( strlen( name ) + 1 );
+        strcpy( currproc->e.macroinfo->filename, name );
+        currproc->e.macroinfo->hidden = hidden;
+    } else if( Parse_Pass == PASS_1 ) {
+        AsmError( PROC_ALREADY_DEFINED );
         return( ERROR );
     }
+    return( macro_exam( i ) );
 }
 
 int MacroEnd( bool exit_flag )
