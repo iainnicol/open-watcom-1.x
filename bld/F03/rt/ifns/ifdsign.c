@@ -49,10 +49,8 @@ double DSIGN( double arg1, double arg2 ) {
     return( -fabs( arg1 ) );
 }
 
-
 double XDSIGN( double *arg1, double *arg2 ) {
 //===========================================
 
     return( DSIGN( *arg1, *arg2 ) );
 }
-

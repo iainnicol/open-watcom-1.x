@@ -50,10 +50,8 @@ complex CONJG( single rp, single ip ) {
     return( result );
 }
 
-
 complex XCONJG( complex *arg ) {
 //==============================
 
     return( CONJG( arg->realpart, arg->imagpart ) );
 }
-

@@ -57,10 +57,8 @@ extern  double          DSINH(double);
 #endif
 
 
-
 double XDSINH( double *arg ) {
 //============================
 
     return( DSINH( *arg ) );
 }
-

@@ -54,10 +54,8 @@ xcomplex        CQEXP( extended rp, extended ip ) {
     return( result );
 }
 
-
 xcomplex        XCQEXP( xcomplex *arg ) {
 //=======================================
 
     return( CQEXP( arg->realpart, arg->imagpart ) );
 }
-

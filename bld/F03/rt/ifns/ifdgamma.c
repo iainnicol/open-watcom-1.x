@@ -61,10 +61,8 @@ double  DGAMMA( double arg ) {
     return( __gamma( arg, &xinf ) );
 }
 
-
 double XDGAMMA( double *arg ) {
 //=============================
 
     return( DGAMMA( *arg ) );
 }
-

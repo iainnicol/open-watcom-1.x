@@ -53,10 +53,8 @@ double  DLGAMA( double arg ) {
     return( __lgamma( arg, &xinf ) );
 }
 
-
 double XDLGAMA( double *arg ) {
 //=============================
 
     return( DLGAMA( *arg ) );
 }
-

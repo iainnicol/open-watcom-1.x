@@ -66,10 +66,8 @@ extern  single          COTAN(single);
 #endif
 
 
-
 single XCOTAN( single *arg ) {
 //============================
 
     return( COTAN( *arg ) );
 }
-

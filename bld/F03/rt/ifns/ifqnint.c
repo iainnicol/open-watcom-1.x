@@ -49,10 +49,8 @@ extended QNINT( extended arg ) {
     return( floor( arg + .5 ) );
 }
 
-
 extended XQNINT( extended *arg ) {
 //============================
 
     return( QNINT( *arg ) );
 }
-

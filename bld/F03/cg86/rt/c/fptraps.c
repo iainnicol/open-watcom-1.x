@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  floating-point exception handling
 *
 ****************************************************************************/
 
-
-//
-// FPTRAPS      : floating-point exception handling
-//
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -46,17 +41,11 @@ extern  void            RTErr(int,...);
   extern        byte    __ExceptionHandled;
 #endif
 
-#if _OPSYS == _PENPOINT
-  #define SIG_HANDLER   CDECL
-#else
-  #define SIG_HANDLER   void
-#endif
-
 extern int      __EnableF77RTExceptionHandling( void );
 
 #ifndef __NETWARE__
 
-static  SIG_HANDLER     FPEHandler( int sig_num, int xcpt ) {
+static void     FPEHandler( int sig_num, int xcpt ) {
 //===========================================================
 
     sig_num = sig_num;

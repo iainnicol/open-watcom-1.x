@@ -49,10 +49,8 @@ single ANINT( single arg ) {
     return( floor( arg + .5 ) );
 }
 
-
 single XANINT( single *arg ) {
 //============================
 
     return( ANINT( *arg ) );
 }
-

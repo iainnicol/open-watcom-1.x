@@ -55,10 +55,8 @@ complex CLOG( single rp, single ip ) {
     return( result );
 }
 
-
 complex XCLOG( complex *arg ) {
 //=============================
 
     return( CLOG( arg->realpart, arg->imagpart ) );
 }
-

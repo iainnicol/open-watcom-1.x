@@ -62,4 +62,3 @@ extended XQATAN( extended *arg ) {
 
     return( QATAN( *arg ) );
 }
-

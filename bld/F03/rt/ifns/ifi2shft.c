@@ -48,10 +48,8 @@ intstar2        I2SHFT( unsigned_16 arg1, intstar2 arg2 ) {
     }
 }
 
-
 intstar2        XI2SHFT( unsigned_16 *arg1, intstar2 *arg2 ) {
 //=============================================================
 
     return( I2SHFT( *arg1, *arg2 ) );
 }
-

@@ -49,10 +49,8 @@ intstar4 IQNINT( extended arg ) {
     return( floor( arg + .5 ) );
 }
 
-
 intstar4 XIQNINT( extended *arg ) {
 //===============================
 
     return( IQNINT( *arg ) );
 }
-

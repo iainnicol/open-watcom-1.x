@@ -44,10 +44,8 @@ intstar4       NOT( intstar4 arg1 ) {
     return( ~arg1 );
 }
 
-
 intstar4       XNOT( intstar4 *arg1 ) {
 //=====================================
 
     return( NOT( *arg1 ) );
 }
-

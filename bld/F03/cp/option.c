@@ -131,7 +131,6 @@ static  bool    GetValue( opt_entry *optn, char *ptr, char **val ) {
 // Get pointer to option value.
 
     *val = SkipBlanks( ptr );
-
     if( ( **val != '=' ) && ( **val != '#' ) ) {
         Warning( CO_NEED_EQUALS, optn->option );
         return( FALSE );
@@ -381,7 +380,6 @@ static  void    FOOption( opt_entry *optn, char *ptr ) {
     optn = optn;
     ObjName = ptr;
 }
-
 
 
 static  void    NegOption( opt_entry *optn, bool negated ) {

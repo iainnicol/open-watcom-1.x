@@ -57,10 +57,8 @@ extern  extended                QACOS(extended);
 #endif
 
 
-
 extended XQACOS( extended *arg ) {
 //======================================
 
     return( QACOS( *arg ) );
 }
-

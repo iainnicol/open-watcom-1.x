@@ -48,10 +48,8 @@ intstar4        IBCHNG( intstar4 arg1, intstar4 arg2 ) {
     return( arg1 ^ bit );
 }
 
-
 intstar4        XIBCHNG( intstar4 *arg1, intstar4 *arg2 ) {
 //=========================================================
 
     return( IBCHNG( *arg1, *arg2 ) );
 }
-

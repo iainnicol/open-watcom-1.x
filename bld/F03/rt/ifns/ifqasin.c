@@ -57,10 +57,8 @@ extern  extended                QASIN(extended);
 #endif
 
 
-
 extended XQASIN( extended *arg ) {
 //============================
 
     return( QASIN( *arg ) );
 }
-

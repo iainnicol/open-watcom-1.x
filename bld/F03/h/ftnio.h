@@ -52,7 +52,7 @@
     #define _BadRec( x )        ( x <= 0 )
 
 // In order to avoid hitting every runtime file we do this before prototyping
-#if !defined( SetIOCB ) 
+#if !defined( SetIOCB )
   #if !defined( __386__ ) && !defined( M_I86 ) && defined( __RT__ )
     #define SetIOCB     __RT_SetIOCB
   #endif

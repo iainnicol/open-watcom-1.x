@@ -62,10 +62,8 @@ single GAMMA( single arg ) {
     return( __gamma( arg, &xinf ) );
 }
 
-
 single XGAMMA( single *arg ) {
 //============================
 
     return( GAMMA( *arg ) );
 }
-

@@ -57,10 +57,8 @@ extern  double          DCOS(double);
 #endif
 
 
-
 double XDCOS( double *arg ) {
 //===========================
 
     return( DCOS( *arg ) );
 }
-

@@ -69,4 +69,3 @@ dcomplex XCDLOG( dcomplex *arg ) {
 
     return( CDLOG( arg->realpart, arg->imagpart ) );
 }
-

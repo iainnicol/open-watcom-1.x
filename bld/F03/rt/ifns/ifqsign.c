@@ -49,7 +49,6 @@ extended QSIGN( extended arg1, extended arg2 ) {
     return( -fabs( arg1 ) );
 }
 
-
 extended XQSIGN( extended *arg1, extended *arg2 ) {
 //===========================================
 

@@ -62,5 +62,3 @@ double XDLOG( double *arg ) {
 
     return( DLOG( *arg ) );
 }
-
-

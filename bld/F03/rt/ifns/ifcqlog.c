@@ -55,10 +55,8 @@ xcomplex        CQLOG( extended rp, extended ip ) {
     return( result );
 }
 
-
 xcomplex XCQLOG( xcomplex *arg ) {
 //================================
 
     return( CQLOG( arg->realpart, arg->imagpart ) );
 }
-

@@ -59,4 +59,3 @@ xcomplex XCQCOS( xcomplex *arg ) {
 
     return( CQCOS( arg->realpart, arg->imagpart ) );
 }
-

@@ -57,10 +57,8 @@ extern  single          ASIN(single);
 #endif
 
 
-
 single XASIN( single *arg ) {
 //===========================
 
     return( ASIN( *arg ) );
 }
-

@@ -48,7 +48,6 @@ intstar4        ISHA( intstar4 arg1, intstar4 arg2 ) {
     }
 }
 
-
 intstar4        XISHA( intstar4 *arg1, intstar4 *arg2 ) {
 //=======================================================
 

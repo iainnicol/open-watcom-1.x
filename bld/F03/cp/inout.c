@@ -107,18 +107,18 @@ extern  character_set   CharSetInfo;
 
 #define _Copyright "1984"
 
-    #define       VERSION _WFC_VERSION_
-    #if _TARGET == _8086
-        #define _Banner "FORTRAN 77/16 Optimizing Compiler"
-    #elif _TARGET == _80386
-        #define _Banner "FORTRAN 77/32 Optimizing Compiler"
-    #elif _TARGET == _AXP
-        #define _Banner "FORTRAN 77 Alpha AXP Optimizing Compiler"
-    #elif _TARGET == _PPC
-        #define _Banner "FORTRAN 77 PowerPC Optimizing Compiler"
-    #else
-        #error Unknown System
-    #endif
+#define       VERSION _WFC_VERSION_
+#if _TARGET == _8086
+    #define _Banner "FORTRAN 77/16 Optimizing Compiler"
+#elif _TARGET == _80386
+    #define _Banner "FORTRAN 77/32 Optimizing Compiler"
+#elif _TARGET == _AXP
+    #define _Banner "FORTRAN 77 Alpha AXP Optimizing Compiler"
+#elif _TARGET == _PPC
+    #define _Banner "FORTRAN 77 PowerPC Optimizing Compiler"
+#else
+    #error Unknown System
+#endif
 
 
 //========================================================================
@@ -314,7 +314,6 @@ void    ReadSrc() {
         }
     }
 }
-
 
 
 static  bool    AlreadyOpen( char *name ) {
@@ -782,7 +781,6 @@ void    PrtBanner() {
     PrtOptions();
     LFSkip();
 }
-
 
 
 void    GetLstName( char *buffer ) {

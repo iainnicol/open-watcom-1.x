@@ -44,10 +44,8 @@ intstar4       IOR( intstar4 arg1, intstar4 arg2 ) {
     return( arg1 | arg2 );
 }
 
-
 intstar4       XIOR( intstar4 *arg1, intstar4 *arg2 ) {
 //=====================================================
 
     return( IOR( *arg1, *arg2 ) );
 }
-

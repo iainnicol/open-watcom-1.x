@@ -52,10 +52,8 @@ extern  char            *STGetName(sym_id,char *);
 extern  char            *STNmListName(sym_id,char *);
 extern  sym_id          STFree(sym_id);
 extern  void            FreeSFHeader(sym_id);
-
 extern  void            AllocGlobal(unsigned_32,bool);
 extern  bool            ForceStatic(unsigned_16);
-
 extern  void            CkSymDeclared( sym_id );
 
 extern  uint            DataThreshold;
@@ -248,17 +246,14 @@ static  void    DumpLocalVars() {
             if( ( flags & ( SY_REFERENCED | SY_EXTERNAL ) ) == 0 ) {
                 UnrefSym( sym );
             }
-
             subprog_type = flags & SY_SUBPROG_TYPE;
             if( subprog_type == SY_REMOTE_BLOCK ) {
                 if( ( flags & SY_RB_DEFINED ) == 0 ) {
                     NameErr( SP_RB_UNDEFINED, sym );
                 }
             } else if( subprog_type == SY_STMT_FUNC ) {
-
             } else if( subprog_type == SY_BLOCK_DATA ) {
                 AddSP2GList( sym );
-
             } else if( !IsIntrinsic( flags ) ) {
                 AddSP2GList( sym );
             } else if( IsIFUsed( sym->ns.si.fi.index ) ) {
@@ -291,7 +286,6 @@ static  void    DumpLocalVars() {
         NList = STFreeName( NList );
     }
 }
-
 
 
 static  void    UnrefSym( sym_id sym ) {
@@ -390,16 +384,17 @@ static  void    DumpStmtNos() {
 }
 
 
+
 static  void    DumpConsts() {
 //============================
 
 // Dump constants from the symbol table.
 
+
     while( CList != NULL ) {
         CList = STFree( CList );
     }
 }
-
 
 
 static  void    DumpStrings() {

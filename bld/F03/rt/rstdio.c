@@ -95,6 +95,7 @@ ftnfile *_SetStd( int unit, int mode, char *term_name, file_handle fp ) {
 
 ftnfile *_InitStandardInput() {
 //=============================
+
     return( _SetStd( STANDARD_INPUT, ACTION_READ, SDTermIn, FStdIn ) );
 }
 

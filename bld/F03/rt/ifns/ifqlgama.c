@@ -220,10 +220,8 @@ extended  QLGAMA( extended arg ) {
     return( __lgamma( arg, &xinf ) );
 }
 
-
 extended XQLGAMA( extended *arg ) {
 //=================================
 
     return( QLGAMA( *arg ) );
 }
-

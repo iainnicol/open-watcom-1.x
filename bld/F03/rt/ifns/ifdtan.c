@@ -57,10 +57,8 @@ extern  double          DTAN(double);
 #endif
 
 
-
 double XDTAN( double *arg ) {
 //===========================
 
     return( DTAN( *arg ) );
 }
-

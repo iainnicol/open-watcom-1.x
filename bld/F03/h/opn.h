@@ -70,4 +70,3 @@
 #define OPN_SAFE        0x10    // - value in a register
 #define OPN_TMP         0x20    // - value in a temporary
 #define OPN_VAL         0x30    // - static temporary SCB
-

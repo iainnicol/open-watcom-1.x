@@ -57,10 +57,8 @@ extern  double          DTANH(double);
 #endif
 
 
-
 double XDTANH( double *arg ) {
 //============================
 
     return( DTANH( *arg ) );
 }
-

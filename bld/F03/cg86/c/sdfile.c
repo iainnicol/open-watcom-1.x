@@ -24,25 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  System dependent file name processor.
 *
 ****************************************************************************/
 
-
-//
-// SDFILE  : System dependent file name processor.
-//
 
 #include "ftnstd.h"
 
 char    FFCtrlSeq[] = { "1" };
 char    SkipCtrlSeq[] = { "0" };
 char    NormalCtrlSeq[] = { " " };
-#if _OPSYS == _PENPOINT
-char    SDTermIn[] = { "console" };
-char    SDTermOut[] = { "console" };
-#elif ( _OPSYS == _QNX ) || ( _OPSYS == _LINUX )
+#if ( _OPSYS == _QNX ) || ( _OPSYS == _LINUX )
 char    SDTermIn[] = { "/dev/tty" };
 char    SDTermOut[] = { "/dev/tty" };
 #else

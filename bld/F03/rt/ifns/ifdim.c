@@ -52,7 +52,6 @@ single DIM( single arg1, single arg2 ) {
     return( result );
 }
 
-
 single XDIM( single *arg1, single *arg2 ) {
 //=========================================
 

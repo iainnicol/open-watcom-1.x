@@ -48,7 +48,6 @@ extended        QIMAG( extended rp, extended ip ) {
     return( ip );
 }
 
-
 extended XQIMAG( xcomplex *arg ) {
 //==============================
 

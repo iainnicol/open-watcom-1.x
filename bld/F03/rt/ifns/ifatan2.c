@@ -57,7 +57,6 @@ extern  single          ATAN2(single,single);
 #endif
 
 
-
 single XATAN2( single *arg1, single *arg2 ) {
 //===========================================
 

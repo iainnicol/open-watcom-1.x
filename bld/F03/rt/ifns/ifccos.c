@@ -54,10 +54,8 @@ complex CCOS( single rp, single ip ) {
     return( result );
 }
 
-
 complex XCCOS( complex *arg ) {
 //=============================
 
     return( CCOS( arg->realpart, arg->imagpart ) );
 }
-

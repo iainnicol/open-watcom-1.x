@@ -57,10 +57,8 @@ extern  double          DACOS(double);
 #endif
 
 
-
 double XDACOS( double *arg ) {
 //============================
 
     return( DACOS( *arg ) );
 }
-

@@ -44,7 +44,6 @@ intstar4        IEOR( intstar4 arg1, intstar4 arg2 ) {
     return( arg1 ^ arg2 );
 }
 
-
 intstar4        XIEOR( intstar4 *arg1, intstar4 *arg2 ) {
 //=======================================================
 

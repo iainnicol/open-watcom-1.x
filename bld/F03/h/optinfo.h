@@ -176,7 +176,6 @@ opt( "Quiet",      OPT_QUIET,        CMD,         &BitOption, MS_OPT_QUIET ),
 opt( "RESources",  OPT_RESOURCES,    CMD,         &BitOption, MS_OPT_RESOURCES ),
 opt( "CC",         OPT_UNIT_6_CC,    CMD,         &BitOption, MS_OPT_UNIT_6_CC ),
 opt( "LFwithff",   OPT_LF_WITH_FF,   CMD,         &BitOption, MS_OPT_LF_WITH_FF ),
-
 opt( "DEPendency", OPT_DEPENDENCY,   CMD,         &BitOption, MS_OPT_DEPENDENCY ),
 #if _TARGET == _8086 || _TARGET == _80386
 opt( "SR",         CGOPT_SEG_REGS,   CMD|CG,      &CGOption,  MS_CGOPT_SEG_REGS ),

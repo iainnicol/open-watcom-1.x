@@ -48,10 +48,8 @@ double  DIMAG( double rp, double ip ) {
     return( ip );
 }
 
-
 double XDIMAG( dcomplex *arg ) {
 //==============================
 
     return( DIMAG( arg->realpart, arg->imagpart ) );
 }
-

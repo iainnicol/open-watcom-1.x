@@ -69,4 +69,3 @@ dcomplex XCDSIN( dcomplex *arg ) {
 
     return( CDSIN( arg->realpart, arg->imagpart ) );
 }
-

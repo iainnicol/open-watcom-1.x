@@ -46,7 +46,6 @@ typedef struct traceback {
 #define TB_LG           (~(uint)0)
 #define TB_LG_DB        (~(uint)0-1)
 
-
 #if defined( __MT__ )
 
     #include "fthread.h"
@@ -54,4 +53,3 @@ typedef struct traceback {
     #define     ExCurr          (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
 
 #endif
-

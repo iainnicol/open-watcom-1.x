@@ -49,7 +49,6 @@ intstar4 NINT( single arg ) {
     return( floor( arg + .5 ) );
 }
 
-
 intstar4 XNINT( single *arg ) {
 //=============================
 

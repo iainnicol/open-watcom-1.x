@@ -116,7 +116,7 @@ static  bool            BrInitialized;
  #define ARCHITECTURE   sizeof( long )
 #endif
 
-  #define _GenerateBrInfo()     ((Options & OPT_BROWSE) && \
+#define _GenerateBrInfo()     ((Options & OPT_BROWSE) && \
                                  (BrInitialized) && \
                                  (ProgSw & PS_DONT_GENERATE))
 

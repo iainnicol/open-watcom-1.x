@@ -57,10 +57,8 @@ extern  double          DSQRT(double);
 #endif
 
 
-
 double XDSQRT( double *arg ) {
 //============================
 
     return( DSQRT( *arg ) );
 }
-

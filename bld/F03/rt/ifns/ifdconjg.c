@@ -50,10 +50,8 @@ dcomplex        DCONJG( double rp, double ip ) {
     return( result );
 }
 
-
 dcomplex XDCONJG( dcomplex *arg ) {
 //=================================
 
     return( DCONJG( arg->realpart, arg->imagpart ) );
 }
-

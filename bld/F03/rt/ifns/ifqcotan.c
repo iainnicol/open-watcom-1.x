@@ -65,10 +65,8 @@ extern  extended                QCOTAN(extended);
 #endif
 
 
-
 extended XQCOTAN( extended *arg ) {
 //=============================
 
     return( QCOTAN( *arg ) );
 }
-

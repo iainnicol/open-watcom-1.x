@@ -55,10 +55,8 @@ xcomplex        CQSIN( extended rp, extended ip ) {
     return( result );
 }
 
-
 xcomplex XCQSIN( xcomplex *arg ) {
 //================================
 
     return( CQSIN( arg->realpart, arg->imagpart ) );
 }
-

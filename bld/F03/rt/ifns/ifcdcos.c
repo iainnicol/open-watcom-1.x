@@ -64,10 +64,8 @@ extern  dcomplex        CDCOS(double,double);
 #endif
 
 
-
 dcomplex XCDCOS( dcomplex *arg ) {
 //================================
 
     return( CDCOS( arg->realpart, arg->imagpart ) );
 }
-

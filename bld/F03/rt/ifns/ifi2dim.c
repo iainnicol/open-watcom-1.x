@@ -52,10 +52,8 @@ intstar2 I2DIM( intstar2 arg1, intstar2 arg2 ) {
     return( result );
 }
 
-
 intstar2 XI2DIM( intstar2 *arg1, intstar2 *arg2 ) {
 //================================================
 
     return( I2DIM( *arg1, *arg2 ) );
 }
-

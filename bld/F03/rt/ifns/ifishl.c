@@ -48,10 +48,8 @@ intstar4        ISHL( unsigned_32 arg1, intstar4 arg2 ) {
     }
 }
 
-
 intstar4        XISHL( unsigned_32 *arg1, intstar4 *arg2 ) {
 //==========================================================
 
     return( ISHL( *arg1, *arg2 ) );
 }
-

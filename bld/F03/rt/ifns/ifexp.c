@@ -57,10 +57,8 @@ extern  single          EXP(single);
 #endif
 
 
-
 single XEXP( single *arg ) {
 //==========================
 
     return( EXP( *arg ) );
 }
-

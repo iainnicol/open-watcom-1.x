@@ -209,7 +209,7 @@ void    __UseChineseCharSet() {
     CharSetInfo.is_double_byte_char = &IsDoubleByteChar;
     CharSetInfo.character_width = &CharacterWidth;
     CharSetInfo.is_foreign = &IsForeign;
-#if !defined( __RT__ ) 
+#if !defined( __RT__ )
     CharSetInfo.character_set = &CharSet;
     CharSetInfo.initializer = "__init_chinese";
 #endif

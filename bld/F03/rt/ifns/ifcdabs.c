@@ -67,10 +67,8 @@ extern  double          CDABS(double,double);
 #endif
 
 
-
 double  XCDABS( dcomplex *arg ) {
 //===============================
 
     return( CDABS( arg->realpart, arg->imagpart ) );
 }
-

@@ -44,10 +44,8 @@ intstar1       I1AND( intstar1 arg1, intstar1 arg2 ) {
     return( arg1 & arg2 );
 }
 
-
 intstar1       XI1AND( intstar1 *arg1, intstar1 *arg2 ) {
 //======================================================
 
     return( I1AND( *arg1, *arg2 ) );
 }
-

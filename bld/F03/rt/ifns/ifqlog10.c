@@ -57,7 +57,6 @@ extern  extended                QLOG10(extended);
 #endif
 
 
-
 extended XQLOG10( extended *arg ) {
 //=================================
 

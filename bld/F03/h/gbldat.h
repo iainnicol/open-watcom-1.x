@@ -112,6 +112,5 @@ gbl_defn pointer        ITPool;         // head of free list of I.T. nodes
 gbl_defn unsigned_32    CGOpts;         // code generator options
 gbl_defn unsigned_32    CPUOpts;        // code generator options (CPU target)
 gbl_defn unsigned_32    OZOpts;         // code generator options (optimizations)
-
 gbl_defn char           SymBuff[MAX_SYMLEN+1]; // buffer for symbol names
 gbl_defn bool           StmtNoFound;    // statement number found?

@@ -49,10 +49,8 @@ single SIGN( single arg1, single arg2 ) {
     return( -fabs( arg1 ) );
 }
 
-
 single XSIGN( single *arg1, single *arg2 ) {
 //==========================================
 
     return( SIGN( *arg1, *arg2 ) );
 }
-

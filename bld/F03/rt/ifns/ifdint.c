@@ -49,10 +49,8 @@ double DINT( double arg ) {
     return( floor( arg ) );
 }
 
-
 double XDINT( double *arg ) {
 //===========================
 
     return( DINT( *arg ) );
 }
-

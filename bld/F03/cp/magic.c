@@ -129,8 +129,6 @@ sym_id  TmpAlloc( int size ) {
 }
 
 
-
-
 void    GSaveTemps() {
 //====================
 

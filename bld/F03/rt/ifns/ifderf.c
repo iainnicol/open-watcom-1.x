@@ -119,10 +119,8 @@ double  DERF( double arg ) {
     return( res );
 }
 
-
 double XDERF( double *arg ) {
 //===========================
 
     return( DERF( *arg ) );
 }
-

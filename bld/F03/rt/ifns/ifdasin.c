@@ -57,10 +57,8 @@ extern  double          DASIN(double);
 #endif
 
 
-
 double XDASIN( double *arg ) {
 //============================
 
     return( DASIN( *arg ) );
 }
-

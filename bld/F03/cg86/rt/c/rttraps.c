@@ -41,74 +41,76 @@
 #elif !defined( __AXP__ ) && !defined( __PPC__ )
   #include <i86.h>
 #endif
-#if ( _OPSYS == _OS2 ) && !defined( __386__ )
-  #define INCL_DOSMISC
-  #include <os2.h>
-#endif
 
-#if defined( __386__ ) && _OPSYS == _OS2
-  #define __OS220__
+#if ( _OPSYS == _OS2 )
+  #if defined( __386__ )
+    #define __OS2_386__
+  #else
+    #define INCL_DOSMISC
+    #include <os2.h>
+    #define __OS2_286__
+  #endif
 #endif
 
 #if defined( __NT__ )
   #include "enterdb.h"
 #endif
 
-extern  void            RTErr(int,...);
-extern  void            FPTrapInit(void);
-extern  void            FPTrapFini(void);
-
-typedef void    (*fsig_func)(intstar4);
-
-#if !defined( __WINDOWS_386__ ) && !defined( __OS220__ ) && \
-    !defined( __NT__ ) && !defined( __NETWARE__ )
-  extern byte IntOverFlow;
-         void (* __UserIOvFlHandler)(intstar4) = { (fsig_func)SIG_DFL };
-  extern byte IntDivBy0;
-         void (* __UserIDivZHandler)(intstar4) = { (fsig_func)SIG_DFL };
+#if defined( __OS2_286__ )
+  #define       _handler        interrupt __pascal __far
+#elif _OPSYS == _PCDOS
+  #define       _handler        interrupt
+#else
+  #define       _handler
 #endif
 
-#include "_handler.h"
+extern void             RTErr(int,...);
+extern void             FPTrapInit(void);
+extern void             FPTrapFini(void);
+
+typedef void            (*fsig_func)(intstar4);
+
+#if defined( __OS2_286__ ) || ( _OPSYS == _PCDOS ) && !defined( __WINDOWS_386__ )
+  extern byte           IntOverFlow;
+         void           (* __UserIOvFlHandler)(intstar4) = { (fsig_func)SIG_DFL };
+  extern byte           IntDivBy0;
+         void           (* __UserIDivZHandler)(intstar4) = { (fsig_func)SIG_DFL };
+  static void           (_handler *ISave)();
+  static void           (_handler *ZSave)();
+#endif
 
 #if (_OPSYS == _PCDOS) && !defined( __WINDOWS__ )
-extern _WCRTLINK int    __NonIBM;       // 0 if IBM, non-zero if NEC
-extern  byte    BreakVector;
-        void    (* __UserBreakHandler)(intstar4) = { (fsig_func)SIG_DFL };
-static  void    (_handler *CBSave)();
-#if defined( __386__ )
-static  unsigned long   CBRealSave;
-#endif
-#endif
-
-#if !defined( __WINDOWS_386__ ) && !defined( __OS220__ ) && \
-    !defined( __NT__ ) && ( _OPSYS != _PENPOINT ) && ( _OPSYS != _LINUX ) \
-     && !defined( __NETWARE__ )
-  static        void            (_handler *ISave)();
-  static        void            (_handler *ZSave)();
+  extern _WCRTLINK int  __NonIBM;       // 0 if IBM, non-zero if NEC
+  extern byte           BreakVector;
+         void           (* __UserBreakHandler)(intstar4) = { (fsig_func)SIG_DFL };
+  static void           (_handler *CBSave)();
+ #if defined( __386__ )
+  static unsigned long  CBRealSave;
+ #endif
 #endif
 
-#if defined( __OS220__ ) || defined( __NT__ )
-  extern        byte    __ExceptionHandled;
-  static        void    _sig_handler IOvFlSignal(int);
+#if defined( __OS2_386__ ) || defined( __NT__ )
+  extern byte           __ExceptionHandled;
+  static void           IOvFlSignal(int);
 #endif
 
 #if (_OPSYS == _PCDOS) && defined( __386__ )
-    extern      unsigned_32             _STACKLOW;
-    void _movestack( unsigned_32 );
-    #pragma aux _movestack = \
+  extern unsigned_32    _STACKLOW;
+
+  void _movestack( unsigned_32 );
+  #pragma aux _movestack = \
         "push ds"            \
         "pop  ss"             \
         "mov  esp,eax"        \
         parm [eax] modify [esp];
 
-    extern      unsigned long   _dos_getrealvect(int);
-    extern      void            _dos_setrealvect(int,unsigned long);
-    extern      void            _dos_setvectp(int,void (interrupt far *)());
+  extern unsigned long _dos_getrealvect(int);
+  extern void          _dos_setrealvect(int,unsigned long);
+  extern void          _dos_setvectp(int,void (interrupt far *)());
 #endif
 
 
 #if !defined( __WINDOWS__ )
-
 
 static  void    ProcessBreak() {
 //==============================
@@ -117,27 +119,26 @@ static  void    ProcessBreak() {
     __XcptFlags |= XF_LIMIT_ERR | XF_KO_INTERRUPT;
     if( __XcptFlags & XF_IO_INTERRUPTABLE ) {
         __XcptFlags |= XF_IO_INTERRUPTED;
-#if defined( __OS220__ ) || defined( __NT__ )
+ #if defined( __OS2_386__ ) || defined( __NT__ )
     } else {
         __ExceptionHandled = 0;
-#endif
+ #endif
     }
 }
 
 
-static  void    _sig_handler BreakSignal( int sig ) {
+static  void    BreakSignal( int sig ) {
 //===================================================
 
     sig = sig;
     signal( SIGINT, BreakSignal );
-#if ( _OPSYS == _OS2 ) || defined( __NT__ )
+ #if ( _OPSYS == _OS2 ) || defined( __NT__ )
     signal( SIGBREAK, BreakSignal );
-#endif
+ #endif
     ProcessBreak();
 }
 
-
-#if _OPSYS == _PCDOS
+ #if ( _OPSYS == _PCDOS )
 
 static  void    _handler BreakHandler() {
 //=======================================
@@ -152,49 +153,44 @@ static  void    _handler BreakHandler() {
         ProcessBreak();
     }
 }
-
-#endif
-
+ #endif
 #endif
 
 
 #if !defined( __WINDOWS_386__ )
 
-#if (_OPSYS != _PENPOINT) && ( _OPSYS != _LINUX ) && !defined( __NETWARE__ )
+ #if ( _OPSYS == _PCDOS ) || ( _OPSYS == _OS2 ) || defined( __NT__ )
 
 static  void    ProcessIDivZ() {
 //==============================
 
     RTErr( KO_IDIV_ZERO );
 }
+ #endif
 
-#endif
+ #if defined( __OS2_386__ ) || defined( __NT__ )
 
-
-#if defined( __OS220__ ) || defined( __NT__ )
-
-static  void    _sig_handler IDivZSignal( int sig ) {
+static  void    IDivZSignal( int sig ) {
 //===================================================
 
     sig = sig;
     ProcessIDivZ();
 }
 
-
-#elif ( _OPSYS != _PENPOINT ) && ( _OPSYS != _LINUX ) && !defined( __NETWARE__ )
+ #elif ( _OPSYS == _PCDOS ) || defined( __OS2_286__ )
 
 static  void    _handler IDivZHandler() {
 //=======================================
 
-#if _OPSYS == _PCDOS
+  #if _OPSYS == _PCDOS
     _enable();
-#ifdef __386__
+   #ifdef __386__
     // Under pharlap, ss != ds when this interrupt is taken.
     // But in order for our error reporting code to work we have to
     // set ss = ds.
     _movestack( _STACKLOW+512 );
-#endif
-#endif
+   #endif
+  #endif
     if( __UserIDivZHandler != (fsig_func)SIG_DFL ) {
         if( (__UserIDivZHandler != (fsig_func)SIG_IGN) &&
             (__UserIDivZHandler != (fsig_func)SIG_ERR) ) {
@@ -204,11 +200,9 @@ static  void    _handler IDivZHandler() {
         ProcessIDivZ();
     }
 }
+ #endif
 
-#endif
-
-
-#if (_OPSYS != _PENPOINT) && ( _OPSYS != _LINUX ) && !defined( __NETWARE__ )
+ #if ( _OPSYS == _PCDOS ) || ( _OPSYS == _OS2 ) || defined( __NT__ )
 
 static  void    ProcessIOvFl() {
 //==============================
@@ -217,13 +211,11 @@ static  void    ProcessIOvFl() {
     // regardless of whether user wants integer overflows reported
     __XcptFlags |= XF_IOVERFLOW;
 }
+ #endif
 
-#endif
+ #if defined( __OS2_386__ ) || defined( __NT__ )
 
-
-#if defined( __OS220__ ) || defined( __NT__ )
-
-static  void    _sig_handler IOvFlSignal( int sig ) {
+static  void    IOvFlSignal( int sig ) {
 //===================================================
 
     sig = sig;
@@ -233,15 +225,14 @@ static  void    _sig_handler IOvFlSignal( int sig ) {
     ProcessIOvFl();
 }
 
-
-#elif (_OPSYS != _PENPOINT) && ( _OPSYS != _LINUX ) && !defined( __NETWARE__ )
+ #elif ( _OPSYS == _PCDOS ) || defined( __OS2_286__ )
 
 static  void    _handler IOvFlHandler() {
 //=======================================
 
-#if _OPSYS == _PCDOS
+  #if _OPSYS == _PCDOS
     _enable();
-#endif
+  #endif
     if( __UserIOvFlHandler != (fsig_func)SIG_DFL ) {
         if( (__UserIOvFlHandler != (fsig_func)SIG_IGN) &&
             (__UserIOvFlHandler != (fsig_func)SIG_ERR) ) {
@@ -251,18 +242,14 @@ static  void    _handler IOvFlHandler() {
         ProcessIOvFl();
     }
 }
-
+ #endif
 #endif
-
-#endif
-
 
 static  void    AbnormalTerm() {
 //==============================
 
     RTErr( CP_TERMINATE );
 }
-
 
 int     __EnableF77RTExceptionHandling( void ) {
 //==============================================
@@ -273,7 +260,6 @@ int     __EnableF77RTExceptionHandling( void ) {
     return( 1 );
 #endif
 }
-
 
 void    R_TrapInit() {
 //====================
@@ -290,33 +276,33 @@ void    R_TrapInit() {
     signal( SIGINT, BreakSignal );
 #endif
 #if _OPSYS == _PCDOS
-    #if !defined( __WINDOWS__ )
-        if( __NonIBM ) {
-            // Assume NEC
-            BreakVector = 0x06;
-        }
-        CBSave = _dos_getvect( BreakVector );
-        _dos_setvect( BreakVector, (void (interrupt far *)(void))(void (near *)(void))BreakHandler );
-        #if defined( __386__ )
-            if( _IsPharLap() ) {
-                CBRealSave = _dos_getrealvect( BreakVector );
-                _dos_setvectp( BreakVector, (void (interrupt far *)(void))(void (near *)(void))BreakHandler );
-            }
-        #endif
-    #endif
-    #if !defined( __WINDOWS_386__ )
-        ISave = _dos_getvect( IntOverFlow );
-        _dos_setvect( IntOverFlow, (void (interrupt far *)(void))(void (near *)(void))IOvFlHandler );
-        ZSave = _dos_getvect( IntDivBy0 );
-        _dos_setvect( IntDivBy0, (void (interrupt far *)(void))(void (near *)(void))IDivZHandler );
-    #endif
-#elif defined( __OS220__ ) || defined( __NT__ )
+ #if !defined( __WINDOWS__ )
+    if( __NonIBM ) {
+        // Assume NEC
+        BreakVector = 0x06;
+    }
+    CBSave = _dos_getvect( BreakVector );
+    _dos_setvect( BreakVector, (void (interrupt far *)(void))(void (near *)(void))BreakHandler );
+  #if defined( __386__ )
+    if( _IsPharLap() ) {
+        CBRealSave = _dos_getrealvect( BreakVector );
+        _dos_setvectp( BreakVector, (void (interrupt far *)(void))(void (near *)(void))BreakHandler );
+    }
+  #endif
+ #endif
+ #if !defined( __WINDOWS_386__ )
+    ISave = _dos_getvect( IntOverFlow );
+    _dos_setvect( IntOverFlow, (void (interrupt far *)(void))(void (near *)(void))IOvFlHandler );
+    ZSave = _dos_getvect( IntDivBy0 );
+    _dos_setvect( IntDivBy0, (void (interrupt far *)(void))(void (near *)(void))IDivZHandler );
+ #endif
+#elif defined( __OS2_386__ ) || defined( __NT__ )
     signal( SIGBREAK, BreakSignal );
     if( enable_excpt ) {
         signal( SIGIDIVZ, IDivZSignal );
         signal( SIGIOVFL, IOvFlSignal );
     }
-#elif _OPSYS == _OS2
+#elif defined( __OS2_286__ )
     signal( SIGBREAK, BreakSignal );
     DosSetVec( IntOverFlow, (PFN)IOvFlHandler, (PFN FAR *)&ISave );
     DosSetVec( IntDivBy0, (PFN)IDivZHandler, (PFN FAR *)&ZSave );
@@ -324,36 +310,31 @@ void    R_TrapInit() {
     FPTrapInit();
 }
 
-
 void    R_TrapFini() {
 //====================
 
 #if _OPSYS == _PCDOS
-    #if !defined( __WINDOWS__ )
-        _dos_setvect( BreakVector, CBSave );
-        #if defined( __386__ )
-            if( _IsPharLap() ) {
-                _dos_setrealvect( BreakVector, CBRealSave );
-            }
-        #endif
-    #endif
-    #if !defined( __WINDOWS_386__ )
-        _dos_setvect( IntOverFlow, ISave );
-        _dos_setvect( IntDivBy0, ZSave );
-    #endif
-#elif _OPSYS == _OS2
-    #if !defined( __386__ )
-        DosSetVec( IntOverFlow, (PFN)ISave, (PFN FAR *)&ISave );
-        DosSetVec( IntDivBy0, (PFN)ZSave, (PFN FAR *)&ZSave );
-    #endif
+ #if !defined( __WINDOWS__ )
+    _dos_setvect( BreakVector, CBSave );
+  #if defined( __386__ )
+    if( _IsPharLap() ) {
+        _dos_setrealvect( BreakVector, CBRealSave );
+    }
+  #endif
+ #endif
+ #if !defined( __WINDOWS_386__ )
+    _dos_setvect( IntOverFlow, ISave );
+    _dos_setvect( IntDivBy0, ZSave );
+ #endif
+#elif defined( __OS2_286__ )
+    DosSetVec( IntOverFlow, (PFN)ISave, (PFN FAR *)&ISave );
+    DosSetVec( IntDivBy0, (PFN)ZSave, (PFN FAR *)&ZSave );
 #endif
     FPTrapFini();
 }
 
-
-extern  void            (*_ExceptionInit)();
-extern  void            (*_ExceptionFini)();
-
+extern void             (*_ExceptionInit)();
+extern void             (*_ExceptionFini)();
 
 void    __InitExceptionVectors() {
 //================================

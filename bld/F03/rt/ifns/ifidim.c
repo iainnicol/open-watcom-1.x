@@ -52,10 +52,8 @@ intstar4 IDIM( intstar4 arg1, intstar4 arg2 ) {
     return( result );
 }
 
-
 intstar4 XIDIM( intstar4 *arg1, intstar4 *arg2 ) {
 //================================================
 
     return( IDIM( *arg1, *arg2 ) );
 }
-

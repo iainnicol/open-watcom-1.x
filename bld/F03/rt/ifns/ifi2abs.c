@@ -47,10 +47,8 @@ intstar2        I2ABS( intstar2 arg ) {
     return( arg );
 }
 
-
 intstar2        XI2ABS( intstar2 *arg ) {
 //======================================
 
     return( I2ABS( *arg ) );
 }
-

@@ -127,7 +127,6 @@ extended  QERFC( extended arg ) {
     return( res );
 }
 
-
 extended XQERFC( extended *arg ) {
 //============================
 

@@ -50,10 +50,8 @@ xcomplex        QCONJG( extended rp, extended ip ) {
     return( result );
 }
 
-
 xcomplex XQCONJG( xcomplex *arg ) {
 //=================================
 
     return( QCONJG( arg->realpart, arg->imagpart ) );
 }
-

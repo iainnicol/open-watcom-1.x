@@ -95,7 +95,6 @@ extern  void            BIStartSubroutine( void );
 extern  void            GSetSrcLine(void);
 
 
-
 void    CpProgram() {
 //===================
 
@@ -173,7 +172,6 @@ static  entry_pt        *SubProgName( byte typ, unsigned_16 flags,
     itnode      *next_node;
     sym_id      sym_ptr;
     uint        size;
-
     sym_ptr = LkSym();
     SubProgId = sym_ptr;
     GSegLabel();    // must be before DumpStatement() so that ISN code for

@@ -46,10 +46,8 @@ double DPROD( single arg1, single arg2 ) {
     return( arg1 * arg2 );
 }
 
-
 double XDPROD( single *arg1, single *arg2 ) {
 //===========================================
 
     return( *arg1 * *arg2 );
 }
-

@@ -49,10 +49,8 @@ single AINT( single arg ) {
     return( floor( arg ) );
 }
 
-
 single XAINT( single *arg ) {
 //===========================
 
     return( AINT( *arg ) );
 }
-

@@ -44,10 +44,8 @@ intstar2       I2AND( intstar2 arg1, intstar2 arg2 ) {
     return( arg1 & arg2 );
 }
 
-
 intstar2       XI2AND( intstar2 *arg1, intstar2 *arg2 ) {
 //======================================================
 
     return( I2AND( *arg1, *arg2 ) );
 }
-

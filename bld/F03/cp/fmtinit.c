@@ -58,6 +58,7 @@ void    FScan( int fmt_length, char *fmt_string, cs_label fmt_label ) {
 
 // FORMAT statement parsing (only compile-time).
 
+
     FInit( fmt_length, fmt_string );
     StartFmt( fmt_label );
     R_FDoSpec();

@@ -49,10 +49,8 @@ logstar4        I2BTEST( intstar2 arg1, intstar2 arg2 ) {
     return( _LogValue( FALSE ) );
 }
 
-
 logstar4        XI2BTEST( intstar2 *arg1, intstar2 *arg2 ) {
 //========================================================
 
     return( I2BTEST( *arg1, *arg2 ) );
 }
-

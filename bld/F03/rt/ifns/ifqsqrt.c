@@ -57,7 +57,6 @@ extern  extended                QSQRT(extended);
 #endif
 
 
-
 extended XQSQRT( extended *arg ) {
 //============================
 

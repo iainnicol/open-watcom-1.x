@@ -71,7 +71,6 @@ extern  void            InitGlobalSegs(void);
 extern  void            FreeGlobalSegs(void);
 extern  void            SDRewind(file_handle);
 
-
 unsigned_32     CompTime;
 
 
@@ -102,6 +101,7 @@ static  void    StartCompile() {
     OpenLst();
     PrtBanner();
 }
+
 
 
 static  void    Compile() {
@@ -138,7 +138,6 @@ void            InvokeCompile() {
     }
     FiniMacros();
 }
-
 
 
 static  void    FiniCompile() {

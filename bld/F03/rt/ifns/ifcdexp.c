@@ -63,10 +63,8 @@ extern  dcomplex        CDEXP(double,double);
 #endif
 
 
-
 dcomplex        XCDEXP( dcomplex *arg ) {
 //=======================================
 
     return( CDEXP( arg->realpart, arg->imagpart ) );
 }
-

@@ -62,4 +62,3 @@ single XACOS( single *arg ) {
 
     return( ACOS( *arg ) );
 }
-

@@ -52,10 +52,8 @@ intstar1 I1DIM( intstar1 arg1, intstar1 arg2 ) {
     return( result );
 }
 
-
 intstar1 XI1DIM( intstar1 *arg1, intstar1 *arg2 ) {
 //================================================
 
     return( I1DIM( *arg1, *arg2 ) );
 }
-

@@ -46,10 +46,8 @@ single ERFC( single arg ) {
     return( DERFC( arg ) );
 }
 
-
 single XERFC( single *arg ) {
 //===========================
 
     return( ERFC( *arg ) );
 }
-

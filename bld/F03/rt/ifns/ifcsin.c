@@ -54,10 +54,8 @@ complex CSIN( single rp, single ip ) {
     return( result );
 }
 
-
 complex XCSIN( complex *arg ) {
 //=============================
 
     return( CSIN( arg->realpart, arg->imagpart ) );
 }
-

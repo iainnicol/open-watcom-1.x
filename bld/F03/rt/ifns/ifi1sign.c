@@ -56,4 +56,3 @@ intstar1 XI1SIGN( intstar1 *arg1, intstar1 *arg2 ) {
 
     return( I1SIGN( *arg1, *arg2 ) );
 }
-

@@ -567,13 +567,13 @@ sym_id    CkAssignOk() {
                 return( NULL );
             }
             sym = CITNode->sym_ptr;
-                // Consider: READ *, CH(I:J)
-                // GFiniSS() sets the symbol table entry in the I.T. node
-                // to the temporary SCB so we need to get the actual symbol
-                // we are substringing elsewhere
-                if( CITNode->opn & OPN_ASY ) {
-                    sym = CITNode->value.st.ss_id;
-                }
+            // Consider: READ *, CH(I:J)
+            // GFiniSS() sets the symbol table entry in the I.T. node
+            // to the temporary SCB so we need to get the actual symbol
+            // we are substringing elsewhere
+            if( CITNode->opn & OPN_ASY ) {
+                sym = CITNode->value.st.ss_id;
+            }
             sym->ns.xflags |= SY_DEFINED;
             return( sym );
         } else {

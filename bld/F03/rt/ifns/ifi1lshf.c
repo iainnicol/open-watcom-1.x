@@ -44,10 +44,8 @@ intstar1        I1LSHIFT( intstar1 arg1, unsigned_8 arg2 ) {
     return( arg1 << arg2 );
 }
 
-
 intstar1        XI1LSHIFT( intstar1 *arg1, unsigned_8 *arg2 ) {
 //=============================================================
 
     return( I1LSHIFT( *arg1, *arg2 ) );
 }
-

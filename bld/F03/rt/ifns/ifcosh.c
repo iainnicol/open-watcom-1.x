@@ -57,10 +57,8 @@ extern  single          COSH(single);
 #endif
 
 
-
 single XCOSH( single *arg ) {
 //===========================
 
     return( COSH( *arg ) );
 }
-

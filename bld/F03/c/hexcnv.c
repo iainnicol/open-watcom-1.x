@@ -104,5 +104,3 @@ char    *BToHS( byte *mem, int length, char *fmt_buf ) {
     *fmt_buf = NULLCHAR;
     return( fmt_buf );
 }
-
-

@@ -54,10 +54,8 @@ single ALGAMA( single arg ) {
     return( __lgamma( arg, &xinf ) );
 }
 
-
 single XALGAMA( single *arg ) {
 //=============================
 
     return( ALGAMA( *arg ) );
 }
-

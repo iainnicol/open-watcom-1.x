@@ -48,10 +48,8 @@ intstar1        I1BSET( intstar1 arg1, intstar1 arg2 ) {
     return( arg1 | bit );
 }
 
-
 intstar1        XI1BSET( intstar1 *arg1, intstar1 *arg2 ) {
 //========================================================
 
     return( I1BSET( *arg1, *arg2 ) );
 }
-

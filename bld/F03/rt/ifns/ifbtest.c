@@ -49,10 +49,8 @@ logstar4        BTEST( intstar4 arg1, intstar4 arg2 ) {
     return( _LogValue( FALSE ) );
 }
 
-
 logstar4        XBTEST( intstar4 *arg1, intstar4 *arg2 ) {
 //========================================================
 
     return( BTEST( *arg1, *arg2 ) );
 }
-

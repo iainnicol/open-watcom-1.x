@@ -98,18 +98,17 @@ void    InitPredefinedMacros() {
 #else
     #error Unknown platform/OS
 #endif
-
-  #if _TARGET == _80386
+#if _TARGET == _80386
     if( CGOpts & CGOPT_STK_ARGS ) {
         MacroDEFINE( "__stack_conventions__", 21 );
     }
-  #endif
-  #if _TARGET == _8086  || _TARGET == _80386
+#endif
+#if _TARGET == _8086  || _TARGET == _80386
     if( CPUOpts & (CPUOPT_FPR | CPUOPT_FPI | CPUOPT_FPI87 |
                    CPUOPT_FP287 | CPUOPT_FP387 | CPUOPT_FP5) ) {
         MacroDEFINE( "__FPI__", 7 );
     }
-  #endif
+#endif
     MacroFlags = 0;
 }
 

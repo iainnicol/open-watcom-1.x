@@ -75,4 +75,3 @@ bool    IFGenInLine( uint func ) {
 
     return( ( IFArgCt[ func ] & IF_IN_LINE ) != 0 );
 }
-

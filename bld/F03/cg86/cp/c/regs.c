@@ -227,7 +227,6 @@ aux_info                IFVarInfo = {
         &IFArgValue,
         0 };
 
-
 aux_info                DefaultInfo = {
         NULL,
         FAR | REVERSE_PARMS,
@@ -241,7 +240,6 @@ aux_info                DefaultInfo = {
         0 };
 
 #elif   _TARGET == _80386
-
 
 char    *RegNames[] = {
             "8087",
@@ -431,7 +429,6 @@ aux_info                IFVarInfo = {
         &IFArgValue,
         0 };
 
-
 aux_info                DefaultInfo = {
         NULL,
         REVERSE_PARMS,
@@ -445,7 +442,6 @@ aux_info                DefaultInfo = {
         0 };
 
 #elif _TARGET == _AXP || _TARGET == _PPC
-
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D( HW_EMPTY )};
@@ -563,7 +559,6 @@ aux_info                IFVarInfo = {
         &IF_Xnames,
         &IFArgValue,
         0 };
-
 
 aux_info                DefaultInfo = {
         NULL,

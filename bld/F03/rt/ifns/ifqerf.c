@@ -119,10 +119,8 @@ extended  QERF( extended arg ) {
     return( res );
 }
 
-
 extended XQERF( extended *arg ) {
 //===========================
 
     return( QERF( *arg ) );
 }
-

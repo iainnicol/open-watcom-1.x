@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX level i/o support
 *
 ****************************************************************************/
 
-
-//
-// POSPUT      : POSIX level i/o support
-//
 
 #include "ftnstd.h"
 #include "fio.h"
@@ -127,7 +122,7 @@ static  void    PutTextRec( b_file *io, char *b, int len ) {
     }
     if( SysWrite( io, b, len ) == -1 ) return;
     if( ( io->attrs & CC_NOCR ) == 0 ) {
-#if ( _OPSYS == _QNX ) || ( _OPSYS == _LINUX ) || ( _OPSYS == _PENPOINT )
+#if ( _OPSYS == _QNX ) || ( _OPSYS == _LINUX )
         tag[0] = LF;
         len = 1;
 #else

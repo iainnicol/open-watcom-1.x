@@ -59,7 +59,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-
 extern  int             KwLookUp(char **,int,char *,int,int);
 extern  int             MkHexConst(char *,char *,int);
 extern  void            Suicide(void);
@@ -210,7 +209,7 @@ static  char            _wresppc[] = { "wresppc" };
 #endif
 
 
-  #if _TARGET == _80386
+#if _TARGET == _80386
     static      char    __Syscall[] = { "aux __syscall \"*\""
                                     "parm caller []"
                                     "value struct struct caller []"
@@ -227,7 +226,7 @@ static  char            _wresppc[] = { "wresppc" };
                                     "parm routine []"
                                     "value struct []"
                                     "modify [eax ecx edx]" };
-  #elif _TARGET == _8086
+#elif _TARGET == _8086
     static      char    __Pascal[] =  { "aux __pascal \"^\""
                                     "parm routine reverse []"
                                     "value struct float struct caller []"
@@ -236,7 +235,7 @@ static  char            _wresppc[] = { "wresppc" };
                                     "parm caller []"
                                     "value struct float struct routine [ax]"
                                     "modify [ax bx cx dx]" };
-  #endif
+#endif
 
 extern  aux_info        DefaultInfo;
 
@@ -363,13 +362,13 @@ void            InitAuxInfo() {
         IFXInfo.parm_info = WinParms;
     }
 #endif
+
     FortranInfo = DefaultInfo;
     ProgramInfo = DefaultInfo;
-
-  #if _TARGET == _80386
+#if _TARGET == _80386
     DoPragma( __Syscall );
     DoPragma( __Stdcall );
-  #endif
+#endif
 #if _TARGET == _8086 || _TARGET == _80386
     DoPragma( __Pascal );
     DoPragma( __Cdecl );
@@ -397,7 +396,6 @@ void            FiniAuxInfo() {
     FreeChain( &DependencyInfo );
     AsmSymFini();
 }
-
 
 
 void    SubAuxInit() {
@@ -480,7 +478,6 @@ void    AddDependencyInfo( source *fi ) {
         }
     }
 }
-
 
 
 static  void    AddDefaultLib( char *lib_ptr, int lib_len, char priority ) {
@@ -585,7 +582,6 @@ void    DefaultLibInfo() {
 #else
   #error Unknown Platform
 #endif
-
 }
 
 
@@ -742,6 +738,7 @@ void            Pragma() {
             SymbolName();
             ProcessAlias();
             ObjectName();
+
             have.f_far    = 0;
             have.f_loadds = 0;
             have.f_export = 0;
@@ -996,7 +993,6 @@ void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
 }
 
 
-
 static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
 //============================================================
 #if _TARGET == _8086 || _TARGET == _80386
@@ -1060,7 +1056,6 @@ static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
     memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
     dst->parm_info = new_reg_set;
 }
-
 
 
 static  void    DupObjectName( aux_info *dst, aux_info *src ) {
@@ -1134,7 +1129,6 @@ static  void            ObjectName() {
     CurrAux->object_name = name;
     ScanToken();
 }
-
 
 
 enum    sym_state       AsmQueryExternal( char *name ) {
@@ -1408,8 +1402,6 @@ static  hw_reg_set      *RegSets() {
 #endif
 
 
-
-
 static  void            GetParmInfo() {
 //=====================================
 
@@ -1559,7 +1551,6 @@ static  void    GetArgList() {
     }
     ReqToken( ")" );
 }
-
 
 
 #if ( _TARGET == _8086 || _TARGET == _80386 )

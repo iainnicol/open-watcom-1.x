@@ -57,10 +57,8 @@ extern  extended                QTANH(extended);
 #endif
 
 
-
 extended XQTANH( extended *arg ) {
 //============================
 
     return( QTANH( *arg ) );
 }
-

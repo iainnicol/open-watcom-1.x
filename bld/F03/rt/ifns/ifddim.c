@@ -52,10 +52,8 @@ double DDIM( double arg1, double arg2 ) {
     return( result );
 }
 
-
 double XDDIM( double *arg1, double *arg2 ) {
 //==========================================
 
     return( DDIM( *arg1, *arg2 ) );
 }
-

@@ -51,10 +51,8 @@ intstar4 ISIGN( intstar4 arg1, intstar4 arg2 ) {
     return( -arg1 );
 }
 
-
 intstar4 XISIGN( intstar4 *arg1, intstar4 *arg2 ) {
 //=================================================
 
     return( ISIGN( *arg1, *arg2 ) );
 }
-

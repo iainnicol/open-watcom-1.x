@@ -62,10 +62,8 @@ extern  single          AMOD(single,single);
 #endif
 
 
-
 single XAMOD( single *arg1, single *arg2 ) {
 //==========================================
 
     return( AMOD( *arg1, *arg2 ) );
 }
-

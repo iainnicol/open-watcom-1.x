@@ -62,4 +62,3 @@ single XCOS( single *arg ) {
 
     return( COS( *arg ) );
 }
-

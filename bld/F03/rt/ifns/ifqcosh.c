@@ -57,7 +57,6 @@ extern  extended                QCOSH(extended);
 #endif
 
 
-
 extended XQCOSH( extended *arg ) {
 //============================
 

@@ -167,7 +167,6 @@ extended  QGAMMA( extended arg ) {
     return( __gamma( arg, &xinf ) );
 }
 
-
 extended XQGAMMA( extended *arg ) {
 //=============================
 

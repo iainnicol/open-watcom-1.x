@@ -49,10 +49,8 @@ double DNINT( double arg ) {
     return( floor( arg + .5 ) );
 }
 
-
 double XDNINT( double *arg ) {
 //============================
 
     return( DNINT( *arg ) );
 }
-

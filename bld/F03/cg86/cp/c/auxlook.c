@@ -42,9 +42,7 @@
 #include "rtentry.h"
 #include "cpopt.h"
 
-
 #include <string.h>
-
 
 extern  void            CopyAuxInfo(aux_info *,aux_info *);
 extern  aux_info        *NewAuxEntry(char *,int);
@@ -80,7 +78,6 @@ aux_info    *AuxLookupName( char *name, int name_len ) {
 }
 
 
-
 aux_info    *AuxLookupAdd( char *name, int name_len ) {
 //=====================================================
 
@@ -108,7 +105,6 @@ aux_info        *RTAuxInfo( sym_id rtn ) {
     }
     return( rt_entry->aux );
 }
-
 
 
 aux_info    *AuxLookup( sym_id sym ) {
@@ -145,8 +141,7 @@ aux_info    *AuxLookup( sym_id sym ) {
             if( info == NULL ) return( &FortranInfo );
             return( info );
         }
-    } else
-    {
+    } else {
         info = AuxLookupName( sym->ns.name, sym->ns.name_len );
         if( info == NULL ) return( &FortranInfo );
         return( info );

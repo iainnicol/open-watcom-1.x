@@ -62,4 +62,3 @@ double XDEXP( double *arg ) {
 
     return( DEXP( *arg ) );
 }
-

@@ -57,10 +57,8 @@ extern  double          DABS(double);
 #endif
 
 
-
 double XDABS( double *arg ) {
 //===========================
 
     return( DABS( *arg ) );
 }
-

@@ -24,20 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  compile-time exception handling
 *
 ****************************************************************************/
 
 
-//
-// CPTRAPS      : compile-time exception handling
-//
-
 #include "ftnstd.h"
 #include "errcod.h"
 #include "xfflags.h"
-#include "_handler.h"
 #include "ferror.h"
 
 #include <stddef.h>

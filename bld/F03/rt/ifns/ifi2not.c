@@ -44,10 +44,8 @@ intstar2       I2NOT( intstar2 arg1 ) {
     return( ~arg1 );
 }
 
-
 intstar2       XI2NOT( intstar2 *arg1 ) {
 //=====================================
 
     return( I2NOT( *arg1 ) );
 }
-

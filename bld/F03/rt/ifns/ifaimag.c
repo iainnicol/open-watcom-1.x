@@ -48,7 +48,6 @@ single  AIMAG( single rp, single ip ) {
     return( ip );
 }
 
-
 single XAIMAG( complex *arg ) {
 //=============================
 

@@ -100,10 +100,8 @@ complex CSQRT( single rp, single ip ) {
     return( result );
 }
 
-
 complex XCSQRT( complex *arg ) {
 //==============================
 
     return( CSQRT( arg->realpart, arg->imagpart ) );
 }
-

@@ -51,7 +51,6 @@ intstar2 I2SIGN( intstar2 arg1, intstar2 arg2 ) {
     return( -arg1 );
 }
 
-
 intstar2 XI2SIGN( intstar2 *arg1, intstar2 *arg2 ) {
 //=================================================
 

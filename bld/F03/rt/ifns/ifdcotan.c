@@ -70,4 +70,3 @@ double XDCOTAN( double *arg ) {
 
     return( DCOTAN( *arg ) );
 }
-

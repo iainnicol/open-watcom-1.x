@@ -53,4 +53,3 @@ intstar2        XI2BCLR( intstar2 *arg1, intstar2 *arg2 ) {
 
     return( I2BCLR( *arg1, *arg2 ) );
 }
-

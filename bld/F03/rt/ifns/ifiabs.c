@@ -47,10 +47,8 @@ intstar4        IABS( intstar4 arg ) {
     return( arg );
 }
 
-
 intstar4        XIABS( intstar4 *arg ) {
 //======================================
 
     return( IABS( *arg ) );
 }
-

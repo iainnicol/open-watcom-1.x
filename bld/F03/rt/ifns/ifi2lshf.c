@@ -44,10 +44,8 @@ intstar2        I2LSHIFT( intstar2 arg1, unsigned_16 arg2 ) {
     return( arg1 << arg2 );
 }
 
-
 intstar2        XI2LSHIFT( intstar2 *arg1, unsigned_16 *arg2 ) {
 //==============================================================
 
     return( I2LSHIFT( *arg1, *arg2 ) );
 }
-

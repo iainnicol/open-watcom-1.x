@@ -209,7 +209,8 @@ void    LinePrint() {
     char        buffer[8];
 
     ISNNumber++;
-    FmtInteger( buffer, ISNNumber, 7 );
+    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
 }
 

@@ -51,4 +51,3 @@ single XERF( single *arg ) {
 
     return( ERF( *arg ) );
 }
-

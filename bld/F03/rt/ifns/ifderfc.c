@@ -127,10 +127,8 @@ double  DERFC( double arg ) {
     return( res );
 }
 
-
 double XDERFC( double *arg ) {
 //============================
 
     return( DERFC( *arg ) );
 }
-

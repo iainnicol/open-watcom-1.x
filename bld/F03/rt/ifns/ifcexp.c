@@ -53,10 +53,8 @@ complex CEXP( single rp, single ip ) {
     return( result );
 }
 
-
 complex XCEXP( complex *arg ) {
 //=============================
 
     return( CEXP( arg->realpart, arg->imagpart ) );
 }
-

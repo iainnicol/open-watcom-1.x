@@ -57,10 +57,8 @@ extern  double          DSIN(double);
 #endif
 
 
-
 double XDSIN( double *arg ) {
 //===========================
 
     return( DSIN( *arg ) );
 }
-

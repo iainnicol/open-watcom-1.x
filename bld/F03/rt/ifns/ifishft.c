@@ -48,7 +48,6 @@ intstar4        ISHFT( unsigned_32 arg1, intstar4 arg2 ) {
     }
 }
 
-
 intstar4        XISHFT( unsigned_32 *arg1, intstar4 *arg2 ) {
 //===========================================================
 

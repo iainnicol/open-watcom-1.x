@@ -48,10 +48,8 @@ intstar1        I1SHL( unsigned_8 arg1, intstar1 arg2 ) {
     }
 }
 
-
 intstar1        XI1SHL( unsigned_8 *arg1, intstar1 *arg2 ) {
 //==========================================================
 
     return( I1SHL( *arg1, *arg2 ) );
 }
-

@@ -57,10 +57,8 @@ extern  single          ALOG10(single);
 #endif
 
 
-
 single XALOG10( single *arg ) {
 //=============================
 
     return( ALOG10( *arg ) );
 }
-

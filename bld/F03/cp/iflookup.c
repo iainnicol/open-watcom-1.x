@@ -170,7 +170,6 @@ byte    IFSpecific( byte typ ) {
 }
 
 
-
 bool    IsIFMax( int ifn ) {
 //==========================
 

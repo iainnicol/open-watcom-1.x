@@ -29,6 +29,13 @@
 *
 ****************************************************************************/
 
+/**************** IMPORTANT NOTE ************************
+
+  data in files:  ptypes.inc, ptypes.h and  parmtype.h
+  
+  must corespond each to other
+
+********************************************************/
 
 //
 // Run and compile-time consts indicating parameter type and attributes

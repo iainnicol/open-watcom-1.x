@@ -114,4 +114,3 @@ dcomplex        XCDSQRT( dcomplex *arg ) {
 
     return( CDSQRT( arg->realpart, arg->imagpart ) );
 }
-

@@ -208,7 +208,7 @@ void    __UseKoreanCharSet() {
     CharSetInfo.is_double_byte_blank = &IsDoubleByteBlank;
     CharSetInfo.character_width = &CharacterWidth;
     CharSetInfo.is_foreign = &IsForeign;
-#if !defined( __RT__ ) 
+#if !defined( __RT__ )
     CharSetInfo.character_set = &CharSet;
     CharSetInfo.initializer = "__init_korean";
 #endif

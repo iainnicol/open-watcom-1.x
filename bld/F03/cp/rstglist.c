@@ -78,7 +78,6 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
 
 
 
-
 sym_id        SearchGList( sym_id local ) {
 //=========================================
 
@@ -212,4 +211,3 @@ void    CkComSize( sym_id sym_ptr, unsigned_32 size ) {
         }
     }
 }
-

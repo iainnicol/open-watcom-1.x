@@ -62,10 +62,8 @@ extern  double          DMOD(double,double);
 #endif
 
 
-
 double XDMOD( double *arg1, double *arg2 ) {
 //==========================================
 
     return( DMOD( *arg1, *arg2 ) );
 }
-

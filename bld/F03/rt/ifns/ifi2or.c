@@ -44,10 +44,8 @@ intstar2       I2OR( intstar2 arg1, intstar2 arg2 ) {
     return( arg1 | arg2 );
 }
 
-
 intstar2       XI2OR( intstar2 *arg1, intstar2 *arg2 ) {
 //=====================================================
 
     return( I2OR( *arg1, *arg2 ) );
 }
-

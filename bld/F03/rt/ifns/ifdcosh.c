@@ -57,10 +57,8 @@ extern  double          DCOSH(double);
 #endif
 
 
-
 double XDCOSH( double *arg ) {
 //============================
 
     return( DCOSH( *arg ) );
 }
-

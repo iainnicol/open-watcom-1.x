@@ -100,10 +100,8 @@ xcomplex        CQSQRT( extended rp, extended ip ) {
     return( result );
 }
 
-
 xcomplex        _CQSQRT( xcomplex *arg ) {
 //========================================
 
     return( CQSQRT( arg->realpart, arg->imagpart ) );
 }
-

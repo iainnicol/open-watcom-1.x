@@ -49,7 +49,6 @@ intstar4 IDNINT( double arg ) {
     return( floor( arg + .5 ) );
 }
 
-
 intstar4 XIDNINT( double *arg ) {
 //===============================
 

@@ -33,7 +33,6 @@
 #include "symflgs.h"
 #include "symacc.h"
 
-
 #define WF77_NULLSEGID  0       // NULL segment id
 #if _TARGET == _8086 || _TARGET == _80386
   #define WF77_LDATA    1       // local data segment for initialized data
@@ -57,7 +56,6 @@
 #define ALIGN_QWORD     8       // align segment on quad word boundary
 #define ALIGN_SEGMENT   16      // align segment on segment boundary
 
-
 #define HASH_PRIME 211
 
 typedef struct hash_entry {
@@ -65,9 +63,7 @@ typedef struct hash_entry {
     sym_id      h_tail;
 } hash_entry;
 
-
 typedef void            *obj_addr;              // back handle
-
 
 typedef unsigned_32     db_handle;
 
@@ -79,11 +75,9 @@ typedef unsigned_32     db_handle;
 
 typedef union vi {
     struct com_eq       *ec_ext;        // common/equivalence extension
-                                        // segment id for arrays/character
     int                 seg_id;         //   variables not in common/equivalence
     void                *alt_scb;       // SCB for character arguments
     unsigned short      cg_typ;         // cg-type for local character
-                                        //   variables on the stack
 } vi;
 
 typedef struct var {
@@ -112,14 +106,12 @@ typedef struct p_constant {
 // symbol table information for subprograms:
 // =========================================
 
-
 typedef struct subprog {
     union {
         label_id        entry;          // entry label
         signed          imp_segid;      // segment id for external subprograms
     };
     void                *alt_scb;       // SCB for character*(*) functions
-                                        // when d2-level debugging used
 } subprog;
 
 // symbol table information for intrinsic functions:
@@ -209,7 +201,6 @@ typedef struct m_sym {
         intstar4        *value;         // value of implied-DO variables
         unsigned short  cg_typ;         // cg-type for character temporaries
     };                                  //   and equivalence sets allocated
-                                        //   on the stack
 } m_sym;
 
 // symbol table structure for constants:

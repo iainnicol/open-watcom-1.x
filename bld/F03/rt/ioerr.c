@@ -50,7 +50,6 @@ extern  void            GetIOErrMsg(ftnfile *,char *);
 extern  int             ErrCodOrg(uint);
 
 
-
 static  void    SysIOErr( int errcode, ... ) {
 //============================================
 

@@ -57,10 +57,8 @@ extern  single          ALOG(single);
 #endif
 
 
-
 single XALOG( single *arg ) {
 //===========================
 
     return( ALOG( *arg ) );
 }
-

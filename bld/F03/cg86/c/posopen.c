@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  POSIX level i/o support
 *
 ****************************************************************************/
 
-
-//
-// POSOPEN      : POSIX level i/o support
-//
 
 #include "ftnstd.h"
 #include "fio.h"
@@ -62,7 +57,7 @@ void    InitStd() {
 
 // Initialize standard i/o.
 
-#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX ) && ( _OPSYS != _PENPOINT )
+#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
     // don't call setmode() since we don't want to affect higher level
     // i/o so that if C function gets called, printf() works ok
 

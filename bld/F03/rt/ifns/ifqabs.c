@@ -62,4 +62,3 @@ extended XQABS( extended *arg ) {
 
     return( QABS( *arg ) );
 }
-

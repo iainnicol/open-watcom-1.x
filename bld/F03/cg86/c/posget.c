@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  i/o read processing
 *
 ****************************************************************************/
 
-
-//
-// POSGET       : i/o read processing
-//
 
 #include "ftnstd.h"
 #include "fio.h"
@@ -380,7 +375,7 @@ char    GetStdChar() {
 #else
     if( read( STDIN_FILENO, &ch, 1 ) < 0 )
         return( NULLCHAR );
-#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX ) && ( _OPSYS != _PENPOINT )
+#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
     if( ch == CR ) {
         if( read( STDIN_FILENO, &ch, 1 ) < 0 ) {
             return( NULLCHAR );
