@@ -43,11 +43,10 @@
 #include "stmtsw.h"
 #include "opn.h"
 #include "cpopt.h"
+#include "recog.h"
 
 extern  void            EatDoParm(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            RecComma(void);
-extern  bool            ReqComma(void);
 extern  void            EmitOp(unsigned_16);
 extern  void            OutPtr(pointer);
 extern  void            OutU16(unsigned_16);
