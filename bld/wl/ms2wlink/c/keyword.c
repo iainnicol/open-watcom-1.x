@@ -77,7 +77,7 @@ static bool             GotOvl;
 
 typedef struct parse_entry {
     char                *keyword;
-    void                (*rtn)(void);
+    bool                (*rtn)();
     char                minlen;
 } parse_entry;
 

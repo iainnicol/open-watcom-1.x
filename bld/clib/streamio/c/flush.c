@@ -63,7 +63,7 @@ _WCRTLINK int __flush( FILE *fp )
                     fp->_flag |= _SFERR;
                     ret = EOF;
                 }
-                #if !defined(__UNIX__)
+                #if !defined(__QNX__)
                     else if( len == 0 ) {
                         __set_errno( ENOSPC );               /* 12-nov-88 */
                         fp->_flag |= _SFERR;
