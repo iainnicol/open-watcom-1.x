@@ -1,0 +1,5 @@
+LIBRARY d3d9.dll
+EXPORTS
+DebugSetLevel
+DebugSetMute
+Direct3DCreate9@4
