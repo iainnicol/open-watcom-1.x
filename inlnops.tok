@@ -431,8 +431,10 @@ punpcklwd
 push
 pusha
 pushad
+pushd
 pushf
 pushfd
+pushw
 pword
 pxor
 qword
