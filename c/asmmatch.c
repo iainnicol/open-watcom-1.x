@@ -53,10 +53,14 @@
 
 extern int_8                    PhaseError;
 
+static void AddLinnumData( void );
+
 extern int  AddFloatingPointEmulationFixup( const struct asm_ins ASMFAR *, bool );
 qdesc       *LinnumQueue = NULL;    // queue of linnum_data structs
 
 #endif
+
+int match_phase_3( int *i, enum operand_type determinant );
 
 static int output_3DNow( int i )
 /************************/
