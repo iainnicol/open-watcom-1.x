@@ -37,4 +37,4 @@
 
 #define gbl_defn extern
 #include <gblboth.h>
-#include <ciodat.h>
+#include "cioconst.h"
