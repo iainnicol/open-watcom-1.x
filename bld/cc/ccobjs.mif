@@ -51,7 +51,10 @@ common_objs = &
         browsio.obj  &
         intlload.obj  &
         autodept.obj  &
-        $(inline_objs) &
+        $(inline_objs)
+
+
+cc_objs_tree = &
         cexpr2.obj &
         cfold2.obj &
         cmath2.obj &
@@ -62,7 +65,7 @@ common_objs = &
         treewalk.obj
 
 !ifeq release 0
-common_objs += cfedump.obj
+cc_objs_tree += cfedump.obj
 !endif
 
 cc_objs_i86 = cprag86.obj pragi86.obj
@@ -71,12 +74,20 @@ cc_objs_axp = cpragaxp.obj pragaxp.obj
 cc_objs_ppc = cpragppc.obj pragppc.obj
 cc_objs_sparc = cpragspc.obj pragspc.obj stubspc.obj
 
+cc_objs_i86_tree =
+# fast code generator
+# cc_objs_386_tree = cgen386.obj
+cc_objs_386_tree =
+cc_objs_axp_tree =
+
 cc_objs = &
         slackdat.obj &
         cdata.obj &
         cintmain.obj &
         $(common_objs) &
-        $(cc_objs_$(target_cpu)) &
+        $(cc_objs_$(cc_version)) &
+        $(cc_objs_$(target_CPU)) &
+        $(cc_objs_$(target_CPU)_$(cc_version)) &
         cstats.obj &
         slack2.obj
 cr_objs = &
@@ -84,7 +95,8 @@ cr_objs = &
         cdata.cbj &
         cintmain.obj &
         $(common_objs) &
-        $(cc_objs_$(target_cpu)) &
+        $(cc_objs_$(cc_version)) &
+        $(cc_objs_$(target_CPU)) &
         cstats.cbj &
         slack2.obj
 dll_objs = &
@@ -93,7 +105,9 @@ dll_objs = &
         idedll.obj &
         idemsgpr.obj &
         $(common_objs) &
-        $(cc_objs_$(target_cpu)) &
+        $(cc_objs_$(cc_version)) &
+        $(cc_objs_$(target_CPU)) &
+        $(cc_objs_$(target_CPU)_$(cc_version)) &
         cstats.obj &
         slack2.obj
 #dll_objs += ntent.obj

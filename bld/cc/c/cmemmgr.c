@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  C compiler memory management routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,6 +34,11 @@
 
 extern  void    AllocPermArea();                /* cintmain */
 extern  void    CSuicide();
+#ifndef NEWCFE
+extern  void    PageOutLeafs();
+extern  void    PageOutQuads();
+extern  void    PageOutSyms();
+#endif
 
 /*  variables used:
  *      char *PermArea;         pointer to start of permanent area
