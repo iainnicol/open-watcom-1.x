@@ -137,7 +137,6 @@ void    _FiniEx() {
 }
 
 
-#if _OPT_CG == _ON
 
 bool    RunEntry() {
 //==================
@@ -153,5 +152,3 @@ void    RunExit() {
 
     _FiniEx();
 }
-
-#endif
