@@ -45,11 +45,10 @@
 #include "ferror.h"
 #include "comio.h"
 #include "frl.h"
+#include "scan.h"
 
 #include <string.h>
 
-extern  void            InitScan(void);
-extern  void            Scan(void);
 
 extern  char            *StmtKeywords[];
 extern  char            *LogTab[];
