@@ -76,11 +76,6 @@ enum operand_type {
     OP_M16      = 0x00400000,
     OP_M32      = 0x00800000,
 
-// we are out of space so ...
-    OP_M16_IND  = ( OP_M8 | OP_M16 ),          // indirect jmp - word ptr
-    OP_M32_IND  = ( OP_M16 | OP_M32 ),         // indirect jmp - dword ptr
-    OP_M48_IND  = ( OP_M32 | OP_M8 ),          // indirect jmp - fword ptr
-
     OP_M        = ( OP_M8 | OP_M16 | OP_M32 ),
     OP_M_ANY    = ( OP_M_B | OP_M_W | OP_M_DW | OP_M_QW | OP_M_TB | OP_M ),
     OP_M8_R8    = ( OP_M8 | OP_R8 ),
@@ -161,16 +156,18 @@ enum operand_type {
  /*     OP_CR           Control Register */
  /*     OP_DR           Debug Register */
  /*     OP_TR           Test Register */
- /*     OP_SR            segreg, 16-bit */
- /*     OP_SR3   segreg, include 16/32 bit */
- /*     OP_ST            Stack Top */
- /*     OP_STI           registers in stack */
+ /*     OP_SR           segreg, 16-bit */
+ /*     OP_SR3          segreg, include 16/32 bit */
+ /*     OP_ST           x87 Stack Top */
+ /*     OP_STI          x87 registers in stack */
+ /*     OP_MMX          MMX registers 64-bit */
+ /*     OP_XMM          XMM registers 128-bit */
 
  /*     OP_LABEL        Label for JMP, CALL, etc */
- /*     OP_REGISTER      designates a reserved register name, eg. AX */
- /*     OP_RES_ID        designates a reserved id, eg. BYTE, WORD */
- /*     OP_DIRECTIVE     designates a directive */
+ /*     OP_REGISTER     designates a reserved register name, eg. AX */
+ /*     OP_RES_ID       designates a reserved id, eg. BYTE, WORD */
+ /*     OP_DIRECTIVE    designates a directive */
  /*     OP_DIRECT_EXPR  designates a directive which has an expression */
- /*     OP_ARITHOP          arithmetic operator */
+ /*     OP_ARITHOP      arithmetic operator */
 
 #endif

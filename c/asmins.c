@@ -2127,9 +2127,6 @@ int AsmParse( void )
             /* fall through */
         case T_NUM:
             switch( last_opnd ) {
-            case OP_M16_IND:
-            case OP_M32_IND:
-            case OP_M48_IND:
             case OP_I8:
             case OP_I16:
             case OP_I32:

@@ -274,14 +274,6 @@ static int output_data( enum operand_type determinant, int index )
         out = 4;
     } else if( determinant & OP_J48 ) {
         out = 6;
-    } else if( determinant == OP_M16_IND ||
-               determinant == OP_M32_IND ||
-               determinant == OP_M48_IND ) {
-        if( Code->use32 ) {
-            out = 4;
-        } else {
-            out = 2;
-        }
     } else if( determinant & OP_M_ANY ) {
         // switch on the mode ( the leftmost 2 bits )
         switch( Code->info.rm_byte & BIT_67 ) {
