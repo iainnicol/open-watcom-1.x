@@ -44,6 +44,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  void            DownScan(void);
 extern  void            UpScan(void);
@@ -54,9 +55,6 @@ extern  void            AdvanceITPtr(void);
 extern  bool            ClassIs(unsigned_16);
 extern  bool            Subscripted(void);
 extern  bool            BitOn(unsigned_16);
-extern  bool            ReqNextOpr(byte,int);
-extern  bool            RecName(void);
-extern  bool            ReqName(int);
 extern  void            SFPrologue(void);
 
 #define SF_MASK (SY_SUB_PARM|SY_IN_EC|SY_DATA_INIT|SY_SAVED)

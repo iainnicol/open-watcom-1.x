@@ -41,6 +41,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  void            AdvError(uint);
 extern  bool            CmpNode2Str(itnode *,char *);

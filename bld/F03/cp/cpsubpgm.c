@@ -46,6 +46,7 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  void            AdvanceITPtr(void);
 extern  void            IntSubExpr(void);
@@ -54,18 +55,6 @@ extern  uint            MapTypes(uint,int);
 extern  int             StorageSize(uint);
 extern  byte            ImplType(char);
 extern  bool            EmptyCSList(void);
-extern  bool            ReqName(int);
-extern  bool            RecOpenParen(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecName(void);
-extern  bool            ReqMul(void);
-extern  bool            RecComma(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecEOS(void);
-extern  bool            ReqEOS(void);
 extern  sym_id          LkSym(void);
 extern  sym_id          LkProgram(void);
 extern  sym_id          LkBlkData(void);

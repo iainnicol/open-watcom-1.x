@@ -42,6 +42,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 #include <ctype.h>
 
 
@@ -52,18 +53,6 @@ extern  void            AdvanceITPtr(void);
 extern  void            IfExpr(void);
 extern  label_id        NextLabel(void);
 extern  void            CkTypeDeclared(void);
-extern  bool            RecNumber(void);
-extern  bool            RecName(void);
-extern  bool            ReqIntVar(void);
-extern  bool            RecComma(void);
-extern  bool            ReqComma(void);
-extern  bool            RecNOpr(void);
-extern  bool            RecNOpn(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecEOS(void);
-extern  bool            ReqEOS(void);
 extern  sym_id          LkUpAssign(void);
 extern  sym_id          LkUpStmtNo(void);
 extern  void            AddCSNode(byte);

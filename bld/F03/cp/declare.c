@@ -47,6 +47,7 @@
 #include "stmtsw.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
@@ -54,25 +55,6 @@
 extern  void            AdvanceITPtr(void);
 extern  void            DimExpr(void);
 extern  bool            CIntExpr(void);
-extern  bool            RecComma(void);
-extern  bool            RecColon(void);
-extern  bool            ReqMul(void);
-extern  bool            RecDiv(void);
-extern  bool            RecCat(void);
-extern  bool            ReqName(int);
-extern  bool            RecName(void);
-extern  bool            ReqEOS(void);
-extern  bool            RecOpenParen(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            RecCloseParen(void);
-extern  bool            ReqComma(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecTrmOpr(void);
-extern  bool            ReqNOpn(void);
-extern  bool            ReqColon(void);
-extern  bool            RecNOpr(void);
-extern  bool            RecNOpn(void);
 extern  void            Function(int,uint,bool);
 extern  act_dim_list    *STSubsList(act_dim_list *);
 extern  sym_id          LkSym(void);

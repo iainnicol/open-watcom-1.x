@@ -41,6 +41,7 @@
 #include "opr.h"
 #include "global.h"
 #include "ferror.h"
+#include "recog.h"
 
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
@@ -53,10 +54,6 @@ extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);
 extern  void            AdvanceITPtr(void);
 extern  label_id        NextLabel(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            ReqEOS(void);
-extern  bool            RecKeyWord(char *);
 extern  void            FreeLabel(label_id);
 
 

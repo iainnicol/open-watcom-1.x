@@ -48,6 +48,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -57,7 +58,6 @@ extern  pointer         FrlAlloc(void **,int);
 extern  sym_id          LkSym(void);
 extern  void            MakeITList(void);
 extern  void            FreeITNodes(itnode *);
-extern  bool            RecName(void);
 extern  bool            BitOn(unsigned_16);
 extern  void            AdvanceITPtr(void);
 extern  void            FreeOneNode(itnode *);
@@ -70,8 +70,6 @@ extern  void            STResolve(void);
 extern  void            GSetDbugLine(void);
 extern  void            Prologue(void);
 extern  void            DefProg(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNextOpr(byte);
 extern  bool            SubStrung(void);
 extern  void            GSetSrcLine(void);
 extern  void            TDStmtInit(void);
