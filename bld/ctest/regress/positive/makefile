@@ -121,7 +121,7 @@ test.lnk : makefile
     %create $^@
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION quiet, noredef
+    @%append $^@ OPTION stack=8k, quiet, caseexact, noredef
 
 save : .symbolic
     if exist exec.out copy exec.out s$(arch)_$(alt_error).sav
