@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Processing of pop-up menu for source file view.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -263,13 +264,9 @@ static void     FileMenuItem( a_window *wnd, unsigned id, int row, int piece )
         WndMenuEnable( wnd, MENU_FILE_STEP_INTO, file->mod != NO_MOD && has_popitem );
         WndMenuEnable( wnd, MENU_FILE_BREAK, has_popitem );
         WndMenuEnable( wnd, MENU_FILE_RUN, has_addr );
-        WndMenuEnable( wnd, MENU_FILE_SKIP_TO_CURSOR, has_addr );
         break;
     case MENU_FILE_RUN:
         GoToAddr( addr );
-        break;
-    case MENU_FILE_SKIP_TO_CURSOR:
-        SkipToAddr( addr );
         break;
     case MENU_FILE_BREAK:
         BreakOnSelected( WndPopItem( wnd ) );

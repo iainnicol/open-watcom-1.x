@@ -34,12 +34,6 @@
 #define _UIDEF_H_
 #include <stddef.h>
 
-#if defined( __WATCOMC__ ) 
-  #define cdecl __cdecl
-#else
-  #define cdecl
-#endif
-
 #ifndef HP
     #ifndef MAXINT
         #define         MAXINT                  0x7fff

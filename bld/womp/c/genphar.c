@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  PharLap style OMF output routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -366,7 +367,10 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
 STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
 
 /**/myassert( out != NULL );
-#if defined( __BIG_ENDIAN__ )
+#if LITTLE_ENDIAN
+    ObjWrite( out, (char *)objr->d.linnum.lines, 6 * objr->d.linnum.num_lines );
+/**/myassert( sizeof( linnum_data ) == 6 );
+#else
     {
         linnum_data *cur;
         linnum_data *stop;
@@ -379,9 +383,6 @@ STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
             ++cur;
         }
     }
-#else
-    ObjWrite( out, (char *)objr->d.linnum.lines, 6 * objr->d.linnum.num_lines );
-/**/myassert( sizeof( linnum_data ) == 6 );
 #endif
 }
 

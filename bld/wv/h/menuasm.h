@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Definition of pop-up menu for assembly view.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,7 +33,6 @@
 MENU_ITEM( MENU_ASM_INSPECT,            XInspect )
 MENU_ITEM( MENU_ASM_BREAK,              XBreak  )
 MENU_ITEM( MENU_ASM_RUN,                Run_to_XCursor )
-MENU_ITEM( MENU_ASM_SKIP_TO_CURSOR,     SXkip_to_Cursor )
 MENU_ITEM( MENU_ASM_STEP_INTO,          XEnter_Function )
 MENU_CASCADE( MENU_ASM_SHOW,            XShow, AsmShowMenu )
 MENU_ITEM( MENU_ASM_HOME,               XHome  )
