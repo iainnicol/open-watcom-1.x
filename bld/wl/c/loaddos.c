@@ -24,11 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  utilities for processing creation of DOS EXE file
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+/*
+   DOSLOAD : utilities for processing creation of DOS EXE file
+
+*/
 #include <string.h>
 #include "linkstd.h"
 #include <exedos.h>
@@ -188,9 +193,7 @@ static unsigned long WriteDOSData()
                 WriteDOSSectRelocs( sect, repos );
             }
         }
-        if( repos ) {
-            SeekLoad( fnode->file_loc );
-        }
+        if( repos ) SeekLoad( fnode->file_loc );
     }
     return( root_size );
 }
@@ -212,8 +215,7 @@ static bool WriteSegData( void *_sdata, void *_start )
 
     if( !sdata->isuninit && !sdata->isdead && sdata->length > 0 ) {
         newpos = *start + sdata->a.delta;
-        if( newpos + sdata->length <= 0 )
-            return FALSE;
+        if( newpos + sdata->length <= 0 ) return FALSE;
         pad = newpos - COMAmountWritten;
         if( pad > 0 ) {
             PadLoad( pad );
@@ -302,9 +304,7 @@ static void WriteCOMFile( void )
         }
         if( (signed long)group->size + chop > 0 ) {
             repos = WriteCOMGroup( group, chop );
-            if( repos ) {
-                SeekLoad( fnode->file_loc );
-            }
+            if( repos ) SeekLoad( fnode->file_loc );
         }
 #if 0
         if( loc < 0 ) {

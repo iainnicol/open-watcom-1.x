@@ -7,7 +7,7 @@ ctype_deps = ../watcom/ctype.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../
 errno_deps = ../watcom/errno.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwatqnx.sp ../errno.sp
 float_deps = ../watcom/float.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwat.sp ../ext.sp
 iso646_deps = ../watcom/iso646.mh ../readonly.sp ../crwat.sp
-limits_deps = ../watcom/limits.mh ../readonly.sp ../crwatqnx.sp ../crwat.sp ../mbmax.sp ../ext.sp ../unixext.sp
+limits_deps = ../watcom/limits.mh ../readonly.sp ../crwatqnx.sp ../mbmax.sp
 locale_deps = ../watcom/locale.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwatqnx.sp ../null.sp ../poppack.sp ../pshpackl.sp ../wchar_t.sp
 math_deps = ../watcom/math.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwat.sp ../ext.sp ../poppack.sp ../pshpackl.sp
 setjmp_deps = ../watcom/setjmp.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwatqnx.sp ../poppack.sp ../pshpackl.sp
@@ -35,7 +35,6 @@ strstrea_deps = ../watcom/strstrea.mh ../readonly.sp ../crwat.sp ../pshpackl.sp 
 
 # These dependency lists are for other C++ library headers.
 
-algorith_deps = ../watcom/algorith.mh ../readonly.sp ../crwat.sp
 function_deps = ../watcom/function.mh ../readonly.sp ../crwat.sp
 iterator_deps = ../watcom/iterator.mh ../readonly.sp ../crwat.sp
 memory_deps = ../watcom/memory.mh ../readonly.sp ../crwat.sp ../throws.sp
@@ -53,6 +52,7 @@ complex.h       : ../watcom/complex.mh ../readonly.sp ../crwat.sp ../poppack.sp 
 conio.h         : ../watcom/conio.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwat.sp ../valist.sp
 crtdbg.h        : ../watcom/crtdbg.mh ../readonly.sp ../crwat.sp ../cplusepi.sp ../cpluspro.sp
 cstdlib.h       : ../watcom/cstdlib.mh ../readonly.sp ../crwat.sp
+cstring.h       : ../watcom/cstring.mh ../readonly.sp ../crwat.sp
 ctype.h         : $(ctype_deps)
 direct.h        : ../watcom/direct.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwat.sp ../dskfreet.sp ../poppack.sp ../pshpackl.sp ../wchar_t.sp
 dos.h           : ../watcom/dos.mh ../readonly.sp ../cplusepi.sp ../cpluspro.sp ../crwat.sp ../dskfreet.sp ../poppack.sp ../pshpackl.sp ../wchar_t.sp

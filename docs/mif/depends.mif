@@ -34,7 +34,6 @@ $(docsrc_dir)\cg\cromable.gml &
 $(docsrc_dir)\cg\crtmsgs.gml &
 $(docsrc_dir)\cg\errnodos.gml &
 $(docsrc_dir)\cg\errnoqnx.gml &
-$(docsrc_dir)\cg\inlintab.gml &
 $(docsrc_dir)\cg\seh.gml &
 $(docsrc_dir)\cg\wccerrs.gml &
 $(docsrc_dir)\cg\wpperrs.gml
@@ -1037,7 +1036,6 @@ $(docsrc_dir)\lg\opdosseg.gml &
 $(docsrc_dir)\lg\opdynami.gml &
 $(docsrc_dir)\lg\opelimin.gml &
 $(docsrc_dir)\lg\opexit.gml &
-$(docsrc_dir)\lg\opfarcal.gml &
 $(docsrc_dir)\lg\opheap.gml &
 $(docsrc_dir)\lg\ophelp.gml &
 $(docsrc_dir)\lg\opimpfil.gml &

@@ -168,7 +168,7 @@ extern void OvlPass2( void )
     }
 }
 
-#ifdef OVERLAY_VERSION1
+#if 0           // NYI
 extern void TryGetVector( extnode *ext, thread *targ )
 /****************************************************/
 {

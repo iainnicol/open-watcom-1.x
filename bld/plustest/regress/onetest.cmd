@@ -79,9 +79,6 @@ cd ..
 cd overload
 call onetest.cmd
 cd ..
-cd owstl
-call onetest.cmd
-cd ..
 cd perl
 call onetest.cmd
 cd ..

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Decode names in DWARF debug info. Language dependent.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -564,7 +565,7 @@ static void GetClassName( dr_handle   entry,
     while( entry != NULL ){
         tmp_entry = entry;
         abbrev = DWRVMReadULEB128( &tmp_entry );
-        abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
+        abbrev = DWRCurrNode->abbrevs[abbrev];
         tag = DWRVMReadULEB128( &abbrev );
         abbrev++;           // skip the child pointer.
         name = DWRGetName( abbrev, tmp_entry );
@@ -592,7 +593,7 @@ static dr_handle SkipPCH( dr_handle   entry )
     while( entry != NULL ){
         tmp_entry = entry;
         abbrev = DWRVMReadULEB128( &tmp_entry );
-        abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
+        abbrev = DWRCurrNode->abbrevs[abbrev];
         tag = DWRVMReadULEB128( &abbrev );
         if( tag != DW_TAG_typedef )break;
         abbrev++;           // skip the child pointer.
@@ -767,7 +768,7 @@ static dw_tagnum GetTag( dr_handle entry )
     dw_tagnum   tag;
 
     abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev = DWRCurrNode->abbrevs[ abbrev ];
     tag = DWRVMReadULEB128( &abbrev );
     return( tag );
 }
@@ -2290,7 +2291,7 @@ static void FillLoc( Loc_T * loc, dr_handle die )
     abbrev_idx = DWRVMReadULEB128( &loc->entry_cr );
 
     if( abbrev_idx != 0 ) {
-        loc->abbrev_st = DWRLookupAbbrev( loc->entry_cr, abbrev_idx );
+        loc->abbrev_st = DWRCurrNode->abbrevs[abbrev_idx];
         loc->abbrev_cr = loc->abbrev_st;
         loc->tag = DWRVMReadULEB128( &( loc->abbrev_cr ) );
         loc->child = DWRVMReadByte( loc->abbrev_cr );

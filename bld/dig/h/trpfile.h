@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  File I/O supplementary requests.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,7 +34,7 @@
 
 #include "trptypes.h"
 
-#pragma pack(push, 1)
+#pragma pack(push,1);
 
 #define FILE_SUPP_NAME          "Files"
 
@@ -189,7 +190,7 @@ typedef struct {
     trap_error          err;
 } file_run_cmd_ret;
 
-#pragma pack(pop)
+#pragma pack(pop);
 
 #define TRPFILE_H
 

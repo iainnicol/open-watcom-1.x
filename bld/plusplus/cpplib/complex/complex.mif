@@ -8,8 +8,7 @@ target_lib = $(prefix)$(suffix).lib
 
 cpp_dirs = ../cpp
 c_dirs = ../c
-
-inc_dirs = -I"../h"
+inc_dirs = ../h
 
 objs = &
 abs.obj &

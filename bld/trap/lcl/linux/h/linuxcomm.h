@@ -37,7 +37,7 @@
 
 /* Use 4-byte packing for compatibility with the default packing used by GCC */
 
-#pragma pack(push,4)
+#pragma pack(__push,4);
 
 /* Linux PTRACE support defines */
 
@@ -166,13 +166,13 @@ typedef struct {
 
 /* Inline functions to get the CS and DS register values */
 
-u_short get_ds( void );
-#pragma aux get_ds = \
+u_short DS( void );
+#pragma aux DS = \
         "mov        ax,ds" \
         value[ax];
 
-u_short get_cs( void );
-#pragma aux get_cs = \
+u_short CS( void );
+#pragma aux CS = \
         "mov        ax,cs" \
         value[ax];
 
@@ -237,10 +237,7 @@ extern int      CheckWatchPoints( void );
 
 extern void print_msg( const char *format, ... );
 
-/* Copy of parent's environment */
-extern char     **dbg_environ;
-
-#pragma pack(pop)
+#pragma pack(__pop);
 
 #endif  /* _LINUXCOMM_H */
 

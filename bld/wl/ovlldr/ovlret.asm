@@ -24,10 +24,17 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Routines to handle calls to parallel overlays
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;<>
+;<> OVLRET:    Routines to handle calls to parallel overlays
+;<>
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 ifdef OVL_SMALL
         name    sovlret

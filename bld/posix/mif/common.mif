@@ -53,7 +53,11 @@ memory_model_386=$(model)
 posixlib=$(posix_dir)/misc/$(targos)/posix$(model).lib
 
 !include cproj.mif
-!include defrule.mif
+
+.EXTENSIONS:
+.EXTENSIONS: .exe
+.EXTENSIONS: .cbj .sbj .lbj .mbj .fbj .obj
+.EXTENSIONS: .asm .c
 
 #
 #       compiler options
@@ -66,7 +70,7 @@ posixlib=$(posix_dir)/misc/$(targos)/posix$(model).lib
 !ifeq        targos  pharlap
 extra_cflags   = -bt=pharlap $(extra_cflags)
 !else ifeq   targos  ntaxp
-extra_cflags   = -DWIN32 -D_WIN32
+extra_cflags   = -dWIN32 -d_WIN32
 !endif
 
 !ifndef make_lib
@@ -77,7 +81,20 @@ extra_cflags   = -DWIN32 -D_WIN32
 
 .before
 !ifndef make_lib
-extra_c_flags = -fo=.obj -D__OS_$(targos)__ -DSTANDALONE_RX -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
+extra_c_flags = -fo=.obj -d__OS_$(targos)__ -dSTANDALONE_RX -i"$(posix_dir)/src/$(name);$(posix_dir)/h;$(inc_path)"
 !else
-extra_c_flags = -fo="$(posix_dir)/misc/$(targos)/.obj" -D__OS_$(targos)__ -DSTANDALONE_RX -I"$(posix_dir)/h"
+extra_c_flags = -fo="$(posix_dir)/misc/$(targos)/.$(model)bj" -d__OS_$(targos)__ -dSTANDALONE_RX -i"$(posix_dir)/h;$(inc_path)"
 !endif
+
+.c.obj: $(posix_autodepends)
+        $(cc) $[@ $(cflags) $(extra_cflags)
+.c.cbj: $(posix_autodepends)
+        $(cc) $[@ $(cflags) $(extra_cflags)
+.c.lbj: $(posix_autodepends)
+        $(cc) $[@ $(cflags) $(extra_cflags)
+.c.fbj: $(posix_autodepends)
+        $(cc) $[@ $(cflags) $(extra_cflags)
+.c.sbj: $(posix_autodepends)
+        $(cc) $[@ $(cflags) $(extra_cflags)
+.c.mbj: $(posix_autodepends)
+        $(cc) $[@ $(cflags) $(extra_cflags)
