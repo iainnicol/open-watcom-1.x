@@ -231,7 +231,7 @@ ExpConsts dt    1.0442737824274138403   ;/*   sqrt(sqrt(sqrt(sqrt(2))))  */
         pop     ECX                     ; restore exp2
 
 ;;        poly = ExpConsts;
-        lea     ESI,ExpConsts
+        _mova   ESI,ExpConsts
 ;;        while( exp2 != 0 ) {
         _loop                           ; loop
           or    ECX,ECX                 ; - quif exp2 == 0

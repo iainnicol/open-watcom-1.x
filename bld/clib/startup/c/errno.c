@@ -49,19 +49,6 @@ _WCRTLINK int *__get_errno_ptr()
 #endif
 }
 
-#elif defined(__LINUX__)
-
-#include "errorno.h"
-
-#if !defined( __SW_BM )
-    _WCRTLINK int               errno;
-#endif
-
-_WCRTLINK int *__get_errno_ptr()
-{
-    return( &_RWD_errno );
-}
-
 #else
 
 #include "errorno.h"

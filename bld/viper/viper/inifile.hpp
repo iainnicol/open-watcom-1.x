@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Viper INI file function prototypes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -35,4 +36,3 @@ int MyGetProfileString( const char *dir, const char *filename,
 int MyWriteProfileString( const char *dir, const char *filename,
                           const char *section, const char *key,
                           const char *string );
-int MyCloseCurrentProfile( void );

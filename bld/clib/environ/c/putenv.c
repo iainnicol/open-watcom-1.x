@@ -24,9 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for putenv()
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #include "variety.h"
 #include "widechar.h"
@@ -243,7 +245,7 @@ static int findenv( const CHAR_TYPE *env_string, int delete_var )
 
         for( envp=__F_NAME(_RWD_environ,_RWD_wenviron); p1=*envp; ++envp ) {
             for( p2 = env_string; *p2; ++p1, ++p2 ) {
-#if defined(__UNIX__)
+#ifdef __QNX__
                 if( *p1 != *p2 ) break;
 #else
                 /* case independent search */
@@ -287,4 +289,3 @@ static int findenv( const CHAR_TYPE *env_string, int delete_var )
         return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );/* not found */
     }
 #endif
-
