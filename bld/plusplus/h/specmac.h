@@ -34,10 +34,10 @@ pick( "__FILE__",       MACRO_FILE,        0 )
 pick( "__DATE__",       MACRO_DATE,        0 )
 pick( "__TIME__",       MACRO_TIME,        0 )
 pick( "__cplusplus",    MACRO_CPLUSPLUS,   0 )
-pick( "__FUNCTION__",   MACRO_FUNCTION,    0 )
+pick( "__FUNCTION__",   MACRO_FUNCTION,    MACRO_CAN_BE_REDEFINED )
 
 // __func__ shouldn't be a macro, define it special for now
-pick( "__func__",       MACRO_FUNC,        MACRO_SPECIAL )
+pick( "__func__",       MACRO_FUNC,        MACRO_CAN_BE_REDEFINED | MACRO_SPECIAL )
 
 // alternative tokens for C++
 pick( NULL,             MACRO_ALT_MARKER,  0 )
