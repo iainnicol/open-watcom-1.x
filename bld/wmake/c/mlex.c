@@ -63,6 +63,7 @@ extern const char * const DotNames[] = {    /* must be in alpha order! */
     "HOLD",
     "IGNORE",
     "JUST_ENOUGH",
+    "KEEP_SPACES",
     "MULTIPLE",
     "NOCHECK",
     "OPTIMIZE",

@@ -57,20 +57,18 @@
 #include "fileio.h"
 #include "symtrace.h"
 #include "reloc.h"
-// #include "strtab.h"
-// #include "carve.h"
-// #include "permdata.h"
+#include "strtab.h"
+#include "carve.h"
+#include "permdata.h"
 #include "dbgall.h"
 
 #ifdef _INT_DEBUG
 unsigned int            Debug;
 #endif
 
-extern void             GetExtraCommands( void );
+extern void             Ignite( void );
 static void             Crash( bool );
-static void             Help( void );
 static void             DoCmdParse( void );
-static void             DisplayOptions( void );
 
 static bool             ProcDosHelp( void );
 static bool             ProcOS2Help( void );
@@ -81,27 +79,32 @@ static bool             ProcELFHelp( void );
 static bool             ProcWindowsHelp( void );
 static bool             ProcWinVxdHelp( void );
 static bool             ProcNTHelp( void );
-static void             WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt );
+
+#ifdef _INT_DEBUG
+extern  bool            ProcXDbg( void );
+extern  bool            ProcIntDbg( void );
+static  void            PrintSect( section * );
+#endif
 
 static  parse_entry   FormatHelp[] = {
-    "Dos",          ProcDosHelp,            MK_ALL,     0,
+    "Dos",          &ProcDosHelp,           MK_ALL,     0,
 #ifdef _OS2
-    "OS2",          ProcOS2Help,            MK_ALL,     0,
-    "WINdows",      ProcWindowsHelp,        MK_ALL,     0,
-    "VXD",          ProcWinVxdHelp,         MK_ALL,     0,
-    "NT",           ProcNTHelp,             MK_ALL,     0,
+    "OS2",          &ProcOS2Help,           MK_ALL,     0,
+    "WINdows",      &ProcWindowsHelp,       MK_ALL,     0,
+    "VXD",          &ProcWinVxdHelp,        MK_ALL,     0,
+    "NT",           &ProcNTHelp,            MK_ALL,     0,
 #endif
 #ifdef _PHARLAP
-    "PHARlap",      ProcPharHelp,           MK_ALL,     0,
+    "PHARlap",      &ProcPharHelp,          MK_ALL,     0,
 #endif
 #ifdef _NOVELL
-    "NOVell",       ProcNovellHelp,         MK_ALL,     0,
+    "NOVell",       &ProcNovellHelp,        MK_ALL,     0,
 #endif
 #ifdef _QNXLOAD
-    "QNX",          ProcQNXHelp,            MK_ALL,     0,
+    "QNX",          &ProcQNXHelp,           MK_ALL,     0,
 #endif
 #ifdef _ELF
-    "ELF",          ProcELFHelp,            MK_ALL,     0,
+    "ELF",          &ProcELFHelp,           MK_ALL,     0,
 #endif
     NULL
 };
@@ -200,7 +203,7 @@ extern void DoCmdFile( char *fname )
         memcpy( fname, INIT_FILE_NAME, sizeof(INIT_FILE_NAME) );
         SetCommandFile( file, fname );
     }
-    if( Spawn( DoCmdParse ) ) {
+    if( Spawn( &DoCmdParse ) ) {
         Ignite();
         Suicide();
     }
@@ -208,18 +211,18 @@ extern void DoCmdFile( char *fname )
     if( !(LinkState & FMT_DECIDED) ) {
         /* restrict set to automatically decided ones */
 #if _OS == _QNX
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
+#define LAST_CHANCE MK_QNX|MK_OS2_NE|MK_OS2_LX|MK_OS2_LE
 #elif _OS == _LINUX
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
+#define LAST_CHANCE MK_ELF|MK_OS2_NE|MK_OS2_LX|MK_OS2_LE
 #elif _OS == _NT
-#define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
+#define LAST_CHANCE MK_PE|MK_WINDOWS|MK_OS2_LX|MK_OS2_NE|MK_WIN_VXD
 #else
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
+#define LAST_CHANCE MK_DOS_EXE|MK_PHAR_SIMPLE|MK_OS2_NE|MK_OS2_LX|MK_OS2_LE
 #endif
         HintFormat( LAST_CHANCE );
     } else {
-        /* restrict to a unique type */
-        for( possible = 1; possible != 0; possible *= 2 ) {
+        /* restrict to only one unique type */
+        for( possible = 1; possible != 0; possible <<= 1 ) {
             if( FmtData.type & possible ) {
                 FmtData.type = possible;
                 break;
@@ -234,7 +237,7 @@ extern void DoCmdFile( char *fname )
         CmdNovFini();
     } else
 #endif
-    if( FmtData.type & MK_OVERLAYS ) {
+           if( FmtData.type & MK_OVERLAYS ) {
         CmdOvlFini();
         AddObjLib( "wovl.lib", 0 );     // add a reference to wovl.lib
     }
@@ -245,14 +248,14 @@ extern void DoCmdFile( char *fname )
     namelen = strlen( Name );
     if( MapFlags & MAP_FLAG ) {
         if( MapFName == NULL ) {
-            MapFName = FileName( Name, (int) namelen, E_MAP, TRUE );
+            MapFName = FileName( Name, namelen, E_MAP, TRUE );
         }
     } else {
         MapFlags = 0;   // if main isn't set, don't set anything.
     }
     if( SymFileName == NULL && (CmdFlags & CF_SEPARATE_SYM ||
                    (LinkFlags & OLD_DBI_FLAG && FmtData.type & MK_COM)) ) {
-        SymFileName = FileName( Name, (int) namelen, E_SYM, TRUE );
+        SymFileName = FileName( Name, namelen, E_SYM, TRUE );
     }
     if( FmtData.make_implib && FmtData.implibname == NULL ) {
         if( FmtData.make_impfile ) {
@@ -260,7 +263,7 @@ extern void DoCmdFile( char *fname )
         } else {
             extension = E_LIBRARY;
         }
-        FmtData.implibname = FileName( Name, (int) namelen, (byte) extension, TRUE );
+        FmtData.implibname = FileName( Name, namelen, extension, TRUE );
     }
     CheckTraces();
     BurnUtils();
@@ -288,7 +291,7 @@ extern char * GetNextLink( void )
 
 struct extra_cmd_info {
     unsigned    type;
-    char        prefix[PREFIX_SIZE+1];
+    char        prefix[PREFIX_SIZE];
     bool        retry;
 };
 
@@ -303,8 +306,8 @@ static struct extra_cmd_info ExtraCmds[] = {
 extern void GetExtraCommands( void )
 /**********************************/
 {
-    struct extra_cmd_info const        *cmd;
-    char                                buff[ _MAX_PATH + PREFIX_SIZE ];
+    struct extra_cmd_info *     cmd;
+    char                        buff[ _MAX_PATH + PREFIX_SIZE ];
 
     cmd = ExtraCmds;
     while( cmd->prefix[0] != '\0' ) {
@@ -312,7 +315,7 @@ extern void GetExtraCommands( void )
             memcpy( buff, cmd->prefix, PREFIX_SIZE );
             if( !GetAddtlCommand( cmd->type, buff + PREFIX_SIZE ) ) break;
             NewCommandSource( NULL, buff, COMMANDLINE );
-            if( Spawn( DoCmdParse ) ) break;
+            if( Spawn( &DoCmdParse ) ) break;
             if( !cmd->retry ) break;
         }
         cmd++;
@@ -335,7 +338,7 @@ static void Crash( bool check_file )
 /**********************************/
 {
     char        buff[81];
-    unsigned    len;
+    int         len;
     f_handle    fp;
 
     if( check_file ) {
@@ -511,9 +514,6 @@ static bool ProcELFHelp( void )
 }
 #endif
 
-static void PressKey( void );
-static void WriteMsg( char msg_buffer[] );
-
 static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
 /***********************************************************************/
 {
@@ -524,7 +524,7 @@ static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
         PressKey();
     }
     for( ; first_ln <= last_ln; first_ln++ ) {
-        Msg_Get( (int) first_ln, msg_buffer );
+        Msg_Get( first_ln, msg_buffer );
         if( previous_null ) {
             if( msg_buffer[0] != '\0' ) {
                 PressKey();
@@ -539,8 +539,8 @@ static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
     }
 }
 
-static void PressKey( void )
-/**************************/
+static void PressKey()
+/********************/
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
     char        result;
@@ -613,9 +613,7 @@ extern void SetFormat( void )
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
-        int const len = (int) strlen(Name);
-
-        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED);
+        fname = FileName( Name, strlen(Name), Extension, CmdFlags & CF_UNNAMED);
         _LnkFree( Name );
     }
     Root->outfile = NewOutFile( fname );
@@ -643,24 +641,24 @@ struct select_format {
 static struct select_format PossibleFmt[] = {
     MK_DOS,         "LIBDOS",       NULL,           NULL,
 #ifdef _QNXLOAD
-    MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
+    MK_QNX,         "LIBQNX",       &SetQNXFmt,     &FreeQNXFmt,
 #endif
 #ifdef _ELF
-    MK_ELF,         "LIBELF",       SetELFFmt,      FreeELFFmt,
+    MK_ELF,         "LIBELF",       &SetELFFmt,     &FreeELFFmt,
 #endif
 #ifdef _OS2
-    MK_WINDOWS,     "LIBWIN",       SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_NE,      "LIBOS2",       SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_LE,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
-    MK_OS2_LX,      "LIBOS2FLAT",   SetOS2Fmt,      FreeOS2Fmt,
-    MK_PE,          "LIBPE",        SetOS2Fmt,      FreeOS2Fmt,
-    MK_WIN_VXD,     "LIBVXD",       SetOS2Fmt,      FreeOS2Fmt,
+    MK_WINDOWS,     "LIBWIN",       &SetOS2Fmt,     &FreeOS2Fmt,
+    MK_OS2_NE,      "LIBOS2",       &SetOS2Fmt,     &FreeOS2Fmt,
+    MK_OS2_LE,      "LIBOS2FLAT",   &SetOS2Fmt,     &FreeOS2Fmt,
+    MK_OS2_LX,      "LIBOS2FLAT",   &SetOS2Fmt,     &FreeOS2Fmt,
+    MK_PE,          "LIBPE",        &SetOS2Fmt,     &FreeOS2Fmt,
+    MK_WIN_VXD,     "LIBVXD",       &SetOS2Fmt,     &FreeOS2Fmt,
 #endif
 #ifdef _PHARLAP
-    MK_PHAR_LAP,    "LIBPHAR",      SetPharFmt,     FreePharFmt,
+    MK_PHAR_LAP,    "LIBPHAR",      &SetPharFmt,    &FreePharFmt,
 #endif
 #ifdef _NOVELL
-    MK_NOVELL,      "LIBNOV",       SetNovFmt,      FreeNovFmt,
+    MK_NOVELL,      "LIBNOV",       &SetNovFmt,     &FreeNovFmt,
 #endif
     0 };
 
@@ -668,8 +666,8 @@ static struct select_format PossibleFmt[] = {
 extern void AddFmtLibPaths( void )
 /********************************/
 {
-    struct select_format const *check;
-    exe_format                  possible;
+    struct select_format    *check;
+    exe_format              possible;
 
     if( !(LinkState & FMT_DECIDED) ) return;
     check = PossibleFmt;
@@ -693,14 +691,12 @@ static void InitFmt( void (*set)(void) )
 extern bool HintFormat( exe_format hint )
 /***************************************/
 {
-    struct select_format const *check;
-    exe_format                  possible;
+    struct select_format    *check;
+    exe_format              possible;
 
-    if( !(hint & FmtData.type) )
-        return( FALSE );
+    if( !(hint & FmtData.type) ) return( FALSE );
     FmtData.type &= hint;
-    if( LinkState & FMT_DECIDED )
-        return( TRUE );
+    if( LinkState & FMT_DECIDED ) return( TRUE );
     check = PossibleFmt;
     for( ;; ) {
         possible = check->bits;
@@ -709,19 +705,17 @@ extern bool HintFormat( exe_format hint )
             if( (~(MK_OS2|MK_PE|MK_WIN_VXD) & FmtData.type) == 0 ) {
                 /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
                    want the same structure */
-                InitFmt( SetOS2Fmt );
+                InitFmt( &SetOS2Fmt );
             }
 #endif
             return( TRUE );
         }
-        if( (~possible & FmtData.type) == 0 )
-            break;
+        if( (~possible & FmtData.type) == 0 ) break;
         ++check;
     }
     InitFmt( check->set_func );
     LinkState |= FMT_DECIDED;
-    if( LinkState & SEARCHING_LIBRARIES )
-        AddFmtLibPaths();
+    if( LinkState & SEARCHING_LIBRARIES ) AddFmtLibPaths();
     return( TRUE );
 }
 
@@ -748,8 +742,8 @@ extern void DecideFormat( void )
 extern void FreeFormatStuff()
 /***************************/
 {
-    struct select_format const *check;
-    exe_format                  possible;
+    struct select_format    *check;
+    exe_format              possible;
 
     if( !(LinkState & FMT_DECIDED) ) return;
     check = PossibleFmt;
@@ -782,11 +776,11 @@ extern void AddCommentLib( char *ptr, int len, unsigned char priority )
 extern void AddLibPaths( char *name, int len, bool add_to_front )
 /***************************************************************/
 {
-    path_entry         *newpath;
-    file_list const    *libfiles;
+    path_entry *    newpath;
+    file_list *     libfiles;
 
-    _ChkAlloc( newpath, sizeof( path_entry ) + (size_t) len );
-    memcpy( newpath->name, name, (size_t) len );
+    _ChkAlloc( newpath, sizeof( path_entry ) + len );
+    memcpy( newpath->name, name, len );
     newpath->name[len] = '\0';
     if( add_to_front ) {
         newpath->next = LibPath;
@@ -801,7 +795,7 @@ extern void AddLibPaths( char *name, int len, bool add_to_front )
             libfiles = libfiles->next_file;
         }
         libfiles = Root->files;
-        while( libfiles != NULL && libfiles->file->flags & INSTAT_USE_LIBPATH ) {
+        while( libfiles != NULL && libfiles->file->flags & INSTAT_USE_LIBPATH ){
             libfiles->file->path_list = LibPath;
             libfiles = libfiles->next_file;
         }
@@ -811,12 +805,11 @@ extern void AddLibPaths( char *name, int len, bool add_to_front )
 extern void AddEnvPaths( char *envname )
 /**************************************/
 {
-    char * const        val = GetEnvString( envname );
-    int                 len;
+    char *  val;
 
+    val = GetEnvString( envname );
     if( val == NULL ) return;
-    len = (int) strlen( val );
-    AddLibPaths( val, len, FALSE );
+    AddLibPaths( val, strlen( val ), FALSE );
 }
 
 #endif
@@ -869,7 +862,7 @@ static void CleanSystemList( bool check )
     }
 }
 
-extern void PruneSystemList( void )
+static void PruneSystemList( void )
 /*********************************/
 /* delete all system blocks except for the "286" and "386" records */
 {

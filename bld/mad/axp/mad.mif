@@ -1,3 +1,5 @@
+!include $(disasm_dir)/mif/dis.mif
+
 imp_objs = &
         axpaddr.obj &
         axpctrl.obj &
@@ -5,8 +7,13 @@ imp_objs = &
         axpreg.obj &
         axpcall.obj &
         axpdisas.obj &
-        axptrace.obj
+        axptrace.obj &
+        $(dis_objs)
 
 mad = axp
+
+extra_incs = $(dis_includes)
+extra_srcs = $(dis_srcs)
+extra_gbls = $(disasm_dir)/core/compile.gbl
 
 !include ../../master.mif

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Macro parsing and processing routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -450,6 +451,9 @@ STATIC char *trimMacroValue( char *v )
     char *t;
     char *p;
 
+    if( Glob.keep_spaces ) {
+        return( v );
+    }
     space = 0;
     t = v;
     for( p = v; *p != '\0'; ++p ) {
@@ -1151,8 +1155,8 @@ extern char *PartDeMacro( BOOLEAN ForceDeMacro) {
     }
     if ( ForceDeMacro ) {
         //remove white spaces at the beginning
-        while( isws( t = PreGetCH() ) )
-            ;
+        while (isws(t = PreGetCH())){
+        }
         UnGetCH(t);
         temp = DeMacro(EOL);
         t = PreGetCH();

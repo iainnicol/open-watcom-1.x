@@ -19,15 +19,11 @@ export DEBUG_BUILD=0
 # Set this variable to 1 to get default windowing support in clib
 export DEFAULT_WINDOWING=0
 
-# Set this variable to 0 to suppress documentation build
-export DOC_BUILD=0
-
 # Stuff for the Open Watcom build environment
 export BATDIR=$OWROOT
 export BUILDER_CTL=lang.ctl
 export BUILD_PLATFORM=linux386
 export BLD_VER=12
-export BLD_VER_STR=1.2
 export DEFPATH=$PATH
 export DEFREL=rel2
 export DEVDIR=$OWROOT/bld
