@@ -573,29 +573,29 @@ static int comp_opt( uint direct )
     case T_DOT_8087:
         return( P_87 );
     case T_DOT_186:
-        return(  P_186 );
+        return( P_186 );
     case T_DOT_286:
-        return(  P_286 );
+        return( P_286 );
     case T_DOT_287:
-        return(  P_287 );
+        return( P_287 );
     case T_DOT_286P:
         return( P_286p );
     case T_DOT_386:
-        return(  P_386 );
+        return( P_386 );
     case T_DOT_387:
-        return(  P_387 );
+        return( P_387 );
     case T_DOT_386P:
         return( P_386p );
     case T_DOT_486:
-        return(  P_486 );
+        return( P_486 );
     case T_DOT_486P:
         return( P_486p );
     case T_DOT_586:
-        return(  P_586 );
+        return( P_586 );
     case T_DOT_586P:
         return( P_586p );
     case T_DOT_686:
-        return(  P_686 );
+        return( P_686 );
     case T_DOT_686P:
         return( P_686p );
     case T_DOT_MMX:
@@ -611,6 +611,33 @@ static int comp_opt( uint direct )
     default:
         // not found
         return( EMPTY );
+    }
+}
+
+static int def_fpu( uint direct )
+/********************************/
+/*
+  get FPU from CPU directive
+*/
+{
+    switch( direct ) {
+    case T_DOT_8086:
+    case T_DOT_186:
+        return( P_87 );
+    case T_DOT_286:
+    case T_DOT_286P:
+        return( P_287 );
+    case T_DOT_386:
+    case T_DOT_386P:
+    case T_DOT_486:
+    case T_DOT_486P:
+    case T_DOT_586:
+    case T_DOT_586P:
+    case T_DOT_686:
+    case T_DOT_686P:
+        return( P_387 );
+    default:
+        return( 0 );
     }
 }
 
@@ -650,15 +677,17 @@ int cpu_directive( int i )
 
     if( ( temp = comp_opt( i ) ) != EMPTY ) {
         if( i == T_DOT_NO87 ) {
-            Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
-        } else if( temp & P_FPU_MASK ) {
-            Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
-            Code->info.cpu |= temp & P_FPU_MASK;        // turn on desired bit(s)
+            Code->info.cpu &= ~P_FPU_MASK;                 // turn off FPU bits
         } else if( temp & P_EXT_MASK ) {
-            Code->info.cpu |= temp & P_EXT_MASK;        // turn on desired bit(s)
+            Code->info.cpu |= temp & P_EXT_MASK;           // turn on desired bit(s)
+        } else if( temp & P_FPU_MASK ) {
+            Code->info.cpu &= ~P_FPU_MASK;
+            Code->info.cpu |= temp & P_FPU_MASK;           // setup FPU bits
         } else {
-            Code->info.cpu &= ~(P_CPU_MASK | P_PM);
-            Code->info.cpu |= temp & (P_CPU_MASK | P_PM);
+            Code->info.cpu &= ~( P_CPU_MASK | P_PM );
+            Code->info.cpu |= temp & ( P_CPU_MASK | P_PM );// setup CPU bits
+            Code->info.cpu &= ~P_FPU_MASK;
+            Code->info.cpu |= def_fpu( i ) & P_FPU_MASK;   // setup FPU bits
         }
     } else {
         AsmError( UNKNOWN_DIRECTIVE );
