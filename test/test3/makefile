@@ -19,6 +19,7 @@ tbyte &
 testequ
 
 dev_objs = &
-irpexitm
+irpexitm &
+push
 
 !include ../test.mif
