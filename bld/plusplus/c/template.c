@@ -332,7 +332,7 @@ static unsigned getArgList( DECL_INFO *args, TYPE *type_list, char **names, REWR
             //  the template info is freed.
             */
             defarg_list[count] = curr->defarg_rewrite;
-			curr->defarg_rewrite = NULL;
+            curr->defarg_rewrite = NULL;
         }
         ++count;
     } RingIterEnd( curr )
@@ -1097,18 +1097,13 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
 
     if( tinfo->corrupted ) {
         something_went_wrong = TRUE;
+    }
+    /* Check for argument overflow */
+    if( num_parms > tinfo->num_args ) {
+        CErr1( ERR_TOO_MANY_TEMPLATE_PARAMETERS );
+        something_went_wrong = TRUE;
     } else if( ! something_went_wrong ) {
-        SCOPE decl_scope;
-        /*
-        // Check for argument overflow
-        */
-        if( num_parms > tinfo->num_args ) {
-            CErr1( ERR_TOO_MANY_TEMPLATE_PARAMETERS );
-            something_went_wrong = TRUE;
-            NodeFreeDupedExpr( parms );
-            parms = NULL;
-            return (parms); /* from loop */
-        }
+        SCOPE decl_scope = ScopeBegin( SCOPE_TEMPLATE_INST );
 
         SrcFileGetTokenLocn( &start_locn );
 
@@ -1131,7 +1126,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
 #endif
                     /* the rewrite stuff would have killed our location so approximate */
                     SetErrLoc(&start_locn);
-                    CErr1( ERR_TOO_FEW_TEMPLATE_PARAMETERS);
+                    CErr1( ERR_TOO_FEW_TEMPLATE_PARAMETERS );
                     something_went_wrong = TRUE;
                     break;  /* from for loop */
                 }
@@ -1176,17 +1171,11 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
                 }
             }
 
-            if(something_went_wrong)
+            if( something_went_wrong )
                 break;
 
-            /*
-            //  Moved the scoping to just around the injection points
-            //  as the code above is in the wrong scope.
-            */
-            decl_scope = ScopeBegin( SCOPE_TEMPLATE_INST );
             injectTemplateParm( decl_scope, parm, tinfo->arg_names[i] );
             list->u.subtree[1] = parm;
-            decl_scope = ScopeEnd( SCOPE_TEMPLATE_INST );
 
             ++i;
             if( i >= tinfo->num_args )
@@ -1197,6 +1186,8 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
               list->u.subtree[0] = PTreeBinary( CO_LIST, NULL, NULL );
             }
         }
+
+	decl_scope = ScopeEnd( SCOPE_TEMPLATE_INST );
     }
     if( something_went_wrong ) {
         NodeFreeDupedExpr( parms );
