@@ -125,7 +125,8 @@ typedef	struct tagGLOBALINFO {
 	WORD	wcItems;
 	WORD	wcItemsFree;
 	WORD	wcItemsLRU;
-} GLOBALINFO,FAR *LPGLOBALINFO;
+} GLOBALINFO;
+typedef GLOBALINFO FAR *LPGLOBALINFO;
 typedef	struct tagGLOBALENTRY {
 	DWORD	dwSize;
 	DWORD	dwAddress;
@@ -140,11 +141,13 @@ typedef	struct tagGLOBALENTRY {
 	WORD	wData;
 	DWORD	dwNext;
 	DWORD	dwNextAlt;
-} GLOBALENTRY,FAR *LPGLOBALENTRY;
+} GLOBALENTRY;
+typedef GLOBALENTRY FAR *LPGLOBALENTRY;
 typedef	struct tagLOCALINFO {
 	DWORD	dwSize;
 	WORD	wcItems;
-} LOCALINFO,FAR *LPLOCALINFO;
+} LOCALINFO;
+typedef LOCALINFO FAR *LPLOCALINFO;
 typedef	struct tagLOCALENTRY {
 	DWORD	dwSize;
 	HLOCAL	hHandle;
@@ -156,7 +159,8 @@ typedef	struct tagLOCALENTRY {
 	WORD	hHeap;
 	WORD	wHeapType;
 	WORD	wNext;
-} LOCALENTRY,FAR *LPLOCALENTRY;
+} LOCALENTRY;
+typedef LOCALENTRY FAR *LPLOCALENTRY;
 typedef	struct tagSTACKTRACEENTRY {
 	DWORD	dwSize;
 	HTASK	hTask;
@@ -167,7 +171,8 @@ typedef	struct tagSTACKTRACEENTRY {
 	HMODULE	hModule;
 	WORD	wSegment;
 	WORD	wFlags;
-} STACKTRACEENTRY,FAR *LPSTACKTRACEENTRY;
+} STACKTRACEENTRY;
+typedef STACKTRACEENTRY FAR *LPSTACKTRACEENTRY;
 typedef	struct tagMODULEENTRY {
 	DWORD	dwSize;
 	char	szModule[MAX_MODULE_NAME + 1];
@@ -175,7 +180,8 @@ typedef	struct tagMODULEENTRY {
 	WORD	wcUsage;
 	char	szExePath[MAX_PATH + 1];
 	WORD	wNext;
-} MODULEENTRY,FAR *LPMODULEENTRY;
+} MODULEENTRY;
+typedef MODULEENTRY FAR *LPMODULEENTRY;
 typedef	struct tagTASKENTRY {
 	DWORD	dwSize;
 	HTASK	hTask;
@@ -192,13 +198,15 @@ typedef	struct tagTASKENTRY {
 	char	szModule[MAX_MODULE_NAME + 1];
 	WORD	wPSPOffset;
 	HANDLE	hNext;
-} TASKENTRY,FAR *LPTASKENTRY;
+} TASKENTRY;
+typedef TASKENTRY FAR *LPTASKENTRY;
 typedef	struct tagCLASSENTRY {
 	DWORD	dwSize;
 	HMODULE	hInst;
 	char	szClassName[MAX_CLASSNAME + 1];
 	WORD	wNext;
-} CLASSENTRY,FAR *LPCLASSENTRY;
+} CLASSENTRY;
+typedef CLASSENTRY FAR *LPCLASSENTRY;
 typedef	struct tagMEMMANINFO {
 	DWORD	dwSize;
 	DWORD	dwLargestFreeBlock;
@@ -211,14 +219,16 @@ typedef	struct tagMEMMANINFO {
 	DWORD	dwFreeLinearSpace;
 	DWORD	dwSwapFilePages;
 	WORD	wPageSize;
-} MEMMANINFO,FAR *LPMEMMANINFO;
+} MEMMANINFO;
+typedef MEMMANINFO FAR *LPMEMMANINFO;
 typedef	struct tagSYSHEAPINFO {
 	DWORD	dwSize;
 	WORD	wUserFreePercent;
 	WORD	wGDIFreePercent;
 	HGLOBAL	hUserSegment;
 	HGLOBAL	hGDISegment;
-} SYSHEAPINFO,FAR *LPSYSHEAPINFO;
+} SYSHEAPINFO;
+typedef SYSHEAPINFO FAR *LPSYSHEAPINFO;
 typedef	struct tagNFYLOADSEG {
 	DWORD	dwSize;
 	WORD	wSelector;
@@ -256,7 +266,8 @@ typedef	struct tagTIMERINFO {
 	DWORD	dwSize;
 	DWORD	dwmsSinceStart;
 	DWORD	dwmsThisVM;
-} TIMERINFO,FAR *LPTIMERINFO;
+} TIMERINFO;
+typedef TIMERINFO FAR *LPTIMERINFO;
 typedef	BOOL (CALLBACK *LPFNNOTIFYCALLBACK)(WORD,DWORD);
 
 BOOL	WINAPI GlobalInfo(LPGLOBALINFO);

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Windows 386 Supervisor init 32-bit DPMI mode startup code (16-bit)
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -100,7 +101,7 @@ struct wstart_vars {
     addr_48     _32BitCallBackAddr;
     addr_48     _DLLEntryAddr;
     addr_48     _WEPAddr;
-    void        (FAR *_16BitCallBackAddr)();
+    void        (far *_16BitCallBackAddr)();
     addr_48     gluertns[5];
 };
 
@@ -132,7 +133,7 @@ extern DWORD    EDataAddr;              // end of loaded code+data
 extern WORD     _no87;
 extern WORD     DPL,Has87,HasWGod;
 
-extern void     FAR __CallBack();
+extern void     far __CallBack();
 void GetDataSelectorInfo( void );
 WORD InitFlatAddrSpace( DWORD baseaddr, DWORD len );
 
@@ -232,8 +233,8 @@ int Init32BitTask( HANDLE thishandle, HANDLE prevhandle, LPSTR cmdline,
      * validate header signature
      */
     _fTinyRead( handle, &exe, sizeof( rex_exe ) );
-    BreakPoint();
-    BreakPoint();
+//    BreakPoint();
+//    BreakPoint();
     if( !(exe.sig[0] == 'M' && exe.sig[1] == 'Q') ) {
         return( Fini( 1,(char _FAR *)"Invalid EXE" ) );
     }
@@ -576,7 +577,11 @@ int Fini( int strcnt, ... )
     tmp[0] = 0;
     while( strcnt > 0 ) {
         n = va_arg( arg, char _FAR * );
+#ifdef DLL32
+        _fstrcat( tmp, n );
+#else
         strcat( tmp, n );
+#endif
         strcnt--;
     }
     va_end( arg );

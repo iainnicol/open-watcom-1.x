@@ -165,7 +165,8 @@ typedef	FNCALLBACK *PFNCALLBACK;
 typedef	struct tagHSZPAIR {
 	HSZ	hszSvc;
 	HSZ	hszTopic;
-} HSZPAIR,FAR *PHSZPAIR;
+} HSZPAIR;
+typedef	HSZPAIR FAR *PHSZPAIR;
 typedef	struct tagCONVCONTEXT {
 	UINT	cb;
 	UINT	wFlags;
@@ -173,7 +174,8 @@ typedef	struct tagCONVCONTEXT {
 	int	iCodePage;
 	DWORD	dwLangID;
 	DWORD	dwSecurity;
-} CONVCONTEXT,FAR *PCONVCONTEXT;
+} CONVCONTEXT;
+typedef	CONVCONTEXT FAR *PCONVCONTEXT;
 typedef	struct tagCONVINFO {
 	DWORD	cb;
 	DWORD	hUser;
@@ -189,7 +191,8 @@ typedef	struct tagCONVINFO {
 	UINT	wLastError;
 	HCONVLIST	hConvList;
 	CONVCONTEXT	ConvCtxt;
-} CONVINFO,FAR *PCONVINFO;
+} CONVINFO;
+typedef	CONVINFO FAR *PCONVINFO;
 typedef	struct tagMONHSZSTRUCT {
 	UINT	cb;
 	BOOL	fsAction;

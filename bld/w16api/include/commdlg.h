@@ -135,7 +135,7 @@ typedef struct tagCHOOSECOLOR {
 	LPARAM	lCustData;
 	LPCCHOOKPROC	lpfnHook;
 	LPCSTR	lpTemplateName;
-} CHOOSECOLOR,FAR *LPCHOOSECOLOR;
+} CHOOSECOLOR;
 typedef struct tagCHOOSEFONT {
 	DWORD	lStructSize;
 	HWND	hwndOwner;
@@ -152,13 +152,13 @@ typedef struct tagCHOOSEFONT {
 	UINT	nFontType;
 	int	nSizeMin;
 	int	nSizeMax;
-} CHOOSEFONT,FAR *LPCHOOSEFONT;
+} CHOOSEFONT;
 typedef struct tagDEVNAMES {
 	UINT wDriverOffset;
 	UINT wDeviceOffset;
 	UINT wOutputOffset;
 	UINT wDefault;
-} DEVNAMES,FAR *LPDEVNAMES;
+} DEVNAMES;
 typedef struct tagFINDREPLACE {
 	DWORD lStructSize;
 	HWND hwndOwner;
@@ -171,7 +171,7 @@ typedef struct tagFINDREPLACE {
 	LPARAM lCustData;
 	LPFRHOOKPROC lpfnHook;
 	LPCSTR lpTemplateName;
-} FINDREPLACE,FAR *LPFINDREPLACE;
+} FINDREPLACE;
 typedef struct tagOFN {
 	DWORD lStructSize;
 	HWND hwndOwner;
@@ -193,7 +193,7 @@ typedef struct tagOFN {
 	LPARAM lCustData;
 	LPOFNHOOKPROC lpfnHook;
 	LPCSTR lpTemplateName;
-} OPENFILENAME,FAR *LPOPENFILENAME;
+} OPENFILENAME;
 typedef struct tagPD {
 	DWORD lStructSize;
 	HWND hwndOwner;
@@ -214,7 +214,13 @@ typedef struct tagPD {
 	LPCSTR lpSetupTemplateName;
 	HGLOBAL hPrintTemplate;
 	HGLOBAL hSetupTemplate;
-} PRINTDLG,FAR *LPPRINTDLG;
+} PRINTDLG;
+typedef OPENFILENAME FAR *LPOPENFILENAME;
+typedef CHOOSECOLOR FAR *LPCHOOSECOLOR;
+typedef FINDREPLACE FAR *LPFINDREPLACE;
+typedef CHOOSEFONT FAR *LPCHOOSEFONT;
+typedef PRINTDLG FAR *LPPRINTDLG;
+typedef DEVNAMES FAR *LPDEVNAMES;
 
 BOOL WINAPI ChooseColor(LPCHOOSECOLOR);
 BOOL WINAPI ChooseFont(LPCHOOSEFONT);
