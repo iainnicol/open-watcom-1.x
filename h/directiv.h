@@ -351,6 +351,7 @@ typedef struct {
 } assume_info;
 
 extern assume_info AssumeTable[ASSUME_LAST];
+extern module_info      ModuleInfo;
 
 /*---------------------------------------------------------------------------*/
 
