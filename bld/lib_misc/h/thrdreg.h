@@ -31,7 +31,6 @@
 
 
 #ifndef _THRDREG_H_INCLUDED
-#define _THRDREG_H_INCLUDED
 
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
     #include "extfunc.h"
@@ -57,8 +56,9 @@
                                                  initializer **init );
 
     _WCRTLINK extern unsigned __RegisterThreadDataSize( unsigned size );
-    _WCRTLINK extern struct thread_data *(*__GetThreadPtr)( void );
+    _WCRTLINK extern void *(*__GetThreadPtr)();
     _WCRTLINK extern unsigned   __ThreadDataSize;
 #endif
 
+#define _THRDREG_H_INCLUDED
 #endif

@@ -389,12 +389,12 @@ static bool CompInfoSym( void *info, void *sym )
 }
 
 #ifdef _INT_DEBUG
-static bool CheckSameComdat( void *info, void *sym )
+static bool CheckSameComdat( comdat_info *info, symbol *sym )
 /***********************************************************/
 {
-    if( (symbol *)sym == ((comdat_info *)info)->sym ) {
+    if( sym == info->sym ) {
         LnkMsg( LOC_REC+ERR+MSG_INTERNAL, "s", "duplicate comdat found" );
-        LnkMsg( ERR+MSG_INTERNAL, "s", ((symbol *)sym)->name );
+        LnkMsg( ERR+MSG_INTERNAL, "s", sym->name );
     }
     return FALSE;
 }

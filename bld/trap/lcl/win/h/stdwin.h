@@ -31,7 +31,6 @@
 
 
 #define _WINDOWS_16_
-#define STRICT
 #include <windows.h>
 #include <toolhelp.h>
 #include "trpimp.h"
@@ -101,10 +100,10 @@ extern BOOL                     DLLLoadExpectingInt1;
 extern WORD                     CopySize;
 extern WORD                     NPXType;
 extern HWND                     DesktopWindow;
-extern HINSTANCE                Instance;
-extern HTASK                    DebuggerTask;
-extern HTASK                    DebugeeTask;
-extern HINSTANCE                DebugeeInstance;
+extern HANDLE                   Instance;
+extern HANDLE                   DebuggerTask;
+extern HANDLE                   DebugeeTask;
+extern HANDLE                   DebugeeInstance;
 extern HANDLE                   TaskAtNotify;
 extern DWORD                    WindowsFlags;
 extern struct interrupt_struct  IntResult;
@@ -116,8 +115,8 @@ extern DWORD                    SystemDebugState;
 extern volatile restart_opts    AppMessage;
 extern DWORD                    TerminateCSIP;
 extern HWND                     DebuggerWindow;
-extern int                      ModuleTop;
-extern int                      CurrentModule;
+extern HANDLE                   ModuleTop;
+extern HANDLE                   CurrentModule;
 extern BOOL                     FaultHandlerEntered;
 extern int                      SaveStdIn;
 extern int                      SaveStdOut;

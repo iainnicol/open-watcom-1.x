@@ -31,9 +31,6 @@
 
 
 #define _WINDOWS_16_
-#ifndef STRICT
-#define STRICT
-#endif
 #include <windows.h>
 #include <toolhelp.h>
 #include "pmdbg.h"
