@@ -1,4 +1,4 @@
-[ DEFAULT type="s" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" where="f77.dev jf77.dev" desc="src/fortran" ]
 dir="src\fortran"		usr="BLACKJAC.FOR"
 dir="src\fortran"		usr="BLACKJAC.JPN"
 dir="src\fortran"		usr="FSIGNAL.FI"
@@ -14,7 +14,7 @@ dir="src\fortran"		usr="THREAD.FI"
 dir="src\fortran"		usr="WC.FI"
 dir="src\fortran"		usr="_MARK_.FI"
 dir="src\fortran"		usr="_MATHERR.FOR"
-[ DEFAULT type="s" cond="adstarg" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="adstarg" where="f77.dev jf77.dev" desc="src/fortran" ]
 dir="src\fortran\ADS"		usr="ADS.FI"
 dir="src\fortran\ADS"		usr="ADSAPI.FI"
 dir="src\fortran\ADS"		usr="ADSCODES.FI"
@@ -34,7 +34,7 @@ dir="src\fortran\ADS\REL12"	usr="MALLOC.FI"
 dir="src\fortran\ADS\REL12"	usr="OL_ERRNO.FI"
 dir="src\fortran\ADS\REL12"	usr="STDLIB.FI"
 dir="src\fortran\ADS\REL12"	usr="STRING.FI"
-[ DEFAULT type="s" cond="dostarg" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="dostarg" where="f77.dev jf77.dev" desc="src/fortran" ]
 dir="src\fortran\DOS"		usr="ANSI.FOR"
 dir="src\fortran\DOS"		usr="CALENDAR.FOR"
 dir="src\fortran\DOS"		usr="DOS.FI"
@@ -47,7 +47,7 @@ dir="src\fortran\DOS"		usr="PG.FI"
 dir="src\fortran\DOS"		usr="PGAPI.FI"
 dir="src\fortran\DOS"		usr="PGDEMO.FI"
 dir="src\fortran\DOS"		usr="PGDEMO.FOR"
-[ DEFAULT type="s" cond="os2targ" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="os2targ" where="f77.dev jf77.dev" desc="src/fortran" ]
 dir="src\fortran\OS2"		usr="BASEDEF.FI"
 dir="src\fortran\OS2"		usr="BASEMID.FI"
 dir="src\fortran\OS2"		usr="BSE.FAP"
@@ -116,7 +116,7 @@ dir="src\fortran\OS2"		usr="REXXSAA.FAP"
 dir="src\fortran\OS2"		usr="REXXSAA.FI"
 dir="src\fortran\OS2"		usr="REXXSAA.FOR"
 dir="src\fortran\OS2"		usr="RXSTRING.FI"
-[ DEFAULT type="s" cond="wintarg" where="f77 jf77" desc="src/fortran" ]
+[ DEFAULT type="s" cond="wintarg" where="f77.dev jf77.dev" desc="src/fortran" ]
 dir="src\fortran\WIN"		usr="COMMDLG.FI"
 dir="src\fortran\WIN"		usr="WIN386.FI"
 dir="src\fortran\WIN"		usr="WIN3API.FI"
