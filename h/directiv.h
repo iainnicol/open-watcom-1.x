@@ -49,7 +49,7 @@
 typedef int     direct_idx;     // directive index, such as segment index,
                                 // group index or lname index, etc.
 
-#define MAGIC_FLAT_GROUP        (ModuleInfo.flat_idx)
+#define MAGIC_FLAT_GROUP        ModuleInfo.flat_idx
 
 typedef enum {
         SIM_CODE = 0,

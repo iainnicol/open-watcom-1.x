@@ -2018,9 +2018,9 @@ void DefFlatGroup()
 {
     dir_node    *grp;
 
-    if( ModuleInfo.flat_idx == 0 ) {
+    if( MAGIC_FLAT_GROUP == 0 ) {
         grp = CreateGroup( "FLAT" );
-        if( grp != NULL ) ModuleInfo.flat_idx = grp->sym.grpidx;
+        if( grp != NULL ) MAGIC_FLAT_GROUP = grp->sym.grpidx;
     }
 }
 
