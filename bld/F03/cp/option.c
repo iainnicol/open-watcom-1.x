@@ -45,6 +45,7 @@
 #include "csetinfo.h"
 #include "fmemmgr.h"
 #include "ferror.h"
+#include "comio.h"
 
 #include "compcfg.h"
 
@@ -54,7 +55,6 @@
 
 extern  bool            SetLst(bool);
 extern  void            LFNewPage(void);
-extern  void            ComPrint(void);
 extern  char            *SkipBlanks(char *);
 extern  void            LFSkip(void);
 extern  void            PrtLstNL(char *);

@@ -43,14 +43,13 @@
 #include "global.h"
 #include "prdefn.h"
 #include "ferror.h"
+#include "comio.h"
 
 #include <string.h>
 
 extern  void            *FrlAlloc(void **,int);
 extern  void            InitScan(void);
 extern  void            Scan(void);
-extern  void            ComRead(void);
-extern  void            ComPrint(void);
 
 extern  char            *StmtKeywords[];
 extern  char            *LogTab[];

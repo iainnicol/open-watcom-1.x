@@ -42,13 +42,11 @@
 #include "csetinfo.h"
 #include "cpopt.h"
 #include "ferror.h"
+#include "comio.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-extern  void            ComRead(void);
-extern  void            ComPrint(void);
-extern  void            LinePrint(void);
 
 extern  character_set   CharSetInfo;
 

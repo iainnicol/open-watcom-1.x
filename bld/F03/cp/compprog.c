@@ -43,6 +43,7 @@
 #include "sdfile.h"
 #include "global.h"
 #include "ferror.h"
+#include "comio.h"
 
 extern  void            BIInit();
 extern  void            BIEnd();
@@ -53,8 +54,6 @@ extern  void            FrlInit(void **);
 extern  void            FrlFini(void **);
 extern  void            TrapInit(void);
 extern  void            TrapFini(void);
-extern  void            ComRead(void);
-extern  void            ProcInclude(void);
 extern  bool            SetLst(bool);
 extern  void            Conclude(void);
 extern  void            CompStatement(void);

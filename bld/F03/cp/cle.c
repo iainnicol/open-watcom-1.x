@@ -38,11 +38,11 @@
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
+#include "comio.h"
 #include "cle.h"
 
 #include <time.h>
 
-extern  void            ComRead(void);
 extern  void            OpenSrc(void);
 extern  void            OpenLst(void);
 extern  bool            SetLst(bool);

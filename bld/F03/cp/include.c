@@ -41,10 +41,9 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
-
+#include "comio.h"
 
 extern  void            Include(char *);
-extern  void            ComRead(void);
 extern  void            AdvanceITPtr(void);
 extern  char            *MkNodeStr(itnode *);
 extern  void            FrNodeStr(char *);

@@ -44,6 +44,7 @@
 #include "extnsw.h"
 #include "csetinfo.h"
 #include "ferror.h"
+#include "comio.h"
 
 #include <string.h>
 #include <stdlib.h>

@@ -39,6 +39,7 @@
 #include "cioconst.h"
 #include "csetinfo.h"
 #include "fmemmgr.h"
+#include "comio.h"
 #include "inout.h"
 
 #include "banner.h"
@@ -54,7 +55,6 @@
 extern  void            BISetSrcFile();
 extern  void            Suicide(void);
 extern  void            InfoError(int,...);
-extern  void            ComRead(void);
 extern  void            PrtOptions(void);
 extern  lib_handle      IncSearch(char *);
 extern  int             LibRead(lib_handle);
