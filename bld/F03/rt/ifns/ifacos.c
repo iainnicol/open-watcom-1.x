@@ -57,12 +57,9 @@ extern  single          ACOS(single);
 #endif
 
 
-#if _OPT_CG == _ON
-
 single XACOS( single *arg ) {
 //===========================
 
     return( ACOS( *arg ) );
 }
 
-#endif

@@ -48,7 +48,6 @@ intstar1        I1BCHNG( intstar1 arg1, intstar1 arg2 ) {
     return( arg1 ^ bit );
 }
 
-#if _OPT_CG == _ON
 
 intstar1        XI1BCHNG( intstar1 *arg1, intstar1 *arg2 ) {
 //=========================================================
@@ -56,4 +55,3 @@ intstar1        XI1BCHNG( intstar1 *arg1, intstar1 *arg2 ) {
     return( I1BCHNG( *arg1, *arg2 ) );
 }
 
-#endif

@@ -55,7 +55,6 @@ xcomplex        CQLOG( extended rp, extended ip ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 xcomplex XCQLOG( xcomplex *arg ) {
 //================================
@@ -63,4 +62,3 @@ xcomplex XCQLOG( xcomplex *arg ) {
     return( CQLOG( arg->realpart, arg->imagpart ) );
 }
 
-#endif

@@ -49,7 +49,6 @@ logstar4        I2BTEST( intstar2 arg1, intstar2 arg2 ) {
     return( _LogValue( FALSE ) );
 }
 
-#if _OPT_CG == _ON
 
 logstar4        XI2BTEST( intstar2 *arg1, intstar2 *arg2 ) {
 //========================================================
@@ -57,4 +56,3 @@ logstar4        XI2BTEST( intstar2 *arg1, intstar2 *arg2 ) {
     return( I2BTEST( *arg1, *arg2 ) );
 }
 
-#endif

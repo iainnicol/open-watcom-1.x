@@ -57,12 +57,9 @@ extern  extended                QABS(extended);
 #endif
 
 
-#if _OPT_CG == _ON
-
 extended XQABS( extended *arg ) {
 //======================================
 
     return( QABS( *arg ) );
 }
 
-#endif

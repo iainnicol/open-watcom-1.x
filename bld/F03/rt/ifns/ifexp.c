@@ -57,7 +57,6 @@ extern  single          EXP(single);
 #endif
 
 
-#if _OPT_CG == _ON
 
 single XEXP( single *arg ) {
 //==========================
@@ -65,4 +64,3 @@ single XEXP( single *arg ) {
     return( EXP( *arg ) );
 }
 
-#endif

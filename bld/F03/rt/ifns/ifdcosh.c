@@ -57,7 +57,6 @@ extern  double          DCOSH(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDCOSH( double *arg ) {
 //============================
@@ -65,4 +64,3 @@ double XDCOSH( double *arg ) {
     return( DCOSH( *arg ) );
 }
 
-#endif

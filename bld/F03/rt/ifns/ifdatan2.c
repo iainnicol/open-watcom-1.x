@@ -57,7 +57,6 @@ extern  double          DATAN2(double,double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDATAN2( double *arg1, double *arg2 ) {
 //============================================
@@ -65,4 +64,3 @@ double XDATAN2( double *arg1, double *arg2 ) {
     return( DATAN2( *arg1, *arg2 ) );
 }
 
-#endif

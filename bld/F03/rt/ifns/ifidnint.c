@@ -49,12 +49,9 @@ intstar4 IDNINT( double arg ) {
     return( floor( arg + .5 ) );
 }
 
-#if _OPT_CG == _ON
 
 intstar4 XIDNINT( double *arg ) {
 //===============================
 
     return( IDNINT( *arg ) );
 }
-
-#endif

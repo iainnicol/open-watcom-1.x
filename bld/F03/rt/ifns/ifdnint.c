@@ -49,7 +49,6 @@ double DNINT( double arg ) {
     return( floor( arg + .5 ) );
 }
 
-#if _OPT_CG == _ON
 
 double XDNINT( double *arg ) {
 //============================
@@ -57,4 +56,3 @@ double XDNINT( double *arg ) {
     return( DNINT( *arg ) );
 }
 
-#endif

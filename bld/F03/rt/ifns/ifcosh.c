@@ -57,7 +57,6 @@ extern  single          COSH(single);
 #endif
 
 
-#if _OPT_CG == _ON
 
 single XCOSH( single *arg ) {
 //===========================
@@ -65,4 +64,3 @@ single XCOSH( single *arg ) {
     return( COSH( *arg ) );
 }
 
-#endif

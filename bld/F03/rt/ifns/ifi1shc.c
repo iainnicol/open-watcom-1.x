@@ -92,7 +92,6 @@ intstar1        I1SHC( unsigned_8 arg1, intstar1 arg2 ) {
     }
 }
 
-#if _OPT_CG == _ON
 
 intstar1        XI1SHC( unsigned_8 *arg1, intstar1 *arg2 ) {
 //==========================================================
@@ -100,4 +99,3 @@ intstar1        XI1SHC( unsigned_8 *arg1, intstar1 *arg2 ) {
     return( I1SHC( *arg1, *arg2 ) );
 }
 
-#endif

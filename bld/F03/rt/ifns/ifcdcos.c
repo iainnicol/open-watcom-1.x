@@ -64,7 +64,6 @@ extern  dcomplex        CDCOS(double,double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 dcomplex XCDCOS( dcomplex *arg ) {
 //================================
@@ -72,4 +71,3 @@ dcomplex XCDCOS( dcomplex *arg ) {
     return( CDCOS( arg->realpart, arg->imagpart ) );
 }
 
-#endif

@@ -48,7 +48,6 @@ intstar2        I2SHL( unsigned_16 arg1, intstar2 arg2 ) {
     }
 }
 
-#if _OPT_CG == _ON
 
 intstar2        XI2SHL( unsigned_16 *arg1, intstar2 *arg2 ) {
 //============================================================
@@ -56,4 +55,3 @@ intstar2        XI2SHL( unsigned_16 *arg1, intstar2 *arg2 ) {
     return( I2SHL( *arg1, *arg2 ) );
 }
 
-#endif

@@ -55,7 +55,6 @@ xcomplex        CQSIN( extended rp, extended ip ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 xcomplex XCQSIN( xcomplex *arg ) {
 //================================
@@ -63,4 +62,3 @@ xcomplex XCQSIN( xcomplex *arg ) {
     return( CQSIN( arg->realpart, arg->imagpart ) );
 }
 
-#endif

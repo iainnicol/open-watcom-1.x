@@ -119,7 +119,6 @@ double  DERF( double arg ) {
     return( res );
 }
 
-#if _OPT_CG == _ON
 
 double XDERF( double *arg ) {
 //===========================
@@ -127,4 +126,3 @@ double XDERF( double *arg ) {
     return( DERF( *arg ) );
 }
 
-#endif

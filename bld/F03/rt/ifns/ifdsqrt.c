@@ -57,7 +57,6 @@ extern  double          DSQRT(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDSQRT( double *arg ) {
 //============================
@@ -65,4 +64,3 @@ double XDSQRT( double *arg ) {
     return( DSQRT( *arg ) );
 }
 
-#endif

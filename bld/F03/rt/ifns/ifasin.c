@@ -57,7 +57,6 @@ extern  single          ASIN(single);
 #endif
 
 
-#if _OPT_CG == _ON
 
 single XASIN( single *arg ) {
 //===========================
@@ -65,4 +64,3 @@ single XASIN( single *arg ) {
     return( ASIN( *arg ) );
 }
 
-#endif

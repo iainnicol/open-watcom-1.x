@@ -65,12 +65,9 @@ extern  double          DCOTAN(double);
 #endif
 
 
-#if _OPT_CG == _ON
-
 double XDCOTAN( double *arg ) {
 //=============================
 
     return( DCOTAN( *arg ) );
 }
 
-#endif

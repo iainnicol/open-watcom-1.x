@@ -52,7 +52,6 @@ single DIM( single arg1, single arg2 ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 single XDIM( single *arg1, single *arg2 ) {
 //=========================================
@@ -60,4 +59,3 @@ single XDIM( single *arg1, single *arg2 ) {
     return( DIM( *arg1, *arg2 ) );
 }
 
-#endif

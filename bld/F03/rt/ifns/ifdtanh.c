@@ -57,7 +57,6 @@ extern  double          DTANH(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDTANH( double *arg ) {
 //============================
@@ -65,4 +64,3 @@ double XDTANH( double *arg ) {
     return( DTANH( *arg ) );
 }
 
-#endif

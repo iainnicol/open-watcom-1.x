@@ -57,7 +57,6 @@ extern  single          ATAN(single);
 #endif
 
 
-#if _OPT_CG == _ON
 
 single XATAN( single *arg ) {
 //===========================
@@ -65,4 +64,3 @@ single XATAN( single *arg ) {
     return( ATAN( *arg ) );
 }
 
-#endif

@@ -53,7 +53,6 @@ double  DLGAMA( double arg ) {
     return( __lgamma( arg, &xinf ) );
 }
 
-#if _OPT_CG == _ON
 
 double XDLGAMA( double *arg ) {
 //=============================
@@ -61,4 +60,3 @@ double XDLGAMA( double *arg ) {
     return( DLGAMA( *arg ) );
 }
 
-#endif

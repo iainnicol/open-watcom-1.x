@@ -57,7 +57,6 @@ extern  double          DABS(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDABS( double *arg ) {
 //===========================
@@ -65,4 +64,3 @@ double XDABS( double *arg ) {
     return( DABS( *arg ) );
 }
 
-#endif

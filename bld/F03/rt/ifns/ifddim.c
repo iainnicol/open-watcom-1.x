@@ -52,7 +52,6 @@ double DDIM( double arg1, double arg2 ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 double XDDIM( double *arg1, double *arg2 ) {
 //==========================================
@@ -60,4 +59,3 @@ double XDDIM( double *arg1, double *arg2 ) {
     return( DDIM( *arg1, *arg2 ) );
 }
 
-#endif

@@ -52,7 +52,6 @@ extended QDIM( extended arg1, extended arg2 ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 extended XQDIM( extended *arg1, extended *arg2 ) {
 //==========================================
@@ -60,4 +59,3 @@ extended XQDIM( extended *arg1, extended *arg2 ) {
     return( QDIM( *arg1, *arg2 ) );
 }
 
-#endif

@@ -51,12 +51,9 @@ intstar2 I2SIGN( intstar2 arg1, intstar2 arg2 ) {
     return( -arg1 );
 }
 
-#if _OPT_CG == _ON
 
 intstar2 XI2SIGN( intstar2 *arg1, intstar2 *arg2 ) {
 //=================================================
 
     return( I2SIGN( *arg1, *arg2 ) );
 }
-
-#endif

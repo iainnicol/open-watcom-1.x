@@ -49,7 +49,6 @@ single ANINT( single arg ) {
     return( floor( arg + .5 ) );
 }
 
-#if _OPT_CG == _ON
 
 single XANINT( single *arg ) {
 //============================
@@ -57,4 +56,3 @@ single XANINT( single *arg ) {
     return( ANINT( *arg ) );
 }
 
-#endif

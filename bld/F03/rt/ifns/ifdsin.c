@@ -57,7 +57,6 @@ extern  double          DSIN(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDSIN( double *arg ) {
 //===========================
@@ -65,4 +64,3 @@ double XDSIN( double *arg ) {
     return( DSIN( *arg ) );
 }
 
-#endif

@@ -57,7 +57,6 @@ extern  extended                QASIN(extended);
 #endif
 
 
-#if _OPT_CG == _ON
 
 extended XQASIN( extended *arg ) {
 //============================
@@ -65,4 +64,3 @@ extended XQASIN( extended *arg ) {
     return( QASIN( *arg ) );
 }
 
-#endif

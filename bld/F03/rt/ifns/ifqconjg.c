@@ -50,7 +50,6 @@ xcomplex        QCONJG( extended rp, extended ip ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 xcomplex XQCONJG( xcomplex *arg ) {
 //=================================
@@ -58,4 +57,3 @@ xcomplex XQCONJG( xcomplex *arg ) {
     return( QCONJG( arg->realpart, arg->imagpart ) );
 }
 
-#endif

@@ -63,7 +63,6 @@ extern  dcomplex        CDEXP(double,double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 dcomplex        XCDEXP( dcomplex *arg ) {
 //=======================================
@@ -71,4 +70,3 @@ dcomplex        XCDEXP( dcomplex *arg ) {
     return( CDEXP( arg->realpart, arg->imagpart ) );
 }
 
-#endif

@@ -57,7 +57,6 @@ extern  extended                QACOS(extended);
 #endif
 
 
-#if _OPT_CG == _ON
 
 extended XQACOS( extended *arg ) {
 //======================================
@@ -65,4 +64,3 @@ extended XQACOS( extended *arg ) {
     return( QACOS( *arg ) );
 }
 
-#endif

@@ -127,7 +127,6 @@ double  DERFC( double arg ) {
     return( res );
 }
 
-#if _OPT_CG == _ON
 
 double XDERFC( double *arg ) {
 //============================
@@ -135,4 +134,3 @@ double XDERFC( double *arg ) {
     return( DERFC( *arg ) );
 }
 
-#endif

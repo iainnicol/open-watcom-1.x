@@ -54,7 +54,6 @@ single ALGAMA( single arg ) {
     return( __lgamma( arg, &xinf ) );
 }
 
-#if _OPT_CG == _ON
 
 single XALGAMA( single *arg ) {
 //=============================
@@ -62,4 +61,3 @@ single XALGAMA( single *arg ) {
     return( ALGAMA( *arg ) );
 }
 
-#endif

@@ -57,12 +57,9 @@ extern  single          COS(single);
 #endif
 
 
-#if _OPT_CG == _ON
-
 single XCOS( single *arg ) {
 //==========================
 
     return( COS( *arg ) );
 }
 
-#endif

@@ -44,7 +44,6 @@ intstar1        I1RSHIFT( intstar1 arg1, unsigned_8 arg2 ) {
     return( arg1 >> arg2 );
 }
 
-#if _OPT_CG == _ON
 
 intstar1        XI1RSHIFT( intstar1 *arg1, unsigned_8 *arg2 ) {
 //=============================================================
@@ -52,4 +51,3 @@ intstar1        XI1RSHIFT( intstar1 *arg1, unsigned_8 *arg2 ) {
     return( I1RSHIFT( *arg1, *arg2 ) );
 }
 
-#endif

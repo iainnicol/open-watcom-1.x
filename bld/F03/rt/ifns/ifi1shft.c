@@ -48,7 +48,6 @@ intstar1        I1SHFT( unsigned_8 arg1, intstar1 arg2 ) {
     }
 }
 
-#if _OPT_CG == _ON
 
 intstar1        XI1SHFT( unsigned_8 *arg1, intstar1 *arg2 ) {
 //===========================================================
@@ -56,4 +55,3 @@ intstar1        XI1SHFT( unsigned_8 *arg1, intstar1 *arg2 ) {
     return( I1SHFT( *arg1, *arg2 ) );
 }
 
-#endif

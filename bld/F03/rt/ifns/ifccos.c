@@ -54,7 +54,6 @@ complex CCOS( single rp, single ip ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 complex XCCOS( complex *arg ) {
 //=============================
@@ -62,4 +61,3 @@ complex XCCOS( complex *arg ) {
     return( CCOS( arg->realpart, arg->imagpart ) );
 }
 
-#endif

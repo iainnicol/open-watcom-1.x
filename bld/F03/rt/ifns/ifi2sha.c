@@ -48,7 +48,6 @@ intstar2        I2SHA( intstar2 arg1, intstar2 arg2 ) {
     }
 }
 
-#if _OPT_CG == _ON
 
 intstar2        XI2SHA( intstar2 *arg1, intstar2 *arg2 ) {
 //=======================================================
@@ -56,4 +55,3 @@ intstar2        XI2SHA( intstar2 *arg1, intstar2 *arg2 ) {
     return( I2SHA( *arg1, *arg2 ) );
 }
 
-#endif

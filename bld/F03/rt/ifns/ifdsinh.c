@@ -57,7 +57,6 @@ extern  double          DSINH(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDSINH( double *arg ) {
 //============================
@@ -65,4 +64,3 @@ double XDSINH( double *arg ) {
     return( DSINH( *arg ) );
 }
 
-#endif

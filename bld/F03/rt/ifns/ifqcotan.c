@@ -65,7 +65,6 @@ extern  extended                QCOTAN(extended);
 #endif
 
 
-#if _OPT_CG == _ON
 
 extended XQCOTAN( extended *arg ) {
 //=============================
@@ -73,4 +72,3 @@ extended XQCOTAN( extended *arg ) {
     return( QCOTAN( *arg ) );
 }
 
-#endif

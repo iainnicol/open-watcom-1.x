@@ -100,7 +100,6 @@ xcomplex        CQSQRT( extended rp, extended ip ) {
     return( result );
 }
 
-#if _OPT_CG == _ON
 
 xcomplex        _CQSQRT( xcomplex *arg ) {
 //========================================
@@ -108,4 +107,3 @@ xcomplex        _CQSQRT( xcomplex *arg ) {
     return( CQSQRT( arg->realpart, arg->imagpart ) );
 }
 
-#endif

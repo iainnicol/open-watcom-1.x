@@ -49,7 +49,6 @@ double DSIGN( double arg1, double arg2 ) {
     return( -fabs( arg1 ) );
 }
 
-#if _OPT_CG == _ON
 
 double XDSIGN( double *arg1, double *arg2 ) {
 //===========================================
@@ -57,4 +56,3 @@ double XDSIGN( double *arg1, double *arg2 ) {
     return( DSIGN( *arg1, *arg2 ) );
 }
 
-#endif

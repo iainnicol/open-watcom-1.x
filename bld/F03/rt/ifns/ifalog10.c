@@ -57,7 +57,6 @@ extern  single          ALOG10(single);
 #endif
 
 
-#if _OPT_CG == _ON
 
 single XALOG10( single *arg ) {
 //=============================
@@ -65,4 +64,3 @@ single XALOG10( single *arg ) {
     return( ALOG10( *arg ) );
 }
 
-#endif

@@ -62,7 +62,6 @@ extern  single          AMOD(single,single);
 #endif
 
 
-#if _OPT_CG == _ON
 
 single XAMOD( single *arg1, single *arg2 ) {
 //==========================================
@@ -70,4 +69,3 @@ single XAMOD( single *arg1, single *arg2 ) {
     return( AMOD( *arg1, *arg2 ) );
 }
 
-#endif

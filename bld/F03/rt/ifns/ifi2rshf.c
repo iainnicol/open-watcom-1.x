@@ -44,7 +44,6 @@ intstar2        I2RSHIFT( intstar2 arg1, unsigned_16 arg2 ) {
     return( arg1 >> arg2 );
 }
 
-#if _OPT_CG == _ON
 
 intstar2        XI2RSHIFT( intstar2 *arg1, unsigned_16 *arg2 ) {
 //==============================================================
@@ -52,4 +51,3 @@ intstar2        XI2RSHIFT( intstar2 *arg1, unsigned_16 *arg2 ) {
     return( I2RSHIFT( *arg1, *arg2 ) );
 }
 
-#endif

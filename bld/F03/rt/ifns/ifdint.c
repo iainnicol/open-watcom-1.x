@@ -49,7 +49,6 @@ double DINT( double arg ) {
     return( floor( arg ) );
 }
 
-#if _OPT_CG == _ON
 
 double XDINT( double *arg ) {
 //===========================
@@ -57,4 +56,3 @@ double XDINT( double *arg ) {
     return( DINT( *arg ) );
 }
 
-#endif

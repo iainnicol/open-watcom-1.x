@@ -48,7 +48,6 @@ double  DIMAG( double rp, double ip ) {
     return( ip );
 }
 
-#if _OPT_CG == _ON
 
 double XDIMAG( dcomplex *arg ) {
 //==============================
@@ -56,4 +55,3 @@ double XDIMAG( dcomplex *arg ) {
     return( DIMAG( arg->realpart, arg->imagpart ) );
 }
 
-#endif

@@ -119,7 +119,6 @@ extended  QERF( extended arg ) {
     return( res );
 }
 
-#if _OPT_CG == _ON
 
 extended XQERF( extended *arg ) {
 //===========================
@@ -127,4 +126,3 @@ extended XQERF( extended *arg ) {
     return( QERF( *arg ) );
 }
 
-#endif

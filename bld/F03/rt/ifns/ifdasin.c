@@ -57,7 +57,6 @@ extern  double          DASIN(double);
 #endif
 
 
-#if _OPT_CG == _ON
 
 double XDASIN( double *arg ) {
 //============================
@@ -65,4 +64,3 @@ double XDASIN( double *arg ) {
     return( DASIN( *arg ) );
 }
 
-#endif

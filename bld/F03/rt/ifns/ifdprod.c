@@ -46,7 +46,6 @@ double DPROD( single arg1, single arg2 ) {
     return( arg1 * arg2 );
 }
 
-#if _OPT_CG == _ON
 
 double XDPROD( single *arg1, single *arg2 ) {
 //===========================================
@@ -54,4 +53,3 @@ double XDPROD( single *arg1, single *arg2 ) {
     return( *arg1 * *arg2 );
 }
 
-#endif

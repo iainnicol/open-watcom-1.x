@@ -49,7 +49,6 @@ single AINT( single arg ) {
     return( floor( arg ) );
 }
 
-#if _OPT_CG == _ON
 
 single XAINT( single *arg ) {
 //===========================
@@ -57,4 +56,3 @@ single XAINT( single *arg ) {
     return( AINT( *arg ) );
 }
 
-#endif
