@@ -642,6 +642,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id, unsigned ctrl
             }
             return( Y_IMPOSSIBLE );
         case T_TILDE:
+        case T_ALT_TILDE:
             yylval.tree = makeUnary( CO_TILDE, curr );
             return( Y_SCOPED_TILDE );
         case T_OPERATOR:
@@ -733,6 +734,7 @@ static int templateScopedChain( PARSE_STACK *state )
             }
             return( Y_TEMPLATE_SCOPED_TYPE_NAME );
         case T_TILDE:
+        case T_ALT_TILDE:
             yylval.tree = makeUnary( CO_TILDE, curr );
             return( Y_TEMPLATE_SCOPED_TILDE );
         case T_OPERATOR:
@@ -774,6 +776,7 @@ static int globalChain( PARSE_STACK *state )
         yylval.tree = makeUnary( CO_OPERATOR, tree );
         return( Y_GLOBAL_OPERATOR );
     case T_TILDE:
+    case T_ALT_TILDE:
         yylval.tree = makeUnary( CO_TILDE, tree );
         return( Y_GLOBAL_TILDE );
     case T_NEW:
