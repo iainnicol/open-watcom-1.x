@@ -1,0 +1,13 @@
+.c.obj: $($(proj_name)_autodepends)
+        $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+
+.cpp.obj: $($(proj_name)_autodepends)
+        $(cpp) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+
+.asm.obj: $($(proj_name)_autodepends)
+        $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+
+!ifdef preproc_rule
+.c.lan: $($(proj_name)_autodepends)
+        $(cc) -p$(preproc_flags) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=.lan $[@
+!endif

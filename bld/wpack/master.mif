@@ -1,0 +1,33 @@
+proj_name = wpack
+
+wpack_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I"$(wpack_dir)/h" -I$(wtouch_dir) -I"$(wtouch_dir)/$(host_os)$(host_cpu)"
+
+.c: ../c;$(wtouch_dir)
+
+objs =               &
+        common.obj   &
+        decode.obj   &
+        dtparse.obj  &
+        encode.obj   &
+        io.obj       &
+        lookup.obj   &
+        message.obj  &
+        qsort.obj    &
+        wpack.obj
+
+!ifneq nowildargv 1
+!ifneq host_os linux
+objs += wildargv.obj
+!endif
+!endif
+
+extra_l_flags = op map
+
+$(proj_name).exe : $(objs)
+        $(linker) $(lflags) name $^@ file { $< }
