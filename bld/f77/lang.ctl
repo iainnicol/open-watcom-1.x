@@ -2,7 +2,6 @@
 # ========================
 
 set PROJDIR=<CWD>
-set f77_dir=<CWD>
 
 [ INCLUDE <LANG_BLD>/master.ctl ]
 [ INCLUDE <LANG_BLD>/wproj.ctl ]
