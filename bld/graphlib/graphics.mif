@@ -1,0 +1,193 @@
+proj_name = graph
+
+graph_autodepends = .AUTODEPEND
+
+suppress_zc = 1
+
+memory_model_i86 = s
+memory_model_386 = s
+
+suffix_register = r
+suffix_stack = s
+
+objs = &
+        sqrtf.obj &
+        std.obj &
+        activepg.obj &
+        arc.obj &
+        bkcolor.obj &
+        clearscr.obj &
+        clip.obj &
+        cliprgn.obj &
+        color.obj &
+        cursor.obj &
+        devutils.obj &
+        dispcurs.obj &
+        ellipse.obj &
+        fillmask.obj &
+        floodfll.obj &
+        fontsupp.obj &
+        getconf.obj &
+        getimage.obj &
+        getlogc.obj &
+        getphysc.obj &
+        getpos.obj &
+        global.obj &
+        grstatus.obj &
+        grtext.obj &
+        gtxtext.obj &
+        gtxtset.obj &
+        imagesiz.obj &
+        l1block.obj &
+        l1clip.obj &
+        l1ellips.obj &
+        l1fillar.obj &
+        l1getdot.obj &
+        l1getpic.obj &
+        l1hersh.obj &
+        l1line.obj &
+        l1paint.obj &
+        l1putdot.obj &
+        l1text.obj &
+        lineto.obj &
+        lnstyle.obj &
+        logorg.obj &
+        moveto.obj &
+        outtext.obj &
+        pie.obj &
+        pixel.obj &
+        plotactn.obj &
+        polygon.obj &
+        putchar.obj &
+        putimage.obj &
+        rectangl.obj &
+        remappal.obj &
+        scrollw.obj &
+        setchsiz.obj &
+        setchspc.obj &
+        setrows.obj &
+        settxpth.obj &
+        settxtal.obj &
+        settxtor.obj &
+        setvideo.obj &
+        setviewp.obj &
+        setwind.obj &
+        stylwrap.obj &
+        textcol.obj &
+        textpos.obj &
+        textwind.obj &
+        visualpg.obj &
+        windfunc.obj &
+        wrapon.obj &
+        zarc.obj &
+        zchsize.obj &
+        zellipse.obj &
+        zfloodfl.obj &
+        zgetimag.obj &
+        zgrtext.obj &
+        zimagesi.obj &
+        zlineto.obj &
+        zmoveto.obj &
+        zpie.obj &
+        zpixel.obj &
+        zpolygon.obj &
+        zputimag.obj &
+        zrectang.obj
+
+eng_nonwin_objs = &
+        8x8font.obj &
+        bit.obj &
+        gstklow.obj &
+        l0drwlin.obj &
+        l0ellips.obj &
+        l1fill.obj &
+        l1putpic.obj &
+        lineutil.obj &
+        seginit.obj &
+        transpar.obj &
+        visit.obj &
+
+english_objs = &
+        cgautils.obj &
+        cnvcolor.obj &
+        egautils.obj &
+        fast256.obj &
+        hercfont.obj &
+        hgcutils.obj &
+        svgautil.obj &
+        vgautils.obj &
+        grcga.obj &
+        grega.obj &
+        grhgc.obj &
+        grsvga.obj &
+        grvga.obj &
+        selpal.obj &
+        setmode.obj &
+        svgainfo.obj &
+        sysmtype.obj
+
+win_objs = &
+        gphmain.obj &
+        winutil.obj &
+
+special_objs = &
+        fsmath.obj &
+        dummy.obj
+
+!ifndef _WIN
+objs += $(eng_nonwin_objs)
+!endif
+
+!ifdef _WIN
+objs += $(win_objs)
+!else
+objs += $(english_objs)
+!endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!ifeq host_os qnx
+inc_dirs = $(dev_dir)/graphlib/h;$(hdr_dir)/qnx;$(watcom_dir)/h;$(%watcom)/qh;$(%watcom)/h
+!else
+inc_dirs = $(dev_dir)/graphlib/h;$(hdr_dir)/dos;$(watcom_dir)/h;$(%watcom)/h
+!endif
+
+!ifdef _WIN
+inc_dirs += ;$(%watcom)/h/win;$(clib_dir)/h;$(clib_dir)/defwin/h;$(wpi_dir)/h;$(inc_dirs_sys)
+!endif
+
+!ifeq host_cpu 386
+.asm: $(dev_dir)/graphlib/386asm;$(dev_dir)/graphlib/asm
+!else
+.asm: $(dev_dir)/graphlib/asm
+!endif
+
+.c: ../c
+
+extra_c_flags_ = -d_SUPERVGA
+extra_c_flags = -r -zl -zld -fpc -d_FARD= -nm=$[&$(suffix_$(convention)) -fo=$@ $(extra_c_flags_$(machine))
+
+extra_c_flags_386_register = -3r
+extra_c_flags_386_stack = -3s -d__STACK
+extra_c_flags_386 = $(extra_c_flags_386_$(convention)) -nt=_TEXT -d_CGRAPH=
+extra_c_flags_i86 = -nt=GRAPH_TEXT -d_CGRAPH=_loadds
+
+extra_c_flags_qnx = -bt=dos # ?????
+
+extra_a_flags = -ms -i"../inc" $(extra_a_flags_$(machine)) -zld -fo=$@
+
+extra_a_flags_i86 = -d_TEXT=GRAPH_TEXT
+extra_a_flags_386_register = -3r
+extra_a_flags_386_stack = -3s
+extra_a_flags_386 = $(extra_a_flags_386_$(convention))
+
+extra_a_flags_qnx = -d_QNX
+
+$(libname).lib : $(special_objs) graphics.lbc
+        $(librarian) -b -n $@ @ $]@
+
+graphics.lbc : $(objs)
+        %create $@
+        @for %i in ($<) do @%append $@ -+%i
