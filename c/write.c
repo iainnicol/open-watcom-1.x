@@ -542,6 +542,7 @@ static int opsize( memtype mem_type )
     case T_FWORD:   return( 6 );
     case T_QWORD:   return( 8 );
     case T_TBYTE:   return( 10 );
+    case T_OWORD:   return( 16 );
     default:        return( 0 );
     }
 }

@@ -417,16 +417,17 @@ struct fixup *CreateFixupRec( int index )
         
         if( sym->state == SYM_EXTERNAL ) {
             if( Modend ) {
-                    if( sym->mem_type == T_BYTE ||
-                        sym->mem_type == T_SBYTE ||
-                        sym->mem_type == T_WORD ||
-                        sym->mem_type == T_SWORD ||
-                        sym->mem_type == T_DWORD ||
-                        sym->mem_type == T_SDWORD ||
-                        sym->mem_type == T_FWORD ||
-                        sym->mem_type == T_QWORD ||
-                        sym->mem_type == T_TBYTE ||
-                        sym->mem_type == T_ABS ) {
+                if( sym->mem_type == T_BYTE ||
+                    sym->mem_type == T_SBYTE ||
+                    sym->mem_type == T_WORD ||
+                    sym->mem_type == T_SWORD ||
+                    sym->mem_type == T_DWORD ||
+                    sym->mem_type == T_SDWORD ||
+                    sym->mem_type == T_FWORD ||
+                    sym->mem_type == T_QWORD ||
+                    sym->mem_type == T_TBYTE ||
+                    sym->mem_type == T_OWORD ||
+                    sym->mem_type == T_ABS ) {
                     
                     AsmError( MUST_BE_ASSOCIATED_WITH_CODE );
                     return( NULL );

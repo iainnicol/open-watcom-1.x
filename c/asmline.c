@@ -330,27 +330,6 @@ void InputQueueLine( char *line )
     strcpy( new->line, line );
 }
 
-#if 0
-static void StripQuotes( char *fname )
-{
-    char *s;
-    char *d;
-
-    if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
-        d = fname;
-        for( s = d + 1; *s && *s != '"'; ++s ) {
-            if( *s == '\0' )break;
-            if( s[0] == '\\' && s[1] == '"' ) {
-                ++s;
-            }
-            *d++ = *s;
-        }
-        *d = '\0';
-    }
-}
-#endif
-
 static FILE *open_file_in_include_path( char *name, char *fullpath )
 /******************************************************************/
 {
@@ -667,6 +646,9 @@ static void output( void )
                         break;
                     case T_TBYTE:
                         DebugMsg(( " %s ", "TByte" ));
+                        break;
+                    case T_OWORD:
+                        DebugMsg(( " %s ", "OWord" ));
                         break;
                     case T_ABS:
                         DebugMsg(( " %s ", "Abs" ));

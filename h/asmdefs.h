@@ -52,6 +52,7 @@
 
 #define OPND1           0
 #define OPND2           1
+#define OPND3           2
 
 #define ADRSIZ          0x67
 #define OPSIZ           0x66

@@ -293,6 +293,10 @@ int directive( int i, long direct )
     case T_REPT:
     case T_REPEAT:
         return( ForDirective ( i+1, IRP_REPEAT ) );
+    case T_DOT_K3D:
+    case T_DOT_MMX:
+    case T_DOT_XMM:
+        return( NOT_ERROR );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( ERROR );

@@ -2627,6 +2627,9 @@ static int find_size( int type )
         case TOK_EXT_TBYTE:
             return( 10 );
             break;
+        case TOK_EXT_OWORD:
+            return( 16 );
+            break;
         case TOK_PROC_VARARG:
             return( 0 );
             break;
@@ -2659,6 +2662,9 @@ static void size_override( char *buffer, int size )
         break;
     case 10:
         strcpy( buffer, " tbyte ptr " );
+        break;
+    case 16:
+        strcpy( buffer, " oword ptr " );
         break;
     }
 }

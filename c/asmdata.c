@@ -48,14 +48,13 @@
 #include "asmalloc.h"
 #include "asmins.h"
 #include "asmopnds.h"
+#include "asmexpnd.h"
+#include "tbyte.h"
 
 #ifdef _WASM_
 #include "directiv.h"
-    #include "asmexpnd.h"
 #include "fixup.h"
 #endif
-
-#include "tbyte.h"
 
 extern unsigned char    More_Array_Element;
 extern unsigned char    Last_Element_Size;
@@ -145,7 +144,8 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
     char                negative = FALSE;
     
 #ifdef _WASM_
-    asm_sym     *the_struct;
+    asm_sym             *the_struct;
+    int                 tmp;
     
     the_struct = (asm_sym*)Definition.curr_struct;
 #endif
@@ -154,8 +154,9 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
         ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos]->token != T_FINAL );
         cur_pos++ ) {
 #ifdef _WASM_
-        int                 tmp;
-        
+        if( AsmBuffer[cur_pos]->token == T_RES_ID ) {
+            continue;
+        }
         tmp = cur_pos;
         if( check_override( &tmp ) == ERROR ) {
             return( ERROR );
@@ -506,6 +507,13 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
             seg_off_operator_loc = cur_pos;
 #ifdef _WASM_
             i = ++cur_pos;
+            if( i + 2 < Token_Count ) {
+                if( ( AsmBuffer[i]->token == T_RES_ID )
+                    && ( AsmBuffer[i + 1]->token == T_RES_ID )
+                    && ( AsmBuffer[i + 1]->value == T_PTR ) ) {
+                    i += 2;
+                }
+            }
             if( check_override( &i ) == ERROR ) {
                 return( ERROR );
             }
@@ -677,11 +685,11 @@ int dup_array( asm_sym *sym, char start_pos, char no_of_bytes )
     int                 cur_pos = start_pos;
     int                 returned_pos;
     int                 count;
+#ifdef _WASM_
+    bool            was_first;
+#endif
 
-    #ifdef _WASM_
-        bool            was_first;
-        ExpandTheWorld( start_pos, FALSE, TRUE );
-    #endif
+    ExpandTheWorld( start_pos, FALSE, TRUE );
     while( cur_pos + 2 < Token_Count ) {
         if(( AsmBuffer[cur_pos + 1]->token == T_RES_ID )
             && ( AsmBuffer[cur_pos + 1]->value == T_DUP )) {
@@ -777,6 +785,10 @@ int data_init( int sym_loc, int initializer_loc )
     case T_TBYTE:                       // 20-Aug-92
         mem_type = T_TBYTE;
         no_of_bytes = BYTE_10;
+        break;
+    case T_OWORD:
+        mem_type = T_OWORD;
+        no_of_bytes = BYTE_16;
         break;
     case T_STRUC:
     case T_STRUCT:

@@ -206,8 +206,8 @@ int LabelDirective( int i )
         return( MakeLabel( AsmBuffer[i-1]->string_ptr, T_QWORD ));
     case T_TBYTE:
         return( MakeLabel( AsmBuffer[i-1]->string_ptr, T_TBYTE ));
-//    case T_OWORD:
-//        return( MakeLabel( AsmBuffer[i-1]->string_ptr, T_OWORD ));
+    case T_OWORD:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, T_OWORD ));
     default:
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );

@@ -61,9 +61,11 @@ enum prefix_reg {
 #ifdef _WASM_
     struct asm_ins {
         unsigned short      token;                  /* T_ADD, etc */
-        unsigned            allowed_prefix  : 3;    /* allowed prefix */
-        unsigned            byte1_info      : 2;    /* flags for 1st byte */
+        unsigned            allowed_prefix  : 4;    /* allowed prefix */
+        unsigned            byte1_info      : 4;    /* flags for 1st byte */
         unsigned            rm_info         : 2;    /* info on r/m byte */
+        unsigned            opnd_type_3rd   : 2;    /* info on 3rd operand */
+        unsigned            opnd_dir        : 1;    /* operand direction */
         enum asm_cpu        cpu;                    /* CPU type */
         enum operand_type   opnd_type[2];           /* asm_opnds */
         unsigned char       opcode;                 /* opcode byte */
@@ -72,9 +74,11 @@ enum prefix_reg {
 #else
     struct asm_ins {
         unsigned            token           : 10;   /* T_ADD, etc */
-        unsigned            allowed_prefix  : 3;    /* allowed prefix */
-        unsigned            byte1_info      : 2;    /* flags for 1st byte */
+        unsigned            allowed_prefix  : 4;    /* allowed prefix */
+        unsigned            byte1_info      : 4;    /* flags for 1st byte */
         unsigned            rm_info         : 2;    /* info on r/m byte */
+        unsigned            opnd_type_3rd   : 2;    /* info on 3rd operand */
+        unsigned            opnd_dir        : 1;    /* operand direction */
         unsigned            cpu             : 8;    /* CPU type */
         enum operand_type   opnd_type[2];           /* asm_opnds */
         unsigned char       opcode;                 /* opcode byte */
@@ -90,8 +94,22 @@ struct asm_code {
         unsigned        opsiz:1;       // operand size prefix
     } prefix;
     memtype         mem_type;       // byte / word / etc. NOT near/far
-    long            data[2];
-    struct asm_ins  info;
+    long            data[3];
+    struct {
+#ifdef _WASM_
+        unsigned short      token;
+        enum asm_cpu        cpu;
+        enum operand_type   opnd_type[3];
+        unsigned char       opcode;
+        unsigned char       rm_byte;
+#else
+        unsigned            token           : 10;
+        unsigned            cpu             : 8;
+        enum operand_type   opnd_type[3];
+        unsigned char       opcode;
+        unsigned char       rm_byte;
+#endif
+    } info;
     signed char     extended_ins;
     unsigned char   sib;
     unsigned        use32:1;
@@ -104,10 +122,20 @@ struct asm_code {
 #define REPxx       0x02
 #define FWAIT       0x03
 #define NO_FWAIT    0x04
+#define K3D_SET     0x05   // AMD 3DNow instruction set
+#define MMX_SET     0x06   // MMX instruction set
+#define SSE_SET     0x07   // XMM instruction set
+#define SSE2_SET    0x08   // XMM instruction set
+#define SSE3_SET    0x09   // XMM instruction set
 
-#define F_0F        0x2
 #define F_16        0x1
-#define F_32        0x3
+#define F_32        0x2
+#define F_0F        0x3
+#define F_F3        0x4
+#define F_0F0F      0x5    // AMD 3DNow prefix
+#define F_660F      0x6    // SSEx prefix 1
+#define F_F20F      0x7    // SSEx prefix 2
+#define F_F30F      0x8    // SSEx prefix 3
 
 #define no_RM       0x1
 #define no_WDS      0x2
@@ -142,7 +170,7 @@ extern char AsmChars[];
 int check_override( int *i );
 int OperandSize( enum operand_type opnd );
 int InRange( unsigned long val, unsigned bytes );
-int mem2code( char ss, int index, int base );
+int mem2code( char ss, int index, int base, asm_sym *sym );
 int cpu_directive( int i );
 int AsmParse( void );
 void AsmInit( int cpu, int fpu, int use32 );
