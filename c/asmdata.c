@@ -50,6 +50,7 @@
 #include "asmopnds.h"
 #include "asmexpnd.h"
 #include "tbyte.h"
+#include "asmfixup.h"
 
 #ifdef _WASM_
 #include "directiv.h"
@@ -347,7 +348,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
             break;
         case T_ID: {
             int i;
-            int temp;
+            int fixup_type;
             asm_sym *init_sym;
             char *ptr;
             long data = 0;
@@ -381,7 +382,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
                 continue;
             case SYM_GRP:
             case SYM_SEG:
-                temp = FIX_SEG;
+                fixup_type = FIX_SEG;
                 break;
             default:
 #endif
@@ -390,18 +391,18 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
                     AsmError( OFFSET_TOO_SMALL ); // fixme
                     return( ERROR );
                 case 2:
-                    temp = FIX_OFF16;
+                    fixup_type = FIX_OFF16;
                     break;
                 case 4:
                     if( Code->use32 ) {
-                        temp = FIX_OFF32;
+                        fixup_type = FIX_OFF32;
                     } else {
-                        temp = FIX_PTR16;
+                        fixup_type = FIX_PTR16;
                     }
                     break;
                 case 6:
                     // fixme -- this needs work .... check USE_32, etc
-                    temp = FIX_PTR32;
+                    fixup_type = FIX_PTR32;
                     Code->info.opnd_type[OPND1] = OP_J48;
                     break;
                 default:
@@ -413,7 +414,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
             }
             find_frame( init_sym );        
 #endif
-            fixup = AddFixup( init_sym, temp );
+            fixup = AddFixup( init_sym, fixup_type, OPTJ_NONE );
             //          if( fixup == NULL ) return( ERROR );
             // fixme
             InsFixups[OPND1] = fixup;
@@ -489,7 +490,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
             }
         case T_UNARY_OPERATOR: {
             int i;
-            int temp;
+            int fixup_type;
             int seg_off_operator_loc = 0;
             asm_sym *init_sym;
             char *ptr;
@@ -540,13 +541,13 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
                             AsmError( OFFSET_TOO_SMALL ); // fixme
                             return( ERROR );
                         case 2:
-                            temp = FIX_OFF16;
+                            fixup_type = FIX_OFF16;
                             break;
                         case 4:
-                            temp = FIX_OFF32;
+                            fixup_type = FIX_OFF32;
 #ifdef _WASM_
                             if( !SymIs32( init_sym ) ) {
-                                temp = FIX_OFF16;
+                                fixup_type = FIX_OFF16;
                             }
 #endif
                             break;
@@ -558,7 +559,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
                         if( init_sym->state == SYM_STACK ) {
                             AsmError( CANNOT_SEG_AUTO );
                         }
-                        temp = FIX_SEG;
+                        fixup_type = FIX_SEG;
                     }
                         
                     switch( AsmBuffer[seg_off_operator_loc]->value ) {
@@ -573,7 +574,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
 #ifdef _WASM_
                         find_frame( init_sym );        
 #endif
-                        fixup = AddFixup( init_sym, temp );
+                        fixup = AddFixup( init_sym, fixup_type, OPTJ_NONE );
                         InsFixups[OPND1] = fixup;
                         if( AsmBuffer[seg_off_operator_loc]->value == T_OFFSET ) {
                             data += fixup->offset;

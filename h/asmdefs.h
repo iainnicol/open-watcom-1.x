@@ -108,8 +108,6 @@ extern uint_32              Address;
 /* global variables */
 extern unsigned char    *CodeBuffer;
 extern struct asm_tok   *AsmBuffer[];
-extern struct asmfixup  *InsFixups[3];
-extern struct asmfixup  *FixupHead;
 extern struct asm_code  *Code;
 extern int_8            Frame;
 extern uint_8           Frame_Datum;
@@ -121,13 +119,6 @@ extern uint             LineNumber;
 extern int              Token_Count;    // number of tokens on line
 
 struct asm_sym;
-extern void             add_frame( void );
-extern struct asmfixup  *AddFixup( struct asm_sym *sym, int fixup_type );
-extern int              BackPatch( struct asm_sym *sym );
-extern void             mark_fixupp( enum operand_type determinant, int index );
-extern struct fixup     *CreateFixupRec( int index );
-extern int              store_fixup( int index );
-extern int              MakeFpFixup( struct asm_sym *sym );
 extern int              match_phase_1( void );
 extern void             AsmByte( unsigned char );
 

@@ -44,6 +44,7 @@
 #include "asmsym.h"
 #include "asmdefs.h"
 #include "asmalloc.h"
+#include "asmfixup.h"
 
 #ifdef _WASM_
 
@@ -782,6 +783,9 @@ int match_phase_3( int *i, enum operand_type determinant )
         case OP_I8:
             if( cur_opnd == OP_I8 ) {
                 /* do nothing yet */
+                if( InsFixups[OPND2] != NULL ) {
+                    break;
+                }
             } else if( ( cur_opnd & OP_I )
                 && ( InsFixups[OPND2] == NULL )
                 && ( ( last_opnd & OP_R16 )

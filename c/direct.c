@@ -52,6 +52,7 @@
 #include "asmexpnd.h"
 
 #include "asmdefs.h"
+#include "asmfixup.h"
 
 #include "directiv.h"
 #undef _DIRECT_H_
@@ -1646,7 +1647,6 @@ int SegDef( int i )
                 GetSymInfo( sym );
                 sym->offset = 0;
                 LnameInsert( name );
-
             }
             if( CurrSeg != NULL ) {
                 if(( !ModuleInfo.mseg )
@@ -2292,9 +2292,13 @@ int SetAssume( int i )
             info->symbol = NULL;
         } else {
             sym = AsmGetSymbol( segloc );
-            if( ( sym == NULL ) && ( Parse_Pass != PASS_1 ) ){
-                AsmErr( SYMBOL_S_NOT_DEFINED, segloc );
-                return( ERROR );
+            if( sym == NULL ) {
+                if( Parse_Pass == PASS_1 ) {
+                    sym = &dir_insert( segloc, TAB_SEG )->sym;
+                } else {
+                    AsmErr( SYMBOL_S_NOT_DEFINED, segloc );
+                    return( ERROR );
+                }
             }
             info->symbol = sym;
             info->flat = FALSE;
@@ -2447,6 +2451,36 @@ static enum assume_reg search_assume( dir_node *grp_or_seg, enum assume_reg def 
     }
 
     return( ASSUME_NOTHING );
+}
+
+int Use32Assume( enum assume_reg prefix )
+/*****************************************************************************/
+{
+    dir_node    *grp_or_seg;
+    seg_list    *seg_l;
+
+    if( AssumeTable[prefix].flat ) {
+        return( 1 );
+    }
+    grp_or_seg = (dir_node *)AssumeTable[prefix].symbol;
+    if( grp_or_seg == NULL )
+        return( EMPTY );
+    if( grp_or_seg->sym.state == SYM_SEG ) {
+        if( grp_or_seg->e.seginfo->segrec == NULL ) {
+            return( EMPTY );
+        } else {
+            return( grp_or_seg->e.seginfo->segrec->d.segdef.use_32 );
+        }
+    } else if( grp_or_seg->sym.state == SYM_GRP ) {
+        seg_l = grp_or_seg->e.grpinfo->seglist;
+        grp_or_seg = seg_l->seg;
+        if( grp_or_seg->e.seginfo->segrec == NULL ) {
+            return( EMPTY );
+        } else {
+            return( grp_or_seg->e.seginfo->segrec->d.segdef.use_32 );
+        }
+    }
+    return( EMPTY );
 }
 
 enum assume_reg GetPrefixAssume( struct asm_sym* sym, enum assume_reg prefix )
@@ -3028,7 +3062,6 @@ int ProcDef( int i )
         if( sym->mem_type == ERROR ) {
             return( ERROR );
         }
-        return( NOT_ERROR );
     } else {
         // fixme -- nested procs can be ok /**/myassert( CurrProc == NULL );
         /**/myassert( i >= 0 );
@@ -3037,8 +3070,9 @@ int ProcDef( int i )
         /**/myassert( CurrProc != NULL );
         GetSymInfo( sym );
         DefineProc = TRUE;
-        return( NOT_ERROR );
     }
+    BackPatch( sym );
+    return( NOT_ERROR );
 }
 
 static void ProcFini( void )

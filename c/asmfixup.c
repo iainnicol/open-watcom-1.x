@@ -44,6 +44,7 @@
 #include "asmsym.h"
 #include "asmdefs.h"
 #include "asmalloc.h"
+#include "asmfixup.h"
 
 #ifdef _WASM_
 #include "womp.h"
@@ -54,24 +55,20 @@
 #include "objrec.h"
 #include "pcobj.h"
 #include "myassert.h"
-#include "fixup.h"
 #endif
 
 struct asmfixup         *InsFixups[3];
-
-#ifndef _WASM_
-struct asmfixup         *FixupHead;
-#endif
-
 struct fixup            *FixupListHead; // head of list of fixups
 struct fixup            *FixupListTail;
 
-#ifdef _WASM_
+#ifndef _WASM_
+
+struct asmfixup         *FixupHead;
+
+#else
+
 extern int_8            PhaseError;
 extern seg_list         *CurrSeg;       // points to stack of opened segments
-#endif
-
-#ifdef _WASM_
 
 void add_frame( void )
 /********************/
@@ -89,8 +86,8 @@ void add_frame( void )
 
 #endif
 
-struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
-/**************************************************************/
+struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enum fixup_options fixup_option )
+/*************************************************************************************************************/
 /*
   put the correct target offset into the link list when forward reference of
   relocatable is resolved;
@@ -127,6 +124,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
         fixup->offset = 0;
 #endif
         fixup->fixup_type = fixup_type;
+        fixup->fixup_option = fixup_option;
         InsFixups[Opnd_Count] = fixup;
     }
     return( fixup );
@@ -175,25 +173,17 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         SkipFixup();
         return( NOT_ERROR );
     } else if( Parse_Pass != PASS_1 ) {
-    } else if( sym->mem_type == T_FAR ) {
+    } else if( sym->mem_type == T_FAR && fixup->fixup_option == OPTJ_CALL ) {
         // convert far call to near, only at first pass
-        switch( fixup->fixup_type ) {
-        case FIX_RELOFF32_CALL:
-        case FIX_RELOFF16_CALL:
-            PhaseError = TRUE;
-            sym->offset++;
-            AsmByte( 0 );
-            AsmFree( fixup );
-            return( NOT_ERROR );
-        }
+        PhaseError = TRUE;
+        sym->offset++;
+        AsmByte( 0 );
+        AsmFree( fixup );
+        return( NOT_ERROR );
     } else if( sym->mem_type == T_NEAR ) {
         // near forward reference, only at first pass
         switch( fixup->fixup_type ) {
-        case FIX_RELOFF32_ONLY:
-        case FIX_RELOFF32_CALL:
         case FIX_RELOFF32:
-        case FIX_RELOFF16_ONLY:
-        case FIX_RELOFF16_CALL:
         case FIX_RELOFF16:
             AsmFree( fixup );
             return( NOT_ERROR );
@@ -207,19 +197,12 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
 #endif
     size = 0;
     switch( fixup->fixup_type ) {
-    case FIX_RELOFF32_ONLY:
-    case FIX_RELOFF32_CALL:
     case FIX_RELOFF32:
         size = 2;
         /* fall through */
-    case FIX_RELOFF16_ONLY:
-    case FIX_RELOFF16_CALL:
     case FIX_RELOFF16:
         size++;
         /* fall through */
-    case FIX_RELOFF8_ONLY:
-    case FIX_RELOFF8_EXTEND:
-    case FIX_RELOFF8_JXX:
     case FIX_RELOFF8:
         size++;
         // calculate the displacement
@@ -236,20 +219,20 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
             PhaseError = TRUE;
             switch( size ) {
             case 1:
-                switch( fixup->fixup_type ) {
-                case FIX_RELOFF8_ONLY:
+                switch( fixup->fixup_option ) {
+                case OPTJ_EXPLICIT:
                     AsmError( JUMP_OUT_OF_RANGE );
                     sym->fixup = NULL;
                     return( ERROR );
-                case FIX_RELOFF8_EXTEND:
+                case OPTJ_EXTEND:
                     sym->offset++;
                     AsmByte( 0 );
                     /* fall through */
-                case FIX_RELOFF8_JXX:
+                case OPTJ_JXX:
                     sym->offset++;
                     AsmByte( 0 );
                     /* fall through */
-                case FIX_RELOFF8:
+                default:
                     if( Code->use32 ) {
                         sym->offset += 2;
                         AsmByte( 0 );
@@ -329,7 +312,6 @@ void mark_fixupp( enum operand_type determinant, int index )
         Code->data[index] = 0;
 #endif
         
-        
         switch( determinant ) {
         case OP_I16:
         case OP_J32:
@@ -342,17 +324,17 @@ void mark_fixupp( enum operand_type determinant, int index )
                 break;
             }
             break;
-            case OP_I32:
-            case OP_J48:
-                switch( fixup->fixup_type ) {
-                case FIX_OFF16:
-                    fixup->fixup_type = FIX_OFF32;
-                    break;
-                case FIX_PTR16:
-                    fixup->fixup_type = FIX_PTR32;
-                    break;
-                }
+        case OP_I32:
+        case OP_J48:
+            switch( fixup->fixup_type ) {
+            case FIX_OFF16:
+                fixup->fixup_type = FIX_OFF32;
                 break;
+            case FIX_PTR16:
+                fixup->fixup_type = FIX_PTR32;
+                break;
+            }
+            break;
         }
     }
 }
@@ -387,22 +369,15 @@ struct fixup *CreateFixupRec( int index )
     
     if( !Modend ) {
         switch( fixup->fixup_type ) {
-        case FIX_RELOFF8_ONLY:
-        case FIX_RELOFF8_EXTEND:
-        case FIX_RELOFF8_JXX:
         case FIX_RELOFF8:
             fixnode->self_relative = TRUE;
             fixnode->loc_method = FIX_LO_BYTE;
             break;
-        case FIX_RELOFF16_ONLY:
-        case FIX_RELOFF16_CALL:
         case FIX_RELOFF16:
             fixnode->self_relative = TRUE;
         case FIX_OFF16:
             fixnode->loc_method = FIX_OFFSET;
             break;
-        case FIX_RELOFF32_ONLY:
-        case FIX_RELOFF32_CALL:
         case FIX_RELOFF32:
             fixnode->self_relative = TRUE;
         case FIX_OFF32:
@@ -569,7 +544,7 @@ int MakeFpFixup( struct asm_sym *sym )
     old_frame = Frame;
     Opnd_Count = 2;
     Frame = FRAME_LOC;
-    AddFixup( sym, FIX_OFF16 );
+    AddFixup( sym, FIX_OFF16, OPTJ_NONE );
     Frame = old_frame;
     Opnd_Count = old_count;
     if( store_fixup( 2 ) == ERROR ) return( ERROR ); // extra entry in insfixups

@@ -55,6 +55,7 @@
 #include "condasm.h"
 #include "asmdefs.h"
 #include "asmexpnd.h"
+#include "asmfixup.h"
 
 #ifdef _WASM_
 
@@ -77,7 +78,6 @@ unsigned char           More_Array_Element = FALSE;
 unsigned char           Last_Element_Size;
 
 static struct asm_code  Code_Info;
-static char             ConstantOnly;           // 20-Aug-92
 struct asm_code         *Code = &Code_Info;
 
 unsigned char           Opnd_Count;
@@ -120,6 +120,7 @@ extern void             SetModuleDefSegment32( int flag );
 #endif
 
 int                     curr_ptr_type;
+static char             ConstantOnly;
 
 void make_inst_hash_table( void );
 
@@ -373,7 +374,7 @@ static int mem( int i )
     char                base_lock = FALSE;
     char                *string_ptr;
     char                id_flag = 0;
-    int                 fixup_type;
+    enum fixup_types    fixup_type;
     int                 flag;
 #ifdef _WASM_
     int                 type;
@@ -574,10 +575,11 @@ static int mem( int i )
 #ifdef _WASM_
                     if( !Modend ) {
 #endif
-                        if( ptr_operator( sym->mem_type, FALSE ) == ERROR ) {
-                            return ERROR;
+                        if( ptr_operator( sym->mem_type, FALSE ) == ERROR )
+                            return( ERROR );
+                        if( ptr_operator( T_PTR, FALSE ) == ERROR ) {
+                            return( ERROR );
                         }
-                        if( ptr_operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
 #ifdef _WASM_
                     }
 #endif
@@ -645,18 +647,18 @@ static int mem( int i )
         }
     }
     if( sym != NULL ) {
-        fixup = AddFixup( sym, fixup_type );
+        fixup = AddFixup( sym, fixup_type, OPTJ_NONE );
     }
 #ifdef _WASM_
     type = 0;
-    if(( sym != NULL ) && ( index == EMPTY ) && ( base == EMPTY )) {
+    if( ( sym != NULL ) && ( index == EMPTY ) && ( base == EMPTY ) ) {
         switch( Code->mem_type ) {
         case T_NEAR:
         case T_FAR:
             type = 1;
             break;
         case EMPTY:
-            switch( sym->mem_type ){
+            switch( sym->mem_type ) {
             case T_NEAR:
             case T_FAR:
                 type = 1;
@@ -673,22 +675,23 @@ static int mem( int i )
             }
         }
     }
-    if( !ConstantOnly && !Modend && ( type == 0 ) )
-#else
-    if( !ConstantOnly )
-#endif
-    {
-        if( mem2code( ss, index, base, sym ) == ERROR ) {
-            return( ERROR );
-        }
+    if( fixup != NULL && fixup->fixup_type == FIX_OFF16 && addr_32( Code ) ) {
+        fixup->fixup_type = FIX_OFF32;
     }
-#ifdef _WASM_
     if( Modend ) {
         if( sym == NULL ) {
             AsmError( SYNTAX_ERROR );
             return( ERROR );
         }
         GetAssume( sym, ASSUME_NOTHING );
+    } else if( ConstantOnly ) {
+        if( idata( Code->data[Opnd_Count] ) == ERROR ) {
+            return( ERROR );
+        }
+    } else if( type == 0 ) {
+        if( mem2code( ss, index, base, sym ) == ERROR ) {
+            return( ERROR );
+        }
     }
     if( type > 0 ) {
         if( idata( Code->data[Opnd_Count] ) == ERROR ) {
@@ -702,14 +705,27 @@ static int mem( int i )
                 return( ERROR );
             }
         } else {
-            if( ptr_operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+            if( ptr_operator( T_PTR, FALSE ) == ERROR ) {
+                return( ERROR );
+            }
         }
     }
-#endif
+    return( i - 1 );
+#else
     if( fixup != NULL && fixup->fixup_type == FIX_OFF16 && addr_32( Code ) ) {
         fixup->fixup_type = FIX_OFF32;
     }
+    if( ConstantOnly ) {
+        if( idata( Code->data[Opnd_Count] ) == ERROR ) {
+            return( ERROR );
+        }
+    } else {
+        if( mem2code( ss, index, base, sym ) == ERROR ) {
+            return( ERROR );
+        }
+    }
     return( i - 1 );
+#endif
 }
 
 static int Reg386( int reg_token )                      /* 12-feb-92 */
@@ -781,9 +797,11 @@ int InRange( unsigned long val, unsigned bytes )
     unsigned long mask;
 
     max = (1UL << (bytes*8)) - 1;
-    if( val <= max ) return( 1 ); /* absolute value fits */
+    if( val <= max ) /* absolute value fits */
+        return( 1 );
     mask = ~(max >> 1);
-    if( (val & mask) == mask ) return( 1 ); /* just a sign extension */
+    if( (val & mask) == mask ) /* just a sign extension */
+        return( 1 );
     return( 0 );
 
 }
@@ -1023,32 +1041,32 @@ int cpu_directive( int i )
         return( ERROR );
     }
 
-    #ifdef _WASM_
-        MakeCPUConstant( i );
-        switch( i ) {
-        case T_DOT_686P:
-        case T_DOT_686:
-        case T_DOT_586P:
-        case T_DOT_586:
-        case T_DOT_486P:
-        case T_DOT_486:
-        case T_DOT_386P:
-        case T_DOT_386:
-            SetModuleDefSegment32( TRUE );
-            find_use32();
-            break;
-        case T_DOT_286P:
-        case T_DOT_286:
-        case T_DOT_186:
-        case T_DOT_8086:
-            SetModuleDefSegment32( FALSE );
-            find_use32();
-            break;
-        default:
-            // set FPU
-            break;
-        }
-    #endif
+#ifdef _WASM_
+    MakeCPUConstant( i );
+    switch( i ) {
+    case T_DOT_686P:
+    case T_DOT_686:
+    case T_DOT_586P:
+    case T_DOT_586:
+    case T_DOT_486P:
+    case T_DOT_486:
+    case T_DOT_386P:
+    case T_DOT_386:
+        SetModuleDefSegment32( TRUE );
+        find_use32();
+        break;
+    case T_DOT_286P:
+    case T_DOT_286:
+    case T_DOT_186:
+    case T_DOT_8086:
+        SetModuleDefSegment32( FALSE );
+        find_use32();
+        break;
+    default:
+        // set FPU
+        break;
+    }
+#endif
 
     return( NOT_ERROR );
 }
@@ -1109,7 +1127,7 @@ static int idata( long value )
             break;
         }
         // fall through
-        case T_FAR:
+    case T_FAR:
         if( value > SHRT_MAX  ||  value < SHRT_MIN ) {
             op_type = OP_I32;
         } else if( value > SCHAR_MAX  ||  value < SCHAR_MIN ) {
@@ -1118,14 +1136,14 @@ static int idata( long value )
             op_type = OP_I8;
         }
         break;
-        case T_NEAR:
+    case T_NEAR:
         if( !Code->use32 ) {
             op_type = OP_I16;
         } else {
             op_type = OP_I32;
         }
         break;
-        case T_SHORT:
+    case T_SHORT:
         if( value > SCHAR_MAX  ||  value < SCHAR_MIN ) {
             // expect 8-bit but got 16 bit
             AsmError( JUMP_OUT_OF_RANGE );
@@ -1272,9 +1290,9 @@ static int idata_float( long value )
             }
         }
         break;
-        case T_FAR:
-        case T_NEAR:
-        case T_SHORT:
+    case T_FAR:
+    case T_NEAR:
+    case T_SHORT:
         AsmError( SYNTAX_ERROR );
         return( ERROR );
 #ifdef _WASM_
@@ -1678,7 +1696,7 @@ int AsmParse( void )
                         if( sym->state != SYM_STRUCT_FIELD ) {
                             find_frame( sym );
 #endif
-                            fixup = AddFixup( sym, temp );
+                            fixup = AddFixup( sym, temp, OPTJ_NONE );
                             if( fixup == NULL ) return( ERROR );
 #ifdef _WASM_
                         }

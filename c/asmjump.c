@@ -39,6 +39,8 @@
 #include "asmerr.h"
 #include "asmsym.h"
 #include "asmdefs.h"
+#include "asmfixup.h"
+
 #ifdef _WASM_
     #include "directiv.h"
     #include "myassert.h"
@@ -161,14 +163,15 @@ static void FarCallToNear()
     unsigned i;
     char buffer[MAX_LINE_LEN];
 
-    /* there MUST be a conditional jump instruction in asmbuffer */
+    /* there MUST be a call instruction in asmbuffer */
     for( i = 0; ; i++ ) {
         if( ( AsmBuffer[i]->token == T_INSTR )
             && ( AsmBuffer[i]->value == T_CALL ) ) {
             break;
         }
     }
-
+    AsmWarn( 4, CALL_FAR_TO_NEAR );
+//    AsmNote( CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
     strcpy( buffer, "CALL NEAR PTR " );
     for( i++; AsmBuffer[i]->token != T_FINAL; i++ ) {
@@ -270,11 +273,12 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
 */
 {
     int_32              addr;
-    int_32              temp;
+    enum fixup_types    fixup_type;
+    enum fixup_options  fixup_option;
     enum sym_state      state;
-    #ifdef _WASM_
-        dir_node                *seg;
-    #endif
+#ifdef _WASM_
+    dir_node                *seg;
+#endif
 
     if( sym == NULL ) {
         return( check_jump( sym ) );
@@ -301,6 +305,8 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
     if( !Code->mem_type_fixed ) {
         Code->mem_type = EMPTY;
     }
+    fixup_option = OPTJ_NONE;
+    fixup_type = FIX_RELOFF8;
     switch( state ) {
     case SYM_INTERNAL:
 #ifdef _WASM_
@@ -312,7 +318,6 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
             && sym->mem_type != T_DWORD
             && sym->mem_type != T_FWORD 
             && !IS_JMPCALLF( Code->info.token ) ) {
-            temp = 0;
 #ifdef _WASM_
             if( ( Code->info.token == T_CALL )
                 && ( Code->mem_type == EMPTY )
@@ -401,11 +406,11 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
             case T_LOOPNEW:
             case T_LOOPNZW:
             case T_LOOPZW:
-                #ifdef _WASM_
-                    #define GOOD_PHASE  !PhaseError &&
-                #else
-                    #define GOOD_PHASE
-                #endif
+#ifdef _WASM_
+    #define GOOD_PHASE  !PhaseError &&
+#else
+    #define GOOD_PHASE
+#endif
                 if( GOOD_PHASE (Code->info.opnd_type[Opnd_Count] != OP_I8) ) {
                     AsmError( JUMP_OUT_OF_RANGE );
                     return( ERROR );
@@ -422,18 +427,18 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                     break;
                 default:
                     if( Code->info.opnd_type[Opnd_Count] != OP_I8 ) {
-                        #ifdef _WASM_
-                            if( Code->mem_type == EMPTY ) {
-                                jumpExtend( 0 );
-                                return( SCRAP_INSTRUCTION );
-                            } else if( !PhaseError ) {
-                                AsmError( JUMP_OUT_OF_RANGE );
-                                return( ERROR );
-                            }
-                        #else
+#ifdef _WASM_
+                        if( Code->mem_type == EMPTY ) {
+                            jumpExtend( 0 );
+                            return( SCRAP_INSTRUCTION );
+                        } else if( !PhaseError ) {
                             AsmError( JUMP_OUT_OF_RANGE );
                             return( ERROR );
-                        #endif
+                        }
+#else
+                        AsmError( JUMP_OUT_OF_RANGE );
+                        return( ERROR );
+#endif
                     }
                 }
             }
@@ -481,13 +486,12 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                 find_frame( sym );
 #endif
                 if( oper_32( Code )) {
-                    temp = FIX_PTR32;
+                    fixup_type = FIX_PTR32;
                     Code->info.opnd_type[Opnd_Count] = OP_J48;
                 } else {
-                    temp = FIX_PTR16;
+                    fixup_type = FIX_PTR16;
                     Code->info.opnd_type[Opnd_Count] = OP_J32;
                 }
-                AddFixup( sym, temp );
                 break;
             case T_BYTE:
             case T_WORD:
@@ -514,12 +518,27 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
             if( Code->mem_type == T_SHORT ) {
                 AsmError( CANNOT_USE_SHORT_WITH_CALL );
                 return( ERROR );
+            } else if( Code->mem_type == EMPTY ) {
+#ifdef _WASM_
+                fixup_option = OPTJ_CALL;
+#else
+                fixup_option = OPTJ_NONE;
+#endif
+                if( Code->use32 ) {
+                    fixup_type = FIX_RELOFF32;
+                    Code->info.opnd_type[Opnd_Count] = OP_I32;
+                } else {
+                    fixup_type = FIX_RELOFF16;
+                    Code->info.opnd_type[Opnd_Count] = OP_I16;
+                }
+                break;
             }
             /* fall through */
         case T_JMP:
             switch( Code->mem_type ) {
             case T_SHORT:
-                temp = FIX_RELOFF8;
+                fixup_option = OPTJ_EXPLICIT;
+                fixup_type = FIX_RELOFF8;
                 Code->info.opnd_type[Opnd_Count] = OP_I8;
                 break;
             case T_FAR:
@@ -529,33 +548,40 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                 // forward reference
                 // inline assembler jmp default distance is near
                 // stand-alone assembler jmp default distance is short
+                fixup_option = OPTJ_NONE;
 #ifdef _WASM_
                 /* guess short if JMP, we will expand later if needed */
-                if( Code->info.token == T_JMP ) {
-                    temp = FIX_RELOFF8;
-                    Code->info.opnd_type[Opnd_Count] = OP_I8;
-                    break;
-                }
-#endif
-                /* fall through */
-            case T_NEAR:
+                fixup_type = FIX_RELOFF8;
+                Code->info.opnd_type[Opnd_Count] = OP_I8;
+#else
                 if( Code->use32 ) {
-                    temp = FIX_RELOFF32;
+                    fixup_type = FIX_RELOFF32;
                     Code->info.opnd_type[Opnd_Count] = OP_I32;
                 } else {
-                    temp = FIX_RELOFF16;
+                    fixup_type = FIX_RELOFF16;
+                    Code->info.opnd_type[Opnd_Count] = OP_I16;
+                }
+#endif
+                break;
+            case T_NEAR:
+                fixup_option = OPTJ_EXPLICIT;
+                if( Code->use32 ) {
+                    fixup_type = FIX_RELOFF32;
+                    Code->info.opnd_type[Opnd_Count] = OP_I32;
+                } else {
+                    fixup_type = FIX_RELOFF16;
                     Code->info.opnd_type[Opnd_Count] = OP_I16;
                 }
                 break;
-                case T_DWORD:
-                case T_WORD:
+            case T_DWORD:
+            case T_WORD:
 #ifdef _WASM_
-                case T_SDWORD:
-                case T_SWORD:
+            case T_SDWORD:
+            case T_SWORD:
 #endif
                 return( INDIRECT_JUMP );
 #ifdef _WASM_
-                case T_SBYTE:
+            case T_SBYTE:
 #endif
             case T_BYTE:
             case T_FWORD:
@@ -566,7 +592,6 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                 return( ERROR );
             }
 //            check_assume( sym, EMPTY );
-            AddFixup( sym, temp );
             break;
         case T_JCXZ:
         case T_JECXZ:
@@ -591,13 +616,15 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                 return( ERROR );
             }
             Code->info.opnd_type[Opnd_Count] = OP_I8;
-            AddFixup( sym, FIX_RELOFF8 );
+            fixup_option = OPTJ_EXPLICIT;
+            fixup_type = FIX_RELOFF8;
             break;
         default:
             if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
                 switch( Code->mem_type ) {
                 case T_SHORT:
-                    temp = FIX_RELOFF8;
+                    fixup_option = OPTJ_EXPLICIT;
+                    fixup_type = FIX_RELOFF8;
                     Code->info.opnd_type[Opnd_Count] = OP_I8;
                     break;
                 case EMPTY:
@@ -605,16 +632,18 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                     // inline assembler default distance is near
                     // stand-alone assembler default distance is short
 #ifdef _WASM_
-                    temp = FIX_RELOFF8;
+                    fixup_option = OPTJ_JXX;
+                    fixup_type = FIX_RELOFF8;
                     Code->info.opnd_type[Opnd_Count] = OP_I8;
                     break;
 #endif
                 case T_NEAR:
+                    fixup_option = OPTJ_EXPLICIT;
                     if( Code->use32 ) {
-                        temp = FIX_RELOFF32;
+                        fixup_type = FIX_RELOFF32;
                         Code->info.opnd_type[Opnd_Count] = OP_I32;
                     } else {
-                        temp = FIX_RELOFF16;
+                        fixup_type = FIX_RELOFF16;
                         Code->info.opnd_type[Opnd_Count] = OP_I16;
                     }
                     break;
@@ -632,8 +661,15 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                 // Jxx SHORT
                 switch( Code->mem_type ) {
                 case EMPTY:
+#ifdef _WASM_
+                    fixup_option = OPTJ_EXTEND;
+                    fixup_type = FIX_RELOFF8;
+                    Code->info.opnd_type[Opnd_Count] = OP_I8;
+                    break;
+#endif
                 case T_SHORT:
-                    temp = FIX_RELOFF8;
+                    fixup_option = OPTJ_EXPLICIT;
+                    fixup_type = FIX_RELOFF8;
                     Code->info.opnd_type[Opnd_Count] = OP_I8;
                     break;
                 default:
@@ -641,8 +677,8 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                     return( ERROR );
                 }
             }
-            AddFixup( sym, temp );
         }
+        AddFixup( sym, fixup_type, fixup_option );
         break;
     default: /* SYM_STACK */
         AsmError( NO_JUMP_TO_AUTO );
