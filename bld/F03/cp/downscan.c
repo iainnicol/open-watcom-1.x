@@ -40,15 +40,13 @@
 #include "fltcnv.h"
 #include "parmtype.h"
 #include "cpopt.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
-extern  void            OpndErr(int);
 extern  void            MoveDown(void);
 extern  void            DSName(void);
 extern  bool            RecTrmOpr(void);

@@ -43,6 +43,7 @@
 #include "global.h"
 #include "bglobal.h"
 #include "cioconst.h"
+#include "ferror.h"
 
 #include <stdarg.h>
 #include <string.h>

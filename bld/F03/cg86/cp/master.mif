@@ -1,7 +1,7 @@
-proj_name = f77
+proj_name = F03
 
-!ifndef f77_autodepends
-f77_autodepends = .AUTODEPEND
+!ifndef F03_autodepends
+F03_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
@@ -13,10 +13,10 @@ f77_autodepends = .AUTODEPEND
 !include wres.mif
 
 !ifeq release 0
-f77_trmem = 1
+F03_trmem = 1
 !endif
 
-inc_dirs=-I"$(f77_dir)/cg86/cp/h" -I"$(f77_dir)/cg86/h" $(cg_inc_dirs) -I"$(f77_dir)/h" -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h"
+inc_dirs=-I"$(F03_dir)/cg86/cp/h" -I"$(F03_dir)/cg86/h" $(cg_inc_dirs) -I"$(F03_dir)/h" -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h"
 
 !ifeq target_cpu 386
 inc_dirs+= -I"$(wasm_dir)/h"
@@ -31,23 +31,23 @@ inc_dirs+= -I"$(as_dir)/h"
 !endif
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
-extra_c_flags = -D_USE_RESOURCES_
+extra_c_flags = -D_USE_RESOURCES_ -db
 extra_c_flags_i86 = -zp1
 extra_c_flags_386 = -zp1
 
-.h: $(f77_dir)/h;$(f77_dir)/cg86/h;$(f77_dir)/cg86/cp/h
-.c: $(f77_dir)/cg86/cp/c;$(f77_dir)/cg86/c;$(f77_dir)/cp;$(f77_dir)/c;$(wasm_dir)/c;$(trmem_dir);
+.h: $(F03_dir)/h;$(F03_dir)/cg86/h;$(F03_dir)/cg86/cp/h
+.c: $(F03_dir)/cg86/cp/c;$(F03_dir)/cg86/c;$(F03_dir)/cp;$(F03_dir)/c;$(wasm_dir)/c;$(trmem_dir);
 
 !ifeq host_cpu axp
-asm_opts  = -oc -zq -we -I"$(f77_dir)/cg86/inc"
-.asm: $(f77_dir)/cg86/axpasm
+asm_opts  = -oc -zq -we -I"$(F03_dir)/cg86/inc"
+.asm: $(F03_dir)/cg86/axpasm
 .asm.obj:
     $(as) $[* $(asm_opts)
 !endif
 
 !include ../files.mif
 
-!ifeq f77_trmem 1
+!ifeq F03_trmem 1
 #extra_c_flags = -DTRMEM
 fobjs += trmem.obj trmemcvr.obj
 !endif
@@ -59,11 +59,11 @@ exename_ppc = wfcppc
 target_exe  = $(exename_$(target_cpu))
 
 !ifdef mkstubs
-f77_cg_libs = $(cg_stub_libs);
+F03_cg_libs = $(cg_stub_libs);
 !else ifeq release 1
-f77_cg_libs = $(cg_libs)
+F03_cg_libs = $(cg_libs)
 !else
-f77_cg_libs = $(cg_debug_libs)
+F03_cg_libs = $(cg_debug_libs)
 !endif
 
 extra_c_flags_trmem = -DTRMEM -of+
@@ -81,7 +81,7 @@ $(target_exe).exe : $(pre_deps_wasm) $(fobjs) errmsg.res $(cg_deps) $(flibs)
     @%append $(target_exe).lnk name $^@
     @for %i in ($(fobjs)) do @%append $(target_exe).lnk file %i
     @for %i in ($(flibs)) do @%append $(target_exe).lnk lib %i
-    @%append $(target_exe).lnk $(f77_cg_libs)
+    @%append $(target_exe).lnk $(F03_cg_libs)
     $(linker) $(lflags) @$(target_exe).lnk
 !ifeq host_os osi
     $(binder)\w32bind $(target_exe).rex $^@ $(binder)\os2ldr.exe
@@ -92,7 +92,7 @@ $(target_exe).exe : $(pre_deps_wasm) $(fobjs) errmsg.res $(cg_deps) $(flibs)
 option.obj : option.c optinfo.h
 
 errmsg.res : ../c/errmsg.rc ../h/errmsgi.rc ../h/errmsg3.rc ../h/errcod.h ../h/errcodi.h ../h/errcod3.h
-    $(rc_aui) -I"$(f77_dir)/h" -I"$(f77_dir)/cg86/h" -I"$(wasm_dir)/h" $[@ -fo=$^@
+    $(rc_aui) -I"$(F03_dir)/h" -I"$(F03_dir)/cg86/h" -I"$(wasm_dir)/h" $[@ -fo=$^@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c
     $(bld_cl) $[@ $(wcl_util_opts)

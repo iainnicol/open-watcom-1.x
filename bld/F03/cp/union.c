@@ -39,6 +39,7 @@
 #include "errcod.h"
 #include "segsw.h"
 #include "prdefn.h"
+#include "insert.h"
 
 extern  void            ReqNOpn(void);
 extern  void            ReqEOS(void);
@@ -46,7 +47,7 @@ extern  void            AdvanceITPtr(void);
 extern  void            STUnion(void);
 extern  void            STMap(void);
 extern  void            CSExtn(void);
-extern  void            StmtPtrErr(int,char *);
+
 
 extern  char            *StmtKeywords[];
 

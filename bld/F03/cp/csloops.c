@@ -40,10 +40,10 @@
 #include "opn.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
 
-extern  void            *FMemAlloc(int);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
 extern  void            CkTypeDeclared(void);
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
@@ -74,7 +74,6 @@ extern  void            STUnShadow(sym_id);
 extern  void            Recurse(void);
 extern  void            GDoInit(int);
 extern  void            GDoEnd(void);
-extern  void            NameErr(int,sym_id);
 extern  void            FreeLabel(label_id);
 extern  void            RemKeyword(itnode *,int);
 extern  void            BIOutSymbol(sym_id);

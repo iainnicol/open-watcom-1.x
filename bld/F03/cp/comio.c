@@ -43,6 +43,7 @@
 #include "intcnv.h"
 #include "extnsw.h"
 #include "csetinfo.h"
+#include "ferror.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -52,8 +53,6 @@ extern  void            PrtLstNL(char *);
 extern  void            PrtLst(char *);
 extern  void            Include(char *);
 extern  char            *SkipBlanks(char *);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
 extern  void            SrcOption(void);
 extern  bool            CompileDebugStmts(void);
 

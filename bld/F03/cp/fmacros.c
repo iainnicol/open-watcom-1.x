@@ -38,6 +38,8 @@
 #include "global.h"
 #include "progsw.h"
 #include "errcod.h"
+#include "fmemmgr.h"
+
 #if _OPT_CG == _ON
 #include "cpopt.h"
 #endif
@@ -51,8 +53,6 @@ typedef struct macro_entry {
     char                name[1];
 } macro_entry;
 
-extern  void            *FMemAlloc(uint);
-extern  void            FMemFree(void *);
 extern  void            InfoError(uint,...);
 
 static  macro_entry     *MacroList;

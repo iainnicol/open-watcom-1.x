@@ -43,6 +43,9 @@
 #include "bglobal.h"
 #include "intcnv.h"
 #include "csetinfo.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+
 #if (_OPT_CG == _OFF) && ((_TARGET == _8086) || (_TARGET == _80386))
 #include "mathopt.h"
 #include "fcboth.h"
@@ -56,13 +59,10 @@
 #include <ctype.h>
 #include <string.h>
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree( void *p );
 extern  bool            SetLst(bool);
 extern  void            LFNewPage(void);
 extern  void            ComPrint(void);
 extern  char            *SkipBlanks(char *);
-extern  void            Warning(int,...);
 extern  void            LFSkip(void);
 extern  void            PrtLstNL(char *);
 extern  void            PrtLst(char *);

@@ -41,9 +41,9 @@
 #include "segsw.h"
 #include "namecod.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
 
-extern  void                    Error(int,...);
-extern  void                    IllName(sym_id);
 extern  bool                    ReqName(int);
 extern  bool                    ReqEOS(void);
 extern  bool                    RecComma(void);

@@ -40,6 +40,8 @@
 #include "global.h"
 #include "cpopt.h"
 #include "parmtype.h"
+#include "ferror.h"
+#include "insert.h"
 
 extern  void            DetSubList(void);
 extern  void            DetCallList(void);
@@ -73,13 +75,7 @@ extern  void            BackTrack(void);
 extern  void            MoveDown(void);
 extern  void            KillOpnOpr(void);
 extern  void            AdvError(int);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  void            ClassErr(int,sym_id);
-extern  void            TypeTypeErr(int,uint,uint);
-extern  void            TypeErr(int,uint);
 extern  void            OpndErr(int);
-extern  void            PrmCodeErr(int,uint);
 extern  void            EndExpr(void);
 extern  sym_id          STConst(void *,int,int);
 extern  sym_id          STLit(byte *,int);

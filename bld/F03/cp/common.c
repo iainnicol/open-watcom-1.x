@@ -40,10 +40,9 @@
 #include "opr.h"
 #include "errcod.h"
 #include "namecod.h"
+#include "ferror.h"
+#include "insert.h"
 
-extern  void            Error(int,...);
-extern  void            IllName(sym_id);
-extern  void            NameErr(int,sym_id);
 extern  bool            RecNextOpr(byte);
 extern  bool            ReqEOS(void);
 extern  bool            RecName(void);

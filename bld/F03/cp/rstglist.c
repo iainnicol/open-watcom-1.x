@@ -41,6 +41,9 @@
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
 
 #if _OPT_CG == _OFF
 #include "objutil.h"
@@ -49,18 +52,11 @@
 
 #include <string.h>
 
-extern  void            ClassNameErr(int,sym_id);
-extern  void            ClassErr(int,sym_id);
-extern  void            PrevDef(sym_id);
-extern  void            NameErr(int,sym_id);
-extern  void            NameWarn(int,sym_id);
-extern  void            Warning(int,...);
 extern  bool            IsIntrinsic(unsigned_16);
 extern  char            *STGetName(sym_id,char *);
 extern  int             AllocName(int);
 extern  intstar4        GetComBlkSize(sym_id);
 extern  void            SetComBlkSize(sym_id,intstar4);
-extern  pointer         FMemAlloc(int);
 extern  void            HashInsert(hash_entry *,unsigned,sym_id *,sym_id);
 extern  int             CalcHash(char *,int);
 #if _OPT_CG == _OFF

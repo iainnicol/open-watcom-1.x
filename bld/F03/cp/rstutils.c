@@ -39,14 +39,14 @@
 #include "segsw.h"
 #include "cpopt.h"
 #include "errcod.h"
+#include "fmemmgr.h"
+#include "insert.h"
 
 #include <string.h>
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 extern  void            FreeChain(void **);
 extern  void            *FreeLink(void *);
-extern  void            NameErr(int,sym_id);
+
 
 
 char    *STExtractName( sym_id sym, char *buff ) {

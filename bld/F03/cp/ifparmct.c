@@ -37,9 +37,8 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "ifargs.h"
+#include "ferror.h"
 
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
 
 extern  char            *IFNames[];
 extern  const byte __FAR    IFArgCt[];

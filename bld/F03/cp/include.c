@@ -38,11 +38,11 @@
 #include "global.h"
 #include "opn.h"
 #include "errcod.h"
+#include "ferror.h"
+#include "insert.h"
 
 extern  void            Include(char *);
 extern  void            ComRead(void);
-extern  void            Error(int,...);
-extern  void            StmtExtension(uint);
 extern  bool            RecLiteral(void);
 extern  bool            ReqEOS(void);
 extern  void            AdvanceITPtr(void);

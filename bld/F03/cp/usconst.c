@@ -40,11 +40,11 @@
 #include "astype.h"
 #include "opn.h"
 #include "global.h"
+#include "fmemmgr.h"
 
 #include <string.h>
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
+
 extern  void            FreeITNodes(itnode *);
 extern  void            BadEqual(void);
 extern  void            AddConst(itnode *);

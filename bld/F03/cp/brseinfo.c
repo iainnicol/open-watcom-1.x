@@ -47,6 +47,8 @@
 #include "dw.h"
 #include "astype.h"
 #include "browscli.h"
+#include "fmemmgr.h"
+#include "ferror.h"
 
 // linked list storage facility
 typedef struct sym_list {
@@ -59,9 +61,6 @@ typedef struct sym_list {
 typedef dw_handle (*func)( sym_id ste_ptr, dw_handle handle );
 
 extern  int             TypeSize(uint);
-extern  void            Error(int,...);
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 extern  int             AllocName(int);
 extern  int             MakeName(char *,char *,char *);
 extern  char            *SDFName(char *fn);

@@ -38,6 +38,7 @@
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
+#include "cle.h"
 
 #include <time.h>
 

@@ -34,6 +34,8 @@
 // SPAWN        :  Spawn() and Suicide()
 //
 
+#include "fspawn.h"
+
 #if defined( __WINDOWS__ ) && !defined( __386__ )
 #define STRICT
 #include <windows.h>

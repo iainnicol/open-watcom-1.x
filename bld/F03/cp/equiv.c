@@ -40,12 +40,12 @@
 #include "errcod.h"
 #include "segsw.h"
 #include "namecod.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <string.h>
 
-extern  void            Error(int,...);
-extern  void            NameErr(int,sym_id);
-extern  void            IllName(sym_id);
 extern  bool            ReqNOpn(void);
 extern  bool            RecNOpn(void);
 extern  bool            ReqOpenParen(void);
@@ -61,8 +61,6 @@ extern  void            AdvanceITPtr(void);
 extern  bool            CIntExpr(void);
 extern  sym_id          LkSym(void);
 extern  com_eq          *STComEq(void);
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 extern  intstar4        ITIntValue(itnode *);
 
 

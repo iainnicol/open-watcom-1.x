@@ -42,15 +42,14 @@
 #include "errcod.h"
 #include "namecod.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
 
 extern  void            DownScan(void);
 extern  void            UpScan(void);
 extern  sym_id          LkSym(void);
 extern  void            ScanExpr(void);
 extern  void            AdvError(int);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  void            IllName(sym_id);
 extern  void            AdvanceITPtr(void);
 extern  bool            ClassIs(unsigned_16);
 extern  bool            Subscripted(void);

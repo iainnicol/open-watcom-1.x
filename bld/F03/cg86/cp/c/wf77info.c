@@ -45,6 +45,8 @@
 #include "parmtype.h"
 #include "errcod.h"
 #include "csetinfo.h"
+#include "fmemmgr.h"
+#include "ferror.h"
 
 #include "langenvd.h"
 #if _TARGET == _80386 || _TARGET == _8086
@@ -105,15 +107,11 @@ extern  int             MakeName(char *,char *,char *);
 extern  char            *SDExtn(char *,char *);
 extern  cg_type         F772CGType(sym_id);
 extern  char            *SDFName(char *);
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STExtractName(sym_id,char *);
 extern  void            Suicide(void);
 extern  intstar4        GetComBlkSize(sym_id);
 extern  aux_info        *AuxLookup(sym_id);
-extern  void            Error(uint,...);
-extern  void            Warning(uint,...);
 extern  cg_type         MkCGType(uint);
 extern  int             ParmType(int,int);
 extern  void            SendBlip(void);

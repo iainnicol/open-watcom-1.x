@@ -36,11 +36,11 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "fmemmgr.h"
 
 #include <string.h>
 
 extern  uint                    AllocName(uint);
-extern  void                    *FMemAlloc(uint);
 extern  label_id                NextLabel(void);
 
 

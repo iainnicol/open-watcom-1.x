@@ -39,14 +39,13 @@
 #include "iodefn.h"
 #include "prdefn.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
 
 #define NO      0
 #define YES     1
 
-extern  void            Error(int code,...);
-extern  void            Extension(int code,...);
-extern  void            OpndErr(int errcod);
-extern  void            StmtPtrErr(int errcod,void *);
+
 extern  uint            IOIndex();
 
 extern  char            *IOKeywords[];

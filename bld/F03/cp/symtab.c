@@ -36,6 +36,7 @@
 #include "stmtsw.h"
 #include "progsw.h"
 #include "opn.h"
+#include "insert.h"
 
 extern  sym_id          STName(char *,int);
 extern  sym_id          STCommon(char *,int);
@@ -44,11 +45,9 @@ extern  sym_id          STNameSearch(char *,int);
 extern  void            InitImplTab(void);
 extern  byte            ImplType(char);
 extern  unsigned_16     ImplSize(char);
-extern  void            NameExt(int,sym_id);
 extern  sym_id          FieldLookup(sym_id,char *,uint,intstar4 *);
 extern  sym_id          STNameList(char *,uint);
 extern  sym_id          FindNameList(char *,uint);
-extern  void            StructErr(uint,sym_id);
 extern  uint            MapTypes(uint,int);
 
 #if _OPT_CG == _OFF

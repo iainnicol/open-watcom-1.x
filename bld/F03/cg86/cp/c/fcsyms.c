@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include <string.h>
 
 #include "ftnstd.h"
 #include "global.h"
@@ -41,8 +42,8 @@
 #include "wf77labe.h"
 #include "falloc.h"
 #include "nmlinfo.h"
+#include "fmemmgr.h"
 
-#include <string.h>
 
 //=================== Back End Code Generation Routines ====================
 
@@ -126,8 +127,6 @@ extern  sym_id          FindAdvShadow(sym_id);
 extern  cg_type         CmplxBaseType(cg_type);
 extern  bool            TypeCmplx(int);
 extern  cg_name         StructRef(cg_name,int);
-extern  void            *FMemAlloc(uint);
-extern  void            FMemFree(void *);
 
 extern  segment_id      CurrCodeSegId;
 

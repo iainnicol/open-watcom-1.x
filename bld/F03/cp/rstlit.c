@@ -37,10 +37,9 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "fmemmgr.h"
 
 #include <string.h>
-
-extern  void            *FMemAlloc(int);
 
 
 sym_id  STLit( byte *string, int len ) {

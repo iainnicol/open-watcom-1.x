@@ -40,8 +40,8 @@
 #include "opn.h"
 #include "opr.h"
 #include "global.h"
+#include "ferror.h"
 
-extern  void            Error(int,...);
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
 extern  void            BlockLabel(void);

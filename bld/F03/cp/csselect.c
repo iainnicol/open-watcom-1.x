@@ -38,12 +38,12 @@
 #include "errcod.h"
 #include "global.h"
 #include "opr.h"
+#include "fmemmgr.h"
+#include "ferror.h"
 
 #include <limits.h>
 
-extern  void            *FMemAlloc(int);
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
+
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
 extern  void            CSNoMore(void);

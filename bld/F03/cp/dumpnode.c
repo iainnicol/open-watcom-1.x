@@ -48,6 +48,33 @@ static  char    *Opn[] = {
 };
 
 
+static char *Typ(byte typ) {
+//===========================
+   switch(typ) {
+      case TY_LOGICAL_1 :     return( "TY_LOGICAL_1 " );
+      case TY_LOGICAL   :     return( "TY_LOGICAL   " );
+      case TY_INTEGER_1 :     return( "TY_INTEGER_1 " ); 
+      case TY_INTEGER_2 :     return( "TY_INTEGER_2 " ); 
+      case TY_INTEGER   :     return( "TY_INTEGER   " ); 
+      case TY_REAL      :     return( "TY_REAL      " ); 
+      case TY_DOUBLE    :     return( "TY_DOUBLE    " ); 
+      case TY_TRUE_EXTENDED:  return( "TY_T_EXTENDED" );  
+   // case TY_EXTENDED  :     return( "TY_EXTENDED  " ); same as TY_DOUBLE  
+      case TY_COMPLEX   :     return( "TY_COMPLEX   " );  
+      case TY_DCOMPLEX  :     return( "TY_DCOMPLEX  " ); 
+      case TY_TRUE_XCOMPLEX:  return( "TY_T_XCOMPLEX" ); 
+   // case TY_XCOMPLEX  :     return( "TY_XCOMPLEX  " ); same as TY_DCOMPLEX
+      case TY_CHAR      :     return( "TY_CHAR      " ); 
+      case TY_STRUCTURE :     return( "TY_STRUCTURE " ); 
+      case TY_UNION     :     return( "TY_UNION     " ); 
+      case TY_HEX       :     return( "TY_HEX       " );  
+      case TY_NO_TYPE   :     return( "TY_NO_TYPE   " );
+      default           :     return( "UNKNOWN      " );
+   }
+  
+ }
+
+
 static  char    *Opr( byte opr ) {
 //================================
 
@@ -116,20 +143,24 @@ static  char    *Opr( byte opr ) {
 
 void    DumpLex() {
 //=================
+// Dump the Current Internal Text list to stdout
+//
 
+itnode *dumpNode = CITNode;
     LLine();
-    while( CITNode != NULL ) {
-        Node();
+    while( dumpNode != NULL ) {
+        Node(dumpNode);
         LLine();
-        CITNode = CITNode->link;
+        dumpNode = dumpNode->link;
     }
 }
 
 
-static  void    Node() {
+static  void    Node(itnode * dumpNode ) {
 //======================
 
-    printf( "|  %s  |  %s  |\n", Opr( CITNode->opr ), Opn[ CITNode->opn ] );
+    printf( "|  %s  |  %s  |  %s  |\n", Opr( dumpNode->opr ), Opn[ dumpNode->opn ],
+       Typ(dumpNode->typ));
 }
 
 

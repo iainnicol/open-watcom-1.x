@@ -41,14 +41,12 @@
 #include "prdefn.h"
 #include "segsw.h"
 #include "csetinfo.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <string.h>
 #include <limits.h>
 
-extern  void            Error(uint,...);
-extern  void            TypeErr(uint,uint);
-extern  void            Extension(uint,...);
-extern  void            StmtExtension(uint);
 extern  void            AdvanceITPtr(void);
 extern  bool            CIntExpr(void);
 extern  bool            CmpNode2Str(itnode *,char *);

@@ -39,6 +39,8 @@
 #include "namecod.h"
 #include "global.h"
 #include "segsw.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <ctype.h>
 #include <string.h>
@@ -74,14 +76,10 @@ extern  bool            StartImpDo(void);
 extern  void            FinishImpDo(void);
 extern  void            GetConst(void);
 extern  void            AddConst(itnode *);
-extern  void            ClassNameErr(int,sym_id);
-extern  void            Extension(int,...);
-extern  void            Error(int,...);
 extern  sym_id          LkSym(void);
 extern  sym_id          SymFind(char *,int);
 extern  void            TermDo(void);
 extern  int             HSToB(char *,uint,char *);
-extern  void            IllName(sym_id);
 extern  intstar4        ITIntValue(itnode *);
 extern  void            ProcDataIExpr(void);
 extern  void            ProcDataRepExpr(void);

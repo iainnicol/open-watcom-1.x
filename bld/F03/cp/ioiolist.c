@@ -37,6 +37,8 @@
 #include "prdefn.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "ferror.h"
+#include "insert.h"
 
 extern  bool            RecComma(void);
 extern  bool            ReqComma(void);
@@ -50,7 +52,6 @@ extern  bool            ReqNOpn(void);
 extern  bool            RecNextOpr(byte);
 extern  bool            RecArrName(void);
 extern  bool            RecEOS(void);
-extern  void            Error(int,...);
 extern  void            ChkAssumed(void);
 extern  void            TermDo(void);
 extern  void            ImpDo(void);
@@ -66,7 +67,6 @@ extern  void            GStopIO(void);
 extern  sym_id          CkAssignOk(void);
 extern  void            GIOStruct(sym_id);
 extern  bool            Already(uint);
-extern  void            StructErr(uint,sym_id);
 extern  bool            NotFormatted(void);
 
 

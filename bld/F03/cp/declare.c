@@ -45,15 +45,12 @@
 #include "global.h"
 #include "prdefn.h"
 #include "stmtsw.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <string.h>
 
-extern  void            Error(int,...);
-extern  void            NameErr(int,sym_id);
-extern  void            Extension(int,...);
-extern  void            StmtExtension(int);
-extern  void            IllName(sym_id);
-extern  void            NameExt(int,sym_id);
+
 extern  void            AdvanceITPtr(void);
 extern  void            DimExpr(void);
 extern  bool            CIntExpr(void);
@@ -91,10 +88,8 @@ extern  void            DataInit(itnode *);
 extern  void            RemKeyword(itnode *,int);
 extern  void            CkDefStmtNo(void);
 extern  void            DefProg(void);
-extern  void            NameTypeErr(int,sym_id);
 extern  void            FreeWarpLabel(warp_label);
 extern  sym_id          STField(char *,uint);
-extern  void            FieldErr(uint,sym_id);
 extern  intstar4        ITIntValue(itnode *);
 
 extern  char            *StmtKeywords[];

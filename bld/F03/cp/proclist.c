@@ -41,12 +41,9 @@
 #include "opr.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "ferror.h"
+#include "insert.h"
 
-extern  void            Error(int,...);
-extern  void            TypeTypeErr(int,uint,uint);
-extern  void            NameErr(int,sym_id);
-extern  void            ClassNameErr(int,sym_id);
-extern  void            OpndErr(int);
 extern  void            AdvanceITPtr(void);
 extern  bool            ClassIs(unsigned_16);
 extern  bool            BitOn(unsigned_16);

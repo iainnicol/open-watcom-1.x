@@ -37,6 +37,9 @@
 #include "progsw.h"
 #include "segsw.h"
 #include "cpopt.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
 
 #if _OPT_CG == _OFF
 #include "objutil.h"
@@ -47,21 +50,12 @@
 #include "nmlinfo.h"
 #endif
 
-extern  void            Error(int,...);
-extern  void            NameErr(int,sym_id);
-extern  void            NamNamErr(int,sym_id,sym_id);
-extern  void            NameWarn(int,sym_id);
-extern  void            NameExt(int,sym_id);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
 extern  sym_id          STFreeName(sym_id);
 extern  bool            IsIFUsed(int);
 extern  bool            IsIntrinsic(unsigned_16);
 extern  sym_id          AddSP2GList(sym_id);
 extern  sym_id          AddCB2GList(sym_id);
 extern  unsigned_32     GetStmtNum(sym_id);
-extern  pointer         FMemAlloc(int);
-extern  void            FMemFree(pointer);
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STNmListName(sym_id,char *);
 extern  sym_id          STFree(sym_id);

@@ -36,8 +36,8 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "fmemmgr.h"
 
-extern  void                    *FMemAlloc(int);
 #if _OPT_CG == _ON
 extern  label_id                NextLabel(void);
 #endif

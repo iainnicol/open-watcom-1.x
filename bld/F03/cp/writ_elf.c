@@ -43,6 +43,8 @@
 #include "bglobal.h"
 #include "global.h"
 #include "brow2elf.h"
+#include "fmemmgr.h"
+#include "ferror.h"
 
 #if defined(__QNX__)
  #include <unistd.h>
@@ -50,10 +52,7 @@
  #include <direct.h>
 #endif
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree( void *p );
 extern  void            Suicide();
-extern  void            Error(int,...);
 extern  void            SDWrite(file_handle,byte *,int);
 extern  bool            SDError(file_handle,char *);
 

@@ -41,13 +41,11 @@
 #include "global.h"
 #include "csetinfo.h"
 #include "cpopt.h"
+#include "ferror.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
 extern  void            ComRead(void);
 extern  void            ComPrint(void);
 extern  void            LinePrint(void);

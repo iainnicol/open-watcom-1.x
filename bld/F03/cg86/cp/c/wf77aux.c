@@ -41,6 +41,9 @@
 #include "errcod.h"
 #include "cpopt.h"
 #include "progsw.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+
 #if _OPT_CG == _ON
   #include "fio.h"
   #include "sdfile.h"
@@ -60,11 +63,9 @@
 #include <sys/stat.h>
 #endif
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
+
 extern  int             KwLookUp(char **,int,char *,int,int);
 extern  int             MkHexConst(char *,char *,int);
-extern  void            Error(int,...);
 extern  void            Suicide(void);
 extern  char            *SkipBlanks(char *);
 extern  int             Spawn(void (*)());

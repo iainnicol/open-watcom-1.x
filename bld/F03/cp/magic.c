@@ -36,8 +36,8 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "fmemmgr.h"
 
-extern  void            *FMemAlloc(int);
 
 #define TEMP_FLAGS      (SY_TYPE | SY_USAGE | SY_VARIABLE);
 

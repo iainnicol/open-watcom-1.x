@@ -41,6 +41,7 @@
 #include "iodefn.h"
 #include "units.h"
 #include "global.h"
+#include "ferror.h"
 
 extern  sym_id          LkSym(void);
 extern  void            InitIO(void);
@@ -60,7 +61,6 @@ extern  bool            RecNextOpr(byte);
 extern  bool            RecEOS(void);
 extern  bool            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
-extern  void            Error(int,...);
 extern  void            GStartIO(void);
 extern  void            GNullEofStmt(void);
 

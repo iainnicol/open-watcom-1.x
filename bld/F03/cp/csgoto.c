@@ -40,11 +40,11 @@
 #include "errcod.h"
 #include "ctrlflgs.h"
 #include "global.h"
-
+#include "ferror.h"
+#include "insert.h"
 #include <ctype.h>
 
-extern  void            Error(int,...);
-extern  void            TypeErr(int,uint);
+
 extern  sym_id          CkAssignOk(void);
 extern  void            CkSize4(void);
 extern  void            ScanExpr(void);

@@ -38,9 +38,8 @@
 #include "global.h"
 #include "errcod.h"
 #include "namecod.h"
+#include "insert.h"
 
-extern  void            StmtExtension(uint);
-extern  void            NameErr(uint,sym_id);
 extern  void            ReqNOpn(void);
 extern  bool            RecNOpn(void);
 extern  void            ReqDiv(void);

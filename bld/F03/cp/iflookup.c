@@ -39,11 +39,11 @@
 #include "ifnames.h"
 #include "errcod.h"
 #include "global.h"
+#include "insert.h"
 
 #include <string.h>
 
 extern  int             KwLookUp(char **,int,char *,int,bool);
-extern  void            TypeErr(int,uint);
 extern  void            MarkIFUsed(int);
 extern  int             TypeSize(uint);
 extern  sym_id          STSearch(char *,int,sym_id);

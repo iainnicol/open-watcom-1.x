@@ -39,15 +39,13 @@
 #include "errcod.h"
 #include "opr.h"
 #include "prdefn.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <string.h>
 
-extern  void            *FMemAlloc(uint);
-extern  void            FMemFree(void *);
-extern  void            Error(int,...);
-extern  void            StmtExtension(uint);
-extern  void            StmtErr(int);
-extern  void            StmtPtrErr(int,void *);
+
 extern  void            AdvanceITPtr(void);
 extern  void            FreeITNodes(itnode *);
 extern  bool            ReqOpenParen(void);

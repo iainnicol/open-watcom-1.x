@@ -46,6 +46,8 @@
 #include "prdefn.h"
 #include "ctrlflgs.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -60,12 +62,6 @@ extern  bool            BitOn(unsigned_16);
 extern  void            AdvanceITPtr(void);
 extern  void            FreeOneNode(itnode *);
 extern  int             RecStmtKW(void);
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
-extern  void            OpndErr(int);
-extern  void            StmtErr(int);
-extern  void            StmtPtrErr(int,void *);
 extern  void            TermDo(void);
 extern  void            TermDoWhile(void);
 extern  void            DefStmtNo(unsigned_32);
@@ -88,6 +84,9 @@ extern  void            STTmpFree(void);
 extern  char                    *StmtKeywords[];
 extern  void                    (* const __FAR ProcTable[])();
 extern  const unsigned_16       __FAR CFTable[];
+
+//GUT
+void DumpLex();
 
 
 static  void    ChkStatementSequence() {
@@ -275,6 +274,7 @@ static  void    InitStatement() {
     StmtSw = SS_SCANNING;
     CpError = FALSE;
     MakeITList();
+//    DumpLex();
     StmtSw &= ~SS_SCANNING;
     StmtProc = 0;
 }
@@ -446,7 +446,9 @@ static  void    ProcStmt() {
 
     if( AError ) return;
     if( CpError && (StmtProc == PR_NULL) ) return;
+    //DumpLex();
     ProcTable[ StmtProc ]();
+    //DumpLex();
 }
 
 

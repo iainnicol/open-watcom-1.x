@@ -42,18 +42,17 @@
 #include "errcod.h"
 #include "sdfile.h"
 #include "global.h"
+#include "ferror.h"
 
 extern  void            BIInit();
 extern  void            BIEnd();
 extern  void            BIStartSubProg();
 extern  void            BIResolveUndefTypes();
 extern  void            BIEndSubProg();
-extern  void            FMemFree(void *);
 extern  void            FrlInit(void **);
 extern  void            FrlFini(void **);
 extern  void            TrapInit(void);
 extern  void            TrapFini(void);
-extern  void            Error(int,...);
 extern  void            ComRead(void);
 extern  void            ProcInclude(void);
 extern  bool            SetLst(bool);

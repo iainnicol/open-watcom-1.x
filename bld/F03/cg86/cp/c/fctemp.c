@@ -42,11 +42,10 @@
 #include "fcdata.h"
 #include "model.h"
 #include "cgprotos.h"
+#include "fmemmgr.h"
 
 //=========================================================================
 
-extern  void            FMemFree(void *);
-extern  void            *FMemAlloc(uint);
 extern  void            FreeChain(void **);
 
 static  tmp_handle      TmpList;

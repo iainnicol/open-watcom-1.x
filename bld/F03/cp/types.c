@@ -31,7 +31,7 @@
 
 
 //
-// TYPES        : Typing information
+// TYPES        : Type size information
 //
 
 #include "ftnstd.h"
@@ -39,12 +39,15 @@
 #include "symflgs.h"
 #include "cpopt.h"
 
-const byte __FAR        Sizes[] = { 1, 4,               // LOGICAL
-                                    1, 2, 4,            // INTEGER
-                                    4, 8, 16,           // REAL
-                                    8, 16, 32,          // COMPLEX
-                                    1,                  // CHARACTER
-                                    0, };               // STRUCTURE
+
+// This array is indexed by the TY_... values defined in symflags.h e.g. TY_REAL = 5
+// there are more TY_... values than in this array index > TY_STRUCTURE is outside of this array
+const byte __FAR        Sizes[] = { 1, 4,               // LOGICAL (TY_LOGICAL_1, TY_LOGICAL)
+                                    1, 2, 4,            // INTEGER  (TY_INTEGER_1, TY_INTEGER_2, TY_INTEGER)
+                                    4, 8, 16,           // REAL     (TY_REAL, TY_DOUBLE, TY_TRUE_EXTENDED)
+                                    8, 16, 32,          // COMPLEX  (TY_COMPLEX, TY_DCOMPLEX, TY_TRUE_XCOMPLEX
+                                    1,                  // CHARACTER(TY_CHAR)
+                                    0, };               // STRUCTURE(TY_STRUCTURE)
 
 
 uint            TypeSize( uint typ ) {

@@ -40,8 +40,8 @@
 #include "namecod.h"
 #include "opr.h"
 #include "falloc.h"
+#include "insert.h"
 
-extern  void            StmtExtension(uint);
 extern  bool            RecTrmOpr(void);
 extern  bool            RecNOpn(void);
 extern  void            ReqNOpn(void);
@@ -50,7 +50,6 @@ extern  void            AdvanceITPtr(void);
 extern  void            ReqOpenParen();
 extern  bool            ReqName(int);
 extern  sym_id          LkSym(void);
-extern  void            IllName(sym_id);
 extern  bool            RecComma(void);
 extern  void            ReqCloseParen(void);
 extern  void            ReqEOS(void);

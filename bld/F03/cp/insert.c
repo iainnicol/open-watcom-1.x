@@ -40,12 +40,11 @@
 #include "stmtsw.h"
 #include "global.h"
 #include "prdefn.h"
+#include "ferror.h"
+#include "insert.h"
 
 #include <stdarg.h>
 
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STStructName(sym_id,char *);
 extern  char            *STFieldName(sym_id,char *);

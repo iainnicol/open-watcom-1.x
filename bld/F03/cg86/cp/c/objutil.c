@@ -44,6 +44,8 @@
 #include "cioconst.h"
 #include "fcodes.h"
 #include "fio.h"
+#include "fmemmgr.h"
+#include "ferror.h"
 
 #include <string.h>
 #include <process.h>
@@ -71,8 +73,7 @@ static  char            *ObjPtr;
 static  char            *ObjCode;
 static  char            *ObjEnd;
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
+
 extern  file_handle     SDOpen(char *,int);
 extern  void            SDClose(file_handle);
 extern  void            SDSeek(file_handle,int,int);
@@ -82,7 +83,6 @@ extern  bool            SDError(file_handle,char *);
 extern  bool            SDEof(file_handle);
 extern  void            SDScratch(char *);
 extern  void            SDSetAttr(file_attr);
-extern  void            Error(int,...);
 
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
