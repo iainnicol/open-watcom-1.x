@@ -1,4 +1,0 @@
-LIBRARY d3d8.dll
-EXPORTS
-DebugSetMute
-Direct3DCreate8@4
