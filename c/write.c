@@ -451,8 +451,6 @@ static void write_global( void )
 {
     queuenode           *curr;
     struct asm_sym      *sym;
-    struct asm_sym      *new;
-    char                *(*save)( struct asm_sym *sym, char *buffer );
 
     if( GlobalQueue == NULL ) return;
     for( ; ; ) {
@@ -460,16 +458,7 @@ static void write_global( void )
         if( curr == NULL ) break;
         sym = (asm_sym *)curr->data;
         if( sym->state == SYM_UNDEFINED ) {
-            int seg;
-            int grp;
-
-            seg = sym->segidx;
-            grp = sym->grpidx;
-            save = sym->mangler;
-            new = MakeExtern( sym->name, sym->mem_type, TRUE );
-            new->mangler = save;
-            new->segidx = seg;
-            new->grpidx = grp;
+            dir_change( (dir_node *)curr->data, TAB_EXT );
             AsmFree( curr );
         } else {
             /* make this record a pubdef */

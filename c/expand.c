@@ -312,18 +312,14 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         }
         dir->e.constinfo->redefine = redefine;
         dir->e.constinfo->expand_early = expand_early;
-        dir->e.constinfo->data = NULL;
-        dir->e.constinfo->count = 0;
-        dir->sym.state = SYM_UNDEFINED; /* can't use the value yet */
     } else {
         /* check if it can be redefined */
         dir = (dir_node *)sym;
         if( sym->state == SYM_UNDEFINED ) {
-            dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
+            dir_change( dir, TAB_CONST );
             dir->e.constinfo->redefine = redefine;
             dir->e.constinfo->expand_early = expand_early;
             sym->grpidx = sym->segidx = sym->offset = 0;
-            dir->e.constinfo->data = NULL;
         } else if(( sym->state != SYM_CONST )
             || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
             /* error */
@@ -347,7 +343,6 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         }
         dir->e.constinfo->count = 1;
         dir->e.constinfo->data = new;
-        dir->sym.state = SYM_CONST;
         return( NOT_ERROR );
     }
 
@@ -398,8 +393,6 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
     }
     dir->e.constinfo->count = count;
     dir->e.constinfo->data = new;
-
-    dir->sym.state = SYM_CONST;
     return( NOT_ERROR );
 }
 

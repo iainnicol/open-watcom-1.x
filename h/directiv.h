@@ -163,7 +163,7 @@ typedef struct {
 
 typedef struct {
     obj_rec     *segrec;
-    direct_idx  idx;            // its group index
+    direct_idx  grpidx;         // its group index
     uint_32     start_loc;      // starting offset of current ledata or lidata
     unsigned    readonly:1;     // if the segment is readonly
     unsigned    ignore:1;       // ignore this if the seg is redefined
@@ -174,10 +174,13 @@ typedef struct {
 typedef struct {
     uint        idx;            // external definition index
     unsigned    use32:1;
+    unsigned    comm:1;
 } ext_info;
 
 typedef struct {
     uint            idx;                // external definition index
+    unsigned        use32:1;
+    unsigned        comm:1;
     unsigned long   size;
     uint            distance;
 } comm_info;
