@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <windows.h>
 #include <dos.h>
 #include <string.h>
@@ -105,7 +104,8 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
     TrapFile = LoadLibrary( trpfile );
     if( TrapFile == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
+        TrapFile = 0;
+        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
         return( buff );
     }
     InitFunc = (LPVOID) GetProcAddress( TrapFile, (LPSTR)1 );

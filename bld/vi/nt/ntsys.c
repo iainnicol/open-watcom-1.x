@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  OS/2 specific system interface functions.:
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -36,6 +37,7 @@
 #include "vi.h"
 #include "win.h"
 #include "dosx.h"
+#define _WINSOCKAPI_
 #include <windows.h>
 
 HANDLE  InputHandle, OutputHandle;
@@ -136,7 +138,7 @@ void ScreenInit( void )
     GetConsoleTitle( tmp, sizeof( tmp ) );
     AddString( &oldConTitle, tmp );
     if( !EditFlags.Quiet ) {
-        SetConsoleTitle( "Open Watcom vi" );
+        SetConsoleTitle( "WATCOM VI for NT" );
     }
 
 } /* ScreenInit */

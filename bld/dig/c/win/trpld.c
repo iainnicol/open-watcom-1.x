@@ -31,7 +31,6 @@
 
 
 #define STRICT
-#include <stdio.h>
 #include <windows.h>
 #include <stdarg.h>
 #include <string.h>
@@ -121,7 +120,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     dll = LoadLibrary( trpfile );
     SetErrorMode( prev );
     if( (UINT)dll < 32 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
+        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
         return( buff );
     }
     InitFunc = (trap_version(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)2 );
