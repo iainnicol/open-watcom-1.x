@@ -1055,12 +1055,6 @@ static boolean suitableForAddressParm( PTREE parm )
 
 static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
 {
-    if( ScopeAccessType( SCOPE_TEMPLATE_DECL ) ) {
-        if( ! currentTemplate->all_generic ) {
-            PTreeFreeSubtrees( parm );
-            return( NodeZero() );
-        }
-    }
     parm = AnalyseRawExpr( parm );
     if( parm->op == PT_ERROR ) {
         return( parm );
@@ -1103,6 +1097,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
         CErr1( ERR_TOO_MANY_TEMPLATE_PARAMETERS );
         something_went_wrong = TRUE;
     } else if( ! something_went_wrong ) {
+        boolean inside_decl_scope = ScopeAccessType( SCOPE_TEMPLATE_DECL );
         SCOPE decl_scope = ScopeBegin( SCOPE_TEMPLATE_INST );
 
         SrcFileGetTokenLocn( &start_locn );
@@ -1162,9 +1157,14 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
 
             if( parm->op != PT_TYPE ) {
                 if( arg_type != NULL ) {
-                    parm = processIndividualParm( arg_type, parm );
-                    if( parm->op == PT_ERROR ) {
-                        something_went_wrong = TRUE;
+                    if( inside_decl_scope && ! currentTemplate->all_generic ) {
+                        PTreeFreeSubtrees( parm );
+                        parm = NodeZero();
+                    } else {
+                        parm = processIndividualParm( arg_type, parm );
+                        if( parm->op == PT_ERROR ) {
+                            something_went_wrong = TRUE;
+                        }
                     }
                 } else {
                     /* non-type parameter supplied for type argument */
