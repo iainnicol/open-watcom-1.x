@@ -456,6 +456,7 @@ static void dir_init( dir_node *dir, int tab )
         dir->e.comminfo->idx = ++extdefidx;
         dir->e.comminfo->use32 = Use32;
         dir->e.comminfo->comm = 1;
+        tab = TAB_EXT;
         break;
     case TAB_CONST:
         sym->state = SYM_CONST;
@@ -523,7 +524,7 @@ static void RemoveFromTable( dir_node *dir )
         }
         switch( dir->sym.state ) {
         case SYM_EXTERNAL:
-            tab = ( dir->e.extinfo->comm ) ? TAB_COMM : TAB_EXT;
+            tab = TAB_EXT;
             break;
         case SYM_SEG:
             tab = TAB_SEG;

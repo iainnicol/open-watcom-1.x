@@ -387,12 +387,10 @@ static void write_global( void )
     GetGlobalData();
 }
 
-static void write_ext( void )
+static dir_node *write_extdef( dir_node *start )
 {
     obj_rec     *objr;
     dir_node    *curr;
-    dir_node    *start;
-    dir_node    *next;
     uint        num;
     uint        total_size;
     uint        i;
@@ -400,39 +398,36 @@ static void write_ext( void )
     char        buffer[MAX_LINE_LEN];
     uint        len;
 
-    next = Tables[TAB_EXT].head;
+    num = 0;
+    total_size = 0;
+    i = 0;
 
-    for( ; ; ) {
-        if( next == NULL ) break;
-        start = next;
-        num = 0;
-        total_size = 0;
-        i = 0;
+    objr = ObjNewRec( CMD_EXTDEF );
+    objr->d.extdef.first_idx = 0;
 
-        objr = ObjNewRec( CMD_EXTDEF );
-        objr->d.extdef.first_idx = 0;
+    for( curr = start;
+        ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
+        curr = curr->next ) {
+        Mangle( &curr->sym, buffer );
+        len = strlen( buffer );
 
-        for( curr = start; curr != NULL; curr = curr->next ) {
-            Mangle( &curr->sym, buffer );
-            len = strlen( buffer );
+        if( total_size + len >= MAX_EXT_LENGTH )
+            break;
+        total_size += len + 2;
+        num++;
 
-            if( total_size + len >= MAX_EXT_LENGTH ) break;
-            total_size += len + 2;
-            num++;
-
-            name[i] = (char)len;
-            i++;
-            memcpy( name+i, buffer, len );
-            i += len;
-            name[i++] = 0;      // for the type index
-
-        }
-        next = curr;
-        ObjAttachData( objr, name, total_size );
+        name[i] = (char)len;
+        i++;
+        memcpy( name+i, buffer, len );
+        i += len;
+        name[i++] = 0;      // for the type index
+    }
+    ObjAttachData( objr, name, total_size );
+    if( num != 0 ) {
         objr->d.extdef.num_names = num;
-        if( objr->d.extdef.num_names == 0 ) return;
         write_record( objr, TRUE );
     }
+    return( curr );
 }
 
 static int opsize( memtype mem_type )
@@ -474,8 +469,8 @@ static int get_number_of_bytes_for_size_in_commdef( unsigned long value )
     }
 }
 
-static void write_comm( void )
-/****************************/
+static dir_node *write_comdef( dir_node *start )
+/**********************************************/
 {
     obj_rec     *objr;
     dir_node    *curr;
@@ -495,8 +490,9 @@ static void write_comm( void )
     objr = ObjNewRec( CMD_COMDEF );
     objr->d.comdef.first_idx = 0;
 
-    for( curr = Tables[TAB_COMM].head; ; curr = curr->next ) {
-        if( curr == NULL ) break;
+    for( curr = start;
+        ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
+        curr = curr->next ) {
         ptr = Mangle( &curr->sym, buffer );
         total_size += 3 + strlen( ptr );
         /* 3 = 1 for string len + 1 for type index + 1 for data type */
@@ -513,8 +509,9 @@ static void write_comm( void )
 
     if( total_size > 0 ) {
         name = AsmAlloc( total_size * sizeof( char ) );
-        for( curr = Tables[TAB_COMM].head; ; curr = curr->next ) {
-            if( curr == NULL ) break;
+        for( curr = start;
+            ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
+            curr = curr->next ) {
             ptr = Mangle( &curr->sym, buffer );
             len = strlen( ptr );
             name[i] = (char)len;
@@ -565,11 +562,27 @@ static void write_comm( void )
         }
         ObjAttachData( objr, name, total_size );
     }
-
-    objr->d.comdef.num_names = num;
     ObjCanFree( objr );
-    if( objr->d.extdef.num_names == 0 ) return;
-    write_record( objr, TRUE );
+    if( num != 0 ) {
+        objr->d.comdef.num_names = num;
+        write_record( objr, TRUE );
+    }
+    return( curr );
+}
+
+static void write_ext_comm( void )
+{
+    dir_node    *next;
+
+    for( next = Tables[TAB_EXT].head; next != NULL; ) {
+        if( next->e.extinfo->comm == 0 ) {
+            // extdef
+            next = write_extdef( next );
+        } else {
+            // comdef
+            next = write_comdef( next );
+        }
+    }
 }
 
 static void write_header( void )
@@ -975,8 +988,7 @@ static void writepass1stuff( void )
     write_seg();
     write_grp();
     write_global();
-    write_ext();
-    write_comm();
+    write_ext_comm();
     write_alias();
     if( write_pub() == ERROR ) return;
     write_export();

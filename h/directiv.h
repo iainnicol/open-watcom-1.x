@@ -95,7 +95,7 @@ typedef enum {
 
 enum {
     TAB_FIRST = 0,
-    TAB_SEG = TAB_FIRST,        // order seg, grp, lname is important
+    TAB_SEG = TAB_FIRST,  // order seg, grp, lname is important
     TAB_GRP,
     TAB_PUB,
     TAB_LIB,
@@ -107,9 +107,9 @@ enum {
     TAB_CLASS_LNAME,
     TAB_STRUCT,
     TAB_GLOBAL,
-    TAB_COMM,
-    TAB_LAST
-};                      // tables for definitions
+    TAB_LAST,
+    TAB_COMM             // TAB_COMM is not included in tables, it is assigned to TAB_EXT
+};                       // tables for definitions
 
 enum {
     QUERY_COMMENT,
