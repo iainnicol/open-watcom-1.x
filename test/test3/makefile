@@ -1,5 +1,6 @@
 
 objs = &
+3dnow &
 addrmode &
 allign &
 callimpl &
