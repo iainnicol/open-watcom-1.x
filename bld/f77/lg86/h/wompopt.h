@@ -37,3 +37,4 @@
 #if _TARGET == _8086
   #define _WOMP_WATFOR_8086
 #endif
+#define NDEBUG
