@@ -605,6 +605,9 @@ static int mem( int i )
             if( sym->state == SYM_STRUCT ) {
                 /* kludge: ignore structures, people using MASM 6.x stuff */
                 i++;
+                if (Code->info.opnd_type[Opnd_Count] == OP_NONE) {
+                    Code->info.opnd_type[Opnd_Count] =  Code->use32 ? OP_I32 : OP_I16;
+                }
                 continue;
             } else if( sym->state == SYM_STRUCT_FIELD ) {
                 //ConstantOnly = TRUE;

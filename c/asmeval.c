@@ -54,28 +54,11 @@ static int              TokCnt;
 
 static struct asm_tok   *Store;
 static unsigned         StoreNum;
-static expr_list        *ExprListCache;
 
 extern char             Parse_Pass;     // phase of parsing
 
-static void expr_free( expr_list *expr )
+static expr_list *init_expr( expr_list *new )
 {
-    if( expr != NULL ) {
-        expr->string = (void *)ExprListCache;
-        ExprListCache = expr;
-    }
-}
-
-static expr_list *create_expr( void )
-{
-    expr_list   *new;
-
-    if( ExprListCache != NULL ) {
-        new = ExprListCache;
-        ExprListCache = (void *)new->string;
-    } else {
-        new = AsmAlloc( sizeof( expr_list ) );
-    }
     new->label    = EMPTY;
     new->override = EMPTY;
     new->instr    = EMPTY;
@@ -96,6 +79,7 @@ static int get_precedence( int i )
 
     char        token;
 
+    if( i == -3 ) return( 9 );
     token = AsmBuffer[i]->token;
 
     switch( token ) {
@@ -105,6 +89,10 @@ static int get_precedence( int i )
                 case T_SIZE:
                 case T_LENGTHOF:
                 case T_SIZEOF:
+                case T_OP_BRACKET:
+                case T_CL_BRACKET:
+                case T_OP_SQ_BRACKET:
+                case T_CL_SQ_BRACKET:
                     return( 2 );
                 case T_SEG2:
                 case T_OFFSET:
@@ -143,18 +131,20 @@ static int get_precedence( int i )
         case '+':
         case '-':
             return( 9 );
+        case T_DOT:
+            return( 3 );
         default:
             /**/myassert( 0 );
     }
     return( ERROR );
 }
 
-static expr_list *get_operand( int i )
+static expr_list *get_operand( int i, expr_list *new )
 {
-    expr_list   *new;
     char        *tmp;
 
-    new = create_expr();
+    init_expr(new);
+
     switch( AsmBuffer[i]->token ) {
     case T_NUM:
         new->type = EXPR_CONST;
@@ -180,9 +170,7 @@ static expr_list *get_operand( int i )
         new->label = i;
         break;
     default:
-        expr_free( new );
-        new = NULL;
-        break;
+        return( NULL );
     }
     return( new );
 }
@@ -221,6 +209,32 @@ static int_8 is_optr( int i )
         return( FALSE );
     }
     return( TRUE );
+}
+
+static int_8 is_op_bracket( int i )
+/* determine if it is open bracket */
+{
+    char        tok;
+
+    tok = AsmBuffer[i]->token;
+    if(( tok == T_OP_BRACKET ) || ( tok == T_OP_SQ_BRACKET )) {
+        return( TRUE );
+    } else {
+        return( FALSE );
+    }
+}
+
+static int_8 is_cl_bracket( int i )
+/* determine if it is close bracket */
+{
+    char        tok;
+
+    tok = AsmBuffer[i]->token;
+    if(( tok == T_CL_BRACKET ) || ( tok == T_CL_SQ_BRACKET )) {
+        return( TRUE );
+    } else {
+        return( FALSE );
+    }
 }
 
 static int_8 is_unary( int i, char sign )
@@ -350,13 +364,17 @@ static void TokenAssign( expr_list *t1, expr_list *t2 )
     t2->idx_reg = EMPTY;
 }
 
-static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
+static int_8 calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
 /* Perform the operation between token_1 and token_2 */
 {
     char                token;
     struct asm_sym      *sym;
 
-    token = AsmBuffer[index]->token;
+    if( index == (uint_8)(-3) ) {
+        token = '+';
+    } else {
+        token = AsmBuffer[index]->token;
+    }
 
     token_1->string = NULL;
 
@@ -747,122 +765,139 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 break;
             }
             break;
+        case T_DOT:
+            MakeConst( token_2 );
+            if( check_same( token_1, token_2, EXPR_ADDR ) ) {
+                index_connect( token_1, token_2 );
+                if( token_1->label == EMPTY ) {
+                    token_1->label = token_2->label;
+                }
+                token_1->value += token_2->value;
+                token_1->indirect |= token_2->indirect;
+            } else if( check_both( token_1, token_2, EXPR_ADDR, EXPR_CONST ) ) {
+                if( token_1->type == EXPR_CONST ) {
+                    token_2->value += token_1->value;
+                    token_2->indirect |= token_1->indirect;
+                    TokenAssign( token_1, token_2 );
+                } else {
+                    if( token_2->label != EMPTY ) {
+                        token_1->label = token_2->label;
+                    }
+                    token_1->value += token_2->value;
+                }
+            } else if( check_both( token_1, token_2, EXPR_REG, EXPR_ADDR ) ) {
+                if( token_2->instr != EMPTY ) {
+                    AsmError( LABEL_IS_EXPECTED );
+                    return( ERROR );
+                }
+                index_connect( token_2, token_1 );
+                token_2->indirect |= token_1->indirect;
+                TokenAssign( token_1, token_2 );
+            } else if( check_both( token_1, token_2, EXPR_REG, EXPR_CONST ) ) {
+                token_1->value += token_2->value;
+                token_1->indirect |= token_2->indirect;
+                token_1->type = EXPR_ADDR;
+            } else {
+                /* Error */
+                AsmError( ADDITION_CONSTANT_EXPECTED );
+                return( ERROR );
+            }
+            break;
     }
     return( NOT_ERROR );
 }
 
-static expr_list *evaluate( int *i, int end )
+static expr_list *evaluate( int *i, int end, expr_list *data_1, int read_first )
 {
+    expr_list           data_2;
     expr_list           *token_1 = NULL;
     expr_list           *token_2 = NULL;
-    int_8               start_token_2;
     char                token_needed;
     int_8               queue[2];       // operator queue; store the index
                                         // of the operator token
+    int_8               buffer_index;
 
     token_needed = FALSE;
 
     queue[0] = queue[1] = EMPTY;
+    token_1 = data_1;
+    token_2 = init_expr( &data_2 );
 
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
     /* Look at first token, which may be an unary operator or an operand */
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
-    if( cmp_token( *i, T_OP_BRACKET ) ) {
-        (*i)++;
-        if( *i > end ) {
-            AsmError( OPERAND_EXPECTED );
-            return( NULL );
-        }
-
-        token_1 = evaluate( i, end );
-        if( token_1 == NULL ) {
-            return( NULL );
-        }
-    } else if( is_unary( *i, TRUE ) ) {
-        token_needed = TRUE;
+    if( is_unary( *i, TRUE ) ) {
         optr_enqueue( *i, queue );
-    } else if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
-        if( *i == 0 ) {
-            return( NULL );
-        }
-        /**/myassert( !cmp_token( (*i)-1, T_CL_BRACKET ) );
-        (*i)++;
-        token_1 = evaluate( i, end );
-        if( token_1 == NULL ) {
-            return( NULL );
-        }
-        token_1->indirect = TRUE;
     } else {
-        token_1 = get_operand( *i );
-        if( token_1 == NULL ) {
-            return( NULL );
+        if( read_first ) {
+            init_expr( data_1 );
+            if( is_op_bracket( *i ) ) {
+                (*i)++;
+                token_1 = evaluate( i, end, data_1, 1 );
+                if( *i > end ) {
+                    AsmError( OPERATOR_EXPECTED );
+                    return( token_1 );
+                } else if( is_cl_bracket( *i ) ) {
+                    (*i)++;
+                } else {
+                    AsmError( OPERATOR_EXPECTED );
+                    return( token_1 );
+                }
+            } else {
+                token_1 = get_operand( *i, data_1 );
+                if( token_1 == NULL ) {
+                    return( NULL );
+                }
+                (*i)++;
+            }
         }
-    }
-
-    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    /* If an unary operator is not found, now read the operator */
-    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-
-    if( !token_needed ) {
-
-        (*i)++;
         if( *i > end ) {
-            /* no operator is found; return token_1 as result */
             return( token_1 );
-        }
-
-        /* Read the operator */
-        if( cmp_token( *i, T_CL_BRACKET ) ||
-            cmp_token( *i, T_CL_SQ_BRACKET ) ) {
+        } else if( is_cl_bracket( *i ) ) {
             return( token_1 );
         } else if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
-            AsmBuffer[*i]->token = '+';
+            optr_enqueue( -3, queue );
+            (*i)--;
         } else if( !is_optr(*i) ) {
             AsmError( OPERATOR_EXPECTED );
-            expr_free( token_1 );
             return( NULL );
+        } else {
+            optr_enqueue( *i, queue );
         }
-        token_needed = TRUE;
-        optr_enqueue( *i, queue );
     }
 
+    token_needed = TRUE;
     while( token_needed ) {
-
+  
         /*:::::::::::::::::::::::::::*/
         /* Now read the next operand */
         /*:::::::::::::::::::::::::::*/
 
         (*i)++;
-        start_token_2 = *i;
         if( *i > end ) {
             AsmError( OPERAND_EXPECTED );
-            expr_free( token_1 );
             return( NULL );
-        }
-
-        if( cmp_token( *i, T_OP_BRACKET ) ||
-            cmp_token( *i, T_OP_SQ_BRACKET ) ) {
+        } else if( is_op_bracket( *i ) ) {
             (*i)++;
-            token_2 = evaluate( i, end );
-            if( token_2 == NULL ) {
-                expr_free( token_1 );
-                return( NULL );
+            token_2 = evaluate( i, end, &data_2, 1 );
+            if( *i > end ) {
+                AsmError( OPERATOR_EXPECTED );
+            } else if( is_cl_bracket( *i ) ) {
+            } else {
+                AsmError( OPERATOR_EXPECTED );
             }
         } else if( is_unary( *i, TRUE ) ) {
-            token_2 = evaluate( i, end );
+            token_2 = evaluate( i, end, &data_2, 1 );
             if( token_2 == NULL ) {
-                expr_free( token_1 );
                 return( NULL );
             }
         } else if( is_optr( *i ) ) {
             AsmError( OPERAND_EXPECTED );
-            expr_free( token_1 );
             return( NULL );
         } else {
-            token_2 = get_operand( *i );
+            token_2 = get_operand( *i, &data_2 );
             if( token_2 == NULL ) {
-                expr_free( token_1 );
                 return( NULL );
             }
         }
@@ -873,37 +908,25 @@ static expr_list *evaluate( int *i, int end )
 
         (*i)++;
         if( *i <= end ) {
-            if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
-                AsmBuffer[*i]->token = '+';
-            } else while( cmp_token( *i, T_CL_SQ_BRACKET ) ) {
-                if( *i == end ) break;
-                (*i)++;
-            }
-        }
-
-        if( *i <= end ) {
             if( !is_optr( *i ) || is_unary( *i, FALSE ) ||
                 cmp_token( *i, T_OP_BRACKET ) ) {
                 AsmError( OPERATOR_EXPECTED );
-                expr_free( token_1 );
-                expr_free( token_2 );
                 return( NULL );
-            } else if( !cmp_token( *i, T_CL_BRACKET ) &&
-                       !cmp_token( *i, T_CL_SQ_BRACKET ) ) {
-
+            } else if( is_cl_bracket( *i ) ) {
+                token_needed = FALSE;
+            } else {
+                buffer_index = *i;
                 if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
-                    AsmBuffer[*i]->token = '+';
+                    buffer_index = -3;
+                    (*i)--;
                 }
-                if( get_precedence( *i ) < get_precedence( queue[0] ) ) {
-                    (*i) = start_token_2;
-                    expr_free( token_2 );
-                    token_2 = evaluate( i, end );
+                if( get_precedence( buffer_index ) < get_precedence( queue[0] ) ) {
+                    token_2 = evaluate( i, end, &data_2, 0 );
                     if( token_2 == NULL ) {
-                        expr_free( token_1 );
                         return( NULL );
                     }
                 } else {
-                    optr_enqueue( *i, queue );
+                    optr_enqueue( buffer_index, queue );
                 }
             }
         }
@@ -912,18 +935,10 @@ static expr_list *evaluate( int *i, int end )
         /* Now evaluate */
         /*::::::::::::::*/
 
-        if( token_1 == NULL ) {
-            /* the operator is unary */
-            token_1 = create_expr();
-        }
-
         if( calculate( token_1, token_2, queue[0] )==ERROR ) {
-            expr_free( token_1 );
-            expr_free( token_2 );
             return( NULL );
         }
 
-        expr_free( token_2 );
         optr_dequeue( queue );
         if( queue[0] == EMPTY ) {
             token_needed = FALSE;
@@ -1014,6 +1029,8 @@ static int is_expr( int i )
             }
         case T_TEXT:
         case T_STRING:
+            return( TRUE );
+        case T_DOT:
             return( TRUE );
         default:
             return( FALSE );
@@ -1186,12 +1203,14 @@ static int fix( expr_list *res, int start, int end )
         if( res->base_reg != EMPTY ) {
             AsmBuffer[start++]->token = T_OP_SQ_BRACKET;
             AsmBuffer[start]->token = T_REG;
+            AsmBuffer[start]->string_ptr = Store[res->base_reg-old_start].string_ptr;
             AsmBuffer[start++]->value = Store[res->base_reg-old_start].value;
             AsmBuffer[start++]->token = T_CL_SQ_BRACKET;
         }
         if( res->idx_reg != EMPTY ) {
             AsmBuffer[start++]->token = T_OP_SQ_BRACKET;
             AsmBuffer[start]->token = T_REG;
+            AsmBuffer[start]->string_ptr = Store[res->idx_reg-old_start].string_ptr;
             AsmBuffer[start++]->value = Store[res->idx_reg-old_start].value;
             if( res->scale != 1 ) {
                 AsmBuffer[start++]->token = T_TIMES;
@@ -1269,6 +1288,7 @@ extern int EvalExpr( int count, int start_tok, int end_tok )
     int         num;            // number of tokens in the expression
     bool        final = FALSE;
     expr_list   *result;
+    expr_list   expr_result;
 
     if( AsmBuffer[end_tok]->token == T_FINAL ) final = TRUE;
 
@@ -1296,7 +1316,7 @@ extern int EvalExpr( int count, int start_tok, int end_tok )
              && AsmBuffer[start]->token == T_REG
              && AsmBuffer[start+1]->token == T_COLON) ) {
                 i = start;
-                result = evaluate( &i, i + num );
+                result = evaluate( &i, i + num, &expr_result, 1 );
                 if( result == NULL ) {
     //          AsmError( SYNTAX_ERROR );
                     return( ERROR );
@@ -1308,7 +1328,6 @@ extern int EvalExpr( int count, int start_tok, int end_tok )
                     end_tok += TokCnt - count;
                     count = TokCnt;
                 }
-                expr_free( result );
             }
         }
         i++;
@@ -1325,20 +1344,11 @@ extern int EvalExpr( int count, int start_tok, int end_tok )
 
 void AsmEvalInit()
 {
-    ExprListCache = NULL;
     Store = NULL;
     StoreNum = 0;
 }
 
 void AsmEvalFini()
 {
-    void        *next;
-
     AsmFree( Store );
-
-    while( ExprListCache != NULL ) {
-        next = ExprListCache->string;
-        AsmFree( ExprListCache );
-        ExprListCache = next;
-    }
 }
