@@ -35,8 +35,8 @@
 #include <dirent.h>
 #include <string.h>
 #include <malloc.h>
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-  #include <alloca.h>
+#ifdef UNIX
+    #include <alloca.h>
 #endif
 #include <fcntl.h>
 #include <ctype.h>

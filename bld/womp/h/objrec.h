@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  OMF record definitions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -45,8 +46,6 @@ typedef struct pubdef_data  pubdef_data;
 #include "namemgr.h"
 #endif
 
-
-#pragma pack( push, 1 )
 
 struct coment_info {
     uint_8  attr;           /* attribute field from coment record       */
@@ -252,9 +251,6 @@ struct obj_rec {
     uint_8      free_data:1;/* should we MemFree( data )??       (PRIVATE)  */
     union objrec_info d;    /* data depending on record type                */
 };
-
-#pragma pack( pop )
-
 /*
     Nothing should rely on the data pointing to the same buffer all the time.
     i.e., any routine is allowed to ObjDetachData( objr ) and

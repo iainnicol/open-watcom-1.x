@@ -24,10 +24,17 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  overlay data used by the standard overlay manager only.
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 
+
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;<>
+;<> OVLSTD:    overlay data used by the standard overlay manager only.
+;<>
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         name ovlstd
 

@@ -24,12 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  This file contains the definitions of DWARF abbreviations
-*               in a user editable form. Compile and run this file to
-*               create abbreviation tables used inside dwabbrev.c.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+/*
+    This file contains the definitions of the abbreviations in a form
+    that the user can modify.  This file should be compiled and run
+    to create the abbreviation tables that are actually used
+    inside dwabbrev.c.
+*/
 
 #include <errno.h>
 #include <stdio.h>
@@ -851,7 +857,7 @@ uint_32 emitInfo(
 }
 
 
-int main( void )
+void main( void )
 {
 
     FILE *                      fp;
@@ -861,7 +867,7 @@ int main( void )
     if( fp == NULL ) {
         fprintf( stderr, "unable to open dwabinfo.i for writing: %s",
             strerror( errno ) );
-        return( 1 );
+        exit( 1 );
     }
     fprintf( fp, "/* this file created by dwmakeab.c */\n" );
     emitEncodings( fp );
@@ -872,15 +878,14 @@ int main( void )
     if( fp == NULL ) {
         fprintf( stderr, "unable to open dwabenum.i for writing: %s",
             strerror( errno ) );
-        return( 1 );
+        exit( 1 );
     }
     fprintf( fp, "/* this file created by dwmakeab.c */\n" );
     /* we need this value for determining the size of the dw_client struct */
     fprintf( fp, "\n#define AB_LAST_CODE    0x%08lx\n\n",  total );
     fprintf( fp, "\n#define AB_BITVECT_SIZE 0x%08lx\n\n", ( total + 7 ) / 8 );
     emitEnum( fp );
-    fprintf( fp, "\n" );
     fclose( fp );
 
-    return( 0 );
+    exit( 0 );
 }

@@ -80,7 +80,7 @@
 #define _IS_SLASH( c )  (( (c) == '/' ) || ( (c) == '\\' ))
 #endif
 
-#if !defined( __NT__ ) && !defined( __NETWARE__ ) && !defined( __UNIX__ )
+#if !defined( __NT__ ) && !defined( __NETWARE__ )
 #pragma on (check_stack);
 #endif
 
