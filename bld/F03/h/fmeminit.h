@@ -34,8 +34,8 @@
 #ifndef fmeminit_h_
 #define fmeminit_h_
 
-void    SysMemInit( void );
-void    SysMemFini( void );
+extern void    SysMemInit( void );
+extern void    SysMemFini( void );
 
 #endif
 

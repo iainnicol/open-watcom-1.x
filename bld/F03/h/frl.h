@@ -29,12 +29,13 @@
 *
 ****************************************************************************/
 //
-// protoypes for frl.c
+// prototypes for frl.c
 //
 #ifndef frl_h_
 #define frl_h_
- 
-void    FrlFini( void **head ); 
+
+extern void    FrlFree( void *, void * );  
+extern void    FrlFini( void ** ); 
 
 #endif
 
