@@ -1,0 +1,55 @@
+proj_name = ui
+name = ui
+
+target: $(name).lib
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c: ../c;../../c;$(extra_cdir)
+.h: ../h;../../h;$(extra_hdir)
+
+inc_dirs += ../h;../../h;$(extra_hdir)
+
+obj = obj
+!include ../objfiles.mif
+
+extra_c_flags_i86 = -fpc
+extra_c_flags_386 = -fpc
+
+extra_c_flags += -os-s
+
+$(name).lib: $(objfiles)
+        $(librarian) -b $^@ $<
+
+!ifeq SAMPLE_MODE WIN_C_M_J
+sample.exe : samplew.obj sampdial.obj $(name).lib
+        %create sample.lnk
+        %append sample.lnk system windows op m D A library $(name).lib
+        %append sample.lnk n sample
+        %append sample.lnk f samplew f sampdial
+        %append sample.lnk import DEATH GDI.121
+        %append sample.lnk import RESURRECTION GDI.122
+        wlink @sample.lnk
+!else ifeq SAMPLE_MODE WIN_C_M
+sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
+        %create sample.lnk
+        %append sample.lnk system windows op m D A library $(name).lib
+        %append sample.lnk n sample
+        %append sample.lnk f samplew f sampdial f swap
+        %append sample.lnk import DEATH GDI.121
+        %append sample.lnk import RESURRECTION GDI.122
+        wlink @sample.lnk
+!else
+sample.exe : sample.obj sampdial.obj $(name).lib
+        $(linker) $(lflags) op q,m,st=32k library $(name).lib n sample f sample, sampdial
+!endif
+
+make: .SYMBOLIC
+    %create mkmk.cmd
+    @%append mkmk.cmd  -c & -m objfiles.mif -q 50
+    @%append mkmk.cmd  nopath ../c/*.c c/*.c h/*.h ../h/*.h  path
+    @%append mkmk.cmd  -i.h -isample.c -isampdial.c -isamplew.c
+    mkmk @mkmk.cmd
+    erase mkmk.cmd
