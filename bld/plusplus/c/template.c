@@ -1511,9 +1511,36 @@ DECL_SPEC *TemplateClassInstantiation( PTREE tid, PTREE parms, tc_instantiate co
     TEMPLATE_INFO *tinfo;
     TEMPLATE_DATA *data;
 
-    template_name = tid->u.id.name;
     type_instantiated = TypeError;
-    class_template = ClassTemplateLookup( template_name );
+
+    if( tid->op == PT_ID ) {
+        template_name = tid->u.id.name;
+        class_template = ClassTemplateLookup( template_name );
+    } else {
+        /* we are dealing with a scoped template here */
+        SCOPE scope;
+        PTREE left;
+        PTREE right;
+
+        DbgAssert( ( tid->op == PT_BINARY ) && ( tid->cgop == CO_STORAGE ) );
+
+        left = tid->u.subtree[0];
+        right = tid->u.subtree[1];
+        DbgAssert( ( left->op == PT_BINARY )
+                && ( left->cgop == CO_COLON_COLON ) );
+        DbgAssert( ( right->op == PT_ID ) );
+
+        template_name = right->u.id.name;
+
+        if( left->u.subtree[1] != NULL ) {
+            scope = left->u.subtree[1]->u.id.scope;
+        } else {
+            scope = left->u.subtree[1]->u.id.scope;
+        }
+
+        class_template = ScopeYYMember( scope, template_name )->name_type;
+    }
+
     if( class_template != NULL ) {
         tinfo = class_template->u.tinfo;
         parms = processClassTemplateParms( tinfo, parms );
@@ -1534,6 +1561,8 @@ DECL_SPEC *TemplateClassInstantiation( PTREE tid, PTREE parms, tc_instantiate co
             }
         }
     } else {
+        /* TODO: I guess we need some error handling here */
+        DbgAssert( 0 );
         PTreeFreeSubtrees( parms );
     }
     if( control & TCI_NO_DECL_SPEC ) {

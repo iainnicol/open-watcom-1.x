@@ -1305,8 +1305,6 @@ namespace-using-declaration
     { NameSpaceUsingDeclType( $2 ); }
     | Y_USING qualified-id-expression
     { NameSpaceUsingDeclId( $2 ); }
-    | Y_USING Y_SCOPED_NAMESPACE_NAME
-    { NameSpaceUsingDeclId( MakeScopedId( $2 ) ); }
     | Y_USING Y_GLOBAL_ID
     { NameSpaceUsingDeclId( MakeGlobalId( $2 ) ); }
     | Y_USING Y_GLOBAL_OPERATOR operator-function-type
@@ -2812,6 +2810,11 @@ template-class-instantiation
     | Y_GLOBAL_TEMPLATE_NAME Y_LT template-arg-list-opt
     {
         $$ = TemplateClassInstantiation( MakeTemplateId( $1 ), $3, TCI_NULL );
+        setWatchColonColon( state, $$ );
+    }
+    | Y_SCOPED_TEMPLATE_NAME Y_LT template-arg-list-opt
+    {
+        $$ = TemplateClassInstantiation( $1, $3, TCI_NULL );
         setWatchColonColon( state, $$ );
     }
     ;

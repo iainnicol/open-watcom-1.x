@@ -634,8 +634,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id, unsigned ctrl
             case LK_TYPE:
                 return( Y_SCOPED_TYPE_NAME );
             case LK_TEMPLATE:
-                // until nested templates are allowed
-                return( Y_SCOPED_ID );
+                return( Y_SCOPED_TEMPLATE_NAME );
             case LK_NAMESPACE:
                 return( Y_SCOPED_NAMESPACE_NAME );
             DbgDefault( "unknown lexical category" );
