@@ -83,6 +83,7 @@ pre_obj_deps += $(intname)01.int
 #
 extra_l_flags_qnx= OPTION stack=16k,offset=24k, res=wcc.u, priv=3
 extra_l_flags_nt = OPTION stack=1024k COMMIT stack=32k
+extra_l_flags_dos = OPTION stack=32k
 
 extra_l_flags = OPTION map, caseexact, quiet
 
