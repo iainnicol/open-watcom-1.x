@@ -42,7 +42,7 @@
 extern  void    __freefp( FILE *fp );
 extern  int     __flush( FILE *fp );
 extern  int     __close( int );
-#if !defined(__UNIX__)
+#if !defined(__QNX__)
 void    (*__RmTmpFileFn)( FILE *fp );
 #endif
 
@@ -96,7 +96,7 @@ int __doclose( FILE *fp, int close_handle )
     }
 
     if( close_handle ) {
-        #if defined(__UNIX__) || defined(__NETWARE__)
+        #if defined(__QNX__) || defined(__NETWARE__)
             // we don't get to implement the close function on these systems
             ret |= close( fileno( fp ) );
         #else
@@ -107,8 +107,8 @@ int __doclose( FILE *fp, int close_handle )
         lib_free( _FP_BASE(fp) );
         _FP_BASE(fp) = NULL;
     }
-#ifndef __UNIX__
-    /* this never happens under UNIX */
+#ifndef __QNX__
+    /* this never happens under QNX */
     if( fp->_flag & _TMPFIL ) {     /* if this is a temporary file */
         __RmTmpFileFn( fp );
     }
@@ -116,4 +116,3 @@ int __doclose( FILE *fp, int close_handle )
     _ReleaseFile( fp );
     return( ret );
 }
-

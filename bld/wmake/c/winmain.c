@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-#define STRICT
 #include <windows.h>
 #include <malloc.h>
 #include "wmakerc.h"
