@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Low-level helper pragmas for vi.
+* Description:  low-level helper pragma's for VI
 *
 ****************************************************************************/
 
@@ -36,17 +36,14 @@
 #define NO_INLINE
 #endif
 
-#if defined(__DOS__)
 extern char In61( void );
 extern void Out61( char );
 extern void Out43( char );
 extern void Out42( char );
 extern U_INT DosMaxAlloc( void );
+extern long DosGetFullPath( char *, char * );
 extern void (interrupt _FAR *DosGetVect())( char );
 extern void DosSetVect( char, void (interrupt _FAR *)());
-#endif
-
-extern long DosGetFullPath( char *, char * );
 extern void BIOSSetColorRegister( short, char, char, char );
 extern void BIOSGetColorPalette( void _FAR * );
 extern void BIOSSetBlinkAttr( void );
@@ -65,8 +62,10 @@ extern char near *GetBP( void );
 extern void SetBP( char near * );
 extern void SetSP( char near * );
 extern char IsWindows( void );
+extern char HasShareDOS( void );
 
-#if defined(__WATCOMC__) && defined(__X86__)
+#ifdef __AXP__
+#else
 #pragma aux IsWindows = \
         "mov    ax,1600h" \
         "int    2fh" \
@@ -78,6 +77,18 @@ extern char IsWindows( void );
         "jmp    done" \
         "notok:" \
         "mov    al,0" \
+        "done:" \
+        value [al];
+
+#pragma aux HasShareDOS = \
+        "mov    ax,1000h" \
+        "int    2fh" \
+        "cmp    al,0ffh" \
+        "je     ok" \
+        "mov    al,0" \
+        "jmp    done" \
+        "ok:" \
+        "mov    al,1" \
         "done:" \
         value [al];
 

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  BIOS emulation routines for QNX.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -57,7 +58,7 @@ unsigned int            QNXConsole;
 struct termios          SaveTermSet;
 int                     SaveTermProtocol;
 pid_t                   Proxy;
-extern pid_t            _my_pid;
+extern pid_t    _my_pid;
 
 
 struct map {
@@ -189,6 +190,10 @@ static struct map events[] = {
 };
 
 #pragma off (unreferenced);
+char In61( void ) { return( 0 ); }
+void Out61( char a ) {}
+void Out43( char a ) {}
+void Out42( char a ) {}
 void BIOSGetColorPalette( void far *a ) {}
 long BIOSGetColorRegister( short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr() {}

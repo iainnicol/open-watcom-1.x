@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Pragmas specific to x86 targets.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -152,13 +153,6 @@ void PragmaInit()
 #endif
     HW_CAsgn( OptlinkInfo.returns, HW_FLTS );
 
-    SyscallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
-    memcpy( SyscallInfo.parms, StackParms, sizeof( StackParms ) );
-    SyscallInfo.objname = CStrSave( "*" );
-    SyscallInfo.class = CALLER_POPS |
-                        NO_STRUCT_REG_RETURNS |
-                        SPECIAL_STRUCT_RETURN;
-
 #if _CPU == 386
     HW_CAsgn( CdeclInfo.streturn, HW_EAX );
     HW_CTurnOff( CdeclInfo.save, HW_EAX );
@@ -177,13 +171,6 @@ void PragmaInit()
 /*  HW_CTurnOff( StdcallInfo.save, HW_EBX );  CGE Jan-25-93 */
     HW_CTurnOff( StdcallInfo.save, HW_ECX );
     HW_CTurnOff( StdcallInfo.save, HW_EDX );
-
-    HW_CTurnOff( SyscallInfo.save, HW_EAX );
-    HW_CTurnOn ( SyscallInfo.save, HW_EBX );
-    HW_CTurnOff( SyscallInfo.save, HW_ECX );
-    HW_CTurnOff( SyscallInfo.save, HW_EDX );
-    HW_CAsgn( SyscallInfo.streturn, HW_EMPTY );
-
 
     HW_CAsgn( OptlinkInfo.streturn, HW_EMPTY );
     HW_CTurnOff( OptlinkInfo.save, HW_EAX );
@@ -209,10 +196,6 @@ void PragmaInit()
     HW_CTurnOff( StdcallInfo.save, HW_ES );
 
     /* roughly like pascal */
-    HW_CTurnOff( SyscallInfo.save, HW_ABCD );
-    HW_CTurnOff( SyscallInfo.save, HW_ES );
-
-    /* roughly like pascal */
     HW_CTurnOff( OptlinkInfo.save, HW_ABCD );
     HW_CTurnOff( OptlinkInfo.save, HW_ES );
 
@@ -221,6 +204,17 @@ void PragmaInit()
     HW_CTurnOff( AsmRegsSaved, HW_DI );
     HW_CTurnOff( AsmRegsSaved, HW_ES );
 #endif
+    SyscallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
+    memcpy( SyscallInfo.parms, StackParms, sizeof( StackParms ) );
+    SyscallInfo.objname = CStrSave( "*" );
+    SyscallInfo.class = CALLER_POPS |
+                        NO_STRUCT_REG_RETURNS |
+                        SPECIAL_STRUCT_RETURN;
+    HW_CTurnOff( SyscallInfo.save, HW_EAX );
+    HW_CTurnOff( SyscallInfo.save, HW_ECX );
+    HW_CTurnOff( SyscallInfo.save, HW_EDX );
+    HW_CTurnOn( SyscallInfo.save, HW_EBX );
+    HW_CAsgn( SyscallInfo.streturn, HW_EMPTY );
     #if _CPU == 386
     {
         /* these are internal, and will never be pointed to by
