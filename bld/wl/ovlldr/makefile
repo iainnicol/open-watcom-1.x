@@ -1,134 +1,126 @@
-#pmake: os_dos os_nt os_os2 os_linux cpu_i86 intel
-host_os = dos
-host_cpu = i86
+#pmake: all os_dos cpu_i86 intel
 
-proj_name = ovlldr
+c_opts = /r/d1/zu/oaxt/w3/zq/zl/nc=_OVLCODE/nt=_TEXT/nm=$^&/fo=$^&
+m_opts = /s/mx/t/ZD/i$(watcom_h)
+lib_opts = /b/q
 
-!ifndef ovlldr_autodepends
-ovlldr_autodepends = .AUTODEPEND
-!endif
+.extensions:
+.extensions: .obj .asm .c
 
-sobjs = sovlret.obj sovlldr.obj sovlmain.obj sovldbg.obj
+.c: $(wldir)ovlldr
+.asm: $(wldir)ovlldr
 
-lobjs = lovlret.obj lovlldr.obj lovlmain.obj lovldbg.obj
+bothobjs = $(s)ovlret.obj $(s)ovlldr.obj $(s)ovlmain.obj $(s)ovldbg.obj
+s=s
+sobjs = $+ $(bothobjs) $-
+s=l
+lobjs = $+ $(bothobjs) $-
 
-commobjs = ovlio.obj ovlboth.obj ovldata.obj ovlstd.obj ovlshare.obj &
-           ngrablow.obj naddarea.obj
+regobjs = ovlio.obj ovlboth.obj novlldr.obj novlmain.obj ovldata.obj &
+          ovlstd.obj novldbg.obj naddarea.obj ngrablow.obj ovlshare.obj
+
+mtobjs  = ovlio.obj ovlboth.obj movlldr.obj movlmain.obj ovldata.obj &
+          movldbg.obj naddarea.obj
+
+allobjs = $(lobjs) $(sobjs) $(regobjs)
 
 debugobjs = dovlboth.obj dovldata.obj
 
-regobjs = novlldr.obj novlmain.obj novldbg.obj
+.asm.obj :
+    $(asm286) $(m_opts) $[@,$^@;
 
-mtobjs  = movlldr.obj movlmain.obj movldbg.obj
-
-allobjs = $(lobjs) $(sobjs) $(commobjs) $(regobjs)
-
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
-lib_opts = -b
-
-extra_c_flags = -r -d1 -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^& -Fo=$^@
-
-extra_c_flags_sovlldr  = -mc -dOVL_SMALL
-extra_c_flags_dsovlldr = -mc -dOVL_SMALL -dOVL_DEBUG
-extra_c_flags_lovlldr  =
-extra_c_flags_dlovlldr = -dOVL_DEBUG
-extra_c_flags_novlldr  =
-extra_c_flags_dnovlldr = -dOVL_DEBUG
-extra_c_flags_movlldr  =
-extra_c_flags_dmovlldr = -dOVL_DEBUG
-
-extra_c_flags_sovldbg  = -mc -dOVL_SMALL
-extra_c_flags_lovldbg  =
-extra_c_flags_novldbg  = -dOVL_WHOOSH
-extra_c_flags_movldbg  = -dOVL_WHOOSH -dOVL_MULTITHREAD
-
-extra_c_flags_dovlboth = -dOVL_DEBUG
-
-extra_a_flags = -i$(watcom_h) -Fo=$^@
-
-extra_a_flags_ovldata  =
-extra_a_flags_dovldata = -DOVL_DEBUG
-extra_a_flags_sovlmain = -DOVL_SMALL
-extra_a_flags_lovlmain =
-extra_a_flags_novlmain =
-extra_a_flags_movlmain =
-extra_a_flags_sovlret  = -DOVL_SMALL
-extra_a_flags_lovlret  =
+.c.obj:
+    $(comp286) $[*$(c_opts)/ml
 
 wovl : .symbolic wovl.lib wmovl.lib
     @%null
 
-all : .symbolic wovl.lib wmovl.lib dovl.lib dovls.lib dovll.lib dovln.lib
+all : .symbolic wovl.lib dovl.lib dovls.lib dovll.lib dovln.lib
     @%null
 
 wovl.lib : $(allobjs)
-    @%make makelib
+    %create tmp.lbc
+    @for %i in ($?) do %append tmp.lbc -+%i
+!ifeq release 0
+    wlib $(lib_opts) wovl @tmp.lbc
+!else
+    wlib $(lib_opts)/s/t wovl @tmp.lbc
+!endif
 
-wmovl.lib : $(commobjs) $(mtobjs)
-    @%make makelib
+wmovl.lib : $(mtobjs)
+    %create tmp.lbc
+    @for %i in ($?) do %append tmp.lbc -+%i
+!ifeq release 0
+    wlib $(lib_opts) wmovl @tmp.lbc
+!else
+    wlib $(lib_opts)/s/t wmovl @tmp.lbc
+!endif
 
 dovl.lib : $(allobjs)
-    @%make makedbglib
+    %create tmp.lbc
+    @for %i in ($?) do %append tmp.lbc -+%i
+    wlib $(lib_opts) dovl @tmp.lbc
 
-dovls.lib : $(debugobjs) dsovlldr.obj sovlmain.obj sovldbg.obj
-    @%make makedbglib
+dovls.lib : $(debugobjs) dovlldr.obj sovlmain.obj sovldbg.obj
+    %create tmp.lbc
+    @for %i in ($?) do %append tmp.lbc -+%i
+    wlib $(lib_opts) dovls @tmp.lbc
 
-dovll.lib : $(debugobjs) dlovlldr.obj lovlmain.obj lovldbg.obj
-    @%make makedbglib
+dovll.lib : $(debugobjs) xovlldr.obj lovlmain.obj lovldbg.obj
+    %create tmp.lbc
+    @for %i in ($?) do %append tmp.lbc -+%i
+    wlib $(lib_opts) dovll @tmp.lbc
 
-dovln.lib : $(debugobjs) dnovlldr.obj novlmain.obj novldbg.obj &
+dovln.lib : $(debugobjs) qovlldr.obj novlmain.obj novldbg.obj &
          naddarea.obj ngrablow.obj
-    @%make makedbglib
+    %create tmp.lbc
+    @for %i in ($?) do %append tmp.lbc -+%i
+    wlib $(lib_opts) dovln @tmp.lbc
 
-dsovlldr.obj : ovlldr.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+dovlldr.obj : ovlldr.c
+    $(comp286) $[*$(c_opts)/mc/dOVL_DEBUG/dOVL_SMALL
 
 sovlldr.obj : ovlldr.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/mc/dOVL_SMALL
 
-dlovlldr.obj : ovlldr.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+xovlldr.obj : ovlldr.c
+    $(comp286) $[*$(c_opts)/ml/dOVL_DEBUG
 
 lovlldr.obj : ovlldr.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/ml
 
-dnovlldr.obj : novlldr.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
-
-dmovlldr.obj : movlldr.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+qovlldr.obj : novlldr.c
+    $(comp286) $[*$(c_opts)/ml/dOVL_DEBUG
 
 dovlboth.obj : ovlboth.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/ml/dOVL_DEBUG
 
 sovldbg.obj : ovldbg.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/mc/dOVL_SMALL
 
 lovldbg.obj : ovldbg.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/ml
 
 novldbg.obj : ovldbg.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/ml/dOVL_WHOOSH
 
 movldbg.obj : ovldbg.c
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(comp286) $[*$(c_opts)/ml/dOVL_WHOOSH/dOVL_MULTITHREAD
+
+sovlmain.obj : sovlmain.asm ovlmain.asm
+    $(asm286) $(m_opts) /DOVL_SMALL=1 $[&;
+
+lovlmain.obj : lovlmain.asm ovlmain.asm
+    $(asm286) $(m_opts) $[&;
+
+sovlret.obj : sovlret.asm ovlret.asm
+    $(asm286) $(m_opts) /DOVL_SMALL=1 $[&;
+
+lovlret.obj : lovlret.asm ovlret.asm
+    $(asm286) $(m_opts) $[&;
 
 dovldata.obj : ovldata.asm
-    $(as) $(aflags) $(extra_a_flags_$^&) $[@
+    $(asm286) $(m_opts) /DOVL_DEBUG=1 $[&,$^&;
 
-makedbglib: .procedure
-    %create $*.lbc
-    @for %i in ($?) do @%append $*.lbc -+%i
-    $(librarian) $(lib_opts) $@ @$*.lbc
-
-makelib: .procedure
-    %create $*.lbc
-    @for %i in ($?) do @%append $*.lbc -+%i
-!ifeq release 0
-    $(librarian) $(lib_opts) $@ @$*.lbc
-!else
-    $(librarian) $(lib_opts) -s -t $@ @$*.lbc
-!endif
+clean
+    rm -f *.obj tmp.lbc *.lib

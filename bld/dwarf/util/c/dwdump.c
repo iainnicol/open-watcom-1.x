@@ -114,8 +114,7 @@ char *secNames[] = {
     ".debug_abbrev",
     ".debug_line",
     ".debug_macinfo",
-    ".WATCOM_references",
-    ".debug_str"
+    ".WATCOM_references"
 };
 
 unsigned long sectsizes[DR_DEBUG_NUM_SECTS];
@@ -156,13 +155,6 @@ orl_return ReadRefSec( orl_sec_handle o_shnd )
     return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_REF] ));
 }
 
-orl_return ReadStrSec( orl_sec_handle o_shnd )
-/********************************************/
-{
-    sectsizes[DW_DEBUG_STR] = ORLSecGetSize( o_shnd );
-    return( ORLSecGetContents( o_shnd, &sections[DW_DEBUG_STR] ));
-}
-
 static int setSects( orl_file_handle o_fhnd )
 /*******************************************/
 {
@@ -190,10 +182,6 @@ static int setSects( orl_file_handle o_fhnd )
     if( ORLFileScan( o_fhnd, secNames[4], &ReadRefSec ) != ORL_OKAY ) {
         printf( "Error reading %s section\n", secNames[4] );
         return( 5 );
-    }
-    if( ORLFileScan( o_fhnd, secNames[5], &ReadStrSec ) != ORL_OKAY ) {
-        printf( "Error reading %s section\n", secNames[5] );
-        return( 6 );
     }
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {

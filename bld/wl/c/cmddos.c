@@ -142,9 +142,7 @@ extern bool ProcBegin( void )
     file_list **    oldflist;
     section *       sect;
 
-#ifndef OVERLAY_VERSION
     LnkMsg( FTL+MSG_OVERLAYS_NOT_SUPPORTED, NULL );
-#endif
     LinkState |= FMT_SPECIFIED;      // she must want DOS mode.
     if( OvlLevel > 0 && FmtData.u.dos.dynamic ) {
         CmdFlags &= ~CF_AUTOSECTION;        // merge old area with this.
