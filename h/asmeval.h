@@ -56,6 +56,8 @@ typedef struct expr_list {
     unsigned    explicit : 1;   // Whether expression type explicitly given
     int         expr_type;      // Whether expr is BYTE, WORD, DWORD, etc.
     uint_8      scale;          // scaling factor 1, 2, 4, or 8 - 386 code only
+    struct asm_sym *sym;
+    struct asm_sym *mbr;
 } expr_list;
 
 extern int      EvalExpr( int, int, int, bool );
