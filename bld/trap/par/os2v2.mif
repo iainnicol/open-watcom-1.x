@@ -1,3 +1,0 @@
-
-extra_linker = lib os2386.lib,os2286.lib &
-    imp OUTPUT_PORT wdio.OUTPORT, INPUT_PORT wdio.INPORT

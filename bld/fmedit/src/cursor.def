@@ -1,4 +1,0 @@
-#include "state.def"
-
-extern void InitCursors();
-extern void SetStateCursor( STATE_ID );
