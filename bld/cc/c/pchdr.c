@@ -39,7 +39,7 @@
     #include <direct.h>
     #include <share.h>
 #endif
-#if (_OS == _QNX) || (_OS == _LINUX)
+#if _OS == _QNX
     #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
 #else
     #define PMODE       S_IRWXU

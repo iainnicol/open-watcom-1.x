@@ -61,7 +61,7 @@
 #include "api.h"
 #define WPROJ 5
 
-HINSTANCE hInst;
+HANDLE hInst;
 
 BatchCallbackFP         BatchProc;
 MessageBoxCallbackFP    MsgProc;
@@ -78,7 +78,7 @@ HWND hwnd;                    /* handle to main windows  */
 
 ****************************************************************************/
 
-int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
+int PASCAL WinMain( HANDLE hInstance,  HANDLE hPrevInstance,
         LPSTR lpCmdLine, int nCmdShow)
 {
     MSG msg;
@@ -108,7 +108,7 @@ int RCSAPI Batcher( rcsstring str, void *cookie )
 int RCSAPI Messager( rcsstring text, rcsstring title, rcsstring buffer, int len, void *cookie )
 {
     cookie = cookie;
-    strcpy( (char*)buffer, "this is a message" );
+    strcpy( buffer, "this is a message" );
     return( MessageBox( hwnd, (LPCSTR)text, (LPCSTR)title, MB_OK ) );
 }
 
@@ -136,9 +136,9 @@ BOOL InitApplication(HANDLE hInstance)
     wc.lpszMenuName =  "WatcomEditCntlMenu";
     wc.lpszClassName = "WEditCntlWClass";
 
-    Cookie = RCSInit( (unsigned long)hwnd, getenv( "WATCOM" ) );
-    BatchProc = (BatchCallbackFP)MakeProcInstance( (FARPROC)&Batcher, hInst );
-    MsgProc = (MessageBoxCallbackFP)MakeProcInstance( (FARPROC)&Messager, hInst );
+    Cookie = RCSInit( hwnd, getenv( "WATCOM" ) );
+    BatchProc = (BatchCallbackFP)MakeProcInstance( &Batcher, hInst );
+    MsgProc = (MessageBoxCallbackFP)MakeProcInstance( &Messager, hInst );
     RCSRegisterBatchCallback( Cookie, BatchProc, NULL );
     RCSRegisterMessageBoxCallback( Cookie, MsgProc, NULL );
 
@@ -154,7 +154,7 @@ BOOL InitApplication(HANDLE hInstance)
 
 ****************************************************************************/
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HANDLE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     hAccTable = LoadAccelerators(hInst, "WatcomEditCntlAcc");
@@ -195,7 +195,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 ****************************************************************************/
 
-long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+long FAR PASCAL MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     FARPROC lpProcAbout;
 
@@ -204,15 +204,15 @@ long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam) {
         case IDM_ABOUT:
             lpProcAbout = MakeProcInstance((FARPROC)About, hInst);
-            DialogBox(hInst, "AboutBox", hWnd, (DLGPROC)lpProcAbout);
+            DialogBox(hInst, "AboutBox", hWnd, lpProcAbout);
             FreeProcInstance(lpProcAbout);
             break;
         /* RCS menu commands */
         case IDM_CHECKIN:
-            RCSCheckin( Cookie, "foo.c", "", "" );
+            RCSCheckin( Cookie, "foo.c" );
             break;
         case IDM_CHECKOUT:
-            RCSCheckout( Cookie, "foo.c", "", "" );
+            RCSCheckout( Cookie, "foo.c" );
             break;
         case IDM_RUNSHELL:
             RCSRunShell( Cookie );
@@ -295,7 +295,7 @@ long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 ****************************************************************************/
 
-BOOL WINAPI About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL FAR PASCAL About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     lParam = lParam;
     switch (message) {

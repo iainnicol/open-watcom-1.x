@@ -52,18 +52,18 @@ static WORD accessSegment( GLOBALHANDLE gh, WORD segment )
     static WORD         offset;
     WORD                i;
 
-    ReadMem( (WORD)gh, 0x22, &offset, sizeof( offset ) );
+    ReadMem( gh, 0x22, &offset, sizeof( offset ) );
 #if 1
     i = 0;
     // was Eisler on drugs??
     while( i < segment ) {
-        ReadMem( (WORD)gh, offset+8, &sel, sizeof( sel ) );
+        ReadMem( gh, offset+8, &sel, sizeof( sel ) );
         offset += 10;
         i++;
     }
 #else
     // not sure if this fix is safe -- so don't make it yet
-    ReadMem( (WORD)gh, 10*(segment-1)+8, &sel, sizeof( sel ) );
+    ReadMem( gh, 10*(segment-1)+8, &sel, sizeof( sel ) );
 #endif
     return( sel+1 );
 
@@ -75,10 +75,10 @@ static WORD accessSegment( GLOBALHANDLE gh, WORD segment )
  *                    so mapaddrs for those segments would fail with
  *                    out this putrid code.
  */
-static WORD horkyFindSegment( HMODULE modid, WORD segment )
+static WORD horkyFindSegment( HANDLE modid, WORD segment )
 {
     static GLOBALENTRY  ge;
-    static HMODULE      lastmodid;
+    static WORD         lastmodid;
 
     if( lastmodid == modid ) {
         return( accessSegment( ge.hBlock, segment ) );
@@ -175,7 +175,7 @@ static void newModule( HANDLE hmod, char *name, samp_block_kinds kind )
                 GlobalUnlock( ge.hBlock );
                 sel = FP_SEG( ptr );
                 if( sel == NULL ) {
-                    sel = (WORD)ge.hBlock + 1;
+                    sel = ge.hBlock + 1;
                 }
             } else {
                 continue;

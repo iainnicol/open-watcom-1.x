@@ -282,8 +282,7 @@ int EDITAPI EDITQueryThisFile( const char *filename )
 }
 
 #ifdef __NT__
-
-int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
+int FAR PASCAL LibMain( HANDLE hDll, DWORD reason, LPVOID res )
 {
     res = res;
     reason = reason;
@@ -292,10 +291,8 @@ int WINAPI LibMain( HINSTANCE hDll, DWORD reason, LPVOID res )
 
     return( 1 );
 }
-
 #else
-
-int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
+int FAR PASCAL LibMain( HANDLE hInst, WORD wDataSeg, WORD wHeapSize,
                         LPSTR lpszCmdLine )
 {
     wDataSeg = wDataSeg;
@@ -307,9 +304,8 @@ int WINAPI LibMain( HINSTANCE hInst, WORD wDataSeg, WORD wHeapSize,
     return( 1 );
 }
 
-int WINAPI WEP( int q )
-{
-    q = q;
+int WEP( int q ){
+    q=q;
     return( 1);
 }
 

@@ -117,8 +117,8 @@ static DUMP_INFO* bufferWrite(  // WRITE A BUFFER
 }
 
 
-static void dumpDirect( BASE_CLASS*, void * );
-static void dumpVirtual( BASE_CLASS*, void * );
+static void dumpDirect( BASE_CLASS*, DUMP_INFO* );
+static void dumpVirtual( BASE_CLASS*, DUMP_INFO* );
 
 
 static DUMP_INFO* dumpTitle(    // DUMP A TITLE LINE
@@ -209,9 +209,8 @@ static DUMP_INFO* dumpDataMemb( // DUMP A DATA MEMBER
 
 static void dumpMember(         // DUMP A MEMBER
     SYMBOL memb,                // - member
-    void *_di )             // - dump information
+    DUMP_INFO* di )             // - dump information
 {
-    DUMP_INFO* di = _di;
     target_offset_t offset;     // - offset of symbol
     TYPE type;                  // - type of symbol
     char* name;                 // - symbol's name
@@ -300,18 +299,16 @@ static void dumpBase(           // DUMP BASE
 
 static void dumpVirtual(        // DUMP VIRTUAL BASE
     BASE_CLASS* vbase,          // - virtual base
-    void * _di )             // - dump information
+    DUMP_INFO* di )             // - dump information
 {
-    DUMP_INFO* di = _di;
     dumpBase( vbase, di, "Virtual Base:" );
 }
 
 
 static void dumpDirect(         // DUMP DIRECT BASE
     BASE_CLASS* dbase,          // - direct base
-    void * _di )             // - dump information
+    DUMP_INFO* di )             // - dump information
 {
-    DUMP_INFO* di = _di;
     dumpBase( dbase, di, "Direct Base:" );
 }
 

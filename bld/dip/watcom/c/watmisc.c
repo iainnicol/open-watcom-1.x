@@ -93,7 +93,7 @@ unsigned DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[ hk ] );
 }
 
-dip_status DIPENTRY DIPImpStartup( void )
+dip_status DIPENTRY DIPImpStartup()
 {
     return( DS_OK );
 }

@@ -118,7 +118,7 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, unsigned message,
     int         i;
     char        data[_MAX_PATH];
     char        tmp[256];
-    HINSTANCE   inst;
+    HANDLE      inst;
 
     switch( message ) {
     case WM_DESTROY:
@@ -128,9 +128,9 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, unsigned message,
     case WM_COMMAND:
         switch( wparam ) {
         case MSG_ABOUT:
-            inst = (HINSTANCE)GetWindowWord( hwnd, GWW_HINSTANCE );
-            farproc = MakeProcInstance( (FARPROC)About2, inst );
-            DialogBox( inst, ResName( "AboutBox" ), hwnd, (DLGPROC)farproc );
+            inst = GetWindowWord( hwnd, GWW_HINSTANCE );
+            farproc = MakeProcInstance( About2, inst );
+            DialogBox( inst, ResName( "AboutBox" ), hwnd, farproc );
             FreeProcInstance( farproc );
             SetFocus( editChild );
             break;
@@ -187,7 +187,7 @@ long __export FAR PASCAL SubClassProc( HWND hwnd, unsigned message,
         }
         break;
     }
-    return( CallWindowProc( (WNDPROC)oldClassProc, hwnd, message, wparam,
+    return( CallWindowProc( oldClassProc, hwnd, message, wparam,
             lparam ) );
 
 } /* SubClassProc */
@@ -195,7 +195,7 @@ long __export FAR PASCAL SubClassProc( HWND hwnd, unsigned message,
 /*
  * GetFileName - create a window, and get file info
  */
-BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
+BOOL GetFileName( HANDLE inst, HANDLE shcmd, char *fname )
 {
     BOOL        rc;
     HWND        mh,win;
@@ -288,7 +288,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
         xs,                             /* init. x size */
         ys,                             /* init. y size */
         mh,                             /* parent window */
-        (HMENU)EDIT_ID,                 /* child id */
+        EDIT_ID,                        /* child id */
         inst,                   /* program handle */
         NULL                    /* create parms */
         );
@@ -314,7 +314,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
         16*avgx,                        /* init. x size */
         avgy+avgy/2,            /* init. y size */
         mh,                             /* parent window */
-        (HMENU)PUSH_GETFILES_ID,        /* child id */
+        PUSH_GETFILES_ID,               /* child id */
         inst,                   /* program handle */
         NULL                    /* create parms */
         );
@@ -330,7 +330,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
         16*avgx,                        /* init. x size */
         avgy+avgy/2,            /* init. y size */
         mh,                             /* parent window */
-        (HMENU)PUSH_OK_ID,              /* child id */
+        PUSH_OK_ID,                     /* child id */
         inst,                   /* program handle */
         NULL                    /* create parms */
         );

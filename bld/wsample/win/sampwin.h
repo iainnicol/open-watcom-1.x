@@ -137,4 +137,4 @@ void MyOutput(char*, ...);
 char *ResName( char * );
 
 /* winopts.c */
-BOOL GetFileName( HINSTANCE, int, char * );
+BOOL GetFileName( HANDLE, HANDLE, char * );

@@ -185,7 +185,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     WPI_PROC    func;
     bool        ret;
 #if !(defined(__NT__) || defined(WILLOWS))
-    HINSTANCE   h;
+    HANDLE      h;
 #endif
 #ifdef __WINDOWS_386__
     HINDIR      hIndir;
@@ -209,7 +209,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     func = ChooseColor;
 #else
     h = LoadLibrary( "COMMDLG.DLL" );
-    if( (UINT)h < 32 ) {
+    if( h < 32 ) {
         return( FALSE );
     }
     func = GetProcAddress( h, "ChooseColor" );
@@ -227,7 +227,7 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
         FreeAlias16( guiColoursAlias );
     }
 #else
-    ret = ((BOOL(*)(LPCHOOSECOLOR))func)( &choose );
+    ret = func( &choose );
 #endif
 #if !(defined(__NT__) || defined(WILLOWS))
     FreeLibrary( h );

@@ -76,17 +76,19 @@ void near *lmem_alloc(
 void near *lmem_realloc(
 /**********************/
 
-    void                *mem,
+    void                *fptr,
     unsigned            size
 ) {
 #ifdef PLAT_OS2
-    return( realloc( mem, (size_t) size ) );
+    return( realloc( fptr, (size_t) size ) );
 #else
     HANDLE              hld;
     void near           *ptr;
 
-    if( mem != NULL ) {
-        hld = _wpi_getlocalhdl( mem );
+    ptr = (void near *) fptr;
+
+    if( ptr != NULL ) {
+        hld = LocalHandle( (unsigned int ) ptr );
 
         if( hld != NULL ) {
             LocalUnlock( hld );
@@ -113,7 +115,7 @@ void lmem_free(
 #ifdef PLAT_OS2
     free( mem );
 #else
-    HLOCAL      hld;
+    HANDLE      hld;
 
     if( LOWORD(mem) != 0 ) {
         hld = _wpi_getlocalhdl( mem );

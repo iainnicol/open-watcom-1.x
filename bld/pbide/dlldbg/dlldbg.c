@@ -105,7 +105,7 @@ BOOL InitFirstInst( HANDLE hinst ) {
     return( RegisterClass( &wc ) );
 }
 
-int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HANDLE currinst, HANDLE previnst, LPSTR cmdline, int cmdshow)
 {
     HWND        hwnd;
 

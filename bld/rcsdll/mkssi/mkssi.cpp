@@ -38,13 +38,18 @@
 
 mksSISystem MksSI;
 
-typedef int WINAPI (*WSICHECKIN)(HWND main_window_handle,
+#ifdef __WINDOWS__
+        #define FNTYPE __pascal
+#else
+        #define FNTYPE __stdcall
+#endif
+typedef int FNTYPE (*WSICHECKIN)(HWND main_window_handle,
                           int files, char const FAR * FAR flist[] );
-typedef int WINAPI (*WSICHECKOUT)(HWND main_window_handle,
+typedef int FNTYPE (*WSICHECKOUT)(HWND main_window_handle,
                           int files, char const FAR * FAR flist[] );
-typedef int WINAPI (*WSILAUNCH)(LPSTR filelist);
-typedef int WINAPI (*WSIINIT)(void);
-typedef int WINAPI (*WSICLEANUP)(void);
+typedef int FNTYPE (*WSILAUNCH)(LPSTR filelist);
+typedef int FNTYPE (*WSIINIT)(void);
+typedef int FNTYPE (*WSICLEANUP)(void);
 
 static WSICHECKIN       ci_fp = NULL;
 static WSICHECKOUT      co_fp = NULL;
@@ -54,26 +59,22 @@ static WSICLEANUP       cl_fp = NULL;
 
 int mksSISystem::init( userData * )
 {
-    HINSTANCE dll;
-
-    dll = LoadLibrary( "WSIHOOK.DLL" );
+    dllId = (long)LoadLibrary( "WSIHOOK.DLL" );
+    if( dllId < HINSTANCE_ERROR ) return( FALSE );
 
 #ifdef __WINDOWS__
-    if( (UINT)dll < 32 ) return( FALSE );
-    ci_fp = (WSICHECKIN)GetProcAddress( dll, "WSICHECKIN" );
-    co_fp = (WSICHECKOUT)GetProcAddress( dll, "WSICHECKOUT" );
-    rs_fp = (WSILAUNCH)GetProcAddress( dll, "WSILAUNCH" );
-    in_fp = (WSIINIT)GetProcAddress( dll, "WSIINIT" );
-    cl_fp = (WSICLEANUP)GetProcAddress( dll, "WSICLEANUP" );
+    ci_fp = (WSICHECKIN)GetProcAddress( (HINSTANCE)dllId, "WSICHECKIN" );
+    co_fp = (WSICHECKOUT)GetProcAddress( (HINSTANCE)dllId, "WSICHECKOUT" );
+    rs_fp = (WSILAUNCH)GetProcAddress( (HINSTANCE)dllId, "WSILAUNCH" );
+    in_fp = (WSIINIT)GetProcAddress( (HINSTANCE)dllId, "WSIINIT" );
+    cl_fp = (WSICLEANUP)GetProcAddress( (HINSTANCE)dllId, "WSICLEANUP" );
 #else
-    if( dll == NULL ) return( FALSE );
-    ci_fp = (WSICHECKIN)GetProcAddress( dll, "wsiCheckIn" );
-    co_fp = (WSICHECKOUT)GetProcAddress( dll, "wsiCheckOut" );
-    rs_fp = (WSILAUNCH)GetProcAddress( dll, "wsiLaunch" );
-    in_fp = (WSIINIT)GetProcAddress( dll, "wsiInit" );
-    cl_fp = (WSICLEANUP)GetProcAddress( dll, "wsiCleanup" );
+    ci_fp = (WSICHECKIN)GetProcAddress( (HINSTANCE)dllId, "wsiCheckIn" );
+    co_fp = (WSICHECKOUT)GetProcAddress( (HINSTANCE)dllId, "wsiCheckOut" );
+    rs_fp = (WSILAUNCH)GetProcAddress( (HINSTANCE)dllId, "wsiLaunch" );
+    in_fp = (WSIINIT)GetProcAddress( (HINSTANCE)dllId, "wsiInit" );
+    cl_fp = (WSICLEANUP)GetProcAddress( (HINSTANCE)dllId, "wsiCleanup" );
 #endif
-    dllId = (long)dll;
 
     if( in_fp == NULL ) return( FALSE );
     in_fp();

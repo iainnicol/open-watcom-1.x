@@ -134,8 +134,14 @@ static BRI_Handle* bri_handle;  // handle for browse-file writer
     brinfo_state == BRS_COLLECTING
 
 
+typedef struct {                // BRINF_PCH_CTL
+    unsigned bsize;             // - buffer size
+    char* buffer;               // - buffer
+} BRINF_PCH_CTL;
+
+
 static char* brinfPchGetBuffer  // GET BUFFER FOR READ
-    ( BRI_PCH_CTL* ctl        // - control
+    ( BRINF_PCH_CTL* ctl        // - control
     , unsigned size )           // - size required
 {
     if( size > ctl->bsize ) {
@@ -146,8 +152,8 @@ static char* brinfPchGetBuffer  // GET BUFFER FOR READ
 }
 
 
-static BRI_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
-    ( BRI_PCH_CTL* ctl )      // - control
+static BRINF_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
+    ( BRINF_PCH_CTL* ctl )      // - control
 {
     ctl->bsize = 0;
     ctl->buffer = 0;
@@ -156,8 +162,8 @@ static BRI_PCH_CTL* brinfPchInit // INITIALIZATION OF CONTROL INFO
 }
 
 
-static BRI_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
-    ( BRI_PCH_CTL* ctl )         // - control
+static BRINF_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
+    ( BRINF_PCH_CTL* ctl )      // - control
 {
     CMemFreePtr( &ctl->buffer );
     return ctl;
@@ -165,7 +171,7 @@ static BRI_PCH_CTL* brinfPchFini // COMPLETION OF CONTROL INFO
 
 
 static uint_8 brinfReadPch1     // READ ONE BYTE FROM PCH
-    ( BRI_PCH_CTL * ctl )     // - control
+    ( BRINF_PCH_CTL* ctl )      // - control
 {
     PCHReadUnaligned( ctl->buffer, 1 );
     return *ctl->buffer;
@@ -173,16 +179,15 @@ static uint_8 brinfReadPch1     // READ ONE BYTE FROM PCH
 
 
 static uint_32 brinfReadPch4    // READ FOUR BYTES FROM PCH
-    ( BRI_PCH_CTL * ctl )     // - control
+    ( BRINF_PCH_CTL* ctl )      // - control
 {
     ctl = ctl;
-
     return PCHReadUIntUnaligned();
 }
 
 
 static void* brinfReadPch       // READ SUPPLIED # OF BYTES
-    ( BRI_PCH_CTL * ctl       // - control
+    ( BRINF_PCH_CTL* ctl        // - control
     , unsigned size )           // - size required
 {
     return PCHReadLocateUnaligned( brinfPchGetBuffer( ctl, size ), size );
@@ -1175,7 +1180,7 @@ unsigned long BrinfPch          // WRITE OUT PCH IF REQ'D
 void BrinfPchRead               // INSERT PCH REFERENCE INTO BROWSING
     ( void )
 {
-    BRI_PCH_CTL         ctl;
+    BRINF_PCH_CTL       ctl;
     BRI_PCHRtns         pchrtns = {
         &brinfReadPch1,
         &brinfReadPch4,

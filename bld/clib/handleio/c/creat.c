@@ -45,7 +45,7 @@
 
 #define _A_RDONLY       0x01
 
-#ifndef __UNIX__
+#ifndef __QNX__
     typedef int mode_t;
 #endif
 

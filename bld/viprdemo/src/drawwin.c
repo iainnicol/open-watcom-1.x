@@ -433,8 +433,8 @@ BOOL init_app( HANDLE inst )
 
 int PASCAL WinMain(
 /*****************/
-    HINSTANCE           inst,
-    HINSTANCE           prev_inst,
+    HANDLE              inst,
+    HANDLE              prev_inst,
     LPSTR               cmd_line,
     int                 show
 ) {

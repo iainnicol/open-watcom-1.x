@@ -196,7 +196,7 @@ BOOL WINEXP FMEditWndProc( HWND wnd, unsigned message,
             break;
         case IDM_GRID :
             procaddr = MakeProcInstance( (FARPROC)FMGrid, inst );
-            DialogBox( inst, "GridBox", wnd, (DLGPROC)procaddr );
+            DialogBox( inst, "GridBox", wnd, procaddr );
             FreeProcInstance( procaddr );
             InheritState( wnd );
             break;
@@ -276,9 +276,9 @@ BOOL WINEXP FMEditWndProc( HWND wnd, unsigned message,
   }
 
 #ifdef __NT__
-
-int WINAPI LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
+int PASCAL LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
 /* Initializes window data and registers window class */
+
   {
     lpReserved = lpReserved;     /* avoid warning */
 
@@ -301,12 +301,13 @@ int WINAPI LibMain ( HANDLE inst, DWORD dwReason, LPVOID lpReserved )
     return ( 1 );
   }
 
+/*************************************************/
 #else
-
-int WINAPI LibMain( HINSTANCE inst, WORD dataseg,
+int FAR PASCAL LibMain( HANDLE inst, WORD dataseg,
                      WORD heapsize, LPSTR cmdline )
 /*************************************************/
 /* Initializes window data and registers window class */
+
   {
     dataseg = dataseg;              /* ref'd to avoid warnings */
     heapsize = heapsize;            /* ref'd to avoid warnings */
@@ -323,15 +324,19 @@ int WINAPI LibMain( HINSTANCE inst, WORD dataseg,
     return( TRUE );
   }
 
-int WINAPI WEP( int parm )
+int WINIEXP WEP( int parm )
 /************************/
+
 /* terminate the DLL */
+
   {
     parm = parm;
     return( 1 );
   }
 
 #endif
+
+
 
 static void OffsetPoint( POINT * point )
 /**************************************/

@@ -86,7 +86,7 @@ static  int     DbIOType() {
 }
 
 
-void    DbModify() {
+int     DbModify() {
 //==================
 
 // Perform "modify" command.
@@ -104,12 +104,12 @@ void    DbModify() {
     len = ParseName();
     if( len == 0 ) {
         DbMsg( MS_DB_SYNTAX_ERR );
-        return;
+        return( 0 );
     }
     item = FindVar( name, len );
     if( item == NULL ) {
         DbMsg( MS_DB_VAR_NOT_FOUND );
-        return;
+        return( 0 );
     }
     DbInCount = 1;
     DbInType = ItemType( item );
@@ -117,12 +117,12 @@ void    DbModify() {
     if( num_ss != 0 ) {
         if( ((lg_adv PGM *)DbInAddr )->num_ss & ADV_NOT_INIT ){
             DbMsg( MS_DB_ARR_NOT_DIMMED );
-            return;
+            return( 0 );
         }
         elt_size = ((lg_adv PGM *)DbInAddr)->elt_size;
         if( ParseChr( '(' ) ) {
             if( !SubScr( num_ss ) ) {
-                return;
+                return( 0 );
             }
             if( DbInType == PT_CHAR ) {
                 scb.len = elt_size;
@@ -143,7 +143,7 @@ void    DbModify() {
     } else if( DbInType == PT_CHAR ) { // character variable
         if( ParseChr( '(' ) ) {
             if( !SubStr( &scb ) ) {
-                return;
+                return( 0 );
             }
         }
         DbInAddr = &scb;
@@ -153,5 +153,5 @@ void    DbModify() {
     Spawn( &DoFreeIn );
     IOTypeRtn = save_iotype_rtn;
     DbClearEOF();
-    return;
+    return( 1 );
 }

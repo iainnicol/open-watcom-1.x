@@ -38,11 +38,17 @@
 
 objectCycleSystem ObjCycle;
 
-typedef int WINAPI (*OCINIT)( long instance, HWND window );
-typedef int WINAPI (*OCFINI)( void );
-typedef int WINAPI (*OCCHECKIN)( const char *fname, const char *objname );
-typedef int WINAPI (*OCCHECKOUT)( const char *fname, const char *objname );
-typedef int WINAPI (*OCRUNOCM)( void );
+#ifdef __WINDOWS__
+        #define FNTYPE __pascal
+#else
+        #define FNTYPE __stdcall
+#endif
+
+typedef int FNTYPE (*OCINIT)( long instance, HWND window );
+typedef int FNTYPE (*OCFINI)( void );
+typedef int FNTYPE (*OCCHECKIN)( const char *fname, const char *objname );
+typedef int FNTYPE (*OCCHECKOUT)( const char *fname, const char *objname );
+typedef int FNTYPE (*OCRUNOCM)( void );
 
 static OCCHECKIN        ci_fp = NULL;
 static OCCHECKOUT       co_fp = NULL;
@@ -52,26 +58,22 @@ static OCFINI           cl_fp = NULL;
 
 int objectCycleSystem::init( userData *d )
 {
-    HINSTANCE dll;
-
-    dll = LoadLibrary( "OCHOOK.DLL" );
+    dllId = (long)LoadLibrary( "OCHOOK.DLL" );
+    if( dllId < HINSTANCE_ERROR ) return( FALSE );
 
 #ifdef __WINDOWS__
-    if( (UINT)dll < 32 ) return( FALSE );
-    ci_fp = (OCCHECKIN)GetProcAddress( dll, "OCCHECKIN" );
-    co_fp = (OCCHECKOUT)GetProcAddress( dll, "OCCHECKOUT" );
-    rs_fp = (OCRUNOCM)GetProcAddress( dll, "OCRUNOCM" );
-    in_fp = (OCINIT)GetProcAddress( dll, "OCINIT" );
-    cl_fp = (OCFINI)GetProcAddress( dll, "OCFINI" );
+    ci_fp = (OCCHECKIN)GetProcAddress( (HINSTANCE)dllId, "OCCHECKIN" );
+    co_fp = (OCCHECKOUT)GetProcAddress( (HINSTANCE)dllId, "OCCHECKOUT" );
+    rs_fp = (OCRUNOCM)GetProcAddress( (HINSTANCE)dllId, "OCRUNOCM" );
+    in_fp = (OCINIT)GetProcAddress( (HINSTANCE)dllId, "OCINIT" );
+    cl_fp = (OCFINI)GetProcAddress( (HINSTANCE)dllId, "OCFINI" );
 #else
-    if( dll == NULL ) return( FALSE );
-    ci_fp = (OCCHECKIN)GetProcAddress( dll, "_OCCheckin@8" );
-    co_fp = (OCCHECKOUT)GetProcAddress( dll, "_OCCheckout@8" );
-    rs_fp = (OCRUNOCM)GetProcAddress( dll, "_OCRunOCM@0" );
-    in_fp = (OCINIT)GetProcAddress( dll, "_OCInit@8" );
-    cl_fp = (OCFINI)GetProcAddress( dll, "_OCFini@0" );
+    ci_fp = (OCCHECKIN)GetProcAddress( (HINSTANCE)dllId, "_OCCheckin@8" );
+    co_fp = (OCCHECKOUT)GetProcAddress( (HINSTANCE)dllId, "_OCCheckout@8" );
+    rs_fp = (OCRUNOCM)GetProcAddress( (HINSTANCE)dllId, "_OCRunOCM@0" );
+    in_fp = (OCINIT)GetProcAddress( (HINSTANCE)dllId, "_OCInit@8" );
+    cl_fp = (OCFINI)GetProcAddress( (HINSTANCE)dllId, "_OCFini@0" );
 #endif
-    dllId = (long)dll;
 
     if( in_fp == NULL ) return( FALSE );
     in_fp( dllId, (HWND)d->window );

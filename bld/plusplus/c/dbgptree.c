@@ -551,7 +551,7 @@ static void printNode(          // PRINT A NODE
 
 
 static void printSubtree(       // PRINT A SUBTREE
-    void *_subtree )          // - subtree to be printed
+    SUBTREE *subtree )          // - subtree to be printed
 {
     char buffer[ 256 ];         // - buffer
     char *bptr;                 // - buffer ptr
@@ -559,8 +559,6 @@ static void printSubtree(       // PRINT A SUBTREE
     NODE *node;                 // - current node
     TOKEN_LOCN locn;            // - subtree location
     boolean print_locn;         // - TRUE ==> print location
-
-    SUBTREE *subtree = _subtree;
 
     begLine();
     if( subtree->next == subtrees ) {

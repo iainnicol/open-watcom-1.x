@@ -136,7 +136,7 @@ void DumpMemberPtrInfo(         // DUMP MEMBER_PTR_CAST STRUCTURE
     MEMBER_PTR_CAST *info )     // - the information
 ;
 void DumpPTree(                 // DUMP A PARSE TREE
-    PTREE node )                // - node in parse tree
+    void *node )                // - node in parse tree
 ;
 void DumpScope(                 // DUMP SCOPE INFO FOR SYMBOL
     SCOPE scope )               // - scope
@@ -153,7 +153,7 @@ void DumpHashStats(             // DUMP HASH TABLE STATISTICS
 void FtabDump()                 // DUMP FUNCTION STATE TABLE
 ;
 void DumpSymbol(                // DUMP SYMBOL ENTRY
-    void *_sym )                // - symbol
+    SYMBOL sym )                // - symbol
 ;
 void DumpSymbolName(            // DUMP SYMBOL_NAME ENTRY
     SYMBOL_NAME sn )            // - symbol name entry

@@ -62,6 +62,8 @@ static void setRange( unsigned low, unsigned high )
 void SetDBChar( int character_set )
 /*********************************/
 {
+    unsigned i;
+
     switch( character_set ) {
     case 0: // KANJI
         setRange( 0x81, 0x9f );
@@ -77,17 +79,12 @@ void SetDBChar( int character_set )
         setRange( 0xa1, 0xfe );
         break;
     case -1:
-#ifndef __LINUX__
-        {
-            unsigned i; 
-            _setmbcp( _MB_CP_ANSI );
-            for( i = 0x80; i <= 0x0ff; ++i ) {
-                if( _mbislead( i ) ) {
-                     CharSet[i] = C_DB;
-                }
+        _setmbcp( _MB_CP_ANSI );
+        for( i = 0x80; i <= 0x0ff; ++i ) {
+            if( _mbislead( i ) ) {
+                CharSet[i] = C_DB;
             }
         }
-#endif
         break;
     }
 }
