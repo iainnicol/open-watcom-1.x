@@ -3,7 +3,7 @@ pushd
 set LABEL=open_watcom_1.1.0
 set PREFIX=open_watcom_1.1.0
 set P4OPT=-f
-set ARCHIVES=c:\archives
+set ARCHIVES=\archives
 cdd %ARCHIVES%
 del /q *.zip >& NUL
 
