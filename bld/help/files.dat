@@ -1,2 +1,0 @@
-[ DEFAULT ]
-type="e" dir="binw" usr="whelp.exe" rel="." cond="doshost" where="c jc f77 jf77" desc="Help utility" old="bin"
