@@ -40,9 +40,7 @@
 #include "errcod.h"
 #include "fmemmgr.h"
 
-#if _OPT_CG == _ON
 #include "cpopt.h"
-#endif
 
 #include <string.h>
 
@@ -100,7 +98,7 @@ void    InitPredefinedMacros() {
 #else
     #error Unknown platform/OS
 #endif
-#if _OPT_CG == _ON
+
   #if _TARGET == _80386
     if( CGOpts & CGOPT_STK_ARGS ) {
         MacroDEFINE( "__stack_conventions__", 21 );
@@ -112,9 +110,6 @@ void    InitPredefinedMacros() {
         MacroDEFINE( "__FPI__", 7 );
     }
   #endif
-#elif _8087 == _ON
-    MacroDEFINE( "__FPI__", 7 );
-#endif
     MacroFlags = 0;
 }
 
