@@ -462,14 +462,14 @@ struct fixup *CreateFixupRec( int index )
                 fixup->frame_datum = GetGrpIdx( sym );
             }
         } else {
-            /**/myassert( sym->segidx != 0 );
+            /**/myassert( sym->segment != NULL );
             if( Modend ) {
                 fixnode->lr.target = TARGET_SEG & TARGET_WITH_DISPL;
                 fixup->frame = FRAME_TARG;
             } else {
                 fixnode->lr.target = TARGET_SEG;
             }
-            fixnode->lr.target_datum = sym->segidx;
+            fixnode->lr.target_datum = GetSegIdx( sym->segment );
         }
         
         /* HMMM .... what if fixup->frame is say -2 .... ie empty?

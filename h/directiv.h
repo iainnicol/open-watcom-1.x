@@ -150,7 +150,7 @@ typedef struct {
 
 typedef struct {
     obj_rec             *segrec;
-    direct_idx          grpidx;         // its group index
+    struct asm_sym      *group;         // its group
     uint_32             start_loc;      // starting offset of current ledata or lidata
     unsigned            readonly:1;     // if the segment is readonly
     unsigned            ignore:1;       // ignore this if the seg is redefined
@@ -166,7 +166,7 @@ typedef struct {
 } ext_info;
 
 typedef struct {
-    uint                idx;                // external definition index
+    uint                idx;            // external definition index
     unsigned            use32:1;
     unsigned            comm:1;
     unsigned long       size;
@@ -336,13 +336,14 @@ extern direct_idx       GetLnameIdx( char * );
 extern direct_idx       LnameInsert( char * );  // Insert a lname
 extern uint_32          GetCurrAddr( void );    // Get offset from current segment
 
-extern uint             GetCurrSeg( void );
-/* Get current segment index; 0 means none */
-extern uint             GetCurrGrp( void );
-/* Get current group index; 0 means none */
+extern dir_node         *GetCurrSeg( void );
+/* Get current segment; NULL means none */
 
 extern uint             GetGrpIdx( struct asm_sym * );
-/* get symbol's group, from the symbol itself or from the symbol's segment */
+/* get symbol's group index, from the symbol itself or from the symbol's segment */
+
+extern uint             GetSegIdx( struct asm_sym * );
+/* get symbol's segment index, from the symbol itself */
 
 extern uint             GetDirIdx( char *, int );
 /* Get the index of either a segment, a group or an extrn defn */
@@ -379,7 +380,9 @@ extern int              ModuleEnd( int );       // handle END statement
 extern uint_32          GetCurrSegStart(void);
 /* Get offset of segment at the start of current LEDATA record */
 
-extern dir_node         *GetSeg( struct asm_sym *sym );
+#define GetSeg( x )     (dir_node *)x->segment
+
+extern dir_node         *get_grp( struct asm_sym * );
 
 extern void             AssumeInit( void );     // init all assumed-register table
 extern int              SetAssume( int );       // Assume a register

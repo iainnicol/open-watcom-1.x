@@ -114,32 +114,34 @@ void find_frame( struct asm_sym *sym )
 {
     if( SegOverride != NULL ) {
         sym = (struct asm_sym *)SegOverride;
-        if( sym->grpidx != 0 ) {
+        if( sym->state == SYM_GRP ) {
             Frame = FRAME_GRP;
-            Frame_Datum = sym->grpidx;
-        } else if( sym->segidx != 0 ) {
+            Frame_Datum = GetGrpIdx( sym );
+        } else if( sym->segment != NULL ) {
             Frame = FRAME_SEG;
-            Frame_Datum = sym->segidx;
+            Frame_Datum = GetSegIdx( sym->segment );
         }
     } else {
         switch( sym->state ) {
         case SYM_INTERNAL:
         case SYM_PROC:
-            if( sym->grpidx != 0 ) {
-                Frame = FRAME_GRP;
-                Frame_Datum = sym->grpidx;
-            } else if( sym->segidx != 0 ) {
-                Frame = FRAME_SEG;
-                Frame_Datum = sym->segidx;
+            if( sym->segment != NULL ) {
+                if( get_grp( sym ) != NULL ) {
+                    Frame = FRAME_GRP;
+                    Frame_Datum = GetGrpIdx( &get_grp( sym )->sym );
+                } else {
+                    Frame = FRAME_SEG;
+                    Frame_Datum = GetSegIdx( sym->segment );
+                }
             }
             break;
         case SYM_GRP:
             Frame = FRAME_GRP;
-            Frame_Datum = sym->grpidx;
+            Frame_Datum = GetGrpIdx( sym );
             break;
         case SYM_SEG:
             Frame = FRAME_SEG;
-            Frame_Datum = sym->segidx;
+            Frame_Datum = GetSegIdx( sym->segment );
             break;
         }
     }
@@ -276,7 +278,9 @@ static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
 
     if( reg == ASSUME_NOTHING ) {
         if( ( sym->state != SYM_EXTERNAL ) && ( sym->state != SYM_PROC ) ) {
-            AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
+            if( Parse_Pass != PASS_1 ) {
+                AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
+            }
         } else {
             Code->prefix.seg = default_reg;
         }
@@ -785,29 +789,6 @@ static int proc_check( void )
     return( TRUE );
 }
 
-int check_override_x( expr_list *opndx )
-/***************************************/
-/* Check if there is a register, segment or group override */
-{
-    int         index;
-
-    index = opndx->override;
-    if( index == EMPTY )
-        return( NOT_ERROR );
-    switch( AsmBuffer[index]->token ) {
-    case T_REG:
-//        Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[index]->value].position].opcode;
-        break;
-    case T_ID:      // Segment or Group override
-        if( FixOverride(index) != NOT_ERROR )
-            return( ERROR );
-        break;
-    default:
-        break;
-    }
-    return( NOT_ERROR );
-}
-
 #endif
 
 static int process_jumps( expr_list *opndx )
@@ -819,7 +800,7 @@ static int process_jumps( expr_list *opndx )
     int         temp;
     bool        flag;
 
-    segm_override( opndx );
+    segm_override_jumps( opndx );
 
     flag = ( opndx->explicit ) ? TRUE : FALSE ;
     if( ptr_operator( opndx->expr_type, flag ) == ERROR )
@@ -848,7 +829,7 @@ static int process_jumps( expr_list *opndx )
     }
 }
 
-static int segm_override( expr_list *opndx )
+static int segm_override_jumps( expr_list *opndx )
 /******************************************/
 {
     if( opndx->override != EMPTY ) {
@@ -856,7 +837,43 @@ static int segm_override( expr_list *opndx )
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->value].position].opcode;
         } else {
 #ifdef _WASM_
-            if( check_override_x( opndx ) == ERROR ) {
+            if( FixOverride( opndx->override ) != NOT_ERROR ) {
+                return( ERROR );
+            }
+#endif
+        }
+    } else {
+    }
+    return( NOT_ERROR );
+}
+
+static int segm_override_idata( expr_list *opndx )
+/******************************************/
+{
+    if( opndx->override != EMPTY ) {
+        if( AsmBuffer[opndx->override]->token == T_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->value].position].opcode;
+        } else {
+#ifdef _WASM_
+            if( FixOverride( opndx->override ) != NOT_ERROR ) {
+                return( ERROR );
+            }
+#endif
+        }
+    } else {
+    }
+    return( NOT_ERROR );
+}
+
+static int segm_override_memory( expr_list *opndx )
+/******************************************/
+{
+    if( opndx->override != EMPTY ) {
+        if( AsmBuffer[opndx->override]->token == T_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->value].position].opcode;
+        } else {
+#ifdef _WASM_
+            if( FixOverride( opndx->override ) != NOT_ERROR ) {
                 return( ERROR );
             }
 #endif
@@ -1099,7 +1116,7 @@ static int idata_fixup( expr_list *opndx )
         return( process_jumps( opndx ) );
     }
     Code->data[Opnd_Count] = opndx->value;
-    segm_override( opndx );
+    segm_override_idata( opndx );
 
 #ifdef _WASM_
     if( ( opndx->sym->state == SYM_SEG )
@@ -1128,11 +1145,6 @@ static int idata_fixup( expr_list *opndx )
             AsmError( OFFSET_TOO_SMALL );
             return( ERROR );
         }
-#ifdef _WASM_
-        if( check_override_x( opndx ) == ERROR ) {
-            return( ERROR );
-        }
-#endif
         if( opndx->sym->state == SYM_STACK ) {
             AsmError( CANNOT_OFFSET_AUTO );
             return( ERROR );
@@ -1233,7 +1245,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     Code->info.opnd_type[Opnd_Count] = OP_M;
     sym = opndx->sym;
 
-    segm_override( opndx );
+    segm_override_memory( opndx );
 
     flag = ( opndx->explicit ) ? TRUE : FALSE ;
     if( ptr_operator( opndx->expr_type, flag ) == ERROR )
@@ -1480,6 +1492,7 @@ static int process_address( expr_list *opndx )
                     return( idata_nofixup( opndx ) );  // error ????
                 }
             } else {                  // with symbol
+#ifdef _WASM_
                 if( ( opndx->sym->state == SYM_UNDEFINED ) && !opndx->explicit ) {
                     // undefined symbol, it is not possible to determine
                     // operand type and size
@@ -1497,6 +1510,25 @@ static int process_address( expr_list *opndx )
                         }
                         break;
                     }
+#else
+                if( ( opndx->sym->state == SYM_UNDEFINED ) && !opndx->explicit ) {
+                    // undefined symbol, it is not possible to determine
+                    // operand type and size
+                    switch( Code->info.token ) {
+                    case T_PUSH:
+                    case T_PUSHW:
+                    case T_PUSHD:
+                        return( idata_nofixup( opndx ) );
+                        break;
+                    default:
+                        if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
+                            return( idata_nofixup( opndx ) );
+                        } else {
+                            return( memory_operand( opndx, TRUE ) );
+                        }
+                        break;
+                    }
+#endif
 #ifdef _WASM_
                 } else if( ( opndx->sym->state == SYM_SEG )
                     || ( opndx->sym->state == SYM_GRP ) ) {

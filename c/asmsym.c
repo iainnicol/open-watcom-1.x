@@ -78,8 +78,7 @@ static char *InitAsmSym( struct asm_sym *sym, char *name )
         sym->next = NULL;
         sym->fixup = NULL;
 #ifdef _WASM_
-        sym->grpidx = 0;
-        sym->segidx = 0;
+        sym->segment = NULL;
         sym->offset = 0;
         sym->public = FALSE;
         sym->langtype = ModuleInfo.langtype;
