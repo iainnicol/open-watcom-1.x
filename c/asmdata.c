@@ -32,9 +32,11 @@
 
 #include <string.h>
 #include <stdlib.h>
+
 #ifndef _WASM_
-    #include <malloc.h>
+#include <malloc.h>
 #endif
+
 #ifndef min
 #define min(x,y) (((x) < (y)) ? (x) : (y))
 #endif
@@ -46,11 +48,13 @@
 #include "asmalloc.h"
 #include "asmins.h"
 #include "asmopnds.h"
+
 #ifdef _WASM_
-    #include "directiv.h"
-    #include "expand.h"
-    #include "fixup.h"
+#include "directiv.h"
+#include "expand.h"
+#include "fixup.h"
 #endif
+
 #include "tbyte.h"
 
 extern unsigned char    More_Array_Element;
@@ -61,21 +65,22 @@ extern int              InitializeStructure( asm_sym *, int );
 extern int              AddFieldToStruct( int );
 extern int              GetStructSize( int );
 
-#ifdef _WASM_
-    extern int          ChangeCurrentLocation( bool, int_32 );
-    extern int          SymIs32( struct asm_sym *sym );
-#endif
-
 extern int dup_array( asm_sym *sym, char start_pos, char no_of_bytes );
 
 #ifdef _WASM_
-    extern int_8                PhaseError;
 
-    /* static globals */
-    /* is this data element a field in a structure definition? */
-    static bool         struct_field;
-    /* is this the first initializer for this field? */
-    static bool         first;
+extern int              ChangeCurrentLocation( bool, int_32 );
+extern int              SymIs32( struct asm_sym *sym );
+extern void             find_frame( struct asm_sym *sym );
+
+extern int_8            PhaseError;
+
+/* static globals */
+/* is this data element a field in a structure definition? */
+static bool             struct_field;
+/* is this the first initializer for this field? */
+static bool             first;
+
 #endif
 
 /* data initialization stuff */
@@ -405,8 +410,8 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
 #ifdef _WASM_
                 /* switch( init_sym->state ) from above */
             }
+            find_frame( init_sym );        
 #endif
-                    
             fixup = AddFixup( init_sym, temp );
             //          if( fixup == NULL ) return( ERROR );
             // fixme
@@ -557,7 +562,9 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
                         }
 #endif
                     case T_SEG:
-                            
+#ifdef _WASM_
+                        find_frame( init_sym );        
+#endif
                         fixup = AddFixup( init_sym, temp );
                         InsFixups[OPND1] = fixup;
                         if( AsmBuffer[seg_off_operator_loc]->value == T_OFFSET ) {
