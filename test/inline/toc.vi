@@ -1,1 +1,1 @@
-%s/^.*$/#pragma aux p\# = "&"\nr\#() { p\#(); }
+%s/^.*$/#pragma aux p\# = "&" parm [] \nvoid r\#() { p\#(); }

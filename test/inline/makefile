@@ -115,20 +115,16 @@ nulldevice=nul
 .BEFORE
     @%create testcomp.log
 
-all : clean reverse.exe $(objs) .SYMBOLIC
-
-reverse.exe : reverse.c
-    @wcl -zq ..\reverse.c -fe=..\reverse.exe
+all : clean $(objs) .SYMBOLIC
 
 $(objs) : .SYMBOLIC
     @echo $@ ================================================================
     @rm -f $@.c
     @vi -d -q -k ":r $@.asm\n:so toc.vi\n:0r cinit.vi\n:$$r cexit.vi\n:w $@.c\n:q!\n"
-    @$(testcomp) $@.c -s -ot -zm -zq -wx -fo=.obj >$(nulldevice)
+    @$(testcomp) $@.c -s -os -zq -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
     @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
-    @..\reverse $@.lst
     @wmake -h -f ../checki.mif name=$@
 
 clean : .SYMBOLIC
-    @rm -f *.obj *.lst *.c *.err reverse.obj ..\reverse.exe mem.trk
+    @rm -f *.obj *.lst *.c *.err mem.trk
