@@ -102,10 +102,6 @@ PMADDWD mm1,mm7
 PMADDWD mm1,dataq
 PMADDWD mm1,cs:[bx+di+10]
 PMADDWD mm1,cs:[ebx+2*eax+10]
-PMULHUW mm1,mm7
-PMULHUW mm1,dataq
-PMULHUW mm1,cs:[bx+di+10]
-PMULHUW mm1,cs:[ebx+2*eax+10]
 PMULHW mm1,mm7
 PMULHW mm1,dataq
 PMULHW mm1,cs:[bx+di+10]

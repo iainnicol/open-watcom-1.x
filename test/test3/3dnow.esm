@@ -3,70 +3,113 @@
 DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
-    movq      mm3,mm0
-    movq      mm4,qword ptr DGROUP:L$1
-    pfcmpge   mm0,mm1
-    pslld     mm0,1fH
-    pxor      mm0,mm4
-    pfadd     mm0,mm2
-    movq      mm5,qword ptr DGROUP:L$3
-    pand      mm0,mm5
-    pfrcp     mm2,mm0
-    movq      mm1,mm0
-    pfrcpit1  mm0,mm2
-    pfrcpit2  mm0,mm2
-    pfmin     mm0,mm1
-    movq      mm7,qword ptr DGROUP:L$3
-    pand      mm0,mm7
-    movq      mm2,qword ptr DGROUP:L$2
-    pcmpgtd   mm2,mm0
-    movq      mm3,qword ptr DGROUP:L$4
-    movq      mm0,mm1
-    pfadd     mm1,mm1
-    pfsubr    mm1,mm3
-    pand      mm0,mm2
-    pandn     mm2,mm1
-    por       mm0,mm2
-    movq      mm5,qword ptr DGROUP:L$3
-    movq      mm6,qword ptr DGROUP:L$1
-    pand      mm0,mm5
-    pcmpgtd   mm6,mm0
-    movq      mm4,qword ptr DGROUP:L$4
-    pfsub     mm4,mm1
-    pandn     mm6,mm4
-    pfmax     mm1,mm6
-    movq      mm7,qword ptr DGROUP:L$5
-    movq      mm6,qword ptr DGROUP:L$5
-    movq      mm5,qword ptr DGROUP:L$3
-    pand      mm7,mm2
-    pand      mm1,mm5
-    pand      mm2,mm5
-    movq      mm6,mm1
-    pcmpgtd   mm6,mm2
-    pslld     mm6,1fH
-    movq      mm5,mm7
-    pxor      mm7,mm6
-    movq      mm3,qword ptr DGROUP:L$6
-    pxor      mm5,mm3
-    psrad     mm6,1fH
-    pandn     mm6,mm5
-    pfsub     mm6,mm3
-    por       mm0,mm7
-    pfadd     mm0,mm6
+    femms       
+    pavgusb     mm1,mm7
+    pavgusb     mm1,DGROUP:L$1
+    pavgusb     mm1,cs:0aH[bx+di]
+    pavgusb     mm1,cs:0aH[ebx+eax*2]
+    pf2id       mm1,mm7
+    pf2id       mm1,DGROUP:L$1
+    pf2id       mm1,cs:0aH[bx+di]
+    pf2id       mm1,cs:0aH[ebx+eax*2]
+    pf2iw       mm1,mm7
+    pf2iw       mm1,DGROUP:L$1
+    pf2iw       mm1,cs:0aH[bx+di]
+    pf2iw       mm1,cs:0aH[ebx+eax*2]
+    pfacc       mm1,mm7
+    pfacc       mm1,DGROUP:L$1
+    pfacc       mm1,cs:0aH[bx+di]
+    pfacc       mm1,cs:0aH[ebx+eax*2]
+    pfadd       mm1,mm7
+    pfadd       mm1,DGROUP:L$1
+    pfadd       mm1,cs:0aH[bx+di]
+    pfadd       mm1,cs:0aH[ebx+eax*2]
+    pfcmpeq     mm1,mm7
+    pfcmpeq     mm1,DGROUP:L$1
+    pfcmpeq     mm1,cs:0aH[bx+di]
+    pfcmpeq     mm1,cs:0aH[ebx+eax*2]
+    pfcmpge     mm1,mm7
+    pfcmpge     mm1,DGROUP:L$1
+    pfcmpge     mm1,cs:0aH[bx+di]
+    pfcmpge     mm1,cs:0aH[ebx+eax*2]
+    pfcmpgt     mm1,mm7
+    pfcmpgt     mm1,DGROUP:L$1
+    pfcmpgt     mm1,cs:0aH[bx+di]
+    pfcmpgt     mm1,cs:0aH[ebx+eax*2]
+    pfmax       mm1,mm7
+    pfmax       mm1,DGROUP:L$1
+    pfmax       mm1,cs:0aH[bx+di]
+    pfmax       mm1,cs:0aH[ebx+eax*2]
+    pfmin       mm1,mm7
+    pfmin       mm1,DGROUP:L$1
+    pfmin       mm1,cs:0aH[bx+di]
+    pfmin       mm1,cs:0aH[ebx+eax*2]
+    pfmul       mm1,mm7
+    pfmul       mm1,DGROUP:L$1
+    pfmul       mm1,cs:0aH[bx+di]
+    pfmul       mm1,cs:0aH[ebx+eax*2]
+    pfnacc      mm1,mm7
+    pfnacc      mm1,DGROUP:L$1
+    pfnacc      mm1,cs:0aH[bx+di]
+    pfnacc      mm1,cs:0aH[ebx+eax*2]
+    pfpnacc     mm1,mm7
+    pfpnacc     mm1,DGROUP:L$1
+    pfpnacc     mm1,cs:0aH[bx+di]
+    pfpnacc     mm1,cs:0aH[ebx+eax*2]
+    pfrcp       mm1,mm7
+    pfrcp       mm1,DGROUP:L$1
+    pfrcp       mm1,cs:0aH[bx+di]
+    pfrcp       mm1,cs:0aH[ebx+eax*2]
+    pfrcpit1    mm1,mm7
+    pfrcpit1    mm1,DGROUP:L$1
+    pfrcpit1    mm1,cs:0aH[bx+di]
+    pfrcpit1    mm1,cs:0aH[ebx+eax*2]
+    pfrcpit2    mm1,mm7
+    pfrcpit2    mm1,DGROUP:L$1
+    pfrcpit2    mm1,cs:0aH[bx+di]
+    pfrcpit2    mm1,cs:0aH[ebx+eax*2]
+    pfrsqit1    mm1,mm7
+    pfrsqit1    mm1,DGROUP:L$1
+    pfrsqit1    mm1,cs:0aH[bx+di]
+    pfrsqit1    mm1,cs:0aH[ebx+eax*2]
+    pfrsqrt     mm1,mm7
+    pfrsqrt     mm1,DGROUP:L$1
+    pfrsqrt     mm1,cs:0aH[bx+di]
+    pfrsqrt     mm1,cs:0aH[ebx+eax*2]
+    pfsub       mm1,mm7
+    pfsub       mm1,DGROUP:L$1
+    pfsub       mm1,cs:0aH[bx+di]
+    pfsub       mm1,cs:0aH[ebx+eax*2]
+    pfsubr      mm1,mm7
+    pfsubr      mm1,DGROUP:L$1
+    pfsubr      mm1,cs:0aH[bx+di]
+    pfsubr      mm1,cs:0aH[ebx+eax*2]
+    pi2fd       mm1,mm7
+    pi2fd       mm1,DGROUP:L$1
+    pi2fd       mm1,cs:0aH[bx+di]
+    pi2fd       mm1,cs:0aH[ebx+eax*2]
+    pi2fw       mm1,mm7
+    pi2fw       mm1,DGROUP:L$1
+    pi2fw       mm1,cs:0aH[bx+di]
+    pi2fw       mm1,cs:0aH[ebx+eax*2]
+    pmulhrw     mm1,mm7
+    pmulhrw     mm1,DGROUP:L$1
+    pmulhrw     mm1,cs:0aH[bx+di]
+    pmulhrw     mm1,cs:0aH[ebx+eax*2]
+    prefetch    dword ptr DGROUP:L$1
+    prefetch    dword ptr cs:0aH[bx+di]
+    prefetch    dword ptr cs:0aH[ebx+eax*2]
+    prefetchw   dword ptr DGROUP:L$2
+    pswapd      mm1,mm7
+    pswapd      mm1,DGROUP:L$1
+    pswapd      mm1,cs:0aH[bx+di]
+    pswapd      mm1,cs:0aH[ebx+eax*2]
 _TEXT		ENDS
 _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 L$1:
-    DB	0, 0, 0, 0, 0, 0, 0f0H, 3fH
-L$2:
-    DB	66H, 66H, 66H, 66H, 66H, 66H, 0e2H, 3fH
-L$3:
-    DB	0ffH, 0ffH, 0ffH, 7fH, 0, 0, 0, 0
-L$4:
-    DB	1fH, 85H, 0ebH, 51H, 0b8H, 1eH, 0f9H, 3fH
-L$5:
     DB	0, 0, 0, 0, 0, 0, 0, 0
-L$6:
-    DB	1fH, 85H, 0ebH, 51H, 0b8H, 1eH, 0f9H, 0bfH
+L$2:
+    DB	0, 0, 0, 0, 0, 0, 0, 0
 
 _DATA		ENDS
 		END

@@ -25,7 +25,8 @@ tst1
 
 dev_objs = &
 3dnow &
+irpexitm &
 mmx &
-irpexitm
+sse
 
 !include ../test.mif
