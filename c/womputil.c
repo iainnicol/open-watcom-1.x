@@ -35,7 +35,7 @@
 #include "asmerr.h"
 #include "objprs.h"
 #include "myassert.h"
-#include "util.h"
+#include "womputil.h"
 
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
