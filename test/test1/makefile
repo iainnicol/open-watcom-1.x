@@ -16,6 +16,7 @@ cmps &
 comm &
 current &
 data &
+dos16m &
 dosinite &
 dosstart &
 do_ax &
@@ -93,7 +94,6 @@ xx
 dev_objs = &
 alignorg &
 bar &
-dos16m &
 fubar &
 jmp &
 newproc &
