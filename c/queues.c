@@ -109,11 +109,11 @@ uint GetPublicData(
 {
     static struct queuenode    *start;
     struct queuenode           *curr;
-    struct asm_sym      *sym;
-    dir_node            *pub;
-    uint                count;
-    uint                i;
-    struct pubdef_data  *d;
+    struct asm_sym             *sym;
+    dir_node                   *pub;
+    uint                       count;
+    uint                       i;
+    struct pubdef_data         *d;
 
     if( PubQueue == NULL )
         return( 0 );

@@ -333,7 +333,8 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
     }
 
     /* expand any constants */
-    if( ExpandTheWorld( start, FALSE, TRUE ) == ERROR ) return( ERROR );
+    if( ExpandTheWorld( start, FALSE, TRUE ) == ERROR )
+        return( ERROR );
 
     for( i=start; AsmBuffer[i]->token != T_FINAL; i++ );
     count = i-start;
@@ -348,23 +349,6 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
                 continue;
             }
             break;
-#if 0   // ?? I think it has no sense
-        case T_ID:
-            if( IS_SYM_COUNTER( AsmBuffer[start+i]->string_ptr ) ) {
-                char            buff[40];
-                /*
-                    We want a '$' symbol to have the value at it's
-                    point of definition, not point of expansion.
-                */
-                sprintf( buff, ".$%x/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
-                AsmBuffer[start+i]->string_ptr = buff;
-                sym = AsmGetSymbol( buff );
-                if( sym == NULL ) {
-                    MakeLabel( buff, T_NEAR );
-                }
-            }
-            break;
-#endif
         }
         new[i].token = AsmBuffer[start + i]->token;
         memcpy( new[i].bytes, AsmBuffer[start + i]->bytes, sizeof( new[i].bytes ) );

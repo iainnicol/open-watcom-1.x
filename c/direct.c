@@ -313,6 +313,7 @@ static int get_watcom_argument_string( char *buffer, uint_8 size, uint_8 *parm_n
 
 #ifdef DEBUG_OUT
 void heap( char *func ) // for debugging only
+/*********************/
 {
     switch(_heapchk()) {
     case _HEAPBADNODE:
@@ -396,7 +397,7 @@ static void push_proc( dir_node *proc )
 }
 
 static dir_node *pop_proc( void )
-/***********************************/
+/*******************************/
 {
     if( ProcStack == NULL )
         return( NULL );
@@ -404,6 +405,7 @@ static dir_node *pop_proc( void )
 }
 
 static void dir_add( dir_node *new, int tab )
+/*******************************************/
 {
     /* note: this is only for those above which do NOT return right away */
     /* put the new entry into the queue for its type of symbol */
@@ -514,6 +516,7 @@ static void dir_init( dir_node *dir, int tab )
 }
 
 static void RemoveFromTable( dir_node *dir )
+/******************************************/
 {
     int tab;
 
@@ -549,7 +552,7 @@ static void RemoveFromTable( dir_node *dir )
 }
 
 void dir_change( dir_node *dir, int tab )
-/*****************************************/
+/***************************************/
 /* Change node type and insert it into the table specified by tab */
 {
     FreeInfo( dir );
@@ -609,7 +612,8 @@ void FreeInfo( dir_node *dir )
         break;
     case SYM_CONST:
 #ifdef DEBUG_OUT
-        if( ( dir->e.constinfo->count > 0 ) && ( dir->e.constinfo->data[0].token != T_NUM ) ) {
+        if( ( dir->e.constinfo->count > 0 )
+            && ( dir->e.constinfo->data[0].token != T_NUM ) ) {
             DebugMsg( ( "freeing const(String): %s = ", dir->sym.name ) );
         } else {
             DebugMsg( ( "freeing const(Number): %s = ", dir->sym.name ) );
@@ -819,6 +823,7 @@ direct_idx LnameInsert( char *name )
 }
 
 void wipe_space( char *token )
+/****************************/
 /* wipe out the spaces at the beginning of a token */
 {
     char        *start;
@@ -840,6 +845,7 @@ void wipe_space( char *token )
 }
 
 static uint checkword( char **token )
+/***********************************/
 /* wipes out prceding and tailing spaces, and make sure token contains only
    one word */
 {
@@ -848,7 +854,7 @@ static uint checkword( char **token )
 
     /* strip the space in the front */
     for( ptrhead = *token; ; ptrhead++ ) {
-        if( *(ptrhead) != ' ' && *(ptrhead) != '\t' ) {
+        if( ( *ptrhead != ' ' ) && ( *ptrhead != '\t' ) ) {
             break;
         }
     }
@@ -867,7 +873,7 @@ static uint checkword( char **token )
         *ptrend = '\0';
         ptrend++;
         while( *ptrend != '\0' ) {
-            if( *ptrend != ' ' && *ptrend != '\t' && *ptrend != '\n' ) {
+            if( ( *ptrend != ' ' ) && ( *ptrend != '\t' ) && ( *ptrend != '\n' ) ) {
                 return( ERROR );
             }
             ptrend++;
@@ -879,7 +885,7 @@ static uint checkword( char **token )
 }
 
 uint GetDirIdx( char *name, int tab )
-/************************************/
+/***********************************/
 {
     dir_node            *dir;
     struct asm_sym              *sym;
@@ -909,7 +915,6 @@ uint_32 GetCurrAddr( void )
 {
     if( CurrSeg == NULL )
         return( 0 );
-//    return( CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length );
     return( CurrSeg->seg->e.seginfo->current_loc );
 }
 
@@ -946,13 +951,12 @@ uint_32 GetCurrSegAlign( void )
 }
 
 uint_32 GetCurrSegStart( void )
-/******************************/
+/*****************************/
 {
     if( CurrSeg == NULL )
         return( 0 );
-//    /**/myassert(  ( CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length - BufSize ) == CurrSeg->seg->e.seginfo->start_loc );
-    /**/myassert(  !write_to_file ||
-                ( CurrSeg->seg->e.seginfo->current_loc - BufSize )
+    /**/myassert( !write_to_file
+                || ( CurrSeg->seg->e.seginfo->current_loc - BufSize )
                      == CurrSeg->seg->e.seginfo->start_loc );
     return( CurrSeg->seg->e.seginfo->start_loc );
 }
@@ -1256,6 +1260,7 @@ static dir_node *CreateGroup( char *name )
 }
 
 int GrpDef( int i )
+/*****************/
 {
     char        *name;
     dir_node    *grp;
@@ -1347,6 +1352,7 @@ int  SetCurrSeg( int i )
 }
 
 static int token_cmp( char **token, int start, int end )
+/******************************************************/
 /* compare token against those specified in TypeInfo[ start...end ] */
 {
     int         i;
@@ -1400,7 +1406,7 @@ int SegDef( int i )
         sym = AsmGetSymbol( name );
         if( sym != NULL ) {
             dirnode = (dir_node *)sym;
-            if ( sym->state == SYM_SEG || sym->grpidx != 0 ) {
+            if ( ( sym->state == SYM_SEG ) || ( sym->grpidx != 0 ) ) {
                 // segment already defined
                 defined = TRUE;
                 oldreadonly = dirnode->e.seginfo->readonly;
@@ -1489,7 +1495,7 @@ int SegDef( int i )
             /* initstate is used to check if any field is already
             initialized */
             
-            if( ( initstate & TypeInfo[type].init ) ) {
+            if( initstate & TypeInfo[type].init ) {
                 AsmError( SEGMENT_PARA_DEFINED ); // initialized already
                 return( ERROR );
             } else {
@@ -1566,12 +1572,11 @@ int SegDef( int i )
             /* Check if new definition is different from previous one */
             
             oldobj = dirnode->e.seginfo->segrec;
-            if( oldreadonly != dirnode->e.seginfo->readonly ||
-                oldobj->d.segdef.align != seg->d.segdef.align ||
-                oldobj->d.segdef.combine != seg->d.segdef.combine ||
-                oldobj->d.segdef.use_32 != seg->d.segdef.use_32 ||
-                oldobj->d.segdef.class_name_idx !=  seg->d.segdef.class_name_idx
-                ) {
+            if( ( oldreadonly != dirnode->e.seginfo->readonly )
+                || ( oldobj->d.segdef.align != seg->d.segdef.align )
+                || ( oldobj->d.segdef.combine != seg->d.segdef.combine )
+                || ( oldobj->d.segdef.use_32 != seg->d.segdef.use_32 )
+                || ( oldobj->d.segdef.class_name_idx != seg->d.segdef.class_name_idx ) ) {
                 ObjKillRec( seg );
                 AsmError( SEGDEF_CHANGED );
                 return( ERROR );
@@ -1618,7 +1623,7 @@ int SegDef( int i )
         }
         if( CurrSeg != NULL ) {
             if(( !ModuleInfo.mseg )
-                && ( CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32 != ModuleInfo.use32 )) {
+                && ( CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32 != ModuleInfo.use32 ) ) {
                 ModuleInfo.mseg = TRUE;
             }
             if( CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32 ) {
@@ -1686,6 +1691,7 @@ int IncludeLib( int i )
 }
 
 static void input_group( int type )
+/*********************************/
 /* emit any GROUP instruction */
 {
     char        buffer[MAX_LINE_LEN];
@@ -1712,11 +1718,12 @@ static void input_group( int type )
 }
 
 static void close_lastseg( void )
+/*******************************/
 /* close the last opened simplified segment */
 {
     if( lastseg.seg != SIM_NONE ) {
         lastseg.seg = SIM_NONE;
-        if( CurrSeg == NULL && *lastseg.close != '\0' ) {
+        if( ( CurrSeg == NULL ) && ( *lastseg.close != '\0' ) ) {
             AsmError( DONT_MIX_SIM_WITH_REAL_SEGDEFS );
             return;
         }
@@ -1759,8 +1766,8 @@ int Startup( int i )
         break;
     case T_DOT_EXIT:
         i++;
-        if( AsmBuffer[i]->string_ptr != NULL &&
-             *(AsmBuffer[i]->string_ptr) != '\0' ) {
+        if( ( AsmBuffer[i]->string_ptr != NULL )
+            && ( *(AsmBuffer[i]->string_ptr) != '\0' ) ) {
             strcpy( buffer, RetVal );
             strcat( buffer, AsmBuffer[i]->string_ptr );
             InputQueueLine( buffer );
@@ -1887,7 +1894,7 @@ int SimSeg( int i )
             seg = SIM_CONST;
         }
 
-        if( string != NULL && type == T_DOT_DATA ) {
+        if( ( string != NULL ) && ( type == T_DOT_DATA ) ) {
             strcpy( buffer, string );
             /* we already have a name */
             strcat( buffer, SimCodeBegin[bit][seg] + SIM_DATA_OFFSET  );
@@ -1907,7 +1914,7 @@ int SimSeg( int i )
         break;
     case T_DOT_FARDATA:
     case T_DOT_FARDATA_UN:  // .fardata?
-        seg = type == T_DOT_FARDATA ? SIM_FARDATA : SIM_FARDATA_UN;
+        seg = ( type == T_DOT_FARDATA ) ? SIM_FARDATA : SIM_FARDATA_UN;
         if( string != NULL ) {
             strcpy( buffer, string );
             strcat( buffer, SimCodeBegin[bit][seg] + FAROFFSET(seg) );
@@ -1932,6 +1939,7 @@ int SimSeg( int i )
 }
 
 static void module_prologue( int type )
+/*************************************/
 /* Generates codes for .MODEL; based on optasm pg.142-146 */
 {
     int         bit;
@@ -1969,7 +1977,7 @@ static void module_prologue( int type )
 }
 
 void ModuleInit( void )
-/**********************/
+/*********************/
 {
     ModuleInfo.model = MOD_NONE;
     ModuleInfo.distance = STACK_NONE;
@@ -1985,6 +1993,7 @@ void ModuleInit( void )
 }
 
 static int SetUse32( void )
+/*************************/
 {
     if( CurrSeg == NULL ) {
         Use32 = ModuleInfo.defUse32;
@@ -2000,8 +2009,9 @@ static int SetUse32( void )
 }
 
 int SetUse32Def( bool flag )
+/**************************/
 {
-    if( CurrSeg == NULL                   // outside any segments
+    if( ( CurrSeg == NULL )               // outside any segments
         && ( !ModuleInfo.init             // model not defined
             || ModuleInfo.cmdline ) ) {   // model defined on cmdline by -m?
         ModuleInfo.defUse32 = flag;
@@ -2010,6 +2020,7 @@ int SetUse32Def( bool flag )
 }
 
 static void get_module_name( void )
+/*********************************/
 {
     char dummy[_MAX_EXT];
     char        *p;
@@ -2017,7 +2028,8 @@ static void get_module_name( void )
     /**/myassert( AsmFiles.fname[ASM] != NULL );
     _splitpath( AsmFiles.fname[ASM], NULL, NULL, ModuleInfo.name, dummy );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
-        if( !(isalnum( *p ) || *p == '_' || *p == '$' || *p == '@' || *p == '?') ) {
+        if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' ) 
+            || ( *p == '@' ) || ( *p == '?') ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
         }
@@ -2050,7 +2062,8 @@ static void set_text_seg_name( void )
     return;
 }
 
-void DefFlatGroup()
+void DefFlatGroup( void )
+/***********************/
 {
     dir_node    *grp;
 
@@ -2144,7 +2157,7 @@ int Model( int i )
         i++;
 
         /* go past comma */
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->token != T_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
@@ -2213,7 +2226,8 @@ int SetAssume( int i )
 
 
     for( i++; i < Token_Count; i++ ) {
-        if( AsmBuffer[i]->token==T_RES_ID && AsmBuffer[i]->value==T_NOTHING ) {
+        if( ( AsmBuffer[i]->token == T_RES_ID )
+            && ( AsmBuffer[i]->value == T_NOTHING ) ) {
             AssumeInit();
             continue;
         }
@@ -2229,7 +2243,8 @@ int SetAssume( int i )
         }
         i++;
 
-        if( AsmBuffer[i]->token == T_UNARY_OPERATOR && AsmBuffer[i]->value == T_SEG ) {
+        if( ( AsmBuffer[i]->token == T_UNARY_OPERATOR )
+            && ( AsmBuffer[i]->value == T_SEG ) ) {
             i++;
         }
 
@@ -2247,8 +2262,8 @@ int SetAssume( int i )
             AsmError( INVALID_REGISTER );
             return( ERROR );
         }
-        if(( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
-            && ( ( reg == TOK_FS ) || ( reg == TOK_GS ) )) {
+        if( ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
+            && ( ( reg == TOK_FS ) || ( reg == TOK_GS ) ) ) {
             AsmError( INVALID_REGISTER );
             return( ERROR );
         }
@@ -2282,7 +2297,7 @@ int SetAssume( int i )
         }
 
         /* go past comma */
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->token != T_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
@@ -2291,7 +2306,7 @@ int SetAssume( int i )
 }
 
 dir_node *GetSeg( struct asm_sym *sym )
-/**************************************/
+/*************************************/
 /* get ptr to sym's segment */
 {
     dir_node            *curr;
@@ -2352,7 +2367,7 @@ uint GetGrpIdx( struct asm_sym *sym )
 }
 
 int SymIs32( struct asm_sym *sym )
-/**************************************/
+/********************************/
 /* get sym's segment size */
 {
     dir_node            *curr;
@@ -2406,7 +2421,7 @@ int FixOverride( int index )
 }
 
 static enum assume_reg search_assume( dir_node *grp_or_seg, enum assume_reg def )
-/********************************************************************************/
+/*******************************************************************************/
 {
     if( grp_or_seg == NULL )
         return( ASSUME_NOTHING );
@@ -2427,7 +2442,7 @@ static enum assume_reg search_assume( dir_node *grp_or_seg, enum assume_reg def 
 }
 
 int Use32Assume( enum assume_reg prefix )
-/*****************************************************************************/
+/***************************************/
 {
     dir_node    *grp_or_seg;
     seg_list    *seg_l;
@@ -2456,7 +2471,7 @@ int Use32Assume( enum assume_reg prefix )
 }
 
 enum assume_reg GetPrefixAssume( struct asm_sym* sym, enum assume_reg prefix )
-/*****************************************************************************/
+/****************************************************************************/
 {
     dir_node    *grp_or_seg;
 
@@ -2506,19 +2521,19 @@ enum assume_reg GetPrefixAssume( struct asm_sym* sym, enum assume_reg prefix )
 }
 
 enum assume_reg GetAssume( struct asm_sym* sym, enum assume_reg def )
-/*********************************************************************/
+/*******************************************************************/
 {
     enum assume_reg reg;
     dir_node *grp_or_seg = SegOverride;
 
-    if( ( def != ASSUME_NOTHING ) && ( AssumeTable[def].flat ) ) {
+    if( ( def != ASSUME_NOTHING ) && AssumeTable[def].flat ) {
         Frame = FRAME_GRP;
         Frame_Datum = MAGIC_FLAT_GROUP;
         return( def );
     }
 
     // first search for segment
-    if( SegOverride == NULL || SegOverride->sym.state == SYM_SEG ) {
+    if( ( SegOverride == NULL ) || ( SegOverride->sym.state == SYM_SEG ) ) {
         if( SegOverride == NULL ) {
             grp_or_seg = GetSeg( sym );
         }
@@ -2531,7 +2546,7 @@ enum assume_reg GetAssume( struct asm_sym* sym, enum assume_reg def )
     }
 
     // second search for group
-    if( SegOverride == NULL || SegOverride->sym.state == SYM_GRP ) {
+    if( ( SegOverride == NULL ) || ( SegOverride->sym.state == SYM_GRP ) ) {
         if( SegOverride == NULL ) {
             grp_or_seg = get_grp( sym );
         }
@@ -2561,7 +2576,7 @@ enum assume_reg GetAssume( struct asm_sym* sym, enum assume_reg def )
 }
 
 int ModuleEnd( int count )
-/*************************/
+/************************/
 {
     struct fixup        *fixup;
 
@@ -2616,6 +2631,7 @@ int ModuleEnd( int count )
 }
 
 static int find_size( int type )
+/******************************/
 {
     switch( type ) {
     case TOK_EXT_BYTE:
@@ -2644,6 +2660,7 @@ static int find_size( int type )
 }
 
 static void size_override( char *buffer, int size )
+/*************************************************/
 {
     switch( size ) {
     default:
@@ -2737,12 +2754,12 @@ int LocalDef( int i )
         if( i < Token_Count ) {
             if( AsmBuffer[i]->token == T_OP_SQ_BRACKET ) {
                 i++;
-                if( AsmBuffer[i]->token != T_NUM || i >= Token_Count ) {
+                if( ( AsmBuffer[i]->token != T_NUM ) || ( i >= Token_Count ) ) {
                     AsmError( SYNTAX_ERROR );
                     return( ERROR );
                 }
                 local->factor = AsmBuffer[i++]->value;
-                if( AsmBuffer[i]->token != T_CL_SQ_BRACKET || i >= Token_Count ) {
+                if( ( AsmBuffer[i]->token != T_CL_SQ_BRACKET ) || ( i >= Token_Count ) ) {
                     AsmError( EXPECTED_CL_SQ_BRACKET );
                     return( ERROR );
                 }
@@ -2782,7 +2799,7 @@ int LocalDef( int i )
 
         /* go past comma */
         i++;
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->token != T_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
@@ -2792,6 +2809,7 @@ int LocalDef( int i )
 }
 
 static memtype proc_exam( int i )
+/*******************************/
 {
     char        *name;
     char        *token;
@@ -2871,7 +2889,7 @@ static memtype proc_exam( int i )
             minimum = TOK_PROC_USES;
             break;
         case TOK_PROC_USES:
-            for( i++; i < Token_Count && AsmBuffer[i]->token != T_COMMA; i++ ) {
+            for( i++; ( i < Token_Count ) && ( AsmBuffer[i]->token != T_COMMA ); i++ ) {
                 token = AsmBuffer[i]->string_ptr;
                 regist = AsmAlloc( sizeof( regs_list ));
                 regist->next = NULL;
@@ -2967,7 +2985,7 @@ parms:
         }
         info->is_vararg |= paranode->is_vararg;
 
-        if( info->langtype >= LANG_BASIC && info->langtype <= LANG_PASCAL ) {
+        if( ( info->langtype >= LANG_BASIC ) && ( info->langtype <= LANG_PASCAL ) ) {
 
             /* Parameters are stored in reverse order */
             paranode->next = info->paralist;
@@ -2989,7 +3007,7 @@ parms:
         }
         /* go past comma */
         i++;
-        if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
+        if( ( i < Token_Count ) && ( AsmBuffer[i]->token != T_COMMA ) ) {
             AsmError( EXPECTING_COMMA );
             return( ERROR );
         }
@@ -3051,6 +3069,7 @@ int ProcDef( int i )
 }
 
 static void ProcFini( void )
+/**************************/
 {
     proc_info   *info;
     label_list  *curr;
@@ -3089,7 +3108,7 @@ int ProcEnd( int i )
 }
 
 void CheckProcOpen( void )
-/*************************/
+/************************/
 {
     while( CurrProc != NULL ) {
         if( Parse_Pass == PASS_1 )
@@ -3148,7 +3167,7 @@ int WritePrologue( void )
                     return( ERROR );
                 }
             }
-            if( info->langtype != LANG_WATCOM_C || retcode == FALSE ) {
+            if( ( info->langtype != LANG_WATCOM_C ) || ( retcode == FALSE ) ) {
                 size_override( buffer, curr->size );
                 if( Use32 ) {
                     strcat( buffer, ARGUMENT_STRING_32 );
@@ -3171,7 +3190,7 @@ int WritePrologue( void )
         }
     }
 
-    if( info->localsize != 0 || info->parasize != 0 || info->is_vararg ) {
+    if( ( info->localsize != 0 ) || ( info->parasize != 0 ) || info->is_vararg ) {
         // prolog code timmings
         //
         //                                                   best result
@@ -3232,6 +3251,7 @@ int WritePrologue( void )
 }
 
 static void pop_register( regs_list *regist )
+/*******************************************/
 /* Pop the register when a procedure ends */
 {
     char        buffer[20];
@@ -3245,6 +3265,7 @@ static void pop_register( regs_list *regist )
 }
 
 static void write_epilogue( void )
+/********************************/
 {
     char        buffer[80];
     proc_info   *info;
@@ -3255,7 +3276,7 @@ static void write_epilogue( void )
     /* Pop the registers */
     pop_register( CurrProc->e.procinfo->regslist );
 
-    if( info->localsize == 0 && info->parasize == 0 && !(info->is_vararg) )
+    if( ( info->localsize == 0 ) && ( info->parasize == 0 ) && !info->is_vararg )
         return;
     // epilog code timmings
     //
@@ -3340,7 +3361,7 @@ static void write_epilogue( void )
 }
 
 int Ret( int i, int count, int flag_iret )
-/*****************************************/
+/****************************************/
 {
     char        buffer[20];
     proc_info   *info;
@@ -3365,9 +3386,8 @@ int Ret( int i, int count, int flag_iret )
 
     if( !flag_iret ) {
         if( count == i + 1 ) {
-            if( ( info->langtype >= LANG_BASIC &&
-                info->langtype <= LANG_PASCAL ) ||
-                ( info->langtype == LANG_STDCALL && !(info->is_vararg) ) ) {
+            if( ( info->langtype >= LANG_BASIC ) && ( info->langtype <= LANG_PASCAL )
+                || ( info->langtype == LANG_STDCALL ) && !info->is_vararg ) {
                 if( info->parasize != 0 ) {
                     sprintf( buffer + strlen(buffer), "%d", info->parasize );
                 }
@@ -3414,13 +3434,13 @@ int Comment( int what_to_do, int i  )
             return( ERROR );
         }
         delim_char = *(AsmBuffer[i]->string_ptr+strspn(AsmBuffer[i]->string_ptr," \t") );
-        if( delim_char == NULL ||
-            strchr( AsmBuffer[i]->string_ptr, delim_char ) == NULL ) {
+        if( ( delim_char == NULL )
+            || ( strchr( AsmBuffer[i]->string_ptr, delim_char ) == NULL ) ) {
             AsmError( COMMENT_DELIMITER_EXPECTED );
             return( ERROR );
         }
-        if( strchr( AsmBuffer[i]->string_ptr, delim_char ) !=
-            strrchr( AsmBuffer[i]->string_ptr, delim_char ) ) {
+        if( strchr( AsmBuffer[i]->string_ptr, delim_char )
+             != strrchr( AsmBuffer[i]->string_ptr, delim_char ) ) {
             /* we have COMMENT delim. ..... delim. -- only 1 line */
         } else {
             in_comment = TRUE;
@@ -3443,8 +3463,8 @@ int AddAlias( int i )
         AsmError( SYNTAX_ERROR );
         return( ERROR );
     }
-    if( AsmBuffer[i]->token != T_ID ||
-        AsmBuffer[i+2]->token != T_ID ) {
+    if( ( AsmBuffer[i]->token != T_ID )
+        || ( AsmBuffer[i+2]->token != T_ID ) ) {
         AsmError( SYMBOL_EXPECTED );
         return( ERROR );
     }

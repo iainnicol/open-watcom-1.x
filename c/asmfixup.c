@@ -70,7 +70,7 @@ void add_frame( void )
 #endif
 
 struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enum fixup_options fixup_option )
-/*************************************************************************************************************/
+/************************************************************************************************************/
 /*
   put the correct target offset into the link list when forward reference of
   relocatable is resolved;
@@ -126,6 +126,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
     FixupHead = fixup
 
 static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
+/******************************************************************/
 {
     long    disp;
     char    *dst;
@@ -141,6 +142,7 @@ static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
 #endif
 
 static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
+/***************************************************************/
 {
     long                disp;
     long                max_disp;
@@ -269,7 +271,7 @@ int BackPatch( struct asm_sym *sym )
 }
 
 void mark_fixupp( enum operand_type determinant, int index )
-/******************************************************/
+/**********************************************************/
 /*
   this routine marks the correct target offset and data record address for
   FIXUPP record;
@@ -325,6 +327,7 @@ void mark_fixupp( enum operand_type determinant, int index )
 #ifdef _WASM_
 
 struct fixup *CreateFixupRec( int index )
+/***************************************/
 /* Create a fixup record for WOMP;
    Note that if Modend is TRUE, it means the fixup is the starting address
    for the module.
@@ -378,7 +381,7 @@ struct fixup *CreateFixupRec( int index )
         }
     }
     
-    sym = AsmLookup( fixup->name );
+    sym = AsmGetSymbol( fixup->name );
     if( sym == NULL )
         return( NULL );
     
