@@ -1,47 +1,45 @@
 .686
-.xmm
+.xmm3
 .model small
+
+.code
+
+addsubpd xmm1,xmm7
+addsubps xmm1,xmm7
+fisttp dword ptr dataq
+fisttp dword ptr cs:[bx+di+10]
+fisttp dword ptr cs:[ebx+2*eax+10]
+fisttp qword ptr dataq
+fisttp qword ptr cs:[bx+di+10]
+fisttp qword ptr cs:[ebx+2*eax+10]
+fisttp word ptr dataq
+fisttp word ptr cs:[bx+di+10]
+fisttp word ptr cs:[ebx+2*eax+10]
+haddpd xmm1,xmm7
+haddps xmm1,xmm7
+hsubpd xmm1,xmm7
+hsubps xmm1,xmm7
+lddqu xmm1,datao
+lddqu xmm1,cs:[bx+di+10]
+lddqu xmm1,cs:[ebx+2*eax+10]
+monitor
+movddup xmm1,xmm7
+movddup xmm1,datao
+movddup xmm1,cs:[bx+di+10]
+movddup xmm1,cs:[ebx+2*eax+10]
+movshdup xmm1,xmm7
+movshdup xmm1,datao
+movshdup xmm1,cs:[bx+di+10]
+movshdup xmm1,cs:[ebx+2*eax+10]
+movsldup xmm1,xmm7
+movsldup xmm1,datao
+movsldup xmm1,cs:[bx+di+10]
+movsldup xmm1,cs:[ebx+2*eax+10]
+mwait
 
 .data
 
 datao label oword
-dataq dq 0
-datad dd 0
-dataw dw 0
-
-.code
-
-ADDSUBPD xmm1,xmm7
-ADDSUBPS xmm1,xmm7
-FISTTP datad
-FISTTP dword ptr cs:[bx+di+10]
-FISTTP dword ptr cs:[ebx+2*eax+10]
-FISTTP dataq
-FISTTP qword ptr cs:[bx+di+10]
-FISTTP qword ptr cs:[ebx+2*eax+10]
-FISTTP dataw
-FISTTP word ptr cs:[bx+di+10]
-FISTTP word ptr cs:[ebx+2*eax+10]
-HADDPD xmm1,xmm7
-HADDPS xmm1,xmm7
-HSUBPD xmm1,xmm7
-HSUBPS xmm1,xmm7
-LDDQU xmm1,datao
-LDDQU xmm1,cs:[bx+di+10]
-LDDQU xmm1,cs:[ebx+2*eax+10]
-MONITOR
-MOVDDUP xmm1,xmm7
-MOVDDUP xmm1,datao
-MOVDDUP xmm1,cs:[bx+di+10]
-MOVDDUP xmm1,cs:[ebx+2*eax+10]
-MOVSHDUP xmm1,xmm7
-MOVSHDUP xmm1,datao
-MOVSHDUP xmm1,cs:[bx+di+10]
-MOVSHDUP xmm1,cs:[ebx+2*eax+10]
-MOVSLDUP xmm1,xmm7
-MOVSLDUP xmm1,datao
-MOVSLDUP xmm1,cs:[bx+di+10]
-MOVSLDUP xmm1,cs:[ebx+2*eax+10]
-MWAIT
+dataq dq 0,0
 
 end

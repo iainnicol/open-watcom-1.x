@@ -79,7 +79,7 @@ enum prefix_reg {
         unsigned            rm_info         : 2;    /* info on r/m byte */
         unsigned            opnd_type_3rd   : 2;    /* info on 3rd operand */
         unsigned            opnd_dir        : 1;    /* operand direction */
-        unsigned            cpu             : 8;    /* CPU type */
+        enum asm_cpu        cpu;                    /* CPU type */
         enum operand_type   opnd_type[2];           /* asm_opnds */
         unsigned char       opcode;                 /* opcode byte */
         unsigned char       rm_byte;                /* mod_rm_byte */
@@ -104,7 +104,7 @@ struct asm_code {
         unsigned char       rm_byte;
 #else
         unsigned            token           : 10;
-        unsigned            cpu             : 8;
+        enum asm_cpu        cpu;
         enum operand_type   opnd_type[3];
         unsigned char       opcode;
         unsigned char       rm_byte;

@@ -111,8 +111,9 @@ static int output( int i )
     /*
      * Check if CPU and FPU is valid for output code
      */
-    if( (ins->cpu&P_CPU_MASK) > (rCode->info.cpu&P_CPU_MASK)
-      ||(ins->cpu&P_FPU_MASK) > (rCode->info.cpu&P_FPU_MASK) ) {
+    if( ( ins->cpu & P_CPU_MASK ) > ( rCode->info.cpu & P_CPU_MASK )
+        || ( ins->cpu & P_FPU_MASK ) > ( rCode->info.cpu & P_FPU_MASK )
+        || ( ins->cpu & P_EXT_MASK ) > ( ins->cpu & rCode->info.cpu & P_EXT_MASK ) ) {
         AsmError( INVALID_INSTRUCTION_WITH_CURRENT_CPU_SETTING );
         return( ERROR );
     }

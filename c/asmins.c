@@ -952,6 +952,16 @@ static int comp_opt( uint direct )
         return(  P_686 );
     case T_DOT_686P:
         return( P_686p );
+    case T_DOT_MMX:
+        return( P_MMX );
+    case T_DOT_K3D:
+        return( P_K3D | P_MMX );
+    case T_DOT_XMM:
+        return( P_SSE | P_MMX );
+    case T_DOT_XMM2:
+        return( P_SSE2 | P_SSE | P_MMX );
+    case T_DOT_XMM3:
+        return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
     default:
         // not found
         return( EMPTY );
@@ -997,6 +1007,8 @@ int cpu_directive( int i )
         } else if( temp & P_FPU_MASK ) {
             Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
             Code->info.cpu |= temp & P_FPU_MASK;        // turn on desired bit(s)
+        } else if( temp & P_EXT_MASK ) {
+            Code->info.cpu |= temp & P_EXT_MASK;        // turn on desired bit(s)
         } else {
             Code->info.cpu &= ~(P_CPU_MASK | P_PM);
             Code->info.cpu |= temp & (P_CPU_MASK | P_PM);

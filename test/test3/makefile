@@ -1,5 +1,6 @@
 
 objs = &
+3dnow &
 addrmode &
 allign &
 callimpl &
@@ -9,6 +10,7 @@ jmpimpl &
 jmpshrt &
 lea &
 lsxxx &
+mmx &
 mseg &
 opi8u &
 plsintr &
@@ -18,17 +20,15 @@ retiret &
 seg16 &
 segatrep &
 shift &
+sse &
+sse2 &
+sse3 &
 structdd &
 tbyte &
 testequ &
 tst1
 
 dev_objs = &
-3dnow &
-irpexitm &
-mmx &
-sse &
-sse2 &
-sse3
+irpexitm
 
 !include ../test.mif

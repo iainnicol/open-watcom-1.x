@@ -1,532 +1,546 @@
 .686
-.xmm
+.xmm2
 .model small
-
-.data
-
-dataq dq 0
-datad dd 0
-dataw dw 0
 
 .code
 
-ADDPD xmm1,xmm7
-ADDPD xmm1,dataq
-ADDPD xmm1,cs:[bx+di+10]
-ADDPD xmm1,cs:[ebx+2*eax+10]
-ADDSD xmm1,xmm7
-ADDSD xmm1,dataq
-ADDSD xmm1,cs:[bx+di+10]
-ADDSD xmm1,cs:[ebx+2*eax+10]
-ANDNPD xmm1,xmm7
-ANDNPD xmm1,dataq
-ANDNPD xmm1,cs:[bx+di+10]
-ANDNPD xmm1,cs:[ebx+2*eax+10]
-ANDPD xmm1,xmm7
-ANDPD xmm1,dataq
-ANDPD xmm1,cs:[bx+di+10]
-ANDPD xmm1,cs:[ebx+2*eax+10]
-CLFLUSH dataq
-CLFLUSH cs:[bx+di+10]
-CLFLUSH cs:[ebx+2*eax+10]
-CMPPD xmm1,xmm7,255
-CMPPD xmm1,dataq,255
-CMPPD xmm1,cs:[bx+di+10],255
-CMPPD xmm1,cs:[ebx+2*eax+10],255
-CMPSD xmm1,xmm7,255
-CMPSD xmm1,dataq,255
-CMPSD xmm1,cs:[bx+di+10],255
-CMPSD xmm1,cs:[ebx+2*eax+10],255
-COMISD xmm1,xmm7
-COMISD xmm1,dataq
-COMISD xmm1,cs:[bx+di+10]
-COMISD xmm1,cs:[ebx+2*eax+10]
-CVTDQ2PD xmm1,xmm7
-CVTDQ2PD xmm1,dataq
-CVTDQ2PD xmm1,cs:[bx+di+10]
-CVTDQ2PD xmm1,cs:[ebx+2*eax+10]
-CVTDQ2PS xmm1,xmm7
-CVTDQ2PS xmm1,dataq
-CVTDQ2PS xmm1,cs:[bx+di+10]
-CVTDQ2PS xmm1,cs:[ebx+2*eax+10]
-CVTPD2DQ xmm1,xmm7
-CVTPD2DQ xmm1,dataq
-CVTPD2DQ xmm1,cs:[bx+di+10]
-CVTPD2DQ xmm1,cs:[ebx+2*eax+10]
-CVTPD2PI mm1,xmm7
-CVTPD2PI mm1,dataq
-CVTPD2PI mm1,cs:[bx+di+10]
-CVTPD2PI mm1,cs:[ebx+2*eax+10]
-CVTPD2PS xmm1,xmm7
-CVTPD2PS xmm1,dataq
-CVTPD2PS xmm1,cs:[bx+di+10]
-CVTPD2PS xmm1,cs:[ebx+2*eax+10]
-CVTPI2PD xmm1,xmm7
-CVTPI2PD xmm1,dataq
-CVTPI2PD xmm1,cs:[bx+di+10]
-CVTPI2PD xmm1,cs:[ebx+2*eax+10]
-CVTPS2DQ xmm1,xmm7
-CVTPS2DQ xmm1,dataq
-CVTPS2DQ xmm1,cs:[bx+di+10]
-CVTPS2DQ xmm1,cs:[ebx+2*eax+10]
-CVTPS2PD xmm1,xmm7
-CVTPS2PD xmm1,dataq
-CVTPS2PD xmm1,cs:[bx+di+10]
-CVTPS2PD xmm1,cs:[ebx+2*eax+10]
-CVTSD2SI ebx,xmm7
-CVTSD2SI ebx,datad
-CVTSD2SI ebx,cs:[bx+di+10]
-CVTSD2SI ebx,cs:[ebx+2*eax+10]
-CVTSD2SS xmm1,xmm7
-CVTSD2SS xmm1,dataq
-CVTSD2SS xmm1,cs:[bx+di+10]
-CVTSD2SS xmm1,cs:[ebx+2*eax+10]
-CVTSI2SD xmm5,datad
-CVTSI2SD xmm5,cs:[bx+di+10]
-CVTSI2SD xmm5,cs:[ebx+2*eax+10]
-CVTSI2SD xmm5,ecx
-CVTSS2SD xmm1,xmm7
-CVTSS2SD xmm1,dataq
-CVTSS2SD xmm1,cs:[bx+di+10]
-CVTSS2SD xmm1,cs:[ebx+2*eax+10]
-CVTTPD2DQ xmm1,xmm7
-CVTTPD2DQ xmm1,dataq
-CVTTPD2DQ xmm1,cs:[bx+di+10]
-CVTTPD2DQ xmm1,cs:[ebx+2*eax+10]
-CVTTPD2PI mm1,xmm7
-CVTTPD2PI mm1,dataq
-CVTTPD2PI mm1,cs:[bx+di+10]
-CVTTPD2PI mm1,cs:[ebx+2*eax+10]
-CVTTPS2DQ xmm1,xmm7
-CVTTPS2DQ xmm1,dataq
-CVTTPS2DQ xmm1,cs:[bx+di+10]
-CVTTPS2DQ xmm1,cs:[ebx+2*eax+10]
-CVTTSD2SI ebx,xmm7
-CVTTSD2SI ebx,datad
-CVTTSD2SI ebx,cs:[bx+di+10]
-CVTTSD2SI ebx,cs:[ebx+2*eax+10]
-DIVPD xmm1,xmm7
-DIVPD xmm1,dataq
-DIVPD xmm1,cs:[bx+di+10]
-DIVPD xmm1,cs:[ebx+2*eax+10]
-DIVSD xmm1,xmm7
-DIVSD xmm1,dataq
-DIVSD xmm1,cs:[bx+di+10]
-DIVSD xmm1,cs:[ebx+2*eax+10]
-LFENCE
-MASKMOVDQU xmm1,xmm5
-MAXPD xmm1,xmm7
-MAXPD xmm1,dataq
-MAXPD xmm1,cs:[bx+di+10]
-MAXPD xmm1,cs:[ebx+2*eax+10]
-MAXSD xmm1,xmm7
-MAXSD xmm1,dataq
-MAXSD xmm1,cs:[bx+di+10]
-MAXSD xmm1,cs:[ebx+2*eax+10]
-MFENCE
-MINPD xmm1,xmm7
-MINPD xmm1,dataq
-MINPD xmm1,cs:[bx+di+10]
-MINPD xmm1,cs:[ebx+2*eax+10]
-MINSD xmm1,xmm7
-MINSD xmm1,dataq
-MINSD xmm1,cs:[bx+di+10]
-MINSD xmm1,cs:[ebx+2*eax+10]
-MOVAPD dataq,xmm7
-MOVAPD cs:[bx+di+10],xmm7
-MOVAPD cs:[ebx+2*eax+10],xmm7
-MOVAPD xmm1,xmm7
-MOVAPD xmm1,dataq
-MOVAPD xmm1,cs:[bx+di+10]
-MOVAPD xmm1,cs:[ebx+2*eax+10]
-MOVD datad,xmm1
-MOVD cs:[bx+di+10],xmm1
-MOVD cs:[ebx+2*eax+10],xmm1
-MOVD ebx,xmm3
-MOVD xmm1,datad
-MOVD xmm1,cs:[bx+di+10]
-MOVD xmm1,cs:[ebx+2*eax+10]
-MOVD xmm7,ebx
-MOVDQ2Q mm7,xmm1
-MOVDQA dataq,xmm1
-MOVDQA cs:[bx+di+10],xmm1
-MOVDQA cs:[ebx+2*eax+10],xmm1
-MOVDQA xmm1,xmm7
-MOVDQA xmm1,dataq
-MOVDQA xmm1,cs:[bx+di+10]
-MOVDQA xmm1,cs:[ebx+2*eax+10]
-MOVDQU dataq,xmm3
-MOVDQU cs:[bx+di+10],xmm3
-MOVDQU cs:[ebx+2*eax+10],xmm3
-MOVDQU xmm1,xmm7
-MOVDQU xmm1,dataq
-MOVDQU xmm1,cs:[bx+di+10]
-MOVDQU xmm1,cs:[ebx+2*eax+10]
-MOVHPD dataq,xmm3
-MOVHPD cs:[bx+di+10],xmm3
-MOVHPD cs:[ebx+2*eax+10],xmm3
-MOVHPD xmm1,dataq
-MOVHPD xmm1,cs:[bx+di+10]
-MOVHPD xmm1,cs:[ebx+2*eax+10]
-MOVLPD dataq,xmm7
-MOVLPD cs:[bx+di+10],xmm7
-MOVLPD cs:[ebx+2*eax+10],xmm7
-MOVLPD xmm1,dataq
-MOVLPD xmm1,cs:[bx+di+10]
-MOVLPD xmm1,cs:[ebx+2*eax+10]
-MOVMSKPD ebx,xmm1
-MOVNTDQ dataq,xmm1
-MOVNTDQ cs:[bx+di+10],xmm1
-MOVNTDQ cs:[ebx+2*eax+10],xmm1
-MOVNTI datad,ebx
-MOVNTI cs:[bx+di+10],ebx
-MOVNTI cs:[ebx+2*eax+10],ebx
-MOVNTPD dataq,xmm1
-MOVNTPD cs:[bx+di+10],xmm1
-MOVNTPD cs:[ebx+2*eax+10],xmm1
-MOVQ dataq,xmm1
-MOVQ cs:[bx+di+10],xmm1
-MOVQ cs:[ebx+2*eax+10],xmm1
-MOVQ xmm1,xmm7
-MOVQ xmm1,dataq
-MOVQ xmm1,cs:[bx+di+10]
-MOVQ xmm1,cs:[ebx+2*eax+10]
-MOVQ2DQ xmm1,mm7
-MOVSD dataq,xmm1
-MOVSD cs:[bx+di+10],xmm1
-MOVSD cs:[ebx+2*eax+10],xmm1
-MOVSD xmm1,xmm7
-MOVSD xmm1,dataq
-MOVSD xmm1,cs:[bx+di+10]
-MOVSD xmm1,cs:[ebx+2*eax+10]
-MOVUPD dataq,xmm1
-MOVUPD cs:[bx+di+10],xmm1
-MOVUPD cs:[ebx+2*eax+10],xmm1
-MOVUPD xmm1,xmm7
-MOVUPD xmm1,dataq
-MOVUPD xmm1,cs:[bx+di+10]
-MOVUPD xmm1,cs:[ebx+2*eax+10]
-MULPD xmm1,xmm7
-MULPD xmm1,dataq
-MULPD xmm1,cs:[bx+di+10]
-MULPD xmm1,cs:[ebx+2*eax+10]
-MULSD xmm1,xmm7
-MULSD xmm1,dataq
-MULSD xmm1,cs:[bx+di+10]
-MULSD xmm1,cs:[ebx+2*eax+10]
-ORPD xmm1,xmm7
-ORPD xmm1,dataq
-ORPD xmm1,cs:[bx+di+10]
-ORPD xmm1,cs:[ebx+2*eax+10]
-PACKSSDW xmm1,xmm7
-PACKSSDW xmm1,dataq
-PACKSSDW xmm1,cs:[bx+di+10]
-PACKSSDW xmm1,cs:[ebx+2*eax+10]
-PACKSSWB xmm1,xmm7
-PACKSSWB xmm1,dataq
-PACKSSWB xmm1,cs:[bx+di+10]
-PACKSSWB xmm1,cs:[ebx+2*eax+10]
-PACKUSWB xmm1,xmm7
-PACKUSWB xmm1,dataq
-PACKUSWB xmm1,cs:[bx+di+10]
-PACKUSWB xmm1,cs:[ebx+2*eax+10]
-PADDB xmm1,xmm7
-PADDB xmm1,dataq
-PADDB xmm1,cs:[bx+di+10]
-PADDB xmm1,cs:[ebx+2*eax+10]
-PADDD xmm1,xmm7
-PADDD xmm1,dataq
-PADDD xmm1,cs:[bx+di+10]
-PADDD xmm1,cs:[ebx+2*eax+10]
-PADDQ xmm1,xmm7
-PADDQ xmm1,dataq
-PADDQ xmm1,cs:[bx+di+10]
-PADDQ xmm1,cs:[ebx+2*eax+10]
-PADDQ xmm1,xmm7
-PADDQ xmm1,dataq
-PADDQ xmm1,cs:[bx+di+10]
-PADDQ xmm1,cs:[ebx+2*eax+10]
-PADDSB xmm1,xmm7
-PADDSB xmm1,dataq
-PADDSB xmm1,cs:[bx+di+10]
-PADDSB xmm1,cs:[ebx+2*eax+10]
-PADDSD xmm1,xmm7
-PADDSD xmm1,dataq
-PADDSD xmm1,cs:[bx+di+10]
-PADDSD xmm1,cs:[ebx+2*eax+10]
-PADDSQ xmm1,xmm7
-PADDSQ xmm1,dataq
-PADDSQ xmm1,cs:[bx+di+10]
-PADDSQ xmm1,cs:[ebx+2*eax+10]
-PADDSW xmm1,xmm7
-PADDSW xmm1,dataq
-PADDSW xmm1,cs:[bx+di+10]
-PADDSW xmm1,cs:[ebx+2*eax+10]
-PADDUSB xmm1,xmm7
-PADDUSB xmm1,dataq
-PADDUSB xmm1,cs:[bx+di+10]
-PADDUSB xmm1,cs:[ebx+2*eax+10]
-PADDUSD xmm1,xmm7
-PADDUSD xmm1,dataq
-PADDUSD xmm1,cs:[bx+di+10]
-PADDUSD xmm1,cs:[ebx+2*eax+10]
-PADDUSQ xmm1,xmm7
-PADDUSQ xmm1,dataq
-PADDUSQ xmm1,cs:[bx+di+10]
-PADDUSQ xmm1,cs:[ebx+2*eax+10]
-PADDUSW xmm1,xmm7
-PADDUSW xmm1,dataq
-PADDUSW xmm1,cs:[bx+di+10]
-PADDUSW xmm1,cs:[ebx+2*eax+10]
-PADDW xmm1,xmm7
-PADDW xmm1,dataq
-PADDW xmm1,cs:[bx+di+10]
-PADDW xmm1,cs:[ebx+2*eax+10]
-PAND xmm1,xmm7
-PAND xmm1,dataq
-PAND xmm1,cs:[bx+di+10]
-PAND xmm1,cs:[ebx+2*eax+10]
-PANDN xmm1,xmm7
-PANDN xmm1,dataq
-PANDN xmm1,cs:[bx+di+10]
-PANDN xmm1,cs:[ebx+2*eax+10]
-PAUSE
-PAVGB xmm1,xmm7
-PAVGB xmm1,dataq
-PAVGB xmm1,cs:[bx+di+10]
-PAVGB xmm1,cs:[ebx+2*eax+10]
-PAVGW xmm1,xmm7
-PAVGW xmm1,dataq
-PAVGW xmm1,cs:[bx+di+10]
-PAVGW xmm1,cs:[ebx+2*eax+10]
-PCMPEQB xmm1,xmm7
-PCMPEQB xmm1,dataq
-PCMPEQB xmm1,cs:[bx+di+10]
-PCMPEQB xmm1,cs:[ebx+2*eax+10]
-PCMPEQD xmm1,xmm7
-PCMPEQD xmm1,dataq
-PCMPEQD xmm1,cs:[bx+di+10]
-PCMPEQD xmm1,cs:[ebx+2*eax+10]
-PCMPEQW xmm1,xmm7
-PCMPEQW xmm1,dataq
-PCMPEQW xmm1,cs:[bx+di+10]
-PCMPEQW xmm1,cs:[ebx+2*eax+10]
-PCMPGTB xmm1,xmm7
-PCMPGTB xmm1,dataq
-PCMPGTB xmm1,cs:[bx+di+10]
-PCMPGTB xmm1,cs:[ebx+2*eax+10]
-PCMPGTD xmm1,xmm7
-PCMPGTD xmm1,dataq
-PCMPGTD xmm1,cs:[bx+di+10]
-PCMPGTD xmm1,cs:[ebx+2*eax+10]
-PCMPGTW xmm1,xmm7
-PCMPGTW xmm1,dataq
-PCMPGTW xmm1,cs:[bx+di+10]
-PCMPGTW xmm1,cs:[ebx+2*eax+10]
-PMADDWD xmm1,xmm7
-PMADDWD xmm1,dataq
-PMADDWD xmm1,cs:[bx+di+10]
-PMADDWD xmm1,cs:[ebx+2*eax+10]
-PMAXSW xmm1,xmm7
-PMAXSW xmm1,dataq
-PMAXSW xmm1,cs:[bx+di+10]
-PMAXSW xmm1,cs:[ebx+2*eax+10]
-PMAXUB xmm1,xmm7
-PMAXUB xmm1,dataq
-PMAXUB xmm1,cs:[bx+di+10]
-PMAXUB xmm1,cs:[ebx+2*eax+10]
-PMINSW xmm1,xmm7
-PMINSW xmm1,dataq
-PMINSW xmm1,cs:[bx+di+10]
-PMINSW xmm1,cs:[ebx+2*eax+10]
-PMINUB xmm1,xmm7
-PMINUB xmm1,dataq
-PMINUB xmm1,cs:[bx+di+10]
-PMINUB xmm1,cs:[ebx+2*eax+10]
-PMOVMSKB ebx,xmm7
-PMULHUW xmm1, xmm6
-PMULHUW xmm1, dataq
-PMULHW xmm1,xmm7
-PMULHW xmm1,dataq
-PMULHW xmm1,cs:[bx+di+10]
-PMULHW xmm1,cs:[ebx+2*eax+10]
-PMULLW xmm1,xmm7
-PMULLW xmm1,dataq
-PMULLW xmm1,cs:[bx+di+10]
-PMULLW xmm1,cs:[ebx+2*eax+10]
-PMULUDQ xmm1,xmm7
-PMULUDQ xmm1,dataq
-PMULUDQ xmm1,cs:[bx+di+10]
-PMULUDQ xmm1,cs:[ebx+2*eax+10]
-PMULUDQ xmm1,xmm7
-PMULUDQ xmm1,dataq
-PMULUDQ xmm1,cs:[bx+di+10]
-PMULUDQ xmm1,cs:[ebx+2*eax+10]
-POR xmm1,xmm7
-POR xmm1,dataq
-POR xmm1,cs:[bx+di+10]
-POR xmm1,cs:[ebx+2*eax+10]
-PSADBW xmm1,xmm7
-PSADBW xmm1,dataq
-PSADBW xmm1,cs:[bx+di+10]
-PSADBW xmm1,cs:[ebx+2*eax+10]
-PSHUFD xmm1,xmm7,255
-PSHUFD xmm1,dataq,255
-PSHUFD xmm1,cs:[bx+di+10],255
-PSHUFD xmm1,cs:[ebx+2*eax+10],255
-PSHUFHW xmm1,xmm7,255
-PSHUFHW xmm1,dataq,255
-PSHUFHW xmm1,cs:[bx+di+10],255
-PSHUFHW xmm1,cs:[ebx+2*eax+10],255
-PSHUFLW xmm1,xmm7,255
-PSHUFLW xmm1,dataq,255
-PSHUFLW xmm1,cs:[bx+di+10],255
-PSHUFLW xmm1,cs:[ebx+2*eax+10],255
-PSLLD xmm1,255
-PSLLD xmm1,xmm7
-PSLLD xmm1,dataq
-PSLLD xmm1,cs:[bx+di+10]
-PSLLD xmm1,cs:[ebx+2*eax+10]
-PSLLDQ xmm1,255
-PSLLQ xmm1,255
-PSLLQ xmm1,xmm7
-PSLLQ xmm1,dataq
-PSLLQ xmm1,cs:[bx+di+10]
-PSLLQ xmm1,cs:[ebx+2*eax+10]
-PSLLW xmm1,255
-PSLLW xmm1,xmm7
-PSLLW xmm1,dataq
-PSLLW xmm1,cs:[bx+di+10]
-PSLLW xmm1,cs:[ebx+2*eax+10]
-PSRAD xmm1,255
-PSRAD xmm1,xmm7
-PSRAD xmm1,dataq
-PSRAD xmm1,cs:[bx+di+10]
-PSRAD xmm1,cs:[ebx+2*eax+10]
-PSRAW xmm1,255
-PSRLD xmm1,255
-PSRLD xmm1,xmm7
-PSRLD xmm1,dataq
-PSRLD xmm1,cs:[bx+di+10]
-PSRLD xmm1,cs:[ebx+2*eax+10]
-PSRLDQ xmm1,255
-PSRLQ xmm1,255
-PSRLQ xmm1,xmm7
-PSRLQ xmm1,dataq
-PSRLQ xmm1,cs:[bx+di+10]
-PSRLQ xmm1,cs:[ebx+2*eax+10]
-PSRLW xmm1,255
-PSRLW xmm1,xmm7
-PSRLW xmm1,dataq
-PSRLW xmm1,cs:[bx+di+10]
-PSRLW xmm1,cs:[ebx+2*eax+10]
-PSUBB xmm1,xmm7
-PSUBB xmm1,dataq
-PSUBB xmm1,cs:[bx+di+10]
-PSUBB xmm1,cs:[ebx+2*eax+10]
-PSUBD xmm1,xmm7
-PSUBD xmm1,dataq
-PSUBD xmm1,cs:[bx+di+10]
-PSUBD xmm1,cs:[ebx+2*eax+10]
-PSUBQ xmm1,xmm7
-PSUBQ xmm1,dataq
-PSUBQ xmm1,cs:[bx+di+10]
-PSUBQ xmm1,cs:[ebx+2*eax+10]
-PSUBQ xmm1,xmm7
-PSUBQ xmm1,dataq
-PSUBQ xmm1,cs:[bx+di+10]
-PSUBQ xmm1,cs:[ebx+2*eax+10]
-PSUBSB xmm1,xmm7
-PSUBSB xmm1,dataq
-PSUBSB xmm1,cs:[bx+di+10]
-PSUBSB xmm1,cs:[ebx+2*eax+10]
-PSUBSW xmm1,xmm7
-PSUBSW xmm1,dataq
-PSUBSW xmm1,cs:[bx+di+10]
-PSUBSW xmm1,cs:[ebx+2*eax+10]
-PSUBUSB xmm1,xmm7
-PSUBUSB xmm1,dataq
-PSUBUSB xmm1,cs:[bx+di+10]
-PSUBUSB xmm1,cs:[ebx+2*eax+10]
-PSUBUSW xmm1,xmm7
-PSUBUSW xmm1,dataq
-PSUBUSW xmm1,cs:[bx+di+10]
-PSUBUSW xmm1,cs:[ebx+2*eax+10]
-PSUBW xmm1,xmm7
-PSUBW xmm1,dataq
-PSUBW xmm1,cs:[bx+di+10]
-PSUBW xmm1,cs:[ebx+2*eax+10]
-PUNPCKHBW xmm1,xmm7
-PUNPCKHBW xmm1,dataq
-PUNPCKHBW xmm1,cs:[bx+di+10]
-PUNPCKHBW xmm1,cs:[ebx+2*eax+10]
-PUNPCKHDQ xmm1,xmm7
-PUNPCKHDQ xmm1,dataq
-PUNPCKHDQ xmm1,cs:[bx+di+10]
-PUNPCKHDQ xmm1,cs:[ebx+2*eax+10]
-PUNPCKHQDQ xmm1,xmm7
-PUNPCKHQDQ xmm1,dataq
-PUNPCKHQDQ xmm1,cs:[bx+di+10]
-PUNPCKHQDQ xmm1,cs:[ebx+2*eax+10]
-PUNPCKHWD xmm1,xmm7
-PUNPCKHWD xmm1,dataq
-PUNPCKHWD xmm1,cs:[bx+di+10]
-PUNPCKHWD xmm1,cs:[ebx+2*eax+10]
-PUNPCKLBW xmm1,xmm7
-PUNPCKLBW xmm1,dataq
-PUNPCKLBW xmm1,cs:[bx+di+10]
-PUNPCKLBW xmm1,cs:[ebx+2*eax+10]
-PUNPCKLDQ xmm1,xmm7
-PUNPCKLDQ xmm1,dataq
-PUNPCKLDQ xmm1,cs:[bx+di+10]
-PUNPCKLDQ xmm1,cs:[ebx+2*eax+10]
-PUNPCKLQDQ xmm1,xmm7
-PUNPCKLQDQ xmm1,dataq
-PUNPCKLQDQ xmm1,cs:[bx+di+10]
-PUNPCKLQDQ xmm1,cs:[ebx+2*eax+10]
-PUNPCKLWD xmm1,xmm7
-PUNPCKLWD xmm1,dataq
-PUNPCKLWD xmm1,cs:[bx+di+10]
-PUNPCKLWD xmm1,cs:[ebx+2*eax+10]
-PXOR xmm1,xmm7
-PXOR xmm1,dataq
-PXOR xmm1,cs:[bx+di+10]
-PXOR xmm1,cs:[ebx+2*eax+10]
-SHUFPD xmm1,xmm7,255
-SHUFPD xmm1,dataq,255
-SHUFPD xmm1,cs:[bx+di+10],255
-SHUFPD xmm1,cs:[ebx+2*eax+10],255
-SQRTPD xmm1,xmm7
-SQRTPD xmm1,dataq
-SQRTPD xmm1,cs:[bx+di+10]
-SQRTPD xmm1,cs:[ebx+2*eax+10]
-SQRTSD xmm1,xmm7
-SQRTSD xmm1,dataq
-SQRTSD xmm1,cs:[bx+di+10]
-SQRTSD xmm1,cs:[ebx+2*eax+10]
-SUBPD xmm1,xmm7
-SUBPD xmm1,dataq
-SUBPD xmm1,cs:[bx+di+10]
-SUBPD xmm1,cs:[ebx+2*eax+10]
-SUBSD xmm1,xmm7
-SUBSD xmm1,dataq
-SUBSD xmm1,cs:[bx+di+10]
-SUBSD xmm1,cs:[ebx+2*eax+10]
-UCOMISD xmm1,xmm7
-UCOMISD xmm1,dataq
-UCOMISD xmm1,cs:[bx+di+10]
-UCOMISD xmm1,cs:[ebx+2*eax+10]
-UNPCKHPD xmm1,xmm7
-UNPCKHPD xmm1,dataq
-UNPCKHPD xmm1,cs:[bx+di+10]
-UNPCKHPD xmm1,cs:[ebx+2*eax+10]
-UNPCKLPD xmm1,xmm7
-UNPCKLPD xmm1,dataq
-UNPCKLPD xmm1,cs:[bx+di+10]
-UNPCKLPD xmm1,cs:[ebx+2*eax+10]
-XORPD xmm1,xmm7
-XORPD xmm1,dataq
-XORPD xmm1,cs:[bx+di+10]
-XORPD xmm1,cs:[ebx+2*eax+10]
+    addpd       xmm1,xmm7
+    addpd       xmm1,x
+    addpd       xmm1,cs:0aH[bx+di]
+    addpd       xmm1,cs:0aH[ebx+eax*2]
+    addsd       xmm1,xmm7
+    addsd       xmm1,x
+    addsd       xmm1,cs:0aH[bx+di]
+    addsd       xmm1,cs:0aH[ebx+eax*2]
+    andnpd      xmm1,xmm7
+    andnpd      xmm1,x
+    andnpd      xmm1,cs:0aH[bx+di]
+    andnpd      xmm1,cs:0aH[ebx+eax*2]
+    andpd       xmm1,xmm7
+    andpd       xmm1,x
+    andpd       xmm1,cs:0aH[bx+di]
+    andpd       xmm1,cs:0aH[ebx+eax*2]
+    clflush     x
+    clflush     cs:0aH[bx+di]
+    clflush     cs:0aH[ebx+eax*2]
+    cmppd       xmm1,xmm7,0ffH
+    cmppd       xmm1,x,0ffH
+    cmppd       xmm1,cs:0aH[bx+di],0ffH
+    cmppd       xmm1,cs:0aH[ebx+eax*2],0ffH
+    cmpsd       xmm1,xmm7,0ffH
+    cmpsd       xmm1,x,0ffH
+    cmpsd       xmm1,cs:0aH[bx+di],0ffH
+    cmpsd       xmm1,cs:0aH[ebx+eax*2],0ffH
+    comisd      xmm1,xmm7
+    comisd      xmm1,x
+    comisd      xmm1,cs:0aH[bx+di]
+    comisd      xmm1,cs:0aH[ebx+eax*2]
+    cvtdq2pd    xmm1,xmm7
+    cvtdq2pd    xmm1,x
+    cvtdq2pd    xmm1,cs:0aH[bx+di]
+    cvtdq2pd    xmm1,cs:0aH[ebx+eax*2]
+    cvtdq2ps    xmm1,xmm7
+    cvtdq2ps    xmm1,x
+    cvtdq2ps    xmm1,cs:0aH[bx+di]
+    cvtdq2ps    xmm1,cs:0aH[ebx+eax*2]
+    cvtpd2dq    xmm1,xmm7
+    cvtpd2dq    xmm1,x
+    cvtpd2dq    xmm1,cs:0aH[bx+di]
+    cvtpd2dq    xmm1,cs:0aH[ebx+eax*2]
+    cvtpd2pi    mm1,xmm7
+    cvtpd2pi    mm1,x
+    cvtpd2pi    mm1,cs:0aH[bx+di]
+    cvtpd2pi    mm1,cs:0aH[ebx+eax*2]
+    cvtpd2ps    xmm1,xmm7
+    cvtpd2ps    xmm1,x
+    cvtpd2ps    xmm1,cs:0aH[bx+di]
+    cvtpd2ps    xmm1,cs:0aH[ebx+eax*2]
+    cvtpi2pd    xmm1,mm7
+    cvtpi2pd    xmm1,x
+    cvtpi2pd    xmm1,cs:0aH[bx+di]
+    cvtpi2pd    xmm1,cs:0aH[ebx+eax*2]
+    cvtps2dq    xmm1,xmm7
+    cvtps2dq    xmm1,x
+    cvtps2dq    xmm1,cs:0aH[bx+di]
+    cvtps2dq    xmm1,cs:0aH[ebx+eax*2]
+    cvtps2pd    xmm1,xmm7
+    cvtps2pd    xmm1,x
+    cvtps2pd    xmm1,cs:0aH[bx+di]
+    cvtps2pd    xmm1,cs:0aH[ebx+eax*2]
+    cvtsd2si    ebx,xmm7
+    cvtsd2si    ebx,dword ptr x
+    cvtsd2si    ebx,cs:0aH[bx+di]
+    cvtsd2si    ebx,cs:0aH[ebx+eax*2]
+    cvtsd2ss    xmm1,xmm7
+    cvtsd2ss    xmm1,x
+    cvtsd2ss    xmm1,cs:0aH[bx+di]
+    cvtsd2ss    xmm1,cs:0aH[ebx+eax*2]
+    cvtsi2sd    xmm5,x
+    cvtsi2sd    xmm5,cs:0aH[bx+di]
+    cvtsi2sd    xmm5,cs:0aH[ebx+eax*2]
+    cvtsi2sd    xmm5,ecx
+    cvtss2sd    xmm1,xmm7
+    cvtss2sd    xmm1,x
+    cvtss2sd    xmm1,cs:0aH[bx+di]
+    cvtss2sd    xmm1,cs:0aH[ebx+eax*2]
+    cvttpd2dq   xmm1,xmm7
+    cvttpd2dq   xmm1,x
+    cvttpd2dq   xmm1,cs:0aH[bx+di]
+    cvttpd2dq   xmm1,cs:0aH[ebx+eax*2]
+    cvttpd2pi   mm1,xmm7
+    cvttpd2pi   mm1,x
+    cvttpd2pi   mm1,cs:0aH[bx+di]
+    cvttpd2pi   mm1,cs:0aH[ebx+eax*2]
+    cvttps2dq   xmm1,xmm7
+    cvttps2dq   xmm1,x
+    cvttps2dq   xmm1,cs:0aH[bx+di]
+    cvttps2dq   xmm1,cs:0aH[ebx+eax*2]
+    cvttsd2si   ebx,xmm7
+    cvttsd2si   ebx,dword ptr x
+    cvttsd2si   ebx,cs:0aH[bx+di]
+    cvttsd2si   ebx,cs:0aH[ebx+eax*2]
+    divpd       xmm1,xmm7
+    divpd       xmm1,x
+    divpd       xmm1,cs:0aH[bx+di]
+    divpd       xmm1,cs:0aH[ebx+eax*2]
+    divsd       xmm1,xmm7
+    divsd       xmm1,x
+    divsd       xmm1,cs:0aH[bx+di]
+    divsd       xmm1,cs:0aH[ebx+eax*2]
+    lfence
+    maskmovdqu  xmm1,xmm5
+    maxpd       xmm1,xmm7
+    maxpd       xmm1,x
+    maxpd       xmm1,cs:0aH[bx+di]
+    maxpd       xmm1,cs:0aH[ebx+eax*2]
+    maxsd       xmm1,xmm7
+    maxsd       xmm1,x
+    maxsd       xmm1,cs:0aH[bx+di]
+    maxsd       xmm1,cs:0aH[ebx+eax*2]
+    mfence
+    minpd       xmm1,xmm7
+    minpd       xmm1,x
+    minpd       xmm1,cs:0aH[bx+di]
+    minpd       xmm1,cs:0aH[ebx+eax*2]
+    minsd       xmm1,xmm7
+    minsd       xmm1,x
+    minsd       xmm1,cs:0aH[bx+di]
+    minsd       xmm1,cs:0aH[ebx+eax*2]
+    movapd      x,xmm7
+    movapd      cs:0aH[bx+di],xmm7
+    movapd      cs:0aH[ebx+eax*2],xmm7
+    movapd      xmm1,xmm7
+    movapd      xmm1,x
+    movapd      xmm1,cs:0aH[bx+di]
+    movapd      xmm1,cs:0aH[ebx+eax*2]
+    movd        x,xmm1
+    movd        cs:0aH[bx+di],xmm1
+    movd        cs:0aH[ebx+eax*2],xmm1
+    movd        ebx,xmm3
+    movd        xmm1,x
+    movd        xmm1,cs:0aH[bx+di]
+    movd        xmm1,cs:0aH[ebx+eax*2]
+    movd        xmm7,ebx
+    movdq2q     mm7,xmm1
+    movdqa      x,xmm1
+    movdqa      cs:0aH[bx+di],xmm1
+    movdqa      cs:0aH[ebx+eax*2],xmm1
+    movdqa      xmm1,xmm7
+    movdqa      xmm1,x
+    movdqa      xmm1,cs:0aH[bx+di]
+    movdqa      xmm1,cs:0aH[ebx+eax*2]
+    movdqu      x,xmm3
+    movdqu      cs:0aH[bx+di],xmm3
+    movdqu      cs:0aH[ebx+eax*2],xmm3
+    movdqu      xmm1,xmm7
+    movdqu      xmm1,x
+    movdqu      xmm1,cs:0aH[bx+di]
+    movdqu      xmm1,cs:0aH[ebx+eax*2]
+    movhpd      x,xmm3
+    movhpd      cs:0aH[bx+di],xmm3
+    movhpd      cs:0aH[ebx+eax*2],xmm3
+    movhpd      xmm1,x
+    movhpd      xmm1,cs:0aH[bx+di]
+    movhpd      xmm1,cs:0aH[ebx+eax*2]
+    movlpd      x,xmm7
+    movlpd      cs:0aH[bx+di],xmm7
+    movlpd      cs:0aH[ebx+eax*2],xmm7
+    movlpd      xmm1,x
+    movlpd      xmm1,cs:0aH[bx+di]
+    movlpd      xmm1,cs:0aH[ebx+eax*2]
+    movmskpd    ebx,xmm1
+    movntdq     x,xmm1
+    movntdq     cs:0aH[bx+di],xmm1
+    movntdq     cs:0aH[ebx+eax*2],xmm1
+    movnti      dword ptr x,ebx
+    movnti      cs:0aH[bx+di],ebx
+    movnti      cs:0aH[ebx+eax*2],ebx
+    movntpd     x,xmm1
+    movntpd     cs:0aH[bx+di],xmm1
+    movntpd     cs:0aH[ebx+eax*2],xmm1
+    movq        x,xmm1
+    movq        cs:0aH[bx+di],xmm1
+    movq        cs:0aH[ebx+eax*2],xmm1
+    movq        xmm1,xmm7
+    movq        xmm1,x
+    movq        xmm1,cs:0aH[bx+di]
+    movq        xmm1,cs:0aH[ebx+eax*2]
+    movq2dq     xmm1,mm7
+    movsd       x,xmm1
+    movsd       cs:0aH[bx+di],xmm1
+    movsd       cs:0aH[ebx+eax*2],xmm1
+    movsd       xmm1,xmm7
+    movsd       xmm1,x
+    movsd       xmm1,cs:0aH[bx+di]
+    movsd       xmm1,cs:0aH[ebx+eax*2]
+    movupd      x,xmm1
+    movupd      cs:0aH[bx+di],xmm1
+    movupd      cs:0aH[ebx+eax*2],xmm1
+    movupd      xmm1,xmm7
+    movupd      xmm1,x
+    movupd      xmm1,cs:0aH[bx+di]
+    movupd      xmm1,cs:0aH[ebx+eax*2]
+    mulpd       xmm1,xmm7
+    mulpd       xmm1,x
+    mulpd       xmm1,cs:0aH[bx+di]
+    mulpd       xmm1,cs:0aH[ebx+eax*2]
+    mulsd       xmm1,xmm7
+    mulsd       xmm1,x
+    mulsd       xmm1,cs:0aH[bx+di]
+    mulsd       xmm1,cs:0aH[ebx+eax*2]
+    orpd        xmm1,xmm7
+    orpd        xmm1,x
+    orpd        xmm1,cs:0aH[bx+di]
+    orpd        xmm1,cs:0aH[ebx+eax*2]
+    packssdw    xmm1,xmm7
+    packssdw    xmm1,x
+    packssdw    xmm1,cs:0aH[bx+di]
+    packssdw    xmm1,cs:0aH[ebx+eax*2]
+    packsswb    xmm1,xmm7
+    packsswb    xmm1,x
+    packsswb    xmm1,cs:0aH[bx+di]
+    packsswb    xmm1,cs:0aH[ebx+eax*2]
+    packuswb    xmm1,xmm7
+    packuswb    xmm1,x
+    packuswb    xmm1,cs:0aH[bx+di]
+    packuswb    xmm1,cs:0aH[ebx+eax*2]
+    paddb       xmm1,xmm7
+    paddb       xmm1,x
+    paddb       xmm1,cs:0aH[bx+di]
+    paddb       xmm1,cs:0aH[ebx+eax*2]
+    paddd       xmm1,xmm7
+    paddd       xmm1,x
+    paddd       xmm1,cs:0aH[bx+di]
+    paddd       xmm1,cs:0aH[ebx+eax*2]
+    paddq       xmm1,xmm7
+    paddq       xmm1,x
+    paddq       xmm1,cs:0aH[bx+di]
+    paddq       xmm1,cs:0aH[ebx+eax*2]
+    paddsb      xmm1,xmm7
+    paddsb      xmm1,x
+    paddsb      xmm1,cs:0aH[bx+di]
+    paddsb      xmm1,cs:0aH[ebx+eax*2]
+    paddsw      xmm1,xmm7
+    paddsw      xmm1,x
+    paddsw      xmm1,cs:0aH[bx+di]
+    paddsw      xmm1,cs:0aH[ebx+eax*2]
+    paddusb     xmm1,xmm7
+    paddusb     xmm1,x
+    paddusb     xmm1,cs:0aH[bx+di]
+    paddusb     xmm1,cs:0aH[ebx+eax*2]
+    paddusw     xmm1,xmm7
+    paddusw     xmm1,x
+    paddusw     xmm1,cs:0aH[bx+di]
+    paddusw     xmm1,cs:0aH[ebx+eax*2]
+    paddw       xmm1,xmm7
+    paddw       xmm1,x
+    paddw       xmm1,cs:0aH[bx+di]
+    paddw       xmm1,cs:0aH[ebx+eax*2]
+    pand        xmm1,xmm7
+    pand        xmm1,x
+    pand        xmm1,cs:0aH[bx+di]
+    pand        xmm1,cs:0aH[ebx+eax*2]
+    pandn       xmm1,xmm7
+    pandn       xmm1,x
+    pandn       xmm1,cs:0aH[bx+di]
+    pandn       xmm1,cs:0aH[ebx+eax*2]
+    pause
+    pavgb       xmm1,xmm7
+    pavgb       xmm1,x
+    pavgb       xmm1,cs:0aH[bx+di]
+    pavgb       xmm1,cs:0aH[ebx+eax*2]
+    pavgw       xmm1,xmm7
+    pavgw       xmm1,x
+    pavgw       xmm1,cs:0aH[bx+di]
+    pavgw       xmm1,cs:0aH[ebx+eax*2]
+    pcmpeqb     xmm1,xmm7
+    pcmpeqb     xmm1,x
+    pcmpeqb     xmm1,cs:0aH[bx+di]
+    pcmpeqb     xmm1,cs:0aH[ebx+eax*2]
+    pcmpeqd     xmm1,xmm7
+    pcmpeqd     xmm1,x
+    pcmpeqd     xmm1,cs:0aH[bx+di]
+    pcmpeqd     xmm1,cs:0aH[ebx+eax*2]
+    pcmpeqw     xmm1,xmm7
+    pcmpeqw     xmm1,x
+    pcmpeqw     xmm1,cs:0aH[bx+di]
+    pcmpeqw     xmm1,cs:0aH[ebx+eax*2]
+    pcmpgtb     xmm1,xmm7
+    pcmpgtb     xmm1,x
+    pcmpgtb     xmm1,cs:0aH[bx+di]
+    pcmpgtb     xmm1,cs:0aH[ebx+eax*2]
+    pcmpgtd     xmm1,xmm7
+    pcmpgtd     xmm1,x
+    pcmpgtd     xmm1,cs:0aH[bx+di]
+    pcmpgtd     xmm1,cs:0aH[ebx+eax*2]
+    pcmpgtw     xmm1,xmm7
+    pcmpgtw     xmm1,x
+    pcmpgtw     xmm1,cs:0aH[bx+di]
+    pcmpgtw     xmm1,cs:0aH[ebx+eax*2]
+    pmaddwd     xmm1,xmm7
+    pmaddwd     xmm1,x
+    pmaddwd     xmm1,cs:0aH[bx+di]
+    pmaddwd     xmm1,cs:0aH[ebx+eax*2]
+    pmaxsw      xmm1,xmm7
+    pmaxsw      xmm1,x
+    pmaxsw      xmm1,cs:0aH[bx+di]
+    pmaxsw      xmm1,cs:0aH[ebx+eax*2]
+    pmaxub      xmm1,xmm7
+    pmaxub      xmm1,x
+    pmaxub      xmm1,cs:0aH[bx+di]
+    pmaxub      xmm1,cs:0aH[ebx+eax*2]
+    pminsw      xmm1,xmm7
+    pminsw      xmm1,x
+    pminsw      xmm1,cs:0aH[bx+di]
+    pminsw      xmm1,cs:0aH[ebx+eax*2]
+    pminub      xmm1,xmm7
+    pminub      xmm1,x
+    pminub      xmm1,cs:0aH[bx+di]
+    pminub      xmm1,cs:0aH[ebx+eax*2]
+    pmovmskb    ebx,xmm7
+    pmulhuw     xmm1,xmm6
+    pmulhuw     xmm1,x
+    pmulhw      xmm1,xmm7
+    pmulhw      xmm1,x
+    pmulhw      xmm1,cs:0aH[bx+di]
+    pmulhw      xmm1,cs:0aH[ebx+eax*2]
+    pmullw      xmm1,xmm7
+    pmullw      xmm1,x
+    pmullw      xmm1,cs:0aH[bx+di]
+    pmullw      xmm1,cs:0aH[ebx+eax*2]
+    pmuludq     xmm1,xmm7
+    pmuludq     xmm1,x
+    pmuludq     xmm1,cs:0aH[bx+di]
+    pmuludq     xmm1,cs:0aH[ebx+eax*2]
+    pmuludq     xmm1,xmm7
+    pmuludq     xmm1,x
+    pmuludq     xmm1,cs:0aH[bx+di]
+    pmuludq     xmm1,cs:0aH[ebx+eax*2]
+    por         xmm1,xmm7
+    por         xmm1,x
+    por         xmm1,cs:0aH[bx+di]
+    por         xmm1,cs:0aH[ebx+eax*2]
+    psadbw      xmm1,xmm7
+    psadbw      xmm1,x
+    psadbw      xmm1,cs:0aH[bx+di]
+    psadbw      xmm1,cs:0aH[ebx+eax*2]
+    pshufd      xmm1,xmm7,0ffH
+    pshufd      xmm1,x,0ffH
+    pshufd      xmm1,cs:0aH[bx+di],0ffH
+    pshufd      xmm1,cs:0aH[ebx+eax*2],0ffH
+    pshufhw     xmm1,xmm7,0ffH
+    pshufhw     xmm1,x,0ffH
+    pshufhw     xmm1,cs:0aH[bx+di],0ffH
+    pshufhw     xmm1,cs:0aH[ebx+eax*2],0ffH
+    pshuflw     xmm1,xmm7,0ffH
+    pshuflw     xmm1,x,0ffH
+    pshuflw     xmm1,cs:0aH[bx+di],0ffH
+    pshuflw     xmm1,cs:0aH[ebx+eax*2],0ffH
+    pslld       xmm1,0ffH
+    pslld       xmm1,xmm7
+    pslld       xmm1,x
+    pslld       xmm1,cs:0aH[bx+di]
+    pslld       xmm1,cs:0aH[ebx+eax*2]
+    pslldq      xmm1,0ffH
+    psllq       xmm1,0ffH
+    psllq       xmm1,xmm7
+    psllq       xmm1,x
+    psllq       xmm1,cs:0aH[bx+di]
+    psllq       xmm1,cs:0aH[ebx+eax*2]
+    psllw       xmm1,0ffH
+    psllw       xmm1,xmm7
+    psllw       xmm1,x
+    psllw       xmm1,cs:0aH[bx+di]
+    psllw       xmm1,cs:0aH[ebx+eax*2]
+    psrad       xmm1,0ffH
+    psrad       xmm1,xmm7
+    psrad       xmm1,x
+    psrad       xmm1,cs:0aH[bx+di]
+    psrad       xmm1,cs:0aH[ebx+eax*2]
+    psraw       xmm1,0ffH
+    psrld       xmm1,0ffH
+    psrld       xmm1,xmm7
+    psrld       xmm1,x
+    psrld       xmm1,cs:0aH[bx+di]
+    psrld       xmm1,cs:0aH[ebx+eax*2]
+    psrldq      xmm1,0ffH
+    psrlq       xmm1,0ffH
+    psrlq       xmm1,xmm7
+    psrlq       xmm1,x
+    psrlq       xmm1,cs:0aH[bx+di]
+    psrlq       xmm1,cs:0aH[ebx+eax*2]
+    psrlw       xmm1,0ffH
+    psrlw       xmm1,xmm7
+    psrlw       xmm1,x
+    psrlw       xmm1,cs:0aH[bx+di]
+    psrlw       xmm1,cs:0aH[ebx+eax*2]
+    psubb       mm1,mm7
+    psubb       mm1,x
+    psubb       mm1,cs:0aH[bx+di]
+    psubb       mm1,cs:0aH[ebx+eax*2]
+    psubd       mm1,mm7
+    psubd       mm1,x
+    psubd       mm1,cs:0aH[bx+di]
+    psubd       mm1,cs:0aH[ebx+eax*2]
+    psubq       mm1,mm7
+    psubq       mm1,x
+    psubq       mm1,cs:0aH[bx+di]
+    psubq       mm1,cs:0aH[ebx+eax*2]
+    psubq       mm1,mm7
+    psubq       mm1,x
+    psubq       mm1,cs:0aH[bx+di]
+    psubq       mm1,cs:0aH[ebx+eax*2]
+    psubsb      mm1,mm7
+    psubsb      mm1,x
+    psubsb      mm1,cs:0aH[bx+di]
+    psubsb      mm1,cs:0aH[ebx+eax*2]
+    psubsw      mm1,mm7
+    psubsw      mm1,x
+    psubsw      mm1,cs:0aH[bx+di]
+    psubsw      mm1,cs:0aH[ebx+eax*2]
+    psubusb     mm1,mm7
+    psubusb     mm1,x
+    psubusb     mm1,cs:0aH[bx+di]
+    psubusb     mm1,cs:0aH[ebx+eax*2]
+    psubusw     mm1,mm7
+    psubusw     mm1,x
+    psubusw     mm1,cs:0aH[bx+di]
+    psubusw     mm1,cs:0aH[ebx+eax*2]
+    psubw       mm1,mm7
+    psubw       mm1,x
+    psubw       mm1,cs:0aH[bx+di]
+    psubw       mm1,cs:0aH[ebx+eax*2]
+    psubb       xmm1,xmm7
+    psubb       xmm1,x
+    psubb       xmm1,cs:0aH[bx+di]
+    psubb       xmm1,cs:0aH[ebx+eax*2]
+    psubd       xmm1,xmm7
+    psubd       xmm1,x
+    psubd       xmm1,cs:0aH[bx+di]
+    psubd       xmm1,cs:0aH[ebx+eax*2]
+    psubq       xmm1,xmm7
+    psubq       xmm1,x
+    psubq       xmm1,cs:0aH[bx+di]
+    psubq       xmm1,cs:0aH[ebx+eax*2]
+    psubq       xmm1,xmm7
+    psubq       xmm1,x
+    psubq       xmm1,cs:0aH[bx+di]
+    psubq       xmm1,cs:0aH[ebx+eax*2]
+    psubsb      xmm1,xmm7
+    psubsb      xmm1,x
+    psubsb      xmm1,cs:0aH[bx+di]
+    psubsb      xmm1,cs:0aH[ebx+eax*2]
+    psubsw      xmm1,xmm7
+    psubsw      xmm1,x
+    psubsw      xmm1,cs:0aH[bx+di]
+    psubsw      xmm1,cs:0aH[ebx+eax*2]
+    psubusb     xmm1,xmm7
+    psubusb     xmm1,x
+    psubusb     xmm1,cs:0aH[bx+di]
+    psubusb     xmm1,cs:0aH[ebx+eax*2]
+    psubusw     xmm1,xmm7
+    psubusw     xmm1,x
+    psubusw     xmm1,cs:0aH[bx+di]
+    psubusw     xmm1,cs:0aH[ebx+eax*2]
+    psubw       xmm1,xmm7
+    psubw       xmm1,x
+    psubw       xmm1,cs:0aH[bx+di]
+    psubw       xmm1,cs:0aH[ebx+eax*2]
+    punpckhbw   xmm1,xmm7
+    punpckhbw   xmm1,x
+    punpckhbw   xmm1,cs:0aH[bx+di]
+    punpckhbw   xmm1,cs:0aH[ebx+eax*2]
+    punpckhdq   xmm1,xmm7
+    punpckhdq   xmm1,x
+    punpckhdq   xmm1,cs:0aH[bx+di]
+    punpckhdq   xmm1,cs:0aH[ebx+eax*2]
+    punpckhqdq  xmm1,xmm7
+    punpckhqdq  xmm1,x
+    punpckhqdq  xmm1,cs:0aH[bx+di]
+    punpckhqdq  xmm1,cs:0aH[ebx+eax*2]
+    punpckhwd   xmm1,xmm7
+    punpckhwd   xmm1,x
+    punpckhwd   xmm1,cs:0aH[bx+di]
+    punpckhwd   xmm1,cs:0aH[ebx+eax*2]
+    punpcklbw   xmm1,xmm7
+    punpcklbw   xmm1,x
+    punpcklbw   xmm1,cs:0aH[bx+di]
+    punpcklbw   xmm1,cs:0aH[ebx+eax*2]
+    punpckldq   xmm1,xmm7
+    punpckldq   xmm1,x
+    punpckldq   xmm1,cs:0aH[bx+di]
+    punpckldq   xmm1,cs:0aH[ebx+eax*2]
+    punpcklqdq  xmm1,xmm7
+    punpcklqdq  xmm1,x
+    punpcklqdq  xmm1,cs:0aH[bx+di]
+    punpcklqdq  xmm1,cs:0aH[ebx+eax*2]
+    punpcklwd   xmm1,xmm7
+    punpcklwd   xmm1,x
+    punpcklwd   xmm1,cs:0aH[bx+di]
+    punpcklwd   xmm1,cs:0aH[ebx+eax*2]
+    pxor        xmm1,xmm7
+    pxor        xmm1,x
+    pxor        xmm1,cs:0aH[bx+di]
+    pxor        xmm1,cs:0aH[ebx+eax*2]
+    shufpd      xmm1,xmm7,0ffH
+    shufpd      xmm1,x,0ffH
+    shufpd      xmm1,cs:0aH[bx+di],0ffH
+    shufpd      xmm1,cs:0aH[ebx+eax*2],0ffH
+    sqrtpd      xmm1,xmm7
+    sqrtpd      xmm1,x
+    sqrtpd      xmm1,cs:0aH[bx+di]
+    sqrtpd      xmm1,cs:0aH[ebx+eax*2]
+    sqrtsd      xmm1,xmm7
+    sqrtsd      xmm1,x
+    sqrtsd      xmm1,cs:0aH[bx+di]
+    sqrtsd      xmm1,cs:0aH[ebx+eax*2]
+    subpd       xmm1,xmm7
+    subpd       xmm1,x
+    subpd       xmm1,cs:0aH[bx+di]
+    subpd       xmm1,cs:0aH[ebx+eax*2]
+    subsd       xmm1,xmm7
+    subsd       xmm1,x
+    subsd       xmm1,cs:0aH[bx+di]
+    subsd       xmm1,cs:0aH[ebx+eax*2]
+    ucomisd     xmm1,xmm7
+    ucomisd     xmm1,x
+    ucomisd     xmm1,cs:0aH[bx+di]
+    ucomisd     xmm1,cs:0aH[ebx+eax*2]
+    unpckhpd    xmm1,xmm7
+    unpckhpd    xmm1,x
+    unpckhpd    xmm1,cs:0aH[bx+di]
+    unpckhpd    xmm1,cs:0aH[ebx+eax*2]
+    unpcklpd    xmm1,xmm7
+    unpcklpd    xmm1,x
+    unpcklpd    xmm1,cs:0aH[bx+di]
+    unpcklpd    xmm1,cs:0aH[ebx+eax*2]
+    xorpd       xmm1,xmm7
+    xorpd       xmm1,x
+    xorpd       xmm1,cs:0aH[bx+di]
+    xorpd       xmm1,cs:0aH[ebx+eax*2]
+
+.data
+
+x dq 0
 
 end

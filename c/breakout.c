@@ -84,6 +84,11 @@ int directive( int i, long direct )
     case T_DOT_287:
     case T_DOT_387:
     case T_DOT_NO87:
+    case T_DOT_K3D:
+    case T_DOT_MMX:
+    case T_DOT_XMM:
+    case T_DOT_XMM2:
+    case T_DOT_XMM3:
         ret = cpu_directive(direct);
         if( Parse_Pass != PASS_1 ) ret = NOT_ERROR;
         return( ret );
@@ -293,10 +298,6 @@ int directive( int i, long direct )
     case T_REPT:
     case T_REPEAT:
         return( ForDirective ( i+1, IRP_REPEAT ) );
-    case T_DOT_K3D:
-    case T_DOT_MMX:
-    case T_DOT_XMM:
-        return( NOT_ERROR );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( ERROR );
