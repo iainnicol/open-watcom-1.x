@@ -44,15 +44,12 @@
 #include "extnsw.h"
 #include "csetinfo.h"
 #include "ferror.h"
+#include "inout.h"
 #include "comio.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-extern  void            ReadSrc(void);
-extern  void            PrtLstNL(char *);
-extern  void            PrtLst(char *);
-extern  void            Include(char *);
 extern  char            *SkipBlanks(char *);
 extern  void            SrcOption(void);
 extern  bool            CompileDebugStmts(void);
