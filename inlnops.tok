@@ -331,6 +331,7 @@ loopzw
 lsl
 lss
 ltr
+maskmovq
 mm0
 mm1
 mm2
@@ -341,6 +342,7 @@ mm6
 mm7
 mov
 movd
+movntq
 movq
 movs
 movsb
@@ -372,6 +374,8 @@ paddusw
 paddw
 pand
 pandn
+pavgb
+pavgw
 pcmpeqb
 pcmpeqd
 pcmpeqw
@@ -379,6 +383,12 @@ pcmpgtb
 pcmpgtd
 pcmpgtw
 pmaddwd
+pmaxsw
+pmaxub
+pminub
+pminsw
+pmovmskb
+pmulhuw
 pmulhw
 pmullw
 pop
@@ -387,6 +397,7 @@ popad
 popf
 popfd
 por
+psadbw
 pslld
 psllq
 psllw

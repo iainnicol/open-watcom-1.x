@@ -709,6 +709,9 @@ ins (T_LTR,             OP_R16,      F_0F,   OP_NONE,    no_WDS, 0x00,     0x18,
 ins (T_LTR,             OP_M16,      F_0F,   OP_NONE,    no_WDS, 0x00,     0x18,                     P_286p,NO_PREFIX)
 insa(T_MACRO,           OP_SPECIAL,  0,      0,          0,      0,        OP_DIRECTIVE,             0,     0)
 insa(T_MASK,            OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
+
+ins (T_MASKMOVQ,           OP_MMX,      F_0F,   OP_MMX,no_WDS, 0xf7,     0x00,                     P_686, NO_PREFIX)
+
 insa(T_MEDIUM,          OP_SPECIAL,  0,      0,          0,      0,        OP_RES_ID,                0,     0)
 insa(T_MEMORY,          OP_SPECIAL,  0,      0,          0,      0,        OP_RES_ID,                0,     0)
 ins (T_MM0,             OP_SPECIAL,  0,      OP_MMX,     0,      1,        OP_REGISTER,              P_586, 0)
@@ -743,6 +746,9 @@ ins (T_MOVD,            OP_MMX,      F_0F,   OP_R,       no_WDS, 0x6E,     0x00,
 ins (T_MOVD,            OP_MMX,      F_0F,   OP_M,       no_WDS, 0x6E,     0x00,                     P_586, NO_PREFIX)
 ins (T_MOVD,            OP_R,        F_0F,   OP_MMX,     no_WDS, 0x7E,     0x00,                     P_586, NO_PREFIX)
 ins (T_MOVD,            OP_M,        F_0F,   OP_MMX,     no_WDS, 0x7E,     0x00,                     P_586, NO_PREFIX)
+
+ins (T_MOVNTQ,           OP_M,      F_0F,   OP_MMX,no_WDS, 0xe7,     0x00,                     P_686, NO_PREFIX)
+
 ins (T_MOVQ,            OP_MMX,      F_0F,   OP_MMX,     no_WDS, 0x6F,     0x00,                     P_586, NO_PREFIX)
 ins (T_MOVQ,            OP_MMX,      F_0F,   OP_M,       no_WDS, 0x6F,     0x00,                     P_586, NO_PREFIX)
 ins (T_MOVQ,            OP_M,        F_0F,   OP_MMX,     no_WDS, 0x7F,     0x00,                     P_586, NO_PREFIX)
@@ -815,6 +821,9 @@ ins (T_PANDN,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xdf,     0x00,
 insa(T_PARA,            OP_SPECIAL,  0,      0,          0,      0,        OP_RES_ID,                0,     0)
 insa(T_PASCAL,          OP_SPECIAL,  0,      0,          0,      0,        OP_RES_ID,                0,     0)
 
+ins (T_PAVGB,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xe0,     0x00,                     P_686, NO_PREFIX)
+ins (T_PAVGW,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xe3,     0x00,                     P_686, NO_PREFIX)
+
 ins (T_PCMPEQB,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0x74,     0x00,                     P_586, NO_PREFIX)
 ins (T_PCMPEQD,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0x76,     0x00,                     P_586, NO_PREFIX)
 ins (T_PCMPEQW,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0x75,     0x00,                     P_586, NO_PREFIX)
@@ -822,6 +831,14 @@ ins (T_PCMPGTB,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0x64,     0x00,
 ins (T_PCMPGTD,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0x66,     0x00,                     P_586, NO_PREFIX)
 ins (T_PCMPGTW,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0x65,     0x00,                     P_586, NO_PREFIX)
 ins (T_PMADDWD,         OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xf5,     0x00,                     P_586, NO_PREFIX)
+
+ins (T_PMAXSW,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xee,     0x00,                     P_686, NO_PREFIX)
+ins (T_PMAXUB,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xde,     0x00,                     P_686, NO_PREFIX)
+ins (T_PMINSW,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xea,     0x00,                     P_686, NO_PREFIX)
+ins (T_PMINUB,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xda,     0x00,                     P_686, NO_PREFIX)
+ins (T_PMOVMSKB,       OP_R32,      F_0F,   OP_MMX, no_WDS, 0xd7,     0x00,                     P_686, NO_PREFIX)
+
+ins (T_PMULHUW,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xe4,     0x00,                     P_686, NO_PREFIX)
 ins (T_PMULHW,          OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xe5,     0x00,                     P_586, NO_PREFIX)
 ins (T_PMULLW,          OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xd5,     0x00,                     P_586, NO_PREFIX)
 
@@ -840,6 +857,8 @@ ins (T_POR,             OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xeb,     0x00,
 insa(T_PRIVATE,         OP_SPECIAL,  0,      0,          0,      0,        OP_RES_ID,                0,     0)
 insa(T_PROC,            OP_SPECIAL,  0,      0,          0,      0,        OP_DIRECTIVE,             0,     0)
 insa(T_PROTO,           OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
+
+ins (T_PSADBW,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xf6,     0x00,                     P_686, NO_PREFIX)
 
 ins (T_PSLLD,           OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xf2,     0x00,                     P_586, NO_PREFIX)
 ins (T_PSLLD,           OP_MMX,      F_0F,   OP_I8_U,    no_WDS, 0x72,     0x30,                     P_586, NO_PREFIX)
