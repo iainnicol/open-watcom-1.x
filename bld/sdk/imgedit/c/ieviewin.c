@@ -55,9 +55,7 @@ static void drawBorder( img_node *node )
     HBRUSH      nullbrush;
     int         width;
     int         height;
-#ifndef __NT__
     WPI_POINT   pt;
-#endif
     int         top;
     int         bottom;
 
@@ -95,14 +93,9 @@ static void drawBorder( img_node *node )
         bottom = height - BORDER_WIDTH + 1;
         top = _wpi_cvth_y( top, height );
         bottom = _wpi_cvth_y( bottom, height );
-#ifndef __NT__
-        /*
-         * Draw the border relative to the size of the object being displayed,
-         * not the window containing it
-         */
         _wpi_rectangle( presborder, BORDER_WIDTH - 1, top,
-                                    node->width + BORDER_WIDTH + 1, top + node->height + 2 );
-#endif
+                                    width - BORDER_WIDTH + 1, bottom );
+
         _wpi_selectobject(presborder, holdbrush );
         _wpi_selectobject( presborder, holdpen );
         _wpi_deleteobject( hnewbrush );
@@ -152,14 +145,8 @@ static void drawBorder( img_node *node )
         bottom = height - BORDER_WIDTH + 1;
         top = _wpi_cvth_y( top, height );
         bottom = _wpi_cvth_y( bottom, height );
-#ifndef __NT__
-        /*
-         * Draw the border relative to the size of the object being displayed,
-         * not the window containing it
-         */
-        _wpi_rectangle( presborder, BORDER_WIDTH - 1, top,
-                                    node->width + BORDER_WIDTH + 1, top + node->height + 2 );
-#endif
+        _wpi_rectangle(presborder, BORDER_WIDTH-1, top,
+                                        width - BORDER_WIDTH + 1, bottom);
 
         _wpi_selectobject( presborder, holdpen );
         _wpi_selectbrush( presborder, holdbrush );
@@ -169,7 +156,6 @@ static void drawBorder( img_node *node )
     /*
      * Give the view window the 3D effect.
      */
-#ifndef __NT__
     holdpen = _wpi_selectobject( presborder, hwhitepen );
 
     _wpi_setpoint( &pt, 0, height-1 );
@@ -201,7 +187,6 @@ static void drawBorder( img_node *node )
     _wpi_lineto( presborder, &pt );
 
     _wpi_selectobject( presborder, holdpen );
-#endif
     _wpi_deleteobject( hgraypen );
     _wpi_deleteobject( hwhitepen );
     _wpi_deleteobject( hblackpen );
@@ -506,17 +491,13 @@ void RePositionViewWnd( img_node *node )
     IMGED_DIM   right;
     IMGED_DIM   bottom;
     HWND        frame;
-    
+
     frame = _wpi_getframe( node->viewhwnd );
     _wpi_getwindowrect( frame, &location );
 
-    h_adj = 2 * _wpi_getsystemmetrics(SM_CXDLGFRAME) + 2 * BORDER_WIDTH;
-    v_adj = 2 * _wpi_getsystemmetrics(SM_CYDLGFRAME) +
-#ifndef __NT__
+    h_adj = 2 * _wpi_getsystemmetrics(SM_CXBORDER) + 2 * BORDER_WIDTH;
+    v_adj = 2 * _wpi_getsystemmetrics(SM_CYBORDER) +
                 _wpi_getsystemmetrics(SM_CYCAPTION) + 2 * BORDER_WIDTH - 1;
-#else
-                _wpi_getsystemmetrics(SM_CYSMCAPTION) + 2 * BORDER_WIDTH - 1;
-#endif
     _wpi_getrectvalues(location, &left, &top, &right, &bottom);
 #ifdef __OS2_PM__
     SetWindowPos(frame,
@@ -535,6 +516,7 @@ void RePositionViewWnd( img_node *node )
                  v_adj + node->height,
                  SWP_SIZE | SWP_MOVE | SWP_NOZORDER | SWP_HIDEWINDOW);
 #endif
+
     hViewWindow = node->viewhwnd;
     ShowWindow( frame, showState );
     SetFocus( HMainWindow );
