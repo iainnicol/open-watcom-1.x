@@ -34,7 +34,10 @@ struct &
 stupid &
 t &
 t01 &
+t02 &
 t03 &
+t04 &
+t05 &
 t06 &
 t07 &
 t08 &
@@ -69,17 +72,14 @@ t38 &
 t39 &
 t51 &
 test &
-timer
+timer &
+tmp
 
 dev_objs = &
 data &
 set386 &
 setjmp &
-t02 &
-t04 &
-t05 &
 t11 &
-t12 &
-tmp
+t12
 
 !include ../test.mif
