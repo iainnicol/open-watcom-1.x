@@ -115,18 +115,16 @@ struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
         fixup->external = 0;
         fixup->name = sym->name;
 #ifdef _WASM_
-        fixup->offset = sym->offset;            // 20-Aug-92
-        /* fixme */
-        /**/myassert( fixup->offset != 0xA5A5A5A5 );
+        fixup->offset = sym->offset;
         fixup->def_seg = (CurrSeg != NULL) ? CurrSeg->seg : NULL;
         fixup->frame = Frame;                   // this is just a guess
         fixup->frame_datum = Frame_Datum;
         fixup->next = sym->fixup;
         sym->fixup = fixup;
 #else
+        fixup->offset = 0;
         fixup->next = FixupHead;
         FixupHead = fixup;
-        fixup->offset = 0;
 #endif
         fixup->fix_type = fixup_type;
         InsFixups[Opnd_Count] = fixup;
@@ -386,10 +384,15 @@ struct fixup *CreateFixupRec( int index )
             return( NULL );
         }
         
-        fixnode->lr.frame = FRAME_GRP;
         fixnode->lr.target = TARGET_GRP;
-        fixnode->lr.frame_datum =
-            fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_GRP );
+        fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_GRP );
+        if( fixup->frame != EMPTY ) {
+            fixnode->lr.frame = fixup->frame;
+            fixnode->lr.frame_datum = fixup->frame_datum;
+        } else {
+            fixnode->lr.frame = FRAME_GRP;
+            fixnode->lr.frame_datum = fixnode->lr.target_datum;
+        }
         
     } else if( sym->state == SYM_SEG ) {
         
@@ -398,10 +401,15 @@ struct fixup *CreateFixupRec( int index )
             return( NULL );
         }
         
-        fixnode->lr.frame = FRAME_SEG;
         fixnode->lr.target = TARGET_SEG;
-        fixnode->lr.frame_datum =
-            fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_SEG );
+        fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_SEG );
+        if( fixup->frame != EMPTY ) {
+            fixnode->lr.frame = fixup->frame;
+            fixnode->lr.frame_datum = fixup->frame_datum;
+        } else {
+            fixnode->lr.frame = FRAME_SEG;
+            fixnode->lr.frame_datum = fixnode->lr.target_datum;
+        }
         
     } else {
         
