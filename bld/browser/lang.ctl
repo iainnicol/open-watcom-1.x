@@ -35,11 +35,4 @@ pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
 
 [ BLOCK <1> clean ]
 #==================
-   cdsay <projdir>\contain\lib\objwin
-   wmake -i -h clean
-   cdsay <projdir>\contain\lib\obj32
-   wmake -i -h clean
-   cdsay <projdir>\dlgprs\o
-   wmake -i -h clean
-   cd <projdir>
-   pmake -d all <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean

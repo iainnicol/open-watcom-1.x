@@ -10,7 +10,7 @@
 #ifndef _COMDEF_H_INCLUDED
  #include <_comdef.h>
 #endif
-:segment !QNX & !LINUX
+:segment !QNX
 #ifndef _IO_H_INCLUDED
     #include <io.h>
 #endif
