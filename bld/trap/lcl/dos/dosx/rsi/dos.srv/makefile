@@ -1,11 +1,10 @@
 #pmake: serv lcl os_dos dsx cpu_386 x86 rsi
+host_CPU = i86
+host_OS = dos
 
-host_os  = dos
-host_cpu = i86
-
-os   = rsi
-srv  = rsi
-cpu  = x86
+os = rsi
+srv = rsi
+cpu = x86
 name = rsihelp
 which = SERVER
 
@@ -23,7 +22,7 @@ extra_objs = &
         rmhdlr.obj &
         sbrk.obj
 
-extra_c_flags = -hc -DDOS4G -DDOSXHELP -zdp -zu
+extra_c_flags = -hc -dDOS4G -dDOSXHELP -zdp -zu
 
 extra_a_flags = -Dcompact
 extra_a_flags_npxtype = -fpi87
@@ -31,7 +30,7 @@ extra_a_flags_rsi87 = -fpi87
 extra_a_flags_dbgliba = -zcm
 
 extra_srcs = $(rsilib);
-inc_dirs = -I$(rsilib)
+inc_dirs = $(rsilib);
 
 !define substitute_linker
 

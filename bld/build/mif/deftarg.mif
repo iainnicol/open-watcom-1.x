@@ -1,5 +1,5 @@
 clean: .SYMBOLIC .EXPLICIT
-        rm -f *.?bj *.o $(additional_cleanup)
+        rm -f *.?bj *.o
         @%make killnonobj
 
 killnonobj: .SYMBOLIC .EXPLICIT

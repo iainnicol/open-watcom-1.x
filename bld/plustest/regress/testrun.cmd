@@ -86,9 +86,6 @@ cd ..
 cd overload
 call testrun.cmd
 cd ..
-cd owstl
-call testrun.cmd
-cd ..
 cd perl
 call testrun.cmd
 cd ..

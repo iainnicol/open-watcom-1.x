@@ -24,11 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Structure packing control header.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #ifdef _M_IX86
-#pragma pack(push, 1)
+#pragma pack(push)
+#pragma pack(1)
 #endif

@@ -35,11 +35,7 @@ BMX:  Image file handling
 */
 
 #include <stdlib.h>
-#ifdef __UNIX__
-#include <unistd.h>
-#else
 #include <direct.h>
-#endif
 #include "bmx.h"
 #include "compress.h"
 

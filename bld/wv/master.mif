@@ -274,17 +274,17 @@ extra_c_flags_regexp = -fi=wndregx.h
 
 # inc_dirs
 ###########
-inc_dirs = -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
+inc_dirs = $(dig_dir)/h;$(syshdir);$(hdir)
 !ifndef dll
-inc_dirs += -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(ui_dir)/h"
+inc_dirs += ;$(aui_dir)/h;$(gui_dir)/h;$(ui_dir)/h
 !endif
-inc_dirs += -I"$($(host_os)inc)"
+inc_dirs += ;$($(host_os)inc)
 !ifndef dll
-inc_dirs += -I"$(posix_dir)/h" -I"$(gui_dir)/ui/h" -I"$(help_dir)/h"
+inc_dirs += ;$(posix_dir)/h;$(gui_dir)/ui/h;$(help_dir)/h
 !endif
 !ifeq host_os linux
-inc_dirs += -I"$(ncurses_dir)/h"
-dig_srcs +=;$(dig_dir)/c/dsx
+inc_dirs += ;$(ncurses_dir)/h
+dig_srcs+=;$(dig_dir)/c/dsx
 !endif
 
 # libs
@@ -358,7 +358,7 @@ resname=$+$(resname)$-dll
 !endif
 resfile = $(resname).res
 
-$(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk)
+$(exe_name) : eraseall.obj $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk)
         $(linker) $(lflags) name $^@ @$(lnk) $(endsect)
 !ifneq sys_windowed 1
         wstrip -q -a -r $^@ . $(resfile)
@@ -375,7 +375,7 @@ $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk)
 !endif
 !endif
 
-wd.lib : litdef.gh $(engine_objs) $(sysobjs)
+wd.lib : eraseall.obj litdef.gh $(engine_objs) $(sysobjs)
         @%create tmp.lbc
         @for %i in ($(engine_objs) $(sysobjs)) do @%append tmp.lbc +%i
         $(librarian) -b -n wd.lib @tmp.lbc
@@ -655,3 +655,9 @@ _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
 
 litdef.gh : ./mkstr.exe
         $[@ $^@
+
+####################
+
+eraseall.obj : $(wv_dir)/compile.gbl
+        if exist *.obj erase *.obj
+        wtouch eraseall.obj

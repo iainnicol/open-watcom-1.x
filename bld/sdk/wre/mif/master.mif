@@ -1,3 +1,10 @@
+#
+#  Makefile for WRE
+#
+#   Date        Name            Reason
+#   ----        ----            ------
+#   25 May 93   Wesley Nelson   created
+
 proj_name = wre
 name = wre
 
@@ -19,12 +26,12 @@ WINDOWS = 1
 !include wres.mif
 
 # path names used in the script
-wacc_dir        = $(sdk_dir)/wresedit/waccel
-wmenu_dir       = $(sdk_dir)/wresedit/wmenu
-wstring_dir     = $(sdk_dir)/wresedit/wstring
+wacc_dir        =$(sdk_dir)/wresedit/waccel
+wmenu_dir       =$(sdk_dir)/wresedit/wmenu
+wstring_dir     =$(sdk_dir)/wresedit/wstring
 
 !ifeq wre_trmem 1
-TRMEM           = -DTRMEM
+TRMEM           = -dTRMEM
 !ifneq host_CPU axp
 TRMEM           += -of+
 !endif
@@ -35,8 +42,10 @@ extra_c_flags_i86 = -fpc
 extra_c_flags_386 = -fpc
 extra_c_flags_win = -zu-zw-zc
 
+#extra_c_flags_wremain = -bd
+
 extra_c_flags_preproc = -zm
-extra_c_flags_ppexpr  = -zm
+extra_c_flags_ppexpr = -zm
 extra_c_flags_ppmacro = -zm
 
 OBJS =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
@@ -102,13 +111,16 @@ OBJS += trmem.tbj trmemcvr.tbj
 .c         : ../c;$(misc_dir);$(cpp_dir);$(trmem_dir)
 .rc        : ../h
 
-inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I$(trmem_dir) -I"$(wres_dir)/h" -I$(cpp_dir) -I$(misc_dir)
+inc_dirs = h;../h;$(watcom_dir)/h;$(wstring_dir)/h;$(wmenu_dir)/h;$(wacc_dir)/h;
+inc_dirs += $(wr_dir)/h;$(trmem_dir);$(wres_dir)/h;$(cpp_dir);$(misc_dir)
 
-xlibs = $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
-        $(wmenu_dir)/$(host_os)$(host_cpu)/wmenu.lib &
-        $(wstring_dir)/$(host_os)$(host_cpu)/wstring.lib &
-        $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
+.BEFORE
+        @set include=$(inc_path)
+
+xlibs = $(wacc_dir)/$(host_OS)$(host_CPU)/wacc.lib &
+        $(wmenu_dir)/$(host_OS)$(host_CPU)/wmenu.lib &
+        $(wstring_dir)/$(host_OS)$(host_CPU)/wstring.lib &
+        $(wr_dir)/$(host_OS)$(host_CPU)/wr.lib &
         $(wres_lib)
 
 extra_l_flags = op map, v
@@ -129,9 +141,10 @@ wremsgs.gh: wretemp.gh
         $(vi) -s $(sdk_dir)/misc/msgtoh.vi -p"$^@" $[@
 
 wretemp.gh: ../h/wre.msg
-        $(cc) $(cflags) $(inc_path) -p $[@ -fo=$^@
+        @set include=$(inc_path)
+        $(cc) $(cflags) -p $[@ -fo=$^@
 
 # implicit rules
 #################
 .rc.res: .AUTODEPEND
-        $(rc) $(rc_flags) $(inc_path) -r -ad $[@ -fo=$^@
+        $(rc) $(rc_flags) -r -ad $[@ -fo=$^@

@@ -1,5 +1,5 @@
 dis_srcs        = $(disasm_dir)/core/c
-dis_includes    = -I"$(disasm_dir)/core/h"
+dis_includes    = $(disasm_dir)/core/h
 dis_prereq      = distbls.gh
 
 #                    axp ppc x86 jvm sparc all
@@ -33,4 +33,5 @@ distbls.gh : ./disbuild.exe
         $[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
-        $(bld_cl) -zq $[@ $(wcl_util_opts) -I"$(disasm_dir)/core/h" $(inc_path)
+        @set include=$(inc_path)
+        $(bld_cl) -zq $[@ $(wcl_util_opts) -i"$(disasm_dir)/core/h"

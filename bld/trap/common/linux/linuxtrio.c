@@ -217,7 +217,6 @@ unsigned long GetSystemHandle( unsigned h )
 
 int WantUsage( char *ptr )
 {
-    if( *ptr == '-' ) ++ptr;
     return( *ptr == '?' );
 }
 

@@ -18,12 +18,12 @@ imp_objs = &
 
 name = dwarf
 
-extra_incs = -I"$(dwarf_dir)/dr/h" -I"$(lib_misc_dir)/h"
+extra_incs = $(dwarf_dir)/dr/h;$(lib_misc_dir)/h
 extra_srcs = $(lib_misc_dir)/c
 extra_cflags =  -DDIP_PRIORITY=DP_DEFAULT
+
+!include ../../imp.mif
 
 !include $(dwarf_dir)/dr/client.mif
 
 imp_libs += $(dwarf_dr_lib)
-
-!include ../../imp.mif
