@@ -29,6 +29,8 @@
 *
 ****************************************************************************/
 
+#include "bool.h"
+
 #ifdef _WASM_
 
 extern int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg );

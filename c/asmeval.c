@@ -39,7 +39,13 @@
 #include "asmdefs.h"
 
 #include "watcom.h"
+
+#ifdef _WASM_
 #include "myassert.h"
+#else
+//  FIXME!!
+#define myassert(x)
+#endif
 
 extern void             AsmError( int );
 extern void             DefFlatGroup();
@@ -115,6 +121,7 @@ static int get_precedence( int i )
     token = AsmBuffer[i]->token;
 
     switch( token ) {
+#ifdef _WASM_
         case T_UNARY_OPERATOR:
             switch( AsmBuffer[i]->value ) {
                 case T_LENGTH:
@@ -148,6 +155,7 @@ static int get_precedence( int i )
                 case T_XOR:
                     return( 13 );
             }
+#endif
         case T_COLON:
             return( 4 );
         case T_POSITIVE:
@@ -163,6 +171,7 @@ static int get_precedence( int i )
             return( 2 );
         default:
             /**/myassert( 0 );
+            break;
     }
     return( ERROR );
 }
@@ -195,6 +204,7 @@ static int get_operand( expr_list *new, int i )
         break;
     case T_ID:
         new->sym = AsmLookup( AsmBuffer[i]->string_ptr );
+#ifdef _WASM_
         if( new->sym != NULL ) {
             if( ( new->sym->state == SYM_STRUCT_FIELD )
                 || ( new->sym->state == SYM_STRUCT ) ) {
@@ -206,6 +216,7 @@ static int get_operand( expr_list *new, int i )
                 break;
             }
         }
+#endif
         new->empty = FALSE;
         new->type = EXPR_ADDR;
         new->label = i;
@@ -346,6 +357,7 @@ static void MakeConst( expr_list *token )
     if( token->sym != NULL ) return;
     token->label = EMPTY;
     if( token->mbr != NULL ) {
+#ifdef _WASM_
         if( token->mbr->state == SYM_STRUCT_FIELD ) {
         } else if( token->mbr->state == SYM_STRUCT ) {
             token->value += token->mbr->total_size;
@@ -353,6 +365,9 @@ static void MakeConst( expr_list *token )
         } else {
             return;
         }
+#else
+        return;
+#endif
     }
     if( token->base_reg != EMPTY ) return;
     if( token->idx_reg != EMPTY ) return;
@@ -366,12 +381,14 @@ static void MakeConst( expr_list *token )
 
 static void fix_struct_value( expr_list *token )
 {
+#ifdef _WASM_
     if( token->mbr != NULL ) {
         if( token->mbr->state == SYM_STRUCT ) {
             token->value += token->mbr->total_size;
             token->mbr = NULL;
         }
     }
+#endif
 }
 
 static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
@@ -602,21 +619,28 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                     sym = token_1->sym;
                     if( sym == NULL )
                         return( ERROR );
-
+#ifdef _WASM_
                     if( Parse_Pass > PASS_1 && sym->state == SYM_UNDEFINED ) {
                         AsmError( LABEL_NOT_DEFINED );
                         return( ERROR );
                     }
                     token_1->value += sym->offset;
+#else
+                    token_1->value += sym->addr;
+#endif
                     sym = token_2->sym;
                     if( sym == NULL )
                         return( ERROR );
 
+#ifdef _WASM_
                     if( Parse_Pass > PASS_1 && sym->state == SYM_UNDEFINED ) {
                         AsmError( LABEL_NOT_DEFINED );
                         return( ERROR );
                     }
                     token_1->value -= sym->offset;
+#else
+                    token_1->value -= sym->addr;
+#endif
                     token_1->value -= token_2->value;
                     token_1->label = EMPTY;
                     token_1->sym = NULL;
@@ -736,7 +760,7 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                     /* Kludge for "FLAT" */
                     AsmBuffer[token_1->label]->token = T_ID;
                 }
-
+#ifdef _WASM_
                 if( sym->state == SYM_GRP || sym->state == SYM_SEG ) {
                     token_2->override = token_1->label;
                     token_2->indirect |= token_1->indirect;
@@ -745,11 +769,16 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                     AsmError( ONLY_SEG_OR_GROUP_ALLOWED );
                     return( ERROR );
                 }
+#else
+                AsmError( ONLY_SEG_OR_GROUP_ALLOWED );
+                return( ERROR );
+#endif
             } else {
                  AsmError( REG_OR_LABEL_EXPECTED_IN_OVERRIDE );
                  return( ERROR );
             }
             break;
+#ifdef _WASM_
         case T_INSTR:
             MakeConst( token_1 );
             MakeConst( token_2 );
@@ -861,6 +890,7 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 break;
             }
             break;
+#endif
     }
     token_1->empty = FALSE;
     return( NOT_ERROR );
@@ -1088,6 +1118,7 @@ static int is_expr( int i )
 /* Check if the token is part of an expression */
 {
     switch( AsmBuffer[i]->token ) {
+#ifdef _WASM_
         case T_INSTR:
         case T_RES_ID:
             switch( AsmBuffer[i]->value ) {
@@ -1133,6 +1164,7 @@ static int is_expr( int i )
                 return( TRUE );
             }
             return( FALSE );
+#endif
         case T_REG:
             return( AsmBuffer[i]->value != T_ST );
         case '+':
@@ -1148,6 +1180,7 @@ static int is_expr( int i )
         case T_CL_SQ_BRACKET:
             return(  TRUE );
         case T_COLON:
+#ifdef _WASM_
             if( i == 1 || ( AsmBuffer[i+1]->token == T_DIRECTIVE &&
                             AsmBuffer[i+1]->value == T_EQU2 ) ) {
                 /* It is the colon following the label or it is a := */
@@ -1155,6 +1188,9 @@ static int is_expr( int i )
             } else {
                 return( TRUE );
             }
+#else
+            return( TRUE );
+#endif
         case T_PATH:
             return( FALSE );
         case T_ID:

@@ -29,6 +29,9 @@
 *
 ****************************************************************************/
 
+#include "asmglob.h"
+#include "asmexpnd.h"
+
 #ifdef _WASM_
 
 #include <stdlib.h>
@@ -37,7 +40,6 @@
 #include <malloc.h>
 #include <ctype.h>
 
-#include "asmglob.h"
 #include "asmalloc.h"
 #include "asmerr.h"
 #include "asmins.h"
@@ -53,7 +55,6 @@
 #include "fixup.h"
 #include "queue.h"
 
-#include "asmexpnd.h"
 #include "directiv.h"
 
 extern dir_node         *CurrProc;
@@ -440,6 +441,9 @@ int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
 }
 
 #else
+
+extern int      EvalExpr( int, int, int, bool );
+extern int      Token_Count;    // number of tokens on line
 
 int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
 /******************************************************************/
