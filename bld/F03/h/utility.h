@@ -34,6 +34,8 @@
 #ifndef utility_h_
 #define utility_h_
 
-void    FreeITNodes( itnode *head );
+/* needs #include ?? */
+
+extern void    FreeITNodes(itnode *);
 
 #endif
