@@ -127,6 +127,8 @@ global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
 static FNAMEPTR FNames = NULL;
 
+void FlushCurrSeg( void );
+
 void AddFlist( char const *filename )
 {
     FNAMEPTR    flist;
