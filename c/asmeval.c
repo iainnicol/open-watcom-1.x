@@ -316,21 +316,24 @@ static int_8 check_both( expr_list *tok_1, expr_list *tok_2, int_8 type1, int_8 
 static void index_connect( expr_list *tok_1, expr_list *tok_2 )
 /* Connects the register lists */
 {
-    int         reg;
-
-    if( tok_2->base_reg != EMPTY ) {
-        reg = tok_2->base_reg;
-    } else if( tok_2->idx_reg != EMPTY ) {
-        reg = tok_2->idx_reg;
-    } else {
-        return;
+    if( tok_1->base_reg == EMPTY ) {
+        if( tok_2->base_reg != EMPTY ) {
+            tok_1->base_reg = tok_2->base_reg;
+            tok_2->base_reg = EMPTY;
+        } else if( ( tok_2->idx_reg != EMPTY ) && ( tok_2->scale == 1 )) {
+            tok_1->base_reg = tok_2->idx_reg;
+            tok_2->idx_reg = EMPTY;
+        }
     }
-    if( tok_1->base_reg == EMPTY && tok_2->scale == 1 ) {
-        tok_1->base_reg = reg;
-    } else {
-        tok_1->idx_reg = reg;
+    if( tok_1->idx_reg == EMPTY ) {
+        if( tok_2->idx_reg != EMPTY ) {
+            tok_1->idx_reg = tok_2->idx_reg;
+            tok_1->scale = tok_2->scale;
+        } else if( tok_2->base_reg != EMPTY ) {
+            tok_1->idx_reg = tok_2->base_reg;
+            tok_1->scale = 1;
+        }
     }
-    tok_1->scale *= tok_2->scale;
 }
 
 static void MakeConst( expr_list *token )
