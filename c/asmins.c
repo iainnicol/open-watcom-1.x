@@ -1615,7 +1615,6 @@ static int process_address( expr_list *opndx )
                 } else if( sym->state == SYM_GRP ) {
                     AsmError( CANNOT_OFFSET_GRP );
                     return( ERROR );
-#endif
                 } else if( IS_ANY_BRANCH( Code->info.token ) ) {
                     switch( sym->mem_type ) {
                     case MT_FAR:
@@ -1627,6 +1626,7 @@ static int process_address( expr_list *opndx )
                     default:
                         break;
                     }
+#endif
                 }
             }
             if( fixup_type != -1 ) {
