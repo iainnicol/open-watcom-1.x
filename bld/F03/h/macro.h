@@ -65,8 +65,10 @@
 // Define feature switch settings:
 // ===============================
 
-#define _OFF   0
+//#define _OFF   0 temporary changed to 2
+#define _OFF   2
 #define _ON    1
+
 
 #include "sdmacro.h"
 #include "switch.h"

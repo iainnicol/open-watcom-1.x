@@ -35,6 +35,4 @@
 
 #define gbl_defn extern
 #include "rundefn.h"
-#if _OPT_CG == _OFF
-#include "rundeflg.h"
-#endif
+
