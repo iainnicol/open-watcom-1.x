@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <cioconst.h>
+//#include <cioconst.h>
 
-#define gbl_defn extern
-#include <ciovars.h>
+//#define gbl_defn extern %GUT
+//#include <ciovars.h>
