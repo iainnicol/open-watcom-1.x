@@ -30,28 +30,15 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <limits.h>
-#include <malloc.h>
-
 #include "asmglob.h"
+
 #include "asmins.h"
-#include "asmopnds.h"
-#include "asmerr.h"
-#include "asmsym.h"
 #include "asmdefs.h"
 #include "asmalloc.h"
-#include "asmfixup.h"
 
 #ifdef _WASM_
-#include "fixup.h"
-#include "directiv.h"
-
-#include "watcom.h"
-#include "myassert.h"
+  #include "directiv.h"
+  #include "myassert.h"
 #endif
 
 struct asmfixup         *InsFixups[3];

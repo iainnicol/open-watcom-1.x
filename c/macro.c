@@ -24,40 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  maro processing routines
 *
 ****************************************************************************/
 
 
 #define     PLACEHOLDER_SIZE 3      /* for #dd - number sign, digit, digit */
 
-// fixme some of these include files are not needed
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
+#include "asmglob.h"
 #include <ctype.h>
 
-#include "asmglob.h"
 #include "asmalloc.h"
-#include "asmerr.h"
 #include "asmins.h"
-#include "namemgr.h"
-#include "asmsym.h"
-#include "asmerr.h"
 #include "asmdefs.h"
 #include "asmeval.h"
-
-#include "myassert.h"
-#include "fixup.h"
 #include "asmexpnd.h"
-
 #include "directiv.h"
 
+#include "myassert.h"
+
 extern char             *ReadTextLine( char * );
-extern void             FlushCurrSeg( void );
-extern void             AsmError( int );
 extern int              InputQueueFile( char * );
 extern int              AsmScan( char * );
 extern void             InputQueueLine( char * );
@@ -69,8 +55,6 @@ extern bool             GetQueueMacroHidden( void );
 
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern dir_node         *CurrProc;
-extern File_Info        AsmFiles;
 extern char             *CurrString;    // Current Input Line
 extern int              MacroLocalVarCounter;
 

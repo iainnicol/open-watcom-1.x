@@ -28,12 +28,15 @@
 *
 ****************************************************************************/
 
-#include <string.h>
-#include "queues.h"
+#include "asmglob.h"
+
 #include "asmalloc.h"
-#include "asmerr.h"
 #include "mangle.h"
 #include "asmins.h"
+#include "directiv.h"
+#include "queue.h"
+#include "queues.h"
+
 #include "myassert.h"
 
 typedef struct queuenode {
@@ -182,8 +185,8 @@ uint GetPublicData(
     return( count );
 }
 
-void FreePubQueue( void )
-/***********************/
+static void FreePubQueue( void )
+/******************************/
 {
     if( PubQueue != NULL ) {
         while( PubQueue->head != NULL ) {
@@ -216,8 +219,8 @@ char *GetAliasData( bool first )
     return( p );
 }
 
-void FreeAliasQueue( void )
-/*************************/
+static void FreeAliasQueue( void )
+/********************************/
 {
     if( AliasQueue != NULL ) {
         while( AliasQueue->head != NULL ) {
@@ -294,8 +297,8 @@ unsigned GetLnameData( char **data )
     return( total_size );
 }
 
-void FreeLnameQueue( void )
-/*************************/
+static void FreeLnameQueue( void )
+/********************************/
 {
     dir_node *dir;
     queuenode *node;
@@ -353,21 +356,21 @@ void AddLinnumData( struct linnum_data *data )
     QAddItem( &LinnumQueue, data );
 }
 
-int GetLinnumData( linnum_data **ldata, bool *need32 )
+int GetLinnumData( struct linnum_data **ldata, bool *need32 )
 /****************************************************/
 {
-    queuenode   *node;
-    linnum_data *next;
-    int         count, i;
+    queuenode           *node;
+    struct linnum_data  *next;
+    int                 count, i;
 
     count = QCount( LinnumQueue );
     if( count == 0 )
         return( count );
     *need32 = FALSE;
-    *ldata = AsmAlloc( count * sizeof( linnum_data ) );
+    *ldata = AsmAlloc( count * sizeof( struct linnum_data ) );
     for( i = 0; i < count; i++ ) {
         node = QDequeue( LinnumQueue );
-        next = (linnum_data *)(node->data);
+        next = (struct linnum_data *)(node->data);
         if( *ldata != NULL ) {
             (*ldata)[i].number = next->number;
             (*ldata)[i].offset = next->offset;

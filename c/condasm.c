@@ -29,28 +29,22 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
-#include <stdio.h>
-
 #include "asmglob.h"
+#include <ctype.h>
+
 #include "asmins.h"
 #include "directiv.h"
-#include "asmerr.h"
-#include "myassert.h"
-#include "asmalloc.h"
 #include "asmexpnd.h"
 #include "asmdefs.h"
 
-extern void             AsmError( int );
+#include "myassert.h"
 
 extern int              get_instruction_position( char *string );
 
 extern int              MacroExitState;
 
-enum if_state CurState = ACTIVE;
+static enum if_state CurState = ACTIVE;
+
 // fixme char *IfSymbol;        /* save symbols in IFDEF's so they don't get expanded */
 #define    MAX_NESTING  20
 

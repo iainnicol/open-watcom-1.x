@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include "asmsym.h"
-#include "asmins.h"
-#include "asmalloc.h"
-#include "asmerr.h"
 #include "asmglob.h"
+
+#include "asmsym.h"
+#include "asmalloc.h"
 #include "asmdefs.h"
 
 #ifdef __USE_BSD
@@ -71,8 +68,6 @@ static unsigned short CvtTable[] = {
 };
 
 #endif
-
-extern void     AsmError( int );
 
 static char *InitAsmSym( struct asm_sym *sym, char *name )
 /************************************************/

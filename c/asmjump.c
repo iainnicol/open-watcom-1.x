@@ -30,19 +30,14 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
 #include "asmglob.h"
-#include "asmopnds.h"
+
 #include "asmins.h"
-#include "asmerr.h"
-#include "asmsym.h"
 #include "asmdefs.h"
 #include "asmfixup.h"
 
 #ifdef _WASM_
-    #include "directiv.h"
+  #include "directiv.h"
 #endif
 
 extern int_8                    PhaseError;
@@ -196,7 +191,7 @@ static void FarCallToNear()
 }
 #endif
 
-int check_jump( struct asm_sym *sym ) {
+static int check_jump( struct asm_sym *sym ) {
 
     memtype mem_type;
     memtype tmp;

@@ -40,31 +40,17 @@
  */
 #define ALLOW_STRUCT_INIT 1
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <limits.h>
-#include <malloc.h>
-
 #include "asmglob.h"
+
 #include "asminsd.h"
-#include "asmerr.h"
-#include "asmsym.h"
-#include "asmalloc.h"
-#include "condasm.h"
 #include "asmdefs.h"
 #include "asmexpnd.h"
 #include "asmfixup.h"
 #include "asmeval.h"
 
 #ifdef _WASM_
-
-#include "directiv.h"
-#include "watcom.h"
-#include "myassert.h"
-#include "fixup.h"
-
+  #include "directiv.h"
+  #include "myassert.h"
 #endif
 
 extern int              match_phase_1( void );
@@ -94,12 +80,10 @@ extern void             GetInsString( enum asm_token, char *, int );
 extern int              SymIs32( struct asm_sym *sym );
 extern void             find_use32( void );
 
-void                    check_assume( struct asm_sym *sym, enum prefix_reg default_reg );
+void                    check_assume( struct asm_sym *, enum prefix_reg );
 
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern dir_node         *CurrProc;
-extern symbol_queue     Tables[];       // tables of definitions
 
 uint_8                  CheckSeg;       // if checking of opened segment is needed
 int_8                   Frame;          // Frame of current fixup
@@ -116,14 +100,17 @@ extern void             SetModuleDefSegment32( int flag );
 
 #endif
 
-int                     curr_ptr_type;
+extern void             make_inst_hash_table( void );
+
+static int              curr_ptr_type;
 static char             ConstantOnly;
 
-void make_inst_hash_table( void );
+static int              mem2code( char, int, int, asm_sym * );
 
 /* moved here from asmline */
 static struct asm_tok   tokens[MAX_TOKEN];
-struct asm_tok  *AsmBuffer[MAX_TOKEN];  // buffer to store token
+
+struct asm_tok          *AsmBuffer[MAX_TOKEN];  // buffer to store token
 
 #ifdef _WASM_
 void find_frame( struct asm_sym *sym )
@@ -264,7 +251,7 @@ static void seg_override( int seg_reg, asm_sym *sym )
 
 #ifdef _WASM_
 
-void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
+static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
 /* Check if an assumed register is found, and prefix a register if necessary */
 {
     enum assume_reg     reg;
@@ -803,7 +790,7 @@ int InRange( unsigned long val, unsigned bytes )
 
 }
 
-int mem2code( char ss, int index, int base, asm_sym *sym )
+static int mem2code( char ss, int index, int base, asm_sym *sym )
 /*
   encode the memory operand to machine code
 */

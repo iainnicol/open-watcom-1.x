@@ -31,9 +31,7 @@
 #ifndef _MANGLE_H_
 #define _MANGLE_H_
 
-extern char *CMangler( struct asm_sym *sym, char *buffer );
-extern char *AsmMangler( struct asm_sym *sym, char *buffer );
-extern char *Mangle( struct asm_sym *sym, char *buffer );
-extern void SetMangler( struct asm_sym *sym, char *mangle_type, int langtype );
+extern char *Mangle( struct asm_sym *, char * );
+extern void SetMangler( struct asm_sym *, char *, int );
 
 #endif

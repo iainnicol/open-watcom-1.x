@@ -29,25 +29,19 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
 #include "asmglob.h"
+
 #include "asmins.h"
-#include "asmerr.h"
-#include "asmsym.h"
 #include "asmeval.h"
 #include "asmdefs.h"
 
-#include "watcom.h"
-
 #ifdef _WASM_
-#include "myassert.h"
+  #include "myassert.h"
 #else
 //  FIXME!!
 #define myassert(x)
 #endif
 
-extern void             AsmError( int );
 extern void             DefFlatGroup();
 
 static int              TakeOut[ MAX_TOKEN ];

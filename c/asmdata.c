@@ -30,31 +30,21 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-
-#ifndef _WASM_
-#include <malloc.h>
-#endif
-
-#ifndef min
-#define min(x,y) (((x) < (y)) ? (x) : (y))
-#endif
-
 #include "asmglob.h"
+
 #include "asmdefs.h"
-#include "asmerr.h"
 #include "asmsym.h"
-#include "asmalloc.h"
 #include "asmins.h"
-#include "asmopnds.h"
 #include "asmexpnd.h"
 #include "tbyte.h"
 #include "asmfixup.h"
 
 #ifdef _WASM_
-#include "directiv.h"
-#include "fixup.h"
+  #include "directiv.h"
+#endif
+
+#ifndef min
+#define min(x,y) (((x) < (y)) ? (x) : (y))
 #endif
 
 extern unsigned char    More_Array_Element;

@@ -29,35 +29,28 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
+#include "asmglob.h"
 #include <fcntl.h>
 #include <unistd.h>
 #ifdef __WATCOMC__
-#include <process.h>
+  #include <process.h>
 #endif
 #include <ctype.h>
-#include <malloc.h>
 
-#include "asmglob.h"
 #include "asmalloc.h"
 #include "asmins.h"
-#include "asmsym.h"
 #include "fatal.h"
-#include "asmerr.h"
 #include "asmdefs.h"
 #include "asmexpnd.h"
-
-#include "memutil.h"
-
 #include "objprs.h"
 #include "genmsomf.h"
+#include "directiv.h"
+
 #ifdef __OSI__
- #include "ostype.h"
+  #include "ostype.h"
 #endif
 
 extern void             Fatal( unsigned msg, ... );
-extern void             WriteObjModule( void );
 extern void             ObjRecInit( void );
 extern void             DelErrFile();
 extern void             PrintStats();
@@ -114,7 +107,7 @@ static char *OptParm;
 
 #if defined( __DOS__ )
 
-extern  unsigned char    _DOS_Switch_Char();
+extern unsigned char    _DOS_Switch_Char();
 #pragma aux     _DOS_Switch_Char = \
     0x52            /* push dx */\
     0xb4 0x37       /* mov ah,37h    */\
@@ -124,7 +117,7 @@ extern  unsigned char    _DOS_Switch_Char();
     0x5a            /* pop dx        */;
 #endif
 
-unsigned char _dos_switch_char()
+static unsigned char _dos_switch_char()
 {
 #if defined( __DOS__ )
         return( _DOS_Switch_Char() );

@@ -29,12 +29,16 @@
 ****************************************************************************/
 
 
-#ifndef ASMGLOB_H
-#define ASMGLOB_H
+#ifndef _ASMGLOB_H_
+#define _ASMGLOB_H_
 
 #include <stdio.h>
-#include <watcom.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include "watcom.h"
 #include "bool.h"
+#include "asmerr.h"
 
 #define MAX_TOKEN               100     // there is no restriction for this number
 #define MAX_LINE_LEN            512     // there is no restriction for this number

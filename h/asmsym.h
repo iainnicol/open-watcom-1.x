@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#ifndef ASMSYM_H
-#define ASMSYM_H
+#ifndef _ASMSYM_H_
+#define _ASMSYM_H_
 
-#include "watcom.h"
 #include "asminlin.h"
 #include "asmops2.h"
 

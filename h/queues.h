@@ -31,9 +31,6 @@
 #ifndef _QUEUES_H_
 #define _QUEUES_H_
 
-#include "queue.h"
-#include "directiv.h"
-
 extern void     AddPublicData( dir_node *data );
 extern void     AddLnameData( dir_node *data );
 extern void     AddGlobalData( dir_node *data );
@@ -45,7 +42,7 @@ extern direct_idx FindLnameIdx( char * );
 extern unsigned GetLnameData( char ** );
 extern char     *GetAliasData( bool );
 extern uint     GetPublicData( uint *, uint *, char *, char ***, struct pubdef_data **, bool *, bool );
-extern int      GetLinnumData( linnum_data **ldata, bool *need32 );
+extern int      GetLinnumData( struct linnum_data **ldata, bool *need32 );
 extern void     GetGlobalData( void );
 
 extern void     FreeAllQueues( void );

@@ -24,36 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WASM symbols expansion.
 *
 ****************************************************************************/
 
 #include "asmglob.h"
+
+#include "asmeval.h"
 #include "asmexpnd.h"
+#include "asmdefs.h"
 
 #ifdef _WASM_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-#include <ctype.h>
-
 #include "asmalloc.h"
-#include "asmerr.h"
 #include "asmins.h"
-#include "namemgr.h"
 #include "asmsym.h"
-#include "asmdefs.h"
-#include "asmeval.h"
-
-#include "myassert.h"
-#include "fixup.h"
-
 #include "directiv.h"
 
-extern dir_node         *CurrProc;
+#include "myassert.h"
 
 extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
@@ -454,9 +442,6 @@ int ExpandTheConstant( int start_pos, bool early_only, bool flag_msg )
 }
 
 #else
-
-extern int      EvalExpr( int, int, int, bool );
-extern int      Token_Count;    // number of tokens on line
 
 int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
 /******************************************************************/

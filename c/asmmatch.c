@@ -30,18 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <limits.h>
-#include <malloc.h>
-
 #include "asmglob.h"
+
 #include "asmins.h"
-#include "asmopnds.h"
-#include "asmerr.h"
-#include "asmsym.h"
 #include "asmdefs.h"
 #include "asmalloc.h"
 #include "asmfixup.h"
@@ -49,10 +40,9 @@
 #ifdef _WASM_
 
 #include "directiv.h"
-#include "write.h"
 #include "queues.h"
 
-extern int_8                    PhaseError;
+extern int_8    PhaseError;
 
 static void AddLinnumDataRef( void );
 

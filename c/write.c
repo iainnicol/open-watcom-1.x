@@ -30,34 +30,28 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "asmglob.h"
 #include <errno.h>
 #include <ctype.h>
-#include <limits.h>
 #include <time.h>
 
-#include "myassert.h"
-#include "watcom.h"
-
-#include "asmglob.h"
-#include "asmerr.h"
 #include "asmsym.h"
 #include "asmins.h"
 #include "asmalloc.h"
 #include "fatal.h"
-#include "directiv.h"
 #include "asmdefs.h"
 #include "asmeval.h"
-
-#include "write.h"
-#include "queues.h"
-
 #include "objio.h"
 #include "objprs.h"
 #include "fixup.h"
 #include "autodept.h"
+#include "mangle.h"
+#include "namemgr.h"  // WOMP callback NameGet routine declaration
+#include "directiv.h"
+#include "queues.h"
+
+#include "myassert.h"
+
 
 // use separate fixupp and fixupp32 records
 // fixupp32 record is used only for FIX_OFFSET386 and FIX_POINTER386 fixup
@@ -69,10 +63,8 @@
 extern char             *ScanLine( char *, int );
 extern void             AsmLine( char * );
 extern void             AsmSymFini( void );
-extern void             AsmError( int );
 extern void             FreeIncludePath( void );
 extern void             PrepAnonLabels( void );
-extern char             *Mangle( struct asm_sym *, char * );
 extern void             CheckForOpenConditionals();
 extern bool             PopLineQueue();
 extern void             set_cpu_parameters( void );
@@ -86,9 +78,7 @@ extern symbol_queue     Tables[];       // tables of definitions
 extern struct fixup     *FixupListHead; // head of list of fixups ( from WOMP )
 extern struct fixup     *FixupListTail;
 extern uint_32          BufSize;
-extern uint             LnamesIdx;      // Number of LNAMES definition
 extern obj_rec          *ModendRec;     // Record for Modend
-extern sim_seg          LastSimSeg;     // last opened simplified segment
 
 extern int              MacroExitState;
 
@@ -108,7 +98,7 @@ char                    EndDirectiveFound = FALSE;
 extern uint             segdefidx;      // Number of Segment definition
 extern uint             extdefidx;      // Number of Extern definition
 
-char                    **NameArray;
+static char             **NameArray;
 
 typedef struct  fname_list {
         struct  fname_list *next;
@@ -119,8 +109,6 @@ typedef struct  fname_list {
 global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
 static FNAMEPTR FNames = NULL;
-
-void FlushCurrSeg( void );
 
 void AddFlist( char const *filename )
 {
@@ -193,7 +181,7 @@ static void write_fini( void )
     FixFini();
 }
 
-void write_record( obj_rec *objr, char kill )
+static void write_record( obj_rec *objr, char kill )
 {
     /**/myassert( objr != NULL );
     ObjRSeek( objr, 0 );
@@ -268,9 +256,9 @@ static void write_dosseg( void )
 
 static void write_lib( void )
 {
-    obj_rec     *objr;
-    dir_node    *curr;
-    char        *name;
+    obj_rec             *objr;
+    struct dir_node     *curr;
+    char                *name;
 
     for( curr = Tables[TAB_LIB].head; curr; curr = curr->next ) {
         name = curr->sym.name;
@@ -484,7 +472,7 @@ static int opsize( memtype mem_type )
 
 #define THREE_BYTE_MAX ( (1UL << 24) - 1 )
 
-int get_number_of_bytes_for_size_in_commdef( unsigned long value )
+static int get_number_of_bytes_for_size_in_commdef( unsigned long value )
 /****************************************************************/
 {
     /* The spec allows up to 128 in a one byte size field, but lots
@@ -676,10 +664,10 @@ static int write_autodep( void )
 static void write_linnum( void )
 /******************************/
 {
-    linnum_data *ldata;
-    int         count;
-    obj_rec     *objr;
-    bool        need_32;
+    struct linnum_data  *ldata;
+    int                 count;
+    obj_rec             *objr;
+    bool                need_32;
 
     count = GetLinnumData( &ldata, &need_32 );
     if( count == 0 )
@@ -914,6 +902,7 @@ static int write_pub()
 
 const char *NameGet( uint_16 hdl )
 /********************************/
+// WOMP callback routine
 {
     return( NameArray[hdl] );
 }

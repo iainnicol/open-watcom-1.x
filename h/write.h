@@ -32,10 +32,12 @@
 #ifndef _WRITE_H_
 #define _WRITE_H_
 
-#ifdef _WASM_
+extern dir_node         *CurrProc;      // current procedure
+extern uint             LineNumber;
 
-#include "objrec.h"   //!!!!asmmatch.c
-
-#endif
+extern void             FlushCurrSeg( void );
+extern void             AddFlist( char const *filename );
+extern void             OutSelect( bool );
+extern void             WriteObjModule( void );
 
 #endif

@@ -32,14 +32,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
-#include "watcom.h"
-#include "asmalloc.h"
 #include "asmerr.h"
-#include "memutil.h"
-
 #include "objprs.h"
+
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
 pobj_filter     jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];

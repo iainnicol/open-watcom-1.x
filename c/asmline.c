@@ -30,27 +30,24 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "asmglob.h"
 #include <ctype.h>
 
-#include "asmglob.h"
 #include "asmins.h"
 #include "asmdefs.h"
 
 #ifdef _WASM_
+
 #include "directiv.h"
-#include "asmerr.h"
 #include "asmalloc.h"
 #include "condasm.h"
 #include "asmexpnd.h"
+#include "macro.h"
+
 #endif
 
 
 extern int              AsmScan( char *);
-extern void             AddFlist( char const *filename );
 
 char *curr_src_line = NULL;
 
@@ -88,18 +85,13 @@ typedef struct input_queue {
 } input_queue;
 
 extern void             heap( char * );
-extern void             FlushCurrSeg( void );
-extern void             AsmError( int );
-extern void             OutSelect( bool );
 
 extern char             write_to_file;
 extern File_Info        AsmFiles;
 extern uint_8           CheckSeg;
-extern dir_node         *CurrProc;
 extern int_8            DefineProc;             // TRUE if the definition of procedure
                                                 // has not ended
 extern unsigned long    PassTotal;
-extern symbol_queue     Tables[];               // tables of definitions
 
 uint_32                 BufSize;                // size of CodeBuffer
 
@@ -536,9 +528,11 @@ void AsmDataByte( unsigned char byte )
 #endif
 
 #ifdef _WASM_
-bool CheckHaveSeg()
+static bool CheckHaveSeg()
 {
-    if( CurrSeg != NULL ) return( TRUE );
+    if( CurrSeg != NULL )
+        return( TRUE );
+
     if( CheckSeg ) {
         AsmError( DATA_EMITTED_WITH_NO_SEGMENT );
         write_to_file = FALSE;

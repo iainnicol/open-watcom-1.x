@@ -48,7 +48,7 @@
   } Msg_Struct;
 
 
-  extern const Msg_Struct Fatal_Msg[] = {
+  static const Msg_Struct Fatal_Msg[] = {
 #else
   #define FATAL_H
   #undef fix

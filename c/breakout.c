@@ -34,15 +34,11 @@
  * used only by WASM not the inline assembler
  */
 
-#include <stdlib.h>
-
-#include "watcom.h"
-
 #include "asmglob.h"
+
 #include "asmins.h"
 #include "directiv.h"
 #include "condasm.h"
-#include "asmerr.h"
 #include "asmexpnd.h"
 #include "asmdefs.h"
 
@@ -53,9 +49,6 @@ extern int              LabelDirective( int );
 extern int              StructDef( int );
 extern void             GetInsString( enum asm_token , char *, int );
 extern int              ForDirective( int, enum irp_type );
-
-/* global vars */
-extern dir_node         *CurrProc;
 
 int directive( int i, long direct )
 /* Handle all directives */
@@ -296,6 +289,9 @@ int directive( int i, long direct )
     case T_REPT:
     case T_REPEAT:
         return( ForDirective ( i+1, IRP_REPEAT ) );
+    case T_DOT_STARTUP:
+    case T_DOT_EXIT:
+        return( Startup ( i+1 ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( ERROR );

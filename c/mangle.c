@@ -30,14 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include "asmglob.h"
+
 #include "asmsym.h"
 #include "asmalloc.h"
-#include "asmerr.h"
 #include "directiv.h"
-#include "asmins.h"
 #include "mangle.h"
 
 /* constants used by the name manglers ( changes ) */
@@ -48,7 +45,7 @@
 #define     REM_USCORE_BACK     8
 #define     UPPERCASE           16
 
-char *AsmMangler( struct asm_sym *sym, char *buffer )
+static char *AsmMangler( struct asm_sym *sym, char *buffer )
 /***************************************************/
 {
     char *name;
@@ -63,7 +60,7 @@ char *AsmMangler( struct asm_sym *sym, char *buffer )
     }
 }
 
-char *CMangler( struct asm_sym *sym, char *buffer )
+static char *CMangler( struct asm_sym *sym, char *buffer )
 /*************************************************/
 {
     char                *name;

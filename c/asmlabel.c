@@ -30,31 +30,20 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "asmglob.h"
-#include "asmerr.h"
-#include "asmsym.h"
+
 #include "asmins.h"
 #include "asmdefs.h"
 #include "asmfixup.h"
 
 #ifdef _WASM_
-    #include "directiv.h"
 
-    extern int_8                PhaseError;
+#include "directiv.h"
 
-    extern int                  AddFieldToStruct( int );
-#endif
+extern int_8                PhaseError;
+extern int                  AddFieldToStruct( int );
+static unsigned             AnonymousCounter = 0;
 
-extern void             AsmError( int );
-
-#ifdef _WASM_
-    static unsigned             AnonymousCounter = 0;
-#endif
-
-#ifdef _WASM_
 void PrepAnonLabels( void )
 /*************************/
 {
@@ -73,7 +62,6 @@ void PrepAnonLabels( void )
 }
 #endif
 
-#pragma off (unreferenced )
 int MakeLabel( char *symbol_name, memtype mem_type )
 /**********************************************/
 {

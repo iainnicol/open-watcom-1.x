@@ -30,22 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "asmglob.h"
-#include "asmerr.h"
+
 #include "asmins.h"
-#include "directiv.h"
 #include "asmdefs.h"
+#include "directiv.h"
 
 #include "myassert.h"
-
-extern void             AsmError( int );
-extern direct_idx       FindClassLnameIdx( char *name );
-extern uint_32          GetCurrSegAlign( void );
-extern void             FlushCurrSeg( void );
-extern bool             CheckHaveSeg( void );
 
 typedef unsigned char   byte;
 
@@ -54,6 +45,7 @@ static byte NopList16[] = {
     0x89, 0xc0,         /* MOV AX,AX */
     0xfc                /* CLD */
 };
+
 static byte NopList32[] = {
     6,
     0x8d,0x80,0x00,0x00,0x00,0x00,  // lea     eax,+00000000H[eax]
@@ -64,7 +56,8 @@ static byte NopList32[] = {
     0x8b,0xc0,                      // mov     eax,eax
     0x90                            // nop
 };
-byte *NopLists[] = { NopList16, NopList32 };
+
+static byte *NopLists[] = { NopList16, NopList32 };
 
 int ChangeCurrentLocation( bool relative, int_32 value  )
 /*******************************************************/

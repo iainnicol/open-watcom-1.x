@@ -92,7 +92,6 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
     queue.obj           &
     fixup.obj           &
     lifix.obj           &
-    array.obj           &
     asmins.obj          &
     asmscan.obj         &
     asmline.obj         &

@@ -40,8 +40,8 @@
 
 #else
 
-#ifndef ASMOPS2_H
-#define ASMOPS2_H
+#ifndef _ASMOPS2_H_
+#define _ASMOPS2_H_
 
 #ifndef _WASM_
 #include "inlnops.gh"

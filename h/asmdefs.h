@@ -29,8 +29,8 @@
 *
 ****************************************************************************/
 
-#ifndef ASMDEFS_H
-#define ASMDEFS_H
+#ifndef _ASMDEFS_H_
+#define _ASMDEFS_H_
 
 #include "asmopnds.h"
 
@@ -115,7 +115,6 @@ extern char             Parse_Pass;     // phase of parsing
 extern unsigned char    Opnd_Count;
 extern char             Modend;         // end of module is reached
 extern int_8            Use32;          // if 32-bit code is use
-extern uint             LineNumber;
 extern int              Token_Count;    // number of tokens on line
 
 struct asm_sym;

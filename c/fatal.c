@@ -30,15 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <unistd.h>
 #include "asmglob.h"
+#include <stdarg.h>
+
 #include "objprs.h"
 #include "asmalloc.h"
-
-#include "memutil.h"
 
 #include "fatal.h"
 #undef FATAL_H
