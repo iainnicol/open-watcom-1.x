@@ -20,6 +20,7 @@
 
 #undef va_start
 
+:segment !QNX
 #if defined(__PPC__)
  extern void *__builtin_va_start(va_list*, ...);
  #pragma intrinsic(__builtin_va_start);
@@ -33,6 +34,7 @@
  #define va_dcl
  #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))
 #else
+:endsegment
  #define va_alist       void *__alist, ...
  #define va_dcl
  #if defined(__HUGE__) || defined(__SW_ZU)
@@ -40,7 +42,9 @@
  #else
   #define va_start(ap)  ((ap)[0]=(char *)&__alist,(void)0)
  #endif
+:segment !QNX
 #endif
+:endsegment
 
 :include cplusepi.sp
 #endif

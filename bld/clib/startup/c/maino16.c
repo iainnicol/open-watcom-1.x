@@ -50,7 +50,6 @@
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "crwd.h"
-#include "thread.h"
 
 #if defined(__SW_BM)
 
@@ -65,8 +64,8 @@ extern  void            __SetupThreadProcessing(int);
 
 extern  unsigned        __MaxThreads;
 
-extern  struct thread_data *    __MultipleThread();
-#define _STACKLOW       (*(unsigned *)(__MultipleThread()))
+extern  unsigned        *__MultipleThread();
+#define _STACKLOW       (*(__MultipleThread()))
 
 #else
 
