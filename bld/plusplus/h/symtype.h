@@ -719,6 +719,9 @@ typedef enum                            // flags for symbol.flag
 ,   SF_ANONYMOUS        = 0x08000000    // - - member of an anonymous union
 ,   SF_RETN_OPT         = 0x04000000    // - - optimized away by return opt.
 ,   SF_CATCH_ALIAS      = 0x02000000    // - - catch variable alias
+,   SF_IN_CLASS_INIT    = 0x01000000    // - - in-class initialization
+                                        //     of const static integral
+                                        //     member
 
                                         // - function
 ,   SF_DONT_INLINE      = 0x08000000    // - - don't inline this function!

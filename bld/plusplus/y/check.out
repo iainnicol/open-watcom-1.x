@@ -601,12 +601,12 @@ Y_TIMES Y_DEFARG_END $eof
 ---
 
 unit reduction states removed:              98
-unit reduction optimizations:             3677
-actions combined:                          114
-parser states:                             898
+unit reduction optimizations:             3703
+actions combined:                          113
+parser states:                             899
 # states (1 reduce only):                  397
 reduce/reduce conflicts:                    11
 shift/reduce conflicts:                     34
 number of rules not reduced:                 0
-bytes used in tables:                    34839
+bytes used in tables:                    34961
 table space utilization:                    54

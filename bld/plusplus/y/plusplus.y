@@ -2648,6 +2648,7 @@ member-declaring-declarator
         }
 
         $$ = InsertDeclInfo( GetCurrScope(), $1 );
+
         if( t == Y_EQUAL ) {
             if( ! SymIsStaticMember( $$->sym ) || ! SymIsConstant( $$->sym ) ) {
                 CErr1( ERR_MUST_BE_CONST_STATIC_INTEGRAL );
@@ -2655,13 +2656,22 @@ member-declaring-declarator
 
             GStackPush( &(state->gstack), GS_DECL_INFO );
             state->gstack->u.dinfo = $$;
+
+            reuseGStack( state, GS_INIT_DATA );
+            DataInitStart( &(state->gstack->u.initdata), $$ );
+            DataInitSimpleLocn( &yylp[1] );
         }
     }
     ;
 
 member-declarator
-    : member-declaring-declarator initializer
-    { $$ = $1; }
+    : member-declaring-declarator Y_EQUAL constant-expression
+    {
+        $$ = $1;
+        $$->sym->flag |= SF_IN_CLASS_INIT;
+        DataInitSimple( $3 );
+        GStackPop( &(state->gstack) );
+    }
     | member-declaring-declarator Y_PURE_FUNCTION_SPECIAL Y_CONSTANT
     {
         $$ = InsertDeclInfo( GetCurrScope(), $1 );
