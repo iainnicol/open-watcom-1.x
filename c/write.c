@@ -1041,8 +1041,8 @@ static unsigned long OnePass( char *string )
         if( ScanLine( string, MAX_LINE_LEN ) == NULL )
             break; // EOF
         AsmLine( string );
-        if( EndDirectiveFound )
-            break;
+//        if( EndDirectiveFound )
+//            break;
     }
     CheckProcOpen();
     return( PassTotal );
@@ -1063,7 +1063,6 @@ void WriteObjModule( void )
 
     Parse_Pass = PASS_1;
     prev_total = OnePass( string );
-    CheckForOpenConditionals();
     if( EndDirectiveFound ) {
         if( !Options.stop_at_end ) {
             for( ;; ) {
@@ -1083,6 +1082,7 @@ void WriteObjModule( void )
     }
     while( PopLineQueue() ) {
     }
+    CheckForOpenConditionals();
     for( ;; ) {
         if( !write_to_file || Options.error_count > 0 )
             break;
