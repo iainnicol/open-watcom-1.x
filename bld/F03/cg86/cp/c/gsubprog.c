@@ -44,6 +44,7 @@
 #include "prdefn.h"
 #include "cpopt.h"
 #include "wf77aux.h"
+#include "recog.h"
 
 extern  void            EmitOp(unsigned_16);
 extern  void            OutU16(unsigned_16);
@@ -52,9 +53,6 @@ extern  void            PushOpn(itnode *);
 extern  void            PushConst(signed_32);
 extern  label_id        NextLabel(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            RecColon(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecCloseParen(void);
 extern  void            GLabel(label_id);
 extern  void            GStmtAddr(sym_id);
 extern  void            GBranch(label_id);
