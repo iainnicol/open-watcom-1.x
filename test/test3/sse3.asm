@@ -4,7 +4,7 @@
 
 .data
 
-datao do 0
+datao label oword
 dataq dq 0
 datad dd 0
 dataw dw 0

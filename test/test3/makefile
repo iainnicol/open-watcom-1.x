@@ -27,6 +27,8 @@ dev_objs = &
 3dnow &
 irpexitm &
 mmx &
-sse
+sse &
+sse2 &
+sse3
 
 !include ../test.mif
