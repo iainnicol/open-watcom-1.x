@@ -46,6 +46,7 @@
 #include "fio.h"
 #include "fmemmgr.h"
 #include "ferror.h"
+#include "objutil.h"
 
 #include <string.h>
 #include <process.h>

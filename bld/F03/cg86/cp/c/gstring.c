@@ -38,14 +38,13 @@
 #include "global.h"
 #include "fcodes.h"
 #include "opn.h"
+#include "objutil.h"
 
 extern  void            AdvanceITPtr(void);
 extern  int             AsgnCat(void);
 extern  void            CatArgs(int);
 extern  void            PushOpn(itnode *);
 extern  void            EmitOp(unsigned_16);
-extern  void            OutU16(unsigned_16);
-extern  void            OutInt(inttarg);
 extern  sym_id          StaticAlloc(int,byte);
 extern  bool            OptimalChSize(uint);
 extern  void            DumpType(uint,uint);

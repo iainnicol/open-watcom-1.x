@@ -41,6 +41,7 @@
 #include "global.h"
 #include "cpopt.h"
 #include "parmtype.h"
+#include "objutil.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -65,7 +66,6 @@ extern  cg_type         GetType1(unsigned_16);
 extern  cg_type         GetType2(unsigned_16);
 extern  cg_type         GetType(unsigned_16);
 extern  cg_type         ResCGType(cg_type,cg_type);
-extern  unsigned_16     GetU16(void);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 extern  bool            TypeCGInteger(cg_type);
 

@@ -39,6 +39,7 @@
 #include "cg.h"
 #include "tmpdefs.h"
 #include "parmtype.h"
+#include "objutil.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -59,7 +60,6 @@ extern  cg_name         XPopValue(cg_type);
 extern  cg_type         GetType(unsigned_16);
 extern  cg_type         GetType1(unsigned_16);
 extern  cg_type         GetType2(unsigned_16);
-extern  unsigned_16     GetU16(void);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 extern  tmp_handle      MkTmp(cg_name,cg_type);
 extern  cg_name         TmpPtr(tmp_handle,cg_type);

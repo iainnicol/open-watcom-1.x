@@ -50,6 +50,7 @@
 #include "wf77defs.h"
 #include "ferror.h"
 #include "insert.h"
+#include "objutil.h"
 #include <string.h>
 
 //=================== Back End Code Generation Routines ====================
@@ -60,10 +61,6 @@ extern  void            BEFreeBack(back_handle);
 
 //=========================================================================
 
-extern  obj_ptr         FCodeTell(int);
-extern  obj_ptr         FCodeSeek(obj_ptr);
-extern  pointer         GetPtr(void);
-extern  unsigned_16     GetU16(void);
 extern  inttarg         GetInt(void);
 extern  byte            ParmType(int,int);
 extern  void            DtInit(segment_id,seg_offset);

@@ -46,6 +46,7 @@
 #include "fcodes.h"
 #include "parmtype.h"
 #include "fmemmgr.h"
+#include "objutil.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -84,8 +85,6 @@ extern  cg_name         CGTempName(temp_handle,cg_type);
 
 //=========================================================================
 
-extern  pointer         GetPtr(void);
-extern  unsigned_16     GetU16(void);
 extern  cg_type         F772CGType(sym_id);
 extern  void            GenLocalSyms(void);
 extern  void            GenLocalDbgInfo(void);
@@ -95,7 +94,6 @@ extern  void            XPush(cg_name);
 extern  cg_name         XPop(void);
 extern  void            XPopCmplx(cg_cmplx *,cg_type);
 extern  cg_name         GetTypedValue(void);
-//extern  void            FMemFree(pointer);
 extern  label_handle    GetLabel(int);
 extern  label_handle    GetStmtLabel(sym_id);
 extern  void            MakeSCB(sym_id,cg_name);
@@ -111,8 +109,6 @@ extern  cg_name         TmpPtr(tmp_handle,cg_type);
 extern  void            RefStmtLabel(sym_id);
 extern  void            DoneLabel(label_id);
 extern  cg_name         CmplxAddr(cg_name,cg_name);
-extern  obj_ptr         FCodeTell(int);
-extern  obj_ptr         FCodeSeek(obj_ptr);
 extern  aux_info        *AuxLookup(sym_id);
 extern  cg_type         GetType(unsigned_16);
 extern  bool            TypePointer(cg_type);

@@ -44,16 +44,14 @@
 #include "stmtsw.h"
 #include "opn.h"
 #include "cpopt.h"
+#include "objutil.h"
+
 
 extern  void            EmitOp(unsigned_16);
 extern  bool            NotFormatted(void);
 extern  uint            IOIndex(void);
 extern  void            PushOpn(itnode *);
 extern  byte            ParmType(int,int);
-extern  void            OutPtr(pointer);
-extern  void            OutU16(unsigned_16);
-extern  obj_ptr         ObjTell(void);
-extern  obj_ptr         ObjSeek(obj_ptr);
 extern  sym_id          GTempString(int);
 extern  bool            AuxIOStmt(void);
 extern  void            GStmtAddr(sym_id);

@@ -41,6 +41,8 @@
 #include "cg.h"
 #include "cpopt.h"
 #include "inline.h"
+#include "objutil.h"
+
 
 //=================== Back End Code Generation Routines ====================
 
@@ -64,9 +66,7 @@ extern  void            XPush(cg_name);
 extern  cg_name         SymAddr(sym_id);
 extern  call_handle     InitCall(int);
 extern  call_handle     InitInlineCall(int);
-extern  unsigned_16     GetU16(void);
 extern  inttarg         GetInt(void);
-extern  void            *GetPtr(void);
 extern  int             GetType(unsigned_16);
 extern  int             GetType1(unsigned_16);
 extern  int             GetType2(unsigned_16);

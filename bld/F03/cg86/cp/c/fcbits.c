@@ -42,6 +42,7 @@
 
 #include "cgswitch.h"
 #include "cgprotos.h"
+#include "objutil.h"
 
 //=========================================================================
 
@@ -52,7 +53,7 @@ extern  cg_type         GetType(unsigned_16);
 extern  cg_type         GetType1(unsigned_16);
 extern  cg_type         GetType2(unsigned_16);
 extern  cg_type         ResCGType(cg_type,cg_type);
-extern  unsigned_16     GetU16(void);
+
 
 
 static  cg_name BitPosition( unsigned_16 typ_info ) {

@@ -42,13 +42,9 @@
 #include "cg.h"
 #include "prdefn.h"
 #include "fmthdr.h"
+#include "objutil.h"
 
 extern  void            EmitOp(unsigned_16 value);
-extern  obj_ptr         ObjSeek(obj_ptr new_obj);
-extern  obj_ptr         ObjTell();
-extern  unsigned_16     ObjOffset(obj_ptr prev_obj);
-extern  void            OutU16(unsigned_16 val);
-extern  void            OutObjPtr(obj_ptr val);
 
 
 void    StartFmt( cs_label fmt_label ) {

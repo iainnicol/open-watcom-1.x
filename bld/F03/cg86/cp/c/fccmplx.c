@@ -41,6 +41,8 @@
 #include "tmpdefs.h"
 #include "cpopt.h"
 #include "global.h"
+#include "objutil.h"
+
 
 //=================== Back End Code Generation Routines ====================
 
@@ -76,7 +78,6 @@ extern  void            CnvD2S(double *,char *);
 extern  void            CnvX2S(extended *,char *);
 extern  cg_name         StructRef(cg_name,int);
 extern  bool            TypePointer(cg_type);
-extern  unsigned_16     GetU16(void);
 extern  cg_type         GetType(unsigned_16);
 extern  cg_type         GetType1(unsigned_16);
 extern  cg_type         GetType2(unsigned_16);

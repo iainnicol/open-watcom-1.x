@@ -45,10 +45,10 @@
 #include "cpopt.h"
 #include "wf77aux.h"
 #include "recog.h"
+#include "objutil.h"
+
 
 extern  void            EmitOp(unsigned_16);
-extern  void            OutU16(unsigned_16);
-extern  void            OutPtr(pointer);
 extern  void            PushOpn(itnode *);
 extern  void            PushConst(signed_32);
 extern  label_id        NextLabel(void);
@@ -61,8 +61,6 @@ extern  char            *STGetName(sym_id,char *);
 extern  sym_id          GTempString(int);
 extern  void            FreeLabel(label_id);
 extern  void            SymRef(itnode *);
-extern  obj_ptr         ObjTell(void);
-extern  obj_ptr         ObjSeek(obj_ptr);
 extern  void            SetOpn(itnode *,int);
 extern  void            GenType(itnode *);
 extern  void            DumpType(int,int);

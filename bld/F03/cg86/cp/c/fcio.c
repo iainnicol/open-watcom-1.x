@@ -36,6 +36,7 @@
 #include "wf77cg.h"
 #include "tmpdefs.h"
 #include "fcodes.h"
+#include "objutil.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -59,8 +60,6 @@ extern  void            BEFiniLabel(label_handle);
 //=========================================================================
 
 extern  call_handle     InitCall(int);
-extern  unsigned_16     GetU16(void);
-extern  pointer         GetPtr(void);
 extern  cg_name         XPop(void);
 extern  cg_name         XPopValue(cg_type);
 extern  void            XPopCmplx(cg_cmplx *,cg_type);

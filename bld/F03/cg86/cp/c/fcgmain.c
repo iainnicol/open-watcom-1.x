@@ -48,6 +48,7 @@
 #include "wf77segs.h"
 #include "wf77labe.h"
 #include "compcfg.h"
+#include "objutil.h"
 
 #include <stdarg.h>
 
@@ -72,8 +73,6 @@ extern  void            DefTypes(void);
 extern  void            DefStructs(void);
 extern  void            FreeGlobalSegs(void);
 extern  void            InitStack(void);
-extern  void            InitFCode(void);
-extern  unsigned_16     GetFCode(void);
 extern  void            InitRtRtns(void);
 extern  void            FreeRtRtns(void);
 extern  void            InitInlinePragmas(void);

@@ -37,17 +37,13 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcodes.h"
+#include "objutil.h"
+
 
 extern  void            EmitOp(unsigned_16);
-extern  void            OutPtr(pointer);
-extern  void            OutU16(unsigned_16);
 extern  void            PushOpn(itnode *);
 extern  void            AddConst(itnode *);
 extern  void            GenType(itnode *);
-extern  obj_ptr         ObjTell(void);
-extern  void            OutObjPtr(obj_ptr);
-extern  obj_ptr         ObjSeek(obj_ptr);
-extern  unsigned_16     ObjOffset(obj_ptr);
 extern  void            DumpType(uint,uint);
 extern  uint            TypeSize(uint);
 extern  void            PushConst(intstar4);

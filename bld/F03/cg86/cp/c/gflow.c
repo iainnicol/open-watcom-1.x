@@ -41,15 +41,11 @@
 #include "opn.h"
 #include "cpopt.h"
 #include "recog.h"
+#include "objutil.h"
 
 
 extern  void            GSPProlog(void);
 extern  void            EmitOp(unsigned_16);
-extern  void            OutPtr(pointer);
-extern  void            OutConst32(signed_32);
-extern  void            OutU16(unsigned_16);
-extern  obj_ptr         ObjTell(void);
-extern  obj_ptr         ObjSeek(obj_ptr);
 extern  void            PushOpn(itnode *);
 extern  void            IfExpr(void);
 extern  sym_id          StaticAlloc(int,int);
@@ -59,8 +55,6 @@ extern  bool            TypeCmplx(int typ);
 extern  void            GenType(itnode *);
 extern  void            DumpType(uint,uint);
 extern  void            DumpTypes(uint,uint,uint,uint);
-extern  obj_ptr         ObjTell(void);
-extern  void            OutObjPtr(obj_ptr);
 extern  void            PushSym(sym_id);
 extern  uint            MapTypes(uint,uint);
 

@@ -39,13 +39,13 @@
 #include "opn.h"
 #include "fcodes.h"
 #include "stmtsw.h"
+#include "objutil.h"
 
 extern  void            EmitOp(unsigned_16);
 extern  void            PushOpn(itnode *);
 extern  void            DumpTypes(uint,uint,uint,uint);
 extern  uint            TypeSize(uint);
 extern  sym_id          GTempString(uint);
-extern  void            OutPtr(void *);
 extern  void            PushConst(intstar4);
 
 

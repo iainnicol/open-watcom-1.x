@@ -45,6 +45,7 @@
 #include "fcodes.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
+#include "objutil.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -79,8 +80,6 @@ extern  cg_name         XPop(void);
 extern  void            XPush(cg_name);
 extern  cg_name         SymAddr(sym_id);
 extern  cg_name         ImagPtr(cg_name,cg_type);
-extern  unsigned_16     GetU16(void);
-extern  pointer         GetPtr(void);
 extern  cg_type         F772CGType(sym_id);
 extern  cg_name         Concat(uint,cg_name);
 extern  bool            TypeCmplx(int);
@@ -89,12 +88,9 @@ extern  void            DoSelect(int);
 extern  unsigned_32     GetStmtNum(sym_id);
 extern  void            XPopCmplx(cg_cmplx *,cg_type);
 extern  cg_type         CmplxBaseType(cg_type);
-extern  obj_ptr         FCodeTell(int);
-extern  obj_ptr         FCodeSeek(obj_ptr);
 extern  cg_type         GetType(unsigned_16);
 extern  bool            IntType(int);
 extern  void            FCodeSequence(void);
-extern  obj_ptr         GetObjPtr(void);
 extern  void            SplitCmplx(cg_name,cg_type);
 extern  tmp_handle      MkTmp(cg_name,cg_type);
 extern  cg_name         TmpPtr(tmp_handle,cg_type);
