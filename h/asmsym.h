@@ -33,6 +33,8 @@
 #define ASMSYM_H
 
 #include "watcom.h"
+#include "asminlin.h"
+#include "asmops2.h"
 
 typedef enum {
         MT_BYTE   = T_BYTE,
