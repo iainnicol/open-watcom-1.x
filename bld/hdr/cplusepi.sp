@@ -1,3 +1,3 @@
 #ifdef __cplusplus
 };
-#endif /* __cplusplus */
+#endif
