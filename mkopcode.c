@@ -3,7 +3,7 @@
 #include <string.h>
 #include "watcom.h"
 
-char Chars[3000];
+char Chars[32000];
 struct words {
         char    *word;
         int     index;
@@ -25,7 +25,7 @@ int len_compare( const void *pv1, const void *pv2 )
 
 int str_compare( const void *p1, const void *p2 )
 {
-    return( strcmp( ((const struct words *)p1)->word, 
+    return( strcmp( ((const struct words *)p1)->word,
                     ((const struct words *)p2)->word ) );
 }
 
