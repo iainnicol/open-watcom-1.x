@@ -101,7 +101,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     rc = DosLoadModule( NULL, 0, trpfile, (PHMODULE)&dll );
     if( rc != 0 ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
+        strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
