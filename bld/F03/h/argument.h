@@ -28,10 +28,11 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+#ifndef _argument_h
+#define _argument_h
 
 typedef struct sf_parm {
-    struct sf_parm      *link;  // next parm -- must be first field!
+    struct sf_parm      *link;  // next parm -- must be first  field!
     sym_id              shadow; // pointer to shadow entry for parm
     sym_id              actual; // pointer to actual entry for parm
 } sf_parm;
@@ -51,3 +52,5 @@ typedef struct entry_pt {
     struct entry_pt     *link;  // next entry point
     unsigned_32         dbh;    // Browsing info handle
 } entry_pt;
+
+#endif
