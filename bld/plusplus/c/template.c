@@ -1659,8 +1659,8 @@ static PTREE fakeUpTemplateParms( SCOPE parm_scope, arg_list *type_args )
     return( parms );
 }
 
-static TYPE makeBoundClass( char *name, SCOPE parm_scope, arg_list *type_args,
-                            TOKEN_LOCN *locn )
+static TYPE makeBoundClass( SCOPE scope, char *name, SCOPE parm_scope,
+                            arg_list *type_args, TOKEN_LOCN *locn )
 {
     TYPE type_instantiated;
     SYMBOL class_template;
@@ -1668,7 +1668,7 @@ static TYPE makeBoundClass( char *name, SCOPE parm_scope, arg_list *type_args,
     PTREE parms;
 
     type_instantiated = NULL;
-    class_template = ClassTemplateLookup( GetCurrScope(), name );
+    class_template = ClassTemplateLookup( scope, name );
     if( class_template != NULL ) {
         parms = fakeUpTemplateParms( parm_scope, type_args );
         tinfo = class_template->u.tinfo;
@@ -1681,6 +1681,7 @@ TYPE TemplateUnboundInstantiate( TYPE unbound_class, arg_list *type_args, TOKEN_
 /******************************************************************************************/
 {
     char *template_name;
+    SCOPE template_scope;
     SCOPE parm_scope;
     TYPE new_type;
 
@@ -1688,9 +1689,11 @@ TYPE TemplateUnboundInstantiate( TYPE unbound_class, arg_list *type_args, TOKEN_
     if( new_type == NULL ) {
         parm_scope = TemplateClassParmScope( unbound_class );
         if( parm_scope != NULL ) {
+            template_scope = TypeScope( unbound_class );
             template_name = SimpleTypeName( unbound_class );
             DbgAssert( template_name != NULL );
-            new_type = makeBoundClass( template_name, parm_scope, type_args, locn );
+            new_type = makeBoundClass( template_scope, template_name,
+                                       parm_scope, type_args, locn );
         }
     }
     return( new_type );
