@@ -56,8 +56,7 @@
 
 extern int              match_phase_1( void );
 extern int              ptr_operator( memtype, uint_8 );
-extern int              jmp( struct asm_sym * );
-extern int              jmpx( expr_list * );
+extern int              jmp( expr_list * );
 
 unsigned char           More_Array_Element = FALSE;
 unsigned char           Last_Element_Size;
@@ -837,7 +836,7 @@ static int process_jumps( expr_list *opndx )
             return( ERROR );
         }
     }
-    temp = jmpx( opndx );
+    temp = jmp( opndx );
     switch( temp ) {
     case ERROR:
         return( ERROR );
@@ -1362,8 +1361,6 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         }
     }
     if( with_fixup ) {
-        sym = opndx->sym;
-
         switch( sym->state ) {
         case SYM_UNDEFINED:
             // forward reference
@@ -1403,7 +1400,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         }
 
 #ifdef _WASM_
-        sym32 = SymIs32( opndx->sym );
+        sym32 = SymIs32( sym );
         if( ( opndx->base_reg == EMPTY ) && ( opndx->idx_reg == EMPTY ) ) {
             SET_ADRSIZ( Code, sym32 );
             fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
