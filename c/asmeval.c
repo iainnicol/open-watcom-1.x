@@ -1115,6 +1115,7 @@ static int fix( expr_list *res, int start, int end )
             AsmBuffer[ start++ ]->token = T_OP_SQ_BRACKET;
         }
         AsmBuffer[ start ]->token = T_REG;
+        AsmBuffer[ start ]->string_ptr = AsmBuffer[ res->base_reg ]->string_ptr;
         AsmBuffer[ start++ ]->value = AsmBuffer[ res->base_reg ]->value;
         if( res->override != EMPTY ) {
             AsmBuffer[ start++ ]->token = T_CL_SQ_BRACKET;
@@ -1213,6 +1214,7 @@ static int fix( expr_list *res, int start, int end )
             AsmBuffer[start]->string_ptr = Store[res->idx_reg-old_start].string_ptr;
             AsmBuffer[start++]->value = Store[res->idx_reg-old_start].value;
             if( res->scale != 1 ) {
+                AsmBuffer[start]->string_ptr = "*";
                 AsmBuffer[start++]->token = T_TIMES;
                 AsmBuffer[start]->token = T_NUM;
                 AsmBuffer[start++]->value = res->scale;
