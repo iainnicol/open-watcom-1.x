@@ -1049,6 +1049,11 @@
 :usage. disable extensions (i.e., accept only ISO/ANSI C++)
 :jusage. 拡張機能を使用不可にします(つまり, ISO/ANSI C++のみ受け付けます)
 
+:option. zat
+:target. any
+:usage. disable alternative tokens (e.g. and, or, not)
+:jusage.
+
 :option. zc
 :target. i86 386
 :usage. place const data into the code segment

@@ -478,7 +478,8 @@ static void parseLabels( void )
         nextYYToken();
     }
     if( label != NULL ) {
-        if( CurToken == T_RIGHT_BRACE ) {
+        if( ( CurToken == T_RIGHT_BRACE )
+         || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
             CErr1( ERR_STMT_REQUIRED_AFTER_LABEL );
         }
     }
@@ -688,7 +689,7 @@ static void parseSwitchStmt( void )
     LabelSwitchBeg();
     FunctionBodyDeadCode();
     openScope();
-    if( CurToken == T_LEFT_BRACE ) {
+    if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
         switch_block->u.s.block_after = TRUE;
     } else {
         switch_block->u.s.block_after = FALSE;
@@ -812,7 +813,7 @@ static void parseCaseStmt( void )
                      , case_entry->value );
     currFunction->dead_code = FALSE;
     RingAppend( &(my_switch->u.s.cases), case_entry );
-    if( CurToken == T_RIGHT_BRACE ) {
+    if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         CErr1( ERR_STMT_REQUIRED_AFTER_CASE );
     }
 }
@@ -850,7 +851,7 @@ static void parseDefaultStmt( void )
     }
     LabelSwitch( my_switch->u.s.defn_scope );
     genDefaultStmt( my_switch, &my_switch->u.s.default_locn );
-    if( CurToken == T_RIGHT_BRACE ) {
+    if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         CErr1( ERR_STMT_REQUIRED_AFTER_DEFAULT );
     }
 }
@@ -1817,7 +1818,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     while( CurToken == T_SEMI_COLON ) {
         nextYYToken();
     }
-    if( CurToken == T_RIGHT_BRACE ) {
+    if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         // these must execute before doFnStartup so that the prologues
         // of ctors and dtors can be affected
         if( f->is_dtor ) {
@@ -1880,9 +1881,11 @@ static void skipFunctionBody( unsigned depth )
         case T_EOF:
             return;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             ++depth;
             break;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             --depth;
             if( depth == 0 ) {
                 return;
@@ -2109,7 +2112,8 @@ void FunctionBody( DECL_INFO *dinfo )
             continue;
         case T_DO:
             beginLoop( CS_DO );
-            if( CurToken == T_RIGHT_BRACE ) {
+            if( ( CurToken == T_RIGHT_BRACE )
+             || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
                 CErr1( ERR_STMT_REQUIRED_AFTER_DO );
                 break;
             }
@@ -2153,6 +2157,7 @@ void FunctionBody( DECL_INFO *dinfo )
             if( fn_data.control->id != CS_BLOCK ) break;
             continue;
         case T_LEFT_BRACE:
+        case T_ALT_LEFT_BRACE:
             startBlock();
             if( ( fn_data.control->next->id == CS_SWITCH )
               &&( fn_data.control->next->u.s.block_after ) ) {
@@ -2161,6 +2166,7 @@ void FunctionBody( DECL_INFO *dinfo )
             nextYYToken();
             continue;
         case T_RIGHT_BRACE:
+        case T_ALT_RIGHT_BRACE:
             if( fn_data.control->id != CS_BLOCK ) {
                 CErr1( ERR_MISPLACED_RIGHT_BRACE );
             }

@@ -725,6 +725,7 @@ static int templateScopedChain( PARSE_STACK *state )
             case T_LEFT_PAREN:
             case T_RIGHT_PAREN:
             case T_LEFT_BRACKET:
+            case T_ALT_LEFT_BRACKET:
             case T_EQUAL:
             case T_SEMI_COLON:
             case T_COMMA:
@@ -1933,13 +1934,31 @@ static void makeStable( int end_token )
 {
     unsigned depth;
     boolean token_absorbed;
+    int alt_token;
+
+    /* also accept alternative tokens (digraphs) */
+    if( end_token == T_LEFT_BRACKET ) {
+        alt_token = T_ALT_LEFT_BRACKET;
+    }
+    if( end_token == T_RIGHT_BRACKET ) {
+        alt_token = T_ALT_RIGHT_BRACKET;
+    }
+    if( end_token == T_LEFT_BRACE ) {
+        alt_token = T_ALT_LEFT_BRACE;
+    }
+    if( end_token == T_RIGHT_BRACE ) {
+        alt_token = T_ALT_RIGHT_BRACE;
+    } else {
+        alt_token = end_token;
+    }
 
     ParseFlush();
     token_absorbed = FALSE;     /* infinite loop protection */
     depth = 0;
     for(;;) {
         if( CurToken == T_EOF ) return;
-        if( CurToken == T_LEFT_BRACE ) {
+        if( ( CurToken == T_LEFT_BRACE )
+         || ( CurToken == T_ALT_LEFT_BRACE ) ) {
             ++depth;
         } else if( depth == 0 ) {
             switch( CurToken ) {
@@ -1957,6 +1976,7 @@ static void makeStable( int end_token )
             case T_THROW:
             case T_CATCH:
             case T_RIGHT_BRACE:
+            case T_ALT_RIGHT_BRACE:
                 if( token_absorbed ) {
                     if( ScopeId( GetCurrScope() ) == SCOPE_BLOCK ) {
                         return;
@@ -1967,11 +1987,12 @@ static void makeStable( int end_token )
                 nextToken( &yylocation );
                 return;
             default:
-                if( CurToken == end_token ) {
+                if( ( CurToken == end_token ) || ( CurToken == alt_token ) ){
                     return;
                 }
             }
-        } else if( CurToken == T_RIGHT_BRACE ) {
+        } else if( ( CurToken == T_RIGHT_BRACE ) 
+                || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
             --depth;
         }
         token_absorbed = TRUE;

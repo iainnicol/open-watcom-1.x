@@ -203,6 +203,9 @@ void FiniPPScan(                 // INIT SCANNER FOR PPNUMBER TOKENS
 int SpecialMacro(               // EXECUTE A SPECIAL MACRO
     MEPTR fmentry )             // - macro entry
 ;
+void DefineAlternativeTokens(	// DEFINE ALTERNATIVE TOKENS
+    void )
+;
 void * PragmaLookup(            // FIND A PRAGMA
     char * name,                // - name of the pragma
     unsigned index )            // - index (M_UNKNOWN if not known)

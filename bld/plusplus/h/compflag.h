@@ -241,7 +241,7 @@ typedef struct comp_flags {
     unsigned dont_autogen_ext_inc   : 1;    // don't convert #include <string> to <string.h> or <string.hpp>
     unsigned dont_autogen_ext_src   : 1;
     unsigned use_old_for_scope      : 1;
-    unsigned anyfiller04            : 1;
+    unsigned no_alternative_tokens  : 1;    // disable alternative tokens
     unsigned anyfiller05            : 1;
     
 

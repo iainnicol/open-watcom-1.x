@@ -40,6 +40,7 @@ pick( "__FUNCTION__",   MACRO_FUNCTION,    0 )
 pick( "__func__",       MACRO_FUNC,        MACRO_SPECIAL )
 
 // alternative tokens for C++
+pick( NULL,             MACRO_ALT_MARKER,  0 )
 pick( "and",            MACRO_ALT_AND,     MACRO_SPECIAL )
 pick( "bitand",         MACRO_ALT_BITAND,  MACRO_SPECIAL )
 pick( "and_eq",         MACRO_ALT_AND_EQ,  MACRO_SPECIAL )

@@ -261,37 +261,37 @@ pick( T_FILLER9,         "",            TC_A3 ),
 
 /* digraphs */
   prec( NO_PREC )
-pick( T_ALT_LEFT_BRACKET, "<:",         TC_A2 ),
+pick( T_ALT_LEFT_BRACKET, "<:",         TC_A1 ),
   prec( NO_PREC )
-pick( T_ALT_RIGHT_BRACKET, ":>",        TC_A2 ),
+pick( T_ALT_RIGHT_BRACKET, ":>",        TC_A1 ),
   prec( NO_PREC )
-pick( T_ALT_LEFT_BRACE,  "<%",          TC_A2 ),
+pick( T_ALT_LEFT_BRACE,  "<%",          TC_A1 ),
   prec( NO_PREC )
-pick( T_ALT_RIGHT_BRACE, "%>",          TC_A2 ),
+pick( T_ALT_RIGHT_BRACE, "%>",          TC_A1 ),
   prec( NO_PREC )
-pick( T_ALT_SHARP,       "%:",          TC_A2 ),
+pick( T_ALT_SHARP,       "%:",          TC_A1 ),
   prec( NO_PREC )
-pick( T_ALT_SHARP_SHARP, "%:%:",        TC_A1 ),
+pick( T_ALT_SHARP_SHARP, "%:%:",        TC_A3 ),
 
 /* alternative tokens */
   prec( 9 )
-pick( T_ALT_AND,         "bitand",      TC_A2 ),
+pick( T_ALT_AND,         "bitand",      TC_A1 ),
   prec( NO_PREC )
-pick( T_ALT_AND_EQUAL,   "andeq",       TC_A1 ),
+pick( T_ALT_AND_EQUAL,   "andeq",       TC_A2 ),
   prec( 6 )
-pick( T_ALT_AND_AND,     "and",         TC_A1 ),
+pick( T_ALT_AND_AND,     "and",         TC_A0 ),
   prec( 7 )
 pick( T_ALT_OR,          "bitor",       TC_A2 ),
   prec( NO_PREC )
-pick( T_ALT_OR_EQUAL,    "or_eq",       TC_A1 ),
+pick( T_ALT_OR_EQUAL,    "or_eq",       TC_A2 ),
   prec( 5 )
 pick( T_ALT_OR_OR,       "or",          TC_A1 ),
   prec( 8 )
-pick( T_ALT_XOR,         "xor",         TC_A2 ),
+pick( T_ALT_XOR,         "xor",         TC_A0 ),
   prec( NO_PREC )
 pick( T_ALT_XOR_EQUAL,   "xor_eq",      TC_A1 ),
   prec( PREC_UNARY )
-pick( T_ALT_EXCLAMATION, "not",         TC_A2 ),
+pick( T_ALT_EXCLAMATION, "not",         TC_A0 ),
   prec( 10 )
 pick( T_ALT_NE,          "not_eq",      TC_A1 ),
   prec( PREC_UNARY )
