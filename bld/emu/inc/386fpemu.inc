@@ -197,6 +197,14 @@ stkop1  db      _0_,_0_,02o,03o,_i_,_0_,_i_,_0_         ; stack operand
         db      _0_,61o,62o,63o,_i_,65o,_i_,67o
         db      _0_,71o,72o,73o,_i_,75o,_i_,77o
 
+_mova   macro   reg,label
+;        ifdef   __WIN387__
+;          mov   reg,label
+;        else
+          lea   reg,label
+;        endif
+        endm
+
 get_st0 macro
       ifdef SEGMENTED
         mov     edi,dword ptr ds:[ebp].stktop;- di gets index of top of stack
@@ -1314,28 +1322,31 @@ stcons  macro   w1,w2,w3,w4,w5
         endm
 
 setp_extended   macro
-        lea     edx,p_extended
 ifdef __WIN387__
+        mov     edx,p_extended
         mov     precrtn, edx
 else
+        lea     edx,p_extended
         putword edx,precrtn
 endif
         endm
 
 setp_double     macro
-        lea     edx,p_double
 ifdef __WIN387__
+        mov     edx,p_double
         mov     precrtn, edx
 else
+        lea     edx,p_double
         putword edx,precrtn
 endif
         endm
 
 setp_single     macro
-        lea     edx,p_single
 ifdef __WIN387__
+        mov     edx,p_single
         mov     precrtn,edx
 else
+        lea     edx,p_single
         putword edx,precrtn
 endif
         endm

@@ -43,11 +43,7 @@ cdsay .
     <CPCMD> library\nw_libcl.386\ms_s\clibs.lib <relroot>\rel2\lib386\netware\libc3sl.lib
     <CPCMD> library\nw_clib.386\ms_s\clibs.lib <relroot>\rel2\lib386\netware\clib3s.lib
     <CPCMD> library\nw_clibl.386\ms_s\clibs.lib <relroot>\rel2\lib386\netware\clib3sl.lib
-#
-# Note binmode applies to both LIBC and CLIB libraries but only needs to be built once from the
-# fat CLIB source code.
-#
-    <CPCMD> startup\library\nw_clib.386\ms_s\binmode.obj <relroot>\rel2\lib386\netware\binmode.obj
+    <CPCMD> startup\library\netware.386\ms_s\binmode.obj <relroot>\rel2\lib386\netware\binmode.obj
     <CPCMD> library\os2.286\mc\clibc.lib <relroot>\rel2\lib286\os2\clibc.lib
     <CPCMD> library\os2.286\mh\clibh.lib <relroot>\rel2\lib286\os2\clibh.lib
     <CPCMD> library\os2.286\ml\clibl.lib <relroot>\rel2\lib286\os2\clibl.lib
@@ -88,12 +84,9 @@ cdsay .
     <CPCMD> library\winnt.386\ms_s\clibs.lib <relroot>\rel2\lib386\nt\clib3s.lib
     <CPCMD> startup\library\winnt.386\ms_r\binmode.obj <relroot>\rel2\lib386\nt\binmode.obj
     <CPCMD> startup\library\winnt.386\ms_r\commode.obj <relroot>\rel2\lib386\nt\commode.obj
-#    <CPCMD> library\winnt.axp\_s\clib.lib <relroot>\rel2\libaxp\nt\clib.lib
-#    <CPCMD> startup\library\winnt.axp\_s\binmode.obj <relroot>\rel2\libaxp\nt\binmode.obj
-#    <CPCMD> startup\library\winnt.axp\_s\commode.obj <relroot>\rel2\libaxp\nt\commode.obj
-    <CPCMD> library\linux.386\ms_r\clibs.lib <relroot>\rel2\lib386\linux\clib3r.lib
-    <CPCMD> library\linux.386\ms_s\clibs.lib <relroot>\rel2\lib386\linux\clib3s.lib
-    <CPCMD> startup\library\linux.386\ms_r\commode.obj <relroot>\rel2\lib386\linux\commode.obj
+    <CPCMD> library\winnt.axp\_s\clib.lib <relroot>\rel2\libaxp\nt\clib.lib
+    <CPCMD> startup\library\winnt.axp\_s\binmode.obj <relroot>\rel2\libaxp\nt\binmode.obj
+    <CPCMD> startup\library\winnt.axp\_s\commode.obj <relroot>\rel2\libaxp\nt\commode.obj
 
 [ BLOCK <1> clibqa ]
 #===================
