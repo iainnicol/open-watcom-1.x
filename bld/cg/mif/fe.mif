@@ -39,7 +39,7 @@ use_owl_lib_ppc = 1
 use_owl_lib_386 = 1
 use_owl_lib_i86 = 1
 
-!include $(cg_dir)\mif\cg.mif
+!include $(cg_dir)/mif/cg.mif
 
 cg_inc_dirs = $(i_dir)
 
