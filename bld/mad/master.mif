@@ -1,0 +1,82 @@
+#
+# Master makefile for creating MAD's
+#
+
+proj_name = mad
+
+!ifndef mad_autodepends
+mad_autodepends = .autodepend
+!endif
+
+!ifeq host_os qnx
+memory_model_386 = s
+!endif
+
+name = mad$(target_cpu)
+mad_os2_i86   = $(name).dll
+mad_os2_386   = $(name).d32
+mad_qnx_386   = $(name).mad
+mad_linux_386 = $(name).mad
+mad_win_i86   = $(name).dll
+mad_dos_386   = $(name).mad
+mad_nt_386    = $(name).dll
+mad_nt_axp    = $(name).dll
+
+exe_name = $(mad_$(host_os)_$(host_cpu))
+
+all: $(exe_name) .SYMBOLIC
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!include $(disasm_dir)/mif/dis.mif
+
+# cflags stuff
+###############
+extra_c_flags = -DMD_$(target_cpu) -s
+extra_c_flags_i86 = -fpc -zu
+extra_c_flags_386 = -fpc
+extra_c_flags_win = -zc
+
+# lflags stuff
+###############
+lflags_qnx_386  = sys pharlap rex disable 1023,1014
+lflags_linux_386= sys pharlap rex disable 1023,1014
+lflags_dos_386  = sys pharlap rex disable 1023,1014
+lflags_os2_i86  = sys os2 dll
+lflags_os2_386  = sys os2v2 dll
+lflags_win_i86  = sys windows op rwr
+lflags_nt_386   = sys nt_dll op offset=0x6eb00000
+lflags_nt_axp   = sys ntaxp_dll op dosseg
+
+extra_l_flags  = op map
+
+extra_l_flags_os2  = export MADLOAD op modname=$(name)
+extra_l_flags_nt   = export MADLOAD op modname=$(name)
+extra_l_flags_win  = op modname=$(name)
+
+libs = clib3r
+!ifeq host_os linux
+!ifdef __LINUX__
+libs = $(clib_dir)/library/linux.386/ms_r/clib3r.lib
+!endif
+!else ifeq host_cpu i86
+libs = clib$(memory_model_i86)
+!else ifneq host_cpu 386
+libs = clib
+!endif
+libs += $(imp_libs)
+
+##################
+
+inc_dirs = -I"../h" -I"../../h" -I"$(dig_dir)/h" $(dis_includes) $(extra_incs)
+
+.c: ../c;../../c;$(dis_srcs);$(extra_srcs)
+
+objs =  madimp.obj $(dis_objs) $(imp_objs)
+
+# explicit rules
+##################
+$(exe_name) : $(dis_prereq) $(objs) $(__MAKEFILES__)
+        $(linker) $(lflags) name $^@ file {$(objs)} library {$(libs)}
