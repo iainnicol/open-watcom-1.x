@@ -104,10 +104,11 @@ enum operand_type {
 };
 
 enum operand3_type {
-    OP3_NONE    = 0,
-    OP3_CL      = 1,
-    OP3_I8_U    = 2,
-    OP3_I       = 3,
+    OP3_NONE = 0x00,
+    OP3_CL   = 0x01,
+    OP3_I8_U = 0x02,
+    OP3_I    = 0x03,
+    OP3_HID  = 0x08
 };
 
 /* we need some kind of magic comparison fcn. to handle these

@@ -612,7 +612,8 @@ static int check_3rd_operand( int i )
     enum operand_type   cur_opnd;
 
     cur_opnd = Code->info.opnd_type[OPND3];
-    if( AsmOpTable[i].opnd_type_3rd == OP3_NONE ) {
+    if( ( AsmOpTable[i].opnd_type_3rd == OP3_NONE )
+        || ( AsmOpTable[i].opnd_type_3rd & OP3_HID ) ) {
         if( cur_opnd == OP_NONE ) {
             return( NOT_ERROR );
         } else {
@@ -627,14 +628,18 @@ static int check_3rd_operand( int i )
 
 static int output_3rd_operand( int i )
 {
-    switch( AsmOpTable[i].opnd_type_3rd ) {
-    case OP3_I8_U:
+    if( AsmOpTable[i].opnd_type_3rd == OP3_NONE ) {
+        return( NOT_ERROR );
+    } else if( AsmOpTable[i].opnd_type_3rd == OP3_I8_U ) {
         if( Code->info.opnd_type[OPND3] & OP_I ) {
             return( output_data( OP_I8, OPND3 ) );
         } else {
             return( ERROR );
         }
-    default:
+    } else if( AsmOpTable[i].opnd_type_3rd & OP3_HID ) {
+        Code->data[OPND3] = AsmOpTable[i].opnd_type_3rd & ~OP3_HID;
+        return( output_data( OP_I8, OPND3 ) );
+    } else {
         return( NOT_ERROR );
     }
 }

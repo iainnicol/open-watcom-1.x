@@ -64,7 +64,7 @@ enum prefix_reg {
         unsigned            allowed_prefix  : 4;    /* allowed prefix */
         unsigned            byte1_info      : 4;    /* flags for 1st byte */
         unsigned            rm_info         : 2;    /* info on r/m byte */
-        unsigned            opnd_type_3rd   : 2;    /* info on 3rd operand */
+        unsigned            opnd_type_3rd   : 4;    /* info on 3rd operand */
         unsigned            opnd_dir        : 1;    /* operand direction */
         enum asm_cpu        cpu;                    /* CPU type */
         enum operand_type   opnd_type[2];           /* asm_opnds */
@@ -77,7 +77,7 @@ enum prefix_reg {
         unsigned            allowed_prefix  : 4;    /* allowed prefix */
         unsigned            byte1_info      : 4;    /* flags for 1st byte */
         unsigned            rm_info         : 2;    /* info on r/m byte */
-        unsigned            opnd_type_3rd   : 2;    /* info on 3rd operand */
+        unsigned            opnd_type_3rd   : 4;    /* info on 3rd operand */
         unsigned            opnd_dir        : 1;    /* operand direction */
         enum asm_cpu        cpu;                    /* CPU type */
         enum operand_type   opnd_type[2];           /* asm_opnds */
