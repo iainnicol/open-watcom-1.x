@@ -8,6 +8,8 @@ mseg &
 opi8u &
 plsintr &
 proccall &
+retiret &
+seg16 &
 segatrep &
 shift &
 structdd &
@@ -17,8 +19,6 @@ testequ
 dev_objs = &
 irpexitm &
 lea &
-lsxxx &
-retiret &
-seg16
+lsxxx
 
 !include ../test.mif
