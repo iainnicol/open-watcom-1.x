@@ -56,7 +56,7 @@ inline_asm_inc_dirs = -I"$(as_dir)/ppc/h" -I"$(as_dir)/h" -I"$(owl_dir)/h"
 !include $(wasm_dir)/mif/inline.mif
 inline_asm_dir = $(wasm_dir)
 inline_asm_h = $(wasm_dir)/h
-inline_asm_inc_dirs = -I"$(wasm_dir)/h"
+inline_asm_inc_dirs = -I"$(wasm_dir)/h" -I"$(owl_dir)/h"
 pre_deps_wasm = inlnops.gh
 !endif
 

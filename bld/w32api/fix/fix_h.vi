@@ -1,7 +1,0 @@
-set norc
-set nomagic
-#
-# fix WIN32 header files
-#
-#
-q

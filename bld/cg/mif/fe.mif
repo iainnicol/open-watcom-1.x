@@ -51,7 +51,7 @@ cg_host = $(host_os)
 
 use_owl_lib_axp = 1
 use_owl_lib_ppc = 1
-use_owl_lib_386 = 0
+use_owl_lib_386 = 1
 use_owl_lib_i86 = 0
 
 !include $(cg_dir)/mif/cg.mif

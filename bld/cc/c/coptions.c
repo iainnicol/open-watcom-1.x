@@ -970,6 +970,8 @@ static void Set_ESP()          { TargetSwitches |= STATEMENT_COUNTING; }
 
 #if _CPU == 386
 static void Set_EZ()           { TargetSwitches |= EZ_OMF; }
+void Set_ELF()          { TargetSwitches |= ELF; }
+void Set_COFF()         { TargetSwitches |= COFF; }
 #endif
 
 static void Set_EP()
@@ -1508,6 +1510,8 @@ static struct option const CFE_Options[] = {
 #endif
 #if _CPU == 386
     { "ez",     0,              Set_EZ },
+    { "eelf",   0,		Set_ELF },
+    { "ecoff",  0,		Set_COFF },
 #endif
     { "e=#",    0,              SetErrorLimit },
 #if _CPU == 8086 || _CPU == 386

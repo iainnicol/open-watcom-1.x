@@ -13,6 +13,9 @@
     386type.obj &
     387wait.obj &
     i86enc32.obj &
+    owlobj.obj &
+    rsccvsup.obj &
+    rscdfsup.obj &
     rtcall.obj &
     sib.obj
 
