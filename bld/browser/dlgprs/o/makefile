@@ -71,21 +71,21 @@ dlgprsp.exe : $(c_objs) $(browse_objs)
 
 ..\gen\prsdlg.gh ..\gen\prsdlg.gpp : ..\y\prsdlg.y ..\cpp\yydriver.cpp
     $(yacc) $[@ $]@ >y.out
-    @if exist ..\gen\prsdlg.gh erase ..\gen\prsdlg.gh >$(nulldevice)
-    @cp ytab.h ../gen/prsdlg.gh >$(nulldevice)
-    @erase ytab.h >$(nulldevice)
-    @if exist ..\gen\prsdlg.gpp erase ..\gen\prsdlg.gpp >$(nulldevice)
-    @cp ytab.c ../gen/prsdlg.gpp >$(nulldevice)
-    @erase ytab.c >$(nulldevice)
+    @if exist ..\gen\prsdlg.gh erase ..\gen\prsdlg.gh >nul
+    @copy ytab.h ..\gen\prsdlg.gh >nul
+    @erase ytab.h >nul
+    @if exist ..\gen\prsdlg.gpp erase ..\gen\prsdlg.gpp >nul
+    @copy ytab.c ..\gen\prsdlg.gpp >nul
+    @erase ytab.c >nul
 
 ..\gen\prsbnd.gh ..\gen\prsbnd.gpp : ..\y\prsbnd.y ..\cpp\yydriver.cpp
     $(yacc) $[@ $]@ >y.out
-    @if exist ..\gen\prsbnd.gh erase ..\gen\prsbnd.gh >$(nulldevice)
-    @cp ytab.h ../gen/prsbnd.gh >$(nulldevice)
-    @erase ytab.h >$(nulldevice)
-    @if exist ..\gen\prsbnd.gpp erase ..\gen\prsbnd.cpp >$(nulldevice)
-    @cp ytab.c ../gen/prsbnd.gpp >$(nulldevice)
-    @erase ytab.c >$(nulldevice)
+    @if exist ..\gen\prsbnd.gh erase ..\gen\prsbnd.gh >nul
+    @copy ytab.h ..\gen\prsbnd.gh >nul
+    @erase ytab.h >nul
+    @if exist ..\gen\prsbnd.gpp erase ..\gen\prsbnd.cpp >nul
+    @copy ytab.c ..\gen\prsbnd.gpp >nul
+    @erase ytab.c >nul
 
 scanner.obj : ..\cpp\scanner.cpp ..\gen\prsdlg.gh ..\gen\prsbnd.gh .AUTODEPEND
     wpp386 @compflags $[@

@@ -39,7 +39,7 @@
 #include "errors.h"
 #include "global.h"
 #include "param.h"
-#include "rctypes.h"
+#include "types.h"
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"

@@ -2,7 +2,11 @@
 host_CPU = i86
 host_OS = dos
 
-memory_model_i86 = m
+os = dos
+build_target = dos
+compiler = comp286
+model=m
 track=
+nodebug=
 
-!include ../guiui.mif
+!include ..\makefile

@@ -29,8 +29,6 @@
 *
 ****************************************************************************/
 
-#ifndef RESERR_H
-#define RESERR_H
 
 typedef enum {
     WRS_OK = 0,                 /* things will break if this is not 0 */
@@ -54,4 +52,3 @@ typedef enum {
 #define WRES_ERROR( x )         WresRecordError( x );
 
 extern void WresRecordError( WResStatus status );
-#endif

@@ -44,8 +44,7 @@
 #include "memory.h"
 #include "message.h"
 #include "parse.h"
-
-#include "optparsc.gh"
+#include "optparse.c"
 
 
 /*

@@ -34,12 +34,7 @@
 #endif
 #include <fcntl.h>
 #include <unistd.h>
-#if defined(__WATCOMC__) || !defined(__LINUX__)
 #include <process.h>
-#endif
-#ifdef __LINUX__
-#include <sys/wait.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -858,7 +853,7 @@ STATIC RET_T percentCmd( char *cmdname, char *arg )
     switch( num ) {
     case PER_ABORT:
         closeCurrentFile();
-        exit( ExitSafe( EXIT_ERROR ) );
+        ExitSafe( EXIT_ERROR );
         break;
 
     case PER_APPEND:
@@ -878,13 +873,13 @@ STATIC RET_T percentCmd( char *cmdname, char *arg )
 
     case PER_QUIT:
         closeCurrentFile();
-        exit( ExitSafe( EXIT_OK ) );
+        ExitSafe( EXIT_OK );
         break;
 
     case PER_STOP:
         closeCurrentFile();
         if( !GetYes( DO_YOU_WISH_TO_CONT ) ) {
-            exit( ExitSafe( EXIT_OK ) );
+            ExitSafe( EXIT_OK );
         }
         break;
 
@@ -900,31 +895,6 @@ STATIC RET_T percentCmd( char *cmdname, char *arg )
     return( RET_SUCCESS );
 }
 
-#ifdef __LINUX__
-STATIC RET_T intSystem( char *cmd )
-/* interruptable "system" (so that ctrl-c works) */
-{
-    pid_t pid = fork();
-    int status;
-    
-    if ( pid == -1 )
-        return -1;
-    if ( pid == 0 ) {
-        execl( "/bin/sh", "sh", "-c", cmd, NULL );
-        exit( 127 );
-    }
-    for (;;) {
-        if ( waitpid( pid, &status, 0) == -1 ) {
-            if ( errno == EINTR ) {
-                continue;
-            }
-            status = -1;
-        }
-        CheckForBreak();
-        return status;
-    }
-}
-#endif
 
 STATIC RET_T mySystem( const char *cmdname, char *cmd )
 /******************************************************
@@ -940,11 +910,7 @@ STATIC RET_T mySystem( const char *cmdname, char *cmd )
     }
 
     closeCurrentFile();
-#ifdef __LINUX__
-    retcode = intSystem( cmd );
-#else
     retcode = system( cmd );
-#endif
     lastErrorLevel = retcode;
     if( retcode < 0 ) {
         PrtMsg( ERR| UNABLE_TO_EXEC, cmdname );
@@ -1619,13 +1585,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
         closeCurrentFile();
         dll_cmd = OSFindDLL( argv[0] );
         if( dll_cmd == NULL ) {
-#ifdef __LINUX__ /* For Linux we must for now use system since
-                    without splitting argv[1] the spawnvp below
-                    does not always work */
-            retcode = mySystem( cmdname, cmd );
-#else
             retcode = spawnvp( P_WAIT, cmdname, argv );
-#endif
             if( retcode < 0 ) {
                 PrtMsg( ERR| UNABLE_TO_EXEC, cmdname );
             }

@@ -198,7 +198,7 @@ BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
     static HWND hlistbox;
     char        *mono32x32;
-    LRESULT     index;
+    int         index;
 
     lparam = lparam;
 

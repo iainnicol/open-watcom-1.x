@@ -42,10 +42,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifndef __LINUX__
-#define socklen_t int
-#endif
-
 #if defined(__NT__) || defined(__WINDOWS__)
     #include <winsock.h>
 #else
@@ -57,16 +53,14 @@
     #endif
     #include <unistd.h>
     #include <sys/socket.h>
-#ifndef __LINUX__
     #include <sys/select.h>
-#endif
     #include <sys/time.h>
     #include <netinet/in.h>
     #include <netinet/tcp.h>
     #include <netdb.h>
     #if defined(__OS2__) && !defined(__386__)
         #include <netlib.h>
-    #elif defined(__UNIX__)
+    #elif defined(__QNX__)
         #include <arpa/inet.h>
     #endif
 #endif
@@ -93,7 +87,7 @@ int control_socket;
 extern void     ServMessage( char * );
 #endif
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
     #define soclose( s )        close( s )
 #elif defined(__NT__) || defined(__WINDOWS__)
     #define soclose( s )        closesocket( s )
@@ -173,9 +167,9 @@ char RemoteConnect( void )
 {
 #ifdef SERVER
     struct      timeval timeout;
-    fd_set ready;
+    struct      fd_set ready;
     struct      sockaddr dummy;
-    socklen_t   dummy_len = sizeof( dummy );
+    int         dummy_len = sizeof( dummy );
 
     FD_ZERO( &ready );
     FD_SET( control_socket, &ready );
@@ -213,7 +207,7 @@ char *RemoteLink( char *name, char server )
     unsigned            port;
 
 #ifdef SERVER
-    socklen_t           length;
+    int                 length;
 
 #if defined(__NT__) || defined(__WINDOWS__)
     {
@@ -258,8 +252,10 @@ char *RemoteLink( char *name, char server )
         return( TRP_ERR_unable_to_get_socket_name );
     }
     {
+        char buffer[16];
         char buff2[128];
-        sprintf( buff2, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
+        strcpy( buff2, TRP_TCP_socket_number );
+        strcat( buff2, itoa( ntohs( socket_address.sin_port ), buffer, 10 ) );
         ServMessage( buff2 );
     }
 

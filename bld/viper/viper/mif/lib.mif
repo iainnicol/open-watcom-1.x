@@ -17,15 +17,15 @@ wclass_dir_win  = win\obj
 wclass_lib      = $(wclass_dir)\$(wclass_dir_$(host_OS))\wclass.lib
 
 !ifeq host_CPU axp
-gui_lib         = $(gui_dir)/win/ntaxp/gui.lib
+gui_lib         = $(gui_dir)\win\guintaxp.lib
 !else
 !ifeq host_OS nt
-gui_lib         = $(gui_dir)/win/nt386/gui.lib
+gui_lib         = $(gui_dir)\win\guintf.lib
 !else
 !ifeq host_OS os2
-gui_lib         = $(gui_dir)/win/os2386/gui.lib
+gui_lib         = $(gui_dir)\win\guios2f.lib
 !else
-gui_lib         = $(gui_dir)/win/wini86/gui.lib
+gui_lib         = $(gui_dir)\win\guiwinl.lib
 !endif
 !endif
 !endif

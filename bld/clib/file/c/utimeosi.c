@@ -24,17 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  OSI implementation of utime().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <stddef.h>
-#include <sys/types.h>
+#include <sys\types.h>
 #include <time.h>
 #include "tinyio.h"
-#include <sys/utime.h>
+#include <sys\utime.h>
 
 
 int utime( char const *fn, struct utimbuf const *times )

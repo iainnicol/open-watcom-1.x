@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  environment pointers
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -42,7 +43,7 @@ extern void __setenvp( void );
 
 AXI( __setenvp, INIT_PRIORITY_LIBRARY )
 
-#if !defined(__NETWARE__) && !defined(__LINUX__)
+#if !defined(__NETWARE__)
 extern void __freeenvp( void );
 AYI( __freeenvp, INIT_PRIORITY_LIBRARY )
 #endif

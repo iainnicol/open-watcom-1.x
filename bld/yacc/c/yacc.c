@@ -63,9 +63,9 @@ static FILE *openr(), *openw();
 static void setoptions( char *p );
 
 static int warnings;
-static int proflag;
+static proflag;
 
-int main( int argc, char **argv )
+void main( int argc, char **argv )
 {
     unsigned i;
     FILE *skeleton, *temp, *save;
@@ -181,7 +181,7 @@ int main( int argc, char **argv )
         fputc( ch, actout );
     }
     tail();
-    return( 0 );
+    exit( 0 );
 }
 
 static FILE *openr( char *filename )

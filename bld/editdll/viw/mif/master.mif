@@ -1,45 +1,38 @@
 proj_name = editdll
 name = wedit
 
-!ifndef editdll_autodepends
-editdll_autodepends = .AUTODEPEND
-!endif
-
 sys_dll = 1
 
+.mif : $(mif_path)
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
 .c: ..
 
-inc_dirs = ..;../..
+inc_dirs = ..;..\..
 
 .before:
-        set include=$(inc_path)
+        set INCLUDE=$(inc_path)
 
-extra_c_flags_win = -zc -zw
+extra_c_flags_386 = /bd
+extra_c_flags_axp = /bd
+extra_c_flags_win = /zc /zw
 
 lflags_nt_axp += initinstance terminstance
 lflags_nt_386 += initinstance terminstance
 lflags_win_i86 += initinstance memory
 
-!ifdef __LINUX__
-description = \'Open Watcom Editor DLL for VIW\'
-!else
-description = 'Open Watcom Editor DLL for VIW'
-!endif
-
 extra_l_flags = op map, verbose, static, heapsize=8k
-extra_l_flags += option description $(description)
+extra_l_flags += option description 'Open Watcom Editor DLL for VIW'
 extra_l_flags_win = op stack=20k lib ddeml export WEP RESIDENT
 extra_l_flags_nt = op stack=40k
 
 all: weditviw.dll wedit.dll .SYMBOLIC
 
 wedit.dll : weditviw.obj
-        $(linker) $(lflags) name $^* file $[@
-        $(librarian) -b -n $^*.lib +$^*.dll
+        $(linker) $(lflags) name $^* file weditviw
+        wlib -b -n $^*.lib +$^*.dll
 
 weditviw.dll : weditviw.obj
-        $(linker) $(lflags) name $^* file $[@
+        $(linker) $(lflags) name $^* file weditviw

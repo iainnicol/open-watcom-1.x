@@ -3,5 +3,4 @@
 host_os  = nt
 host_cpu = 386
 
-proj_path = ../../wasm
-!include $(proj_path)/mif/master.mif
+!include ..\..\wasm\master.mif

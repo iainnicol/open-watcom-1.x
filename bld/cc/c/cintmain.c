@@ -42,10 +42,6 @@ void ResetHandlers()
     CloseFiles();                       /* 09-may-89 */
 }
 
-#ifndef __WATCOMC__
-char **_argv;
-#endif
-
 #if _OS == _DOS || _OS == _OS2 || _OS == _NT
 int main()
     {
@@ -58,9 +54,6 @@ int main( int argc, char **argv )
     {
         int        ret;
         argc = argc; /* shut the compiler up */
-#ifndef __WATCOMC__
-        _argv = argv;
-#endif
 #endif
         FrontEndInit( FALSE );
         atexit( ResetHandlers );

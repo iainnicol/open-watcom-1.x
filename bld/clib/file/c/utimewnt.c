@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 implementation of utime().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,14 +33,14 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stddef.h>
-#include <sys/types.h>
+#include <sys\types.h>
 #include <time.h>
 #include <dos.h>
 #include <windows.h>
-#include <sys/stat.h>
+#include <sys\stat.h>
 #include <errno.h>
 #include <direct.h>
-#include <sys/utime.h>
+#include <sys\utime.h>
 #include "libwin32.h"
 #include "openmode.h"
 #include "rtdata.h"

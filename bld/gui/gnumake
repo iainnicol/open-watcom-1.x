@@ -24,7 +24,7 @@ vpath %.c $(SRCDIRS)
 vpath %.h $(INCDIRS)
 vpath %.msg h
 
-GUI_MSG_FILE = _guimsgs.gh
+GUI_MSG_FILE = h/_guimsgs.h
 
 ifeq ($(THREADMODEL),)
     all :

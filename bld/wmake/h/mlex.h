@@ -32,7 +32,6 @@
 
 #ifndef _MLEX_H
 #define _MLEX_H     1
-#include "watcom.h"
 #include "mtypes.h"
 #include "mstream.h"
 
@@ -189,6 +188,7 @@ enum Tokens {
 #define MAX_STRING     256
 #define EXIST          "EXIST"
 #define DEFINED        "DEFINED"
+typedef signed long int int_32;
 
 // Node Definition for the tokens
 typedef struct TOKEN_OP {

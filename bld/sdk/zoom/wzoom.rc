@@ -18,7 +18,7 @@
 
 STRINGTABLE
 BEGIN
-    #include "rcstrmsg.gh"
+    #include "rcstr.msg"
 END
 
 #include "config.dlg"

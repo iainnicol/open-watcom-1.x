@@ -53,7 +53,7 @@
 extern int              AsmScan( char *, char * );
 extern int              AsmParse();
 extern void             AsmInit();
-extern void             AddFlist( char const *filename );
+extern void             AsmError( uint );
 
 char *ScanLine( char *, int );
 
@@ -268,7 +268,6 @@ static file_list *push_flist( char *name, bool is_a_file )
         new->name = AsmAlloc( strlen( dir->e.macroinfo->filename ) + 1 );
         strcpy( new->name, dir->e.macroinfo->filename );
     } else {
-		AddFlist( name );
         new->name = AsmAlloc( strlen( name ) + 1 );
         strcpy( new->name, name );
         LineNumber = 0;
@@ -326,27 +325,6 @@ void InputQueueLine( char *line )
     strcpy( new->line, line );
 }
 
-#if 0
-static void StripQuotes( char *fname )
-{
-    char *s;
-    char *d;
-
-    if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
-        d = fname;
-        for( s = d + 1; *s && *s != '"'; ++s ) {
-            if( *s == '\0' )break;
-            if( s[0] == '\\' && s[1] == '"' ) {
-                ++s;
-            }
-            *d++ = *s;
-        }
-        *d = '\0';
-    }
-}
-#endif
-
 static FILE *open_file_in_include_path( char *name, char *fullpath )
 /******************************************************************/
 {
@@ -359,7 +337,7 @@ static FILE *open_file_in_include_path( char *name, char *fullpath )
 
     inc_path_list = AsmTmpAlloc( strlen( IncludePath ) + 1 );
     strcpy( inc_path_list, IncludePath );
-    next_path = strtok( inc_path_list, INCLUDE_PATH_DELIM ";");
+    next_path = strtok( inc_path_list, INCLUDE_PATH_DELIM );
 
     while( ( file == NULL ) && ( next_path != NULL ) ) {
         strcpy( buffer, next_path );
@@ -371,7 +349,7 @@ static FILE *open_file_in_include_path( char *name, char *fullpath )
 
         file = fopen( buffer, "r" );
         if( file ) break;
-        next_path = strtok( NULL, INCLUDE_PATH_DELIM ";");
+        next_path = strtok( NULL, INCLUDE_PATH_DELIM );
     }
     strcpy( fullpath, buffer );
     return( file );
@@ -397,7 +375,7 @@ int InputQueueFile( char *path )
     }
 
     if( file == NULL ) {
-        AsmErr( CANNOT_OPEN_INCLUDE_FILE, fullpath );
+        AsmError( CANNOT_OPEN_INCLUDE_FILE );
         return( ERROR );
     } else {
         new = push_flist( tmp, TRUE );

@@ -120,7 +120,7 @@ extern TOKEN_T LexPath( STRM_T t )
         if( t == STRM_MAGIC ) {
             InsString( DeMacro( EOL ), TRUE );
 
-        } else if( !isfilec( t ) && t != PATH_SPLIT && t != ';' && !isws( t )) {
+        } else if( !isfilec( t ) && t != PATH_SPLIT && !isws( t )) {
             PrtMsg( ERR|LOC| EXPECTING_M, M_PATH );
 
         } else if( !isws( t ) ) break;
@@ -128,7 +128,7 @@ extern TOKEN_T LexPath( STRM_T t )
         t = PreGetCH(); /* keep fetching characters */
     }
     /* just so you know what we've got now */
-    assert( isfilec( t ) || t == PATH_SPLIT || t == ';' );
+    assert( isfilec( t ) || t == PATH_SPLIT );
 
     vec = StartVec();
 
@@ -145,7 +145,7 @@ extern TOKEN_T LexPath( STRM_T t )
         path[ pos ] = NULLCHAR;
         WriteVec( vec, path );
 
-        if( t != PATH_SPLIT && t != ';' ) break;
+        if( t != PATH_SPLIT ) break;
 
         pos = 0;
         path[ pos++ ] = PATH_SPLIT;
@@ -306,7 +306,7 @@ STATIC TOKEN_T lexDotName( void )
     }
 
 
-    if( isdirc( t ) || t == PATH_SPLIT || t == ';' ) {  /* check for "."{dirc} */
+    if( isdirc( t ) || t == PATH_SPLIT ) {  /* check for "."{dirc} */
         UnGetCH( t );
         if (dep_path != NULL) {
             PrtMsg( ERR|LOC| INVALID_SUFSUF);
@@ -317,7 +317,7 @@ STATIC TOKEN_T lexDotName( void )
     if( t == DOT ) {        /* check if ".."{extc} or ".."{dirc} */
         t2 = PreGetCH();   /* probe one character */
         UnGetCH( t2 );
-        if( isdirc( t2 ) || t2 == PATH_SPLIT || t2 == ';' ) {    /* is ".."{dirc} */
+        if( isdirc( t2 ) || t2 == PATH_SPLIT ) {    /* is ".."{dirc} */
             UnGetCH( t );
             if (dep_path != NULL) {
                 PrtMsg( ERR|LOC| INVALID_SUFSUF);

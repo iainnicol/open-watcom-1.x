@@ -48,7 +48,7 @@ typedef char __far *va_list[1];
 
 #include <dos.h>
 #include <share.h>
-#include <sys/stat.h>
+#include <sys\stat.h>
 #define STRICT
 #include <windows.h>
 #include "winext.h"
@@ -273,7 +273,7 @@ int Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
      */
 //    BreakPoint();
     minmem = (DWORD) exe.min_data *(DWORD) 4096L;
-    if( exe.max_data == (WORD)-1 ) {
+    if( exe.max_data == -1 ) {
         maxmem = 4096L;
     } else {
         maxmem = (DWORD) exe.max_data*4096L;

@@ -36,7 +36,7 @@
 #include "wderesin.h"
 #include "wderes.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.gh"
+#include "wdemsgs.h"
 #include "wdemain.h"
 #include "wdeactn.h"
 #include "wdefdiag.h"

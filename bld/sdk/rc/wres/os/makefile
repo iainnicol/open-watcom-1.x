@@ -1,7 +1,7 @@
 #pmake: build os_dos os_os2 os_win cpu_i86
 host_OS = dos
 host_CPU = i86
-memory_model_i86 = s
+MODEL = s
 libname = s
 
-!include ../master.mif
+!include ..\master.mif

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Browse database file I/O.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -49,7 +50,7 @@
 #include "dw.h"
 #include "exeelf.h"
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
  #include <unistd.h>
 #else
  #include <direct.h>

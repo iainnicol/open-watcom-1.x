@@ -1,10 +1,5 @@
-sw_c_common =-ox-w4-zl-zld
-sw_a_common =-w4 -zld
-
-!ifdef __LINUX__
-sw_c_common +=-fo=.obj
-sw_a_common +=-fo=.obj
-!endif
+sw_c_common =-ox-w4-zq-zl-zld
+sw_a_common =-zq
 
 !ifndef on_build_machine
 !ifdef debug
@@ -115,6 +110,6 @@ a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model))
 a_flags += $(sw_a_$(processor)) $(sw_a_$(system)_$(processor))
 a_flags += $(extra_a_flags)
 
-!include $(mathlib_dir)/include.mif
-!include $(mathlib_dir)/bt.mif
-!include $(mathlib_dir)/lib.mif
+!include $(mathlib_dir)\include.mif
+!include $(mathlib_dir)\bt.mif
+!include $(mathlib_dir)\lib.mif

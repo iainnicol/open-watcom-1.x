@@ -44,14 +44,13 @@
 #include "message.h"
 #include "parse.h"
 #include "system.h"
-//#include "optparse.h"
 
 #if defined(__TARGET_386__)
-    #include "optp386c.gh"
+    #include "optparse.386"
 #elif defined(__TARGET_AXP__)
-    #include "optpaxpc.gh"
+    #include "optparse.axp"
 #elif defined(__TARGET_PPC__)
-    #include "optpppcc.gh"
+    #include "optparse.ppc"
 #else
     #error Unrecognized CPU type
 #endif

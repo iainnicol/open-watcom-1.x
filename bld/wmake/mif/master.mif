@@ -7,32 +7,19 @@
 proj_name   = wmake
 xname       = wmk
 
-!ifndef wmake_autodepends
-wmake_autodepends = .AUTODEPEND
-!endif
-
-# DOS code will not fit in 64k with /d2
-#!ifeq host_OS dos
-#!ifeq host_CPU i86
-#release_wmake = 1
-#!endif
-#!endif
-
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
 .ERASE
 .CONTINUE
 
-.h      : ../h
-.h      : $(watcom_dir)/h
-.h      : $(trmem_dir)
-.c      : ../c
-.c      : $(watcom_dir)/c
-.c      : $(trmem_dir)
-.inc    : .
-.inc    : ../h
+.extensions:
+.extensions: . .qnx .exe .obj .wbj .asm .c .inc .h .mif
+
+.h      : ..\h;$(watcom_dir)\h;$(trmem_dir)
+.mif    : ..\mif;$(mif_path)
+.c      : ..\c;..\support;$(watcom_dir)\c;$(trmem_dir)
+.inc    : .;..\h
+
+!include cproj.mif
+!include defrule.mif
 
 !ifdef COMPACT
 MODEL = c
@@ -46,6 +33,9 @@ MODEL = s
 
 !include wres.mif
 
+cc16 = $(cc_i86)
+
+#asm     = optasm
 echo    = echo
 
 # Compiler Flags
@@ -64,13 +54,21 @@ extra_c_flags_dos += -DNEC_98_BUG
 mem_model_i86 = -ms
 !endif
 
-inc_dirs = $(wmake_dir)/h;$(watcom_dir)/h;$(orl_dir)/h;$(trmem_dir);
+# DOS code will not fit in 64k with /d2
+!ifeq host_OS dos
+mode_cflags = -oaxs -d1
+!endif
+
+inc_dirs = $(wmake_dir)\h;$(watcom_dir)\h;$(orl_dir)\h;$(trmem_dir)
 
 !ifdef cachestat
 extra_c_flags += -dCACHE_STATS
 !endif
 
-!include ../mif/wmk.mif                    #   get our objs macro
+!include wmk.mif                    #   get our objs macro
+
+.BEFORE
+        set include=$(inc_path)
 
 ##############################################################################
 
@@ -98,43 +96,46 @@ extra_l_flags_dos = option stack=16k
 !else
 extra_l_flags_dos = option stack=4k
 !endif
-extra_l_flags = NAME $(xname).$(ext) OPTION MAP
+extra_l_flags = NAME $(xname) option quiet
 
-libs_nt_386     = $(orl_dir)/o/orl.lib
-libs_nt_axp     = $(orl_dir)/axp/orl.lib
-libs_os2_386    = $(orl_dir)/os2/orl.lib
-libs_qnx_386    = $(orl_dir)/o/orl.lib
-libs_linux_386  = $(orl_dir)/o/orl.lib
-libs_dos_386    = $(orl_dir)/o/orl.lib
+libs_nt_386     = $(orl_dir)\o\orl.lib
+libs_nt_axp     = $(orl_dir)\axp\orl.lib
+libs_os2_386    = $(orl_dir)\os2\orl.lib
+libs_qnx_386    = $(orl_dir)\o\orl.lib
+libs_linux_386  = $(orl_dir)\o\orl.lib
+libs_dos_386    = $(orl_dir)\o\orl.lib
 libs            = $(libs_$(host_OS)_$(host_CPU))
 
-$(xname).$(ext) :: usageend.gh wmake.res $(objs) $(__MAKEFILES__)
-        $(linker) $(lflags) FILE {$(objs) } LIBRARY { $(wres_lib) $(libs) }
+.exe. : .symbolic   # so that "wmake wmk" works as expected
+    @%null
+
+$(xname).$(ext) :: usageend.h wmake.res $(objs) $(__MAKEFILES__)
+    $(linker) $(lflags) OPTION MAP FILE {$(objs) } LIBRARY { $(wres_lib) $(libs) }
 #
 # If the linker files were different (i.e. if we needed a QNX version),
 # the copy would be replaced by a separate link. CSK
 !ifeq host_OS win
 #    wstrip  wmk.exe . x.sym
-        rc wmk
-        rc wmkj
+    rc wmk
+    rc wmkj
 #    copy /b wmk.exe+x.sym
 #    erase x.sym
 !endif
-        wstrip -q -a -r $(xname).$(ext) . wmake.res
+    wstrip /q /a /r $(xname).$(ext) . wmake.res
 
-wmake.res : ../h/wmake.rc mrcmsg.h usage.rc usagej.rc
-        $(rc) -bt=windows -zk0 -q -r -fo=$^@ $[@
+wmake.res : ..\h\wmake.rc mrcmsg.h usage.rc usagej.rc
+        $(rc) /bt=windows /zk0 /q /r /fo=$^@ $[@
 
-usage.rc : ../h/usage.sp
-        wsplice -kIS_RC -kENGLISH -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" ../h/usage.sp usage.rc
+usage.rc : ..\h\usage.sp
+        wsplice -kIS_RC -kENGLISH -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" ..\h\usage.sp usage.rc
 
-usagej.rc : ../h/usage.sp
-        wsplice -kIS_RC -kJAPANESE -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" ../h/usage.sp usagej.rc
+usagej.rc : ..\h\usage.sp
+        wsplice -kIS_RC -kJAPANESE -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" ..\h\usage.sp usagej.rc
 
-usageend.gh : usage.rc usagej.rc
+usageend.h : usage.rc usagej.rc
         wsplice usage.rc -o "%n%n%n%n" usage.rcp
-        wsplice -f "%+" usage.rcp -o "$#define USAGE_LAST (USAGE_BASE+%$#)%n" usageend.gh
-        rm -f usage.rcp
+        wsplice -f "%+" usage.rcp -o "$#define USAGE_LAST (USAGE_BASE+%$#)" usageend.h
+        del usage.rcp
 
 # usage.h : ..\h\usage.sp
 # I want the usage message codes to be generated on the fly, and also
@@ -150,14 +151,13 @@ usageend.gh : usage.rc usagej.rc
 ##############################################################################
 # special case targets
 
-isarray.gh : ./cretype.exe
-    $< > $@
+isarray.inc : cretype.exe
+    cretype >isarray.inc
 
-./cretype.exe : cretype.c
-    $(bld_cl) -fe=$@ -d2 -w4 $[@
+cretype.exe : cretype.c
+    $(bld_cl) /d2 /zq /w4 $[@
 
-# dependencies on .h files
-mglob.obj : isarray.gh .AUTODEPEND
+!include makedeps.mif               # dependencies on .h files
 
 
 ##############################################################################
@@ -165,9 +165,9 @@ mglob.obj : isarray.gh .AUTODEPEND
 
 # print a list of unreferenced messages
 chkmsg :
-    sed -f ../mif/msgdef.sed ../h/msg.h | sort -u >chkmsg.1
-    awk -f ../mif/msgref.awk chkmsg.1 >chkmsg.2
-    sed -f chkmsg.2 ../c/*.c | sort -u >chkmsg.3
+    sed -f ..\mif\msgdef.sed ..\h\msg.h | sort -u >chkmsg.1
+    awk -f ..\mif\msgref.awk chkmsg.1 >chkmsg.2
+    sed -f chkmsg.2 ..\c\*.c | sort -u >chkmsg.3
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?
 
@@ -176,8 +176,22 @@ strip : .symbolic
     ls -l *.$(ext)
 
 deps : .symbolic
-    cd ../c
-    ../support/mmk >../mif/makedeps.mif
+    cd ..\c
+    ..\support\mmk >..\mif\makedeps.mif
 
 do : .symbolic
-    wmake -h -n | sed -f ../mif/mkdo.sed >do.bat
+    wmake -h -n | sed -f ..\mif\mkdo.sed >do.bat
+
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj del *.?bj
+        @if exist *.lnk del *.lnk
+        @if exist *.exe del *.exe
+        @if exist *.lib del *.lib
+        @if exist *.res del *.res
+        @if exist *.clb del *.clb
+        @if exist *.err del *.err
+        @if exist *.h del *.h
+        @if exist *.sym del *.sym
+        @if exist *.map del *.map
+        @if exist *.rc del *.rc
+        @if exist *.inc del *.inc

@@ -33,7 +33,7 @@
 #include <string.h>
 #include "watcom.h"
 
-#include "rctypes.h"
+#include "types.h"
 #include "semantic.h"
 #include "rcmem.h"
 #include "global.h"
@@ -42,7 +42,7 @@
 #include "yydriver.h"
 #include "scan.h"
 #include "errprt.h"
-#include "rcmsg.gh"
+#include "rcmsg.h"
 
 typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;
@@ -385,7 +385,6 @@ static p_action doParse( parse_stack * resource_state )
     int         token_count;
 
     error_state = FALSE;
-    token_count = 0;
 
     do {
         token = yylex();

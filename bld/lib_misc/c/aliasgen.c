@@ -35,11 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <limits.h>
 
-#ifndef _MAX_PATH
-#define _MAX_PATH PATH_MAX
-#endif
 
 struct SysElem {
     char *              system;

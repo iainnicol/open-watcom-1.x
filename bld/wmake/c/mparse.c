@@ -394,7 +394,7 @@ STATIC void parseTargWarning( TLIST *walk )
     while( walk != NULL ) {
         if( !walk->target->special ) {
             PrtMsg( DBG|WRN|LOC| ASSUMING_SYMBOLIC,
-                walk->target->node.name );
+                DotNames[ DOT_SYMBOLIC ] );
             break;
         }
         walk = walk->next;

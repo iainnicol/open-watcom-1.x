@@ -34,8 +34,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <sys\types.h>
+#include <sys\stat.h>
 #include <fcntl.h>
 #include <io.h>
 #include <time.h>
@@ -53,7 +53,7 @@
 #include "ctl3d.h"
 #include "win1632.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.h"
 #ifndef __NT__
 #include "toolhelp.h"
 #endif

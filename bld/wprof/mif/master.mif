@@ -14,13 +14,13 @@ sys_windowed = 1
 !include cproj.mif
 !include defrule.mif
 
-.mif : ../mif
+.mif : ..\mif
 
 !include wproflib.mif
 !include wprofobj.mif
 
-.c : ../c;$(dig_srcs);$(watcom_dir)/c
-.h : ../h
+.c : ..\c;$(dig_srcs);$(watcom_dir)\c
+.h : ..\h
 
 !ifeq host_OS qnx
 exe = qnx
@@ -28,10 +28,10 @@ exe = qnx
 exe = exe
 !endif
 
-inc_dirs = ../h;$(wsample_dir)/h;$(aui_dir)/h;$(gui_dir)/h;$(trmem_dir);$(dig_dir)/h
+inc_dirs = ..\h;$(wsample_dir)\h;$(aui_dir)\h;$(gui_dir)\h;$(trmem_dir);$(dig_dir)\h
 
 .BEFORE:
-        set include=$(inc_path)
+        set INCLUDE=$(inc_path)
 
 extra_c_flags   = -s
 
@@ -99,30 +99,30 @@ $(fname).$(exe) : eraseall.obj $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wpr
     $(rc) $(rc_flags) $(resfile) $(fname).exe
 !endif
 !else
-    wstrip -q -a -r  $(fname).$(exe) . $(resfile)
+    wstrip /q /a /r  $(fname).$(exe) . $(resfile)
 !endif
 !endif
 
-eraseall.obj : ../compile.gbl
+eraseall.obj : ..\compile.gbl
     @if exist *.obj del *.obj
     wtouch eraseall.obj
 
 !ifeq host_OS os2
-wprof.res : auistr.gh wprof.rc
+wprof.res : wprof.rc
         @set oinc=$(%include)
-        set include=$(lang_root)/h/os2;$(rcinclude);$(%include)
-        wcc -dRC -i"$(aui_dir)/os2386.pm;$(rcinclude)" -p -pw=0 -fo=wprof.i wprof.rc
-#       wcc -dRC -i"$(aui_dir)/os2386.pm;$(rcinclude)" -p -pw=0 -fo=wprofj.i wprof.rc -dJAPANESE_MESSAGES
+        set include=$(lang_root)\h\os2;$(rcinclude);$(%include)
+        wcc -dRC -i$(aui_dir)\pmf;$(rcinclude) -p -pw=0 -fo=wprof.i wprof.rc
+#       wcc -dRC -i$(aui_dir)\pmf;$(rcinclude) -p -pw=0 -fo=wprofj.i wprof.rc /dJAPANESE_MESSAGES
 
 !ifndef %use_os2tk_stuff
 
         set opath=$(%path)
-        set path=$(lang_root)/binp
+        set path=$(lang_root)\binp
 
 !endif
 
-        $(rc) -i"$(inc_dirs_sys)" -r foros2pm.rc
-        cp foros2pm.res wprof.res
+        $(rc) -i $(inc_dirs_sys) -r foros2pm.rc
+        copy foros2pm.res wprof.res
 
 !ifndef %use_os2tk_stuff
 
@@ -133,7 +133,7 @@ wprof.res : auistr.gh wprof.rc
         @set include=$(%oinc)
 !else
 !ifeq sys_windowed 1
-wprof.res : auistr.gh wprof.rc
+wprof.res : wprof.rc
         $(rc) -r $(rc_flags) wprof.rc
 !endif
 !endif
@@ -143,25 +143,21 @@ msg.obj : msg.c msg.h
 msgstr.obj : msgstr.c msg.h
 
 rcfiles = &
-    $(gui_dir)/h/gui.rc &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/h/aui.rc &
-    $(aui_dir)/h/dlgrx.dlg &
-    $(aui_dir)/h/dlgsrch.dlg &
-    $(aui_dir)/h/dlgsrcha.dlg &
-    $(aui_dir)/h/japrx.dlg &
-    $(aui_dir)/h/japsrch.dlg &
-    $(aui_dir)/h/japsrcha.dlg
+    $(gui_dir)\h\gui.rc &
+    $(gui_dir)\h\gui.msg &
+    $(aui_dir)\h\aui.rc &
+    $(aui_dir)\h\dlgrx.dlg &
+    $(aui_dir)\h\dlgsrch.dlg &
+    $(aui_dir)\h\dlgsrcha.dlg &
+    $(aui_dir)\h\japrx.dlg &
+    $(aui_dir)\h\japsrch.dlg &
+    $(aui_dir)\h\japsrcha.dlg
 
-rcinclude=.;../h;$(dig_dir)/h;$(aui_dir)/h;$(gui_dir);$(gui_dir)/h;$(brinfo_dir)/merge/res
+rcinclude=.;..\h;$(dig_dir)\h;$(aui_dir)\h;$(gui_dir);$(gui_dir)\h;$(brinfo_dir)\merge\res
 
-wprofui.res : ../h/wprofui.rc auistr.gh $(rcfiles)
-    $(rc) -r -q -bt=windows -i="$(rcinclude);$(lang_root)/h/win" $[@ -fo=$^@
+wprofui.res : ..\h\wprofui.rc $(rcfiles)
+    $(rc) -r -q -bt=windows -i=$(rcinclude);$(lang_root)\h\win ..\h\wprofui.rc /fo=wprofui.res
 
-auistr.gh : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-        $(bld_cl) -i"$(aui_dir)/h" $]@
-        mkstr $^@
-        @rm -f mkstr.*
 
 clean: .SYMBOLIC .EXPLICIT
         @if exist *.?bj del *.?bj
@@ -170,7 +166,7 @@ clean: .SYMBOLIC .EXPLICIT
         @if exist *.dll del *.dll
         @if exist *.lib del *.lib
         @if exist *.res del *.res
-        @if exist *.lbc del *.lbc
+        @if exist *.clb del *.clb
         @if exist *.err del *.err
         @if exist *.map del *.map
         @if exist *.sym del *.sym

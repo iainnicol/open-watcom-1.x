@@ -3,12 +3,12 @@
 #include "intdlg.h"
 #include "stat.h"
 #include "stackt.h"
-#include "memwnd.h"
+#include "..\misc\memwnd.h"
 #include "log.h"
 #include "dmptask.h"
 #include "taskctl.h"
 #include "about.h"
-#include "rcstr.gh"
+#include "rcstr.h"
 #include "dbgopt.h"
 #include "segmap.h"
 #include "dipload.h"
@@ -54,7 +54,7 @@ END
 #define pick( a, b ) a, b
 STRINGTABLE
 BEGIN
-    #include "rcstrmsg.gh"
+    #include "rcstr.msg"
 END
 
 #include "about.dlg"

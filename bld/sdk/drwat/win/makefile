@@ -11,7 +11,7 @@ msgfiles = drwatcom.msg $(sdk_misc)\savelbox.msg $(sdk_misc)\memwnd.msg &
 
 .before
         @set wcc=-dNOUSE3D
-        @set include=$(%include);$(common_dir);$(wdisasmdir)h;$(dig_dir)\h
+        @set INCLUDE=$(%include);$(common_dir);$(wdisasmdir)h;$(dig_dir)\h
 
 cflags= -ml-zq-2-s-zu-d1-zW-fpc-w4 -i=$(sdk_misc) -fo=obj\.obj
 
@@ -30,7 +30,7 @@ disasm = $(build_root)\wdisasm\vid\olw
 .EXTENSIONS: .asm .c .h .dlg .ico
 
 dig_os = win
-!include $(dig_dir)/mif/dipcli.mif
+!include $(dig_dir)\mif\dipcli.mif
 
 objs =  drwatcom.obj fault.obj globals.obj &
         notify.obj winproc.obj debug.obj dump.obj disasm.obj &
@@ -48,7 +48,7 @@ $(name).exe : $(msgh) $(objs) $(lnk) $(name).res
 
 .ERASE
 $(msgh) : $(mastermsg)
-        $(vi) -s $(sdk_misc)\msgtoh.vi -p "$(msgh)" $(mastermsg)
+        vi -i -q -s $(sdk_misc)\msgtoh.vi -p "$(msgh)" $(mastermsg)
         del obj\*.obj
 
 $(mastermsg) : $(msgfiles)

@@ -571,7 +571,7 @@ static int fSearch( char *fn, char *r )
     if( i ) {
         return( i );
     }
-    #if !defined( __NT__ ) && defined( __WATCOMC__ )
+    #ifndef __NT__
         bytecnt = 3*stackavail()/4;
     #else
         bytecnt = 2048;

@@ -1,6 +1,6 @@
 #ifndef _WINBASE_H
 #define _WINBASE_H
-#if __GNUC__ >= 3
+#if __GNUC__ >=3
 #pragma GCC system_header
 #endif
 
@@ -153,29 +153,22 @@ extern "C" {
 #define PIPE_CLIENT_END 0
 #define PIPE_SERVER_END 1
 #define PIPE_UNLIMITED_INSTANCES 255
-#define DEBUG_PROCESS			0x00000001
-#define DEBUG_ONLY_THIS_PROCESS		0x00000002
-#define CREATE_SUSPENDED		0x00000004
-#define DETACHED_PROCESS		0x00000008
-#define CREATE_NEW_CONSOLE		0x00000010
-#define NORMAL_PRIORITY_CLASS		0x00000020
-#define IDLE_PRIORITY_CLASS		0x00000040
-#define HIGH_PRIORITY_CLASS		0x00000080
-#define REALTIME_PRIORITY_CLASS		0x00000100
-#define CREATE_NEW_PROCESS_GROUP	0x00000200
-#define CREATE_UNICODE_ENVIRONMENT	0x00000400
-#define CREATE_SEPARATE_WOW_VDM		0x00000800
-#define CREATE_SHARED_WOW_VDM		0x00001000
-#define CREATE_FORCEDOS			0x00002000
-#define BELOW_NORMAL_PRIORITY_CLASS	0x00004000
-#define ABOVE_NORMAL_PRIORITY_CLASS	0x00008000
-#define CREATE_BREAKAWAY_FROM_JOB	0x01000000
-#define CREATE_WITH_USERPROFILE		0x02000000
-#define CREATE_DEFAULT_ERROR_MODE	0x04000000
-#define CREATE_NO_WINDOW		0x08000000
-#define PROFILE_USER			0x10000000
-#define PROFILE_KERNEL			0x20000000
-#define PROFILE_SERVER			0x40000000
+#define CREATE_DEFAULT_ERROR_MODE	67108864
+#define DEBUG_PROCESS	1
+#define DEBUG_ONLY_THIS_PROCESS	2
+#define CREATE_SUSPENDED	4
+#define DETACHED_PROCESS	8
+#define CREATE_NEW_CONSOLE	16
+#define NORMAL_PRIORITY_CLASS	32
+#define IDLE_PRIORITY_CLASS	64
+#define HIGH_PRIORITY_CLASS	128
+#define REALTIME_PRIORITY_CLASS	256
+#define CREATE_NEW_PROCESS_GROUP	512
+#define CREATE_UNICODE_ENVIRONMENT	1024
+#define CREATE_SEPARATE_WOW_VDM	2048
+#define CREATE_SHARED_WOW_VDM 4096
+#define CREATE_FORCEDOS 8192
+#define CREATE_NO_WINDOW 0x8000000
 #define CONSOLE_TEXTMODE_BUFFER 1
 #define CREATE_NEW	1
 #define CREATE_ALWAYS	2
@@ -276,7 +269,6 @@ extern "C" {
 #define GMEM_DISCARDED 16384
 #define GMEM_INVALID_HANDLE 32768
 #define GMEM_LOCKCOUNT 255
-#define GMEM_VALID_FLAGS 32626
 #define STATUS_WAIT_0 0
 #define STATUS_ABANDONED_WAIT_0 0x80
 #define STATUS_USER_APC 0xC0
@@ -495,6 +487,9 @@ extern "C" {
 #define MS_DSR_ON 32
 #define MS_RING_ON 64
 #define MS_RLSD_ON 128
+#define PROFILE_USER 0x10000000
+#define PROFILE_KERNEL 0x20000000
+#define PROFILE_SERVER 0x40000000
 #define DTR_CONTROL_DISABLE 0
 #define DTR_CONTROL_ENABLE 1
 #define DTR_CONTROL_HANDSHAKE 2
@@ -1044,8 +1039,6 @@ HANDLE WINAPI CreateIoCompletionPort(HANDLE,HANDLE,DWORD,DWORD);
 #if (_WIN32_WINNT >= 0x0500)
 HANDLE WINAPI CreateJobObjectA(LPSECURITY_ATTRIBUTES,LPCSTR);
 HANDLE WINAPI CreateJobObjectW(LPSECURITY_ATTRIBUTES,LPCWSTR);
-BOOL WINAPI TerminateJobObject(HANDLE,UINT);
-BOOL WINAPI AssignProcessToJobObject(HANDLE,HANDLE);
 #endif
 HANDLE WINAPI CreateMailslotA(LPCSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES);
 HANDLE WINAPI CreateMailslotW(LPCWSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES);
@@ -1077,10 +1070,6 @@ void WINAPI DeleteCriticalSection(PCRITICAL_SECTION);
 void WINAPI DeleteFiber(PVOID);
 BOOL WINAPI DeleteFileA(LPCSTR);
 BOOL WINAPI DeleteFileW(LPCWSTR);
-#if (_WIN32_WINNT >= 0x0500)
-BOOL WINAPI DeleteVolumeMountPointA(LPCSTR);
-BOOL WINAPI DeleteVolumeMountPointW(LPCWSTR);
-#endif
 BOOL WINAPI DeregisterEventSource(HANDLE);
 BOOL WINAPI DestroyPrivateObjectSecurity(PSECURITY_DESCRIPTOR*);
 BOOL WINAPI DeviceIoControl(HANDLE,DWORD,PVOID,DWORD,PVOID,DWORD,PDWORD,POVERLAPPED);
@@ -1131,8 +1120,6 @@ BOOL WINAPI FindFirstFreeAce(PACL,PVOID*);
 #if (_WIN32_WINNT >= 0x0500)
 HANDLE WINAPI FindFirstVolumeA(LPCSTR,DWORD);
 HANDLE WINAPI FindFirstVolumeW(LPCWSTR,DWORD);
-HANDLE WINAPI FindFirstVolumeMountPointA(LPSTR,LPSTR,DWORD);
-HANDLE WINAPI FindFirstVolumeMountPointW(LPWSTR,LPWSTR,DWORD);
 #endif
 BOOL WINAPI FindNextChangeNotification(HANDLE);
 BOOL WINAPI FindNextFileA(HANDLE,LPWIN32_FIND_DATAA);
@@ -1140,10 +1127,7 @@ BOOL WINAPI FindNextFileW(HANDLE,LPWIN32_FIND_DATAW);
 #if (_WIN32_WINNT >= 0x0500)
 BOOL WINAPI FindNextVolumeA(HANDLE,LPCSTR,DWORD);
 BOOL WINAPI FindNextVolumeW(HANDLE,LPWSTR,DWORD);
-BOOL WINAPI FindNextVolumeMountPointA(HANDLE,LPSTR,DWORD);
-BOOL WINAPI FindNextVolumeMountPointW(HANDLE,LPWSTR,DWORD);
 BOOL WINAPI FindVolumeClose(HANDLE);
-BOOL WINAPI FindVolumeMountPointClose(HANDLE);
 #endif
 HRSRC WINAPI FindResourceA(HMODULE,LPCSTR,LPCSTR);
 HRSRC WINAPI FindResourceW(HINSTANCE,LPCWSTR,LPCWSTR);
@@ -1316,14 +1300,6 @@ BOOL WINAPI GetVersionExA(LPOSVERSIONINFOA);
 BOOL WINAPI GetVersionExW(LPOSVERSIONINFOW);
 BOOL WINAPI GetVolumeInformationA(LPCSTR,LPSTR,DWORD,PDWORD,PDWORD,PDWORD,LPSTR,DWORD);
 BOOL WINAPI GetVolumeInformationW(LPCWSTR,LPWSTR,DWORD,PDWORD,PDWORD,PDWORD,LPWSTR,DWORD);
-#if (_WIN32_WINNT >= 0x0500)
-BOOL WINAPI GetVolumeNameForVolumeMountPointA(LPCSTR,LPSTR,DWORD);
-BOOL WINAPI GetVolumeNameForVolumeMountPointW(LPCWSTR,LPWSTR,DWORD);
-BOOL WINAPI GetVolumePathNameA(LPCSTR,LPSTR,DWORD);
-BOOL WINAPI GetVolumePathNameW(LPCWSTR,LPWSTR,DWORD);
-BOOL WINAPI GetVolumePathNamesForVolumeNameA(LPCSTR,LPSTR,DWORD,PDWORD);
-BOOL WINAPI GetVolumePathNamesForVolumeNameW(LPCWSTR,LPWSTR,DWORD,PDWORD);
-#endif
 UINT WINAPI GetWindowsDirectoryA(LPSTR,UINT);
 UINT WINAPI GetWindowsDirectoryW(LPWSTR,UINT);
 DWORD WINAPI GetWindowThreadProcessId(HWND,PDWORD);
@@ -1354,7 +1330,7 @@ BOOL WINAPI GlobalUnWire(HGLOBAL);
 PVOID WINAPI GlobalWire(HGLOBAL);
 #define HasOverlappedIoCompleted(lpOverlapped)  ((lpOverlapped)->Internal != STATUS_PENDING)
 PVOID WINAPI HeapAlloc(HANDLE,DWORD,DWORD);
-SIZE_T WINAPI HeapCompact(HANDLE,DWORD);
+UINT WINAPI HeapCompact(HANDLE,DWORD);
 HANDLE WINAPI HeapCreate(DWORD,DWORD,DWORD);
 BOOL WINAPI HeapDestroy(HANDLE);
 BOOL WINAPI HeapFree(HANDLE,DWORD,PVOID);
@@ -1592,10 +1568,6 @@ LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter(LPTOP_LEVEL_EXCE
 BOOL WINAPI SetupComm(HANDLE,DWORD,DWORD);
 BOOL WINAPI SetVolumeLabelA(LPCSTR,LPCSTR);
 BOOL WINAPI SetVolumeLabelW(LPCWSTR,LPCWSTR);
-#if (_WIN32_WINNT >= 0x0500)
-BOOL WINAPI SetVolumeMountPointA(LPCSTR,LPCSTR);
-BOOL WINAPI SetVolumeMountPointW(LPCWSTR,LPCWSTR);
-#endif
 BOOL WINAPI SetWaitableTimer(HANDLE,const LARGE_INTEGER*,LONG,PTIMERAPCROUTINE,PVOID,BOOL);
 BOOL WINAPI SignalObjectAndWait(HANDLE,HANDLE,DWORD,BOOL);
 DWORD WINAPI SizeofResource(HINSTANCE,HRSRC);
@@ -1712,9 +1684,6 @@ typedef HW_PROFILE_INFOW HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define CreateWaitableTimer CreateWaitableTimerW
 #define DefineDosDevice DefineDosDeviceW
 #define DeleteFile DeleteFileW
-#if (_WIN32_WINNT >= 0x0500)
-#define DeleteVolumeMountPoint DeleteVolumeMountPointW
-#endif
 #define EncryptFile EncryptFileW
 #define EndUpdateResource EndUpdateResourceW
 #define EnumResourceLanguages EnumResourceLanguagesW
@@ -1729,12 +1698,10 @@ typedef HW_PROFILE_INFOW HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define FindFirstFileEx FindFirstFileExW
 #if (_WIN32_WINNT >= 0x0500)
 #define FindFirstVolume FindFirstVolumeW
-#define FindFirstVolumeMountPoint FindFirstVolumeMountPointW
 #endif
 #define FindNextFile FindNextFileW
 #if (_WIN32_WINNT >= 0x0500)
 #define FindNextVolume FindNextVolumeW
-#define FindNextVolumeMountPoint  FindNextVolumeMountPointW
 #endif
 #define FindResource FindResourceW
 #define FindResourceEx FindResourceExW
@@ -1777,9 +1744,6 @@ typedef HW_PROFILE_INFOW HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define GetUserName GetUserNameW
 #define GetVersionEx GetVersionExW
 #define GetVolumeInformation GetVolumeInformationW
-#define GetVolumeNameForVolumeMountPoint GetVolumeNameForVolumeMountPointW
-#define GetVolumePathName GetVolumePathNameW
-#define GetVolumePathNamesForVolumeName GetVolumePathNamesForVolumeNameW
 #define GetWindowsDirectory GetWindowsDirectoryW
 #define GlobalAddAtom GlobalAddAtomW
 #define GlobalFindAtom GlobalFindAtomW
@@ -1826,7 +1790,6 @@ typedef HW_PROFILE_INFOW HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define SetFileAttributes SetFileAttributesW
 #define SetFileSecurity SetFileSecurityW
 #define SetVolumeLabel SetVolumeLabelW
-#define SetVolumeMountPoint SetVolumeMountPointW
 #define UpdateResource UpdateResourceW
 #define VerifyVersionInfo VerifyVersionInfoW
 #define WaitNamedPipe WaitNamedPipeW
@@ -1868,9 +1831,6 @@ typedef HW_PROFILE_INFOA HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define CreateWaitableTimer CreateWaitableTimerA
 #define DefineDosDevice DefineDosDeviceA
 #define DeleteFile DeleteFileA
-#if (_WIN32_WINNT >= 0x0500)
-#define DeleteVolumeMountPoint DeleteVolumeMountPointA
-#endif
 #define EncryptFile EncryptFileA
 #define EndUpdateResource EndUpdateResourceA
 #define EnumResourceLanguages EnumResourceLanguagesA
@@ -1885,12 +1845,10 @@ typedef HW_PROFILE_INFOA HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define FindFirstFileEx FindFirstFileExA
 #if (_WIN32_WINNT >= 0x0500)
 #define FindFirstVolume FindFirstVolumeA
-#define FindFirstVolumeMountPoint FindFirstVolumeMountPointA
 #endif
 #define FindNextFile FindNextFileA
 #if (_WIN32_WINNT >= 0x0500)
 #define FindNextVolume FindNextVolumeA
-#define FindNextVolumeMountPoint FindNextVolumeMountPointA
 #endif
 #define FindResource FindResourceA
 #define FindResourceEx FindResourceExA
@@ -1932,9 +1890,6 @@ typedef HW_PROFILE_INFOA HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define GetUserName GetUserNameA
 #define GetVersionEx GetVersionExA
 #define GetVolumeInformation GetVolumeInformationA
-#define GetVolumeNameForVolumeMountPoint GetVolumeNameForVolumeMountPointA
-#define GetVolumePathName GetVolumePathNameA
-#define GetVolumePathNamesForVolumeName GetVolumePathNamesForVolumeNameA
 #define GetWindowsDirectory GetWindowsDirectoryA
 #define GlobalAddAtom GlobalAddAtomA
 #define GlobalFindAtom GlobalFindAtomA
@@ -1981,7 +1936,6 @@ typedef HW_PROFILE_INFOA HW_PROFILE_INFO,*LPHW_PROFILE_INFO;
 #define SetFileAttributes SetFileAttributesA
 #define SetFileSecurity SetFileSecurityA
 #define SetVolumeLabel SetVolumeLabelA
-#define SetVolumeMountPoint SetVolumeMountPointA
 #define UpdateResource UpdateResourceA
 #define VerifyVersionInfo VerifyVersionInfoA
 #define WaitNamedPipe WaitNamedPipeA

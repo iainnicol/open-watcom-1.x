@@ -180,14 +180,14 @@ extern short BIOSKeyboardHit( char x )
 
 } /* BIOSKeyboardHit */
 
-void MyVioShowBuf( unsigned offset, int length )
+void MyVioShowBuf( unsigned short offset, unsigned short length )
 {
     extern int  PageCnt;
 
     if( PageCnt > 0 ) {
         return;
     }
-    VioShowBuf( (unsigned short)offset, (unsigned short)(length*2), 0 );
+    VioShowBuf( offset, length*2, 0 );
 
 } /* MyVioShowBuf */
 

@@ -131,7 +131,6 @@ static char *validTargets[] = {
     "axp",
     "ppc",
     "dbg",
-    "linux",
     "qnx",
     "sparc",
     NULL

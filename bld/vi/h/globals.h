@@ -52,16 +52,10 @@ extern char near * near BoolStr[];
 extern int NumEditOpts;
 
 /* mouse data */
-#ifdef __LINUX__ /* compatible with the ui lib */
-extern unsigned short MouseRow;
-extern unsigned short MouseCol;
-extern unsigned short MouseStatus;
-#else
 extern int MouseRow;
 extern int MouseCol;
-extern int MouseStatus;
-#endif
 extern int MouseSpeed;
+extern int MouseStatus;
 extern int MouseDoubleClickSpeed;
 extern int LastMouseEvent;
 extern int MouseRepeatStartDelay;

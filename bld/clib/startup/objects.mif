@@ -92,7 +92,7 @@
 !inject main4wnt.obj                     nt nta ntp
 !inject maino16.obj                                                 o16
 !inject mainqnx.obj                                                             q32
-!inject mainlnx.obj                                                                             l32
+!inject mainlnx.obj
 !inject maino32.obj                                                     o32
 !inject mainwnt.obj                      nt nta ntp
 !inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32
@@ -151,7 +151,7 @@
 !inject wstrwaxp.obj                        nta
 !inject wstrwwna.obj                        nta ntp
 !inject wstrwwnt.obj                     nt
-!inject xiyi.obj     d16 d32                        nvc ncl nvl nll o16     q16 q32 w16 w32 osi
+!inject xiyi.obj     d16 d32                        nvc ncl nvl nll o16     q16 q32 w16 w32 osi l32
 !inject xmsg.obj     d16 d32
 !inject xmsgnov.obj                                 nvc ncl nvl nll
 !inject xmsgo16.obj                                                 o16
@@ -164,7 +164,7 @@
 !inject ___argc.obj  d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject ___wargc.obj                     nt nta ntp                     o32
 
-!include ../../../../objlist.mif
+!include ..\..\..\..\objlist.mif
 
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32
 #==================================================================================================
@@ -195,7 +195,7 @@
 !inject wmndwwnt.obj                     nt nta ntp
 
 objsuffix=files
-!include ../../../../objlist.mif
+!include ..\..\..\..\objlist.mif
 objsuffix=
 
 086_ac_opts=-zdp

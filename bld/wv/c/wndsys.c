@@ -277,7 +277,7 @@ void ProcWindow()
 
 void WndSysStart()
 {
-    #if defined(__UNIX__)
+    #if defined(__QNX__)
         ScrnSpawnStart();
     #endif
     GUISpawnStart();
@@ -287,7 +287,7 @@ void WndSysStart()
 void WndSysEnd( bool pause )
 {
     GUISpawnEnd();
-    #if defined(__UNIX__)
+    #if defined(__QNX__)
         ScrnSpawnEnd();
     #endif
     pause=pause; // NYI - PUI

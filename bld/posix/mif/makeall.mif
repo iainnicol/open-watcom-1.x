@@ -1,4 +1,4 @@
-!include $(posix_dir)/mif/targos.mif
+!include $(posix_dir)\mif\targos.mif
 
 all : .symbolic lib $(commands)
         @%null
@@ -25,6 +25,7 @@ $(commands) : .symbolic
 !endif
 
 clean : .symbolic
+        @for %i in ($(commands)) do @wmake -h -f $(posix_dir)\src\%i\makefile clean clean_dir=$(posix_dir)\src\%i\$(targos)
         @wmake -h -f $(posix_dir)\misc\$(targos)\makefile clean clean_dir=$(posix_dir)\misc\$(targos)
         @if exist *.ex? @erase *.ex?
         @if exist *.?bj @erase *.?bj

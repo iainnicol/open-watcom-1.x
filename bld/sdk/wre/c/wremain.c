@@ -46,7 +46,7 @@
 #include "wremem.h"
 #include "wrememf.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "wremsgs.h"
 #include "wrenames.h"
 #include "wreopts.h"
 #include "wreres.h"

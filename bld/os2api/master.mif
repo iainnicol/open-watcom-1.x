@@ -1,7 +1,6 @@
-proj_name =  os2api
-
-!include cproj.mif
-!include deftarg.mif
+lib = wlib
+cc  = wcc386
+as  = wasm
 
 .EXTENSIONS : .lbc .def
 
@@ -47,57 +46,45 @@ componentsrexx =     &
         rexx.lbc     &
         rexxapi.lbc
 
-componentsmmpm2 =    &
-        dive.lbc     &
-        mdm.lbc      &
-        mmio.lbc     &
-        sw.lbc
-
-.def .asm : ../$(srcdir)
+.def .asm : ..\$(srcdir)
 
 .def.lbc:
-        $(vi) -s ../def2lbc.vi -p"$*" ../$(srcdir)/$[.
+        vi -i -q -k ":set norc\n:r ../$(srcdir)/$[.\n:source ../def2lbc.vi $*\n"
 
 .lbc.lib:
-        $(librarian) -b -c -n -io -ii -p=32 $@ @$<
+        $(lib) -b -c -q -n -io -ii -p=32 $@ @$<
 
 .obj.lib:
-        $(librarian) -b -c -n $@ $<
+        $(lib) -b -c -q -n $@ $<
 
 .c.obj:
-        $(cc) -i$(inc_dirs) -fo=.obj -zq-w4-we-dNDEBUG -zc -oaxt -d1 $<
+        $(cc) -i$(inc_dirs) -zq-w4-we-dNDEBUG -zc -oaxt -d1 $<
 
 .asm.obj:
-        $(as) -fo=.obj -zq -d1 $<
+        $(as) -zq -d1 $<
 
 os2.lib: lib286.lbc msgseg.obj
-        $(librarian) -b -c -n -io -ii -p=32 $@ @$<
-        $(librarian) -b -c -p=32 $@ +msgseg.obj
+        $(lib) -b -c -q -n -io -ii -p=32 $@ @$<
+        $(lib) -b -c -q -p=32 $@ +msgseg.obj
 
 lib286.lbc: $(components286)
         cat $< > $@
 
 os2386.lib: lib386.lbc msgseg32.obj
-        $(librarian) -b -c -n -io -ii -p=32 $@ @$<
-        $(librarian) -b -c -p=32 $@ +msgseg32.obj
+        $(lib) -b -c -q -n -io -ii -p=32 $@ @$<
+        $(lib) -b -c -q -p=32 $@ +msgseg32.obj
 
 lib386.lbc: $(components386)
         cat $< > $@
 
 rexx.lib: rexxall.lbc
-        $(librarian) -b -c -n -io -ii -p=32 $@ @$<
+        $(lib) -b -c -q -n -io -ii -p=32 $@ @$<
 
 rexxall.lbc: $(componentsrexx)
         cat $< > $@
 
-mmpm2.lib: mmpm2all.lbc
-        $(librarian) -b -c -n -io -ii -p=32 $@ @$<
-
-mmpm2all.lbc: $(componentsmmpm2)
-        cat $< > $@
-
-#clean: .SYMBOLIC .EXPLICIT
-#        @if exist *.lbc @del *.lbc
-#        @if exist *.lib @del *.lib
-#        @if exist *.bak @del *.bak
-#        @if exist *.obj @del *.obj
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.lbc @del *.lbc
+        @if exist *.lib @del *.lib
+        @if exist *.bak @del *.bak
+        @if exist *.obj @del *.obj

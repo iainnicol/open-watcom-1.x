@@ -50,7 +50,7 @@
 #include "wde_wres.h"
 #include "wdefutil.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.gh"
+#include "wdemsgs.h"
 #include "wdewait.h"
 #include "wdegoto.h"
 #include "wdectl3d.h"
@@ -218,7 +218,7 @@ Bool WdeSetSelectInfo ( HWND hDlg, WdeDialogSelectInfo *si )
 
 Bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 {
-    LRESULT        count;
+    int            count;
     int           *sel;
     Bool           ok;
     LRESULT        ret;

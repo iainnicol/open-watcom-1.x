@@ -14,9 +14,12 @@
 
 name = wstring
 
-sys_object =    wmain.obj winfo.obj wstr.obj whndl.obj &
-                whints.obj wstat.obj &
-                wedit.obj wtoolbar.obj wribbon.obj &
-                wdel.obj wnewitem.obj wsvobj.obj wstr2rc.obj
+sys_object =    wmain.sbj winfo.sbj wstr.sbj whndl.sbj &
+                whints.sbj wstat.sbj &
+                wedit.sbj wtoolbar.sbj wribbon.sbj &
+                wdel.sbj wnewitem.sbj wsvobj.sbj wstr2rc.sbj
 
-!include ../../mif/master.mif
+!include ..\..\mif\master.mif
+
+$(name).res: $(name).rc rename.dlg w_rc.h sys_rc.h wmsgfile.h &
+             wstring.men strabout.dlg stredit.dlg

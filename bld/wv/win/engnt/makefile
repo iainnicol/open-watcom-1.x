@@ -19,7 +19,7 @@ lexusbld : .symbolic lib
 
 sysobjs = ntstub.obj ntfilio.obj winlkup.obj winchk.obj ntcmd.obj ntfinfo.obj
 
-!include ../../master.mif
+!include ..\..\makefile
 
 stubdb.obj : ..\c\stubdb.c
          $(compile) /fh

@@ -36,9 +36,7 @@
 #ifdef __OS2__
    #include <stdio.h>
 #endif
-#ifdef __WATCOMC__
 #include <process.h>
-#endif
 
 #include "macros.h"
 #include "make.h"
@@ -514,8 +512,8 @@ STATIC void init( const char **argv )
 }
 
 
-extern int ExitSafe( int rc )
-/***************************/
+extern void ExitSafe( int rc )
+/****************************/
 {
     static BOOLEAN busy = FALSE;    /* recursion protection */
 
@@ -555,46 +553,37 @@ extern int ExitSafe( int rc )
         LogFini();
     }
 
-    return( rc );
+    exit( rc );
 }
 
-#ifndef __WATCOMC__
-char **_argv;
-#else
 #pragma off(unreferenced);
-#endif
 #if !defined( __WINDOWS__ )
-extern int main( int argc, char **argv )
+extern void main( int argc, const char **argv )
 #else
-extern int wmake_main( int argc, char **argv )
+extern void wmake_main( int argc, const char **argv )
 #endif
-#ifdef __WATCOMC__
 #pragma on (unreferenced);
-#endif
 /*********************************************/
 {
 
     assert( argv[argc] == NULL );       /* part of ANSI standard */
-#ifndef __WATCOMC__
-    _argv = argv;
-#endif
     InitSignals();
     InitHardErr();
-    init( (const char **)argv );        /* initialize, process cmdline */
+    init( argv );                       /* initialize, process cmdline */
     Header();
     parseFiles();
     if( Glob.print ) {
         print();
-        return( ExitSafe( EXIT_OK ) );
+        ExitSafe( EXIT_OK );
     }
     if( Glob.erroryet ) {
-        return( ExitSafe( EXIT_ERROR ) );
+        ExitSafe( EXIT_ERROR );
     }
     if( doMusts() != RET_SUCCESS ) {
-        return( ExitSafe( EXIT_ERROR ) );
+        ExitSafe( EXIT_ERROR );
     }
     ParseFini();
-    return( ExitSafe( EXIT_OK ) );
+    ExitSafe( EXIT_OK );
 }
 
 #if 0

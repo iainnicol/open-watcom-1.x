@@ -38,15 +38,15 @@
 #include <errno.h>
 #include <string.h>
 #include <process.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <sys\types.h>
+#include <sys\stat.h>
 #include "banner.h"
 #define FAR _far
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
 typedef WORD HINSTANCE;
 typedef char FAR *LPSTR;
-#include "winext.h"
+#include "..\h\winext.h"
 #include "watcom.h"
 #include "exedos.h"
 #include "exeos2.h"
@@ -385,7 +385,7 @@ main( int argc, char *argv[] )
         lseek( in, exelen, SEEK_SET );
         read( in, &re, sizeof( rex_exe ) );
         if( !(re.sig[0] == 'M' && re.sig[1] == 'Q') ) {
-            doError( "Not a bound Open WATCOM 32-bit Windows application" );
+            doError( "Not a bound WATCOM 32-bit Windows application" );
         }
         lseek( in, exelen, SEEK_SET );
         CopyFile( in, out, path, rex );

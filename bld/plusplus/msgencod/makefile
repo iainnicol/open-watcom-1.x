@@ -3,7 +3,7 @@ host_OS = dos
 !include cproj.mif
 .erase
 
-!include ../tools.mif
+!include ..\tools.mif
 
 objs = wrdencod.obj msgencio.obj
 
@@ -41,4 +41,4 @@ global : .symbolic
     rm -f *.obj *.exe *.gh *.lnk
 
 reference : .symbolic msgencod.exe
-    cp msgencod.exe ../bin
+    copy msgencod.exe ..\bin

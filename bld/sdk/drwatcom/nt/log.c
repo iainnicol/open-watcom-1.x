@@ -37,7 +37,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <io.h>
-#include <sys/stat.h>
+#include <sys\stat.h>
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "intdlg.h"
@@ -415,10 +415,10 @@ BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 {
     char                        buf[150];
     SelMemDlgInfo               *info;
-    LRESULT                     selcnt;
+    DWORD                       selcnt;
     int                         *selitems;
     DWORD                       i;
-    LRESULT                     index;
+    DWORD                       index;
     HWND                        lb;
     MEMORY_BASIC_INFORMATION    *mbi;
 

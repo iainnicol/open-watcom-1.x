@@ -33,7 +33,7 @@
 #define EXT_LST ".lst"
 #define EXT_CMD ".lbc"
 #define EXT_LIB ".lib"
-#ifdef __UNIX__
+#ifdef __QNX__
 #define EXT_OBJ ".o"
 #else
 #define EXT_OBJ ".obj"

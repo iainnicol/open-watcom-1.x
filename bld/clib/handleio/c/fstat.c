@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of fstat().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,8 +34,8 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <io.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <sys\types.h>
+#include <sys\stat.h>
 #include <errno.h>
 #include "tinyio.h"
 #include "iomode.h"
