@@ -10,9 +10,9 @@ _TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
     jmp         L$2
     DB	0afH, 0deH
-    DW	Initialize
-    DW	Request
-    DW	Finalize
+    DW	offset Initialize
+    DW	offset Request
+    DW	offset Finalize
 L$1:
     DW	dgroup
 L$2:

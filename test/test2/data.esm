@@ -22,18 +22,18 @@ L$3:
 L$4:
     DB	0, 0
 L$5:
-    DD	DGROUP:L$4
-    DD	DGROUP:L$4
-    DD	L$2
-    DD	L$2
-    DD	DGROUP:L$6
-    DD	DGROUP:L$7
+    DD	offset DGROUP:L$4
+    DD	offset DGROUP:L$4
+    DD	offset L$2
+    DD	offset L$2
+    DD	offset DGROUP:L$6
+    DD	offset DGROUP:L$7
 L$6:
-    DW	DGROUP:L$3
+    DW	seg DGROUP:L$3
 L$7:
-    DW	L$1
-    DD	DGROUP:L$7
-    DD	L$2
+    DW	seg L$1
+    DD	offset DGROUP:L$7
+    DD	offset L$2
     DW	DGROUP
     DW	DGROUP
 

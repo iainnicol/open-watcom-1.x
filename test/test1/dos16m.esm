@@ -287,7 +287,7 @@ _TEXT		ENDS
 C_ETEXT		SEGMENT	PARA PUBLIC USE16 'ENDCODE'
 		ASSUME CS:C_ETEXT, DS:DGROUP, SS:DGROUP
 __first_data_16M:
-    DW	__first_data_16M
+    DW	seg __first_data_16M
     add         byte ptr [bx+si],al
     add         byte ptr [bx+si],al
     add         byte ptr [bx+si],al
@@ -304,24 +304,24 @@ nullseg		SEGMENT	PARA PUBLIC USE16 'CODE'
 d16_seginfo_struct:
     DB	44H, 4fH, 53H, 2fH, 31H, 36H, 4dH, 0
     DB	3, 0
-    DW	_cstart_
-    DW	_startup_
+    DW	offset _cstart_
+    DW	seg _startup_
     DB	0, 0, 0, 0
-    DW	L$20
-    DW	_startup_
-    DW	__first_data_16M
-    DW	DGROUP:__nullarea
-    DW	DGROUP:__nullarea
-    DW	DGROUP:__end_16M
-    DW	__gdt
-    DW	__idt
-    DW	__d16info
+    DW	seg L$20
+    DW	seg _startup_
+    DW	seg __first_data_16M
+    DW	seg DGROUP:__nullarea
+    DW	seg DGROUP:__nullarea
+    DW	seg DGROUP:__end_16M
+    DW	seg __gdt
+    DW	seg __idt
+    DW	seg __d16info
     DB	0, 0
-    DW	__rtcode
-    DW	__psp16M
-    DW	__env16M
-    DW	__mem16M
-    DW	__dummy16M
+    DW	seg __rtcode
+    DW	seg __psp16M
+    DW	seg __env16M
+    DW	seg __mem16M
+    DW	seg __dummy16M
 L$18:
     mov         dx,offset L$19
     mov         ax,cs
@@ -482,6 +482,8 @@ __stack_16M    LABEL	BYTE
 STACK		ENDS
 
 verylast		SEGMENT	PARA PRIVATE USE16 'STACK'
+    ORG 0
+__end_16M    LABEL	BYTE
 verylast		ENDS
 
 		END

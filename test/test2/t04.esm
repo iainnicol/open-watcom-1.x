@@ -9,7 +9,7 @@ L$1:
 text		ENDS
 donna		SEGMENT	PAGE PUBLIC USE16 'data'
     DB	89H, 0d2H, 0, 0, 0b8H
-    DW	flora:L$1
+    DW	offset flora:L$1
 
 donna		ENDS
 		END
