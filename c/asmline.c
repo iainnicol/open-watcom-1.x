@@ -260,9 +260,10 @@ static file_list *push_flist( char *name, bool is_a_file )
 
     new = AsmAlloc( sizeof( file_list ) );
     new->next = file_stack;
-    new->line = LineNumber;
     file_stack = new;
+    new->line = LineNumber;
     new->is_a_file = is_a_file;
+    new->hidden = 0;
     if( !is_a_file ) {
         dir_node *dir;
 
