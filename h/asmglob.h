@@ -115,6 +115,8 @@ typedef struct {
     char        *fname[FILE_TYPES];
 } File_Info;    // Information about the source and object files
 
+extern File_Info        AsmFiles;   // files information
+
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
 

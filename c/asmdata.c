@@ -63,8 +63,6 @@ extern int              ChangeCurrentLocation( bool, int_32 );
 extern int              SymIs32( struct asm_sym *sym );
 extern void             find_frame( struct asm_sym *sym );
 
-extern int_8            PhaseError;
-
 /* static globals */
 /* is this data element a field in a structure definition? */
 static bool             struct_field;

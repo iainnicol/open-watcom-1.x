@@ -40,7 +40,6 @@
   #include "directiv.h"
 #endif
 
-extern int_8                    PhaseError;
 /* prototypes */
 int ptr_operator( memtype mem_type, uint_8 fix_mem_type );
 int jmp( struct asm_sym *sym );
@@ -52,8 +51,6 @@ extern void             GetInsString( enum asm_token, char *, int );
 extern int              SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, enum prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
-
-extern int              curr_ptr_type;
 
 static enum asm_token getJumpNegation( enum asm_token instruction )
 /*****************************************************************/
@@ -488,8 +485,11 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
             switch( Code->mem_type ) {
             case T_SHORT:
             case T_NEAR:
-                AsmError( CANNOT_USE_SHORT_OR_NEAR );
-                return( ERROR );
+                if( Opnd_Count == OPND1 ) {
+                    AsmError( CANNOT_USE_SHORT_OR_NEAR );
+                    return( ERROR );
+                }
+                /* fall through */
             case T_FAR:
             case EMPTY:
 #ifdef _WASM_

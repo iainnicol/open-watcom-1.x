@@ -38,22 +38,17 @@
 #include "asmsym.h"
 #include "directiv.h"
 
-extern File_Info    AsmFiles;   // files information
-
-extern char         *curr_src_line;
+extern char             *curr_src_line;
 
 extern void             MsgPrintf( int resourceid ); // don't use this
 extern int              MsgGet( int resourceid, char *buffer );
 extern int              trademark( void );
 extern char             *get_curr_filename( void );
 
-static void AsmSuicide( void );
-static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args );
-
-void OpenErrFile( void );
-void PrtMsg( register char *prefix, register int msgnum, va_list args1,
-             va_list args2 );
-void print_include_file_nesting_structure( void );
+void                    OpenErrFile( void );
+void                    PrtMsg( register char *prefix, register int msgnum, va_list args1,
+                                va_list args2 );
+void                    print_include_file_nesting_structure( void );
 
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
@@ -74,8 +69,11 @@ void print_include_file_nesting_structure( void );
 #define __vfprintf vfprintf
 #define __printf printf
 
-static int Errfile_Written = FALSE;
-static FILE *ErrFile = NULL;
+static int              Errfile_Written = FALSE;
+static FILE             *ErrFile = NULL;
+
+static void             AsmSuicide( void );
+static void             PutMsg( FILE *fp, char *prefix, int msgnum, va_list args );
 
 void AsmError( int msgnum )
 /*************************/

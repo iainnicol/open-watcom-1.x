@@ -38,7 +38,7 @@
 
 char                    *CurrString; // Current Input Line
 
-extern int get_instruction_position( char *string );
+extern int              get_instruction_position( char *string );
 
 #ifdef _WASM_
 

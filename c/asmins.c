@@ -56,7 +56,6 @@
 extern int              match_phase_1( void );
 extern int              ptr_operator( memtype, uint_8 );
 extern int              jmp( struct asm_sym *sym );
-extern int              check_jump( struct asm_sym * );
 
 unsigned char           More_Array_Element = FALSE;
 unsigned char           Last_Element_Size;
@@ -2594,7 +2593,7 @@ int AsmParse( void )
                 cur_opnd = OP_M;
             } else if ( last_opnd == OP_LABEL ) {
                 if( AsmBuffer[i+1]->token != T_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, EMPTY )==ERROR ) {
+                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, T_NEAR )==ERROR ) {
                          return( ERROR );
                     }
                 }

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Label directive, anonymous labels
 *
 ****************************************************************************/
 
@@ -40,7 +39,6 @@
 
 #include "directiv.h"
 
-extern int_8                PhaseError;
 extern int                  AddFieldToStruct( int );
 static unsigned             AnonymousCounter = 0;
 

@@ -24,60 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WOMP utility routines
+* Description:  Fatal error messages, they are shared with WOMP
 *
 ****************************************************************************/
 
-
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "asmerr.h"
-#include "objprs.h"
-#include "myassert.h"
-#include "util.h"
-
-#define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
-
-extern void             MsgPrintf( int resourceid );
-extern int              MsgGet( int resourceid, char *buffer );
-
-static pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
-
-/* these routines are part of the interface to the WOMP routines */
-
-void PObjRegList( const pobj_list *list, size_t len )
-/***************************************************/
-{
-
-    size_t  i;
-
-    for( i = 0; i < len; ++i ) {
-        jumpTable[ JUMP_OFFSET( list[i].command ) ] = list[i].func;
-    }
-}
-
-void PObjUnRegList( const pobj_list *list, size_t len )
-/*****************************************************/
-{
-
-    list = list;
-    len = len;
-}
-
-void ObjWriteError( void )
-{
-//    printf( "OBJECT WRITE ERROR !!\n" );
-    MsgPrintf( OBJECT_WRITE_ERROR );
-    exit( EXIT_FAILURE );
-};
-
-void write_record( obj_rec *objr, char kill )
-{
-    /**/myassert( objr != NULL );
-    ObjRSeek( objr, 0 );
-    jumpTable[ JUMP_OFFSET(objr->command) ] ( objr, &pobjState );
-    if( kill ) {
-        ObjKillRec( objr );
-    }
-}
+fix( MSG_OUT_OF_MEMORY, 0, OUT_OF_MEMORY, AsmShutDown, 0 ),
+fix( MSG_CANNOT_OPEN_FILE, 1, CANNOT_OPEN_FILE, NULL, 1 ),
+fix( MSG_CANNOT_CLOSE_FILE, 1, CANNOT_CLOSE_FILE, NULL, 1 ),
+fix( MSG_CANNOT_GET_START_OF_SOURCE_FILE, 0, CANNOT_GET_FILE, AsmShutDown, 1 ),
+fix( MSG_CANNOT_SET_TO_START_OF_SOURCE_FILE, 0, CANNOT_SET_FILE, AsmShutDown, 1 ),
+fix( MSG_TOO_MANY_FILES, 0, TOO_MANY_FILES, NULL, 1 ),

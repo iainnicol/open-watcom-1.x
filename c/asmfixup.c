@@ -51,8 +51,6 @@ struct asmfixup         *FixupHead;
 
 #else
 
-extern int_8            PhaseError;
-
 void add_frame( void )
 /********************/
 /* determine the frame and frame datum for the fixup */

@@ -116,7 +116,6 @@ extern  char            write_to_file;  // write if there is no error
 extern  uint_32         BufSize;
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern File_Info        AsmFiles;
 extern char             *CurrString;    // Current Input Line
 extern char             EndDirectiveFound;
 extern dir_node         *SegOverride;

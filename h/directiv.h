@@ -412,6 +412,7 @@ extern uint_32          GetCurrSegAlign( void );
 
 extern dir_node         *CurrProc;      // current procedure
 extern uint             LineNumber;
+extern int_8            PhaseError;
 
 extern void             FlushCurrSeg( void );
 extern void             AddFlist( char const *filename );

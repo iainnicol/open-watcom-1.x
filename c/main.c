@@ -45,6 +45,7 @@
 #include "objprs.h"
 #include "genmsomf.h"
 #include "directiv.h"
+#include "util.h"
 
 #ifdef __OSI__
   #include "ostype.h"

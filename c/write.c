@@ -49,6 +49,7 @@
 #include "namemgr.h"  // WOMP callback NameGet routine declaration
 #include "directiv.h"
 #include "queues.h"
+#include "util.h"
 
 #include "myassert.h"
 
@@ -57,8 +58,6 @@
 // fixupp32 record is used only for FIX_OFFSET386 and FIX_POINTER386 fixup
 // it is for better compatibility with MASM
 #define SEPARATE_FIXUPP_16_32 1
-
-#define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
 extern char             *ScanLine( char *, int );
 extern void             AsmLine( char * );
@@ -71,9 +70,6 @@ extern void             set_cpu_parameters( void );
 extern void             set_fpu_parameters( void );
 extern void             CheckProcOpen( void );
 
-extern pobj_state       pobjState;      // for WOMP interface
-extern File_Info        AsmFiles;
-extern pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
 extern symbol_queue     Tables[];       // tables of definitions
 extern struct fixup     *FixupListHead; // head of list of fixups ( from WOMP )
 extern struct fixup     *FixupListTail;
@@ -179,16 +175,6 @@ static void write_init( void )
 static void write_fini( void )
 {
     FixFini();
-}
-
-static void write_record( obj_rec *objr, char kill )
-{
-    /**/myassert( objr != NULL );
-    ObjRSeek( objr, 0 );
-    jumpTable[ JUMP_OFFSET(objr->command) ] ( objr, &pobjState );
-    if( kill ) {
-        ObjKillRec( objr );
-    }
 }
 
 void OutSelect( bool starts )

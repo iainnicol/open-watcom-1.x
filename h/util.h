@@ -24,60 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WOMP utility routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+#ifndef _UTIL_H_
+#define _UTIL_H_
 
-#include <stdlib.h>
-#include <stdio.h>
+extern pobj_state       pobjState;
 
-#include "asmerr.h"
-#include "objprs.h"
-#include "myassert.h"
-#include "util.h"
+extern void write_record( obj_rec *objr, char kill );
 
-#define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
-
-extern void             MsgPrintf( int resourceid );
-extern int              MsgGet( int resourceid, char *buffer );
-
-static pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
-
-/* these routines are part of the interface to the WOMP routines */
-
-void PObjRegList( const pobj_list *list, size_t len )
-/***************************************************/
-{
-
-    size_t  i;
-
-    for( i = 0; i < len; ++i ) {
-        jumpTable[ JUMP_OFFSET( list[i].command ) ] = list[i].func;
-    }
-}
-
-void PObjUnRegList( const pobj_list *list, size_t len )
-/*****************************************************/
-{
-
-    list = list;
-    len = len;
-}
-
-void ObjWriteError( void )
-{
-//    printf( "OBJECT WRITE ERROR !!\n" );
-    MsgPrintf( OBJECT_WRITE_ERROR );
-    exit( EXIT_FAILURE );
-};
-
-void write_record( obj_rec *objr, char kill )
-{
-    /**/myassert( objr != NULL );
-    ObjRSeek( objr, 0 );
-    jumpTable[ JUMP_OFFSET(objr->command) ] ( objr, &pobjState );
-    if( kill ) {
-        ObjKillRec( objr );
-    }
-}
+#endif

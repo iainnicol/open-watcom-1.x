@@ -42,8 +42,6 @@
 #include "directiv.h"
 #include "queues.h"
 
-extern int_8    PhaseError;
-
 static void AddLinnumDataRef( void );
 
 extern int  AddFloatingPointEmulationFixup( const struct asm_ins ASMFAR *, bool );

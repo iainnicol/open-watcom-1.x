@@ -87,7 +87,6 @@ typedef struct input_queue {
 extern void             heap( char * );
 
 extern char             write_to_file;
-extern File_Info        AsmFiles;
 extern uint_8           CheckSeg;
 extern int_8            DefineProc;             // TRUE if the definition of procedure
                                                 // has not ended
