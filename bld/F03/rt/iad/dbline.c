@@ -92,11 +92,7 @@ extern  int             Errorf(file_handle);
 extern  bool            EOFile(file_handle);
 extern  void            Drop(char);
 extern  int             Shell(char *);
-#if _TARGET == _370
-extern  void            Dsplcm(char *,int,bool);
-#else
 extern  void            PutRec(char *,int);
-#endif
 extern  b_file          *Openf(char *,f_attrs);
 extern  void            Closef(b_file *);
 
@@ -110,9 +106,7 @@ extern  char            *CCtrlTab[];
 extern  char            *ActionTab[];
 extern  void            (*DbOutRoutine)(ftnfile *);
 extern  short           DbugRet;
-#if _TARGET != _370
 extern  file_handle     FStdOut;
-#endif
 
 static  char    DebugCmds[] = {
     "Breakpoint\0"
@@ -897,7 +891,6 @@ void    DbPaused() {
 }
 
 
-#if _TARGET != _370
 
 static  void    Dsplcm( char *prompt, int len, bool curs_eol ) {
 //==============================================================
@@ -908,8 +901,6 @@ static  void    Dsplcm( char *prompt, int len, bool curs_eol ) {
     PutRec( prompt, len );
     ((a_file *)FStdOut)->attrs &= ~CC_NOCR;
 }
-
-#endif
 
 
 static  void    Prompt( char *prompt ) {

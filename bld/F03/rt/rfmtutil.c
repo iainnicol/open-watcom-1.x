@@ -207,11 +207,6 @@ void    FOString( uint width ) {
     fcb = IOCB->fileinfo;
     if( IOCB->typ != PT_CHAR ) {
         length = GetLen();
-#if _TARGET == _370
-        if( length < 4 ) {
-            IORslt.intstar4 <<= 8 * ( 4 - length );
-        }
-#endif
     } else {
         length = IORslt.string.len;
     }
@@ -549,9 +544,6 @@ bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
         len *= 2;
         src += width - len;
     } else {
-#if _TARGET == _370
-        dst += len - ( width + 1 ) / len;
-#endif
         len = width;
     }
     stop = src + len;
@@ -698,11 +690,6 @@ void    FOHex( uint width ) {
     }
 
     if( typ != PT_CHAR ) {
-#if _TARGET == _370
-        if( len < 4 ) {
-            IORslt.intstar4 <<= 8 * ( 4 - len );
-        }
-#endif
         len *= 2;
 #if ( _TARGET == _VAX ) || ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
         HexFlip( (char *)&IORslt, len );

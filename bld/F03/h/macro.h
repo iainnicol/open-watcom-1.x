@@ -40,7 +40,7 @@
 // Define CPU targets:
 // ====================
 
-#define _370   0
+#define _370   0    // no longer used
 #define _8086  1
 #define _VAX   2
 #define _80386 3

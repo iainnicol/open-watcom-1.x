@@ -44,9 +44,6 @@ typedef struct com_reloc {
     struct com_reloc    *link;          // pointer to common relocation entry
     targ_addr           reloc_chain;    // relocation chain
     unsigned_32         offset;         // offset into common block
-#if _TARGET == _370
-    bool                in_data;        // data initialized
-#endif
 } com_reloc;
 
 typedef union reloc_head {
