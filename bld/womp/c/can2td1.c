@@ -344,9 +344,8 @@ STATIC void typ1Complex( cantype *type ) {
     endType( tr );
 }
 
-STATIC int typePass1( void *_type, void *parm ) {
+STATIC int typePass1( cantype *type, void *parm ) {
 
-    cantype *type = _type;
 /**/myassert( type != NULL && parm == NULL );
     parm = parm;
     switch( type->class ) {
@@ -693,10 +692,8 @@ STATIC void typ2CharBlockI( cantype *type ) {
     type->extra = TD_TYPE_VOID;
 }
 
-STATIC int typePass2( void *_type, void *_force ) {
+STATIC int typePass2( cantype *type, int *force ) {
 
-    cantype *type = _type;
-    int *force = _force;
 /**/myassert( type != NULL );
     if( type->extra != 0 ) {    /* already processed */
         return( 0 );
@@ -737,9 +734,8 @@ void Can2TDT( void ) {
     }
 }
 
-STATIC int doTypeDef( void *_type, void *parm ) {
+STATIC int doTypeDef( cantype *type, void *parm ) {
 
-    cantype     *type = _type;
     obj_rec     *coment;
     const char  *name;
     size_t      name_len;

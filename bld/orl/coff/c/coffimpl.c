@@ -61,10 +61,10 @@ typedef enum {
     NULL_IMPORT_DESCRIPTOR,
     NULL_THUNK_DATA,
     ORDINAL,    // ordinal and name
-    NAMED,      // name only
+    NAMED,        // name only
     ELF,        // name only or name and ordinal
     ELFRENAMED, // renamed entry,
-} importType;
+}importType;
 
 typedef struct {
     importType  type;
@@ -75,6 +75,7 @@ typedef struct {
     char        *exportedName;
     uint_32     time_date_stamp;
 } import_sym;
+
 
 #pragma pack ( push, 1 )
 
@@ -104,7 +105,6 @@ static void InitCoffFile( coff_lib_file *c_file )
     c_file->max_string_table_size = INIT_MAX_SIZE_COFF_STRING_TABLE;
 
 }
-
 static void SetCoffFile( coff_lib_file *c_file, short processor,
      unsigned_32 time_stamp, unsigned_16 opt_hdr_size)
 {
@@ -295,40 +295,35 @@ static CreateCoffStringTable( coff_file_handle coff_file_hnd, coff_lib_file *c_f
     AddDataImpLib( coff_file_hnd, c_file->string_table, c_file->string_table_size - 4 );
 }
 
-char * getImportName(char * src, int type){
-    char    *end;
+char * undecoratedName(char * sym){
+    int     pos;
+    char    c;
 
-/*
-I got following information from Microsoft about name type and name conversion.
-
-    IMPORT_OBJECT_ORDINAL = 0,          // Import by ordinal
-    IMPORT_OBJECT_NAME = 1,             // Import name == public symbol name.
-    IMPORT_OBJECT_NAME_NO_PREFIX = 2,   // Import name == public symbol name skipping leading ?, @, or optionally _.
-    IMPORT_OBJECT_NAME_UNDECORATE = 3,  // Import name == public symbol name skipping leading ?, @, or optionally _
-                                        // and truncating at first @
-*/
     // this is stupid, probably it needs improvement
-    // there is no more information from Microsoft 
+    // there is not much information from Microsoft 
     // about name undecorating.
+    // I did it as standard __cdecl function with leading
+    // underscore and traling @nnn
 
-    switch (type) {
-    case IMPORT_OBJECT_ORDINAL:
-    case IMPORT_OBJECT_NAME:
-        break;
-    case IMPORT_OBJECT_NAME_NO_PREFIX:
-    case IMPORT_OBJECT_NAME_UNDECORATE:
-        while ((*src != 0) && ((*src == '?') || (*src == '@') || (*src == '_'))) {
-            src++;
+    // It doesn't support C++ undecorating
+    // I have not any information for MS or other decorating.
+
+    // Now it can not works on decorated C++ symbols.!!!!!!!!!!!
+
+    // remove trailing characters .....@nnn
+    pos = strlen(sym);
+    while (pos-- > 0) {
+        c = sym[pos];
+        if (c == '@') {
+            sym[pos] = 0;
+            // remove leading character _..... if @nn removed
+            if (*sym == '_') sym++;
+            break;
+        } else if (c < '0' || c > '9') {
+            break;
         }
-        if (type == IMPORT_OBJECT_NAME_NO_PREFIX) break;
-        end = src;
-        while ((*end != 0) && (*end != '@')) {
-            end++;
-        }
-        *end = 0;
-        break;
     }
-    return src;
+    return sym;
 }
 
 static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym * import )
@@ -356,7 +351,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym * import
     symbol_name_len = strlen(import->exportedName);
     DLLSymbolName = alloca(symbol_name_len + 1 );
     strcpy(DLLSymbolName, import->exportedName);
-    DLLSymbolName = getImportName(DLLSymbolName, import->type);
+    DLLSymbolName = undecoratedName(DLLSymbolName);
     dllsymbol_name_len = strlen(DLLSymbolName);
 
     buffer = alloca(max( strlen(import->DLLName), symbol_name_len) + 64 );

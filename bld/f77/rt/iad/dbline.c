@@ -80,8 +80,8 @@ extern  int             ParseName(void);
 extern  bool            ParseNum(unsigned_32 *);
 extern  bool            ParseChr(char);
 extern  char            *ParsePtr(void);
-extern  void            DbModify(void);
-extern  void            DbExamine(void);
+extern  bool            DbModify(void);
+extern  bool            DbExamine(void);
 extern  void            DbMsg(uint);
 extern  uint            FGetRec(file_handle,char *,uint);
 extern  void            FBackspace(file_handle,int);
@@ -773,7 +773,7 @@ static  void    DbOutRtn( ftnfile *fcb ) {
 }
 
 
-void            DebugInit() {
+bool            DebugInit() {
 //===========================
 
     DbTrace = 0;
@@ -793,6 +793,7 @@ void            DebugInit() {
     }
 #endif
     CurrISN = 0;
+    return( TRUE );
 }
 
 

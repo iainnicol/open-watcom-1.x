@@ -5329,9 +5329,8 @@ static void handleVFN( vftable_walk *data, SYMBOL sym )
     }
 }
 
-static void scanForVFNs( SYMBOL_NAME sym_name, void *_data )
+static void scanForVFNs( SYMBOL_NAME sym_name, vftable_walk *data )
 {
-    vftable_walk *data = _data;
     TYPE fn_type;
     SYMBOL sym;
 

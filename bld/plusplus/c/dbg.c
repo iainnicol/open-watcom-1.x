@@ -455,9 +455,8 @@ static void dumpNameSpaceInfo( NAME_SPACE *ns )
 //  SYMBOL-TABLE FUNCTIONS
 //
 void DumpSymbol(                // DUMP SYMBOL ENTRY
-    void *_sym )                // - symbol
+    SYMBOL sym )                // - symbol
 {
-    SYMBOL sym = _sym;
     VBUF vbuf;
 
     static char const *ids[] = {
@@ -602,9 +601,8 @@ static void dumpFnType(         // DUMP EXTRA INFO FOR FUNCTION
 
 
 static void dumpBaseClass(      // DUMP BASE_CLASS
-    void *_base )               // - points to information
+    BASE_CLASS *base )          // - points to information
 {
-    BASE_CLASS *base = _base;
     printf( "    BASECLASS" F_BADDR
             " next"         F_PTR
             " type"         F_PTR
@@ -850,9 +848,8 @@ void DumpSymInfo(               // DUMP COMPLETE INFO FOR SYMBOL
 
 
 static void dumpFriendRef(      // DUMP REFERENCE TO FRIEND SCOPE
-    void *_fr )                 // - the reference
+    FRIEND *fr )                 // - the reference
 {
-    FRIEND *fr = _fr;
     printf( "   FRIEND"     F_BADDR
             " next"         F_PTR
             " sym"          F_PTR
@@ -948,9 +945,8 @@ static void dump_sym_scope(     // DUMP SCOPE FOR A SYMBOL
 
 
 static void dumpFriend(         // DUMP A FRIEND SCOPE
-    void *_fr )                 // - symbol for the friend scope
+    FRIEND *fr )                 // - symbol for the friend scope
 {
-    FRIEND *fr = _fr;
     dump_sym_scope( fr->sym );
 }
 
@@ -1003,9 +999,8 @@ void DbgForgetScope(            // SCOPE is useless, so don't dump it
 
 
 static dump_scope_defn(         // DUMP SCOPE, GIVEN A SCOPE_DEFN
-    void *_defn )               // - scope definition
+    SCOPE_DEFN *defn )          // - scope definition
 {
-    SCOPE_DEFN *defn = _defn;
     DumpScope( defn->defn );
 }
 
@@ -1018,9 +1013,8 @@ void DumpScopes(                // DUMP ALL SCOPES
 
 
 static dump_hash(               // DUMP HASH STAT FOR SCOPE, GIVEN A SCOPE_DEFN
-    void *_defn )               // - scope definition
+    SCOPE_DEFN *defn )          // - scope definition
 {
-    SCOPE_DEFN *defn = _defn;
     printf( "SCOPE: %p\n", defn->defn );
     StatsHASHTAB( defn->defn->names );
 }
@@ -1029,7 +1023,7 @@ static dump_hash(               // DUMP HASH STAT FOR SCOPE, GIVEN A SCOPE_DEFN
 void DumpHashStats(             // DUMP ALL SCOPES' HASH TAB STATS
     void )
 {
-    RingWalk( scopes, (void(*)(void*))dump_hash );
+    RingWalk( scopes, dump_hash );
 }
 
 static void dumpNodeType( PTREE node )

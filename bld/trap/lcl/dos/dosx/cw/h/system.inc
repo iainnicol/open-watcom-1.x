@@ -1,6 +1,11 @@
-        .386P
-        .387                            ; lets wasm compile FPU instructions
-        .model small
+	.386
+	.model small,C
+;	option oldstructs
+;	option proc:private
+
+
+	include equmac.inc
+	include c.inc
 
 
 ;******************************************************************************
@@ -8,15 +13,15 @@
 ;
 ;Usage: Run(statement);
 ;
-;statement      - ASCII statement to pass to command.com
+;statement	- ASCII statement to pass to command.com
 ;
 ;Returns:
 ;
-;AL     - DOS exec error code.
-;AH     - errorlevel if AL == 0.
+;AL	- DOS exec error code.
+;AH	- errorlevel if AL == 0.
 ;
 ;******************************************************************************
-        externdef run:near
+	externdef run:near
 
 
 ;*******************************************************************************
@@ -24,16 +29,16 @@
 ;
 ;Usage: MallocL(bytes);
 ;
-;bytes  - Bytes required.
+;bytes	- Bytes required.
 ;
 ;Returns:
 ;
-;EAX    - Address of allocated memory, zero on error.
+;EAX	- Address of allocated memory, zero on error.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef mallocl:near
+	externdef mallocl:near
 
 
 ;*******************************************************************************
@@ -41,16 +46,16 @@
 ;
 ;Usage: FreeL(void *memory);
 ;
-;memory - Address to release.
+;memory	- Address to release.
 ;
 ;On Exit:
 ;
-;EAX    - Address released if ok, zero on error.
+;EAX	- Address released if ok, zero on error.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef freel:near
+	externdef freel:near
 
 
 ;*******************************************************************************
@@ -58,15 +63,15 @@
 ;
 ;Usage: MemLock(void *memory, int bytes);
 ;
-;memory - address to lock
-;bytes  - bytes to lock.
+;memory	- address to lock
+;bytes	- bytes to lock.
 ;
 ;Returns:
 ;
-;EAX    - bytes locked. (basicly bytes or zero)
+;EAX	- bytes locked. (basicly bytes or zero)
 ;
 ;*******************************************************************************
-        externdef memlock:near
+	externdef memlock:near
 
 
 ;*******************************************************************************
@@ -74,15 +79,15 @@
 ;
 ;Usage: MemUnLock(void *memory, int bytes);
 ;
-;memory - address to unlock.
-;bytes  - bytes to unlock.
+;memory	- address to unlock.
+;bytes	- bytes to unlock.
 ;
 ;Returns:
 ;
-;EAX    - bytes un-locked.
+;EAX	- bytes un-locked.
 ;
 ;*******************************************************************************
-        externdef memunlock:near
+	externdef memunlock:near
 
 
 ;*******************************************************************************
@@ -91,16 +96,16 @@
 ;
 ;Usage: mallocdos(bytes);
 ;
-;bytes  - bytes to allocate.
+;bytes	- bytes to allocate.
 ;
 ;On Exit:
 ;
-;EAX    - memory allocated, zero if failed.
+;EAX	- memory allocated, zero if failed.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef mallocdos:near
+	externdef mallocdos:near
 
 
 ;*******************************************************************************
@@ -109,17 +114,17 @@
 ;
 ;Usage: reallocdos(old_mem, bytes);
 ;
-;old_mem        - existing memory address.
-;bytes  - new size in bytes.
+;old_mem	- existing memory address.
+;bytes	- new size in bytes.
 ;
 ;Returns:
 ;
-;EAX    - memory allocated, zero if failed.
+;EAX	- memory allocated, zero if failed.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef reallocdos:near
+	externdef reallocdos:near
 
 
 ;*******************************************************************************
@@ -128,14 +133,14 @@
 ;
 ;Usage: freedos(memory);
 ;
-;memory - address of allocated memory.
+;memory	- address of allocated memory.
 ;
 ;Returns:
 ;
 ;All registers preserved.
 ;
 ;*******************************************************************************
-        externdef freedos:near
+	externdef freedos:near
 
 
 ;******************************************************************************
@@ -147,15 +152,15 @@
 ;
 ;Returns:
 ;
-;EAX    - error code if < 4 else load address.
-;       0 - file not found
-;       1 - file read error.
-;       2 - not enough memory.
+;EAX	- error code if < 4 else load address.
+;	0 - file not found
+;	1 - file read error.
+;	2 - not enough memory.
 ;
 ;All other registers preseved.
 ;
 ;******************************************************************************
-        externdef LoadAlloc:near
+	externdef LoadAlloc:near
 
 
 ;******************************************************************************
@@ -167,15 +172,15 @@
 ;
 ;Returns:
 ;
-;EAX    - error code if < 4 else load address.
-;       0 - file not found
-;       1 - file read error.
-;       2 - not enough memory.
+;EAX	- error code if < 4 else load address.
+;	0 - file not found
+;	1 - file read error.
+;	2 - not enough memory.
 ;
 ;All other registers preseved.
 ;
 ;******************************************************************************
-        externdef LoadAllocL:near
+	externdef LoadAllocL:near
 
 
 ;*******************************************************************************
@@ -184,20 +189,20 @@
 ;
 ;Usage: OpenFile(filename,flags);
 ;
-;filename       - pointer to zero terminated ASCII file name.
-;flags  - flags.
+;filename	- pointer to zero terminated ASCII file name.
+;flags	- flags.
 ;
 ;Returns:
 ;
-;EAX    - file access handle.
+;EAX	- file access handle.
 ;
 ;If EAX=0 then the open failed and FIOError has the error code.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef OpenFile:near
-        externdef REDOpenFile:dword
+	externdef OpenFile:near
+	externdef REDOpenFile:dword
 
 
 ;*******************************************************************************
@@ -206,19 +211,19 @@
 ;
 ;Usage: CreateFile(filename,flags);
 ;
-;filename       - pointer to zero terminated ASCII file name.
-;flags  - flags.
+;filename	- pointer to zero terminated ASCII file name.
+;flags	- flags.
 ;
 ;Returns:
 ;
-;EAX    - file access handle.
+;EAX	- file access handle.
 ;
 ;If EAX=0 then the create failed and FIOError has the error code.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef CreateFile:near
+	externdef CreateFile:near
 
 
 ;*******************************************************************************
@@ -228,16 +233,16 @@
 ;
 ;Usage: CloseFile(handle);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
+;handle	- file handle returned by "OpenFile" or "CreateFile"
 ;
 ;Returns:
 ;
-;EAX    - error code, zero for none. FIOError is also updated.
+;EAX	- error code, zero for none. FIOError is also updated.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef CloseFile:near
+	externdef CloseFile:near
 
 
 ;*******************************************************************************
@@ -246,18 +251,18 @@
 ;
 ;Usage: SeekFile(handle,offset,mode);
 ;
-;mode   - mode (same as DOS)
-;handle - file handle returned by "OpenFile" or "CreateFile"
-;offset - new pointer value to set.
+;mode	- mode (same as DOS)
+;handle	- file handle returned by "OpenFile" or "CreateFile"
+;offset	- new pointer value to set.
 ;
 ;Returns:
 ;
-;EAX    - absolute offset or error detected if -1.
+;EAX	- absolute offset or error detected if -1.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef SeekFile:near
+	externdef SeekFile:near
 
 
 ;*******************************************************************************
@@ -266,16 +271,16 @@
 ;
 ;Usage: ReadFile(handle,buffer,bytes);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
-;buffer - address to transfer data to.
-;bytes  - number of bytes to read.
+;handle	- file handle returned by "OpenFile" or "CreateFile"
+;buffer	- address to transfer data to.
+;bytes	- number of bytes to read.
 ;
 ;Returns:
 ;
-;EAX    - bytes transfered, -1 for error & FIOError has error code.
+;EAX	- bytes transfered, -1 for error & FIOError has error code.
 ;
 ;*******************************************************************************
-        externdef ReadFile:near
+	externdef ReadFile:near
 
 
 ;*******************************************************************************
@@ -284,18 +289,18 @@
 ;
 ;Usage: ReadLineFile(handle,buffer,maxlen);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
-;buffer - buffer to put the line in.
-;maxlen - maximum line length to allow.
+;handle	- file handle returned by "OpenFile" or "CreateFile"
+;buffer	- buffer to put the line in.
+;maxlen	- maximum line length to allow.
 ;
 ;Returns:
 ;
-;EAX    - status.
-;       0=line is in buffer.
-;       1=EOF, nothing in the buffer.
-;       2=line length overun.
-;       3=read error.
-;       4=CR/LF pair mismatch.
+;EAX	- status.
+;	0=line is in buffer.
+;	1=EOF, nothing in the buffer.
+;	2=line length overun.
+;	3=read error.
+;	4=CR/LF pair mismatch.
 ;
 ;A zero terminated string with CR, LF and soft EOF's removed is read into the
 ;buffer specified. The removal of CR & LF and soft EOF's are the only
@@ -320,7 +325,7 @@
 ;LF. The consequences are the same as for a read error.
 ;
 ;*******************************************************************************
-        externdef ReadLineFile:near
+	externdef ReadLineFile:near
 
 
 ;*******************************************************************************
@@ -329,16 +334,16 @@
 ;
 ;Usage: ReadByteFile(handle);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
+;handle	- file handle returned by "OpenFile" or "CreateFile"
 ;
 ;Returns:
 ;
-;EAX    - byte read or -1 for error, FIOError is error code.
+;EAX	- byte read or -1 for error, FIOError is error code.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef ReadByteFile:near
+	externdef ReadByteFile:near
 
 
 ;*******************************************************************************
@@ -347,18 +352,18 @@
 ;
 ;Usage: WriteFile(handle,buffer,bytes);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
-;buffer - address to transfer data from.
-;bytes  - number of bytes to write.
+;handle	- file handle returned by "OpenFile" or "CreateFile"
+;buffer	- address to transfer data from.
+;bytes	- number of bytes to write.
 ;
 ;Returns:
 ;
-;EAX    - bytes written or -1 on error, FIOError has error code.
+;EAX	- bytes written or -1 on error, FIOError has error code.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef WriteFile:near
+	externdef WriteFile:near
 
 
 ;*******************************************************************************
@@ -367,17 +372,17 @@
 ;
 ;Usage: WriteByteFile(handle,byte);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
-;byte   - byte to write.
+;handle	- file handle returned by "OpenFile" or "CreateFile"
+;byte	- byte to write.
 ;
 ;Returns:
 ;
-;EAX    - byte written, -1 for error & FIOError has error code.
+;EAX	- byte written, -1 for error & FIOError has error code.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef WriteByteFile:near
+	externdef WriteByteFile:near
 
 
 ;*******************************************************************************
@@ -387,16 +392,16 @@
 ;
 ;Usage: FlushFile(handle);
 ;
-;handle - file handle returned by "OpenFile" or "CreateFile"
+;handle	- file handle returned by "OpenFile" or "CreateFile"
 ;
 ;Returns:
 ;
-;EAX    - error code, zero for no error.
+;EAX	- error code, zero for no error.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef FlushFile:near
+	externdef FlushFile:near
 
 
 ;*******************************************************************************
@@ -404,21 +409,21 @@
 ;Buffer size and error code storage to use with above functions.
 ;
 ;*******************************************************************************
-        externdef FIOBufferSize:dword
-        externdef FIOError:dword
+	externdef FIOBufferSize:dword
+	externdef FIOError:dword
 
 
-FIO_struc       struc
-FIO_Flags       dd ?            ;Control flags.
-FIO_Flags_DOS   equ 1           ;Buffer is in conventional memory.
-FIO_Flags_Dirty equ 2   ;Buffer is dirty.
-FIO_Handle      dd ?            ;File's DOS handle.
-FIO_Pointer     dd ?            ;Current file pointer position.
-FIO_BPointer    dd ?            ;Buffer file pointer position.
-FIO_Buffered    dd ?            ;Number of bytes in the buffer.
-FIO_Length      dd ?            ;Length of the buffer.
-FIO_Spare       dd 2 dup (?)    ;reserved.
-FIO_struc       ends
+FIO_struc	struc
+FIO_Flags	dd ?		;Control flags.
+FIO_Flags_DOS	equ 1		;Buffer is in conventional memory.
+FIO_Flags_Dirty equ 2	;Buffer is dirty.
+FIO_Handle	dd ?		;File's DOS handle.
+FIO_Pointer	dd ?		;Current file pointer position.
+FIO_BPointer	dd ?		;Buffer file pointer position.
+FIO_Buffered	dd ?		;Number of bytes in the buffer.
+FIO_Length	dd ?		;Length of the buffer.
+FIO_Spare	dd 2 dup (?)	;reserved.
+FIO_struc	ends
 
 
 ;*******************************************************************************
@@ -426,15 +431,15 @@ FIO_struc       ends
 ;
 ;Usage: CopyFile(source,dest);
 ;
-;source - source file name.
-;dest   - destination file name.
+;source	- source file name.
+;dest	- destination file name.
 ;
 ;Returns:
 ;
-;EAX    - bytes copied, -1 on error.
+;EAX	- bytes copied, -1 on error.
 ;
 ;*******************************************************************************
-        externdef CopyFile:near
+	externdef CopyFile:near
 
 
 ;*******************************************************************************
@@ -442,11 +447,11 @@ FIO_struc       ends
 ;
 ;Usage: GetDrives(char *buffer);
 ;
-;buffer - Address to build list of drives.
+;buffer	- Address to build list of drives.
 ;
 ;On Exit:
 ;
-;EAX    - number of drives.
+;EAX	- number of drives.
 ;
 ;ALL other registers preserved.
 ;
@@ -454,7 +459,7 @@ FIO_struc       ends
 ;and the list is terminated with -1.
 ;
 ;*******************************************************************************
-        externdef GetDrives:near
+	externdef GetDrives:near
 
 
 ;******************************************************************************
@@ -465,10 +470,10 @@ FIO_struc       ends
 ;
 ;Returns:
 ;
-;EAX    - Drive code.
+;EAX	- Drive code.
 ;
 ;******************************************************************************
-        externdef GetDrive:near
+	externdef GetDrive:near
 
 
 ;*******************************************************************************
@@ -476,14 +481,14 @@ FIO_struc       ends
 ;
 ;Usage: GetPath(char *buffer);
 ;
-;buffer - pointer to buffer.
+;buffer	- pointer to buffer.
 ;
 ;On Exit:
 ;
 ;ALL registers preserved.
 ;
 ;*******************************************************************************
-        externdef GetPath:near
+	externdef GetPath:near
 
 
 ;******************************************************************************
@@ -492,14 +497,14 @@ FIO_struc       ends
 ;
 ;Usage: SetDrive(drive);
 ;
-;drive  - drive code to set.
+;drive	- drive code to set.
 ;
 ;Returns:
 ;
 ;ALL registers preserved.
 ;
 ;******************************************************************************
-        externdef SetDrive:near
+	externdef SetDrive:near
 
 
 ;*******************************************************************************
@@ -507,17 +512,17 @@ FIO_struc       ends
 ;
 ;Usage: SetPath(char *buffer);
 ;
-;buffer - pointer to path string.
+;buffer	- pointer to path string.
 ;
 ;On Exit:
 ;
-;EAX    - error code.
-;0      - no error.
+;EAX	- error code.
+;0	- no error.
 ;
 ;ALL other registers preserved.
 ;
 ;*******************************************************************************
-        externdef SetPath:near
+	externdef SetPath:near
 
 
 ;*******************************************************************************
@@ -529,20 +534,20 @@ FIO_struc       ends
 ;
 ;On Exit:
 ;
-;AL     - ASCII character code.
-;AH     - Hardware key code.
-;EAX high word  - Shift keys status word from 417h.
+;AL	- ASCII character code.
+;AH	- Hardware key code.
+;EAX high word	- Shift keys status word from 417h.
 ;
 ;*******************************************************************************
-        externdef GetKey:near
-SK_SHIFTR       equ     1
-SK_SHIFTL       equ     2
-SK_CTRL equ     4
-SK_ALT  equ     8
-SK_SCROLL       equ     16
-SK_NUM  equ     32
-SK_CAPS equ     64
-SK_INS  equ     128
+	externdef GetKey:near
+SK_SHIFTR	equ	1
+SK_SHIFTL	equ	2
+SK_CTRL	equ	4
+SK_ALT	equ	8
+SK_SCROLL	equ	16
+SK_NUM	equ	32
+SK_CAPS	equ	64
+SK_INS	equ	128
 
 
 ;******************************************************************************
@@ -556,7 +561,7 @@ SK_INS  equ     128
 ;All registers preserved.
 ;
 ;******************************************************************************
-        externdef strupr:near
+	externdef strupr:near
 
 
 ;*******************************************************************************
@@ -564,10 +569,10 @@ SK_INS  equ     128
 ;
 ;Usage: PrintString(char *buffer);
 ;
-;buffer - pointer to string to print.
+;buffer	- pointer to string to print.
 ;
 ;*******************************************************************************
-        externdef PrintString:near
+	externdef PrintString:near
 
 
 ;*******************************************************************************
@@ -575,17 +580,17 @@ SK_INS  equ     128
 ;
 ;Usage: Bin2Dec(int num, char *buffer);
 ;
-;num    - Number to convert.
-;buffer - Buffer to put it in.
+;num	- Number to convert.
+;buffer	- Buffer to put it in.
 ;
 ;On Exit:
 ;
-;EAX    - Next available byte in buffer.
+;EAX	- Next available byte in buffer.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef Bin2Dec:near
+	externdef Bin2Dec:near
 
 
 ;*******************************************************************************
@@ -593,17 +598,17 @@ SK_INS  equ     128
 ;
 ;Usage: Dec2Bin(char *buffer, int *result);
 ;
-;buffer - pointer to source string
-;result - int to recieve the result.
+;buffer	- pointer to source string
+;result	- int to recieve the result.
 ;
 ;Returns:
 ;
-;EAX    - status, 0=ok, none-zero=invalid character.
+;EAX	- status, 0=ok, none-zero=invalid character.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef Dec2Bin:near
+	externdef Dec2Bin:near
 
 
 ;*******************************************************************************
@@ -611,18 +616,18 @@ SK_INS  equ     128
 ;
 ;Usage: Bin2Hex(int num, int digits, char *buffer);
 ;
-;num    - Number to convert.
-;digits - Digits to do.
-;buffer - Buffer to put string in.
+;num	- Number to convert.
+;digits	- Digits to do.
+;buffer	- Buffer to put string in.
 ;
 ;On Exit:
 ;
-;EDI    - Next un-used byte in buffer.
+;EDI	- Next un-used byte in buffer.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef Bin2Hex:near
+	externdef Bin2Hex:near
 
 
 ;*******************************************************************************
@@ -630,17 +635,17 @@ SK_INS  equ     128
 ;
 ;Usage: ASCII2Bin(char *buffer, int *result);
 ;
-;buffer - pointer to source string
-;result - int to recieve the result.
+;buffer	- pointer to source string
+;result	- int to recieve the result.
 ;
 ;Returns:
 ;
-;EAX    - status, 0=ok, none-zero=invalid character.
+;EAX	- status, 0=ok, none-zero=invalid character.
 ;
 ;All other registers preserved.
 ;
 ;*******************************************************************************
-        externdef ASCII2Bin:near
+	externdef ASCII2Bin:near
 
 
 ;*******************************************************************************
@@ -658,21 +663,21 @@ SK_INS  equ     128
 ;intended to be file names, but neadn't be.
 ;All text entries are 0 terminated.
 ;
-;OptionCounter   - Total command line parameters (files & switches).
-;OptionTable     - Switch table, ASCII code is index to check.
+;OptionCounter	 - Total command line parameters (files & switches).
+;OptionTable	 - Switch table, ASCII code is index to check.
 ;OptionPointers - Pointer table, ASCII code*4 is index to use.
 ;
 ;Usage: ReadCommand();
 ;
 ;Returns:
 ;
-;EAX    - number of none-switch strings (file names).
+;EAX	- number of none-switch strings (file names).
 ;
 ;*******************************************************************************
-        externdef ReadCommand:near
-        externdef OptionCounter:byte
-        externdef OptionTable:byte
-        externdef OptionPointers:dword
+	externdef ReadCommand:near
+	externdef OptionCounter:byte
+	externdef OptionTable:byte
+	externdef OptionPointers:dword
 
 
 ;*******************************************************************************
@@ -681,26 +686,26 @@ SK_INS  equ     128
 ;
 ;Usage: cfgGetOnOff(filename,section,variable,result);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
-;result - address to put the result.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
+;result	- address to put the result.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, result updated.
-;       1=file not found.
-;       2=section not found.
-;       3=option not found.
-;       4=file I/O error occured.
-;       5=invalid option value.
+;EAX	- status code.
+;	0=all ok, result updated.
+;	1=file not found.
+;	2=section not found.
+;	3=option not found.
+;	4=file I/O error occured.
+;	5=invalid option value.
 ;
 ;The option can be: ON or OFF, 1 or 0, YES or NO, TRUE or FALSE
 ;ON,0,YES & TRUE are returned as none-zero, OFF,0,NO and FALSE as zero.
 ;
 ;*******************************************************************************
-        externdef cfgGetOnOff:near
+	externdef cfgGetOnOff:near
 
 
 ;*******************************************************************************
@@ -709,23 +714,23 @@ SK_INS  equ     128
 ;
 ;Usage: cfgGetInt(filename,section,variable,result);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
-;result - address to put the result.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
+;result	- address to put the result.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, result updated.
-;       1=file not found.
-;       2=section not found.
-;       3=option not found.
-;       4=file I/O error occured.
-;       5=invalid option value.
+;EAX	- status code.
+;	0=all ok, result updated.
+;	1=file not found.
+;	2=section not found.
+;	3=option not found.
+;	4=file I/O error occured.
+;	5=invalid option value.
 ;
 ;*******************************************************************************
-        externdef cfgGetInt:near
+	externdef cfgGetInt:near
 
 
 ;*******************************************************************************
@@ -734,22 +739,22 @@ SK_INS  equ     128
 ;
 ;Usage: cfgSetInt(filename,section,variable,value);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
-;value  - value to write.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
+;value	- value to write.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, value updated.
-;       1=file not found.
-;       2=section not found.
-;       4=file I/O error occured.
-;       5=invalid option value.
+;EAX	- status code.
+;	0=all ok, value updated.
+;	1=file not found.
+;	2=section not found.
+;	4=file I/O error occured.
+;	5=invalid option value.
 ;
 ;*******************************************************************************
-        externdef cfgSetInt:near
+	externdef cfgSetInt:near
 
 
 ;*******************************************************************************
@@ -758,25 +763,25 @@ SK_INS  equ     128
 ;
 ;Usage: cfgGetInts(filename,section,variable,results,maxres);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
-;results        - address to put the results.
-;maxres - maximum number of results.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
+;results	- address to put the results.
+;maxres	- maximum number of results.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, result updated.
-;       1=file not found.
-;       2=section not found.
-;       3=option not found.
-;       4=file I/O error occured.
-;       5=invalid option value.
-;       6=maxres reached with more values to come.
+;EAX	- status code.
+;	0=all ok, result updated.
+;	1=file not found.
+;	2=section not found.
+;	3=option not found.
+;	4=file I/O error occured.
+;	5=invalid option value.
+;	6=maxres reached with more values to come.
 ;
 ;*******************************************************************************
-        externdef cfgGetInts:near
+	externdef cfgGetInts:near
 
 
 ;*******************************************************************************
@@ -785,25 +790,25 @@ SK_INS  equ     128
 ;
 ;Usage: cfgGetString(filename,section,variable,result,maxlen);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
-;result - address to put the result.
-;maxlen - maximum string length.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
+;result	- address to put the result.
+;maxlen	- maximum string length.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, result updated.
-;       1=file not found.
-;       2=section not found.
-;       3=option not found.
-;       4=file I/O error occured.
-;       5=invalid option value.
-;       6=maxlen exceded.
+;EAX	- status code.
+;	0=all ok, result updated.
+;	1=file not found.
+;	2=section not found.
+;	3=option not found.
+;	4=file I/O error occured.
+;	5=invalid option value.
+;	6=maxlen exceded.
 ;
 ;*******************************************************************************
-        externdef cfgGetString:near
+	externdef cfgGetString:near
 
 
 ;*******************************************************************************
@@ -812,22 +817,22 @@ SK_INS  equ     128
 ;
 ;Usage: cfgSetString(filename,section,variable,value);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
-;value  - address of string to write.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
+;value	- address of string to write.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, value updated.
-;       1=file not found.
-;       2=section not found.
-;       4=file I/O error occured.
-;       5=invalid option value.
+;EAX	- status code.
+;	0=all ok, value updated.
+;	1=file not found.
+;	2=section not found.
+;	4=file I/O error occured.
+;	5=invalid option value.
 ;
 ;*******************************************************************************
-        externdef cfgSetString:near
+	externdef cfgSetString:near
 
 
 ;*******************************************************************************
@@ -836,19 +841,19 @@ SK_INS  equ     128
 ;
 ;Usage: cfgDelOption(filename,section,variable);
 ;
-;filename       - name of the config file.
-;section        - section name.
-;variable       - variable/option text.
+;filename	- name of the config file.
+;section	- section name.
+;variable	- variable/option text.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=all ok, value updated.
-;       1=file not found.
-;       4=file I/O error occured.
+;EAX	- status code.
+;	0=all ok, value updated.
+;	1=file not found.
+;	4=file I/O error occured.
 ;
 ;*******************************************************************************
-        externdef cfgDelOption:near
+	externdef cfgDelOption:near
 
 
 ;*******************************************************************************
@@ -857,24 +862,24 @@ SK_INS  equ     128
 ;
 ;Usage: cfgFindSectionOption(handle,section,variable);
 ;
-;handle - file handle to search.
-;section        - section name.
-;variable       - variable/option text.
+;handle	- file handle to search.
+;section	- section name.
+;variable	- variable/option text.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=option found.
-;       1=reserved.
-;       2=section not found.
-;       3=option not found.
-;       4=file I/O error occured.
+;EAX	- status code.
+;	0=option found.
+;	1=reserved.
+;	2=section not found.
+;	3=option not found.
+;	4=file I/O error occured.
 ;
 ;The file is searched from the current position so it's up to the caller to
 ;make sure it starts in the right place.
 ;
 ;*******************************************************************************
-        externdef cfgFindSectionOption:near
+	externdef cfgFindSectionOption:near
 
 
 ;*******************************************************************************
@@ -883,21 +888,21 @@ SK_INS  equ     128
 ;
 ;Usage: cfgFindSection(handle,section);
 ;
-;handle - file handle to search.
-;section        - section name to search for.
+;handle	- file handle to search.
+;section	- section name to search for.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=section found.
-;       1=section NOT found.
-;       2=file I/O error.
+;EAX	- status code.
+;	0=section found.
+;	1=section NOT found.
+;	2=file I/O error.
 ;
 ;The file is searched from the current position so it's up to the caller to
 ;make sure it starts in the right place.
 ;
 ;*******************************************************************************
-        externdef cfgFindSection:near
+	externdef cfgFindSection:near
 
 
 ;*******************************************************************************
@@ -906,23 +911,23 @@ SK_INS  equ     128
 ;
 ;Usage: cfgFindOption(handle,variable);
 ;
-;handle - file handle to search.
-;variable       - option text to find.
+;handle	- file handle to search.
+;variable	- option text to find.
 ;
 ;Returns:
 ;
-;EAX    - status code.
-;       0=option found.
-;       1=option NOT found.
-;       2=file I/O error.
+;EAX	- status code.
+;	0=option found.
+;	1=option NOT found.
+;	2=file I/O error.
 ;
 ;The file is searched from the current position so it's up to the caller to
 ;make sure it starts in the right place. A line with "[" as the first character
 ;or EOF will be treated as the end of the section.
 ;
 ;*******************************************************************************
-        externdef cfgFindOption:near
-        externdef cfgIOBuffer:byte
+	externdef cfgFindOption:near
+	externdef cfgIOBuffer:byte
 
 
 ;*******************************************************************************
@@ -930,12 +935,12 @@ SK_INS  equ     128
 ;
 ;Usage: MakeFileList(char *filename, int attribs);
 ;
-;filename       - File name mask (can include a path).
-;attribs        - search attributes.
+;filename	- File name mask (can include a path).
+;attribs	- search attributes.
 ;
 ;On Exit:
 ;
-;EAX    - buffer with file names etc, EAX=0 if not enough memory.
+;EAX	- buffer with file names etc, EAX=0 if not enough memory.
 ;
 ;Each entry in the buffer will have the following format.
 ;
@@ -966,7 +971,7 @@ SK_INS  equ     128
 ; Next 256 bytes is the path to append the names to.
 ;
 ;*******************************************************************************
-        externdef MakeFilelist:near
+	externdef MakeFilelist:near
 
 
 ;*******************************************************************************
@@ -975,9 +980,9 @@ SK_INS  equ     128
 ;
 ;Usage: FilelistMakeName(int entry, void *filelist, void *buffer);
 ;
-;entry  - entry number to make name from.
-;filelist       - pointer to file list.
-;buffer - pointer to destination buffer.
+;entry	- entry number to make name from.
+;filelist	- pointer to file list.
+;buffer	- pointer to destination buffer.
 ;
 ;Returns:
 ;
@@ -988,7 +993,7 @@ SK_INS  equ     128
 ;name which this routine does.
 ;
 ;*******************************************************************************
-        externdef FilelistMakeName:near
+	externdef FilelistMakeName:near
 
 
 ;*******************************************************************************
@@ -996,7 +1001,7 @@ SK_INS  equ     128
 ;
 ;Usage: ULFileList(void *filelist);
 ;
-;filelist       - pointer to file list.
+;filelist	- pointer to file list.
 ;
 ;On Exit:
 ;
@@ -1008,7 +1013,7 @@ SK_INS  equ     128
 ;then sorted, directory names will appear at the top.
 ;
 ;*******************************************************************************
-        externdef ULFilelist:near
+	externdef ULFilelist:near
 
 
 ;*******************************************************************************
@@ -1017,7 +1022,7 @@ SK_INS  equ     128
 ;
 ;Usage: SortFileList(void *filelist);
 ;
-;filelist       - pointer to file list to sort.
+;filelist	- pointer to file list to sort.
 ;
 ;On Exit:
 ;
@@ -1027,7 +1032,7 @@ SK_INS  equ     128
 ;of the list.
 ;
 ;*******************************************************************************
-        externdef SortFilelist:near
+	externdef SortFilelist:near
 
 
 ;*******************************************************************************
@@ -1040,14 +1045,14 @@ SK_INS  equ     128
 ;nothing.
 ;
 ;*******************************************************************************
-        externdef Delay:near
+	externdef Delay:near
 
 
 ;*******************************************************************************
 ;This gets used in variables that need a valid destination that doesn't actually
 ;do anything. Saves keep checking for zero before makeing a CALL or JMP.
 ;*******************************************************************************
-        externdef DummyRET:near
+	externdef DummyRET:near
 
 
 

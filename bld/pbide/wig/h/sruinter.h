@@ -34,6 +34,7 @@
 #define INTERNAL_DATA_STRUCTS_INCLUDED
 
 #include "hashtab.h"
+#include "srusuprt.h"
 #include "list.h"
 
 #define PB_NAME_LEN     40

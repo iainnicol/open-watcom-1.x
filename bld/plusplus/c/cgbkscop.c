@@ -235,7 +235,7 @@ static void _printFunction( SYMBOL fun, char const * msg )
     }
 }
 
-static boolean _printCallNode
+static void _printCallNode
     ( CALLGRAPH* ctl
     , CALLNODE* node )
 {
@@ -250,7 +250,6 @@ static boolean _printCallNode
             _printUnrUsage( fu, "" );
         } RingIterEnd( fu );
     }
-    return FALSE;
 }
 
 #else

@@ -117,9 +117,8 @@ static SYMBOL getSymInScope(    // GET A SYMBOL IN A SCOPE
 //
 static void classVisit(         // VISIT ANCESTRAL CLASS
     SCOPE scope,                // - class scope
-    void *_wdata )   // - internal data for walker
+    struct walk_data *wdata )   // - internal data for walker
 {
-    struct walk_data *wdata = _wdata;
     SYMBOL sym;                 // - original symbol
     SYMBOL csym;                // - corresponding class symbol
 

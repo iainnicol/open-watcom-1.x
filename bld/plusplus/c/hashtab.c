@@ -446,7 +446,7 @@ void HashInsert( HASHTAB hash, SYMBOL_NAME sym_name, char *name )
     }
 }
 
-void HashWalk( HASHTAB hash, void (*do_it)( SYMBOL_NAME ) )
+void HashWalk( HASHTAB hash, void (*do_it)( void * ) )
 /*****************************************************/
 {
     unsigned i;
@@ -466,7 +466,7 @@ void HashWalk( HASHTAB hash, void (*do_it)( SYMBOL_NAME ) )
     }
 }
 
-void HashWalkData( HASHTAB hash, void (*do_it)( SYMBOL_NAME, void * ), void *data )
+void HashWalkData( HASHTAB hash, void (*do_it)( void *, void * ), void *data )
 /*****************************************************************************/
 {
     unsigned i;

@@ -52,8 +52,8 @@
 #define IDM_TEST_MSG    118
 #define IDM_QUERY_SYS   119
 
-int PASCAL WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
+int PASCAL WinMain(HANDLE, HANDLE, LPSTR, int);
 BOOL InitApplication(HANDLE);
-BOOL InitInstance(HINSTANCE, int);
+BOOL InitInstance(HANDLE, int);
 long FAR PASCAL MainWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL FAR PASCAL About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);

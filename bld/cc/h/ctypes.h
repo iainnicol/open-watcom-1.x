@@ -696,7 +696,7 @@ struct  global_comp_flags {  // things that live across compiles
         unsigned cc_reuse               : 1;    /* in a resuable version batch, dll*/
         unsigned cc_first_use           : 1;    /* first time thru           */
 };
-#if (_OS == _QNX) || (_OS == _LINUX)
+#if _OS == _QNX
 #define errout  stderr
 #else
 #define errout  stdout
@@ -711,8 +711,7 @@ enum {
     TS_CHEAP_WINDOWS,
     TS_NETWARE,
     TS_QNX,
-    TS_NETWARE5,
-    TS_LINUX
+    TS_NETWARE5
 };
 
 /*

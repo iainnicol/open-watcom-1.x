@@ -54,11 +54,11 @@
 
 /*
  *
- * START KLUDGE TO GET UNIX WORKING FOR NOW.
+ * START KLUDGE TO GET QNX WORKING FOR NOW.
  *
  */
 
-#if defined(__QNX__) || defined(__LINUX__)
+#ifdef __QNX__
 
     #define PMODE       S_IRUSR+S_IWUSR+S_IRGRP+S_IWGRP+S_IROTH+S_IWOTH
 

@@ -97,7 +97,7 @@ int    _InitIO() {
     if( IOCB == NULL ) return( -1 );
     IOCB->flags = 0;
     IOCB->set_flags = 0;
-    return 0;
+    return( 0 );
 }
 
 
@@ -143,7 +143,7 @@ bool    RunEntry() {
 //==================
 
     IOTypeRtn = &IOType;
-    Spawn( (void(*)())_InitIO );
+    Spawn( &_InitIO );
     return( ( __XcptFlags & XF_FATAL_ERROR ) == 0 );
 }
 

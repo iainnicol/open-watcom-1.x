@@ -33,7 +33,7 @@
 #ifndef __IDEDRV_H__
 #define __IDEDRV_H__
 
-#if defined(__QNX__) || defined(__LINUX__)
+#if defined(__QNX__)
 #define errout  stderr
 #else
 #define errout  stdout
@@ -111,4 +111,3 @@ void IdeDrvSetCallbacks         // SET CALLBACKS (TO FILL IN BLANKS)
     ( void *cb )
 ;
 #endif
-

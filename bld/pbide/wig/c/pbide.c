@@ -67,6 +67,7 @@ extern int Wigmain( int argc, char **argv );
 
 #ifdef __NT__
 
+
 int __stdcall DLLMain( long hdll, long reason, long reserved )
 {
     say( "DLLMain", NULL );
@@ -92,7 +93,7 @@ int __stdcall DLLMain( long hdll, long reason, long reserved )
 
 #else
 
-int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int IDE_EXPORT LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     hmod = hmod;
     dataseg = dataseg;
@@ -101,7 +102,7 @@ int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int WINAPI WEP( int res )
+int IDE_EXPORT WEP( int res )
 {
     res = res;
     return( 1 );

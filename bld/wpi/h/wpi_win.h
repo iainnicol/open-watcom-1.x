@@ -53,11 +53,7 @@
 
 extern void _wpi_setpoint( WPI_POINT *pt, int x, int y );
 
-#ifdef __NT__
-    #define _wpi_moveto( pres, point ) MoveToEx( pres, (point)->x, (point)->y, NULL )
-#else
     #define _wpi_moveto( pres, point ) MoveTo( pres, (point)->x, (point)->y )
-#endif
 
     #define _wpi_movetoex( pres, point, extra ) \
         MoveToEx( pres, (point)->x, (point)->y, extra )
@@ -291,14 +287,14 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
     #define _wpi_makeprocinstance( proc, inst ) MakeProcInstance( proc, inst )
 
     #define _wpi_makeenumprocinstance( proc, inst ) \
-                                    (WPI_ENUMPROC)MakeProcInstance( (FARPROC)proc, inst )
+                                    MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_makelineddaprocinstance( proc, inst ) \
-                                    (WPI_LINEDDAPROC)MakeProcInstance( (FARPROC)proc, inst )
+                                    MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
 
-    #define _wpi_freeprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
+    #define _wpi_freeprocinstance( proc ) FreeProcInstance( proc )
 
     #define _wpi_getclassproc( class ) (class)->lpfnWndProc
 
@@ -325,7 +321,7 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
     #define _wpi_enddialog( hwnd, result ) EndDialog( hwnd, result )
 
     #define _wpi_dialogbox( parent, proc, inst, res_id, data ) \
-        DialogBoxParam( inst, res_id, parent, (DLGPROC)proc, (DWORD)(LPARAM)(data) )
+        DialogBoxParam( inst, res_id, parent, proc, (DWORD)(LPSTR) (data) )
 
     #define _wpi_setstretchbltmode( mem, mode ) SetStretchBltMode( mem, mode )
 
@@ -446,11 +442,8 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
 
     #define _wpi_deletebrush( brush )  DeleteObject( brush )
 
-#ifdef __NT__
-    #define _wpi_setbrushorigin( pres, pt ) SetBrushOrgEx( pres, (pt)->x, (pt)->y, NULL )
-#else
-    #define _wpi_setbrushorigin( pres, pt ) SetBrushOrg( pres, (pt)->x, (pt)->y )
-#endif
+    #define _wpi_setbrushorigin( pres, pt ) \
+                                        SetBrushOrg( pres, (pt)->x, (pt)->y )
 
     #define _wpi_setlogbrushsolid( plogbrush ) (plogbrush)->lbStyle = BS_SOLID
 
@@ -708,7 +701,7 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *tm,
         EnumFonts( pres, (LPSTR)facename, (FARPROC)(proc), (LPSTR)(data) )
 
     #define _wpi_enumchildwindows( hwnd, proc, lp ) \
-                EnumChildWindows( (HWND)(hwnd), (WNDENUMPROC)(proc), (LPARAM)(lp) )
+                EnumChildWindows( (HWND)(hwnd), (FARPROC)(proc), (LONG)(lp) )
 
     #define _wpi_getnextwindow( hwnd ) GetNextWindow( hwnd, GW_HWNDNEXT )
 
@@ -929,13 +922,9 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPSTR string, int len_string,
 
     #define _wpi_unrealizeobject( hobj ) UnrealizeObject( hobj )
 
-#ifdef __NT__
-    #define _wpi_getlocalhdl( mem ) LocalHandle( mem )
-    #define _wpi_getglobalhdl( mem ) GlobalHandle( mem )
-#else
-    #define _wpi_getlocalhdl( mem ) LocalHandle( (void NEAR*)LOWORD( mem ) )
-    #define _wpi_getglobalhdl( mem ) (HGLOBAL)LOWORD(GlobalHandle( (UINT)HIWORD( mem ) ))
-#endif
+    #define _wpi_getlocalhdl( mem ) LocalHandle( LOWORD( mem ) )
+
+    #define _wpi_getglobalhdl( mem ) GlobalHandle( HIWORD( mem ) )
 
     #define _wpi_getmenu( hframe ) GetMenu( hframe )
 
