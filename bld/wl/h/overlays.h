@@ -47,7 +47,8 @@ extern void             Vectorize( symbol * );
 extern void             TryRefVector( symbol * );
 extern void             OvlUseVector( symbol *, extnode * );
 extern void             IndirectCall( symbol * );
-extern void             GetVecAddr( int, targ_addr * );
+//extern void           OvlForceVect( thread *, bool ); NYI
+//extern void           GetVecAddr2( int, thread * );  NYI
 extern bool             CheckOvlClass( char *, bool * );
 extern section *        CheckOvlSect( char * );
 extern void             EmitOvlVectors( void );
@@ -70,4 +71,5 @@ extern void             TryDefVector( symbol * );
 extern void             TryUseVector( symbol *, extnode * );
 extern section *        GetOvlSect( char * );
 extern void             OvlPass2( void );
+//extern void           TryGetVector( extnode *, thread * ); NYI
 extern virt_mem         GetLoadObjTarget( segdata * );

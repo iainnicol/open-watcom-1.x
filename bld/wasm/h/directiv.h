@@ -297,7 +297,7 @@ typedef struct {
     unsigned    use32:1;         // If 32-bit segment is used
     unsigned    init:1;
     unsigned    cmdline:1;
-    unsigned    defseg32:1;      // default segment size 32-bit
+    unsigned    defUse32:1;      // default segment size 32-bit
     unsigned    mseg:1;          // mixed segments (16/32-bit)
     unsigned    flat_idx;        // index of FLAT group
     char        name[_MAX_FNAME];// name of module
@@ -318,6 +318,8 @@ enum assume_reg {
 #define ASSUME_LAST     ASSUME_ERROR
 
 extern module_info      ModuleInfo;
+
+#define IS_PROC_FAR()   ( ModuleInfo.model > MOD_FLAT )
 
 extern seg_list         *CurrSeg;       // points to stack of opened segments
 
@@ -405,7 +407,7 @@ extern void             push( void **stack, void *elt );
 extern void             *pop( void **stack );
 extern uint_32          GetCurrSegAlign( void );
 extern void             wipe_space( char *token );
-extern void             SetModuleDefSegment32( int flag );
+extern int              SetUse32Def( bool );
 
 /*---------------------------------------------------------------------------
  *   included from write.c

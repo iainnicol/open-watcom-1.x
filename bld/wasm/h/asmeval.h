@@ -37,6 +37,7 @@ enum exprtype {
     EXPR_ADDR,          // e.g. "foo", "seg foo" and "offset foo"
     EXPR_CONST,         // A constant; note that "label1 - label2" -> constant
     EXPR_REG,           // A register
+    EXPR_UNDEF,         // undefined type when error occures or result is undefined
     EXPR_EMPTY = EMPTY
 };
 
@@ -51,8 +52,8 @@ typedef struct expr_list {
     int             label;          // Position of token holding the label
     int             override;       // Position of token holding the override label
                                     //   or register
-    int             instr;          // Position of token holding the instruction for
-                                    //   the label
+    int             instr;          // instruction token for label
+                                    //
     unsigned        indirect : 1;   // Whether inside [] or not
     unsigned        explicit : 1;   // Whether expression type explicitly given
     unsigned        empty : 1;

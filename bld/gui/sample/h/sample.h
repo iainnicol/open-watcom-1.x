@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  GUI sample program local constants and declarations.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -208,6 +209,3 @@ extern void SetWidthHeight( gui_rect *rect, bool has_parent );
 
 extern  char            *OldValue;
 extern  gui_window      *DialogWindow;
-
-extern void * GUIAlloc( unsigned size );
-extern void GUIFree( void *chunk );

@@ -49,7 +49,6 @@ is any of the following:
 .note CVPACK
 .note DOSSEG
 .note ELIMINATE
-.note [NO]FARCALLS
 .note HEAPSIZE=n
 .note INCREMENTAL
 .note LINEARRELOCS

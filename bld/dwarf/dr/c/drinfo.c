@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Various DWARF information helper functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -40,7 +41,7 @@ static dw_tagnum GetTag( dr_handle entry )
     dw_tagnum   tag;
 
     abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev = DWRCurrNode->abbrevs[ abbrev ];
     tag = DWRVMReadULEB128( &abbrev );
     return( tag );
 }
@@ -146,34 +147,21 @@ extern char * DRGetName( dr_handle entry )
     return DWRGetName( abbrev, entry );
 }
 
-extern unsigned DRGetNameBuff( dr_handle entry, char *buff, unsigned length )
-/***************************************************************************/
+extern unsigned DRGetNameBuff( dr_handle entry, char *buff, unsigned length  )
+/****************************************/
 {
     dr_handle   abbrev;
     unsigned    form;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_name ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_name   ) != 0 ) {
         form = DWRVMReadULEB128( &abbrev );
-        switch( form ) {
-        case DW_FORM_string:
-            length = DWRGetStrBuff( entry, buff, length );
-            break;
-        case DW_FORM_strp: {
-            unsigned_32 offset;
-            dr_handle   dbgsec_str;
-
-            offset = ReadConst( DW_FORM_data4, entry );
-            dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-            length = DWRGetStrBuff( dbgsec_str, buff, length );
-            break;
-            }
-        default:
-            DWREXCEPT( DREXCEP_BAD_DBG_INFO );
-            length = 0;
+        if( form == DW_FORM_strp ){
+            /* get the ref */
         }
-    } else {
-        length = 0;
+        length = DWRGetStrBuff( entry, buff, length );
+    }else{
+         length = 0;
     }
     return( length );
 }
@@ -380,7 +368,7 @@ extern int DRIsMemberStatic( dr_handle entry )
     dw_tagnum   tag;
 
     abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev = DWRCurrNode->abbrevs[abbrev];
     tag = DWRVMReadULEB128( &abbrev );
     return tag == DW_TAG_variable;
 }
@@ -392,7 +380,7 @@ extern int DRIsFunc( dr_handle entry )
     dw_tagnum   tag;
 
     abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev = DWRCurrNode->abbrevs[abbrev];
     tag = DWRVMReadULEB128( &abbrev );
     return tag == DW_TAG_subprogram;
 }
@@ -404,7 +392,7 @@ extern int DRIsParm( dr_handle entry )
     dw_tagnum   tag;
 
     abbrev = DWRVMReadULEB128( &entry );
-    abbrev = DWRLookupAbbrev( entry, abbrev );
+    abbrev = DWRCurrNode->abbrevs[abbrev];
     tag = DWRVMReadULEB128( &abbrev );
     return tag == DW_TAG_formal_parameter;
 }

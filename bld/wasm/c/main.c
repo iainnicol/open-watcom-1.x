@@ -86,17 +86,15 @@ struct  option {
 };
 
 static struct SWData {
-    char calling_convention;
-    char naming_convention;
-    char protect_mode;
+    bool register_conventions;
+    bool protect_mode;
     int cpu;
     int fpu;
 } SWData = {
-    0,  // no calling convention
-    0,  // no naming convention
-    0,  // real mode CPU instructions set
-    0,  // default CPU 8086
-    -1  // unspecified FPU
+    TRUE,  // register conventions
+    FALSE, // real mode CPU instructions set
+    0,     // default CPU 8086
+    -1     // unspecified FPU
 };
 
 #define MAX_NESTING 15
@@ -165,7 +163,7 @@ static void StripQuotes( char *fname )
 }
 
 static char *GetAFileName(void)
-/*******************************************/
+/*****************************/
 {
     char *fname;
     fname = CopyOfParm();
@@ -174,7 +172,7 @@ static char *GetAFileName(void)
 }
 
 static void SetTargName( char *name, unsigned len )
-/*******************************************/
+/*************************************************/
 {
     char        *p;
 
@@ -192,37 +190,31 @@ static void SetTargName( char *name, unsigned len )
     *p++ = '\0';
 }
 
-static void SetCPU(void)
-/*******************************************/
+static void SetCPUPMC(void)
+/*************************/
 {
     char                *tmp;
 
-    switch( OptValue ) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-        SWData.cpu = OptValue;
-        break;
-    case 7:
-        SWData.fpu = OptValue;
-        break;
-    }
     for( tmp=OptParm; tmp < OptScanPtr; tmp++ ) {
-        if( *tmp == 'r' ) {
-            SWData.calling_convention = *tmp;
-            SWData.naming_convention = 0;
+        if( *tmp == 'p' ) {
+            if( SWData.cpu >= 2 ) {         // set protected mode
+                SWData.protect_mode = TRUE;
+            } else {
+                MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
+            }
+        } else if( *tmp == 'r' ) {
+            if( SWData.cpu >= 3 ) {  // set register calling convention
+                SWData.register_conventions = TRUE;
+            } else {
+                MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
+            }
         } else if( *tmp == 's' ) {
-            SWData.calling_convention = *tmp;
-            SWData.naming_convention = 0;
-        } else if( *tmp == '_' ) {
-            SWData.naming_convention = *tmp;
-        } else if( *tmp == 'p' ) {
-            SWData.protect_mode = TRUE;
-        } else if( *tmp == '"' ) {
+            if( SWData.cpu >= 3 ) {  // set stack calling convention
+                SWData.register_conventions = FALSE;
+            } else {
+                MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
+            }
+        } else if( *tmp == '"' ) {                             // set default mangler
             char *dest;
             tmp++;
             dest = strchr(tmp, '"');
@@ -240,10 +232,23 @@ static void SetCPU(void)
             exit( 1 );
         }
     }
+    if( SWData.cpu < 2 ) {
+        SWData.protect_mode = FALSE;
+        SWData.register_conventions = TRUE;
+    } else if( SWData.cpu < 3 ) {
+        SWData.register_conventions = TRUE;
+    }
+}
+
+static void SetCPU(void)
+/**********************/
+{
+    SWData.cpu = OptValue;
+    SetCPUPMC();
 }
 
 static void SetFPU(void)
-/*******************************************/
+/**********************/
 {
     switch( OptValue ) {
     case 'i':
@@ -261,13 +266,14 @@ static void SetFPU(void)
     case 4:
     case 5:
     case 6:
+    case 7:
         SWData.fpu = OptValue;
         break;
     }
 }
 
 static void SetMemoryModel(void)
-/*******************************************/
+/******************************/
 {
     char buffer[20];
     char *model;
@@ -362,7 +368,7 @@ static struct option const cmdl_options[] = {
     { "4$",     4,        SetCPU },
     { "5$",     5,        SetCPU },
     { "6$",     6,        SetCPU },
-    { "7$",     7,        SetCPU },
+    { "7",      7,        SetFPU },
     { "?",      0,        HelpUsage },
     { "bt=$",   0,        Set_BT },
     { "c",      0,        Set_C },
@@ -426,7 +432,7 @@ global_options Options = {
     /* quiet            */      FALSE,
     /* banner_printed   */      FALSE,
     /* debug_flag       */      FALSE,
-    /* naming_convention*/      DO_NOTHING,
+    /* naming_convention*/      ADD_USCORES,
     /* floating_point   */      DO_FP_EMULATION,
     /* output_data_in_code_records */   TRUE,
 
@@ -535,6 +541,7 @@ static void do_init_stuff( char **cmdline )
     }
     open_files();
     PushLineQueue();
+    AsmLookup( "$" );    // create "$" symbol for current segment counter
 }
 
 #ifndef __WATCOMC__
@@ -807,19 +814,19 @@ static void add_constant( char *string )
 void set_cpu_parameters( void )
 {
     int token;
-    
-    if( SWData.calling_convention == 'r' ) {
+
+    // set naming convention    
+    if( SWData.register_conventions || ( SWData.cpu < 3 ) ) {
         Options.naming_convention = ADD_USCORES;
-        add_constant( "__REGISTER__" );
-    } else if( SWData.calling_convention == 's' ) {
-        add_constant( "__STACK__" );
+    } else {
         Options.naming_convention = DO_NOTHING;
     }
-    if( SWData.naming_convention == '_' ) {
-        if( Options.naming_convention == DO_NOTHING ) {
-            Options.naming_convention = REMOVE_USCORES;
+    // set parameters passing convention    
+    if( SWData.cpu >= 3 ) {
+        if( SWData.register_conventions ) {
+            add_constant( "__REGISTER__" );
         } else {
-            Options.naming_convention = DO_NOTHING;
+            add_constant( "__STACK__" );
         }
     }
     switch( SWData.cpu ) {

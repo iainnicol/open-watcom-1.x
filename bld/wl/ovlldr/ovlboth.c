@@ -24,10 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  overlay routines used by both overlaying schemes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+/* OVLBOTH:       overlay routines used by both overlaying schemes.
+*/
 
 #include <dos.h>
 #include <stddef.h>
@@ -189,8 +193,8 @@ extern tiny_ret_t near __OpenOvl__( unsigned int offset )
     } else {
         __CloseOvl__();
         __OVLFILEPREV__ = offset;
-        isexe = offset & OVE_EXE_FILENAME;
-        offset &= ~OVE_EXE_FILENAME;
+        isexe = offset & EXE_FILENAME;
+        offset &= ~EXE_FILENAME;
         fname = (( char * )(&__OVLTAB__)) + offset;
         // strip drive/directory from fname
         for( fnstart = fname; *fnstart != 0; ++fnstart ) {
