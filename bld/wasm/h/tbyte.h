@@ -24,26 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Default Windowing - API function pointers definition.
+* Description:  tbyte format / long double structure definition
 *
 ****************************************************************************/
 
-#include "_defwin.h"
+#ifndef _TBYTE_H
+#define _TBYTE_H
 
-LPWDATA (*_WindowsIsWindowedHandle)() = { 0 };
-void (*_WindowsRemoveWindowedHandle)() = { 0 };
-unsigned (*_WindowsNewWindow)() = { 0 };
-int (*_WindowsCloseWindow)() = { 0 };
-int (*_WindowsSetAbout)() = { 0 };
-int (*_WindowsSetAppTitle)() = { 0 };
-int (*_WindowsSetConTitle)() = { 0 };
-int (*_WindowsDestroyOnClose)() = { 0 };
-int (*_WindowsYieldControl)() = { 0 };
-int (*_WindowsShutDown)() = { 0 };
-unsigned (*_WindowsStdin)() = { 0 };
-unsigned (*_WindowsStdout)() = { 0 };
-unsigned (*_WindowsKbhit)() = { 0 };
-unsigned (*_WindowsGetch)() = { 0 };
-unsigned (*_WindowsGetche)() = { 0 };
-void (*_WindowsPutch)() = { 0 };
-void (*_WindowsExitRtn)() = { 0 };
+typedef struct {
+        unsigned __int64 m;
+        unsigned short e;
+} TB_LD;
+
+TB_LD * strtotb( char *bufptr, TB_LD *pld, char negative );
+
+#endif
