@@ -28,19 +28,20 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "rtdata.h"
 #include "exitwmsg.h"
 #include <signal.h>
+#if defined(__QNX__)
 #include <unistd.h>
+#endif
 
 void __terminate();
 
 void    (*_RWD_abort)() = __terminate;
-
-// TODO: Use the QNX code once we get signal handling working properly
 
 #if defined(__QNX__)
 /*
@@ -80,4 +81,3 @@ void __terminate()
 {
     __fatal_runtime_error( "ABNORMAL TERMINATION\r\n", EXIT_FAILURE );
 }
-

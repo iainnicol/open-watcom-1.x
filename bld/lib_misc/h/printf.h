@@ -24,11 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Definitions needed by callers to internal string formatter
-*               __prtf() for printf() style handling.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+/*
+ * printf.h --  definitions needed by callers to internal string
+ *              formatter __prtf()
+ */
 #ifndef _PRINTF_H_INCLUDED
 #define _PRINTF_H_INCLUDED
 
@@ -183,4 +188,3 @@ int __prtf_slib( void __SLIB *dest,             /* parm for use by out_putc */
 
 #pragma pack(pop);
 #endif
-

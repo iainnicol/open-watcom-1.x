@@ -32,12 +32,17 @@
 
 #include <windows.h>
 
+#if defined(__386__)
+  /* This can be deleted when the build tools are >= 11.0 */
+  #pragma library( "nt" )
+#endif
+
 #pragma library("kernel32")
 #pragma library("user32")
 #pragma library("ole32")
 
 #pragma off (unreferenced);
-int WINAPI LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
+int PASCAL LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 {
     return( 1 );
 }
