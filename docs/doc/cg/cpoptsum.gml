@@ -469,18 +469,6 @@ try truncated (8.3) header file specification
 do not try truncated (8.3) header file specification
 :optref refid='SWfx'.
 .*
-.note fzh
-:CMT. .ix 'options' 'fzh'
-(C++ only)
-do not automatically append extensions for include files
-:optref refid='SWfzh'.
-.*
-.note fzs
-:CMT. .ix 'options' 'fzs'
-(C++ only)
-do not automatically append extensions for source files
-:optref refid='SWfzs'.
-.*
 .note g=<codegroup>
 :CMT. .ix 'options' 'g'
 &x86only.
@@ -833,11 +821,6 @@ allow DS register to "float" or "peg" it to DGROUP (default is zdp)
 load DS register directly from DGROUP
 :optref refid='SWzdl'.
 .*
-.note zev&optdag.
-:CMT .ix 'options' 'zev'
-(C only, Unix extension) enable arithmetic on void derived types
-:optref refid='SWzev'
-.*
 .note zf{f,p}&optdag.
 :CMT. .ix 'options' 'zfp'
 :CMT. .ix 'options' 'zff'
@@ -898,16 +881,6 @@ file
 :CMT. .ix 'options' 'zld'
 suppress generation of file dependency information in object file
 :optref refid='SWzld'.
-.*
-.note zlf&optdag.
-:CMT .ix 'options' 'zlf'
-add default library information to object files
-:optref refid='SWzlf'
-.*
-.note zls&optdag.
-:CMT .ix 'options' 'zls'
-remove automatically inserted symbols (such as runtime library references)
-:optref refid='SWzls'
 .*
 .note zm
 :CMT. .ix 'options' 'zm'

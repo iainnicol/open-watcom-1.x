@@ -24,9 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Module to init multi-threading
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #include "variety.h"
 #include "rtinit.h"
@@ -36,7 +38,6 @@
 #elif defined (_NETWARE_LIBC)
   extern unsigned __LibCThreadInit( void );
 #elif defined(__QNX__)
-#elif defined(__LINUX__)
 #elif defined(__WARP__)
   extern void *__InitThreadProcessing(void);
 #endif
@@ -53,7 +54,6 @@
         #elif defined(_NETWARE_LIB)
             if( !__LibCThreadInit() ) return;
         #elif defined(__QNX__)
-        #elif defined(__LINUX__)
         #elif defined(__WARP__)
             if( __InitThreadProcessing() == 0 ) return;
         #endif
@@ -66,4 +66,3 @@
 #if defined(_M_IX86)
   #pragma aux __imthread "*";
 #endif
-
