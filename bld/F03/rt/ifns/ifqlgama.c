@@ -220,7 +220,6 @@ extended  QLGAMA( extended arg ) {
     return( __lgamma( arg, &xinf ) );
 }
 
-#if _OPT_CG == _ON
 
 extended XQLGAMA( extended *arg ) {
 //=================================
@@ -228,4 +227,3 @@ extended XQLGAMA( extended *arg ) {
     return( QLGAMA( *arg ) );
 }
 
-#endif
