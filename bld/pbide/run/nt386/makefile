@@ -1,6 +1,8 @@
-#pmake: build cpu_386 os_nt
+#pmake: all build cpu_386 os_nt
 
-host_os  = nt
-host_cpu = 386
+!include cproj.mif
+!include deftarg.mif
 
-!include ../master.mif
+runnt.exe : ../run.c
+        wcc386 -bt=nt -mf -i$(lang_root)\h\nt $< -d2 -w4 /fo=runnt.obj
+        wlink deb all sys nt_win file runnt.obj op map

@@ -45,13 +45,9 @@ char *_inline_strcat( char *__s1, const char *__s2 );
 void *_inline_memcpy( void *__s1, const void *__s2, unsigned int __n );
 void *_inline_memset( void *__s, int __c, unsigned int __n );
 
-#ifdef __UNIX__
-    #define FSYS_CASE_SENSITIVE         1
 #ifdef __QNX__
+    #define FSYS_CASE_SENSITIVE         1
     extern FileSysNeedsCR( int handle );
-#else
-    #define FileSysNeedsCR( x )         0
-#endif
 #else
     #define FSYS_CASE_SENSITIVE         0
     #define FileSysNeedsCR( x )         1
@@ -63,7 +59,7 @@ void *_inline_memset( void *__s, int __c, unsigned int __n );
     #define _NEAR near
 #endif
 
-#if !defined( __AXP__ ) && !defined( __LINUX__ ) && !defined( PREBUILD )
+#ifndef __AXP__
 #define VI_RCS  1
 #endif
 

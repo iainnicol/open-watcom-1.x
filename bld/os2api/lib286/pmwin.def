@@ -1,5 +1,5 @@
-LIBRARY PMWIN
 EXPORTS
+LIBRARY PMWIN
     WINQUERYDESKTOPWINDOW                       @1
     WINQUERYOBJECTWINDOW                        @2
     WINREGISTERCLASS                            @3

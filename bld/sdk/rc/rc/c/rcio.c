@@ -28,23 +28,22 @@
 *
 ****************************************************************************/
 
+
 #include <stdio.h>
-#include <unistd.h>
+#include <io.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdarg.h>
-#ifndef __UNIX__
 #include <process.h>
-#endif
 #include "watcom.h"
 #include "wresall.h"
 #include "global.h"
 #include "pass2.h"
 #include "semstr.h"
 #include "rcmem.h"
-#include "rctypes.h"
+#include "types.h"
 #include "errors.h"
 #include "exeutil.h"
 #include "rcio.h"
@@ -55,22 +54,13 @@
 #include "autodep.h"
 #include "errprt.h"
 #include "util.h"
-#include "rcldstr.h"
+#include "ldstr.h"
 #include "iortns.h"
+#ifdef UNIX
+    #include <stdlib.h>
+#endif
 
 #include <time.h>
-
-#ifdef __UNIX__
-#define PATH_SEP '/'
-#define PATH_SPLIT ':'
-#else
-#define PATH_SEP '\\'
-#define PATH_SPLIT ';'
-#endif
-
-#ifndef S_IRWXU
-#define S_IRWXU 0
-#endif
 
 #ifdef __OSI__
  extern char    *_Copyright;
@@ -89,14 +79,14 @@ static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
 {
     char    drive[ _MAX_DRIVE ];
     char    dir[ _MAX_DIR ];
-#ifdef __UNIX__
+#ifdef UNIX
     char    fname[ 32 ];
 #else
     char    *fname = "__TMP__";
 #endif
 
     _splitpath( dirfile, drive, dir, NULL, NULL );
-#ifdef __UNIX__
+#ifdef UNIX
     // Must be able to run several "rc" executables simultaneously
     // in the same directory
     sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
@@ -180,7 +170,7 @@ extern void RcFindResource( char *name, char *fullpath ) {
     //if the filename has a drive or is an absolute path then ignore
     //the include path and just look at the specified location
     _splitpath( name, drive, dir, NULL, NULL );
-    if( drive[0] != '\0' || dir[0] ==PATH_SEP ) {
+    if( drive[0] != '\0' || dir[0] =='\\' ) {
         if( access( name, F_OK ) == 0 ) {
             strcpy( fullpath, name );
         }
@@ -195,15 +185,15 @@ extern void RcFindResource( char *name, char *fullpath ) {
         end = *NewIncludeDirs;
         while( end != '\0' ) {
             dst = fullpath;
-            while( *src != ';' && *src != PATH_SPLIT && *src != '\0' ) {
+            while( *src != ';' && *src != '\0' ) {
                 *dst = *src;
                 dst ++;
                 src ++;
             }
             end = *src;
             src ++;
-            if( *( dst - 1 ) != PATH_SEP ) {
-                *dst = PATH_SEP;
+            if( *( dst - 1 ) != '\\' ) {
+                *dst = '\\';
                 dst++;
             }
             strcpy( dst, name );
@@ -227,9 +217,9 @@ extern void RcTmpFileName( char * tmpfilename )
         strncpy( tmpfilename, tmpdir, _MAX_PATH - L_tmpnam - 1 );
         nextchar = tmpfilename + strlen( tmpfilename ) - 1;
         /* tack a '\' onto the end if it is not there already */
-        if( *nextchar != PATH_SEP ) {
+        if( *nextchar != '\\' ) {
             nextchar++;
-            *nextchar = PATH_SEP;
+            *nextchar = '\\';
         }
         nextchar++;
     } else {

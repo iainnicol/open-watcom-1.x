@@ -217,4 +217,3 @@ bool VpeMain::loadProject( const WFileName& fn )
     printf( "Unable to open project '%s'", (const char*)fn );
     return FALSE;
 }
-

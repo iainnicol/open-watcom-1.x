@@ -38,7 +38,7 @@
 #include "wrestat.h"
 #include "wrehints.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "wremsgs.h"
 #include "wre_rc.h"
 #include "wreribbn.h"
 

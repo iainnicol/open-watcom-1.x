@@ -1,5 +1,9 @@
 include mdef.inc
-include struct.inc
+ifdef __WASM__
+ include struct.inc
+else
+ include struct3.inc
+endif
 
         modstart  e86sqrt
 

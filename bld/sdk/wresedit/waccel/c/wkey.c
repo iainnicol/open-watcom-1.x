@@ -46,7 +46,7 @@
 #include "wkey.h"
 #include "sys_rc.h"
 #include "wresall.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

@@ -904,7 +904,6 @@ STATIC void bangInclude( void )
     chopTrailWS( text );    /* get rid of trailing ws */
 
 
-#ifdef __WATCOMC__
     if (*text == LESSTHAN) {
         current = text;
         while (*current != GREATERTHAN && *current != NULLCHAR) {
@@ -941,9 +940,7 @@ STATIC void bangInclude( void )
         } else {
               PrtMsg( ERR|LOC| UNABLE_TO_INCLUDE, text );
         }
-    } else
-#endif
-          {
+    } else {
         temp = text;
         text = formatLongFileName(text);
         if (text == NULL) {

@@ -225,7 +225,7 @@ Column=0;        /* skip to Column when reading */
 Trunc=0;         /* stop at Trunc when reading  */
 PrevProtoType=NULL;          /* prev func prototype */
 
-TargSys=TS_OTHER;
+TargSys=0;
 DefDataSegment=0;  /* #pragma data_seg("segname","class") */
 DefCodeSegment=NULL; /* #pragma code_seg("seg","c") */
 

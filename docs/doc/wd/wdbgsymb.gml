@@ -3,6 +3,7 @@
 .np
 .ix 'symbols' 'predefined'
 The &dbgname defines a number of symbols which have special meaning.
+..if &e'&addend. eq 0 .do begin
 Each of the registers is designated by a special name.
 .begnote $compact
 .mnote eax
@@ -270,7 +271,9 @@ In the above example, the "carry" flag is cleared since the
 low order bit of the result is 0.
 .np
 The debugger also defines some other special names.
+..do end
 .begnote
+..if &e'&addend. eq 0 .do begin
 .ix 'predefined symbol' 'dbg$32'
 .mnote dbg$32
 This debugger symbol represents the mode in which the processor is
@@ -295,6 +298,7 @@ examination.
 The dot address "." is either set to dbg$code or dbg$data, depending
 on whether you were last looking at code or data.
 .ix 'predefined symbol' 'dbg$cpu'
+..do end
 .mnote dbg$cpu
 This debugger symbol represents the type of central processing unit
 which is in your personal computer system.
@@ -312,13 +316,14 @@ Intel 80486 or compatible processor
 .note 5
 Intel Pentium processor
 .endnote
+..if &e'&addend. eq 0 .do begin
 .ix 'predefined symbol' 'dbg$ctid'
 .mnote dbg$ctid
 This debugger symbol represents the identification number of the
 current execution thread.
-Under environments which do not support threading, the current thread
-ID is always 1. The current execution thread can be selected using the
-Thread window or the Thread command.
+Under DOS and QNX, the current thread ID is always 1.
+The current execution thread can be selected using the Thread window
+or the Thread command.
 .ix 'predefined symbol' 'dbg$data'
 .mnote dbg$data
 This debugger symbol represents the current data location under
@@ -329,8 +334,8 @@ on whether you were last looking at code or data.
 .mnote dbg$etid
 This debugger symbol represents the identification number of the
 thread that was executing when the debugger was entered.
-Under environments which do not support threading, the executing thread
-ID is always 1.
+Under DOS and QNX, the executing thread ID is always 1.
+..do end
 .ix 'predefined symbol' 'dbg$fpu'
 .mnote dbg$fpu
 This debugger symbol represents the type of numeric data processor
@@ -353,6 +358,7 @@ installed
 An Intel Pentium processor, supporting coprocessor instructions, is
 installed
 .endnote
+..if &e'&addend. eq 0 .do begin
 .ix 'predefined symbol' 'dbg$ip'
 .mnote dbg$ip
 This debugger symbol represents the register pair CS:IP (16-bit mode)
@@ -374,30 +380,7 @@ IBM Enhanced Graphics Adapter (EGA)
 .note 3
 IBM Video Graphics Array (VGA)
 .endnote
-
-.ix 'predefined symbol' 'dbg$ntid'
-.mnote dbg$ntid
-This debugger symbol represents the identification number of the
-next execution thread. To iterate through all of the threads in a process,
-you can execute
-.id thread dbg$ntid
-repetitively until you are back to the original thread.
-Under environments which do not support threading, the next thread
-ID is always 1. To show the execution stack for all threads (in the Log window),
-you can execute the following commands:
-.exam begin
-/orig_tid = dbg$ctid
-/curr_tid = dbg$ctid
-while curr_tid != 0 {
-    print {----- Next Thread %x -----} curr_tid;
-    show calls;
-    /curr_tid = dbg$ntid;
-    thread curr_tid;
-    if( curr_tid == orig_tid ) {
-        /curr_tid = 0;
-    };
-}
-.exam end
+..do end
 .ix 'predefined symbol' 'dbg$os'
 .mnote dbg$os
 This debugger symbol represents the operating system that is currently
@@ -412,6 +395,11 @@ OS/2
 .ix '386|DOS-Extender'
 .ix 'Phar Lap Software, Inc.'
 386|DOS-Extender from Phar Lap Software, Inc.
+:cmt. .note 4
+:cmt. :cmt..ix 'DOS extenders' 'OS/386'
+:cmt. :cmt..ix 'OS/386 DOS extender'
+:cmt. :cmt..ix 'ERGO Computing, Inc.'
+:cmt. OS/386 from ERGO Computing, Inc.
 .note 5
 .ix 'NetWare 386'
 .ix 'Novell'
@@ -430,17 +418,26 @@ DOS/4GW from Tenberry Software, Inc. (included in the &watc32 and
 .ix 'Windows 3.x'
 .ix 'Microsoft Corp.'
 Windows 3.x from Microsoft Corporation
+:cmt. .note 9
+:cmt. :cmt..ix 'PenPoint'
+:cmt. PenPoint from GO Corporation
 .note 10
 .ix 'Windows NT'
 .ix 'Windows 95'
 .ix 'Microsoft Corp.'
-Windows NT/2000/XP or Windows 9x from Microsoft Corporation
+Windows NT or Windows 95 from Microsoft Corporation
+.note 11
+.ix 'AutoCAD Development System'
+.ix 'Autodesk, Inc.'
+AutoCAD from Autodesk, Inc.
 .endnote
 .ix 'predefined symbol' 'dbg$pid'
 .mnote dbg$pid
+:cmt. (OS/2, NetWare 386, PenPoint, QNX, Windows NT only) This debugger
 (OS/2, NetWare 386, QNX, Windows NT, Windows 95 only)
 This debugger symbol contains the process identification value for the
 program being debugged.
+..if &e'&addend. eq 0 .do begin
 .ix 'predefined symbol' 'dbg$psp'
 .mnote dbg$psp
 (DOS only) This debugger symbol contains the segment value for the DOS
@@ -470,4 +467,5 @@ This debugger symbol is the null pointer value.
 .mnote dbg$src
 This debugger symbol is 1 if you are currently debugging in an area that
 contains debugging information.
+..do end
 .endnote

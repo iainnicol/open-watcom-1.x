@@ -10,7 +10,7 @@
 :set symbol="tgtfile" value="mthread".
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
-:set symbol="tgtopts"   value="&sw.bm".
+:set symbol="tgtopts"   value="/bm".
 :set symbol="include" value="include".
 :set symbol="begthread" value="beginthread".
 :set symbol="endthread" value="endthread".
@@ -25,10 +25,10 @@
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .   .if '&targetos' eq 'OS/2 2.x' .do begin
-:set symbol="tgtopts"   value="&sw.bt=os2 &sw.bm".
+:set symbol="tgtopts"   value="/bt=os2 /bm".
 .   .do end
 .   .el .do begin
-:set symbol="tgtopts"   value="&sw.bt=nt &sw.bm".
+:set symbol="tgtopts"   value="/bt=nt /bm".
 .   .do end
 :set symbol="include" value="header".
 :set symbol="begthread" value="_beginthread".
@@ -112,6 +112,34 @@ to affect the execution of other threads.
 Therefore, each thread should contain its own instance of this
 variable.
 .do end
+:cmt. .np
+:cmt. Special run-time libraries are required to solve these problems.
+:cmt. You must link with these special run-time libraries when creating a
+:cmt. multi-threaded application.
+:cmt. The following lists these libraries and the compiler options that
+:cmt. cause the libraries to be used.
+:cmt. .if '&lang' eq 'FORTRAN 77' .do begin
+:cmt. .millust begin
+:cmt. Library Name    Compiler Option
+:cmt. ------------    ---------------
+:cmt. flibmt          /bm         /fpc
+:cmt. flibmt7         /bm         /fpi, fpi87 or /fpi287
+:cmt. flibmts         /bm   /sc   /fpc
+:cmt. flibmt7s        /bm   /sc   /fpi, fpi87 or /fpi287
+:cmt. .millust end
+:cmt. .do end
+:cmt. .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+:cmt. .millust begin
+:cmt. Library Name       Compiler Option
+:cmt. ------------    ---------------------
+:cmt. clibmt3r        /bm   /3r, /4r or /5r
+:cmt. clibmt3s        /bm   /3s, /4s or /5r
+:cmt. .millust end
+:cmt. .do end
+:cmt. .np
+:cmt. The "bm" compiler option must be specified when compiling modules of a
+:cmt. multi-threaded application.
+:cmt. These libraries are automatically used when this option is specified.
 .*
 .section Creating Threads
 .*
@@ -312,7 +340,7 @@ The source code for this example can be found in
       common NumThreads, HoldThreads
 
       integer STACK_SIZE
-      parameter (STACK_SIZE=32768)
+      parameter (STACK_SIZE=8192)
       integer NUM_THREADS
       parameter (NUM_THREADS=5)
 
@@ -348,8 +376,8 @@ The source code for this example can be found in
           call DosSleep( 1 )
       end while
 .code break
-      call DosEnterCritSec()
       print '(''Hi from thread '', i4)', threadid()
+      call DosEnterCritSec()
       NumThreads = NumThreads - 1
       call DosExitCritSec()
       call endthread()
@@ -357,8 +385,6 @@ The source code for this example can be found in
 .code end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-The source code for this example can be found in
-.fi &pathnam.\samples\os2.
 .code begin
 #include <process.h>
 #include <stdio.h>
@@ -370,7 +396,7 @@ static  volatile int    NumThreads;
 static  volatile int    HoldThreads;
 
 #define NUM_THREADS     5
-#define STACK_SIZE      32768
+#define STACK_SIZE      8192
 
 .code break
 static void a_thread( void *arglist )
@@ -640,7 +666,7 @@ directories
 We can now compile and link the application by issuing the following
 command.
 .millust begin
-&prompt.&wclcmd &tgtopts &sw.l=&tgtosname &tgtfile
+&prompt.&wclcmd &tgtopts /l=&tgtosname &tgtfile
 .millust end
 .np
 The "bm" option must be specified since we are creating a
@@ -654,7 +680,7 @@ The system name
 .id &tgtosname
 is defined in the file
 .fi wlsystem.lnk
-which is located in the "BINW" subdirectory of the directory in which you
+which is located in the "BINW" directory of the directory in which you
 installed &product..
 .np
 The multi-threaded application is now ready to be run.
@@ -681,7 +707,7 @@ global variable
 Under 32-bit OS/2, there is no limit to the number of threads an
 application can create.
 However, due to the way in which multiple threads are supported in the
-&company libraries, there is a small performance penalty once the number
+WATCOM libraries, there is a small performance penalty once the number
 of threads exceeds the default limit of 32 (this number includes the
 initial thread).
 If you are creating more than 32 threads and wish to avoid this

@@ -70,14 +70,15 @@ static char const *MsgPrefix[grp_index_max] = {
 #undef GRP_DEF
 };
 
-#ifndef __msg_file_prefix
-#error no message file prefix
+#ifndef __target_CPU
+#error no target
 #endif
 #define _mkstr( a ) #a
 #define _str( a ) _mkstr( a )
+#ifdef __WATCOMC__
 void InitMsg( void )
 {
-    internationalData = LoadInternationalData( _str( __msg_file_prefix ) );
+    internationalData = LoadInternationalData( _str( __target_CPU ) );
 }
 void FiniMsg( void )
 {
@@ -85,6 +86,7 @@ void FiniMsg( void )
         FreeInternationalData( internationalData );
     }
 }
+#endif
 static char const EUsage[] = {
 #include "usage.gh"
 "\0" };

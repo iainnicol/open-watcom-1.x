@@ -3,5 +3,4 @@
 host_os  = nt
 host_cpu = 386
 
-proj_path = ..
-!include $(proj_path)/mif/master.mif
+!include ..\mif\master.mif

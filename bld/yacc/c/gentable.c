@@ -109,8 +109,6 @@ void genobj( void )
     other = CALLOC( nstate, short );
     parent = CALLOC( nstate, short );
     size = CALLOC( nstate, short );
-    same = r = diff = NULL;
-    shift = parent_base = 0;
     for( i = nstate; --i >= 0; ) {
         x = statetab[i];
         q = token;
@@ -166,12 +164,11 @@ void genobj( void )
                             *--q = tokval;
                     }
                 }
-                if( other[j] != error ) {
+                if( other[j] != error )
                     if( other[j] == other[i] )
                         *p++ = dtoken;
                     else
                         *--q = dtoken;
-                }
                 savings = size[i] + size[j] - 2*(p - test);
                 if( savings < min ) {
                     min = savings;

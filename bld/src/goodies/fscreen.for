@@ -1,14 +1,13 @@
 * FSCREEN.FOR
 * The following program shows how to access screen memory
-* from a FORTRAN program under DOS/4GW or compatible
-* DOS extenders.
+* from a FORTRAN program under the DOS/4GW DOS extender.
 
-* Compile & Link: wfl386 -l=dos4g fscreen
+* Compile & Link: wfl386 /l=dos4g fscreen
 
       program fscreen
 
 * Allocatable arrays must be declared by specifying their
-* dimensions using colons only (see Open Watcom FORTRAN 77
+* dimensions using colons only (see WATCOM FORTRAN 77
 * Language Reference on the ALLOCATE statement for details).
 
       character*1 screen(:,:)
@@ -25,7 +24,7 @@
       allocate( screen(0:1,0:SCRSIZE-1), location='B8000'x )
 
       do i = 0, SCRSIZE - 1
-        screen(0,i) = '*'
+	  screen(0,i) = '*'
       enddo
 
       end

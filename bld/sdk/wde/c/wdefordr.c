@@ -84,7 +84,7 @@ static HFONT      WdeTagFont            = NULL;
 
 static void WdeSetTagState( WdeOrderedEntry *oe )
 {
-    LRESULT     result;
+    DWORD       result;
     Bool        pressed;
 
     if( oe && ( oe->tag != (HWND)NULL ) ) {

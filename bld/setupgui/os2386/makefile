@@ -1,7 +1,6 @@
 VERSION = _OS2
 model = f
 
-guilib  = $(guidir)/win/os2386/gui.lib
-guiinc  = $(guidir)/win/os2386
+guilib  = $(guidir)\win\guios2$(model).lib
 
-!include ../setup.mif
+!include ..\setup.mif

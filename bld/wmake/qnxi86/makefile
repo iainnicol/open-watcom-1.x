@@ -2,6 +2,6 @@
 host_os  = qnx
 host_cpu = i86
 
-memory_model_i86 = c
+compact = 1
 
-!include ../mif/master.mif
+!include ..\mif\master.mif

@@ -1,5 +1,5 @@
 proj_name       = cf
-inc_dirs        = $(watcom_dir)/h;../h
+inc_dirs        = $(watcom_dir)\h;..\h
 
 !include cproj.mif
 !include deftarg.mif
@@ -7,7 +7,8 @@ inc_dirs        = $(watcom_dir)/h;../h
 
 extra_c_flags_386 = -fpc
 
-.c: $(cfloat_dir)/c
+
+.c: $(cfloat_dir)\c
 
 cf_objs = &
     cfconv.obj &
@@ -21,6 +22,6 @@ cf_objs = &
     u32moddi.obj
 
 cf.lib : $(cf_objs)
-        rm -f $^&.lbc
-        @for %i in ($<) do @%append $^&.lbc -+%i
-        $(librarian) -n -b $^@ @$^&.lbc
+        @if exist $^&.clb @erase $^&.clb
+        @for %i in ($<) do @%append $^&.clb -+%i
+        $(librarian) -n -q -b $^. @$^&.clb

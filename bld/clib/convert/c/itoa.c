@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of itoa() and utoa().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,7 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 
-extern const char __based(__segname("_CODE")) __Alphabet[];
+static const char _WCI86FAR Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 unsigned __udiv( unsigned, unsigned _WCNEAR * );
 #if defined(__386__)
@@ -80,14 +81,14 @@ _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, in
         buf[0] = '\0';
         q = &buf[1];
         do {
-            #if defined(__AXP__) || defined(__PPC__) || !defined(__WATCOMC__)
+            #if defined(__AXP__) || defined(__PPC__)
                 rem = value % radix;
                 quot = value / radix;
             #else
                 quot = radix;
                 rem = __udiv( value, (unsigned _WCNEAR *) &quot );
             #endif
-            *q = __Alphabet[ rem ];
+            *q = Alphabet[ rem ];
             ++q;
             value = quot;
         } while( value != 0 );

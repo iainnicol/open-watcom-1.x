@@ -40,10 +40,8 @@ include struct.inc
         name    codei86
 
 _DATA   segment word public 'DATA'
+DGROUP  group   _DATA
         assume  CS:_DATA
-
-module_start:
-  dw    _Functions - module_start
 
 strcat_body     macro
         mov     cx,-1                   ; set length to -1
@@ -729,7 +727,7 @@ _DP_memcpy:
 E_DP_memcpy:
 ;=======================================================================
 func    macro   name
-        dw      _&name&_defs - module_start,_&name&_name - module_start,_&name - module_start
+        dw      DGROUP:_&name&_defs,DGROUP:_&name&_name,DGROUP:_&name
         endm
 
         public  _Functions

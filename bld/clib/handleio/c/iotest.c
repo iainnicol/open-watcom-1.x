@@ -24,10 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Non-exhaustive test of the C library handle I/O functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+/*
+ *  IOTEST.C
+ *  Non-exhaustive test of the C library handle I/O functions.
+ *
+ *  20 February 1995
+ *  By Matthew Hildebrand
+ */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -36,9 +45,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/locking.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <sys\locking.h>
+#include <sys\stat.h>
+#include <sys\types.h>
 
 #ifdef __SW_BW
   #include <wdefwin.h>

@@ -35,4 +35,4 @@
 char near DATESTAMP_T[] = __TIME__;
 char near DATESTAMP_D[] = __DATE__;
 char near AUTHOR[] = banner2( "1991" );
-char near VERSIONT[] = _VI_VERSION_;
+char near VERSION[] = _VI_VERSION_;

@@ -1,4 +1,6 @@
 uncompressed=yes        # mklib wont work because objs_c required in both libs
+no_precompiled_headers=yes    # headers files aren't laid out for pch
+
 
 # dependencies:
 
@@ -64,7 +66,7 @@ objs_reg =
 
 # files that must not be compressed
 targdir=
-!include $(plusplus_cpplib_dir)/runtime/static.mif
+!include $(plusplus_cpplib_dir)\runtime\static.mif
 !ifeq linkage dynamic
 objs_dyn = $(dynamic_objs)
 !else
@@ -159,33 +161,9 @@ objs_cpp += allocexc.$(obj_ext) &
 #           throwfne.obj
 #           throwobj.obj
 
-pch_flags = -fh=pch01.pch
-pch_flags_x = -fh=pch02.pch
-extra_cpp_flags_cppdata = -fh=pch03.pch
-extra_cpp_flags_rttidync = -fh=pch04.pch
-extra_cpp_flags_rttiptr = -fh=pch04.pch
-extra_cpp_flags_rttiref = -fh=pch04.pch
-extra_cpp_flags_rttisupp = -fh=pch04.pch
-extra_cpp_flags_rttitid = -fh=pch04.pch
-extra_cpp_flags_rttivoid = -fh=pch04.pch
-extra_cpp_flags_fsregist = -fh=pch05.pch
-extra_cpp_flags_stabinit = -fh=pch05.pch
-extra_cpp_flags_areaexc = -fh=pch06.pch
-extra_cpp_flags_fsroot = -fh=pch06.pch
-extra_cpp_flags_moddtorr = -fh=pch06.pch
-extra_cpp_flags_stabmod = -fh=pch06.pch
-extra_cpp_flags_stablcl = -fh=pch06.pch
-extra_cpp_flags_undefmbd = -fh=pch06.pch
-extra_cpp_flags_dfsroot = -fh=pch07.pch
-extra_cpp_flags_dstabmod = -fh=pch08.pch
-extra_cpp_flags_x_rttiref = -fh=pch09.pch
-extra_cpp_flags_x_rttitid = -fh=pch09.pch
-extra_cpp_flags_x_stabthrw = -fh=pch10.pch
-extra_cpp_flags_x_fsregist = -fh=pch10.pch
-
-!include $(plusplus_cpplib_dir)/plibname.mif
+!include $(plusplus_cpplib_dir)\plibname.mif
 
 prefix = $(plib_n)
 prefix_x = $(plib_x)
 
-!include $(plusplus_dir)/mklibtgt.mif
+!include $(plusplus_dir)\mklibtgt.mif

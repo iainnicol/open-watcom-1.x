@@ -62,15 +62,15 @@ static int                      orlFileSize;
 // note: this should match name in rscobj.c in codegen
 static const char               *dependSectionName = ".depend";
 
-static long fileSize( int handle )
+static fpos_t fileSize( int handle )
 {
-    long                old;
-    long                size;
+    fpos_t              old;
+    fpos_t              size;
 
     old = tell( handle );
     lseek( handle, 0, SEEK_END );
     size = tell( handle );
-    lseek( handle, old, SEEK_SET );
+    lseek( handle, SEEK_SET, old );
     if( size == 0 ) {
         // MallocSafe returns NULL for size == 0
         ++size;

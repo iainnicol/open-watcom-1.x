@@ -49,7 +49,7 @@
 #include "wredel.h"
 #include "wrestat.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "wremsgs.h"
 #include "wreres.h"
 #include "wreftype.h"
 #include "wretoolb.h"

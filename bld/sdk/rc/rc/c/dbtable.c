@@ -29,18 +29,18 @@
 *
 ****************************************************************************/
 
+
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
-#include "rctypes.h"
+#include "types.h"
 #include "dbtable.h"
 #include "rcmem.h"
-#include <fcntl.h>
-#include <unistd.h>
+#include "fcntl.h"
+#include "io.h"
 #include "write.h"
 #include "iortns.h"
-
-#if defined(__UNIX__) && !defined(__WATCOMC__)
+#ifdef UNIX
     #include "clibext.h"
 #endif
 

@@ -33,9 +33,6 @@
 #include "cofflwlv.h"
 #include "orlhash.h"
 #include <malloc.h>
-#ifdef _BSD_SOURCE
-#define stricmp strcasecmp
-#endif
 
 orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 {

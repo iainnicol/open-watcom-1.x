@@ -34,9 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #ifndef __AXP__
-#ifdef __WATCOMC__
 #include <i86.h>
-#endif
 #endif
 #include "vi.h"
 #include "rxsupp.h"
@@ -524,11 +522,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     {
         extern HANDLE OutputHandle;
         SetConsoleActiveScreenBuffer( OutputHandle );
-    }
-    #endif
-    #if defined( PREBUILD )
-    if( startcnt == 0 ) {
-        ExitEditor( 0 );
     }
     #endif
 

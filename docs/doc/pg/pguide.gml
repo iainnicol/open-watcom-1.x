@@ -98,9 +98,7 @@
 .helppref NT:
 :INCLUDE file='WINNT'.
 :INCLUDE file='PGWINNT'.
-.if '&defwin' eq 'Windows NT' .do begin
 :INCLUDE file='PGWINNTW'.
-.do end
 :set symbol="targetos" value="Windows NT"
 :INCLUDE file='MTHREAD'.
 :INCLUDE file='DYNLINK'.
@@ -121,6 +119,7 @@
 :INCLUDE file='DYNLINK'.
 :INCLUDE file='OS2PM'.
 :INCLUDE file='OS2PDD'.
+:INCLUDE file='WKFRAME'.
 .helppref
 .*
 .do end
@@ -136,6 +135,12 @@
 .do end
 .*
 .if '&target' eq 'DOS' .do begin
+.*
+.sepsect AutoCAD ADS Programming Guide
+.*
+.helppref AutoCAD:
+:INCLUDE file='PGADS'.
+.helppref
 .*
 .sepsect Novell NLM Programming Guide
 .*

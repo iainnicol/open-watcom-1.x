@@ -61,7 +61,7 @@
 #include "wsvobj.h"
 #include "wsetedit.h"
 #include "wmain.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 #include "wacc2rc.h"
 #include "weditsym.h"
 #include "wstrdup.h"

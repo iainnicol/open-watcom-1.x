@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
+#include <io.h>
 #include <string.h>
 #include <errno.h>
 #include "watcom.h"

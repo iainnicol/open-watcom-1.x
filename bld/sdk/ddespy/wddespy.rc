@@ -30,13 +30,13 @@
 
 STRINGTABLE
 BEGIN
-    #include "rcstrmsg.gh"
+    #include "rcstr.msg"
 END
 
 
 #include "msgfilt.dlg"
 #include "cbfilt.dlg"
-#include "log.rc"
-#include "alias.rc"
-#include "mark.rc"
-#include "about.dlg"
+#include "..\misc\log.rc"
+#include "..\misc\alias.rc"
+#include "..\misc\mark.rc"
+#include "..\misc\about.dlg"

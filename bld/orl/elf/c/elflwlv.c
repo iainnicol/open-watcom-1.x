@@ -33,9 +33,6 @@
 #include <assert.h>
 #include "elflwlv.h"
 #include "orlhash.h"
-#ifdef _BSD_SOURCE
-#define stricmp strcasecmp
-#endif
 
 orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
 {
@@ -202,7 +199,6 @@ static orl_reloc_type convert386Reloc( elf_reloc_type elf_type ) {
         return( ORL_RELOC_TYPE_WORD_32 );
     case R_386_PC32:
     case R_386_PLT32:
-    case R_386_GOTPC:
         return( ORL_RELOC_TYPE_REL_32 );
     default:
         assert( 0 );

@@ -1,13 +1,13 @@
 * MTHREAD.FOR
-c$define INCL_DOS
-c$include os2.fap
+
+*$pragma aux DosSleep parm( value*4 ) [] caller
 
       integer NumThreads
       logical HoldThreads
       common NumThreads, HoldThreads
 
       integer STACK_SIZE
-      parameter (STACK_SIZE=32768)
+      parameter (STACK_SIZE=8192)
       integer NUM_THREADS
       parameter (NUM_THREADS=5)
 
@@ -39,8 +39,8 @@ c$include os2.fap
       while( HoldThreads )do
           call DosSleep( 1 )
       end while
-      call DosEnterCritSec()
       print '(''Hi from thread '', i4)', threadid()
+      call DosEnterCritSec()
       NumThreads = NumThreads - 1
       call DosExitCritSec()
       call endthread()

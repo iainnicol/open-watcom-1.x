@@ -126,7 +126,7 @@ typedef struct {
 typedef struct {
     char                attr;
     long                fsize;
-#ifndef __UNIX__
+#ifndef __QNX__
     time_struct         time;
     date_struct         date;
 #else
@@ -245,7 +245,7 @@ typedef struct file {
     long        size;                   // size of file in bytes
     int         handle;                 // file handle (if entire file is not
                                         // read, will be an open file handle)
-#ifdef __UNIX__
+#ifdef __QNX__
     short       attr;
 #endif
     char        as_name[TMP_NAME_LEN];  // name that file was auto-saved as

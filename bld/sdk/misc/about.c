@@ -33,9 +33,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#define STRICT
-#define INCLUDE_TOOLHELP_H
 #include <windows.h>
+#ifndef __NT__
+#include "toolhelp.h"
+#endif
 #include "about.h"
 #include "aboutdlg.h"
 #include "win1632.h"
@@ -43,7 +44,7 @@
 #include "ctl3d.h"
 #endif
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.h"
 
 /*
  * AboutProc - callback routine for settings dialog

@@ -1,14 +1,14 @@
 &prompt.&wclcmd. &sw.l=&bldnam.&bldswt. &sw.&debugopt. &demo.&demosuff.
-Open Watcom F77/16 Compile and Link Utility
+WATCOM F77/16 Compile and Link Utility
 .cpyrit 1990
 .trdmrk
         &ccmd16 sieve.for  &bldswt. &sw.&debugopt.
-Open Watcom FORTRAN 77/16 Optimizing Compiler
+WATCOM FORTRAN 77/16 Optimizing Compiler
 .cpyrit 1984
 .trdmrk
 sieve.for: 4305 statements, 467 bytes, 1524 extensions, 0 warnings, 0 errors
 
-Open Watcom Linker
+WATCOM Linker
 .cpyrit 1985
 .trdmrk
 loading object files

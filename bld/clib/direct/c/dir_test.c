@@ -24,12 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Simple test of directory related clib functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <sys/types.h>
+#include <sys\types.h>
 #include <direct.h>
 #include <stdio.h>
 #include <stdlib.h>

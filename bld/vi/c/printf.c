@@ -84,7 +84,7 @@ static void basePrintf( const char *in, va_list al )
                 barfChar( '%' );
                 break;
             case 'c':
-                barfChar( (char)va_arg( al, int ) );
+                barfChar( va_arg( al, char ) );
                 break;
             case 'u':
                 i = va_arg( al, int );

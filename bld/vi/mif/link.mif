@@ -1,4 +1,5 @@
-extra_l_flags = option map, symfile
+extra_l_flags = option map,quiet
+extra_l_flags += option symfile
 
 extra_l_flags_os2_386 = op newfiles,stack=20k
 extra_l_flags_os2_i86 = op newfiles,stack=1k
@@ -15,22 +16,15 @@ extra_l_flags_win = $(extra_l_flags_win_$(host_CPU))
 !ifdef sys_windowed
 ! ifeq host_CPU 386
 extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k
-!ifdef __LINUX__
-extra_l_flags_nt += alias "_WinMain='_WinMain@16'"
-!else
 extra_l_flags_nt += alias _WinMain='_WinMain@16'
-!endif
 ! else
-extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k
+extra_l_flags_nt = op stack=40k,heap=8k commit heap=4k op caseexact
 ! endif
 !else
 extra_l_flags_nt = runtime console op stack=20k
 !endif
 
 extra_l_flags_qnx = op stack=2k,priv=3
-!ifndef prebuild
-extra_l_flags_linux = lib $(ncurses_dir)/linux386/ncurses.lib lib $(ui_dir)/unix/linux386/ui.lib
-!endif
 
 !ifdef is286
 extra_l_flags_dos_i86 = op stack=1k

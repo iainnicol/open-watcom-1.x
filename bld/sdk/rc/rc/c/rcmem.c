@@ -35,14 +35,14 @@
 #include <string.h>
 #include <assert.h>
 #include <malloc.h>
-#include "rctypes.h"
+#include "types.h"
 #include "errors.h"
 #include "rcmem.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
 
 #ifdef RC_USE_TRMEM
-    #include <unistd.h>
+    #include <io.h>
     #include "trmem.h"
     _trmem_hdl RcMemHandle = NULL;
 

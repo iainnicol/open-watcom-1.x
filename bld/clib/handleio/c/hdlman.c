@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Handle manager routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -314,7 +315,7 @@ _WCRTLINK int _grow_handles( int num )
             ULONG   curr_max_fh;
             APIRET  rc;
 
-            req_count = num - __NHandles;
+            req_count = num;
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
         }

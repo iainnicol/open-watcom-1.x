@@ -66,7 +66,6 @@
 #include "pragdefn.h"
 #include "specfuns.h"
 #include "compcfg.h"
-#include "autodept.h"
 
 #if _CPU == 386
     extern struct  inline_funcs Fs_Functions[];   // FS PRAGMAS
@@ -826,16 +825,46 @@ static sym_access getSymAccess( // GET access flag of symbol
     return( access );
 }
 
-static time_t *getFileDepTimeStamp( SRCFILE h )
-{
-    static time_t            stamp;
 
+enum {
+    TIME_SEC_B  = 0,
+    TIME_MIN_B  = 5,
+    TIME_HOUR_B = 11,
+};
+
+enum {
+    DATE_DAY_B  = 0,
+    DATE_MON_B  = 5,
+    DATE_YEAR_B = 9,
+};
+
+static uint_32 *makeDOSTimeStamp( void *h )
+{
 #if COMP_CFG_COFF == 0
-    stamp = _timet2dos( SrcFileTimeStamp( h ) );
+    time_t *t;
+    struct tm *ltime;
+    uint_16 dos_date;
+    uint_16 dos_time;
+    static uint_32 dos_stamp;
+
+    t = SrcFileTimeStamp( (SRCFILE)h );
+    ltime = localtime( t );
+    dos_date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
+             | (( ltime->tm_mon + 1 ) << DATE_MON_B )
+             | (( ltime->tm_mday ) << DATE_DAY_B );
+    dos_time = (( ltime->tm_hour ) << TIME_HOUR_B )
+             | (( ltime->tm_min ) << TIME_MIN_B )
+             | (( ltime->tm_sec / 2 ) << TIME_SEC_B );
+    dos_stamp = dos_time | ( dos_date << 16 );
+    return( &dos_stamp );
 #else
-    stamp = SrcFileTimeStamp( h );
-#endif
+    time_t              *t;
+    static time_t       stamp;
+
+    t = SrcFileTimeStamp( (SRCFILE)h );
+    stamp = *t;
     return( &stamp );
+#endif
 }
 
 static void addDefaultLibs( void )
@@ -1082,7 +1111,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         aux_class request )     // - request
 {
     AUX_INFO *inf;              // - auxilary info
-    void *retn = NULL;          // - return value
+    void *retn;                 // - return value
     static char *buf = NULL;    // - temporary buffer
     static SYMBOL dtor_sym;     // - symbol to be DTOR'ed
     static EXTRF res_info;      // - external-symbol resolution information
@@ -1310,7 +1339,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
       case DEPENDENCY_TIMESTAMP :
         DbgNotSym();
         DbgNotRetn();
-        retn = getFileDepTimeStamp( (SRCFILE)sym );
+        retn = makeDOSTimeStamp( sym );
         break;
       case DEPENDENCY_NAME :
         DbgNotSym();
@@ -1323,7 +1352,6 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         retn = (void*)TEMP_LOC_YES;
         break;
       case TEMP_LOC_TELL :
-        DbgNotSym();
         DbgNotRetn();
         CgBackDtorAutoOffset( dtor_sym, (unsigned)sym );
         break;
@@ -1435,7 +1463,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 #ifndef NDEBUG
     if( PragDbgToggle.auxinfo ) {
         printf( "FeAuxInfo( %x, %x ) -> %x\n", sym, request, retn );
-        if( isSym && ( NULL != sym )) {
+        if( isSym && NULL != sym ) {
             printf( "  sym = %s\n", objectName( sym ) );
         }
         if( isRetn && NULL != retn ) {

@@ -1,9 +1,9 @@
 ctest_name = positive
-!include ../environ.mif
+!include ..\environ.mif
 
 positive_dir = source
 
-!include $(positive_dir)/positive.mif
+!include $(positive_dir)\positive.mif
 
 !ifdef test1
 cflags_386 = -d2-mf
@@ -59,16 +59,8 @@ cflags_i86 = -ox-d1-ms
 cflags_axp = -ox-d1
 alt_error = 00
 !ifndef __MSDOS__
-!ifndef __LINUX__
 add_br_ = -br
 !endif
-!endif
-!endif
-
-!ifdef __LINUX__
-exec_prefix = ./
-!else
-exec_prefix =
 !endif
 
 !ifndef noisy
@@ -89,37 +81,37 @@ cflags_386 += $(add_br_$(no_br_$^*))
 .c: $(positive_dir)
 .c.obj:
     @set error_msg=failure to compile $^@
-    $(wcc_$(arch)) $[@ $(cflags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    $(wcc_$(arch)) $[@ $(cflags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*))
 
 .obj.$(exe):
     @set error_msg=failure to link $^@
-    $(linker) @test.lnk $(opt_link_$^*) FILE $[@ NAME $^@
+    $(linker) @test.lnk $(opt_link_$^*) FILE $[@
     @set error_msg=failure to execute $^@
     @%append exec.out PASS executing $^@
-    $(run) $(exec_prefix)$^@ >>exec.out
-    rm $[@
-#    wstrip -q $^@
+    $(run) $^@ >>exec.out
+    del $[@
+    wstrip -q $^@
 
 test : .symbolic actual_test
     @set error_file=error.out
     @set error_msg=failure to complete test stream
     echo OK >error.out
     $(bld_cl) chk_exec.c -ox-d1
-    $(exec_prefix)chk_exec exec.out >>error.out
+    chk_exec exec.out >>error.out
     diff -b error.out error.chk
     %make global
     %append $(log_file) PASS $(%__CWD__)
 
 actual_test : .symbolic start_test $(positive_exes)
-    rm -f *.obj
-    rm -f *.$(exe)
+    if exist *.obj del *.obj
+    if exist *.$(exe) del *.$(exe)
 
 fnstat1.$(exe) : fnstat1a.obj fnstat1b.obj
     @set error_msg=failure to link $^@
     $(linker) @test.lnk NAME $^@ FILE $[@, $]@
     @set error_msg=failure to execute $^@
     @%append exec.out PASS executing $^@
-    $(run) $(exec_prefix)$^@ >>exec.out
+    $(run) $^@ >>exec.out
 
 start_test : .symbolic test.lnk
     %create exec.out
@@ -129,11 +121,11 @@ test.lnk : makefile
     %create $^@
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
-    @%append $^@ OPTION noredef
+    @%append $^@ OPTION quiet, noredef
 
 save : .symbolic
-    if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+    if exist exec.out copy exec.out s$(arch)_$(alt_error).sav
 
 global : .symbolic
-    @if exist failure rm failure
+    @if exist failure del failure
     @%make common_clean

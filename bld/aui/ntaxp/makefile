@@ -1,4 +1,3 @@
-#pmake: os_nt cpu_axp
-host_OS = nt
-host_CPU = axp
-!include ../master.mif
+compile = $(compaxp) $[*  /w4
+axp = 1
+!include ..\makefile

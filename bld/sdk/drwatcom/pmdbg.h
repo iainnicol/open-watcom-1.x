@@ -33,7 +33,7 @@
 #ifndef __PMDBG_INCLUDED__
 #define __PMDBG_INCLUDED__
 
-#include "descript.h"
+#include "..\misc\descript.h"
 
 typedef struct {
 unsigned short  SS;

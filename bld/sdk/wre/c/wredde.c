@@ -279,23 +279,17 @@ Bool WREPokeData( HCONV conv, void *data, int size, Bool retry )
     UINT        err;
     Bool        timeout;
     Bool        ret;
-    UINT	tries;
 
     if( ( conv == (HCONV)NULL ) || ( data == NULL ) || ( size == 0 ) ) {
         return( FALSE );
     }
 
-    if( retry )
-        tries = 8;
-    else
-        tries = 0;
-	
     while( TRUE ) {
         ret = (Bool)
             DdeClientTransaction( (LPBYTE)data, size, conv, hDataItem,
                                   CF_TEXT, XTYP_POKE, LONG_TIME_OUT,
                                   &result );
-        if( !ret && tries-- ) {
+        if( !ret && retry ) {
             err = DdeGetLastError( IdInst );
             timeout = ( ( err & DMLERR_POKEACKTIMEOUT ) != 0 );
             if( !timeout ) {

@@ -148,12 +148,12 @@ static void getString( ss_block *ss_new, char *start, int skip )
 
 void InitHTMLFlagsGivenValues( ss_flags_c *newFlags )
 {
-    flags = *(ss_flags_h *)newFlags;
+    flags = *newFlags;
 }
 
 void GetHTMLFlags( ss_flags_c *storeFlags )
 {
-    *storeFlags = *(ss_flags_c *)(&flags);
+    *storeFlags = flags;
 }
 
 void InitHTMLFlags( linenum line_no )

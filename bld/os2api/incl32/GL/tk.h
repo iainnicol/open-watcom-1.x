@@ -198,3 +198,4 @@ extern void APIENTRY tkInitDisplayMode(GLenum);
 extern void APIENTRY tkInitDisplayModePolicy(GLenum);
 extern GLenum APIENTRY tkInitDisplayModeID(GLint);
 void APIENTRY tkClipBoard(void);
+

@@ -33,7 +33,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "varstr.h"
-#include "rctypes.h"
+#include "types.h"
 #include "global.h"
 #include "rcio.h"
 #include "rcmem.h"

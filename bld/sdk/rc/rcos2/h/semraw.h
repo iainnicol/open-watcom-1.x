@@ -34,7 +34,7 @@
 #define SEMRAW_INCLUDED
 
 #include "watcom.h"
-#include "rctypes.h"
+#include "types.h"
 
 #define MAX_DATA_NODES     100
 

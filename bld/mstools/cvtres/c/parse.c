@@ -41,8 +41,7 @@
 #include "message.h"
 #include "parse.h"
 #include "pathconv.h"
-
-#include "optparsc.gh"
+#include "optparse.c"
 
 
 /*

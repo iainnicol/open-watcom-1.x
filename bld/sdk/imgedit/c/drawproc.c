@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "imgedit.h"
 #include <string.h>
+#include "imgedit.h"
 #include "iemem.h"
 #include "drawproc.h"
 

@@ -1,5 +1,5 @@
 plustest_name = wclass
-!include ../environ.mif
+!include ..\environ.mif
 
 !ifeq arch 386
 !define arch i86
@@ -59,7 +59,7 @@ wmsgdlg.obj &
 wwinmain.obj
 
 test : .symbolic test.exe
-    cp test.exe test.ice
+    copy test.exe test.ice
     %make global
     %append $(log_file) PASS $(%__CWD__)
     ren test.ice test.exe
