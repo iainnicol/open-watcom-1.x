@@ -3,6 +3,7 @@ objs = &
 387 &
 a &
 alias &
+alignorg &
 anon &
 anthony &
 b &
@@ -93,7 +94,6 @@ x &
 xx
 
 dev_objs = &
-alignorg &
 fubar &
 jmp &
 newproc &

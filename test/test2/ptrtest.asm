@@ -43,10 +43,10 @@ bar:    xor ax, ax
         jmpf bar
 ifdef errors
         jmpf bx
-endif
         jmpf word ptr [bx]
         jmpf word ptr [bx]+2
         jmpf word ptr 2h[bx]
+endif
 
         jmpf dword ptr [bx]
         jmpf dword ptr [bx]+2
@@ -56,9 +56,11 @@ endif
         jmpf fword ptr [bx]+2
         jmpf fword ptr 2h[bx]
 
+ifdef errors
         jmpf word ptr [ebx]
         jmpf word ptr [ebx]+2
         jmpf word ptr 2h[ebx]
+endif
 
         jmpf dword ptr [ebx]
         jmpf dword ptr [ebx]+2

@@ -80,9 +80,9 @@ _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
     add         byte ptr [eax],al
     add         byte ptr [eax],al
     add         byte ptr [eax],al
-    add         byte ptr 66909090H[eax],dl
+    DB	0, 90H, 90H, 90H, 90H
 L$1:
-    xor         eax,eax
+    xor         ax,ax
     nop         
     nop         
     nop         

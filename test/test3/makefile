@@ -1,5 +1,6 @@
 
 objs = &
+addrmode &
 allign &
 callimpl &
 datamix1 &
@@ -9,7 +10,6 @@ jmpshrt &
 lea &
 lsxxx &
 mseg &
-msgseg32 &
 opi8u &
 plsintr &
 proccall &
@@ -20,7 +20,8 @@ segatrep &
 shift &
 structdd &
 tbyte &
-testequ
+testequ &
+tst1
 
 dev_objs = &
 irpexitm
