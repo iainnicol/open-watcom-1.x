@@ -361,6 +361,9 @@ extern void             FreeTable( int );
 /* Search for the directive node (name specified by 1st para) in the table
    ( specified by 2nd para ) */
 
+extern dir_node         *dir_insert( char *, int );
+extern void             dir_change( dir_node *, int );
+
 extern void             IdxInit( void );
 /* Initialize all the index variables */
 

@@ -75,7 +75,6 @@ extern void             FlushCurrSeg( void );
 extern void             AsmError( int );
 extern int              InputQueueFile( char * );
 extern void             InputQueueLine( char * );
-extern void             AsmTakeOut( char * );
 extern void             GetInsString( enum asm_token, char *, int );
 extern void             SetMangler( struct asm_sym *sym, char *mangle_type );
 
@@ -407,91 +406,109 @@ static dir_node *AllocADir( char *name ) {
     return( dir );
 }
 
+static void dir_init( dir_node *dir, int tab )
+/*****************************************/
+/* Change node and insert it into the table specified by tab */
+{
+    struct asm_sym      *sym;
+
+    sym = &dir->sym;
+
+    dir->line = LineNumber;
+    dir->next = dir->prev = NULL;
+
+    switch( tab ) {
+    case TAB_SEG:
+        dir->e.seginfo = AsmAlloc( sizeof( seg_info ) );
+        dir->e.seginfo->lname_idx = 0;
+        break;
+    case TAB_GRP:
+        dir->e.grpinfo = AsmAlloc( sizeof( grp_info ) );
+        dir->e.grpinfo->idx = ++grpdefidx;
+        dir->e.grpinfo->seglist = NULL;
+        dir->e.grpinfo->numseg = 0;
+        dir->e.grpinfo->lname_idx = 0;
+        break;
+    case TAB_EXT:
+        dir->e.extinfo = AsmAlloc( sizeof( ext_info ) );
+        break;
+    case TAB_COMM:
+        dir->e.comminfo = AsmAlloc( sizeof( comm_info ) );
+        dir->e.comminfo->size = 1;
+        break;
+    case TAB_CONST:
+        sym->state = SYM_CONST;
+        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
+        return;
+    case TAB_PROC:
+        dir->e.procinfo = AsmAlloc( sizeof( proc_info ) );
+        dir->e.procinfo->regslist = NULL;
+        dir->e.procinfo->paralist = NULL;
+        dir->e.procinfo->locallist = NULL;
+        break;
+    case TAB_MACRO:
+        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
+        dir->e.macroinfo->parmlist = NULL;
+        dir->e.macroinfo->data = NULL;
+        dir->e.macroinfo->filename = NULL;
+        dir->e.macroinfo->start_line = LineNumber;
+        break;
+    case TAB_CLASS_LNAME:
+    case TAB_LNAME:
+        sym->state = ( tab == TAB_LNAME ) ? SYM_LNAME : SYM_CLASS_LNAME;
+        dir->e.lnameinfo = AsmAlloc( sizeof( lname_info ) );
+        dir->e.lnameinfo->idx = LnamesIdx;
+        // fixme
+        return;
+    case TAB_PUB:
+        sym->public = TRUE;
+        return;
+    case TAB_GLOBAL:
+        return;
+    case TAB_STRUCT:
+        sym->state = SYM_STRUCT;
+        dir->e.structinfo = AsmAlloc( sizeof( struct_info ) );
+        dir->e.structinfo->size = 0;
+        dir->e.structinfo->alignment = 0;
+        dir->e.structinfo->head = NULL;
+        dir->e.structinfo->tail = NULL;
+        return;
+    case TAB_LIB:
+        break;
+    default:
+        // unknown table
+        /**/myassert( 0 );
+        break;
+    }
+    dir_add( dir, tab );
+    return;
+}
+
+void dir_change( dir_node *dir, int tab )
+/*****************************************/
+/* Change node type and insert it into the table specified by tab */
+{
+    FreeInfo( dir );
+    dir_init( dir, tab );
+}
+
 dir_node *dir_insert( char *name, int tab )
 /*****************************************/
 /* Insert a node into the table specified by tab */
 {
     dir_node            *new;
-    struct asm_sym      *sym;
 
+    /**/myassert( name != NULL );
     new = AllocADir( name );
     if( new == NULL ) {
         AsmError( NO_MEMORY );
         return( NULL );
     }
-    new->line = LineNumber;
-    new->next = new->prev = NULL;
-
+    /* don't put class lnames into the symbol table - separate name space */
     if( tab != TAB_CLASS_LNAME ) {
-        sym = AsmAdd( &new->sym );
-    } else {
-        /* don't put class lnames into the symbol table - separate name space */
-        sym = &new->sym;
+        AsmAdd( &new->sym );
     }
-
-    /**/myassert( name != NULL );
-
-    switch( tab ) {
-    case TAB_SEG:
-        new->e.seginfo = AsmAlloc( sizeof( seg_info ) );
-        new->e.seginfo->lname_idx = 0;
-        break;
-    case TAB_GRP:
-        new->e.grpinfo = AsmAlloc( sizeof( grp_info ) );
-        new->e.grpinfo->idx = ++grpdefidx;
-        new->e.grpinfo->seglist = NULL;
-        new->e.grpinfo->numseg = 0;
-        new->e.grpinfo->lname_idx = 0;
-        break;
-    case TAB_EXT:
-        new->e.extinfo = AsmAlloc( sizeof( ext_info ) );
-        break;
-    case TAB_COMM:
-        new->e.comminfo = AsmAlloc( sizeof( comm_info ) );
-        new->e.comminfo->size = 1;
-        break;
-    case TAB_CONST:
-        sym->state = SYM_CONST;
-        new->e.constinfo = AsmAlloc( sizeof( const_info ) );
-        return( new );
-    case TAB_PROC:
-        new->e.procinfo = AsmAlloc( sizeof( proc_info ) );
-        new->e.procinfo->regslist = NULL;
-        new->e.procinfo->paralist = NULL;
-        new->e.procinfo->locallist = NULL;
-        break;
-    case TAB_MACRO:
-        new->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
-        new->e.macroinfo->parmlist = NULL;
-        new->e.macroinfo->data = NULL;
-        new->e.macroinfo->filename = NULL;
-        new->e.macroinfo->start_line = LineNumber;
-        break;
-    case TAB_CLASS_LNAME:
-    case TAB_LNAME:
-        sym->state = tab == TAB_LNAME ? SYM_LNAME : SYM_CLASS_LNAME;
-        new->e.lnameinfo = AsmAlloc( sizeof( lname_info ) );
-        new->e.lnameinfo->idx = LnamesIdx;
-        // fixme
-        return( new );
-    case TAB_PUB:
-        sym->public = TRUE;
-        return( new );
-    case TAB_GLOBAL:
-        return( new );
-    case TAB_STRUCT:
-        sym->state = SYM_STRUCT;
-        new->e.structinfo = AsmAlloc( sizeof( struct_info ) );
-        new->e.structinfo->size = 0;
-        new->e.structinfo->alignment = 0;
-        new->e.structinfo->head = NULL;
-        new->e.structinfo->tail = NULL;
-        return( new );
-    default:
-        break;
-    }
-    dir_add( new, tab );
-
+    dir_init( new, tab );
     return( new );
 }
 
@@ -1038,20 +1055,22 @@ asm_sym *MakeExtern( char *name, memtype type, bool already_defd )
 {
     dir_node    *ext;
     struct asm_sym *sym;
+    struct asm_sym **sym_ptr;
 
-    if( already_defd ) {
-        char    *tmp;
-        // in case sym->name was passed in
-        tmp = AsmTmpAlloc( strlen( name ) + 1 );
-        strcpy( tmp, name );
-        AsmTakeOut( name );
-        name = tmp;
+    sym_ptr = AsmFind( name );
+    if( ( *sym_ptr != NULL ) && already_defd ) {
+        /* found it -- so take it out */
+        sym = *sym_ptr;
+        *sym_ptr = sym->next;
+        ext = (dir_node *)sym;
+        dir_change( ext, TAB_EXT );
+    } else {
+        ext = dir_insert( name, TAB_EXT );
+        if( ext == NULL ) {
+            return( NULL );
+        }
+        sym = &ext->sym;
     }
-    ext = dir_insert( name, TAB_EXT );
-
-    if( ext == NULL )
-        return( NULL );
-    sym = &ext->sym;
     ext->e.extinfo->idx = ++extdefidx;
     ext->e.extinfo->use32 = Use32;
 
@@ -1401,22 +1420,28 @@ int SegDef( int i )
 
             /* Check to see if the segment is already defined */
             sym = AsmGetSymbol( name );
-            if( sym != NULL && ( sym->state == SYM_SEG || sym->grpidx != 0 ) ) {
-                // segment already defined
+            if( sym != NULL ) {
                 dirnode = (dir_node *)sym;
-                defined = TRUE;
-                oldreadonly = dirnode->e.seginfo->readonly;
-                ignore = dirnode->e.seginfo->ignore;
-                if( dirnode->e.seginfo->lname_idx == 0 ) {
-                    // segment was mentioned in a group statement, but not really set up
-                    defined = FALSE;
-                    LnameInsert( name );
+                if ( sym->state == SYM_SEG || sym->grpidx != 0 ) {
+                    // segment already defined
+                    defined = TRUE;
+                    oldreadonly = dirnode->e.seginfo->readonly;
+                    ignore = dirnode->e.seginfo->ignore;
+                    if( dirnode->e.seginfo->lname_idx == 0 ) {
+                        // segment was mentioned in a group statement, but not really set up
+                        defined = FALSE;
+                        LnameInsert( name );
+                        seg->d.segdef.idx = ++segdefidx;
+                    }
+                } else {
+                    // symbol is different kind
+                    dir_change( dirnode, TAB_SEG );
                     seg->d.segdef.idx = ++segdefidx;
+                    defined = FALSE;
+                    ignore = FALSE;
                 }
             } else {
-                if( sym != NULL && sym->state != SYM_SEG ) {
-                    AsmTakeOut( name );
-                }
+                // segment is not defined
                 dirnode = dir_insert( name, TAB_SEG );
                 seg->d.segdef.idx = ++segdefidx;
                 defined = FALSE;
@@ -3396,21 +3421,24 @@ int MakeComm( char *name, memtype type, bool already_defd, int number, memtype d
 {
     dir_node    *dir;
     struct asm_sym *sym;
+    struct asm_sym **sym_ptr;
 
-    if( already_defd ) {
-        char    *tmp;
-        // in case sym->name was passed in
-        tmp = AsmTmpAlloc( strlen( name ) + 1 );
-        strcpy( tmp, name );
-        AsmTakeOut( name );
-        name = tmp;
+    sym_ptr = AsmFind( name );
+    if( ( *sym_ptr != NULL ) && already_defd ) {
+        /* found it -- so take it out */
+        sym = *sym_ptr;
+        *sym_ptr = sym->next;
+        dir = (dir_node *)sym;
+        dir_change( dir, TAB_COMM );
+    } else {
+        dir = dir_insert( name, TAB_COMM );
+        if( dir == NULL )
+            return( ERROR );
+        sym = &dir->sym;
     }
-    dir = dir_insert( name, TAB_COMM );
     // what do we do with number ?
     number = number;
 
-    if( dir == NULL ) return( ERROR );
-    sym = &dir->sym;
     dir->e.comminfo->idx = ++extdefidx;
     dir->e.comminfo->size = number;
     dir->e.comminfo->distance = distance;

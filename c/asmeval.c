@@ -206,7 +206,12 @@ static int get_operand( expr_list *new, int i )
                 break;
             }
         }
+        new->empty = FALSE;
+        new->type = EXPR_ADDR;
+        new->label = i;
+        break;
     case T_RES_ID:
+        new->sym = AsmLookup( AsmBuffer[i]->string_ptr );
         new->empty = FALSE;
         new->type = EXPR_ADDR;
         new->label = i;

@@ -61,7 +61,6 @@ extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
 extern void             wipe_space( char *token );
 extern int              AsmScan( char * );
-extern dir_node         *dir_insert( char *name, int tab );
 extern void             GetInsString( enum asm_token , char *, int );
 extern int              MakeLabel( char *symbol_name, memtype mem_type );
 
@@ -342,8 +341,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         new[0].string_ptr = NULL;
 
         if( dir->e.constinfo->data != NULL ) {
-            FreeInfo( dir );
-            dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
+            dir_change( dir, TAB_CONST );
             dir->e.constinfo->redefine = redefine;
             dir->e.constinfo->expand_early = expand_early;
         }
@@ -394,8 +392,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         }
     }
     if( dir->e.constinfo->data != NULL ) {
-        FreeInfo( dir );
-        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
+        dir_change( dir, TAB_CONST );
         dir->e.constinfo->redefine = redefine;
         dir->e.constinfo->expand_early = expand_early;
     }
