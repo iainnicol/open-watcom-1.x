@@ -38,7 +38,7 @@
 #include "variety.h"
 #define __INT64__
 #include "int64.h"
-#ifdef __UNIX__
+#ifdef __QNX__
     #include <unistd.h>
 #else
     #include <io.h>

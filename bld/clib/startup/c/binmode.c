@@ -29,16 +29,18 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <fcntl.h>
 #include <stdlib.h>
 #include "rtdata.h"
 #include "rtinit.h"
 
+
 static void do_it( void )
 {
     _RWD_fmode = O_BINARY;
 }
 
-AXI( do_it, INIT_PRIORITY_LIBRARY )
 
+AXI( do_it, INIT_PRIORITY_LIBRARY )
