@@ -64,9 +64,6 @@ extern  void            GExecute(void);
 extern  void            GEndBlock(void);
 extern  void            ClearRem(void);
 extern  void            FreeLabel(label_id);
-#if _OPT_CG == _OFF
-extern  void            GDbugInfo(void);
-#endif
 
 #define RB_FLAGS (SY_USAGE | SY_SUBPROGRAM | SY_REMOTE_BLOCK)
 
@@ -83,9 +80,7 @@ static  bool    BlockName( unsigned_16 rb_defined ) {
     if( ReqName( NAME_REM_BLOCK ) ) {
         sym_ptr = LkSym();
         if( ( sym_ptr->ns.flags & ~SY_REFERENCED ) == 0 ) {
-#if _OPT_CG == _ON
             sym_ptr->ns.si.rb.entry = NextLabel();
-#endif
             sym_ptr->ns.flags = RB_FLAGS;
         }
         flag_mask = (unsigned_16)~( SY_RB_DEFINED | SY_REFERENCED );
@@ -115,21 +110,16 @@ void    CpRemBlock() {
     GBranch( CSHead->branch );
     if( BlockName( SY_RB_DEFINED ) ) {
         rb = CITNode->sym_ptr;
-#if _OPT_CG == _ON
         if( ( rb->ns.flags & SY_REFERENCED ) == 0 ) {
             rb->ns.si.rb.ref_count = 0;
         }
         rb->ns.si.rb.ref_count++;
-#endif
         CSHead->cs_info.rb = rb;
         GStartBlock();
         BIStartRBorEP( rb );
     }
     AdvanceITPtr();
     ReqEOS();
-#if _OPT_CG == _OFF
-    GDbugInfo();
-#endif
     StNumbers.in_remote = TRUE;
     ClearRem();
 }
@@ -170,12 +160,10 @@ void    CpExecute() {
     }
     if( BlockName( 0 ) ) {
         rb = CITNode->sym_ptr;
-#if _OPT_CG == _ON
         if( ( rb->ns.flags & ( SY_RB_DEFINED | SY_REFERENCED ) ) == 0 ) {
             rb->ns.si.rb.ref_count = 0;
         }
         rb->ns.si.rb.ref_count++;
-#endif
         BIOutSymbol( rb );              // reference and or declare the sucker
         rb->ns.flags |= SY_REFERENCED;
         GExecute();

@@ -77,10 +77,6 @@ extern  void            GDoEnd(void);
 extern  void            FreeLabel(label_id);
 extern  void            RemKeyword(itnode *,int);
 extern  void            BIOutSymbol(sym_id);
-#if _OPT_CG == _OFF
-extern  void            GDbugInfo(void);
-extern  void            GISNCall(void);
-#endif
 
 
 static  void    InitLoop( int loop_type ) {
@@ -113,9 +109,6 @@ void    CpLoop() {
     CSExtn();
     InitLoop( CS_LOOP );
     BlockLabel();
-#if _OPT_CG == _OFF
-    GDbugInfo();
-#endif
 }
 
 
@@ -145,9 +138,6 @@ void    CpWhile() {
 
     CSExtn();
     InitLoop( CS_WHILE );
-#if _OPT_CG == _OFF
-    GISNCall();
-#endif
     CSCond( CSHead->bottom );
     if( RecNOpn() && RecNextOpr( OPR_COL ) ) {
         BlockLabel();
@@ -299,15 +289,11 @@ void    InitDo( signed_32 term ) {
     do_entry    *do_pointer;
     sym_id      do_var;
 
-#if _OPT_CG == _ON
     if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
-#endif
         CSHead->branch = NextLabel();
         CSHead->bottom = NextLabel();
         CSHead->cycle = NextLabel();
-#if _OPT_CG == _ON
     }
-#endif
     do_pointer = FMemAlloc( sizeof( do_entry ) );
     CSHead->cs_info.do_parms = do_pointer;
     do_pointer->do_term = term;
@@ -332,9 +318,6 @@ void    InitDo( signed_32 term ) {
         }
         CITNode->sym_ptr = do_var;
         GDoInit( do_var->ns.typ );
-#if _OPT_CG == _OFF
-        GLabel( CSHead->branch );
-#endif
         do_var->ns.flags |= SY_DO_PARM;
     }
 }
@@ -369,26 +352,18 @@ void    TermDo() {
                 STUnShadow( do_var );
             }
             do_var->ns.flags &= ~SY_DO_PARM;
-#if _OPT_CG == _ON
             if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
-#endif
                 GLabel( CSHead->bottom );
-#if _OPT_CG == _ON
             }
-#endif
         }
     } else {
         Match();
     }
-#if _OPT_CG == _ON
     if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
-#endif
         FreeLabel( CSHead->branch );
         FreeLabel( CSHead->bottom );
         FreeLabel( CSHead->cycle );
-#if _OPT_CG == _ON
     }
-#endif
     DelCSNode();
 }
 
