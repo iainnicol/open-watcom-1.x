@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  OS/2 DosDebug related definitions
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -82,12 +83,6 @@ typedef struct  {
 /* 94 */unsigned short  segv;
 } dos_debug;
 
-/* Don't define these if they were already defined in os2.h.  */
-/* Unfortunately many of these #defines are not present in    */
-/* versions of OS/2 headers shipped with Watcom, otherwise    */
-/* it'd be best to take these out completely and use os2.h.   */
-#ifndef DBG_C_Null
-
 #define DBG_C_Null              0       /* Null */
 #define DBG_C_ReadMem           1       /* Read Word */
 #define DBG_C_ReadMem_I         1       /* Read Word */
@@ -125,10 +120,7 @@ typedef struct  {
 
 #define DBG_C_GetLibName        100     /* get library name */
 
-#endif
-
 #ifndef DBG_N_Success
-
 #define DBG_N_Success           0       /* Successful command completion */
 #define DBG_N_Error             -1      /* Error detected during command */
 #define DBG_N_ProcTerm          -6      /* Process termination - DosExitList done */
@@ -143,16 +135,11 @@ typedef struct  {
 #define DBG_N_ThreadCreate      -15     /* Thread creation */
 #define DBG_N_ModuleFree        -16     /* Module freed */
 #define DBG_N_RangeStep         -17     /* Range Step detected */
-
 #endif
-
-#ifndef DBG_N_Breakpoint
 
 #define DBG_N_Breakpoint        -100
 #define DBG_N_SStep             -101
 #define DBG_N_Signal            -102
-
-#endif
 
 #define XCPT_DIV        1
 #define XCPT_OVERFLOW   2
@@ -166,24 +153,11 @@ typedef struct  {
 
 #define DBG_L_386       1
 
-#define DBG_W_Global    1
-#define DBG_W_Local     2
+#define DBG_W_Global    0x00000001
+#define DBG_W_Local     0x00000002
 #define DBG_W_Execute   0x00010000
 #define DBG_W_Write     0x00020000
 #define DBG_W_ReadWrite 0x00030000
 
 #define DBG_CO_387      1
 #define DBG_CO_SIZE     108
-
-#ifndef DBG_X_PRE_FIRST_CHANCE
-
-#define DBG_X_PRE_FIRST_CHANCE  0
-#define DBG_X_FIRST_CHANCE      1
-#define DBG_X_LAST_CHANCE       2
-#define DBG_X_STACK_INVALID     3
-
-#endif
-
-extern ULONG CallDosDebug( dos_debug *buff );
-extern ULONG MakeFlatPointer( PVOID ptr );
-int IsFlatSeg( USHORT seg );
