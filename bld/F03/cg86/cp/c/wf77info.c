@@ -1211,7 +1211,7 @@ static char *GetName( sym_id sym ) {
 }
 
 
-char *FEExtName( sym_id sym, char **pat_ret ) {
+char *FEExtName( sym_id sym ) {
 //=============================================
 
 // Return symbol name for object file.
@@ -1220,7 +1220,6 @@ char *FEExtName( sym_id sym, char **pat_ret ) {
     char *      buff;
 
     _UnShadow( sym );
-    *pat_ret = "*";
     buff = StackBuffer( &len );
     BldObjSym( sym, buff, len );
     return( buff );
