@@ -117,6 +117,26 @@ extern  character_set   CharSetInfo;
 #endif
 
 
+//
+// I/O variables for listings 
+// moved from ciovars.h
+//
+static char           *ListBuff;      // listing file buffer
+static file_handle    ListFile;       // file pointer for the listing file
+static int            ListCursor;     // offset into "ListBuff"
+
+static byte           ListCount;      // # of lines printed to listing file
+static byte           ListFlag;       // flag for listing file
+
+static char           *ErrBuff;       // error file buffer
+static file_handle    ErrFile;        // file pointer for the error file
+static int            ErrCursor;      // offset into "ErrBuff"
+
+static char           *TermBuff;      // terminal file buffer
+static file_handle    TermFile;       // file pointer for terminal
+static int            TermCursor;     // offset into "TermBuff"
+//
+//
 //========================================================================
 //
 //  Initialization routines
@@ -814,6 +834,17 @@ void    LFSkip() {
 }
 
 
+/**************************************************
+*  check if error listing file is opened
+***************************************************/
+bool isErrFileOpen(void){
+   
+   // test error file filehandle 
+   return NULL != ErrFile;
+}
+
+
+
 static  void    PutLst( char *string ) {
 //======================================
 
@@ -922,3 +953,5 @@ static  void    SendBuff( char *str, char *buff, int buff_size, int *cursor,
         *cursor = 0;
     }
 }
+
+
