@@ -331,7 +331,7 @@ _WCRTLINK int _grow_handles( int num )
         {
             #error NO HANDLE MANAGER UNDER NETWARE
         }
-        #elif defined(__UNIX__)
+        #elif defined(__QNX__)
         {
             // nothing to do
         }
