@@ -112,7 +112,7 @@ asm=wasm
 	@%write $(cmd_file) @$(asm) %1.asm -q >null
 	@%write $(cmd_file) @if not exist %1.err goto next1
 	@%write $(cmd_file) @if not exist %1.chk goto next2
-        @%write $(cmd_file) @diff -b %1.err %1.chk
+        @%write $(cmd_file) @bdiff -b %1.err %1.chk
 	@%write $(cmd_file) goto next1
 	@%write $(cmd_file) :next2
 	@%write $(cmd_file) type %1.err
@@ -126,7 +126,7 @@ debug : .SYMBOLIC
 	@%write $(cmd_file) @$(asm) %1.asm -q -d6 >null
 	@%write $(cmd_file) @if not exist %1.err goto next1
 	@%write $(cmd_file) @if not exist %1.chk goto next2
-        @%write $(cmd_file) @diff -b %1.err %1.chk
+        @%write $(cmd_file) @bdiff -b %1.err %1.chk
 	@%write $(cmd_file) goto next1
 	@%write $(cmd_file) :next2
 	@%write $(cmd_file) type %1.err

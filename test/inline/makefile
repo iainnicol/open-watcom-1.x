@@ -125,7 +125,7 @@ test_files : .SYMBOLIC
 	@%write $(cmd_file) wdis -a -l %1
 	@%write $(cmd_file) vi -d -q -k ":so fixlst.vi\nZZ" %1.lst
 	@%write $(cmd_file) ..\reverse %1.lst
-	@%write $(cmd_file) diff -b %1.lst %1.asm
+	@%write $(cmd_file) bdiff -b %1.lst %1.asm
 	@%write $(cmd_file) set cmplr=
 	@for %x in ($(objs1)) do @call $(cmd_file) %x $(ccomp)
 	@%create $(cmd_file)
@@ -138,7 +138,7 @@ test_files : .SYMBOLIC
 	@%write $(cmd_file) wdis -a -l %1
 	@%write $(cmd_file) vi -d -q -k ":so fixlst.vi\nZZ" %1.lst
 	@%write $(cmd_file) ..\reverse %1.lst
-	@%write $(cmd_file) diff -b %1.lst %1.bug
+	@%write $(cmd_file) bdiff -b %1.lst %1.bug
 	@%write $(cmd_file) set cmplr=
 	@for %x in ($(objs2)) do @call $(cmd_file) %x $(ccomp)
 
