@@ -1862,8 +1862,10 @@ int AsmParse( void )
                 break;
             }
             i++;
-            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR )
+            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR ) {
+                AsmError( OPERAND_EXPECTED );
                 return( ERROR );
+            }
             if( opndx.empty )
                 break;
             switch( opndx.type ) {
@@ -1901,8 +1903,10 @@ int AsmParse( void )
                 Modend = TRUE;
                 temp = i;
                 temp++;
-                if( EvalOperand( &temp, Token_Count, &opndx, TRUE ) == ERROR )
+                if( EvalOperand( &temp, Token_Count, &opndx, TRUE ) == ERROR ) {
+                    AsmError( OPERAND_EXPECTED );
                     return( ERROR );
+                }
                 if( !opndx.empty && ( opndx.type == EXPR_ADDR ) ) {
                     process_address( &opndx );
                 }
@@ -2015,8 +2019,10 @@ int AsmParse( void )
             Frame = EMPTY;
             SegOverride = NULL;
 #endif
-            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR )
+            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR ) {
+                AsmError( OPERAND_EXPECTED );
                 return( ERROR );
+            }
             if( opndx.empty )
                 break;
             switch( opndx.type ) {

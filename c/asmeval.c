@@ -971,11 +971,11 @@ static int calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
             if( sym == NULL )
                 return( ERROR );
 
+#ifdef _WASM_
             if( AsmBuffer[token_1->label]->token == T_RES_ID ) {
                 /* Kludge for "FLAT" */
                 AsmBuffer[token_1->label]->token = T_ID;
             }
-#ifdef _WASM_
             if( sym->state == SYM_GRP || sym->state == SYM_SEG ) {
                 token_2->override = token_1->label;
                 token_2->indirect |= token_1->indirect;
