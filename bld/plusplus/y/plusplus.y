@@ -271,6 +271,7 @@ Modified        By              Reason
 %token Y_REDUCE_SPECIAL
 %token Y_SHIFT_SPECIAL
 %token Y_DEFARG_GONE_SPECIAL
+%token Y_PURE_FUNCTION_SPECIAL
 
 /*** special function names ***/
 %token Y___OFFSETOF
@@ -383,6 +384,7 @@ Modified        By              Reason
 %type <dinfo> template-arg-declaration-list
 %type <dinfo> actual-exception-declaration
 %type <dinfo> exception-declaration
+%type <dinfo> member-declaring-declarator
 %type <dinfo> member-declarator
 %type <dinfo> actual-new-declarator
 %type <dinfo> partial-ptr-declarator
@@ -2636,16 +2638,43 @@ member-declarator-list
     }
     ;
 
-member-declarator
-    : declarator Y_EQUAL Y_CONSTANT
+member-declaring-declarator
+    : declarator
     {
-        VerifyPureFunction( $1, $3 );
+        if( t == Y_EQUAL ) {
+            if( VerifyPureFunction( $1 ) ) {
+                t = Y_PURE_FUNCTION_SPECIAL;
+            }
+        }
+
         $$ = InsertDeclInfo( GetCurrScope(), $1 );
+        if( t == Y_EQUAL ) {
+            if( ! SymIsStaticMember( $$->sym ) || ! SymIsConstant( $$->sym ) ) {
+                CErr1( ERR_MUST_BE_CONST_STATIC_INTEGRAL );
+            }
+
+            GStackPush( &(state->gstack), GS_DECL_INFO );
+            state->gstack->u.dinfo = $$;
+        }
     }
-    | declarator
+    ;
+
+member-declarator
+    : member-declaring-declarator initializer
+    { $$ = $1; }
+    | member-declaring-declarator Y_PURE_FUNCTION_SPECIAL Y_CONSTANT
     {
         $$ = InsertDeclInfo( GetCurrScope(), $1 );
-	DeclNoInit( $$ );
+        if( $3->op != PT_INT_CONSTANT || $3->u.int_constant != 0 ) {
+            CErr1( ERR_MUST_BE_ZERO );
+        }
+        PTreeFree( $3 );
+        $$ = $1;
+    }
+    | member-declaring-declarator
+    {
+        $$ = $1;
+        DeclNoInit( $$ );
     }
     |         Y_COLON constant-expression
     {

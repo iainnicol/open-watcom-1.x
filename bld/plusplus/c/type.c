@@ -6819,18 +6819,7 @@ TYPE MakeVBTableFieldType( boolean add_in_consts )
     return( vbtable );
 }
 
-static boolean aZeroConstant( PTREE init )
-{
-    if( init->op != PT_INT_CONSTANT ) {
-        return( FALSE );
-    }
-    if( init->u.int_constant != 0 ) {
-        return( FALSE );
-    }
-    return( TRUE );
-}
-
-void VerifyPureFunction( DECL_INFO *dinfo, PTREE init )
+boolean VerifyPureFunction( DECL_INFO *dinfo )
 /*****************************************************/
 {
     SYMBOL sym;
@@ -6840,15 +6829,11 @@ void VerifyPureFunction( DECL_INFO *dinfo, PTREE init )
     sym = dinfo->sym;
     type = sym->sym_type;
     fn_type = FunctionDeclarationType( type );
-    if( fn_type == NULL ) {
-        CErr1( ERR_PURE_FUNCTIONS_ONLY );
-    } else {
+    if( fn_type != NULL ) {
         sym->sym_type = MakePureFunction( type );
-        if( ! aZeroConstant( init ) ) {
-            CErr1( ERR_MUST_BE_ZERO );
-        }
+        return( TRUE );
     }
-    PTreeFree( init );
+    return( FALSE );
 }
 
 void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )

@@ -1542,7 +1542,7 @@ extern PTREE MakeNewExpr( PTREE, PTREE, DECL_INFO *, PTREE );
 extern void CheckNewModifier( type_flag );
 extern TYPE MakeVFTableFieldType( boolean );
 extern TYPE MakeVBTableFieldType( boolean );
-extern void VerifyPureFunction( DECL_INFO *, PTREE );
+extern boolean VerifyPureFunction( DECL_INFO * );
 extern void VerifyMemberFunction( DECL_SPEC *, DECL_INFO * );
 extern void TypedefReset( SYMBOL, TYPE );
 extern void *TypeHasPragma( TYPE );
