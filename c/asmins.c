@@ -65,7 +65,7 @@
 #include "myassert.h"
 #include "fixup.h"
 #include "queue.h"
-#include "expand.h"
+#include "asmexpnd.h"
 
 #endif
 
@@ -1160,7 +1160,7 @@ static int idata( long value )
             break;
         }
         // fall through
-    case T_FAR:
+        case T_FAR:
         if( value > SHRT_MAX  ||  value < SHRT_MIN ) {
             op_type = OP_I32;
         } else if( value > SCHAR_MAX  ||  value < SCHAR_MIN ) {
@@ -1169,14 +1169,14 @@ static int idata( long value )
             op_type = OP_I8;
         }
         break;
-    case T_NEAR:
+        case T_NEAR:
         if( !Code->use32 ) {
             op_type = OP_I16;
         } else {
             op_type = OP_I32;
         }
         break;
-    case T_SHORT:
+        case T_SHORT:
         if( value > SCHAR_MAX  ||  value < SCHAR_MIN ) {
             // expect 8-bit but got 16 bit
             AsmError( JUMP_OUT_OF_RANGE );
@@ -1300,9 +1300,9 @@ static int idata_float( long value )
             }
         }
         break;
-    case T_FAR:
-    case T_NEAR:
-    case T_SHORT:
+        case T_FAR:
+        case T_NEAR:
+        case T_SHORT:
         AsmError( SYNTAX_ERROR );
         return( ERROR );
 #ifdef _WASM_

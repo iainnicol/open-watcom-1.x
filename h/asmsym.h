@@ -43,6 +43,7 @@ typedef enum {
         MT_QWORD  = T_QWORD,
         MT_FWORD  = T_FWORD,
         MT_TBYTE  = T_TBYTE,
+//        MT_OWORD  = T_OWORD,
 
         MT_SHORT  = T_SHORT,
         MT_NEAR   = T_NEAR,

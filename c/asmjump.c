@@ -478,20 +478,20 @@ int jmp( int i )                // Bug: can't handle indirect jump
                     Code->info.opnd_type[Opnd_Count] = OP_I16;
                 }
                 break;
-            case T_DWORD:
-            case T_WORD:
+                case T_DWORD:
+                case T_WORD:
 #ifdef _WASM_
-            case T_SDWORD:
-            case T_SWORD:
+                case T_SDWORD:
+                case T_SWORD:
 #endif
                 return( INDIRECT_JUMP );
 #ifdef _WASM_
-            case T_SBYTE:
+                case T_SBYTE:
 #endif
-            case T_BYTE:
-            case T_FWORD:
-            case T_QWORD:
-            case T_TBYTE:
+                case T_BYTE:
+                case T_FWORD:
+                case T_QWORD:
+                case T_TBYTE:
                 AsmError( INVALID_SIZE );
                 return( ERROR );
             case T_FAR:
