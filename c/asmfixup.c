@@ -126,7 +126,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
         FixupHead = fixup;
         fixup->offset = 0;
 #endif
-        fixup->fix_type = fixup_type;
+        fixup->fixup_type = fixup_type;
         InsFixups[Opnd_Count] = fixup;
     }
     return( fixup );
@@ -174,7 +174,7 @@ int BackPatch( struct asm_sym *sym )
         }
 #endif
         size = 0;
-        switch( patch->fix_type ) {
+        switch( patch->fixup_type ) {
         case FIX_RELOFF8:
             size = 1;
             /* fall through */
@@ -183,7 +183,7 @@ int BackPatch( struct asm_sym *sym )
             /* fall through */
         case FIX_RELOFF32:
             if( size == 0 ) size = 4;
-            patch_addr = patch->fix_loc;
+            patch_addr = patch->fixup_loc;
             // calculate the displacement
             disp = patch->offset + Address - patch_addr - size;
             max_disp = (1UL << ((size * 8)-1)) - 1;
@@ -262,11 +262,11 @@ void mark_fixupp( enum operand_type determinant, int index )
     
     fixup = InsFixups[index];
     if( fixup != NULL ) {
-        fixup->fix_loc = Address;
+        fixup->fixup_loc = Address;
 #ifdef _WASM_
         // fixup->offset = Code->data[index];
         // Code->data[index] = 0; // fixme
-        if( fixup->fix_type != FIX_SEG ) {
+        if( fixup->fixup_type != FIX_SEG ) {
             Code->data[index] += fixup->offset;
         }
         /*
@@ -282,23 +282,23 @@ void mark_fixupp( enum operand_type determinant, int index )
         switch( determinant ) {
         case OP_I16:
         case OP_J32:
-            switch( fixup->fix_type ) {
+            switch( fixup->fixup_type ) {
             case FIX_OFF32:
-                fixup->fix_type = FIX_OFF16;
+                fixup->fixup_type = FIX_OFF16;
                 break;
             case FIX_PTR32:
-                fixup->fix_type = FIX_PTR16;
+                fixup->fixup_type = FIX_PTR16;
                 break;
             }
             break;
             case OP_I32:
             case OP_J48:
-                switch( fixup->fix_type ) {
+                switch( fixup->fixup_type ) {
                 case FIX_OFF16:
-                    fixup->fix_type = FIX_OFF32;
+                    fixup->fixup_type = FIX_OFF32;
                     break;
                 case FIX_PTR16:
-                    fixup->fix_type = FIX_PTR32;
+                    fixup->fixup_type = FIX_PTR32;
                     break;
                 }
                 break;
@@ -335,7 +335,7 @@ struct fixup *CreateFixupRec( int index )
     }
     
     if( !Modend ) {
-        switch( fixup->fix_type ) {
+        switch( fixup->fixup_type ) {
         case FIX_RELOFF8:
             fixnode->self_relative = TRUE;
             fixnode->loc_method = FIX_LO_BYTE;
