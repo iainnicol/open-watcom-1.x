@@ -99,7 +99,7 @@ extern dir_node         *CurrProc;
 extern symbol_queue     Tables[];       // tables of definitions
 
 uint_8                  CheckSeg;       // if checking of opened segment is needed
-int_8                   Label_Idx;      // used in check_assume()
+int_8                   Label_Idx;      // used in seg_override()
 int_8                   AssumeError;    // Error about assumed register
 int_8                   Frame;          // Frame of current fixup
 uint_8                  Frame_Datum;    // Frame datum of current fixup
@@ -123,6 +123,7 @@ void make_inst_hash_table( void );
 static struct asm_tok   tokens[MAX_TOKEN];
 struct asm_tok  *AsmBuffer[MAX_TOKEN];  // buffer to store token
 
+#if 0
 #ifdef _WASM_
 static void find_frame( struct asm_sym *sym )
 /*******************************************/
@@ -149,6 +150,7 @@ static void find_frame( struct asm_sym *sym )
         break;
     }
 }
+#endif
 #endif
 
 static int comp_mem( int reg1, int reg2 )
@@ -180,10 +182,10 @@ static void seg_override( int seg_reg )
 - determine if segment override is necessary with the current address mode;
 */
 {
-    int                 default_seg;
+    enum prefix_reg     default_seg;
 #ifdef _WASM_
     struct asm_sym      *sym;
-    int                 assume_seg;
+    enum assume_reg     assume_seg;
 
     switch( seg_reg ) {
         case T_SS:
@@ -195,40 +197,38 @@ static void seg_override( int seg_reg )
         default:
             default_seg = PREFIX_DS;
     }
-    if( Code->prefix.seg == EMPTY ) {
-        if( Label_Idx != -1 ) {
-            check_assume( default_seg );
-        }
-    } else {
-        if( Label_Idx != -1 ) {
-            sym = AsmLookup( AsmBuffer[Label_Idx]->string_ptr );
-            /**/myassert( sym != NULL );
+    if( Label_Idx != -1 ) {
+        sym = AsmLookup( AsmBuffer[Label_Idx]->string_ptr );
+        /**/myassert( sym != NULL );
+        if( Code->prefix.seg == EMPTY ) {
+            check_assume( sym, default_seg );
+        } else {
             switch( Code->prefix.seg ) {
-                case PREFIX_ES:
-                    assume_seg = ASSUME_ES;
-                    break;
-                case PREFIX_CS:
-                    assume_seg = ASSUME_CS;
-                    break;
-                case PREFIX_SS:
-                    assume_seg = ASSUME_SS;
-                    break;
-                case PREFIX_DS:
-                    assume_seg = ASSUME_DS;
-                    break;
-                case PREFIX_FS:
-                    assume_seg = ASSUME_FS;
-                    break;
-                case PREFIX_GS:
-                    assume_seg = ASSUME_GS;
-                    break;
+            case PREFIX_ES:
+                assume_seg = ASSUME_ES;
+                break;
+            case PREFIX_CS:
+                assume_seg = ASSUME_CS;
+                break;
+            case PREFIX_SS:
+                assume_seg = ASSUME_SS;
+                break;
+            case PREFIX_DS:
+                assume_seg = ASSUME_DS;
+                break;
+            case PREFIX_FS:
+                assume_seg = ASSUME_FS;
+                break;
+            case PREFIX_GS:
+                assume_seg = ASSUME_GS;
+                break;
             }
             if( GetPrefixAssume( sym, assume_seg ) == ASSUME_NOTHING ) {
                 AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
             }
         }
     }
-
+    
     if( Code->prefix.seg == default_seg ) {
         Code->prefix.seg = EMPTY;
     }
@@ -253,16 +253,13 @@ static void seg_override( int seg_reg )
 
 #ifdef _WASM_
 
-static void check_assume( int default_reg )
+static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
 /* Check if an assumed register is found, and prefix a register if necessary */
 {
-    struct asm_sym      *sym;
-    uint                reg;
-    uint                def_reg;
+    enum assume_reg     reg;
+    enum assume_reg     def_reg;
 
-    sym = AsmLookup( AsmBuffer[Label_Idx]->string_ptr );
     /**/myassert( sym != NULL );
-
     if( sym->state == SYM_UNDEFINED ) return;
 
     switch( default_reg ) {
@@ -321,32 +318,28 @@ int check_override( int *i )
 
     if( ( index+2 ) < Token_Count ) {
         if( AsmBuffer[index+1]->token == T_COLON ) {
-        switch( AsmBuffer[index]->token ) {
-                case T_REG:
-                    Code->prefix.seg =
-                       AsmOpTable[AsmOpcode[AsmBuffer[index]->value].position].opcode;
-                    (*i) += 2;
-                    if( *i >= Token_Count ) {
-                        AsmError( LABEL_EXPECTED_AFTER_COLON );
-                        return ERROR;
-                    }
-                    break;
-                case T_ID:      // Segment or Group override
-                    AssumeError = FALSE;
-                    Label_Idx = index;
-                    check_assume( EMPTY );
-                    if( AssumeError ) {
-                        return ERROR;
-                    }
-                    (*i) += 2;
-                    if( *i >= Token_Count ) {
-                        AsmError( LABEL_EXPECTED_AFTER_COLON );
-                        return ERROR;
-                    }
-                    return FixOverride(*i);
-                    break;
-                default:
-                    break;
+            switch( AsmBuffer[index]->token ) {
+            case T_REG:
+                Code->prefix.seg =
+                    AsmOpTable[AsmOpcode[AsmBuffer[index]->value].position].opcode;
+                (*i) += 2;
+                if( *i >= Token_Count ) {
+                    AsmError( LABEL_EXPECTED_AFTER_COLON );
+                    return ERROR;
+                }
+                break;
+            case T_ID:      // Segment or Group override
+                if( FixOverride(*i) != NOT_ERROR ) {
+                    return ERROR;
+                }
+                (*i) += 2;
+                if( *i >= Token_Count ) {
+                    AsmError( LABEL_EXPECTED_AFTER_COLON );
+                    return ERROR;
+                }
+                break;
+            default:
+                break;
             }
         }
     }
@@ -369,9 +362,9 @@ static int mem( int i )
     char                base_lock = FALSE;
     char                *string_ptr;
     char                id_flag = 0;
+    int                 fix_type;
 #ifdef _WASM_
     char                field_flag = 0;
-    int                 fix_type;
 
     Label_Idx = -1;
     AssumeError = FALSE;
@@ -663,13 +656,14 @@ static int mem( int i )
 #endif
                 }
 #ifdef _WASM_
-                Label_Idx = i;  // used in check_assume()
+                Label_Idx = i;  // used in seg_override()
 #endif
                 break;
             }
-#ifdef _WASM_
+
             fix_type = FIX_OFF16; /* might be changed to OFF32 later */
 
+#ifdef _WASM_
             switch( sym->state ) {
             case SYM_GRP:
             case SYM_SEG:
@@ -680,11 +674,9 @@ static int mem( int i )
                 break;
             }
 
-            find_frame( sym );
-            fixup = AddFixup( sym, fix_type );
-#else
-            fixup = AddFixup( sym, FIX_OFF16 );
+//            find_frame( sym );
 #endif
+            fixup = AddFixup( sym, fix_type );
 //          if( fixup == NULL )  return( ERROR );
             break;
         default:
@@ -1278,7 +1270,7 @@ static int idata_float( long value )
     return( NOT_ERROR );
 }
 
-static unsigned char get_sr_rm_byte( unsigned char seg_prefix )
+static unsigned char get_sr_rm_byte( enum prefix_reg seg_prefix )
 /*************************************************************/
 {
     switch( seg_prefix ) {
@@ -1762,7 +1754,7 @@ int AsmParse( void )
                             temp = FIX_SEG;
                         }
 #ifdef _WASM_
-                        find_frame( sym );
+//                        find_frame( sym );
                         if( sym->state != SYM_STRUCT_FIELD ) {
 #endif
                             fixup = AddFixup( sym, temp );

@@ -2150,7 +2150,7 @@ int Model( int i )
 void AssumeInit( void )
 /*********************/
 {
-    int reg;
+    enum assume_reg reg;
 
     for( reg = ASSUME_DS; reg < ASSUME_LAST; reg++ ) {
         AssumeTable[reg].symbol = NULL;
@@ -2325,68 +2325,53 @@ int FixOverride( int index )
 /**************************/
 /* Fix segment or group override */
 {
-    struct asm_sym      *sym1;
-    struct asm_sym      *sym2;
+    struct asm_sym      *sym;
     dir_node            *tmp;
 
-    sym1 = AsmLookup( AsmBuffer[index-2]->string_ptr );
-    /**/myassert( sym1 != NULL );
+    sym = AsmLookup( AsmBuffer[index]->string_ptr );
+    /**/myassert( sym != NULL );
 
-    tmp = GetSeg( sym1 );
+    tmp = GetSeg( sym );
     if( tmp != NULL ) {
-        sym2 = AsmLookup( AsmBuffer[index]->string_ptr );
-        /**/myassert( sym2 != NULL );
         Frame = FRAME_SEG;
-        Frame_Datum = sym1->segidx;
+        Frame_Datum = sym->segidx;
         return( NOT_ERROR );
     }
 
-    tmp = get_grp( sym1 );
+    tmp = get_grp( sym );
     if( tmp != NULL ) {
-        sym2 = AsmLookup( AsmBuffer[index]->string_ptr );
-        /**/myassert( sym2 != NULL );
         Frame = FRAME_GRP;
-        Frame_Datum = sym1->grpidx;
+        Frame_Datum = sym->grpidx;
         return( NOT_ERROR );
     }
     AsmError( SYNTAX_ERROR );
     return( ERROR );
 }
 
-static int search_assume( dir_node *grp_or_seg, int def )
-/*********************************************************/
+static enum assume_reg search_assume( dir_node *grp_or_seg, enum assume_reg def )
+/********************************************************************************/
 {
-    int         reg;
-    char        found = FALSE;
-
     if( grp_or_seg == NULL ) {
         return( ASSUME_NOTHING );
     }
 
     if( def != ASSUME_NOTHING ) {
         if( AssumeTable[def].symbol == (struct asm_sym *)grp_or_seg ) {
-            reg = def;
-            found = TRUE;
-        }
-    }
-    if( !found ) {
-        for( reg = ASSUME_DS; reg <= ASSUME_CS; reg++ ) {
-            if( (struct asm_sym *)grp_or_seg == AssumeTable[reg].symbol ) {
-                found = TRUE;
-                break;
-            }
+            return( def );
         }
     }
 
-    if( !found ) {
-        return( ASSUME_NOTHING );
-    } else {
-        return( reg );
+    for( def = ASSUME_DS; def < ASSUME_LAST; def++ ) {
+        if( AssumeTable[def].symbol == (struct asm_sym *)grp_or_seg ) {
+            return( def );
+        }
     }
+
+    return( ASSUME_NOTHING );
 }
 
-int GetPrefixAssume( struct asm_sym* sym, int prefix )
-/******************************************************/
+enum assume_reg GetPrefixAssume( struct asm_sym* sym, enum assume_reg prefix )
+/*****************************************************************************/
 {
     int         type;
     dir_node    *dir;
@@ -2451,43 +2436,34 @@ int GetPrefixAssume( struct asm_sym* sym, int prefix )
     }
 }
 
-int GetAssume( struct asm_sym* sym, int def )
-/**********************************************/
+enum assume_reg GetAssume( struct asm_sym* sym, enum assume_reg def )
+/*********************************************************************/
 {
-    int        reg;
+    enum assume_reg reg;
 
-    if( AssumeTable[def].flat ) {
+    if( ( def != ASSUME_NOTHING ) && ( AssumeTable[def].flat ) ) {
         Frame = FRAME_GRP;
         Frame_Datum = MAGIC_FLAT_GROUP;
         return( def );
     }
 
     reg = search_assume( get_grp( sym ), def );
-
     if( reg != ASSUME_NOTHING ) {
-
         Frame = FRAME_GRP;
         Frame_Datum = sym->grpidx;
-
-    } else if( reg == ASSUME_NOTHING ) {
-
-        reg = search_assume( GetSeg( sym ), def );
-        if( reg != ASSUME_NOTHING ) {
-            if( Frame == EMPTY ) {
-                Frame = FRAME_SEG;
-                Frame_Datum = sym->segidx;
-            }
-        } else {
-            if( sym->state == SYM_EXTERNAL ) {
-                if( Frame == EMPTY ) {
-                    Frame = FRAME_EXT;
-                    Frame_Datum = GetDirIdx( sym->name, TAB_EXT );
-                }
-            }
-        }
-
+        return( reg );
     }
 
+    reg = search_assume( GetSeg( sym ), def );
+    if( reg != ASSUME_NOTHING ) {
+        Frame = FRAME_SEG;
+        Frame_Datum = sym->segidx;
+    } else {
+        if( sym->state == SYM_EXTERNAL ) {
+            Frame = FRAME_EXT;
+            Frame_Datum = GetDirIdx( sym->name, TAB_EXT );
+        }
+    }
     return( reg );
 }
 

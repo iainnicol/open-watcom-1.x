@@ -52,6 +52,16 @@
 
 #endif
 
+enum prefix_reg {
+    PREFIX_EMPTY = EMPTY,
+    PREFIX_ES = 0x26,
+    PREFIX_CS = 0x2E,
+    PREFIX_SS = 0x36,
+    PREFIX_DS = 0x3E,
+    PREFIX_FS = 0x64,
+    PREFIX_GS = 0x65
+};
+
 #ifdef _WASM_
     struct asm_ins {
         unsigned short      token;                  /* T_ADD, etc */
@@ -78,10 +88,10 @@
 
 struct asm_code {
     struct {
-        signed short ins;           // prefix before instruction, e.g. lock
-        signed char  seg;           // segment register override
-        unsigned     adrsiz:1;      // address size prefix
-        unsigned     opsiz:1;       // operand size prefix
+        signed short    ins;           // prefix before instruction, e.g. lock
+        enum prefix_reg seg;           // segment register override
+        unsigned        adrsiz:1;      // address size prefix
+        unsigned        opsiz:1;       // operand size prefix
     } prefix;
     memtype         mem_type;       // byte / word / etc. NOT near/far
     long            data[2];
@@ -99,13 +109,6 @@ struct asm_code {
 #define REPxx       0x02
 #define FWAIT       0x03
 #define NO_FWAIT    0x04
-
-#define PREFIX_ES   0x26
-#define PREFIX_CS   0x2E
-#define PREFIX_SS   0x36
-#define PREFIX_DS   0x3E
-#define PREFIX_FS   0x64
-#define PREFIX_GS   0x65
 
 #define F_0F        0x2
 #define F_16        0x1
