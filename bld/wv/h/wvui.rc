@@ -1,0 +1,2 @@
+#include "../../brinfo/merge/res/wresdefn.h"
+#include "wv.rc"
