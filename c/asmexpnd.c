@@ -102,7 +102,7 @@ int ExpandSymbol( int i, bool early_only )
     switch( sym->state ) {
     case SYM_CONST:
         dir = (dir_node *)sym;
-        if(( dir->e.constinfo->expand_early == FALSE ) 
+        if(( dir->e.constinfo->expand_early == FALSE )
             && ( early_only == TRUE )) return( NOT_ERROR );
         DebugMsg(( "Expand Constant: %s ->", sym->name ));
         /* insert the pre-scanned data for this constant */
