@@ -28,10 +28,16 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+/*
+*       Definition of character classes for the scanner.
+*       Definition of the scanner states during the scan
+****************************************************************************/
+#ifndef scan_h_
+#define scan_h_
 
 #include <limits.h>
 
+// the character classes known to the scanner
 typedef enum {
     C_AL,       // alphabetic characters and '$'
     C_EX,       // exponent ( 'E' or 'D' )
@@ -53,10 +59,14 @@ typedef enum {
     C_MAX = UCHAR_MAX   // force enum to be unsigned
 } char_class;
 
+// bit 8: Language extension character
+// bit 7: Lower case character. This is an extension to standard F77
+
 #define C_EXT   0x80    //  extension to standard defined character set.
 #define C_LOW   0x40    //  lower case character
 #define C_MASK  ~( C_EXT | C_LOW )
 
+// extended character classes
 #define XC_AL   (C_AL | C_EXT)
 #define XC_EX   (C_EX | C_EXT)
 #define XC_SG   (C_SG | C_EXT)
@@ -75,6 +85,7 @@ typedef enum {
 #define XC_CS   (C_CS | C_EXT)
 #define XC_DB   (C_DB | C_EXT)
 
+//lower case characters
 #define LC_AL   (XC_AL | C_LOW)
 #define LC_EX   (XC_EX | C_LOW)
 #define LC_HL   (XC_HL | C_LOW)
@@ -82,6 +93,8 @@ typedef enum {
 #define LC_HX   (XC_HX | C_LOW)
 #define LC_CS   (XC_CS | C_LOW)
 
+
+// state definitions for the scanner
 typedef enum {
 
 //  state           description                  example
@@ -117,3 +130,5 @@ typedef enum {
     SCM,        // end-of-line comment
     SDB         // scanned 1st byte of a double-byte character
 } token_state;
+
+#endif
