@@ -628,6 +628,53 @@ static void output( void )
                 case T_CL_SQ_BRACKET:
                     DebugMsg(( " %s ", "]" ));
                     break;
+                case T_COLON:
+                    DebugMsg(( " %s ", ":" ));
+                    break;
+                case T_RES_ID:
+                    switch( AsmBuffer[i]->value ) {
+                    case T_PTR:
+                        DebugMsg(( " %s ", "Ptr" ));
+                        break;
+                    case T_NEAR:
+                        DebugMsg(( " %s ", "Near" ));
+                        break;
+                    case T_FAR:
+                        DebugMsg(( " %s ", "Far" ));
+                        break;
+                    case T_PROC:
+                        DebugMsg(( " %s ", "Proc" ));
+                        break;
+                    case T_BYTE:
+                    case T_SBYTE:
+                        DebugMsg(( " %s ", "Byte" ));
+                        break;
+                    case T_WORD:
+                    case T_SWORD:
+                        DebugMsg(( " %s ", "Word" ));
+                        break;
+                    case T_DWORD:
+                    case T_SDWORD:
+                        DebugMsg(( " %s ", "DWord" ));
+                        break;
+                    case T_PWORD:
+                    case T_FWORD:
+                        DebugMsg(( " %s ", "FWord" ));
+                        break;
+                    case T_QWORD:
+                        DebugMsg(( " %s ", "QWord" ));
+                        break;
+                    case T_TBYTE:
+                        DebugMsg(( " %s ", "TByte" ));
+                        break;
+                    case T_ABS:
+                        DebugMsg(( " %s ", "Abs" ));
+                        break;
+                    default:
+                        DebugMsg((" %s ", AsmBuffer[i]->string_ptr ));
+                        break;
+                    }
+                    break;
                 default:
                     DebugMsg((" %s ", AsmBuffer[i]->string_ptr ));
                     break;
