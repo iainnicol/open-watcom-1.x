@@ -1,6 +1,5 @@
 
 objs = &
-3dnow &
 addrmode &
 allign &
 callimpl &
@@ -25,6 +24,8 @@ testequ &
 tst1
 
 dev_objs = &
+3dnow &
+mmx &
 irpexitm
 
 !include ../test.mif
