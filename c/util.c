@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WOMP utility routines
+* Description:  WOMP utility routines, these are used by WOMP
 *
 ****************************************************************************/
 
@@ -65,14 +65,30 @@ void PObjUnRegList( const pobj_list *list, size_t len )
     len = len;
 }
 
-void ObjWriteError( void )
+#ifndef NDEBUG
+int InternalError( const char *file, unsigned line )
+/**************************************************/
+// it is used by WOMP myassert function in debug version
 {
-//    printf( "OBJECT WRITE ERROR !!\n" );
+
+    char msgbuf[80];
+
+    MsgGet( MSG_INTERNAL_ERROR, msgbuf );
+    printf( msgbuf, file, line );
+    exit( EXIT_FAILURE );
+    return( 0 );
+}
+#endif
+
+void ObjWriteError( void )
+/************************/
+{
     MsgPrintf( OBJECT_WRITE_ERROR );
     exit( EXIT_FAILURE );
 };
 
 void write_record( obj_rec *objr, char kill )
+/*******************************************/
 {
     /**/myassert( objr != NULL );
     ObjRSeek( objr, 0 );
