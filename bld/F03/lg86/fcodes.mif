@@ -4,14 +4,14 @@
 # fcnames_inc is used by the disassembler
 # fctab_c is the .c file that translates the enumerated type into offset
 #
-fcodes_h = $(f77_dir)/lg86/h/fcodes.h
-fcodes_inc = $(f77_dir)/lg86/rt/asm/fcodes.inc
-fcnames_inc = $(f77_dir)/lg86/h/fcnames.inc
-fctab_c = $(f77_dir)/lg86/cp/c/fctab.c
+fcodes_h = $(F03_dir)/lg86/h/fcodes.h
+fcodes_inc = $(F03_dir)/lg86/rt/asm/fcodes.inc
+fcnames_inc = $(F03_dir)/lg86/h/fcnames.inc
+fctab_c = $(F03_dir)/lg86/cp/c/fctab.c
 
 fcode_headers = $(fcodes_h) $(fcodes_inc)
 
-#fcbuild = $(f77_dir)/lg86/utils/fcbuild.exe
+#fcbuild = $(F03_dir)/lg86/utils/fcbuild.exe
 
 #
 # The fcinfo.dat processing utility
@@ -24,14 +24,14 @@ fcode_headers = $(fcodes_h) $(fcodes_inc)
 #    *wlink sys dos debug all option quiet name $(fcbuild) file $[@
 #!endif
 
-#$(f77_dir)/lg86/utils/fcbuild.obj : fcbuild.c
-#    $(comp286) $[@-zq-oailt-s-w4-d1-i"$(c_dir)h"-fo=$(f77_dir)/lg86/utils/
+#$(F03_dir)/lg86/utils/fcbuild.obj : fcbuild.c
+#    $(comp286) $[@-zq-oailt-s-w4-d1-i"$(c_dir)h"-fo=$(F03_dir)/lg86/utils/
 
 
 #
 # Special files which fcbuild.exe creates
 #
-fcinfo = $(f77_dir)/lg86/fcinfo.dat
+fcinfo = $(F03_dir)/lg86/fcinfo.dat
 $(fcodes_h) : $(fcinfo) ./fcbuild.exe
     $]@ $[@ $^@ e
 

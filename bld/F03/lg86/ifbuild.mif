@@ -1,4 +1,4 @@
-ifbuild = $(f77_dir)/lg86/utils/ifbuild.exe
+ifbuild = $(F03_dir)/lg86/utils/ifbuild.exe
 
 fciftbl.asm : $(ifbuild)
 !ifdef __386__

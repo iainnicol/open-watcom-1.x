@@ -2,7 +2,7 @@
 #   MAKEGO.MIF: makefile for generating WATFOR77 Load and Go compiler
 #
 
-!include $(f77_dir)/lg86/comp.mif
+!include $(F03_dir)/lg86/comp.mif
 
 !ifndef incl_errmsgs
 resource_file = errmsg.res
@@ -11,7 +11,7 @@ resource_file = errmsg.res
 #
 # get the obj file macros and overlay configurations
 #
-!include $(f77_dir)/lg86/files.mif
+!include $(F03_dir)/lg86/files.mif
 
 #
 # these are the extra lnk files we require
@@ -20,8 +20,8 @@ resource_file = errmsg.res
 fcnovect_lnk =
 lnk_files =
 !else
-fcnovect_lnk = $(f77_dir)/lg86/fcnovect.lnk
-lnk_files = $(f77_dir)/lg86/novector.lnk $(fcnovect_lnk) fciftbl.lnk
+fcnovect_lnk = $(F03_dir)/lg86/fcnovect.lnk
+lnk_files = $(F03_dir)/lg86/novector.lnk $(fcnovect_lnk) fciftbl.lnk
 !endif
 
 #
@@ -36,12 +36,12 @@ $(exename) :
 #
 # get the fcodes information
 #
-!include $(f77_dir)/lg86/fcodes.mif
+!include $(F03_dir)/lg86/fcodes.mif
 
 #
 # get the ifbuild information
 #
-!include $(f77_dir)/lg86/ifbuild.mif
+!include $(F03_dir)/lg86/ifbuild.mif
 
 #
 # build the compiler
@@ -82,7 +82,7 @@ $(exename) :
 #
 fcmds=@%append $^@ file %i
 
-$(exe).lnk : $(f77_dir)/lg86/files.mif $(f77_dir)/lg86/rt/rt.mif $(f77_dir)/lg86/comp.mif
+$(exe).lnk : $(F03_dir)/lg86/files.mif $(F03_dir)/lg86/rt/rt.mif $(F03_dir)/lg86/comp.mif
     @echo Creating $^@
     @%create $^@
 !ifdef __LINUX__
@@ -159,7 +159,7 @@ res_dependencies += $(wl95_dir)/h/wlink.rc
 !endif
 
 errmsg.res : $(res_dependencies)
-   $(rc_aui) -I"$(f77_dir)/h" -fo=$^@ -dMSG_LANG_BASE=0 -dMSG_LANG_SPACING=0 ../c/errmsg.rc
+   $(rc_aui) -I"$(F03_dir)/h" -fo=$^@ -dMSG_LANG_BASE=0 -dMSG_LANG_SPACING=0 ../c/errmsg.rc
 
 !endif
 
