@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define STRICT
 #include "windows.h"
 
 #pragma aux InvalidIns = 0x0f 0xff;

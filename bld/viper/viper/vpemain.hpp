@@ -61,8 +61,6 @@ WCLASS WSystemHelp;
 typedef struct mPop MenuPop;
 typedef struct mData MenuData;
 
-#define MAXOLDPROJECTS 8
-
 WCLASS VpeMain : public WMdiWindow, public WView
 {
     Declare( VpeMain )

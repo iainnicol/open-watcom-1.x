@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <stdio.h>
 #include <malloc.h>
-#if defined(__UNIX__)
+#if defined(__QNX__)
 #include <unistd.h>
 #else
 #include <io.h>
