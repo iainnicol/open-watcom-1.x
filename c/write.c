@@ -1063,6 +1063,9 @@ void WriteObjModule( void )
     write_init();
 
     Parse_Pass = PASS_1;
+#ifdef DEBUG_OUT
+    printf( "*************\npass %u\n*************\n", Parse_Pass + 1 );
+#endif
     prev_total = OnePass( string );
     if( EndDirectiveFound ) {
         if( !Options.stop_at_end ) {
@@ -1096,6 +1099,9 @@ void WriteObjModule( void )
         Globals.data_in_code = FALSE;
         PrepAnonLabels();
 
+#ifdef DEBUG_OUT
+        printf( "*************\npass %u\n*************\n", Parse_Pass + 1 );
+#endif
         curr_total = OnePass( string );
         // remove all remaining lines and deallocate corresponding memory
         while( ScanLine( string, MAX_LINE_LEN ) != NULL ) {
