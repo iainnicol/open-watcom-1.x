@@ -354,6 +354,8 @@ static void Set_ZLD(void) { Options.emit_dependencies = FALSE; }
 
 static void Set_ZQ(void) { Options.quiet = TRUE; }
 
+static void Set_ZZ(void) { Options.use_stdcall_at_number = FALSE; }
+
 static void HelpUsage(void) { usage_msg();}
 
 #ifdef DEBUG_OUT
@@ -421,6 +423,7 @@ static struct option const cmdl_options[] = {
     { "w=#",    0,        SetWarningLevel },
     { "zld",    0,        Set_ZLD },
     { "zcm",    0,        Set_ZCM },
+    { "zz",     0,        Set_ZZ },
     { "zq",     0,        Set_ZQ },
     { 0,        0,        0 }
 };
@@ -453,7 +456,8 @@ global_options Options = {
     /* default_name_mangler */      NULL,
     /* allow_c_octals   */          FALSE,
     /* emit_dependencies */         TRUE,
-    /* Watcom C name mangler */     TRUE
+    /* Watcom C name mangler */     TRUE,
+    /* stdcall at number */         TRUE
 };
 
 static int OptionDelimiter( char c )
