@@ -1563,6 +1563,44 @@ static int proc_check( void )
 
 #endif
 
+static memtype ConvMemType( int x )
+{
+    switch( x ) {
+    case T_NEAR:
+        return( MT_NEAR );
+    case T_FAR:
+        return( MT_FAR );
+    case T_SHORT:
+        return( MT_SHORT );
+    case T_BYTE:
+        return( MT_BYTE );
+    case T_WORD:
+        return( MT_WORD );
+    case T_DWORD:
+        return( MT_DWORD );
+    case T_QWORD:
+        return( MT_QWORD );
+    case T_TBYTE:
+        return( MT_TBYTE );
+    case EMPTY:
+        return( MT_EMPTY );
+#ifdef _WASM_
+    case T_SBYTE:
+        return( MT_SBYTE );
+    case T_SWORD:
+        return( MT_SWORD );
+    case T_SDWORD:
+        return( MT_SDWORD );
+#endif
+    case T_FWORD:
+        return( MT_FWORD );
+    case T_PWORD:
+        return( MT_FWORD );
+    default:
+        return( MT_ERROR );
+    }
+}
+
 int AsmParse( void )
 /************/
 /*
@@ -1842,7 +1880,7 @@ int AsmParse( void )
                 // find 'ptr' but no 'byte', 'word' etc in front of it
                 AsmError( NO_SIZE_GIVEN_BEFORE_PTR_OPERATOR );
                 return( ERROR );
-            } else if( ptr_operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
+            } else if( ptr_operator( ConvMemType( AsmBuffer[i]->value ), TRUE ) == ERROR ) {
                 return( ERROR );
             }
             cur_opnd = OP_NONE;

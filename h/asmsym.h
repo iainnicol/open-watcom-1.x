@@ -33,8 +33,6 @@
 #define ASMSYM_H
 
 #include "watcom.h"
-#include "asmops2.h"
-#include "asmglob.h"
 
 enum fixup_types {
         FIX_SEG,
@@ -47,24 +45,52 @@ enum fixup_types {
         FIX_PTR32
 };
 
-enum sym_state {
-    SYM_UNDEFINED,
-    SYM_INTERNAL,
-    SYM_EXTERNAL,
-    SYM_STACK,
+typedef enum {
+        MT_BYTE   = 0,
+        MT_WORD   ,
+        MT_DWORD  ,
+        MT_QWORD  ,
+        MT_FWORD  ,
+        MT_TBYTE  ,
+
+        MT_SHORT  ,
+        MT_NEAR   ,
+        MT_FAR    ,
+
+        MT_PTR    ,
 
 #ifdef _WASM_
-    SYM_SEG,    // segment
-    SYM_GRP,    // group
-    SYM_PROC,   // procedure
-    SYM_MACRO,  // macro
-    SYM_CONST,  // constant - created with EQU, =, or /D on the cmdline
-    SYM_LIB,    // included library
-    SYM_EXT,    // extern def.
-    SYM_LNAME,  // lname entry
-    SYM_CLASS_LNAME,    // lname entry for segment class ... not in symbol table
-    SYM_STRUCT_FIELD,   // field defined in some structure
-    SYM_STRUCT          // structure
+        MT_SBYTE  ,
+        MT_SWORD  ,
+        MT_SDWORD ,
+
+        MT_STRUCT ,
+
+        MT_PROC   ,
+        MT_ABS    ,
+#endif
+        MT_EMPTY  ,
+        MT_ERROR  
+} memtype;
+
+enum sym_state {
+        SYM_UNDEFINED,
+        SYM_INTERNAL,
+        SYM_EXTERNAL,
+        SYM_STACK,
+
+#ifdef _WASM_
+        SYM_SEG,            // segment
+        SYM_GRP,            // group
+        SYM_PROC,           // procedure
+        SYM_MACRO,          // macro
+        SYM_CONST,          // constant - created with EQU, =, or /D on the cmdline
+        SYM_LIB,            // included library
+        SYM_EXT,            // extern def.
+        SYM_LNAME,          // lname entry
+        SYM_CLASS_LNAME,    // lname entry for segment class ... not in symbol table
+        SYM_STRUCT_FIELD,   // field defined in some structure
+        SYM_STRUCT          // structure
 #endif
 
 };
@@ -84,36 +110,6 @@ struct asmfixup {
 #endif
 
 };
-
-typedef enum {
-        MT_EMPTY  = EMPTY,
-        MT_ERROR  = ERROR,
-
-        MT_BYTE   = T_BYTE,
-        MT_WORD   = T_WORD,
-        MT_DWORD  = T_DWORD,
-        MT_QWORD  = T_QWORD,
-        MT_FWORD  = T_FWORD,
-        MT_TBYTE  = T_TBYTE,
-
-        MT_SHORT  = T_SHORT,
-        MT_NEAR   = T_NEAR,
-        MT_FAR    = T_FAR,
-
-        MT_PTR    = T_PTR,
-
-#ifdef _WASM_
-        MT_SBYTE  = T_SBYTE,
-        MT_SWORD  = T_SWORD,
-        MT_SDWORD = T_SDWORD,
-
-        MT_STRUCT = T_STRUCT,
-
-        MT_PROC   = T_PROC,
-        MT_ABS    = T_ABS
-#endif
-
-} memtype;
 
 typedef struct asm_sym {
         struct asm_sym  *next;

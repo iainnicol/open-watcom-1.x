@@ -52,6 +52,8 @@
 
 #endif
 
+#include "asmglob.h"
+
 enum prefix_reg {
     PREFIX_EMPTY = EMPTY,
     PREFIX_ES = 0x26,
