@@ -333,10 +333,12 @@ enum assume_reg {
     ASSUME_FS,
     ASSUME_GS,
     ASSUME_CS,
-    ASSUME_LAST,
     ASSUME_ERROR,
     ASSUME_NOTHING
 };
+
+#define ASSUME_FIRST    ASSUME_DS
+#define ASSUME_LAST     ASSUME_ERROR
 
 typedef struct {
     asm_sym             *symbol;        /* segment or group that is to

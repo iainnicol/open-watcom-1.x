@@ -2153,7 +2153,7 @@ void AssumeInit( void )
 {
     enum assume_reg reg;
 
-    for( reg = ASSUME_DS; reg < ASSUME_LAST; reg++ ) {
+    for( reg = ASSUME_FIRST; reg < ASSUME_LAST; reg++ ) {
         AssumeTable[reg].symbol = NULL;
         AssumeTable[reg].error = FALSE;
         AssumeTable[reg].flat = FALSE;
@@ -2363,7 +2363,7 @@ static enum assume_reg search_assume( dir_node *grp_or_seg, enum assume_reg def 
         }
     }
 
-    for( def = ASSUME_DS; def < ASSUME_LAST; def++ ) {
+    for( def = ASSUME_FIRST; def < ASSUME_LAST; def++ ) {
         if( AssumeTable[def].symbol == (struct asm_sym *)grp_or_seg ) {
             return( def );
         }

@@ -193,7 +193,6 @@ static void write_init( void )
 
     ModuleInit();
     FixInit();
-    AssumeInit();
 }
 
 static void write_fini( void )
@@ -1181,6 +1180,8 @@ static unsigned long OnePass( char *string )
 {
     set_cpu_parameters();
     set_fpu_parameters();
+
+    AssumeInit();
 
     EndDirectiveFound = FALSE;
     PhaseError = FALSE;
