@@ -29,8 +29,12 @@
 *
 ****************************************************************************/
 /*
+*       scan.h :
+*
 *       Definition of character classes for the scanner.
 *       Definition of the scanner states during the scan
+*       Prototypes for scan.c
+*
 ****************************************************************************/
 #ifndef scan_h_
 #define scan_h_
@@ -130,5 +134,12 @@ typedef enum {
     SCM,        // end-of-line comment
     SDB         // scanned 1st byte of a double-byte character
 } token_state;
+
+/*************************************************************
+*   prototypes for scan.c
+*************************************************************/
+extern void    InitScan(void);
+extern void    Scan(void);
+
 
 #endif
