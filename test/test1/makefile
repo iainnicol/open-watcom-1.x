@@ -7,6 +7,7 @@ anon &
 anthony &
 b &
 backquot &
+bar &
 beep &
 bigext &
 bug &
@@ -93,7 +94,6 @@ xx
 
 dev_objs = &
 alignorg &
-bar &
 fubar &
 jmp &
 newproc &

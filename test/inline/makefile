@@ -112,11 +112,15 @@ nulldevice=/dev/null
 nulldevice=nul
 !endif
 
+log_file=testcomp.log
+
 .BEFORE
-    @%create testcomp.log
+    @%create $(log_file)
 
 all : clean $(objs) .SYMBOLIC
 
+!ifdef objs
+!ifneq objs
 $(objs) : .SYMBOLIC
     @echo $@ ================================================================
     @rm -f $@.c
@@ -124,7 +128,9 @@ $(objs) : .SYMBOLIC
     @$(testcomp) $@.c -s -os -zq -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
     @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
-    @wmake -h -f ../checki.mif name=$@
+    @wmake -h -f ../checki.mif name=$@ log_file=$(log_file)
+!endif
+!endif
 
 clean : .SYMBOLIC
     @rm -f *.obj *.lst *.c *.err mem.trk
