@@ -5,7 +5,7 @@ set PREFIX=open_watcom_1.2.0
 set P4OPT=-f
 set ARCHIVES=\archives
 cdd %ARCHIVES%
-del /q *.zip >& NUL
+del /q %PREFIX%-src.zip >& NUL
 
 rem ##########################################################################
 rem ZIP all Open Watcom source files
