@@ -34,14 +34,11 @@
 // Define global data that is used both at run-time and compile-time.
 // ==================================================================
 
-#ifndef _SA_LIBRARY
 gbl_defn int            UnFreeMem;      //  & of unfreed bits of memory
-#endif
 gbl_defn unsigned_32    StmtLimit;      //  maximum number of stmts executable
 gbl_defn uint           PageLimit;      //  maximum number of pages printable
 gbl_defn uint           NumErrors;      //  number of errors during compilation
                                         //  and execution
-#ifndef _SA_LIBRARY
 gbl_defn uint           LinesPerPage;   //  number of lines per page in listing
                                         //  file
-#endif
+
