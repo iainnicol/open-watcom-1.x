@@ -823,9 +823,6 @@ void DgInitBegin(               // START INITIALIZATION OF SYMBOL
     flags.init_data_end = FALSE;
     gen->init_sym = sym;
     if( sym->id == SC_STATIC && ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
-#if 0
-      && ScopeId( SymScope( sym ) ) != SCOPE_CLASS ) {
-#endif
         emitDataCGFILE = &codeCGFILE;
     } else {
         gen->emit_init_beg = TRUE;

@@ -947,12 +947,6 @@ static void dataInitStartLocal( INITIALIZE_DATA *init, DECL_INFO *dinfo,
             currInit->bracketed = 1;
             DgInitBegin( sym );
             currInit->location = DL_EXTERNAL_STATIC;
-#if 0
-        } else if( SymIsStaticMember( sym ) && currInit->const_int ) {
-            currInit->bracketed = 1;
-            DgInitBegin( sym );
-            currInit->location = DL_EXTERNAL_STATIC;
-#endif
         } else {
             currInit->location = DL_EXTERNAL_PUBLIC;
         }
