@@ -264,7 +264,7 @@ int BackPatch( struct asm_sym *sym )
     return( NOT_ERROR );
 }
 
-void mark_fixupp( unsigned long determinant, int index )
+void mark_fixupp( enum operand_type determinant, int index )
 /******************************************************/
 /*
   this routine marks the correct target offset and data record address for

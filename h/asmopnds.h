@@ -29,76 +29,80 @@
 *
 ****************************************************************************/
 
+#ifndef ASMOPNDS_H
+#define ASMOPNDS_H
 
-#define OP_NONE     0
-#define OP_CL       0x00000001
-#define OP_AL       0x00000002
-#define OP_R8_GEN   0x00000004
-#define OP_R8       ( OP_CL | OP_AL | OP_R8_GEN )
+enum operand_type {
+    OP_NONE     = 0,
+    OP_CL       = 0x00000001,
+    OP_AL       = 0x00000002,
+    OP_R8_GEN   = 0x00000004,
+    OP_R8       = ( OP_CL | OP_AL | OP_R8_GEN ),
 
-#define OP_AX       0x00000008
-#define OP_DX       0x00000010
-#define OP_R16_GEN  0x00000020
-#define OP_R16      ( OP_AX | OP_DX | OP_R16_GEN )
+    OP_AX       = 0x00000008,
+    OP_DX       = 0x00000010,
+    OP_R16_GEN  = 0x00000020,
+    OP_R16      = ( OP_AX | OP_DX | OP_R16_GEN ),
 
-#define OP_EAX      0x00000040
-#define OP_R32_GEN  0x00000080
-#define OP_R32      ( OP_EAX | OP_R32_GEN )
+    OP_EAX      = 0x00000040,
+    OP_R32_GEN  = 0x00000080,
+    OP_R32      = ( OP_EAX | OP_R32_GEN ),
 
-#define OP_R        ( OP_R8 | OP_R16 | OP_R32 )
-#define OP_R1632    ( OP_R16 | OP_R32 )
-#define OP_A        ( OP_AL | OP_AX | OP_EAX )
-#define OP_MMX      ( OP_EAX | OP_DX | OP_CL )  //Kludge because of no bits
+    OP_R        = ( OP_R8 | OP_R16 | OP_R32 ),
+    OP_R1632    = ( OP_R16 | OP_R32 ),
+    OP_A        = ( OP_AL | OP_AX | OP_EAX ),
+    OP_MMX      = ( OP_EAX | OP_DX | OP_CL ),  //Kludge because of no bits
 
-#define OP_I8       0x00000100
-#define OP_I_1      0x00000200
-#define OP_I_3      0x00000400
-#define OP_I8_U     0x00000800
-#define OP_I16      0x00001000
-#define OP_I32      0x00002000
-#define OP_J32      0x00004000
-#define OP_J48      0x00008000
-#define OP_I        ( OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U | OP_I16 | OP_I32 )
-#define OP_GE_8     ( OP_I8 | OP_I8_U | OP_I16 | OP_I32 )
-#define OP_GE_16    ( OP_I16 | OP_I32 )
-#define OP_GE_U8    ( OP_I8_U | OP_I16 | OP_I32 )
+    OP_I8       = 0x00000100,
+    OP_I_1      = 0x00000200,
+    OP_I_3      = 0x00000400,
+    OP_I8_U     = 0x00000800,
+    OP_I16      = 0x00001000,
+    OP_I32      = 0x00002000,
+    OP_J32      = 0x00004000,
+    OP_J48      = 0x00008000,
+    OP_I        = ( OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U | OP_I16 | OP_I32 ),
+    OP_GE_8     = ( OP_I8 | OP_I8_U | OP_I16 | OP_I32 ),
+    OP_GE_16    = ( OP_I16 | OP_I32 ),
+    OP_GE_U8    = ( OP_I8_U | OP_I16 | OP_I32 ),
 
-#define OP_M_B      0x00010000
-#define OP_M_W      0x00020000
-#define OP_M_DW     0x00040000
-#define OP_M_QW     0x00080000
-#define OP_M_TB     0x00100000
+    OP_M_B      = 0x00010000,
+    OP_M_W      = 0x00020000,
+    OP_M_DW     = 0x00040000,
+    OP_M_QW     = 0x00080000,
+    OP_M_TB     = 0x00100000,
 
-#define OP_M8       0x00200000
-#define OP_M16      0x00400000
-#define OP_M32      0x00800000
+    OP_M8       = 0x00200000,
+    OP_M16      = 0x00400000,
+    OP_M32      = 0x00800000,
 
 // we are out of space so ...
-#define OP_M16_IND  ( OP_M8 | OP_M16 )          // indirect jmp - word ptr
-#define OP_M32_IND  ( OP_M16 | OP_M32 )         // indirect jmp - dword ptr
-#define OP_M48_IND  ( OP_M32 | OP_M8 )          // indirect jmp - fword ptr
+    OP_M16_IND  = ( OP_M8 | OP_M16 ),          // indirect jmp - word ptr
+    OP_M32_IND  = ( OP_M16 | OP_M32 ),         // indirect jmp - dword ptr
+    OP_M48_IND  = ( OP_M32 | OP_M8 ),          // indirect jmp - fword ptr
 
-#define OP_M        ( OP_M8 | OP_M16 | OP_M32 )
-#define OP_M_ANY    ( OP_M_B | OP_M_W | OP_M_DW | OP_M_QW | OP_M_TB | OP_M )
-#define OP_M8_R8    ( OP_M8 | OP_R8 )
-#define OP_M16_R16    ( OP_M16 | OP_R16 )
-#define OP_M32_R32    ( OP_M32 | OP_R32 )
+    OP_M        = ( OP_M8 | OP_M16 | OP_M32 ),
+    OP_M_ANY    = ( OP_M_B | OP_M_W | OP_M_DW | OP_M_QW | OP_M_TB | OP_M ),
+    OP_M8_R8    = ( OP_M8 | OP_R8 ),
+    OP_M16_R16  = ( OP_M16 | OP_R16 ),
+    OP_M32_R32  = ( OP_M32 | OP_R32 ),
 
-#define OP_CR       0x01000000
-#define OP_DR       0x02000000
-#define OP_TR       0x04000000
-#define OP_SPEC_REG ( OP_CR | OP_DR | OP_TR )
+    OP_CR       = 0x01000000,
+    OP_DR       = 0x02000000,
+    OP_TR       = 0x04000000,
+    OP_SPEC_REG = ( OP_CR | OP_DR | OP_TR ),
 
-#define OP_SR2      0x08000000
-#define OP_SR3      0x10000000
-#define OP_SR       ( OP_SR2 | OP_SR3 )
+    OP_SR2      = 0x08000000,
+    OP_SR3      = 0x10000000,
+    OP_SR       = ( OP_SR2 | OP_SR3 ),
 
-#define OP_ST       0x20000000
-#define OP_ST_REG   0x40000000
-#define OP_STI    ( OP_ST | OP_ST_REG )
+    OP_ST       = 0x20000000,
+    OP_ST_REG   = 0x40000000,
+    OP_STI      = ( OP_ST | OP_ST_REG ),
 
-#define OP_SPECIAL  0x80000000      /* this includes the following cases, most
+    OP_SPECIAL  = 0x80000000      /* this includes the following cases, most
                                        of which are used in asmscan */
+};
 
 /* we need some kind of magic comparison fcn. to handle these
    this is ok, since they are not used in the parser, and rarely at all
@@ -118,7 +122,6 @@
 
 /* fix these comments up -- they are from the old stuff */
  /*     OP_NONE         no operands */
- /*     OP_LABEL        Label for JMP, CALL, etc */
  /*     OP_R            register */
  /*     OP_R8           8-bit register */
  /*     OP_CL           CL register */
@@ -162,8 +165,12 @@
  /*     OP_SR3   segreg, include 16/32 bit */
  /*     OP_ST            Stack Top */
  /*     OP_STI           registers in stack */
+
+ /*     OP_LABEL        Label for JMP, CALL, etc */
  /*     OP_REGISTER      designates a reserved register name, eg. AX */
  /*     OP_RES_ID        designates a reserved id, eg. BYTE, WORD */
  /*     OP_DIRECTIVE     designates a directive */
  /*     OP_DIRECT_EXPR  designates a directive which has an expression */
  /*     OP_ARITHOP          arithmetic operator */
+
+#endif

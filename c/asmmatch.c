@@ -46,17 +46,16 @@
 #include "asmalloc.h"
 
 #ifdef _WASM_
-    #include "directiv.h"
-    #include "womp.h"
-    #include "queue.h"
+
+#include "directiv.h"
+#include "womp.h"
+#include "queue.h"
 
 extern int_8                    PhaseError;
 
-#endif
+extern int  AddFloatingPointEmulationFixup( const struct asm_ins ASMFAR *, bool );
+qdesc       *LinnumQueue = NULL;    // queue of linnum_data structs
 
-#ifdef _WASM_
-extern int AddFloatingPointEmulationFixup( const struct asm_ins ASMFAR *, bool );
-    qdesc       *LinnumQueue = NULL;    // queue of linnum_data structs
 #endif
 
 static int output( int i )
@@ -241,7 +240,7 @@ static int output( int i )
     return( NOT_ERROR );
 }
 
-static int output_data( unsigned long determinant, int index )
+static int output_data( enum operand_type determinant, int index )
 /************************************************************/
 /*
   output address displacement and immediate data;
@@ -334,8 +333,8 @@ int match_phase_1( void )
     int                 i;
     int                 retcode;
     signed char         temp_opsiz = 0;
-    unsigned long       cur_opnd;
-    unsigned long       asm_op1;
+    enum operand_type   cur_opnd;
+    enum operand_type   asm_op1;
 
     // if nothing inside, no need to output anything
     if( Code->info.token == T_NULL ) {
@@ -539,7 +538,7 @@ int match_phase_2( int *i )
     }
 }
 
-int match_phase_3( int *i, unsigned long determinant )
+int match_phase_3( int *i, enum operand_type determinant )
 /*
 - this routine will look up the assembler opcode table and try to match
   the second operand with what we get;
@@ -548,9 +547,9 @@ int match_phase_3( int *i, unsigned long determinant )
 - call by match_phase_2() only;
 */
 {
-    unsigned long       cur_opnd;
-    unsigned long       last_opnd;
-    unsigned long       asm_op2;
+    enum operand_type   cur_opnd;
+    enum operand_type   last_opnd;
+    enum operand_type   asm_op2;
     unsigned            instruction;
 
     instruction = AsmOpTable[*i].token;

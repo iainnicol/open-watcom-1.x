@@ -748,7 +748,7 @@ static int Reg386( int reg_token )                      /* 12-feb-92 */
     return( 0 );
 }
 
-int OperandSize( unsigned long opnd )
+int OperandSize( enum operand_type opnd )
 /***********************************/
 {
     if( opnd == OP_NONE || opnd & OP_SPECIAL ) {
@@ -1084,7 +1084,7 @@ static int idata( long value )
   determine the correct data size of immediate operand;
 */
 {
-    unsigned long       op_type;
+    enum operand_type   op_type;
 
     /* note that we now have code DISTANCE ( short / near / far ) and
      *                            mem_type ( byte / word / dword ... )
@@ -1597,8 +1597,8 @@ int AsmParse( void )
     char                *char_ptr;
     struct asm_sym      *sym;
     struct asmfixup     *fixup;
-    unsigned long       cur_opnd;
-    unsigned long       last_opnd = OP_NONE;
+    enum operand_type   cur_opnd = OP_NONE;
+    enum operand_type   last_opnd = OP_NONE;
     struct asm_code     *rCode = Code;
 
 #ifdef _WASM_
@@ -2255,8 +2255,8 @@ static int check_size( void )
 - optimize MOV instruction;
 */
 {
-    unsigned long       op1 = Code->info.opnd_type[OPND1];
-    unsigned long       op2 = Code->info.opnd_type[OPND2];
+    enum operand_type   op1 = Code->info.opnd_type[OPND1];
+    enum operand_type   op2 = Code->info.opnd_type[OPND2];
     int                 state = NOT_ERROR;
     int                 temp;
     int                 op1_size;
@@ -2497,7 +2497,7 @@ static int check_size( void )
                 case 1:
                     Code->mem_type = MT_BYTE;
                     #ifdef _WASM_
-                        if( Parse_Pass == PASS_1 && ( op2 & OP_I ) ) {
+                        if( Parse_Pass != PASS_1 && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_BYTE );
                         }
                     #endif
@@ -2506,7 +2506,7 @@ static int check_size( void )
                     Code->mem_type = MT_WORD;
                     Code->info.opcode |= W_BIT;
                     #ifdef _WASM_
-                        if( Parse_Pass == PASS_1 && ( op2 & OP_I ) ) {
+                        if( Parse_Pass != PASS_1 && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_WORD );
                         }
                     #endif
@@ -2515,7 +2515,7 @@ static int check_size( void )
                 case 4:
                     Code->mem_type = MT_DWORD;
                     #ifdef _WASM_
-                        if( Parse_Pass == PASS_1 && ( op2 & OP_I ) ) {
+                        if( Parse_Pass != PASS_1 && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_DWORD );
                         }
                     #endif

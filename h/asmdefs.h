@@ -29,6 +29,10 @@
 *
 ****************************************************************************/
 
+#ifndef ASMDEFS_H
+#define ASMDEFS_H
+
+#include "asmopnds.h"
 
 #define IS_CALL( inst )     ( inst == T_CALL || inst == T_CALLF )
 #define IS_JMP( inst )      ( inst >= T_JA && inst <= T_JZ )
@@ -88,11 +92,15 @@
 #define oper_32( s )     ( s->use32 ? ( s->prefix.opsiz == FALSE ) : ( s->prefix.opsiz == TRUE ))
 
 #ifdef _WASM_
-    #define     Address         ( GetCurrAddr() )
-    #define MEM_TYPE( op, typ ) ( (op) == MT_##typ || (op) == MT_S##typ )
+
+#define     Address         ( GetCurrAddr() )
+#define MEM_TYPE( op, typ ) ( (op) == MT_##typ || (op) == MT_S##typ )
+
 #else
-    extern uint_32              Address;
-    #define MEM_TYPE( op, typ ) ( (op) == MT_##typ )
+
+extern uint_32              Address;
+#define MEM_TYPE( op, typ ) ( (op) == MT_##typ )
+
 #endif
 
 /* global variables */
@@ -114,16 +122,23 @@ struct asm_sym;
 extern void             add_frame( void );
 extern struct asmfixup  *AddFixup( struct asm_sym *sym, int fixup_type );
 extern int              BackPatch( struct asm_sym *sym );
-extern void             mark_fixupp( unsigned long determinant, int index );
+extern void             mark_fixupp( enum operand_type determinant, int index );
 extern struct fixup     *CreateFixupRec( int index );
 extern int              store_fixup( int index );
 extern int              MakeFpFixup( struct asm_sym *sym );
 extern int              match_phase_1( void );
 extern void             AsmByte( unsigned char );
+
 #ifdef _WASM_
-    extern void         AsmCodeByte( unsigned char );
-    extern void         AsmDataByte( unsigned char );
+
+extern void             AsmCodeByte( unsigned char );
+extern void             AsmDataByte( unsigned char );
+
 #else
-    #define AsmCodeByte( c )        AsmByte( c )
-    #define AsmDataByte( c )        AsmByte( c )
+
+#define AsmCodeByte( c )    AsmByte( c )
+#define AsmDataByte( c )    AsmByte( c )
+
+#endif
+
 #endif
