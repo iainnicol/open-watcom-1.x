@@ -1,7 +1,14 @@
 #! /bin/sh
-RELEASE=1.2.0
-LABEL=open_watcom_$RELEASE
-PREFIX=open_watcom_$RELEASE
+# Check for command line option
+if [ "$1" = "" ]; then
+echo Usage: zipup.sh [RELEASE]
+echo
+echo Where RELEASE is the public release number (ie: 1.3.0).
+exit
+fi
+
+LABEL=open_watcom_$1
+PREFIX=open_watcom_$1
 P4OPT=-f
 P4PORT=-pp4.scitechsoft.com:3488
 ARCHIVES=/archives
