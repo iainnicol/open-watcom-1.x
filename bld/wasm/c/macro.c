@@ -70,7 +70,7 @@ extern struct fixup     *CreateFixupRec( int );
 extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
 extern void             AsmTakeOut( char * );
-extern int              EvalExpr( int, int, int );
+extern int              EvalExpr( int, int, int, bool );
 extern dir_node         *dir_insert( char *name, int tab );
 extern void             wipe_space( char *token );
 extern char             *get_curr_filename( void );
@@ -459,7 +459,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     }
 
     my_sprintf( buffer, lnode->line, count-1, parm_array );
-    new_line = AsmAlloc( strlen( (char*)buffer ) + 1 );
+    new_line = AsmAlloc( strlen( (char *)buffer ) + 1 );
     strcpy( new_line, buffer );
     return( new_line );
 }
@@ -588,7 +588,6 @@ int ExpandMacro( int tok_count)
                             char        *dst;
 
                             dst = &buffer[strlen(buffer)];
-                            *dst++ = '\'';
 
                             src = AsmBuffer[count]->string_ptr;
                             while( *src != '\0' ) {
@@ -597,7 +596,6 @@ int ExpandMacro( int tok_count)
                                 }
                                 *dst++ = *src++;
                             }
-                            *dst++ = '\'';
                             *dst = '\0';
                         } else {
                             strcat( buffer, AsmBuffer[count]->string_ptr );
@@ -608,6 +606,7 @@ int ExpandMacro( int tok_count)
                             free_parmlist( info->parmlist );
                             return( ERROR );
                         case STRING_EXPANDED:
+                            tok_count = Token_Count;
                             continue;
                         }
 
@@ -615,9 +614,8 @@ int ExpandMacro( int tok_count)
                             AsmBuffer[count]->string_ptr == NULL ||
                             AsmBuffer[count+1]->token == T_FINAL ) {
                             if( AsmBuffer[count+1]->token == T_FINAL ) count++;
-                            tok_count = EvalExpr( tok_count, exp_start, count-1 );
+                            tok_count = EvalExpr( tok_count, exp_start, count-1, TRUE );
                             expansion_flag = FALSE;
-                            Token_Count = tok_count;
                             count = exp_start;
                         }
                     }

@@ -207,12 +207,15 @@ int directive( int i, long direct )
     case T_DOT_EXIT:
         AsmError( NOT_SUPPORTED );
         return( ERROR );
+    case T_ORG:
+        ExpandTheWorld( 0, FALSE, TRUE );
+        break;
     case T_EQU:
     case T_EQU2:
     case T_TEXTEQU:
         /* expand any constants and simplify any expressions */
         //if( Parse_Pass == PASS_1 ) {
-            ExpandTheWorld( 0, FALSE );
+            ExpandTheWorld( 0, FALSE, TRUE );
         //}
         break;
     default:

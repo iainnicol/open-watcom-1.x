@@ -66,7 +66,7 @@ extern void             PushLineQueue(void);
 extern void             wipe_space( char *token );
 extern int              AsmScan( char *, char * );
 extern dir_node         *dir_insert( char *name, int tab );
-extern int              EvalExpr( int, int, int );
+extern int              EvalExpr( int, int, int, bool );
 extern void             GetInsString( enum asm_token , char *, int );
 extern int              MakeLabel( char *symbol_name, int mem_type );
 
@@ -284,7 +284,7 @@ int StoreConstant( char *name, char *value, int_8 redefine )
     return( createconstant( name, FALSE, 0, redefine, FALSE ) );
 }
 
-void MakeConstant( long token )
+void MakeConstantUnderscored( long token )
 /*****************************/
 {
     char buffer[20];
@@ -329,9 +329,8 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
             dir->e.constinfo->expand_early = expand_early;
             sym->grpidx = sym->segidx = sym->offset = 0;
             dir->e.constinfo->data = NULL;
-        } else  if( sym->state != SYM_CONST ||
-            ( !dir->e.constinfo->redefine && Parse_Pass == PASS_1 ) ) {
-
+        } else if(( sym->state != SYM_CONST )
+            || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
             /* error */
             AsmError( LABEL_ALREADY_DEFINED );
             return( ERROR );
@@ -358,7 +357,7 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
     }
 
     /* expand any constants */
-    if( ExpandTheWorld( start, FALSE ) == ERROR ) return( ERROR );
+    if( ExpandTheWorld( start, FALSE, TRUE ) == ERROR ) return( ERROR );
 
     for( i=start; AsmBuffer[i]->token != T_FINAL; i++ );
     count = i-start;
@@ -411,15 +410,19 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
     return( NOT_ERROR );
 }
 
-int ExpandTheWorld( int start_pos, bool early_only )
+int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
 /**************************************************/
 {
-    int         val;
-
     if( ExpandAllConsts( start_pos, early_only ) == ERROR ) return( ERROR );
     if( !early_only ) {
-        val = EvalExpr( Token_Count, start_pos, Token_Count );
+        int    val;
+
+        val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
+#if 0        
         if( val == ERROR ) val = 0;
+#else
+        if( val == ERROR ) return( ERROR );
+#endif        
         Token_Count = val;
     }
     return( NOT_ERROR );

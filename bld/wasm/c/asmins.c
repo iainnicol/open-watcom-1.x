@@ -50,7 +50,7 @@
 #include "asmglob.h"
 #include "asmops1.h"
 #include "asmops2.h"
-#include "asmins.h" ////
+#include "asmins.h"
 #include "asmerr.h"
 #include "asmsym.h"
 #include "asmalloc.h"
@@ -75,9 +75,9 @@
 
 #endif
 
-extern int              operator( int, uint_8 );
+extern int              ptr_operator( int, uint_8 );
 extern int              jmp( int i );
-extern void             MakeConstant( long );
+extern void             MakeConstantUnderscored( long );
 
 extern int              Token_Count;
 
@@ -189,6 +189,7 @@ static void seg_override( int seg_reg )
     int                 default_seg;
 #ifdef _WASM_
     struct asm_sym      *sym;
+    int                 assume_seg;
 
     switch( seg_reg ) {
         case T_SS:
@@ -200,7 +201,7 @@ static void seg_override( int seg_reg )
         default:
             default_seg = PREFIX_DS;
     }
-    if( Code->seg_prefix == EMPTY ) {
+    if( Code->prefix.seg == EMPTY ) {
         if( Label_Idx != -1 ) {
             check_assume( default_seg, 0 );
         }
@@ -208,37 +209,37 @@ static void seg_override( int seg_reg )
         if( Label_Idx != -1 ) {
             sym = AsmLookup( AsmBuffer[Label_Idx]->string_ptr );
             /**/myassert( sym != NULL );
-            switch( Code->seg_prefix ) {
+            switch( Code->prefix.seg ) {
                 case PREFIX_ES:
-                    default_seg = ASSUME_ES;
+                    assume_seg = ASSUME_ES;
                     break;
                 case PREFIX_CS:
-                    default_seg = ASSUME_CS;
+                    assume_seg = ASSUME_CS;
                     break;
                 case PREFIX_SS:
-                    default_seg = ASSUME_SS;
+                    assume_seg = ASSUME_SS;
                     break;
                 case PREFIX_DS:
-                    default_seg = ASSUME_DS;
+                    assume_seg = ASSUME_DS;
                     break;
                 case PREFIX_FS:
-                    default_seg = ASSUME_FS;
+                    assume_seg = ASSUME_FS;
                     break;
                 case PREFIX_GS:
-                    default_seg = ASSUME_GS;
+                    assume_seg = ASSUME_GS;
                     break;
             }
-            if( GetPrefixAssume( sym, default_seg ) == ASSUME_NOTHING ) {
+            if( GetPrefixAssume( sym, assume_seg ) == ASSUME_NOTHING ) {
                 AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
             }
         }
     }
 
-    if( Code->seg_prefix == default_seg ) {
-        Code->seg_prefix = EMPTY;
+    if( Code->prefix.seg == default_seg ) {
+        Code->prefix.seg = EMPTY;
     }
 #else
-    if( Code->seg_prefix != EMPTY ) {
+    if( Code->prefix.seg != EMPTY ) {
         switch( seg_reg ) {
         case T_SS:
         case T_BP:
@@ -249,8 +250,8 @@ static void seg_override( int seg_reg )
         default:
             default_seg = PREFIX_DS;
         }
-        if( Code->seg_prefix == default_seg ) {
-            Code->seg_prefix = EMPTY;
+        if( Code->prefix.seg == default_seg ) {
+            Code->prefix.seg = EMPTY;
         }
     }
 #endif
@@ -290,27 +291,27 @@ static void check_assume( int default_reg )
             // AssumeError = TRUE;
             AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
         } else {
-            Code->seg_prefix = default_reg;
+            Code->prefix.seg = default_reg;
         }
     } else {
         switch( reg ) {
             case ASSUME_ES:
-                Code->seg_prefix = PREFIX_ES;
+                Code->prefix.seg = PREFIX_ES;
                 break;
             case ASSUME_CS:
-                Code->seg_prefix = PREFIX_CS;
+                Code->prefix.seg = PREFIX_CS;
                 break;
             case ASSUME_DS:
-                Code->seg_prefix = PREFIX_DS;
+                Code->prefix.seg = PREFIX_DS;
                 break;
             case ASSUME_GS:
-                Code->seg_prefix = PREFIX_GS;
+                Code->prefix.seg = PREFIX_GS;
                 break;
             case ASSUME_FS:
-                Code->seg_prefix = PREFIX_FS;
+                Code->prefix.seg = PREFIX_FS;
                 break;
             case ASSUME_SS:
-                Code->seg_prefix = PREFIX_SS;
+                Code->prefix.seg = PREFIX_SS;
                 break;
         }
     }
@@ -328,7 +329,7 @@ int check_override( int *i )
         if( AsmBuffer[index+1]->token == T_COLON ) {
         switch( AsmBuffer[index]->token ) {
                 case T_REG:
-                    Code->seg_prefix =
+                    Code->prefix.seg =
                        AsmOpTable[AsmOpcode[AsmBuffer[index]->value].position].opcode;
                     (*i) += 2;
                     if( *i >= Token_Count ) {
@@ -384,7 +385,7 @@ static int mem( int i )
 #endif
     fixup = NULL;
     ConstantOnly = TRUE;
-    if( Code->seg_prefix != EMPTY ) {
+    if( Code->prefix.seg != EMPTY ) {
         //fixme
         /* temporary fix -- we will probably have to change the structure of
          * the asm_code structure, to allow multiple seg. overrides per line
@@ -419,13 +420,13 @@ static int mem( int i )
                     AsmError( CANNOT_USE_386_ADDRESSING_MODE_WITH_CURRENT_CPU_SETTING );
                     return( ERROR );
                 }
-                if( !Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                if( !Code->use32 ) Code->prefix.adrsiz = TRUE;
                 break;
             case T_BX:
             case T_BP:
             case T_SI:
             case T_DI:
-                if( Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                if( Code->use32 ) Code->prefix.adrsiz = TRUE;
                 break;
             default:
                 AsmError( INVALID_MEMORY_POINTER );
@@ -494,7 +495,7 @@ static int mem( int i )
                 break;
             case T_TIMES :  // 386, cur reg is index
                 if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
-                    if( !Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                    if( !Code->use32 ) Code->prefix.adrsiz = TRUE;
                     index = AsmBuffer[i]->value;
                     switch( index ) {
                     case T_ESP:
@@ -506,7 +507,7 @@ static int mem( int i )
                         AsmError( INVALID_INDEX_REGISTER );
                         return( ERROR );
                     default:
-                        if( !Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                        if( !Code->use32 ) Code->prefix.adrsiz = TRUE;
                         i += 2;
                         if( AsmBuffer[i]->token == T_NUM ) {
                             switch( AsmBuffer[i]->value ) {
@@ -610,8 +611,8 @@ static int mem( int i )
                 //ConstantOnly = TRUE;
                 Code->data[Opnd_Count] += sym->offset;
                 // fixme
-                if( operator( sym->mem_type, FALSE ) == ERROR ) return( ERROR );
-                //if( operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+                if( ptr_operator( sym->mem_type, FALSE ) == ERROR ) return( ERROR );
+                //if( ptr_operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
                 i++;
                 sym = field;
                 field_flag = 1;
@@ -632,8 +633,8 @@ static int mem( int i )
             switch( sym->state ) {
             case SYM_UNDEFINED:
                 // forward reference
-                if( Code->seg_prefix == EMPTY ) {
-                    Code->seg_prefix = PREFIX_CS;
+                if( Code->prefix.seg == EMPTY ) {
+                    Code->prefix.seg = PREFIX_CS;
                 }
                 break;
             case SYM_STACK:
@@ -658,10 +659,10 @@ static int mem( int i )
 #ifdef _WASM_
                     if( !Modend ) {
 #endif
-                        if( operator( sym->mem_type, FALSE ) == ERROR ) {
+                        if( ptr_operator( sym->mem_type, FALSE ) == ERROR ) {
                             return ERROR;
                         }
-                        if( operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+                        if( ptr_operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
 #ifdef _WASM_
                     }
 #endif
@@ -724,7 +725,7 @@ static int mem( int i )
                 return( ERROR );
             }
         } else {
-            if( operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+            if( ptr_operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
         }
     }
 #endif
@@ -1007,26 +1008,26 @@ static int comp_opt( uint direct )
 void MakeCPUConstant( long i )
 /****************************/
 {
-    MakeConstant( i );
+    MakeConstantUnderscored( i );
 
     switch( i ) {
     // fall right through
     case T_DOT_686P:
     case T_DOT_686:
-        MakeConstant( T_DOT_686 );
+        MakeConstantUnderscored( T_DOT_686 );
     case T_DOT_586P:
     case T_DOT_586:
-        MakeConstant( T_DOT_586 );
+        MakeConstantUnderscored( T_DOT_586 );
     case T_DOT_486P:
     case T_DOT_486:
-        MakeConstant( T_DOT_486 );
+        MakeConstantUnderscored( T_DOT_486 );
     case T_DOT_386P:
     case T_DOT_386:
-        MakeConstant( T_DOT_386 );
+        MakeConstantUnderscored( T_DOT_386 );
         break;
     case T_DOT_286P:
     case T_DOT_286:
-        MakeConstant( T_DOT_286 );
+        MakeConstantUnderscored( T_DOT_286 );
     }
     return;
 }
@@ -1304,7 +1305,7 @@ static int reg( int i )
     case OP_R16:
     case OP_R16_GEN:
         Code->info.opcode |= W_BIT;             // set w-bit
-        if( Code->use32 ) Code->opsiz = NOT_EMPTY;
+        if( Code->use32 ) Code->prefix.opsiz = TRUE;
         break;
     case OP_MMX:
         reg = (AsmBuffer[i]->value - T_MM0);
@@ -1351,7 +1352,7 @@ static int reg( int i )
     case OP_SR2:                                // 8086 segment register
         if( AsmBuffer[i + 1]->token == T_COLON ) {
             /* segment override */
-            Code->seg_prefix = AsmOpTable[temp].opcode;
+            Code->prefix.seg = AsmOpTable[temp].opcode;
             /* fixme - setup the frame here */
             return( i );
         }
@@ -1375,7 +1376,7 @@ static int reg( int i )
             return( ERROR );
         }
         Code->info.opcode |= W_BIT;             // set w-bit
-        if( !Code->use32 ) Code->opsiz = NOT_EMPTY;
+        if( !Code->use32 ) Code->prefix.opsiz = TRUE;
         break;
     case OP_TR:                 // Test registers
         switch( AsmBuffer[i]->value ) {
@@ -1561,15 +1562,16 @@ int AsmParse()
     rCode->info.token   = T_NULL;
     rCode->info.opcode  = 0;
     rCode->info.rm_byte = 0;
-    rCode->adrsiz       = EMPTY;
-    rCode->opsiz        = EMPTY;
+    rCode->prefix.ins   = EMPTY;
+    rCode->prefix.seg   = EMPTY;
+    rCode->prefix.adrsiz = FALSE;
+    rCode->prefix.opsiz = FALSE;
     rCode->mem_type     = EMPTY;
     rCode->mem_type_fixed = FALSE;
     rCode->distance     = EMPTY;
-    rCode->seg_prefix   = EMPTY;
-    rCode->prefix       = EMPTY;
     rCode->extended_ins = EMPTY;
     rCode->sib          = 0;            // assume ss is *1
+    rCode->indirect     = FALSE;
     i = 2;
     while( i > 0 ) {
         i--;
@@ -1596,7 +1598,7 @@ int AsmParse()
         switch( AsmBuffer[i]->token ) {
         case T_INS:
             #ifdef _WASM_
-                ExpandTheWorld( i, FALSE );
+                ExpandTheWorld( i, FALSE, TRUE );
             #endif
             if( last_opnd != OP_NONE ) {
                 // illegal operand is put before instruction
@@ -1612,7 +1614,7 @@ int AsmParse()
             case T_REPNE:
             case T_REPNZ:
             case T_REPZ:
-                rCode->prefix = AsmBuffer[i]->value;
+                rCode->prefix.ins = AsmBuffer[i]->value;
                 // prefix has to be followed by an instruction
                 if( AsmBuffer[i+1]->token != T_INS ) {
                     AsmError( PREFIX_MUST_BE_FOLLOWED_BY_AN_INSTRUCTION );
@@ -1791,7 +1793,7 @@ int AsmParse()
             if( AsmBuffer[i]->value == T_PTR ) {
                 if( AsmBuffer[i - 1]->token == T_RES_ID ) {
                     if( AsmBuffer[i - 1]->value != T_PTR ) {
-                        if( operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
+                        if( ptr_operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
                             return( ERROR );
                         }
                         break;
@@ -1801,7 +1803,7 @@ int AsmParse()
                 AsmError( NO_SIZE_GIVEN_BEFORE_PTR_OPERATOR );
                 return( ERROR );
             }
-             else if( operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
+             else if( ptr_operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
                 return( ERROR );
             }
             cur_opnd = OP_NONE;
@@ -2117,7 +2119,7 @@ int AsmParse()
         case T_PERCENT:
             /* expansion operator */
             cur_opnd = OP_NONE;
-            ExpandTheWorld( i, FALSE );
+            ExpandTheWorld( i, FALSE, TRUE );
             break;
         #endif
         case T_NOOP:
@@ -2174,17 +2176,17 @@ static void SizeString( unsigned op_size )
     case 1:
         Code->mem_type = T_BYTE;
         Code->info.opcode &= NOT_W_BIT;
-        if( Code->use32 ) Code->opsiz = EMPTY;
+        if( Code->use32 ) Code->prefix.opsiz = FALSE;
         break;
     case 2:
         Code->mem_type = T_WORD;
         Code->info.opcode |= W_BIT;
-        Code->opsiz = Code->use32 ? NOT_EMPTY : EMPTY;
+        Code->prefix.opsiz = Code->use32 ? TRUE : FALSE;
         break;
     case 4:
         Code->mem_type = T_DWORD;
         Code->info.opcode |= W_BIT;
-        Code->opsiz = Code->use32 ? EMPTY : NOT_EMPTY;
+        Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
         break;
     }
 }
@@ -2229,7 +2231,7 @@ static int check_size( void )
             case OP_AL:
                 Code->info.opcode &= NOT_W_BIT;         // clear w-bit
             case OP_EAX:
-                if( Code->use32 ) Code->opsiz = EMPTY;
+                if( Code->use32 ) Code->prefix.opsiz = FALSE;
             }
         }
         break;
@@ -2241,7 +2243,7 @@ static int check_size( void )
             case OP_AL:
                 Code->info.opcode &= NOT_W_BIT;         // clear w-bit
             case OP_EAX:
-                if( Code->use32 ) Code->opsiz = EMPTY;
+                if( Code->use32 ) Code->prefix.opsiz = FALSE;
             }
         }
         break;
@@ -2335,7 +2337,7 @@ static int check_size( void )
                 state = ERROR;
             }
             if( Code->use32 ) {
-                Code->opsiz = EMPTY;     // - don't need opnd size prefix
+                Code->prefix.opsiz = FALSE;     // - don't need opnd size prefix
             }
             break;
         case 2:
@@ -2354,10 +2356,10 @@ static int check_size( void )
         op1_size = OperandSize( op1 );
         switch( op1_size ) {
         case 2:
-            if( Code->use32 ) Code->opsiz = NOT_EMPTY;
+            if( Code->use32 ) Code->prefix.opsiz = TRUE;
             break;
         case 4:
-            if( Code->use32 ) Code->opsiz = EMPTY;
+            if( Code->use32 ) Code->prefix.opsiz = FALSE;
             break;
         default:
             AsmError( INVALID_SIZE );
@@ -2450,7 +2452,7 @@ static int check_size( void )
                             AsmWarn( 1, ASSUMING_WORD );
                         }
                     #endif
-                    if( Code->use32 ) Code->opsiz = NOT_EMPTY;
+                    if( Code->use32 ) Code->prefix.opsiz = TRUE;
                     break;
                 case 4:
                     Code->mem_type = T_DWORD;

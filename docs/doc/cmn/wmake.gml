@@ -173,6 +173,10 @@ silent mode - do not print commands before execution
 touch files instead of executing commands
 .note &sw.u
 UNIX compatibility mode
+.note &sw.v
+verbose listing of inline files
+.note &sw.y
+show why a target will be updated
 .note &sw.z
 do not erase target after error/interrupt (disables prompting)
 .endnote
@@ -379,7 +383,7 @@ __LOADDLL__= defined if DLL loading supported
 __MSDOS__ =  defined if MS/DOS version
 __WINDOWS__ = defined if Windows version
 __NT__ = defined if Windows NT version
-__NT386__ = defined if 32-bit Windows NT version
+__NT386__ = defined if x86 Windows NT version
 __OS2__ = defined if OS/2 version
 __QNX__ = defined if QNX version
 __LINUX__ = defined if Linux version
@@ -493,6 +497,14 @@ UNIX compatibility mode
 .np
 The "u" option will indicate to &maksname that the line continuation
 character should be a backslash "\" rather than an ampersand "&".
+:OPT name='v'
+.ix '&makcmdup options' 'v'
+The "v" option enables a verbose listing of inline temporary files.
+:OPT name='y'
+.ix '&makcmdup options' 'y'
+The "y" option enables the display of a progress line denoting which
+dependent file has caused a target to be updated. This is a useful
+option for helping to debug makefiles.
 :OPT name='z'
 .ix '&makcmdup options' 'z'
 .ix '&makcmdup' 'target deletion prompt'
@@ -1264,6 +1276,14 @@ balance.lst summary.lst : ledger.dat sales.dat purchase.dat
 If the program "DOREPORT" executes and its return code is non-zero
 then &maksname will not delete "BALANCE.LST" or "SUMMARY.LST".
 .*
+.section Ignoring Target Timestamp (.EXISTSONLY)
+.*
+.ix '&makcmdup directives' '.EXISTSONLY'
+.ix 'EXISTSONLY' '&makcmdup directive'
+The
+.id &sysper.EXISTSONLY
+directive indicates to &maksname that the target should not be updated if it already exists, regardless of its timestamp.
+.*
 .section Defining Recognized File Extensions (.EXTENSIONS)
 .*
 .ix '&makcmdup directives' '.EXTENSIONS'
@@ -1277,7 +1297,9 @@ The default
 declaration is:
 .code begin
 &sysper.EXTENSIONS:
-&sysper.EXTENSIONS: .exe .exp .lib .obj .asm .c .for .pas .cob .h .fi .mif
+&sysper.EXTENSIONS: .exe .nlm .dsk .lan .exp .lib .obj &
+             .i .asm .c .cpp .cxx .cc .for .pas .cob &
+             .h .hpp .hxx .hh .fi .mif .inc
 .code end
 .pc
 A
@@ -1298,13 +1320,19 @@ declaration could have been coded as:
 .br
 &sysper.EXTENSIONS: .exe
 .br
-&sysper.EXTENSIONS: .exp
+&sysper.EXTENSIONS: .nlm .dsk .lan .exp
 .br
 &sysper.EXTENSIONS: .lib
 .br
 &sysper.EXTENSIONS: .obj
 .br
-&sysper.EXTENSIONS: .asm .c .for .pas .cob .h .fi .mif
+&sysper.EXTENSIONS: .i .asm .c .cpp .cxx .cc
+.br
+&sysper.EXTENSIONS: .for .pas .cob
+.br
+&sysper.EXTENSIONS: .h .hpp .hxx .hh .fi .mif .inc
+.br
+&sysper.EXTENSIONS: .inc
 :cmt. .emillust
 .np
 with identical results.
@@ -2762,9 +2790,6 @@ program&exe :: $(objs)
 
 .millust end
 .pc
-:cmt.wcg. .ix 'SET' '&wcgvarup environment variable'
-:cmt.wcg. Notice that the "SET" command will be executed after the ".DEF"
-:cmt.wcg. files have been updated.
 The ".OBJ" files are updated to complete the update of the file
 "PROGRAM&exeup".
 .ix '&makcmdup' '"::" behaviour'
@@ -3175,10 +3200,6 @@ along with
 Together these preprocessor directives allow selection of makefile
 declarations to be based on either the value or the existence of a
 macro.
-.* .ix '&makcmdup' 'preprocessor restrictions'
-.* .ix 'preprocessor restrictions
-.* The preprocessor directives must encapsulate complete declarations.
-.* A rule or declaration cannot be split across preprocessor directives.
 .np
 Environment variables can be checked by using an environment variable
 name prefixed with a "%".
@@ -3918,7 +3939,6 @@ The setting of environment variables in makefiles reduces the number
 of "SET" commands required in the system initialization file.
 Here is an example with the &cmpname compiler.
 .ix 'environment variables' '&incvarup'
-:cmt.wcg. .ix 'environment variables' '&wcgvarup'
 .ix 'environment variables' '&libvarup'
 .ix '&makcmdup' 'environment variables'
 .ix '&makcmdup' 'setting environment variables'
@@ -3926,7 +3946,6 @@ Here is an example with the &cmpname compiler.
 .ix 'setting environment variables'
 .ix '&makcmdup special macros' '$(%path)'
 .ix 'SET' '&incvarup environment variable'
-:cmt.wcg. .ix 'SET' '&wcgvarup environment variable'
 .ix 'SET' '&libvarup environment variable'
 .millust begin
 #

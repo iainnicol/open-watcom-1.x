@@ -1,6 +1,10 @@
-#pmake: all os_nt cpu_386
+#pmake: build os_nt cpu_386 dll
 
-host_OS = nt
-host_CPU = 386
+host_os  = nt
+host_cpu = 386
 
-!include ../wlink.mif
+release_wlink    = 1
+sys_dll          = 1
+add_version_info = 1
+
+!include ..\wlink.mif

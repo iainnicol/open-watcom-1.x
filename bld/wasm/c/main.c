@@ -347,7 +347,7 @@ static void SetMemoryModel(void)
         break;
     default:
         strcpy( buffer, "/m" );
-        strcat( buffer, (char*)&OptValue );
+        strcat( buffer, (char *)&OptValue );
         MsgPrintf1( MSG_UNKNOWN_OPTION, buffer );
         exit( 1 );
     }
@@ -630,7 +630,7 @@ int main()
 #ifndef __UNIX__
     free( buff );
 #endif
-    return( (int)Options.error_count ); /* zero if no errors */
+    return( Options.error_count ); /* zero if no errors */
     }
 
 static void usage_msg( void )
@@ -1179,7 +1179,7 @@ static void parse_cmdline( char **cmdline )
     char msgbuf[80];
     int  level = 0;
 
-    if( cmdline == NULL || *cmdline == NULL ) {
+    if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {
         usage_msg();
     }
     for( ;*cmdline != NULL; ++cmdline ) {

@@ -136,8 +136,10 @@ int SaveFileAs( void )
         return( rc );
     }
     // rename current file
-    FileLower( fn );
-    sprintf( cmd, "set filename %s", fn );
+#ifndef __NT__   // this is stupid for all case-preserving systems like NT
+    FileLower( fn );          
+#endif    
+    sprintf( cmd, "set filename \"%s\"", fn );
     RunCommandLine( cmd );
     UpdateLastFileList( fn );
 

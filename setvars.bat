@@ -22,6 +22,9 @@ set owroot=d:\openwa~1
 REM Change this to point to your Watcom 11.0c directory
 set watcom=c:\c\wc11
 
+REM Change this to the install location of GhostScript for PDF creation (only if you want it)
+set GHOSTSCRIPT=C:\gs\gs7.04
+
 REM temporary sub-directory for pre-build OW tools
 set OBJDIR=prebuild
 
@@ -44,7 +47,7 @@ echo OpenWatcom compiler build environment
 REM Stuff for the Open Watcom build environment
 set build_platform=nt386
 set batdir=%owroot%
-set bld_ver=11
+set bld_ver=12
 set builder.ctl=lang.ctl
 set cge=vi.exe pagedown pageup end
 set defrel=rel2

@@ -237,12 +237,14 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
     case WM_DROPFILES:
         hfileinfo = (HANDLE) wparam;
         cnt = DragQueryFile( hfileinfo, (UINT)-1, NULL, 0 );
-        buff = alloca( _MAX_PATH );
+        buff = alloca( _MAX_PATH+2 );   /* we add a " at the beginning and at the end so we can handle path- and filenames with spaces */
         if( buff != NULL ) {
+            buff[0] = '"';      /* one " at the beginning of the filename */
             for( i=0;i<cnt;i++ ) {
-                if( DragQueryFile( hfileinfo, i, buff, _MAX_PATH ) == (UINT)-1 ) {
+                if( DragQueryFile( hfileinfo, i, buff+1, _MAX_PATH ) == (UINT)-1 ) {
                     break;
                 }
+                strcat( buff, "\"" );
                 rc = EditFile( buff, FALSE );
                 if( rc > 0 ) {
                     Error( GetErrorMsg( rc ) );
@@ -349,6 +351,28 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         ExitWithPrompt( TRUE );
         PopMode();
         return( 0 );
+#ifdef __NT__        
+    case WM_MOUSEWHEEL:
+        {
+            int i, increment;
+            ULONG linesPerNotch;
+            HWND activeWnd;
+            
+            activeWnd = (HWND)SendMessage( EditContainer, (UINT) WM_MDIGETACTIVE, NULL, NULL );
+            SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &linesPerNotch, 0);
+            
+            increment = GET_WHEEL_DELTA_WPARAM( wparam ) / 120;         // see WM_MOUSEWHEEL-documentation for information about the "120"
+
+            if( increment > 0 )
+                for( i = 0; i < increment*(int)linesPerNotch; i++ )
+                    SendMessage( activeWnd, WM_VSCROLL, SB_LINEUP, NULL );
+            else
+                for( i = 0; i < (-increment)*(int)linesPerNotch; i++ )
+                    SendMessage( activeWnd, WM_VSCROLL, SB_LINEDOWN, NULL );
+        }
+        return( 0 );
+    break;
+#endif
     case WM_DESTROY:
         DestroyToolBar();
         DragAcceptFiles( hwnd, FALSE );

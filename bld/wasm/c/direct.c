@@ -79,9 +79,9 @@ extern int              AsmScan( char *, char * );
 extern struct fixup     *CreateFixupRec( int );
 extern void             InputQueueLine( char * );
 extern void             AsmTakeOut( char * );
-extern int              EvalExpr( int, int, int );
+extern int              EvalExpr( int, int, int, bool );
 extern void             GetInsString( enum asm_token, char *, int );
-extern void             MakeConstant( long );
+extern void             MakeConstantUnderscored( long );
 extern void             SetMangler( struct asm_sym *sym, char *mangle_type );
 
 static char *Check4Mangler( int *i );
@@ -405,6 +405,24 @@ static dir_add( dir_node *new, int tab )
     }
 }
 
+static dir_node *AllocADir( char *name ) {
+    dir_node *dir;
+
+    dir = AsmAlloc( sizeof( dir_node ) );
+    if( dir != NULL ) {
+        if( InitAsmSym( (struct asm_sym *)dir, name ) == NULL ) {
+            AsmFree( dir );
+            return( NULL );
+        } else {
+            dir->next = NULL;
+            dir->prev = NULL;
+            dir->line = 0;
+            dir->e.seginfo = NULL;
+        }
+    }
+    return( dir );
+}
+
 dir_node *dir_insert( char *name, int tab )
 /*****************************************/
 /* Insert a node into the table specified by tab */
@@ -412,18 +430,19 @@ dir_node *dir_insert( char *name, int tab )
     dir_node            *new;
     struct asm_sym      *sym;
 
-    new = AsmAlloc( sizeof( dir_node ) );
-    new->next = NULL;
+    new = AllocADir( name );
+    if( new == NULL ) {
+        AsmError( NO_MEMORY );
+        return( NULL );
+    }
     new->line = LineNumber;
-    new->sym.name = AsmAlloc( strlen( name ) + 1 );
-    strcpy( new->sym.name, name );
     new->next = new->prev = NULL;
 
     if( tab != TAB_CLASS_LNAME ) {
-        sym = AsmAdd( (struct asm_sym*)new );
+        sym = AsmAdd( (struct asm_sym *)new );
     } else {
         /* don't put class lnames into the symbol table - separate name space */
-        sym = (struct asm_sym*)new;
+        sym = (struct asm_sym *)new;
     }
 
     /**/myassert( name != NULL );
@@ -711,7 +730,7 @@ direct_idx FindClassLnameIdx( char *name )
     dir_node            *dir;
 
     if( LnameQueue == NULL ) return( LNAME_NULL);
-    for( ptr = LnameQueue->head; ptr != NULL; ptr = *(void**)ptr ) {
+    for( ptr = LnameQueue->head; ptr != NULL; ptr = *(void **)ptr ) {
         node = (queuenode *)ptr;
         dir = (dir_node *)node->data;
         if( dir->sym.state != SYM_CLASS_LNAME ) continue;
@@ -999,15 +1018,15 @@ int GlobalDef( int i )
 
         sym = AsmGetSymbol( token );
 
-        if( sym != NULL && sym->mem_type != SYM_UNDEFINED ) {
+        if(( sym != NULL ) && ( sym->state != SYM_UNDEFINED )) {
             return( PubDef( 0 ) ); // it is defined here, so make a pubdef
         }
 
         if( sym == NULL ) {
             dir = dir_insert( token, TAB_GLOBAL );
-            sym = (struct asm_sym*)dir;
+            sym = (struct asm_sym *)dir;
         } else {
-            dir = (dir_node*)sym;
+            dir = (dir_node *)sym;
         }
 
         if( dir == NULL ) return( ERROR );
@@ -1100,7 +1119,7 @@ int ExtDef( int i )
         sym = AsmGetSymbol( token );
 
         if( sym != NULL ) {
-            if( sym->mem_type == SYM_UNDEFINED ) {
+            if( sym->state == SYM_UNDEFINED ) {
                 if( MakeExtern( token, mem_type, TRUE ) == NULL ) {
                     return( ERROR );
                 }
@@ -1175,7 +1194,7 @@ int PubDef( int i )
                 /* check if the symbol expands to another symbol,
                  * and if so, expand it */
                  if( node->e.constinfo->data[0].token == T_ID ) {
-                    ExpandTheWorld( i, FALSE );
+                    ExpandTheWorld( i, FALSE, TRUE );
                     return( PubDef( i ) );
                  }
             }
@@ -1310,28 +1329,19 @@ int  SetCurrSeg( int i )
     name = AsmBuffer[i]->string_ptr;
     Use32 = ModuleInfo.use32;
 
-    if( write_to_file ) {
-        switch( AsmBuffer[i+1]->value ) {
-        case T_SEGMENT:
-
-            /* Flushes the data in current segment, then set up the new
-               current segment */
-
-            FlushCurrSeg();
-
-            sym = AsmGetSymbol( name );
-
-            /**/ myassert( sym != NULL );
-            push_seg( (dir_node *)sym );
-
-            break;
-        case T_ENDS:
-            FlushCurrSeg();
-            pop_seg();
-            break;
-        default:
-            break;
-        }
+    switch( AsmBuffer[i+1]->value ) {
+    case T_SEGMENT:
+        FlushCurrSeg();
+        sym = AsmGetSymbol( name );
+        /**/ myassert( sym != NULL );
+        push_seg( (dir_node *)sym );
+        break;
+    case T_ENDS:
+        FlushCurrSeg();
+        pop_seg();
+        break;
+    default:
+        break;
     }
     if( CurrSeg != NULL ) {
         if( CurrSeg->seg->e.seginfo->segrec->d.segdef.class_name_idx
@@ -1398,7 +1408,7 @@ static void find_use32( void )
 int SegDef( int i )
 /*****************/
 {
-    char                defined = FALSE;
+    char                defined;
     char                *token;
     obj_rec             *seg;
     obj_rec             *oldobj;
@@ -1443,6 +1453,8 @@ int SegDef( int i )
                 }
                 dirnode = dir_insert( name, TAB_SEG );
                 seg->d.segdef.idx = ++segdefidx;
+                defined = FALSE;
+                ignore = FALSE;
             }
 
             /* Setting up default values */
@@ -1536,8 +1548,16 @@ int SegDef( int i )
                         dirnode->e.seginfo->ignore = TRUE;
                         break;
                     case TOK_AT:
-                        AsmError( SEGDEF_AT_NOT_SUPPORTED );
-                        return( ERROR );
+                        seg->d.segdef.align = SEGDEF_ALIGN_ABS;
+                        ExpandTheWorld( i + 1, FALSE, TRUE);
+                        if( AsmBuffer[i+1]->token == T_NUM ) {
+                            i++;
+                            seg->d.segdef.abs.frame = AsmBuffer[i]->value;
+                            seg->d.segdef.abs.offset = 0;
+                        } else {
+                            AsmError( UNDEFINED_SEGMENT_OPTION );
+                            return( ERROR );
+                        }
                         break;
                     default:
                         AsmError( UNDEFINED_SEGMENT_OPTION );
@@ -2009,22 +2029,6 @@ static void get_module_name( void )
 
 }
 
-#if 0
-void MakeConstant( long token )
-/*****************************/
-{
-    char buffer[20];
-
-    /* define a macro */
-    buffer[0]='\0';
-    strcat( buffer, "__" );
-    GetInsString( (enum asm_token)token, buffer+2, 18 );
-    strcat( buffer, "__" );
-    strupr( buffer );
-    StoreConstant( buffer, "1", TRUE );
-}
-#endif
-
 void set_text_seg_name( void )
 /****************************/
 {
@@ -2090,7 +2094,7 @@ int Model( int i )
                 }
             }
         }
-        MakeConstant( AsmBuffer[i]->value );
+        MakeConstantUnderscored( AsmBuffer[i]->value );
 
         if( initstate & TypeInfo[type].init ) {
             AsmError( MODEL_PARA_DEFINED ); // initialized already
@@ -3348,7 +3352,7 @@ int CommDef( int i )
 
         if( sym != NULL ) {
             SetMangler( sym, mangle_type );
-            if( sym->mem_type == SYM_UNDEFINED ) {
+            if( sym->state == SYM_UNDEFINED ) {
                 if( MakeComm( token, TypeInfo[type].value, TRUE, count,
                     TypeInfo[distance].value ) == ERROR ) {
                     return( ERROR );
