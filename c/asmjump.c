@@ -153,50 +153,50 @@ int check_jump( struct asm_sym *sym ) {
     memtype mem_type;
 
     if( sym == NULL ) {
-        mem_type = MT_EMPTY;
+        mem_type = EMPTY;
     } else {
         mem_type = sym->mem_type;
     }
     if( IS_JMPCALLF( Code->info.token ) ) {
-        if( Code->mem_type == MT_EMPTY ) {
+        if( Code->mem_type == EMPTY ) {
             Code->mem_type = mem_type;
         }
         switch( Code->mem_type ) {
-        case MT_EMPTY:
-            Code->mem_type = MT_FAR;
+        case EMPTY:
+            Code->mem_type = T_FAR;
             break;
-        case MT_FAR:
+        case T_FAR:
             break;
-        case MT_FWORD:
+        case T_FWORD:
             SET_OPSIZ_32( Code );
             return( INDIRECT_JUMP );
-        case MT_DWORD:
+        case T_DWORD:
             SET_OPSIZ_16( Code );
             return( INDIRECT_JUMP );
         default:
             break;
         }
     } else if( IS_JMPCALLN( Code->info.token ) ) {
-        if( Code->mem_type == MT_EMPTY ) {
+        if( Code->mem_type == EMPTY ) {
             Code->mem_type = mem_type;
         }
         switch( Code->mem_type ) {
-        case MT_FAR:
+        case T_FAR:
             Code->info.token++;
             break;
-        case MT_NEAR:
+        case T_NEAR:
             if( ( Code->info.token == T_JMP )
                 && !Code->mem_type_fixed 
                 && ( ( sym == NULL ) || ( sym->state != SYM_EXTERNAL ) ) ) {
-                Code->mem_type = MT_SHORT;
+                Code->mem_type = T_SHORT;
             }
-        case MT_SHORT:
+        case T_SHORT:
             break;
-        case MT_FWORD:
+        case T_FWORD:
             Code->info.token++;
             SET_OPSIZ_32( Code );
             return( INDIRECT_JUMP );
-        case MT_DWORD:
+        case T_DWORD:
             if( Code->use32 ) {
                 SET_OPSIZ_32( Code );
             } else {
@@ -204,10 +204,10 @@ int check_jump( struct asm_sym *sym ) {
                 SET_OPSIZ_16( Code );
             }
             return( INDIRECT_JUMP );
-        case MT_WORD:
+        case T_WORD:
             SET_OPSIZ_16( Code );
             return( INDIRECT_JUMP );
-        case MT_EMPTY:
+        case EMPTY:
             break;
         default:
             return( INDIRECT_JUMP );
@@ -233,7 +233,7 @@ int jmp( int i )                // Bug: can't handle indirect jump
     if( sym == NULL ) return( ERROR );
 
 #ifdef _WASM_
-    if( sym->mem_type == MT_ERROR ) {
+    if( sym->mem_type == ERROR ) {
         AsmError( LABEL_NOT_DEFINED );
         return ERROR;
     }
@@ -255,12 +255,12 @@ int jmp( int i )                // Bug: can't handle indirect jump
 #ifdef _WASM_
     case SYM_PROC:
 #endif
-        if(  ( Code->mem_type == MT_EMPTY || Code->mem_type == MT_SHORT
-                || Code->mem_type == MT_NEAR ) 
-            && sym->mem_type != MT_WORD
-            && sym->mem_type != MT_DWORD
-            && sym->mem_type != MT_FWORD
-            && ( sym->mem_type != MT_FAR || Code->info.token == T_JMP && state != SYM_EXTERNAL ) ) {
+        if(  ( Code->mem_type == EMPTY || Code->mem_type == T_SHORT
+                || Code->mem_type == T_NEAR ) 
+            && sym->mem_type != T_WORD
+            && sym->mem_type != T_DWORD
+            && sym->mem_type != T_FWORD
+            && ( sym->mem_type != T_FAR || Code->info.token == T_JMP && state != SYM_EXTERNAL ) ) {
             temp = 0;
 
 #ifdef _WASM_
@@ -293,10 +293,10 @@ int jmp( int i )                // Bug: can't handle indirect jump
                 }
                 break;
             }
-            if( Code->info.token == T_CALL && Code->mem_type == MT_EMPTY ) {
-                Code->mem_type = MT_NEAR;
+            if( Code->info.token == T_CALL && Code->mem_type == EMPTY ) {
+                Code->mem_type = T_NEAR;
             }
-            if( Code->mem_type != MT_NEAR && Code->info.token != T_CALL
+            if( Code->mem_type != T_NEAR && Code->info.token != T_CALL
                 && ( addr >= SCHAR_MIN && addr <= SCHAR_MAX ) ) {
                 Code->info.opnd_type[Opnd_Count] = OP_I8;
             } else {
@@ -366,7 +366,7 @@ int jmp( int i )                // Bug: can't handle indirect jump
                 default:
                     if( Code->info.opnd_type[Opnd_Count] != OP_I8 ) {
                         #ifdef _WASM_
-                            if( Code->mem_type == MT_EMPTY ) {
+                            if( Code->mem_type == EMPTY ) {
                                 jumpExtend();
                                 return( SCRAP_INSTRUCTION );
                             } else if( !PhaseError ) {
@@ -387,19 +387,19 @@ int jmp( int i )                // Bug: can't handle indirect jump
     case SYM_EXTERNAL:
 
         /* forward ref, or external symbol */
-        if( Code->mem_type == MT_EMPTY && sym->mem_type != MT_EMPTY ) {
+        if( Code->mem_type == EMPTY && sym->mem_type != EMPTY ) {
             switch( sym->mem_type ) {
-            case MT_FAR:
+            case T_FAR:
                 if( IS_JMPCALLN( Code->info.token ) ) {
                     Code->info.token++;
                 }
                 // fall through
-            case MT_SHORT:
-            case MT_NEAR:
+            case T_SHORT:
+            case T_NEAR:
                 Code->mem_type = sym->mem_type;
                 break;
-            case MT_FWORD:
-                if( ptr_operator( MT_FWORD, TRUE ) == ERROR )
+            case T_FWORD:
+                if( ptr_operator( T_FWORD, TRUE ) == ERROR )
                     return( ERROR );
                 break;
             default:
@@ -410,12 +410,12 @@ int jmp( int i )                // Bug: can't handle indirect jump
         case T_CALLF:
         case T_JMPF:
             switch( Code->mem_type ) {
-            case MT_SHORT:
-            case MT_NEAR:
+            case T_SHORT:
+            case T_NEAR:
                 AsmError( CANNOT_USE_SHORT_OR_NEAR );
                 return( ERROR );
-            case MT_FAR:
-            case MT_EMPTY:
+            case T_FAR:
+            case EMPTY:
 #ifdef _WASM_
                 SET_OPSIZ( Code, SymIs32( sym ));
                 find_frame( sym );
@@ -429,39 +429,39 @@ int jmp( int i )                // Bug: can't handle indirect jump
                 }
                 AddFixup( sym, temp );
                 break;
-            case MT_BYTE:
-            case MT_WORD:
+            case T_BYTE:
+            case T_WORD:
 #ifdef _WASM_
-            case MT_SBYTE:
-            case MT_SWORD:
+            case T_SBYTE:
+            case T_SWORD:
 #endif
                 AsmError( INVALID_SIZE );
                 return( ERROR );
-            case MT_DWORD:
-            case MT_FWORD:
+            case T_DWORD:
+            case T_FWORD:
 #ifdef _WASM_
-            case MT_SDWORD:
+            case T_SDWORD:
 #endif
                 return( INDIRECT_JUMP );
-            case MT_QWORD:
-            case MT_TBYTE:
+            case T_QWORD:
+            case T_TBYTE:
                 AsmError( INVALID_SIZE );
                 return( ERROR );
             }
             break;
         case T_CALL:
-            if( Code->mem_type == MT_SHORT ) {
+            if( Code->mem_type == T_SHORT ) {
                 AsmError( CANNOT_USE_SHORT_WITH_CALL );
                 return( ERROR );
             }
             /* fall through */
         case T_JMP:
             switch( Code->mem_type ) {
-            case MT_SHORT:
+            case T_SHORT:
                 temp = FIX_RELOFF8;
                 Code->info.opnd_type[Opnd_Count] = OP_I8;
                 break;
-            case MT_EMPTY:
+            case EMPTY:
                 /* guess short if JMP, we will expand later if needed */
                 if( Code->info.token == T_JMP ) {
                     temp = FIX_RELOFF8;
@@ -469,7 +469,7 @@ int jmp( int i )                // Bug: can't handle indirect jump
                     break;
                 }
                 /* fall through */
-            case MT_NEAR:
+            case T_NEAR:
                 if( Code->use32 ) {
                     temp = FIX_RELOFF32;
                     Code->info.opnd_type[Opnd_Count] = OP_I32;
@@ -478,23 +478,23 @@ int jmp( int i )                // Bug: can't handle indirect jump
                     Code->info.opnd_type[Opnd_Count] = OP_I16;
                 }
                 break;
-            case MT_DWORD:
-            case MT_WORD:
+            case T_DWORD:
+            case T_WORD:
 #ifdef _WASM_
-            case MT_SDWORD:
-            case MT_SWORD:
+            case T_SDWORD:
+            case T_SWORD:
 #endif
                 return( INDIRECT_JUMP );
 #ifdef _WASM_
-            case MT_SBYTE:
+            case T_SBYTE:
 #endif
-            case MT_BYTE:
-            case MT_FWORD:
-            case MT_QWORD:
-            case MT_TBYTE:
+            case T_BYTE:
+            case T_FWORD:
+            case T_QWORD:
+            case T_TBYTE:
                 AsmError( INVALID_SIZE );
                 return( ERROR );
-            case MT_FAR:
+            case T_FAR:
                 AsmError( SYNTAX_ERROR );
 #ifdef _WASM_
                 myassert( 0 );
@@ -522,7 +522,7 @@ int jmp( int i )                // Bug: can't handle indirect jump
         case T_LOOPNEW:
         case T_LOOPNZW:
         case T_LOOPZW:
-            if( Code->mem_type != MT_EMPTY && Code->mem_type != MT_SHORT ) {
+            if( Code->mem_type != EMPTY && Code->mem_type != T_SHORT ) {
                 AsmError( ONLY_SHORT_DISPLACEMENT_IS_ALLOWED );
                 return( ERROR );
             }
@@ -532,12 +532,12 @@ int jmp( int i )                // Bug: can't handle indirect jump
         default:
             if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
                 switch( Code->mem_type ) {
-                case MT_EMPTY:
-                case MT_SHORT:
+                case EMPTY:
+                case T_SHORT:
                     temp = FIX_RELOFF8;
                     Code->info.opnd_type[Opnd_Count] = OP_I8;
                     break;
-                case MT_NEAR:
+                case T_NEAR:
                     temp = FIX_RELOFF32;
                     Code->info.opnd_type[Opnd_Count] = OP_I32;
                     break;
@@ -582,7 +582,7 @@ int ptr_operator( memtype mem_type, uint_8 fix_mem_type )
         return( NOT_ERROR );
     if( Code->info.token == T_SMSW )
         return( NOT_ERROR );
-    if( mem_type == MT_PTR ) {
+    if( mem_type == T_PTR ) {
         /* finish deciding what type to make the inst NOW
          * ie: decide size overrides etc.
          */
@@ -643,9 +643,9 @@ int ptr_operator( memtype mem_type, uint_8 fix_mem_type )
             }
         }
     } else {
-        if(( mem_type != MT_EMPTY ) && ( Code->mem_type_fixed == FALSE )) {
+        if(( mem_type != EMPTY ) && ( Code->mem_type_fixed == FALSE )) {
 #ifdef _WASM_
-            if( mem_type != MT_STRUCT ) {
+            if( mem_type != T_STRUCT ) {
 #endif
                 Code->mem_type = mem_type;
                 if( fix_mem_type ) {

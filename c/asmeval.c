@@ -829,7 +829,7 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 switch( AsmBuffer[index]->value ) {
                 case T_LENGTH:
                     token_1->value = sym->first_length;
-                    if( sym->mem_type != MT_STRUCT ) {
+                    if( sym->mem_type != T_STRUCT ) {
                         break;
                     }
                 case T_LENGTHOF:
@@ -837,7 +837,7 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                     break;
                 case T_SIZE:
                     token_1->value = sym->first_size;
-                    if( sym->mem_type != MT_STRUCT ) {
+                    if( sym->mem_type != T_STRUCT ) {
                         break;
                     }
                 case T_SIZEOF:
@@ -1215,42 +1215,6 @@ static int fix_parant( void )
     return( NOT_ERROR );
 }
 
-static int ConvMemType( memtype x )
-{
-    switch( x ) {
-    case MT_NEAR:
-        return( T_NEAR );
-    case MT_FAR:
-        return( T_FAR );
-    case MT_SHORT:
-        return( T_SHORT );
-    case MT_BYTE:
-        return( T_BYTE );
-    case MT_WORD:
-        return( T_WORD );
-    case MT_DWORD:
-        return( T_DWORD );
-    case MT_QWORD:
-        return( T_QWORD );
-    case MT_TBYTE:
-        return( T_TBYTE );
-    case MT_EMPTY:
-        return( EMPTY );
-#ifdef _WASM_
-    case MT_SBYTE:
-        return( T_SBYTE );
-    case MT_SWORD:
-        return( T_SWORD );
-    case MT_SDWORD:
-        return( T_SDWORD );
-#endif
-    case MT_FWORD:
-        return( T_FWORD );
-    default:
-        return( EMPTY );
-    }
-}
-
 static int fix( expr_list *res, int start, int end )
 /* Convert the result in res into tokens and put them back in AsmBuffer[] */
 {
@@ -1295,7 +1259,7 @@ static int fix( expr_list *res, int start, int end )
 
         if( res->instr != EMPTY ) {
             size++;
-        } else if( res->mbr != NULL && ConvMemType( res->mbr->mem_type ) != EMPTY ) {
+        } else if( res->mbr != NULL && res->mbr->mem_type != EMPTY ) {
             size += 2;
         }
 
@@ -1357,9 +1321,9 @@ static int fix( expr_list *res, int start, int end )
         if( res->instr != EMPTY ) {
             AsmBuffer[start]->token = T_UNARY_OPERATOR;
             AsmBuffer[start++]->value = Store[res->instr-old_start].value;
-        } else if( res->mbr != NULL && ConvMemType( res->mbr->mem_type ) != EMPTY ) {
+        } else if( res->mbr != NULL && res->mbr->mem_type != EMPTY ) {
             AsmBuffer[start]->token = T_RES_ID;
-            AsmBuffer[start++]->value = ConvMemType( res->mbr->mem_type );
+            AsmBuffer[start++]->value = res->mbr->mem_type;
             AsmBuffer[start]->token = T_RES_ID;
             AsmBuffer[start++]->value = T_PTR;
         }

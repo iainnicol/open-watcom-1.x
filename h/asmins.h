@@ -45,13 +45,7 @@
 #include "asmopnds.h"
 #include "asmsym.h"
 #include "asmops1.h"
-
-#ifndef   asm_op
-
 #include "asmops2.h"
-
-#endif
-
 #include "asmglob.h"
 
 enum prefix_reg {

@@ -1158,7 +1158,7 @@ int ExtDef( int i )
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( ERROR );
             }
-            mem_type = MT_STRUCT;
+            mem_type = T_STRUCT;
         } else {
             mem_type = TypeInfo[type].value;
         }
@@ -2711,7 +2711,7 @@ int LocalDef( int i )
             return( ERROR );
         } else {
             sym->state = SYM_INTERNAL;
-            sym->mem_type = MT_WORD;
+            sym->mem_type = T_WORD;
         }
 
         local = AsmAlloc( sizeof( label_list ) );
@@ -2808,9 +2808,9 @@ static memtype proc_exam( int i )
     /* Obtain all the default value */
 
     if( ModuleInfo.model <= MOD_FLAT ) {
-        info->mem_type = MT_NEAR;
+        info->mem_type = T_NEAR;
     } else {
-        info->mem_type = MT_FAR;
+        info->mem_type = T_FAR;
     }
     info->visibility = dir->sym.public ? VIS_PUBLIC : VIS_PRIVATE;
     info->parasize = 0;
@@ -2832,7 +2832,7 @@ static memtype proc_exam( int i )
         if( type == ERROR ) break;
         if( type < minimum ) {
             AsmError( SYNTAX_ERROR );
-            return( MT_ERROR );
+            return( ERROR );
         }
         switch( type ) {
         case TOK_PROC_FAR:
@@ -2891,7 +2891,7 @@ parms:
         return( info->mem_type );
     } else if( info->langtype == LANG_NONE ) {
         AsmError( LANG_MUST_BE_SPECIFIED );
-        return( MT_ERROR );
+        return( ERROR );
     } else if( AsmBuffer[i]->token == T_COMMA ) {
         i++;
     }
@@ -2905,7 +2905,7 @@ parms:
         /* read colon */
         if( AsmBuffer[i]->token != T_COLON ) {
             AsmError( COLON_EXPECTED );
-            return( MT_ERROR );
+            return( ERROR );
         }
         i++;
 
@@ -2918,21 +2918,21 @@ parms:
             type = token_cmp( &typetoken, TOK_PROC_VARARG, TOK_PROC_VARARG );
             if( type == ERROR ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
-                return( MT_ERROR );
+                return( ERROR );
             } else {
                 if( info->langtype <= LANG_PASCAL ) {
                     AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
-                    return( MT_ERROR );
+                    return( ERROR );
                 }
             }
         }
 
         sym = AsmLookup( token );
-        if( sym == NULL ) return( MT_ERROR );
+        if( sym == NULL ) return( ERROR );
 
         if( sym->state != SYM_UNDEFINED ) {
             AsmError( SYMBOL_ALREADY_DEFINED );
-            return( MT_ERROR );
+            return( ERROR );
         } else {
             sym->state = SYM_INTERNAL;
             sym->mem_type = TypeInfo[type].value;
@@ -2974,7 +2974,7 @@ parms:
         i++;
         if( i < Token_Count && AsmBuffer[i]->token != T_COMMA ) {
             AsmError( EXPECTING_COMMA );
-            return( MT_ERROR );
+            return( ERROR );
         }
     }
     return( info->mem_type );
@@ -3017,7 +3017,7 @@ int ProcDef( int i )
         }
         GetSymInfo( sym );
         sym->mem_type = proc_exam( i );
-        if( sym->mem_type == MT_ERROR ) {
+        if( sym->mem_type == ERROR ) {
             return( ERROR );
         }
         return( NOT_ERROR );
@@ -3117,7 +3117,7 @@ int WritePrologue( void )
 
         /* Figure out the replacing string for the parameters */
 
-        if( info->mem_type == MT_NEAR ) {
+        if( info->mem_type == T_NEAR ) {
             offset = 4;         // offset from BP : return addr + old BP
         } else {
             offset = 6;
@@ -3334,7 +3334,7 @@ int Ret( int i, int count, int flag_iret )
             strcpy( buffer, "iretdf" );
         }
     } else {
-        if( info->mem_type == MT_NEAR ) {
+        if( info->mem_type == T_NEAR ) {
             strcpy( buffer, "retn " );
         } else {
             strcpy( buffer, "retf " );
