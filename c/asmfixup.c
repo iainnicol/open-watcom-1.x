@@ -83,13 +83,6 @@ void add_frame( void )
         fixup = InsFixups[Opnd_Count];
         if( fixup == NULL ) return;
         fixup->frame = Frame;
-#if 0 // fixme
-        // fixme /**/myassert( Frame != EMPTY );
-        if( Frame == EMPTY ) {
-            AsmError( SYMBOL_NOT_DEFINED );
-            return;
-        }
-#endif
         fixup->frame_datum = Frame_Datum;
     }
 }
@@ -126,10 +119,6 @@ struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
         /* fixme */
         /**/myassert( fixup->offset != 0xA5A5A5A5 );
         fixup->def_seg = (CurrSeg != NULL) ? CurrSeg->seg : NULL;
-
-        /* WHAT SHOULD REALLY BE GOING ON HERE ? */
-        // fixup->frame = 0;
-        // fixup->frame_datum = 0;
         fixup->frame = Frame;                   // this is just a guess
         fixup->frame_datum = Frame_Datum;
         fixup->next = sym->fixup;
