@@ -24,10 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Module for adding functions to the atexit() list, as well
-*               invoking the functions on library shutdown.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #include "variety.h"
 #include <stdio.h>
@@ -72,4 +73,3 @@ static void _Full_at_exit_rtn()
     }
 
 AYI( _Full_at_exit_rtn, INIT_PRIORITY_PROGRAM+32 );
-

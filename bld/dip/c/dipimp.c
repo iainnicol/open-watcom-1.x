@@ -126,7 +126,6 @@ dip_imp_routines        ImpInterface = {
 #elif defined( __WINDOWS__)
 
 #include <stdlib.h>
-#define STRICT
 #include <windows.h>
 #include <i86.h>
 
@@ -135,7 +134,7 @@ dip_imp_routines        ImpInterface = {
 typedef void (DIPENTRY INTER_FUNC)();
 
 static HANDLE TaskId;
-static HINSTANCE ThisInst;
+static HANDLE ThisInst;
 
 extern dip_imp_routines *DIPLOAD( dip_status *, dip_client_routines * );
 
@@ -152,7 +151,7 @@ void DIPENTRY DIPUNLOAD()
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
 
-int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
+int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst,
                     LPSTR cmdline, int cmdshow )
 /***********************************************
 
@@ -212,11 +211,11 @@ dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
     Client = client;
 #if defined(__WINDOWS__) && !defined(__386__)
     {
-        FARPROC start;
-   
-        start = MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
-        *status = ((dip_status(DIPENTRY*)(void)) start)();
-        FreeProcInstance( start );
+        dip_status (DIPENTRY *start)(void);
+
+        start = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
+        *status = start();
+        FreeProcInstance( (FARPROC)start );
     }
 #else
     *status = DIPImpStartup();
