@@ -30,24 +30,29 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+/*
+ * Adapted from netdb/common/guimem.c
+ */
+
+#include "stdtypes.h"
+#include "utmem.h"
 
 void * GUIAlloc( unsigned size )
 /******************************/
 {
-    return( malloc( size ) );
+    return( ut_alloc( size ) );
 }
 
 void GUIFree( void *chunk )
 /*************************/
 {
-    free( chunk );
+    ut_free( chunk );
 }
 
 void * GUIRealloc( void * chunk, unsigned size )
 /**********************************************/
 {
-    return( realloc( chunk, size ) );
+    return( ut_realloc( chunk, size ) );
 }
 
 void GUIMemOpen( void )

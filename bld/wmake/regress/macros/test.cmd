@@ -131,7 +131,6 @@ if errorlevel 1 goto err5
     @echo Error: MACRO #5 unsuccessful!!! | tee -a %2
 
 :test6
-rm hello.boo hello.tmp hello.c
 
 echo # ---------------------------
 echo #   Macro Test 6
