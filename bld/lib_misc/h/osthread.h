@@ -24,18 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Includes Operating System specific header files required
-*               for threads
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
 #ifndef _OSTHREAD_H_INCLUDED
+// include Operating System specific header files required for threads
 
 #include "variety.h"
 #if defined(__QNX__)
   #include <semaphor.h>
-#elif defined(__LINUX__)
-// TODO: Include Linux specific thread header files
 #elif defined(__NT__)
   #include <windows.h>
   #include <ntex.h>
@@ -55,4 +55,3 @@
 
 #define _OSTHREAD_H_INCLUDED
 #endif
-

@@ -80,8 +80,8 @@ long _EXPORT FAR PASCAL WindowProc( HWND, unsigned, UINT, LONG );
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
-                      int cmdshow )
+int PASCAL WinMain( HANDLE this_inst, HANDLE prev_inst, LPSTR cmdline,
+                    int cmdshow )
 {
     MSG         msg;
 
@@ -223,8 +223,8 @@ static bool Exit = FALSE;
 /*
  * WindowProc - handle messages for the main application window
  */
-LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
-                                     WPARAM wparam, LPARAM lparam )
+LONG _EXPORT FAR PASCAL WindowProc( HWND hwnd, unsigned msg,
+                                     UINT wparam, LONG lparam )
 {
     FARPROC     proc;
     char        *err;
@@ -234,8 +234,8 @@ LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case MENU_ABOUT:
-            proc = MakeProcInstance( (FARPROC)AboutDlgProc, Instance );
-            DialogBox( Instance,"AboutBox", hwnd, (DLGPROC)proc );
+            proc = MakeProcInstance( AboutDlgProc, Instance );
+            DialogBox( Instance,"AboutBox", hwnd, proc );
             FreeProcInstance( proc );
             break;
 
@@ -292,10 +292,10 @@ LRESULT _EXPORT FAR PASCAL WindowProc( HWND hwnd, UINT msg,
 
             break;
         case MENU_OPTIONS:
-            proc = MakeProcInstance( (FARPROC)OptionsDlgProc, Instance );
+            proc = MakeProcInstance( OptionsDlgProc, Instance );
             if( Linked ) RemoteUnLink();
             Linked = FALSE;
-            DialogBox( Instance, "Options", hwnd, (DLGPROC)proc );
+            DialogBox( Instance, "Options", hwnd, proc );
             FreeProcInstance( proc );
             break;
         case MENU_EXIT:
