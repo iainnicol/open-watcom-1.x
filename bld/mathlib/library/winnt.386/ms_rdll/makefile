@@ -1,11 +1,11 @@
-#pmake: build small 32bit register calls winnt iX86 dynamic os_nt cpu_386
+#pmake:all small 32bit register calls winnt iX86 dynamic os_nt cpu_386
 processor=386
 model=ms
 subdir=ms_rdll
 system=winnt
 convention=register
 linkage=dynamic
-!include $(mathlib_dir)/objects.mif
-!include $(mathlib_dir)/master.mif
-!include $(mathlib_dir)/mklib.mif
-!include $(mathlib_dir)/deps.mif
+!include $(mathlib_dir)\objects.mif
+!include $(mathlib_dir)\master.mif
+!include $(mathlib_dir)\mklib.mif
+!include $(mathlib_dir)\deps.mif

@@ -74,25 +74,12 @@ static uint BldObjString( aux_info *aux, char *name, uint len,
     for(;;) {
         if( idx >= buff_size - 1 ) break;
         if( *pattern == NULLCHAR ) break;
-        if( *pattern == '^' ) {
+        if( (*pattern == '*') || (*pattern == '^') ) {
             count = len;
             if( idx + count > buff_size - 1 ) {
                 count = buff_size - idx - 1;
             }
             memcpy( &buff[idx], name, count );
-            idx += count;
-        } else if( *pattern == '*' ) {
-            count = len;
-            if( idx + count > buff_size - 1 ) {
-                count = buff_size - idx - 1;
-            }
-
-            if( aux->sym_len > 0 ) {
-                memcpy( &buff[idx], aux->sym_name, aux->sym_len );
-            } else {
-                memcpy( &buff[idx], name, count );
-            }
-
             idx += count;
         } else if( *pattern == '!' ) {
             count = len;
@@ -111,11 +98,7 @@ static uint BldObjString( aux_info *aux, char *name, uint len,
 
             args_size = 0;
             for( arg = aux->arg_info; arg != NULL; arg = arg->link ) {
-                if( arg->info & ARG_SIZE_1 ) {
-                    args_size += 1;
-                } else if( arg->info & ARG_SIZE_2 ) {
-                    args_size += 2;
-                } else if( arg->info & ARG_SIZE_4 ) {
+                if( arg->info & (ARG_SIZE_1 | ARG_SIZE_2 | ARG_SIZE_4) ) {
                     args_size += 4;
                 } else if( arg->info & ARG_SIZE_8 ) {
                     args_size += 8;

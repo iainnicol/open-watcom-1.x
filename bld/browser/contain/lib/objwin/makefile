@@ -1,5 +1,7 @@
-ppcompile = *wpp
-contain_lib = contwin.lib
-compflags=-zl-zq-w4-d1-ox-ml-zu-zW -i"../../h;$(watcom_dir)/h"
+.BEFORE
+    @set compflags=-zl-zq-w4-d1-ox-ml-zu-zW -i..\..\h;$(watcom_dir)\h
 
-!include ../contain.mif
+ppcompile = wpp
+contain_lib = contwin.lib
+
+!include ..\contain.mif

@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#if defined( __UNIX__ )
+#if defined( __QNX__ )
 #include <fcntl.h>
 #include <dirent.h>
 #include <utime.h>
@@ -232,7 +232,7 @@ static void incTouchTime( void )
     mktime( &touchTime );
 }
 
-static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf *stamp )
+static void incFilesOwnTime( struct dirent *dir, struct utimbuf *stamp )
 /**********************************************************************/
 {
     time_t      ftime;
@@ -252,13 +252,7 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
         return;
     }
     /* we need to access the file's time stamp and increment it */
-    #if defined( __LINUX__ )
-        {
-            struct stat buf;
-            stat( full_name, &buf );
-            ftime = buf.st_mtime;
-        }
-    #elif defined( __QNX__ )
+    #ifdef __QNX__
         ftime = dir->d_stat.st_mtime;
     #else
         ftime = _d2ttime( dir->d_date, dir->d_time );
@@ -294,7 +288,7 @@ static void processOptions( int argc, char **argv )
         p = *++argv;
         switch( p[0] ) {
         case '-':
-    #ifndef __UNIX__
+    #ifndef __QNX__
         case '/':
     #endif
             if( ( isalpha( p[1] ) || p[1] == '?' ) && p[2] == '\0' ) {
@@ -365,47 +359,11 @@ static void processOptions( int argc, char **argv )
     }
 }
 
-static int doTouchFile( char *full_name, struct dirent *ndir,
-                        struct utimbuf *stamp )
-/*********************************************/
-{
-    int utime_rc;
-    int stat_rc;
-    struct stat sb;
-
-    incFilesOwnTime( full_name, ndir, stamp );
-    utime_rc = utime( full_name, stamp );
-    if( utime_rc == -1 ) {
-        stat_rc = stat( full_name, &sb );
-        if( stat_rc == -1 ) return 0;
-        if( TouchFlags.allow_read_only && stat_rc == 0 ) {
-            chmod( full_name, sb.st_mode | S_IWRITE );
-            utime_rc = utime( full_name, stamp );
-            chmod( full_name, sb.st_mode );
-        }
-        if( utime_rc == -1 ) {
-            if( !TouchFlags.quiet ) {
-                if( stat( full_name, &sb ) == 0 &&
-                    ( sb.st_mode & S_IWRITE ) == 0 ) {
-                    writeMsg( MSG_READ_ONLY, full_name );
-                    return 1;
-                } else {
-                    writeMsg( MSG_CANT_TOUCH, full_name );
-                }
-            }
-        } else {
-            return 1;
-        }
-    } else {
-        return 1;
-    }
-    return 0;
-}
-
-    
 static void doTouch( void )
 /*************************/
 {
+    int stat_rc;
+    int utime_rc;
     int fh;
     char *item;
     DIR *dirpt;
@@ -443,11 +401,7 @@ static void doTouch( void )
         // it more palatable if required.
         // the splitpath will nuke the dot instead of the last part of
         // the directory
-        if( 
-        #ifndef __UNIX__
-            ( item[len - 1] == '\\' ) ||
-        #endif
-            ( item[len - 1] == '/' ) ) {
+        if( ( item[len - 1] == '\\' ) || ( item[len - 1] == '/' ) ) {
             strcpy( dir_name, item );
             dir_name[len] = '.';
             dir_name[len + 1] = '\0';
@@ -455,7 +409,7 @@ static void doTouch( void )
         } else if( ( strpbrk( item, "*?" ) == NULL ) && !stat( item, &sb ) &&
                     S_ISDIR( sb.st_mode ) ) {
             strcpy( dir_name, item );
-        #ifdef __UNIX__
+        #ifdef __QNX__
             dir_name[len] = '/';
         #else
             dir_name[len] = '\\';
@@ -465,34 +419,55 @@ static void doTouch( void )
             item = dir_name;
         }
         _splitpath2( item, sp_buf, &drive, &dir, NULL, NULL );
-        number_of_successful_touches = 0;
-#ifdef __LINUX__
-        strcpy( full_name, item );
-        number_of_successful_touches += doTouchFile( full_name, ndir, &stamp );
-        {
-#else
         dirpt = opendir( item );
+        number_of_successful_touches = 0;
         if( dirpt ) {
             while( ndir = readdir( dirpt ) ) {
                 int attr;
 
                 _makepath( full_name, drive, dir, ndir->d_name, NULL );
             #ifdef __QNX__
+                if( ( ndir->d_stat.st_status & _FILE_USED ) == 0 ) {
+                    // stat information may not be valid
+                    stat( full_name, &ndir->d_stat );
+                }
                 attr = ndir->d_stat.st_mode;
                 if( S_ISREG( attr ) ) {
             #else
                 attr = ndir->d_attr;
                 if( !( ndir->d_attr & ( _A_VOLID | _A_SUBDIR ) ) ) {
             #endif
-                    number_of_successful_touches +=
-                        doTouchFile( item, ndir, &stamp );
+                    incFilesOwnTime( ndir, &stamp );
+                    utime_rc = utime( full_name, &stamp );
+                    if( utime_rc == -1 ) {
+                        stat_rc = stat( full_name, &sb );
+                        if( TouchFlags.allow_read_only && stat_rc == 0 ) {
+                            chmod( full_name, sb.st_mode | S_IWRITE );
+                            utime_rc = utime( full_name, &stamp );
+                            chmod( full_name, sb.st_mode );
+                        }
+                        if( utime_rc == -1 ) {
+                            if( !TouchFlags.quiet ) {
+                                if( stat( full_name, &sb ) == 0 &&
+                                        ( sb.st_mode & S_IWRITE ) == 0 ) {
+                                    writeMsg( MSG_READ_ONLY, full_name );
+                                    ++number_of_successful_touches;
+                                } else {
+                                    writeMsg( MSG_CANT_TOUCH, full_name );
+                                }
+                            }
+                        } else {
+                            ++number_of_successful_touches;
+                        }
+                    } else {
+                        ++number_of_successful_touches;
+                    }
                 }
             }
             if( closedir( dirpt ) != 0 ) {
                 writeMsg( MSG_ERR_CLOSE, item );
                 continue;
             }
-#endif
             if( TouchFlags.recursive ) {
                 _makepath( full_name, drive, dir, NULL, NULL );
                 dirpt = opendir( full_name );
@@ -500,17 +475,9 @@ static void doTouch( void )
                 // what to do if it does....
                 if( dirpt ) {
                     while( ndir = readdir( dirpt ) ) {
-                        if ( '.' != *ndir->d_name ) {
-                        #ifdef __UNIX__
+                        if( ndir->d_attr & _A_SUBDIR && '.' != *ndir->d_name ) {
                             _makepath( full_name, drive, dir, ndir->d_name, NULL );
-                            if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
-                        #else
-                            if( ndir->d_attr & _A_SUBDIR ) {
-                                            
-                                _makepath( full_name, drive, dir, ndir->d_name, NULL );
-                        #endif
-                                insertFileSpec( strdup(full_name), curr );
-                            }
+                            insertFileSpec( strdup(full_name), curr );
                         }
                     }
                     closedir( dirpt );

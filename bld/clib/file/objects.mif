@@ -55,10 +55,10 @@
 !inject uutimos2.obj                                        o16 o32
 !inject uutimwnt.obj                     nt nta ntp
 
-!include ../../../../objlist.mif
+!include ..\..\..\..\objlist.mif
 
-stat_postopts   =-os
-statos2_postopts=-os
-statwnt_postopts=-os
-utmpnm_postopts =-os
-uremove_postopts=-os
+stat_opts   =-os
+statos2_opts=-os
+statwnt_opts=-os
+utmpnm_opts =-os
+uremove_opts=-os

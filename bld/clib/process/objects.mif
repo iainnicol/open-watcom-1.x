@@ -17,23 +17,23 @@
 !inject exaddwnt.obj                     nt nta ntp
 !inject excptwnt.obj                     nt nta ntp
 !inject execaddr.obj d16 d32
-!inject exl.obj      d16                 nt nta ntp         o16 o32                     l32
-!inject exle.obj     d16                 nt nta ntp         o16 o32                     l32
+!inject exl.obj      d16                 nt nta ntp         o16 o32
+!inject exle.obj     d16                 nt nta ntp         o16 o32
 !inject exleqnx.obj                                                 q16 q32
-!inject exlp.obj     d16                 nt nta ntp         o16 o32                     l32
-!inject exlpe.obj    d16                 nt nta ntp         o16 o32                     l32
+!inject exlp.obj     d16                 nt nta ntp         o16 o32
+!inject exlpe.obj    d16                 nt nta ntp         o16 o32
 !inject exlpeqnx.obj                                                q16 q32
 !inject exlpqnx.obj                                                 q16 q32
 !inject exlqnx.obj                                                  q16 q32
-!inject exv.obj      d16                 nt nta ntp         o16 o32                     l32
+!inject exv.obj      d16                 nt nta ntp         o16 o32
 !inject exve.obj     d16
 !inject exveos2.obj                                         o16 o32
 !inject exveqnx.obj                                                 q16 q32
 !inject exvewnt.obj                      nt nta ntp
 !inject exvp.obj     d16                 nt nta ntp         o16 o32
 !inject exvpe.obj    d16                 nt nta ntp         o16 o32
-!inject exvpeqnx.obj                                                q16 q32             l32
-!inject exvpqnx.obj                                                 q16 q32             l32
+!inject exvpeqnx.obj                                                q16 q32
+!inject exvpqnx.obj                                                 q16 q32
 !inject exvqnx.obj                                                  q16 q32
 !inject exwc2mb.obj  d16 d32                                o16 o32         w16 w32
 !inject _povrlay.obj                     nt nta ntp
@@ -95,24 +95,24 @@
 !inject waitwnt.obj                      nt nta ntp
 !inject _raise.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32
 
-!include ../../../../objlist.mif
+!include ..\..\..\..\objlist.mif
 
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
 #==========================================================================================
 !inject ergospwn.obj     d32
 
 objsuffix=files
-!include ../../../../objlist.mif
+!include ..\..\..\..\objlist.mif
 objprefix=
 
-cenvarg_postopts    =-os
-exve_postopts       =-os
-exveos2_postopts    =-os
-exveqnx_postopts    =-os
-exvewnt_postopts    =-os
-exvpe_postopts      =-os
-exvpeqnx_postopts   =-os
-spve_postopts       =-os
-spveqnx_postopts    =-os
-spvpe_postopts      =-os
-spvpeqnx_postopts   =-os
+cenvarg_opts    =-os
+exve_opts       =-os
+exveos2_opts    =-os
+exveqnx_opts    =-os
+exvewnt_opts    =-os
+exvpe_opts      =-os
+exvpeqnx_opts   =-os
+spve_opts       =-os
+spveqnx_opts    =-os
+spvpe_opts      =-os
+spvpeqnx_opts   =-os

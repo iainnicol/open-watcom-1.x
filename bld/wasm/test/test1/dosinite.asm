@@ -129,19 +129,35 @@ _endif  macro
         endm
 
 _set    macro   base1,ext1,base2,ext2
-        base1&ext1 = base2&ext2
+        ifdef __WASM__
+            base1&&ext1 = base2&&ext2
+        else
+            base1&ext1 = base2&ext2
+        endif
         endm
 
 _label  macro   base,ext
-base&ext:
+ifdef __WASM__
+    base&&ext:
+else
+    base&ext:
+endif
         endm
 
 _j      macro   cc,base,ext
-        j&cc        base&ext
+        ifdef __WASM__
+            j&cc        base&&ext
+        else
+            j&cc        base&ext
+        endif
         endm
 
 _jn     macro   cc,base,ext
-        jn&cc       base&ext
+        ifdef __WASM__
+            jn&cc       base&&ext
+        else
+            jn&cc       base&ext
+        endif
         endm
 
 jnna    macro   label

@@ -206,8 +206,6 @@ int out( char * str )
     return 0;
 }
 
-#define out0 out
-
 static char hexbuff[80];
 
 char * hex( unsigned long num )
@@ -232,13 +230,9 @@ char * hex( unsigned long num )
 #endif
 }
 #else
-//    #define out( s ) 0
-//    #define put( s )
-//    #define hex( n ) 1
-    #define out( s )
-    #define out0( s ) 0
+    #define out( s ) 0
     #define put( s )
-    #define hex( n )
+    #define hex( n ) 1
 #endif
 
 #ifndef put
@@ -1041,12 +1035,12 @@ out( "    checking environment:\r\n" );
     if( parm[0] == 'D' || parm[0] == 'd' ) {
         Flags.DRsOn = FALSE;
         ++parm;
-    } else if( out0( "    CPU type\r\n" ) || X86CPUType() < 3 ) {
+    } else if( out( "    CPU type\r\n" ) || X86CPUType() < 3 ) {
         Flags.DRsOn = FALSE;
-    } else if( out0( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
+    } else if( out( "    WinEnh\r\n" ) || ( EnhancedWinCheck() & 0x7f ) ) {
         /* Enhanced Windows 3.0 VM kernel messes up handling of debug regs */
         Flags.DRsOn = FALSE;
-    } else if( out0( "    DOSEMU\r\n" ) || DOSEMUCheck() ) {
+    } else if( out( "    DOSEMU\r\n" ) || DOSEMUCheck() ) {
         /* no fiddling with debug regs in Linux DOSEMU either */
         Flags.DRsOn = FALSE;
     } else {

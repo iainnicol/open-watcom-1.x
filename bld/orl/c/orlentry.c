@@ -85,7 +85,7 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd ) {
 orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
 /****************************************************************/
 {
-    unsigned char *     magic;
+    char *              magic;
     uint_16             machine_type;
     uint_16             offset;
     uint_16             len;
@@ -746,7 +746,7 @@ orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle hnd )
 {
     switch( hnd->type ) {
     case( ORL_ELF ):
-        return (orl_symbol_handle) ElfSymbolGetAssociated( (elf_symbol_handle) hnd );
+        return NULL;    // NYI: call to an ELF func. here.
     case( ORL_COFF ):
         return (orl_symbol_handle) CoffSymbolGetAssociated( (coff_symbol_handle) hnd );
     case( ORL_OMF ):

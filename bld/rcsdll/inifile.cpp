@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Configuration profile routines for multiple OSes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -42,12 +43,20 @@
     int MyGetProfileString( char *dir, char *filename, char *section,
                             char *key, char *def, char *buffer, int len ) {
         dir = dir; filename = filename;
+        #if( __WATCOMC__ > 1000 )
         return( PrfQueryProfileString( HINI_USERPROFILE, (char const *)section, (char const *)key, (char const *)def, (void *)buffer, len ) );
+        #else
+        return( PrfQueryProfileString( HINI_USERPROFILE, (unsigned char *)section, (unsigned char *)key, (unsigned char *)def, (void *)buffer, len ) );
+        #endif
     }
     int MyWriteProfileString( char *dir, char *filename, char *section,
                               char *key, char *string ) {
         dir = dir; filename = filename;
+        #if( __WATCOMC__ > 1000 )
         return( PrfWriteProfileString( HINI_USERPROFILE, (char const *)section, (char const *)key, (char const *)string ) );
+        #else
+        return( PrfWriteProfileString( HINI_USERPROFILE, (unsigned char *)section, (unsigned char *)key, (unsigned char *)string ) );
+        #endif
     }
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     #define STRICT
@@ -64,7 +73,7 @@
         dir =dir; // ignored in this model
         return(WritePrivateProfileString(section,key,string,filename));
     }
-#elif defined( __UNIX__ )
+#elif defined( __QNX__ )
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

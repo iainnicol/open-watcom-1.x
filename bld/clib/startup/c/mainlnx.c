@@ -37,8 +37,6 @@ struct thread_data *__FirstThreadData = (struct thread_data *)&_STACKLOW;
 #include "osthread.h"
 #include "stacklow.h"
 #include "rtdata.h"
-#include "initfini.h"
-#include "syslinux.h"
 
 extern void __InitThreadData( thread_data * );
 
@@ -81,11 +79,5 @@ void __LinuxInit( void *ptr )
     tmp = &_STACKLOW;
     #undef _STACKLOW
     *tmp = _STACKLOW;
-}
-
-_WCRTLINK void __exit(unsigned ret_code)
-{
-    __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-    sys_exit(ret_code);
 }
 

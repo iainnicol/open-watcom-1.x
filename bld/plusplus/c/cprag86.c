@@ -768,8 +768,8 @@ static int insertFixups( VBUF *code_buffer, unsigned char *buff, unsigned i )
                 case FIX_SEG:
                     if( name == NULL ) {
                         /* special case for floating point fixup */
-                        if( *src != 0x9b ) { // FWAIT
-                            code_buffer->buf[ dst++ ] = 0x9b; // FWAIT
+                        if( *src != 0x9b ) { /* FWAIT */
+                            code_buffer->buf[ dst++ ] = 0x9b;
                         }
                     } else {
                         skip = 2;
@@ -1044,8 +1044,6 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
                     d = copyCodeLen( d, p, sizeof( unsigned long ) );
                     p += sizeof( unsigned long );
                     break;
-                case 0x9B: // FWAIT
-                    break;
                 default:
                     DbgNever();
                 }
@@ -1098,8 +1096,6 @@ void AsmSysPCHReadCode( AUX_INFO *info )
                     sym = SymbolMapIndex( *((SYMBOL*)p) );
                     copyCodeLen( p, &sym, sizeof( sym ) );
                     p += sizeof( SYMBOL ) + sizeof( unsigned long );
-                    break;
-                case 0x9B: // FWAIT
                     break;
                 default:
                     DbgNever();

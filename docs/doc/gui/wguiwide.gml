@@ -345,7 +345,7 @@ in the Target Name field (we suggest
 .mono target1
 .ct ).
 Next, select the appropriate Target Environment (we suggest
-"Win32") and Image Type (we suggest "Character-mode Executable").
+"Win32") and Image Type (we suggest "Windowed Executable").
 Click on OK when completed.
 .figure *depth='2.79' *scale=100 *file='ide5' Select target name, target environment and image type
 .result
@@ -480,8 +480,6 @@ void main()
     {
         printf( "Value is %d\n", ii );
     }
-    printf("Press Enter...\n");
-    getchar();
 }
 .millust end
 .np
@@ -494,10 +492,6 @@ FORTRAN programmers can enter the following lines of code.
       do i = 0, 9
         print *, 'Value is ', ii
       enddo
-
-      print *, 'Press Enter...'
-      read *
-
       end
 .millust end
 .np
@@ -561,21 +555,17 @@ If you are using FORTRAN, the Fortran Compiler Switches dialog appears.
 until the
 .mono 7. CodeGen Strategy Switches
 dialog appears.
-Click on the "Multithreaded application [-bm]" checkbox button to select
+Click on the "Default-window application [-bw]" checkbox to select
 this option.
 .np
 .us FORTRAN programmers:
 Click on the ">>" button until the
 .mono 9. Application Type Switches
 dialog appears.
-Click on the "Multithreaded application [-bm]" checkbox to select
+Click on the "Default windowed application [-bw]" checkbox to select
 this option.
 .result
 A check-mark appears in the checkbox.
-.np
-Note: Selecting this option is for demonstration purposes only, it is not
-required for this simple application.
-.np
 Click OK to close the dialog.
 .step Choose Make
 from the Targets menu.
@@ -618,10 +608,11 @@ from the Targets menu.
 The &vip executes the program
 .fi target1.exe.
 .figure *depth='3.60' *scale=100 *file='ide10' Run from the Targets menu runs the target.
-The program you wrote is a character mode application and its output
-appears in a separate console window.
-You are now ready to debug your target program. You probably do not need
-to debug this simple program with the &dbgname but go through the steps
+The program you wrote uses the default Windowing support that is built
+in to the run-time library.
+The output of your program appears in the Standard IO window. You are
+now ready to debug your target program. You probably do not need to
+debug this simple program with the &dbgname but go through the steps
 so that you know what to do for more complex programs.
 .np
 The &vip has several debugging information options which it uses as
@@ -2655,6 +2646,123 @@ The target is a 32-bit &company Windows extender library.
 The target is a help file.
 .endnote
 .*
+.section MFC - 32-bit (&'substr(&mfc32.,5)) Targets
+.*
+.ix 'targets' 'MFC 32-bit'
+.ix 'MFC 32-bit targets'
+.begnote
+.note Executable [.exe]
+.br
+The "Executable" image type produces a .exe file with no run-time DLL
+dependencies. The resulting .exe file is the only file required for
+deployment. The resulting .exe will be larger and will require more
+time to link than the equivalent AFXDLL .exe (described following).
+.note Executable (AFXDLL) [.exe]
+.br
+The "Executable (AFXDLL)" image type produces a .exe file that has
+run-time dependencies on DLL's that contain the MFC libraries. The
+resulting .exe file is smaller in size and will take less time to link
+than the equivalent non-AFXDLL executable. The on-line MFC Help file
+contains a document named "Technical Note 33: DLL Version of MFC"
+which covers this topic in more detail. The Technical Note is
+Microsoft specific, however, so the run-time DLL names are different
+in the &company version. The following are the &company AFXDLL
+run-time DLL's:
+.code begin
+Calling                             &company      &company
+Convention  Description             DLL         Debug DLL
+----------- ----------------------- ----------- -----------
+register    MFC core libraries      mrw40.dll   mrw40d.dll
+register    MFC database libraries  mrwd40.dll  mrwd40d.dll
+register    MFC OLE libraries       mrwo40.dll  mrwo40d.dll
+stack       MFC core libraries      msw40.dll   msw40d.dll
+stack       MFC database libraries  mswd40.dll  mswd40d.dll
+stack       MFC OLE libraries       mswo40.dll  mswo40d.dll
+.code end
+.np
+The &company DLL versions are freely distributable but the Debug
+versions are not.
+.note Unicode Executable [.exe]
+.br
+This is a Unicode version of the "Executable" image type.
+.note Unicode Executable (AFXDLL) [.exe]
+.br
+This is a Unicode version of the "Executable (AFXDLL)" image type.
+.note DLL (USRDLL) [.dll]
+.br
+The "DLL (USRDLL)" image type produces a stand-alone DLL that can be
+called from both MFC and non-MFC applications. To accomplish this the
+interface functions are declared as extern "C". Please refer to
+"Technical Note 11: Using MFC as Part of a DLL" in the on-line MFC
+Help for further information.
+.note DLL (AFXEXT) [.dll]
+.br
+The "DLL (AFXEXT)" image type produces an Extension MFC DLL that
+contains classes and functions that add functionality to the base MFC
+libraries. The MFC Database DLL (mrwd40.dll and mswd40.dll) and the
+MFC OLE DLL (mrwo40.dll and mswo40.dll) are examples of Extension MFC
+DLL's. Please refer to the section titled "How to Write an MFC
+Extension DLL" in "Technical Note 33: DLL Version of MFC" in the
+on-line MFC Help for further information.
+.note Unicode DLL (USRDLL) [.dll]
+.br
+This is a Unicode version of the "DLL (USRDLL)" image type.
+.note Unicode DLL (AFXEXT) [.dll]
+.br
+This is a Unicode version of the "DLL (AFXEXT)" image type.
+.endnote
+.*
+.section MFC - 16-bit (&'substr(&mfc16.,5)) Targets
+.*
+.ix 'targets' 'MFC 16-bit'
+.ix 'MFC 16-bit targets'
+.begnote
+.note Executable [.exe]
+.br
+The "Executable" image type produces a .exe file with no run-time DLL
+dependencies. The resulting .exe file is the only file required for
+deployment. The resulting .exe will be larger and will require more
+time to link than the equivalent AFXDLL .exe (described following).
+.note Executable (AFXDLL) [.exe]
+.br
+The "Executable (AFXDLL)" image type produces a .exe file that has
+run-time dependencies on DLL's that contain the MFC libraries. The
+resulting .exe file is smaller in size and will take less time to link
+than the equivalent non-AFXDLL executable. The on-line MFC Help file
+contains a document named "Technical Note 33: DLL Version of MFC"
+which covers this topic in more detail. The Technical Note is
+Microsoft specific, however, so the run-time DLL names are different
+in the &company version. The following are the &company AFXDLL
+run-time DLL's:
+.code begin
+Calling                             &company      &company
+Convention  Description             DLL         Debug DLL
+----------- ----------------------- ----------- -----------
+register    MFC core libraries      mfc25w.dll  mfc25wd.dll
+register    MFC database libraries  mfcd25w.dll mfcd25wd.dll
+register    MFC OLE libraries       mfco25w.dll mfco25wd.dll
+.code end
+.np
+The &company DLL versions are freely distributable but the Debug
+versions are not.
+.note DLL (USRDLL) [.dll]
+.br
+The "DLL (USRDLL)" image type produces a stand-alone DLL that can be
+called from both MFC and non-MFC applications. To accomplish this the
+interface functions are declared as extern "C". Please refer to
+"Technical Note 11: Using MFC as Part of a DLL" in the on-line MFC
+Help for further information.
+.note DLL (AFXEXT) [.dll]
+.br
+The "DLL (AFXEXT)" image type produces an Extension MFC DLL that
+contains classes and functions that add functionality to the base MFC
+libraries. The MFC Database DLL (mfcd25w.dll) and the MFC OLE DLL
+(mfco25w.dll_) are examples of Extension MFC DLL's. Please refer to
+the section titled "How to Write an MFC Extension DLL" in "Technical
+Note 33: DLL Version of MFC" in the on-line MFC Help for further
+information.
+.endnote
+.*
 .section DOS - 16-bit Targets
 .*
 .ix 'targets' 'DOS 16-bit'
@@ -2755,6 +2863,24 @@ The target is an OS/2 help file (HLP format).
 .note INF File [.inf]
 .br
 The target is an OS/2 help file (INF format).
+.endnote
+.*
+.section AutoCad - 32-bit Targets
+.*
+.ix 'targets' 'AutoCAD 32-bit'
+.ix 'AutoCAD 32-bit targets'
+.begnote
+.note Executable [.exp]
+.br
+The target is a 32-bit AutoCAD Development System (ADS) application.
+.note Device Interface [.exp]
+.br
+The target is a floating-point emulation 32-bit AutoCAD Device
+Interface (EADI) application.
+.note Floating-point Device Interface [.exp]
+.br
+The target is a floating-point 32-bit AutoCAD Device Interface (FADI)
+application.
 .endnote
 .*
 .endlevel

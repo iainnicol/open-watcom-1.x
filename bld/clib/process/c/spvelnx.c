@@ -65,9 +65,6 @@ _WCRTLINK int (spawnve)( mode, path, argv, envp )
     struct sigaction    new;
     int status_pipe[2];
 
-    if ( mode == P_OVERLAY )
-        return execve( path, argv, envp );
-    
     if (pipe( status_pipe ) == -1)
         return -1;
 
@@ -86,7 +83,9 @@ _WCRTLINK int (spawnve)( mode, path, argv, envp )
             sigaction( SIGCHLD, &new, NULL );
         }
     }
-    err = pid = fork();
+    pid = 0;
+    if ( mode != P_OVERLAY )
+        err = pid = fork();
     if ( pid == 0 ) {
         close( status_pipe[0] );
         execve( path, argv, envp );

@@ -16,10 +16,10 @@
 #include "ftbar.h"
 #include "ssbar.h"
 #include "repdlg.h"
-#include "rcstr.gh"
-#include "../ctl/setfs.h"
-#include "../ctl/setscr.h"
-#include "../ctl/setgen.h"
+#include "rcstr.h"
+#include "..\ctl\setfs.h"
+#include "..\ctl\setscr.h"
+#include "..\ctl\setgen.h"
 
 APPLICON        ICON    viw.ico
 WATCOMICON      ICON    watcom.ico
@@ -50,7 +50,7 @@ DROPSS          CURSOR  dropss.cur
 #define pick( a, b, c )  a b
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
-    #include "rcstrmsg.gh"
+    #include "rcstr.msg"
 END
 
 #include "filelist.dlg"
@@ -69,6 +69,6 @@ END
 #include "ssbar.dlg"
 #include "repdlg.dlg"
 #include "snoop.dlg"
-#include "../ctl/setfs.dlg"
-#include "../ctl/setscr.dlg"
-#include "../ctl/setgen.dlg"
+#include "..\ctl\setfs.dlg"
+#include "..\ctl\setscr.dlg"
+#include "..\ctl\setgen.dlg"

@@ -29,7 +29,7 @@ followed by an optional decimal integer or an asterisk character (*);
 .bull
 an optional
 .us type length
-specification: one of "h", "l", "ll", "L", "I64", "w"
+specification: one of "h", "l", "L", "I64", "w"
 .if &farfnc eq 0 .do begin
 .ct
 ; and
@@ -40,7 +40,7 @@ specification: one of "h", "l", "ll", "L", "I64", "w"
 .do end
 .bull
 a character that specifies the type of conversion to be performed: one of
-the characters "bcCdeEfFgGinopsSuxX".
+the characters "cCdeEfFgGinopsSuxX".
 .endbull
 .np
 The valid format control flags are:
@@ -58,8 +58,8 @@ both "+" and "&sysrb." are specified, "+" overrides "&sysrb."
 an alternate conversion form is used:
 .begbull
 .bull
-for "b" (unsigned binary) and "o" (unsigned octal) conversions, the
-precision is incremented, if necessary, so that the first digit is "0".
+for "o" (unsigned octal) conversions, the precision is incremented, if
+necessary, so that the first digit is "0".
 .bull
 for "x" or "X" (unsigned hexadecimal) conversions, a non-zero value
 is prepended with "0x" or "0X" respectively.
@@ -98,8 +98,8 @@ If no precision value is given, a precision of 0 is used.
 The precision value affects the following conversions:
 .begbull
 .bull
-For "b", "d", "i", "o", "u", "x" and "X" (integer) conversions, the
-precision specifies the minimum number of digits to appear.
+For "d", "i", "o", "u", "x" and "X" (integer) conversions, the precision
+specifies the minimum number of digits to appear.
 .bull
 For "e", "E" and "f" (fixed-precision, floating-point) conversions, the
 precision specifies the number of digits to appear after the
@@ -115,7 +115,7 @@ maximum number of characters to appear.
 A type length specifier affects the conversion as follows:
 .begbull
 .bull
-"h" causes a "b", "d", "i", "o", "u", "x" or "X" (integer) format
+"h" causes a "d", "i", "o", "u", "x" or "X" (integer) format
 conversion to treat the argument as a
 .id short int
 or
@@ -169,7 +169,7 @@ printf(    "%s%d", "Num=", 12345 );
 wprintf( L"%hs%d", "Num=", 12345 );
 .millust end
 .bull
-"l" causes a "b", "d", "i", "o", "u", "x" or "X" (integer) conversion to
+"l" causes a "d", "i", "o", "u", "x" or "X" (integer) conversion to
 process a
 .id long int
 or
@@ -205,16 +205,8 @@ be treated as a far pointer.
 .do end
 .if &version ge 110 .do begin
 .bull
-.ix 'long long'
-"ll" causes a "b", "d", "i", "o", "u", "x" or "X" (integer) conversion to
-process a
-.id long long
-or
-.id unsigned long long
-argument (e.g., %lld).
-.bull
 .ix '__int64'
-"L" causes a "b", "d", "i", "o", "u", "x" or "X" (integer) conversion to
+"L" causes a "d", "i", "o", "u", "x" or "X" (integer) conversion to
 process an
 .id __int64
 or
@@ -222,8 +214,8 @@ or
 argument (e.g., %Ld).
 .bull
 .ix '__int64'
-"I64" causes a "b", "d", "i", "o", "u", "x" or "X" (integer) conversion
-to process an
+"I64" causes a "d", "i", "o", "u", "x" or "X" (integer) conversion to
+process an
 .id __int64
 or
 .id unsigned __int64
@@ -244,13 +236,6 @@ be treated as a near pointer.
 .np
 The valid conversion type specifiers are:
 .begnote $setptnt 3
-.note b
-An argument of type
-.id int
-is converted to an unsigned binary notation and written to the output
-stream.
-The default precision is 1, but if more digits are required, leading
-zeros are added.
 .note c
 An argument of type
 .id int

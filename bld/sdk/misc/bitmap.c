@@ -29,13 +29,14 @@
 *
 ****************************************************************************/
 
-#define STRICT
-#include <windows.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <dos.h>
+#define STRICT
+#include <windows.h>
 #include "palette.h"
 #include "bitmap.h"
 

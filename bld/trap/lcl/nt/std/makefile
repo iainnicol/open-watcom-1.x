@@ -1,7 +1,4 @@
 #pmake: all build lcl os_nt cpu_386 trap x86
-host_cpu = 386
-host_OS = nt
-
 #
 # Create the NT STD.DLL
 #
@@ -9,7 +6,6 @@ host_OS = nt
 os      = nt
 srv     = lcl
 cpu     = x86
-which = TRAP
 
 extra_objs = &
         x86cpu.obj &
@@ -35,11 +31,11 @@ extra_objs = &
 
 #       pgmexec.obj &
 
-inc_dirs += $(lang_root)/h/nt;$(trap_dir)/lcl/dos/h
-extra_c_flags += -dWOW
+extra_incs = $(lang_root)\h\nt;$(trap_dir)\lcl\dos\h
+extra_cflags = /dWOW
 
-!include $(trap_dir)/lcl/lcl.mif
-!include $(trap_dir)/master.mif
+!include $(trap_dir)\lcl\lcl.mif
+!include $(trap_dir)\trap.mif
 
-globals.obj :: ../h/globals.h
+globals.obj :: ..\h\globals.h
 

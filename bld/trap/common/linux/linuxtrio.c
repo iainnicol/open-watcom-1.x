@@ -35,7 +35,6 @@
 #include <string.h>
 #include <termios.h>
 #include <conio.h>
-#include <sys/time.h>
 #include "trapdbg1.h"
 #include "trapdbg2.h"
 #include "trpimp.h"
@@ -61,44 +60,12 @@ void StartupErr( char *err )
 
 int KeyPress()
 {
-    int             ret;
-    struct termios  old;
-    struct termios  new;
-    struct timeval  tv;
-    fd_set          rdfs;
-
-    tcgetattr( 0, &old );
-    new = old;
-    new.c_lflag &= ~(ICANON | ECHO);
-    new.c_cc[VMIN] = 1;
-    new.c_cc[VTIME] = 0;
-    tcsetattr( 0, TCSANOW, &new );
-
-    FD_ZERO( &rdfs );
-    FD_SET( 0, &rdfs );
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
-    ret = select(1, &rdfs, NULL, NULL, &tv );
-
-    tcsetattr( 0, TCSANOW, &old );
-    return( ret != 0 );
+    return( kbhit() );
 }
 
 int KeyGet()
 {
-    struct termios  old;
-    struct termios  new;
-    char            key;
-
-    tcgetattr( 0, &old );
-    new = old;
-    new.c_lflag &= ~(ICANON | ECHO);
-    new.c_cc[VMIN] = 1;
-    new.c_cc[VTIME] = 0;
-    tcsetattr( 0, TCSANOW, &new );
-    read( 0, &key, 1 );
-    tcsetattr( 0, TCSANOW, &old );
-    return( key );
+    return( getch() );
 }
 
 int WantUsage( char *ptr )

@@ -34,15 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#ifdef __WATCOMC__
 #include <process.h>
-#include <share.h>
-#define sopen4 sopen
-#else
-#define sopen4(a,b,c,d) open(a,b,d)
-#endif
 #include <fcntl.h>
-#include <sys/stat.h>
+#include <share.h>
+#include <sys\stat.h>
 #include "posix.h"
 #include "vi.h"
 #include "win.h"
@@ -59,7 +54,7 @@
 #define AS_LOCK         "alock_"
 #define AS_FILE         "asave_"
 #define AS_FILE_EXT     ".fil"
-#ifdef __UNIX__
+#ifdef __QNX__
 #define EXTRA_EXT "0000_"
 #define LOCK_NAME_LEN   22
 #define EXTRA_EXT_OFF   6
@@ -305,7 +300,7 @@ void AutoSaveInit( void )
     /*
      * initialize tmpname
      */
-    #ifdef __UNIX__
+    #ifdef __QNX__
         strcpy( currTmpName,"aaaaaaaaaaaa.tmp" );
     #else
         strcpy( currTmpName,"aaaaaaaa.tmp" );
@@ -388,7 +383,7 @@ void AutoSaveInit( void )
     off = len + CHAR_OFF;
     for( ch =START_CHAR;ch<=END_CHAR;ch++ ) {
         path[ off ] = ch;
-        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR |O_TEXT,
+        lockFileHandle = sopen( path, O_CREAT | O_TRUNC | O_RDWR |O_TEXT,
                                         SH_DENYRW, S_IREAD | S_IWRITE );
         if( lockFileHandle > 0 ) {
             break;

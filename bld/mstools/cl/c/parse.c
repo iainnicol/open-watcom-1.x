@@ -44,19 +44,17 @@
 #include "message.h"
 #include "parse.h"
 #include "system.h"
-//#include "optparse.h"
 
 #if defined(__TARGET_386__)
-    #include "optp386c.gh"
+    #include "optparse.386"
 #elif defined(__TARGET_AXP__)
-    #include "optpaxpc.gh"
+    #include "optparse.axp"
 #elif defined(__TARGET_PPC__)
-    #include "optpppcc.gh"
+    #include "optparse.ppc"
 #else
     #error Unrecognized CPU type
 #endif
 
-#pragma disable_message (202);
 
 /*
  * Initialize the OPT_STORAGE structure.
@@ -980,16 +978,6 @@ static int OPT_GET_LOWER( void )
     return( GetCharContext() );
 }
 
-
-/*
- * If the next character is ch, it is consumed and a non-zero value
- * is returned; otherwise, it is not consumed and zero is returned.
- */
-static int OPT_RECOG( int ch )
-/**********************************/
-{
-    return( CmdScanRecogCharExact( ch ) );
-}
 
 /*
  * If the next character is ch (in either uppercase or lowercase form), it

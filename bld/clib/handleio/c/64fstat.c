@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  64-bit fstat().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -46,7 +47,7 @@
 #endif
 /* most includes should go after this line */
 #include <string.h>
-#include <sys/stat.h>
+#include <sys\stat.h>
 
 
 #ifdef __WIDECHAR__

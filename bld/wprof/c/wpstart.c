@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Execution profiler command line processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -45,6 +46,16 @@
 #ifdef TRMEM
 #include "trmemcvr.h"
 #endif
+
+//#include "utils.def"
+//#include "msg.def"
+//#include "memutil.def"
+//#include "dipinter.def"
+//#include "aboutmsg.def"
+//#include "getsamps.def"
+//#include "clrsamps.def"
+//#include "rptsamps.def"
+//#include "wphelp.def"
 
 extern void WPFiniHelp(void);
 extern void WPDipInit(void);
@@ -160,7 +171,7 @@ extern void WPInit()
     }
     getcmd( buff );
     do_report = procCmd( buff );
-    WndInit( "Open Watcom Profiler" );
+    WndInit( "WATCOM Profiler" );
     WPWndInitDone = B_TRUE;
     InitMADInfo();
     WPDipInit();
@@ -206,7 +217,7 @@ STATIC bint procCmd( char * cmd )
     for(;;) {
         cmd = eatBlanks( cmd );
         if( *cmd == NULLCHAR ) break;
-#ifdef __UNIX__
+#ifdef __QNX__
         if( *cmd == '-' ) {
 #else
         if( *cmd == '-' || *cmd == '/' ) {

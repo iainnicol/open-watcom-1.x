@@ -1,12 +1,28 @@
-!ifdef sys_windowed
-$(ED).res : $(vi_dir)/win/viw.rc .AUTODEPEND
-        $(rc) $(rc_flags) -r -ad -zk0 -i"$(vi_dir)/win;$(vi_dir)/ctl" $[@ -fo=$^@
+!ifeq ED vintw
+vintw.res : $(vi_dir)\win\viw.rc $(rc_deps)
+        $(rc) -r -zk0 -bt=nt -i$(vi_dir)\win;$(vi_dir)\ctl $(vi_dir)\win\viw.rc -fo=vintw.res
+!endif
+!ifeq ED viaxpw
+viaxpw.res : $(vi_dir)\win\viw.rc $(rc_deps)
+        $(rc) -r -zk0 -bt=nt -i$(vi_dir)\win;$(vi_dir)\ctl $(vi_dir)\win\viw.rc -fo=viaxpw.res
+!endif
+!ifeq ED viwp
+viwp.res : $(vi_dir)\win\viw.rc $(rc_deps)
+        $(rc) -r -zk0 -bt=windows -i$(vi_dir)\win;$(vi_dir)\ctl $(vi_dir)\win\viw.rc -fo=viwp.res
+!endif
+!ifeq ED viw
+viw.res : $(vi_dir)\win\viw.rc $(rc_deps)
+        $(rc) -r -zk0 -bt=windows -i$(vi_dir)\win;$(vi_dir)\ctl $(vi_dir)\win\viw.rc -fo=viw.res
+!endif
 
-rcstr.gh : rcstrmsg.gh
-        $(vi) -s $(sdk_dir)/misc/msgtoh.vi -p"$^@" $[@
 
-rcstrmsg.gh : $(vi_dir)/vi.msg $(msgfiles)
-        $(bld_cc) -p -i="$(sdk_dir)/misc" -zk0 $[@ -fo=$^@
+!ifdef msgcheck$(ED)
+$(msgh) : $(mastermsg)
+        vi -i -q -s $(sdk_dir)\misc\msgtoh.vi -p"$(msgh)" $(mastermsg)
+        @if exist about.obj erase about.obj
+
+$(mastermsg) : $(msgfiles)
+        $(bld_cc) -p -i=$(sdk_dir)\misc -zk0 $(vi_dir)\vi.msg >$(mastermsg)
 
 setfs.ybj : setfs.c setfs.ch setfs.dh
 setfs.ch : setfs.ctl
@@ -18,15 +34,14 @@ setgen.dh : setgen.dyn
 
 setscr.ybj : setscr.c setscr.ch
 setscr.ch : setscr.ctl
-
 !endif
 
-ideactiv.ybj : $(viper_dir)/ideact/ideactiv.c
-        $(cc) $[@ -D__ISVI__ $(cflags) -fo=ideactiv.ybj
-getopt.ybj : $(posix_dir)/misc/getopt.c
-        $(cc) $[@ -D__ISVI__ $(cflags) -fo=getopt.ybj
-regexp.obj : $(posix_dir)/misc/regexp.c
-        $(cc) $[@ -DREGEXP -fi=rxsupp.h $(cflags) -fo=regexp.obj
+ideactiv.ybj : $(viper_dir)\ideact\ideactiv.c
+        $(cc) $[@ -d__ISVI__ $(cflags) -fo=ideactiv.ybj
+getopt.ybj : $(posix_dir)\misc\getopt.c
+        $(cc) $[@ -d__ISVI__ $(cflags) -fo=getopt.ybj
+regexp.obj : $(posix_dir)\misc\regexp.c
+        $(cc) $[@ -dREGEXP -fi=rxsupp.h $(cflags) -fo=regexp.obj
 
 !ifndef on_build_machine
 !ifeq vi_trmem 1
@@ -34,7 +49,7 @@ regexp.obj : $(posix_dir)/misc/regexp.c
 extra_c_flags += -of+
 !endif
 
-trmem.ybj : $(trmem_dir)/trmem.c
-trmemcvr.ybj : $(trmem_dir)/trmemcvr.c
+trmem.ybj : $(trmem_dir)\trmem.c
+trmemcvr.ybj : $(trmem_dir)\trmemcvr.c
 !endif
 !endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
+#include <io.h>
 #include <string.h>
 #include <ctype.h>
 #include "watcom.h"
@@ -38,7 +38,7 @@
 #include "wresall.h"
 #include "global.h"
 #include "errors.h"
-#include "rctypes.h"
+#include "types.h"
 #include "rcmem.h"
 #include "rcstr.h"
 #include "exeutil.h"

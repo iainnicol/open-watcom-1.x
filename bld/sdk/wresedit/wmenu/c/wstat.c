@@ -40,7 +40,7 @@
 #include "wmsg.h"
 #include "wmain.h"
 #include "wstat.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

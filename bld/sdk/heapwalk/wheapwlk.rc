@@ -20,7 +20,7 @@
 #define pick( a, b, c )  a b
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
-    #include "rcstrmsg.gh"
+    #include "rcstr.msg"
 END
 
 NUMBER_OF_STRINGS RCDATA
@@ -39,5 +39,5 @@ END
 #include "code.dlg"
 #include "config.dlg"
 //#include "exsort.dlg"
-#include "memwnd.rc"
-#include "about.dlg"
+#include "..\misc\memwnd.rc"
+#include "..\misc\about.dlg"

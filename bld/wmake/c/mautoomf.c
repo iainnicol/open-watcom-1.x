@@ -36,7 +36,6 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mautodep.h"
-#include "autodept.h"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -108,7 +107,7 @@ STATIC handle OMFInitFile( const char *name ) {
     return( ret_val );
 }
 
-static BOOLEAN getOMFCommentRecord( omf_info *info ) {
+static BOOLEAN getCommentRecord( omf_info *info ) {
 /*************************************************/
 
     obj_record          header;
@@ -136,7 +135,7 @@ static BOOLEAN getOMFCommentRecord( omf_info *info ) {
         len = comment.name_len + 1;
         if( read( hdl, &nameBuffer, len ) != len ) break;
         nameBuffer[ len - 1 ] = '\0';
-        info->time_stamp = _DOSStampToTime( comment.dos_date, comment.dos_time );
+        info->time_stamp = SysDOSStampToTime( comment.dos_date, comment.dos_time );
         info->name = &nameBuffer[ 0 ];
         return( TRUE );
     }
@@ -146,7 +145,7 @@ static BOOLEAN getOMFCommentRecord( omf_info *info ) {
 STATIC dep_handle OMFNextDep( dep_handle info ) {
 /***********************************************/
 
-    if( getOMFCommentRecord( info ) ) {
+    if( getCommentRecord( info ) ) {
         return( info );
     }
     return( NULL );

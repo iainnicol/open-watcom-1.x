@@ -15,7 +15,7 @@ The chapters in this section describe the 32-bit Tenberry Software
 Key differences are:
 .begbull
 .bull
-&dos4g will only execute programs built with a &company 32-bit compiler
+&dos4g will only execute programs built with a WATCOM 32-bit compiler
 such as &cmpname and linked with its run-time libraries.
 .bull
 .ix '&dos4gprd' 'VMM restriction'
@@ -29,17 +29,17 @@ VMM performance tuning enhancements.
 .np
 If your application has requirements beyond those provided by &dos4g,
 you may wish to acquire &dos4gprd Professional or DOS/4G from:
-.millust begin
-Tenberry Software, Inc.
-PO Box 20050
-Fountain Hills, Arizona
-U.S.A  85269-0050
+.illust begin
+Tenberry Software, Inc.,
+220 No. Main St.,
+Natick, Massachusetts,
+U.S.A. 01760.
 
-WWW:    http://www.tenberry.com/dos4g/
-Email:  info@tenberry.com
-Phone:  1.480.767.8868
-Fax:    1.480.767.8709
-.millust end
+Telephone:      (508)653-6006
+Facsimile:      (508)655-2753
+Internet:       dos4gw@ratsys.com
+CompuServe:     73667,1753
+.illust end
 .np
 Programs developed to use the restricted version of &dos4g which is
 included in the &cmpname package can be distributed on a royalty-free

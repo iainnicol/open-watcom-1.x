@@ -237,3 +237,8 @@ extern bool ExecWlibDLL( char *cmdline )
     return status != IDEDRV_SUCCESS;
 }
 
+// Temporary? Make sure the DLL gets initialized.
+unsigned LibMain(unsigned handle, unsigned reason)
+{
+    return 1;
+}

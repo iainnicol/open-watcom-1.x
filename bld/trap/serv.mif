@@ -2,11 +2,13 @@
 # Master makefile for creating remote servers
 #
 
-!ifdef __LINUX__
-description = \'Open Watcom Debug Server\'
-!else
-description = 'Open Watcom Debug Server'
-!endif
+# Hack to get the $(linker) macro defined; all trap makefiles need to
+# be redone and define it (and this whole makefile needs to be shredded
+# and redone).
+host_cpu = 386
+
+!include cproj.mif
+!include deftarg.mif
 
 sys_x86_os2     = sys os2 op st=4k,modname=$^&, desc $^&
 sys_x86_os2v2   = sys os2v2 op modname=$^&, desc $^&
@@ -16,7 +18,7 @@ sys_x86_win     = sys windows op st=20k, modname=$^&, desc $^&
 sys_x86_dos     = sys dos op st=4k
 sys_x86_rsi     = stub
 sys_x86_cw      = sys causeway
-sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
+sys_x86_ads     = sys ads op st=8k lib $(adsdir)\wcads.lib
 !ifndef sys_x86_pls
 sys_x86_pls     = sys pharlap op st=8k
 !endif
@@ -33,10 +35,10 @@ sys_x86_nt      = sys nt_win op st=20k, modname=$^&, desc $^&
 !endif
 !endif
 !endif
-sys_x86_nlm     = form novell nlm $(description) &
-                        libpath $(lang_root)/lib386 &
+sys_x86_nlm     = form novell nlm 'Open Watcom Debug Server' &
+                        libpath $(lang_root)\lib386 &
                         op st=8k &
-                        import @$(trap_dir)/common/nlm/trap.imp op nodef
+                        import @$(trap_dir)\common\nlm\trap.imp op nodef
 sys_x86_penpoint= sys penpoint op st=8k, modname=$^&, desc $^&
 
 sys_axp_nt      = sys ntaxp op st=16k, modname=$^&, desc $^&
@@ -49,37 +51,37 @@ machsuff=
 machsuff=$+$(machine)$-
 !endif
 
-targ_x86_os2    = binp/$(name)1.exe
-targ_x86_os2v2  = binp/$(name).exe
-targ_x86_qnx    = qnx/$(name).qnx
-targ_x86_linux  = linux/$(name).elf
-targ_x86_win    = bin/$(name).exe
-targ_x86_dos    = bin.$(machsuff)/$(name).exe
-targ_x86_rsi    = bin.$(machsuff)/$(name).exp
-targ_x86_cw     = bin.$(machsuff)/$(name).exe
-targ_x86_ads    = bin.$(machsuff)/$(name).exp
+targ_x86_os2    = binp\$(name)1.exe
+targ_x86_os2v2  = binp\$(name).exe
+targ_x86_qnx    = qnx\$(name).qnx
+targ_x86_linux  = linux\$(name).elf
+targ_x86_win    = bin\$(name).exe
+targ_x86_dos    = bin.$(machsuff)\$(name).exe
+targ_x86_rsi    = bin.$(machsuff)\$(name).exp
+targ_x86_cw     = bin.$(machsuff)\$(name).exe
+targ_x86_ads    = bin.$(machsuff)\$(name).exp
 !ifndef targ_pls
-targ_x86_pls    = bin.$(machsuff)/$(name).exp
+targ_x86_pls    = bin.$(machsuff)\$(name).exp
 !endif
 !ifeq srv jvm
-targ_x86_nt     = binnt/jvmhlp_g.dll
+targ_x86_nt     = binnt\jvmhlp_g.dll
 !endif
 !ifeq srv msj
-targ_x86_nt     = binnt/msjhlp.dll
+targ_x86_nt     = binnt\msjhlp.dll
 !else
-targ_x86_nt     = binnt/$(name).exe
+targ_x86_nt     = binnt\$(name).exe
 !endif
-targ_x86_nlm    = nlm/$(name).nlm
-targ_x86_penpoint= pen/$(name).dll
+targ_x86_nlm    = nlm\$(name).nlm
+targ_x86_penpoint= pen\$(name).dll
 
-targ_axp_nt     = axpnt/$(name).exe
+targ_axp_nt     = axpnt\$(name).exe
 
-targ_ppc_nt     = ppcnt/$(name).exe
+targ_ppc_nt     = ppcnt\$(name).exe
 
 objs_nlm        = nlmstrt.obj
 
 dig_os = $(os)
-!include $(dig_dir)/mif/trpcli.mif
+!include $(dig_dir)\mif\trpcli.mif
 
 SERVER_objs = $(objs_$(os))
 
@@ -95,3 +97,7 @@ SERVER_remote_objs += serv.obj $(os)trio.obj
 SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
 extra_srcs +=;$(dig_srcs)
 !endif
+
+which = SERVER
+
+!include $(trap_dir)\imp.mif

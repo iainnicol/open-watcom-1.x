@@ -51,17 +51,6 @@
 #define O_BINARY 0
 #endif
 
-enum encoding {
-    ENC_ZK = 1,
-    ENC_ZK0,
-    ENC_ZK1,
-    ENC_ZK2,
-    ENC_ZK3,
-    ENC_ZKL,
-    ENC_ZKU,
-    ENC_ZK0U
-};
-
 struct  option {
     char        *option;
     unsigned    value;
@@ -141,46 +130,6 @@ static struct
 int EqualChar( int c )
 {
     return( c == '#' || c == '=' );
-}
-
-static int character_encoding = 0;
-static long unicode_CP = 0;
-
-void SetCharacterEncoding( void )
-{
-    CompFlags.jis_to_unicode = 0;
-
-    switch( character_encoding ) {
-    case ENC_ZKU:
-        LoadUnicodeTable( unicode_CP );
-        break;
-    case ENC_ZK0U:
-        CompFlags.use_unicode = 0;
-        SetDBChar( 0 );                     /* set double-byte char type */
-        CompFlags.jis_to_unicode = 1;
-        break;
-    case ENC_ZK:
-    case ENC_ZK0:
-        CompFlags.use_unicode = 0;
-        SetDBChar( 0 );                     /* set double-byte char type */
-        break;
-    case ENC_ZK1:
-        CompFlags.use_unicode = 0;
-        SetDBChar( 1 );                     /* set double-byte char type */
-        break;
-    case ENC_ZK2:
-        CompFlags.use_unicode = 0;
-        SetDBChar( 2 );                     /* set double-byte char type */
-        break;
-    case ENC_ZK3:
-        CompFlags.use_unicode = 0;
-        SetDBChar( 3 );                     /* set double-byte char type */
-        break;
-    case ENC_ZKL:
-        CompFlags.use_unicode = 0;
-        SetDBChar( -1 );                    /* set double-byte char type to defualt */
-        break;
-    }
 }
 
 local void SetTargName( char *name, unsigned len )
@@ -315,10 +264,6 @@ local void SetTargSystem()                               /* 07-aug-90 */
     else if( strcmp( SwData.sys_name, "QNX" ) == 0 )
     {
         TargSys = TS_QNX;
-    }
-    else if( strcmp( SwData.sys_name, "OS2" ) == 0 )
-    {
-        TargSys = TS_OS2;
     }
     else
     {
@@ -1153,20 +1098,46 @@ void Set_ZE()           { CompFlags.extensions_enabled = 1; }
 void Set_ZG()           { CompFlags.generate_prototypes = 1; }
 
 void Set_ZI()           { CompFlags.extra_stats_wanted = 1; }
-
-void Set_ZK()           { character_encoding = ENC_ZK; }
-void Set_ZK0()          { character_encoding = ENC_ZK0; }
-void Set_ZK1()          { character_encoding = ENC_ZK1; }
-void Set_ZK2()          { character_encoding = ENC_ZK2; }
-void Set_ZK3()          { character_encoding = ENC_ZK3; }
-void Set_ZKL()          { character_encoding = ENC_ZKL; }
+#ifdef __WATCOMC__
 void Set_ZKU()
 {
-    character_encoding = ENC_ZKU;
-    unicode_CP = OptValue;
+    CompFlags.use_unicode = 1;
+    OptScanPtr = LoadUnicodeTable( OptScanPtr );
 }
-void Set_ZK0U()         { character_encoding = ENC_ZK0U; }
-
+void Set_ZK0()
+{
+    CompFlags.use_unicode = 0;          /* 05-jun-91 */
+    SetDBChar( 0 );                     /* set double-byte char type */
+}
+void Set_ZK0U()
+{
+    CompFlags.use_unicode = 0;          /* 05-jun-91 */
+    SetDBChar( 0 );                     /* set double-byte char type */
+    CompFlags.jis_to_unicode = 1;
+}
+void Set_ZK1()
+{
+    CompFlags.use_unicode = 0;          /* 05-jun-91 */
+    SetDBChar( 1 );                     /* set double-byte char type */
+}
+void Set_ZK2()
+{
+    CompFlags.use_unicode = 0;          /* 05-jun-91 */
+    SetDBChar( 2 );                     /* set double-byte char type */
+}
+void Set_ZK3()
+{
+    CompFlags.use_unicode = 0;          /* 24-mar-00 */
+    SetDBChar( 3 );                     /* set double-byte char type */
+}
+#if _OS != __LINUX__
+void Set_ZKL()
+{
+    CompFlags.use_unicode = 0;          /* 05-jun-91 */
+    SetDBChar( -1 );                   /* set double-byte char type to defualt */
+}
+#endif
+#endif
 void Set_ZL()                   { CompFlags.emit_library_with_main = 0; }
 void Set_ZLF()                  { CompFlags.emit_library_any  = 1; }
 void Set_ZLD()                  { CompFlags.emit_dependencies = 0; }
@@ -1485,14 +1456,17 @@ struct option const CFE_Options[] = {
     { "ze",     0,              Set_ZE },
     { "zg",     0,              Set_ZG },
     { "zi",     0,              Set_ZI },
+#ifdef __WATCOMC__
     { "zk0u",   0,              Set_ZK0U },
     { "zk0",    0,              Set_ZK0 },
     { "zk1",    0,              Set_ZK1 },
     { "zk2",    0,              Set_ZK2 },
     { "zk3",    0,              Set_ZK3 },
+#if _OS != __LINUX__
     { "zkl",    0,              Set_ZKL },
-    { "zku=#",  0,              Set_ZKU },
-    { "zk",     0,              Set_ZK },
+#endif
+    { "zku*",   0,              Set_ZKU },
+#endif
     { "zld",    0,              Set_ZLD },
     { "zlf",    0,              Set_ZLF },
     { "zls",    0,              Set_ZLS },
@@ -1783,7 +1757,6 @@ static void InitCPUModInfo()
     CodeClassName = NULL;
     PCH_FileName  = NULL;
     TargetSwitches = 0;
-    TargSys = TS_OTHER;
 #if _MACHINE == _ALPHA | _MACHINE == _PPC | _MACHINE == _SPARC
     TextSegName   = ".text";
     DataSegName   = ".data";
@@ -1796,6 +1769,7 @@ static void InitCPUModInfo()
     TextSegName   = "";
     DataSegName   = "";
     GenCodeGroup  = "";
+    TargSys = TS_OTHER;
     CompFlags.register_conv_set = 0;
     CompFlags.register_conventions = 1;
     GenSwitches = MEMORY_LOW_FAILS;
@@ -1960,7 +1934,6 @@ void GenCOptions( char **cmdline )
     GblPackAmount = PackAmount;
     SetTargSystem();
     SetGenSwitches();
-    SetCharacterEncoding();
     Define_Memory_Model();
     #ifdef __PCODE__                                                /* 04-feb-91 */
         if( Toggles & TOGGLE_PCODE )  CompFlags.inline_functions = 0;

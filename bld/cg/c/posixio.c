@@ -86,7 +86,7 @@ static  unsigned_32     ObjOffset;
 static  handle          ObjFile;
 static  bool            NeedSeek;
 static  char            ObjName[PATH_MAX+1];
-static  bool            EraseObj;
+static  bool            AbortObj;
 
 
 #define BOUNDARY 64
@@ -136,7 +136,7 @@ extern  void    OpenObj() {
 
     ObjOffset = 0;
     NeedSeek = FALSE;
-    EraseObj = FALSE;
+    AbortObj = FALSE;
 }
 
 
@@ -264,17 +264,10 @@ extern  void    GetFromObj( objhandle rec, uint offset, byte *buff, int len ) {
 }
 
 
-extern  void    AbortObj( void ) {
-/**************************/
-
-    EraseObj = TRUE;
-}
-
 extern  void    ScratchObj() {
 /****************************/
 
-    EraseObj = TRUE;
-    CloseObj();
+    AbortObj = TRUE;
 }
 
 static void FlushBuffers( handle h )
@@ -303,7 +296,7 @@ extern  void    CloseObj() {
     if( ObjFile != -1 ) {
         FlushBuffers( ObjFile );
         CloseStream( ObjFile );
-        if( EraseObj ) {
+        if( AbortObj ) {
             EraseStream( ObjName );
         }
         ObjFile = -1;

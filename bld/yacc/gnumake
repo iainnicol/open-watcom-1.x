@@ -1,6 +1,4 @@
-include $(DEVDIR)/build/mif/master.mk
-
-vpath %.c c
+include watcom.mk
 
 SOURCE := 
 SOURCE += c
@@ -28,17 +26,16 @@ OBJECTS += gentable.o genfast.o gensupp.o
 
 OBJECTS := $(foreach i,$(OBJECTS),$(OBJDIR)/$i)
 
+vpath %.c c
+
 LIBDIRS = $(WCLIB_DIR)/$(OBJDIR)
 
-#LIBS = -lwatcom
+LIBS = -lwatcom
 
-$(OBJDIR)/yacc	: $(OBJDIR) $(OBJECTS)
+$(OBJDIR)/yacc	: $(OBJECTS)
 	$(CC) -o $@ $(CFLAGS) $(OBJECTS) $(LIBS)
-
-$(OBJDIR) :
-	mkdir $(OBJDIR)
 
 .PHONY	: clean
 clean	:
-	rm -rf $(OBJDIR)
+	rm -f $(OBJDIR)/*.[ocha] $(OBJDIR)/yacc
 

@@ -29,12 +29,13 @@
 *
 ****************************************************************************/
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <malloc.h>
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
+#ifdef UNIX
     #include <alloca.h>
     #ifdef _AIX
         #define alloca __alloca

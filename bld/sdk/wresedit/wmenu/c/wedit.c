@@ -47,7 +47,7 @@
 #include "wsetedit.h"
 #include "wprev.h"
 #include "wclip.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 #include "wmsg.h"
 #include "sys_rc.h"
 #include "jdlg.h"

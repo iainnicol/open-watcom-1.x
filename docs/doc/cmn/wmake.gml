@@ -1,6 +1,43 @@
 .* .mono .THINGME gives Script a hard time so use back quote instead
 :set symbol='sysper'     value='~.'
 :set symbol="prod16"    value="16-bit &product".
+:CMT.    .if '&ccmd' eq 'wcexp' .do begin
+:CMT.    :set symbol='compcmd'    value='wcexp'
+:CMT.    :set symbol='ocompcmd'   value='wcc'
+:CMT.    :set symbol='compopt'    value='/o'
+:CMT.    :set symbol='compprdopt' value='/o /r /d0'
+:CMT.    :set symbol='warnopt'    value='/w3'
+:CMT.    :set symbol='optnam'     value='wcexp_options'
+:CMT.    :set symbol='optcont'    value='wcexp_options_$(version)'
+:CMT.    :set symbol='optprod'    value='wcexp_options_production'
+:CMT.    :set symbol='optdeb'     value='wcexp_options_debugging'
+:CMT.    :set symbol='wlinkdebug' value='file wcexpdbg'
+:CMT.    .do end
+:CMT.    .if '&ccmd' eq 'wcc' .do begin
+:CMT.    :set symbol='compcmd'    value='wcc'
+:CMT.    :set symbol='ocompcmd'   value='wcc'
+:CMT.    :set symbol='compopt'    value='/mm /d1'
+:CMT.    :set symbol='compprdopt' value='/mm'
+:CMT.    :set symbol='warnopt'    value='/w3'
+:CMT.    :set symbol='optnam'     value='wcc_options'
+:CMT.    :set symbol='optcont'    value='wcc_options_$(version)'
+:CMT.    :set symbol='optprod'    value='wcc_options_production'
+:CMT.    :set symbol='optdeb'     value='wcc_options_debugging'
+:CMT.    :set symbol='wlinkdebug' value='debug all'
+:CMT.    .do end
+:CMT.    .if '&ccmd' eq 'wpp' .do begin
+:CMT.    :set symbol='compcmd'    value='wpp'
+:CMT.    :set symbol='ocompcmd'   value='wcc'
+:CMT.    :set symbol='compopt'    value='/mm /d1'
+:CMT.    :set symbol='compprdopt' value='/mm'
+:CMT.    :set symbol='warnopt'    value='/w3'
+:CMT.    :set symbol='optnam'     value='wpp_options'
+:CMT.    :set symbol='optcont'    value='wpp_options_$(version)'
+:CMT.    :set symbol='optprod'    value='wpp_options_production'
+:CMT.    :set symbol='optdeb'     value='wpp_options_debugging'
+:CMT.    :set symbol='wlinkdebug' value='debug all'
+:CMT.    .do end
+:CMT.    .if '&ccmd' eq 'wcc386' .do begin
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 :set symbol='libdir'     value='&libdir32.'
 :set symbol='compcmd'    value='wcc386'
@@ -14,6 +51,31 @@
 :set symbol='optdeb'     value='compile_options_debugging'
 :set symbol='wlinkdebug' value='debug all'
 .do end
+:CMT.    .if '&ccmd' eq 'wpp386' .do begin
+:CMT.    :set symbol='compcmd'    value='wpp386'
+:CMT.    :set symbol='ocompcmd'   value='wpp'
+:CMT.    :set symbol='compopt'    value='/mf /d1'
+:CMT.    :set symbol='compprdopt' value='/mf'
+:CMT.    :set symbol='warnopt'    value='/w3'
+:CMT.    :set symbol='optnam'     value='wpp_options'
+:CMT.    :set symbol='optcont'    value='wpp_options_$(version)'
+:CMT.    :set symbol='optprod'    value='wpp_options_production'
+:CMT.    :set symbol='optdeb'     value='wpp_options_debugging'
+:CMT.    :set symbol='wlinkdebug' value='debug all'
+:CMT.    .do end
+:CMT.    .if '&ccmd' eq 'wfc' .do begin
+:CMT.    :set symbol='compcmd'    value='wfc'
+:CMT.    :set symbol='ocompcmd'   value='wfc'
+:CMT.    :set symbol='compopt'    value='/mm /d1'
+:CMT.    :set symbol='compprdopt' value='/mm'
+:CMT.    :set symbol='warnopt'    value='/warn'
+:CMT.    :set symbol='optnam'     value='wfc_options'
+:CMT.    :set symbol='optcont'    value='wfc_options_$(version)'
+:CMT.    :set symbol='optprod'    value='wfc_options_production'
+:CMT.    :set symbol='optdeb'     value='wfc_options_debugging'
+:CMT.    :set symbol='wlinkdebug' value='debug all'
+:CMT.    .do end
+:CMT.    .if '&ccmd' eq 'wfc386' .do begin
 .if '&lang' eq 'FORTRAN 77' .do begin
 :set symbol='libdir'     value='&libdir32.'
 :set symbol='compcmd'    value='wfc386'
@@ -71,6 +133,14 @@ Subsequent sections go into the philosophy and capabilities of
 If you are not familiar with the capabilities of the Make utility, we
 recommend that you skip to the next major section entitled "Dependency
 Declarations" and read on.
+.if '&target' eq 'PP' .do begin
+.np
+The sample code in
+.fi &pathnamup.\sample
+contains &makname files for all sample applications.
+You can refer to these Make files for examples of how to write
+&makname files.
+.do end
 .*
 .section &makname Reference
 .*
@@ -116,6 +186,14 @@ macro definitions defined in makefiles.
 .ix '&makcmdup command line' 'targets'
 .note targets
 is one or more targets described in the makefile.
+:cmt. .ix '&makcmdup command line' 'large rules'
+:cmt. .ix '&makcmdup command line' 'increasing buffer space'
+:cmt. .note s=buffer_size
+:cmt. is a macro expansion buffer size declaration.
+:cmt. The buffer size determines how large a rule may be.
+:cmt. The default buffer size is 2K bytes and should suffice for most
+:cmt. applications.
+:cmt. (e.g., s=4k)
 .endnote
 .*
 .section &makname Options Summary
@@ -173,10 +251,6 @@ silent mode - do not print commands before execution
 touch files instead of executing commands
 .note &sw.u
 UNIX compatibility mode
-.note &sw.v
-verbose listing of inline files
-.note &sw.y
-show why a target will be updated
 .note &sw.z
 do not erase target after error/interrupt (disables prompting)
 .endnote
@@ -383,10 +457,9 @@ __LOADDLL__= defined if DLL loading supported
 __MSDOS__ =  defined if MS/DOS version
 __WINDOWS__ = defined if Windows version
 __NT__ = defined if Windows NT version
-__NT386__ = defined if x86 Windows NT version
+__NT386__ = defined if 32-bit Windows NT version
 __OS2__ = defined if OS/2 version
 __QNX__ = defined if QNX version
-__LINUX__ = defined if Linux version
 #endif
 # clear &sysper.EXTENSIONS list
 &sysper.EXTENSIONS:
@@ -497,14 +570,6 @@ UNIX compatibility mode
 .np
 The "u" option will indicate to &maksname that the line continuation
 character should be a backslash "\" rather than an ampersand "&".
-:OPT name='v'
-.ix '&makcmdup options' 'v'
-The "v" option enables a verbose listing of inline temporary files.
-:OPT name='y'
-.ix '&makcmdup options' 'y'
-The "y" option enables the display of a progress line denoting which
-dependent file has caused a target to be updated. This is a useful
-option for helping to debug makefiles.
 :OPT name='z'
 .ix '&makcmdup options' 'z'
 .ix '&makcmdup' 'target deletion prompt'
@@ -1276,14 +1341,6 @@ balance.lst summary.lst : ledger.dat sales.dat purchase.dat
 If the program "DOREPORT" executes and its return code is non-zero
 then &maksname will not delete "BALANCE.LST" or "SUMMARY.LST".
 .*
-.section Ignoring Target Timestamp (.EXISTSONLY)
-.*
-.ix '&makcmdup directives' '.EXISTSONLY'
-.ix 'EXISTSONLY' '&makcmdup directive'
-The
-.id &sysper.EXISTSONLY
-directive indicates to &maksname that the target should not be updated if it already exists, regardless of its timestamp.
-.*
 .section Defining Recognized File Extensions (.EXTENSIONS)
 .*
 .ix '&makcmdup directives' '.EXTENSIONS'
@@ -1297,9 +1354,7 @@ The default
 declaration is:
 .code begin
 &sysper.EXTENSIONS:
-&sysper.EXTENSIONS: .exe .nlm .dsk .lan .exp .lib .obj &
-             .i .asm .c .cpp .cxx .cc .for .pas .cob &
-             .h .hpp .hxx .hh .fi .mif .inc
+&sysper.EXTENSIONS: .exe .exp .lib .obj .asm .c .for .pas .cob .h .fi .mif
 .code end
 .pc
 A
@@ -1320,19 +1375,13 @@ declaration could have been coded as:
 .br
 &sysper.EXTENSIONS: .exe
 .br
-&sysper.EXTENSIONS: .nlm .dsk .lan .exp
+&sysper.EXTENSIONS: .exp
 .br
 &sysper.EXTENSIONS: .lib
 .br
 &sysper.EXTENSIONS: .obj
 .br
-&sysper.EXTENSIONS: .i .asm .c .cpp .cxx .cc
-.br
-&sysper.EXTENSIONS: .for .pas .cob
-.br
-&sysper.EXTENSIONS: .h .hpp .hxx .hh .fi .mif .inc
-.br
-&sysper.EXTENSIONS: .inc
+&sysper.EXTENSIONS: .asm .c .for .pas .cob .h .fi .mif
 :cmt. .emillust
 .np
 with identical results.
@@ -2790,6 +2839,9 @@ program&exe :: $(objs)
 
 .millust end
 .pc
+:cmt.wcg. .ix 'SET' '&wcgvarup environment variable'
+:cmt.wcg. Notice that the "SET" command will be executed after the ".DEF"
+:cmt.wcg. files have been updated.
 The ".OBJ" files are updated to complete the update of the file
 "PROGRAM&exeup".
 .ix '&makcmdup' '"::" behaviour'
@@ -3200,6 +3252,10 @@ along with
 Together these preprocessor directives allow selection of makefile
 declarations to be based on either the value or the existence of a
 macro.
+.* .ix '&makcmdup' 'preprocessor restrictions'
+.* .ix 'preprocessor restrictions
+.* The preprocessor directives must encapsulate complete declarations.
+.* A rule or declaration cannot be split across preprocessor directives.
 .np
 Environment variables can be checked by using an environment variable
 name prefixed with a "%".
@@ -3939,6 +3995,7 @@ The setting of environment variables in makefiles reduces the number
 of "SET" commands required in the system initialization file.
 Here is an example with the &cmpname compiler.
 .ix 'environment variables' '&incvarup'
+:cmt.wcg. .ix 'environment variables' '&wcgvarup'
 .ix 'environment variables' '&libvarup'
 .ix '&makcmdup' 'environment variables'
 .ix '&makcmdup' 'setting environment variables'
@@ -3946,6 +4003,7 @@ Here is an example with the &cmpname compiler.
 .ix 'setting environment variables'
 .ix '&makcmdup special macros' '$(%path)'
 .ix 'SET' '&incvarup environment variable'
+:cmt.wcg. .ix 'SET' '&wcgvarup environment variable'
 .ix 'SET' '&libvarup environment variable'
 .millust begin
 #

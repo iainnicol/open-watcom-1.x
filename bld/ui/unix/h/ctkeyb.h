@@ -58,11 +58,9 @@
 #endif
 */
 
-#ifndef __WATCOMC__
 #include "clibext.h"
-#endif
 
-extern unsigned short   ShftState;
+static unsigned short   ShftState;
 extern char *GetTermType( void );
 
 int             ck_init();

@@ -33,7 +33,7 @@
 #include <string.h>
 #include "watcom.h"
 
-#include "rctypes.h"
+#include "types.h"
 #include "semantic.h"
 #include "rcmem.h"
 #include "global.h"
@@ -42,7 +42,7 @@
 #include "yydriver.h"
 #include "scan.h"
 #include "errprt.h"
-#include "rcmsg.gh"
+#include "rcmsg.h"
 
 #include "os2res.h"
 

@@ -249,7 +249,7 @@ void EliminateFirstN( char *buff, int n  )
 
 } /* EliminateFirstN */
 
-#if defined( __AXP__ ) || !defined( __WATCOMC__ )
+#ifdef __AXP__
 #define toUpper( x )    toupper( x )
 #define toLower( x )    tolower( x )
 #else

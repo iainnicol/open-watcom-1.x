@@ -4,7 +4,7 @@
 #include "settings.h"
 #include "dialogs.h"
 #include "about.h"
-#include "rcstr.gh"
+#include "rcstr.h"
 
 APPLICON        ICON    wimgedit.ico
 APPLBITMAP      BITMAP  wimgedit.bmp
@@ -108,7 +108,7 @@ Accelerators ACCELERATORS
 #define sp( a, b ) a
 STRINGTABLE
 BEGIN
-    #include "rcstrmsg.gh"
+    #include "rcstr.msg"
 END
 
 #include "wimgedit.men"

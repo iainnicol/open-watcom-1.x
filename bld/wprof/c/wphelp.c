@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Execution profiler (console version) online help processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -37,6 +38,9 @@
 #include "msg.h"
 #include "pathlist.h"
 
+//#include "wphelp.def"
+//#include "utils.def"
+//#include "msg.def"
 extern void ErrorMsg(char *msg,... );
 extern char *FindFile(char *path,char *name,path_list *path_tail);
 
@@ -54,7 +58,7 @@ void WPInitHelp()
 /***************/
 {
     helpHandle = GUIHelpInit( WndGui( WndMain ), HELPNAME,
-                              "Open Watcom Profiler Help" );
+                              "WATCOM Profiler Help" );
 }
 
 

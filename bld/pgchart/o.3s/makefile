@@ -4,10 +4,10 @@
 #
 
 libname =       chart3s
-model =         -ms -3s
+model =         /ms /3s
 module =        $[&s
 cdecl =
 fard =
 _386 =          386
 
-!include ../pgchart.mif
+!include ..\pgchart.mif

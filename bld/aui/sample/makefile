@@ -36,11 +36,11 @@ apppm.res apppmj.res : $(rcfiles) ..\h\apppm.rc
         set opath=$(%path)
         set path=$(lang_root)\binp
         $(lang_root)\binp\rc -r app.rc
-        rm -f apppm.i
-        cp app.res apppm.res
+        del apppm.i
+        copy app.res apppm.res
         rename apppmj.i apppm.i
         $(lang_root)\binp\rc -r app.rc
-        cp app.res apppmj.res
+        copy app.res apppmj.res
         set path=$(%opath)
         @set include=$(%oinc)
 
@@ -49,7 +49,7 @@ apppm.res apppmj.res : $(rcfiles) ..\h\apppm.rc
         $(compile) $(copts) /zq /fh
 
 eraseall.obj : $(auidir)\compile.gbl
-        rm -f *.obj
+        if exist *.obj erase *.obj
         wtouch eraseall.obj
 
 objs = app.obj util.obj window1.obj window2.obj window3.obj &
@@ -65,9 +65,3 @@ app.lnk : eraseall.obj $(objs) $(__makefiles__) $(auilib)
         @%append app.lnk op map,un,stack=12k
         @for %i in ($(objs)) do @%append app.lnk file %i
         @%append app.lnk lib $(auilib)
-
-./mkstr.exe: $(auidir)/c/mkstr.c
-        wcl $]@ -fe=$^@
-
-auistr.gh : ./mkstr.exe $(auidir)/h/aui.msg
-        $[@ $^@

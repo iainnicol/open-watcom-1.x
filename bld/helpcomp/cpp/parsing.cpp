@@ -24,10 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  .RTF file parsing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+/*
+PARSING:  .RTF file parsing
+*/
 
 #include "parsing.h"
 #include "hcerrors.h"
@@ -38,13 +43,13 @@
 //  Generate the list of supported RTF commands.
 #define _COMMAND( n, s ) n
 enum com_nums {
-#include "../h/commands.h"
+#include "..\h\commands.h"
 };
 
 #undef _COMMAND
 #define _COMMAND( n, s ) s
 static char const *com_strs[] = {
-#include "../h/commands.h"
+#include "..\h\commands.h"
 };
 
 

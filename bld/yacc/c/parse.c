@@ -539,7 +539,6 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         }
         ++s;
     } else {
-        i = n + 1;
         if( *s == '-' || isdigit( *s ) ) {
             i = strtol( s, &s, 10 );
         }
@@ -882,7 +881,7 @@ static int xlat_char( int special, int c ) {
     }
     warn( "'x' token contains unknown character '%c' (\\x%x)\n", c, c );
     addbuf( 'X' );
-    sprintf( buff, "%x", c );
+    ultoa( c, buff, 16 );
     addstr( buff );
     return( TRUE );
 }

@@ -74,12 +74,17 @@
 #include <ctype.h>
 #include <limits.h>
 #include <sys/stat.h>
-#ifdef __UNIX__
+#ifdef __QNX__
 #include <utime.h>
 #else
 #include <sys/utime.h>
 #endif
-#include "watcom.h"
+#ifndef _MAX_PATH2
+#define _MAX_PATH2 PATH_MAX+4
+#endif
+#ifdef __USE_BSD
+#define stricmp strcasecmp
+#endif
 
 //#define local static
 #define local
@@ -174,9 +179,6 @@ local unsigned RecordInitialize(); // - initialize for record processing
 local void OutputString();      // - send string to output file
 local void PutNL();             // - output a newline
 local void AddIncludePathList();// - add to list of include paths
-local void ProcessRecord(int,char *); // - PROCESS A RECORD OF INPUT
-local void EatWhite(void);      // - eat white space
-local int Expr(void);
 
                                 // DATA (READ ONLY)
 
@@ -246,8 +248,8 @@ enum                            // PROCESSING MODES
 
 
 int main(                  // MAIN-LINE
-    int argc,          // - # arguments
-    char *argv[] )         // - arguments list
+    unsigned arg_count,     // - # arguments
+    char *param[] )         // - arguments list
 {
 #define src_file param[ count ]         // - name of source file
 #define tgt_file param[ arg_count-1 ]   // - name of modifications file
@@ -256,67 +258,8 @@ int main(                  // MAIN-LINE
     SEGMENT *seg;           // - segment structure
     struct utimbuf      dest_time;
     struct stat         src_time;
-    char                *src = NULL;
-    char                *tgt = NULL;
-
-    char                *param[32];
-    int                 arg_count = 0;
-
-    for( count = 0; count < argc; count++ ) {
-        if( argv[count][0] != '@' ) {
-            param[arg_count] = malloc( strlen( argv[count] ) + 1 );
-            strcpy( param[arg_count++], argv[count] );
-        } else {
-            FILE        *f;
-            char        st[512], separator;
-            int         i, j, k;
-
-            f = fopen( argv[count]+1, "r" );
-            if( f == NULL ) {
-                Error( "Unable to open indirect argument file" );
-                continue;
-            }    
-
-            fgets( st, 512, f );
-            fclose( f );
-
-            if( st[strlen( st ) - 1] == '\n' )
-                st[strlen( st ) - 1] = 0;
-
-            i = 0;
-            while( i < strlen( st )) {
-                while( st[i] == ' ' )
-                    i++;
-                if( st[i] == 0 )
-                    break;
-                if( st[i] == '"' ) {
-                    separator = '"';
-                    i++;
-                } else {
-                    separator = ' ';
-                }
-                j = i;
-                while(( st[j] != separator ) && ( st[j] != 0 )) {
-                    if(( separator == '"') && ( st[j] == '\\' ))
-                        j++;
-                    j++;
-                }
-
-                param[arg_count] = malloc( j - i + 1 );
-                for( k = 0; k < j - i; k++ ) {
-                    if(( separator == '"') && ( st[i + k] == '\\' ))
-                        i++;
-                    param[arg_count][k] = st[i + k];
-                }    
-                param[arg_count][k] = 0;
-                arg_count++;
-
-                i = j;
-                if ( st[i] == '"' )
-                    i++;
-            }
-        }    
-    }    
+    char                *src;
+    char                *tgt;
 
     ErrCount = 0;
     if( arg_count < 3 ) {
@@ -551,7 +494,7 @@ local void OutputString( char *p, char *record )
 
 local void PutNL()
 {
-#if !defined( __UNIX__ )
+#if !defined( __QNX__ )
     if( !UnixStyle ) fputc( '\r', OutputFile );
 #endif
     fputc( '\n', OutputFile );
@@ -718,11 +661,7 @@ local void AddIncludePathList(  // ADD TO PATH LIST
         Error( "Unable to allocate %d bytes for path list entry: %s", size, path );
     } else {
         memcpy( lptr->path, path, size + 1 );
-#ifdef __UNIX__
-        lptr->path[size] = '/';
-#else
         lptr->path[size] = '\\';
-#endif
         lptr->path[size+1] = 0;
         lptr->next = NULL;
         p = IncPathList;

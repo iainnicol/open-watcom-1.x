@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Presentation Manager default windowing dialogs.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -68,7 +69,7 @@ typedef struct {
  *
  * For certains things ctldata is required, this is true for dialog boxes.
  * I did not find anywhere where this was documented and had to figure it out
- * by dissecting a .res file.
+ * by disecting a .res file.
  *
  */
 
@@ -101,7 +102,7 @@ static itemdata _getint[] = {
 
 char *ultoa( unsigned long int __value, char *__buf, int __radix );
 
-static char *titleName = "Open Watcom Default Windowing System";
+static char *titleName = "WATCOM Default Windowing System";
 static char *helpMsg = "Enter the number of lines of text you would like to keep in the window at any time";
 
 static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val ) {

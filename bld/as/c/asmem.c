@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
-#include "as.h"
 #ifdef _STANDALONE_
 #include "trmem.h"
 #include "trmemcvr.h"
-#else
+#endif
+#include "as.h"
+
+#ifndef _STANDALONE_
 extern void *AsmAlloc( unsigned amount );
 extern void AsmFree( void *ptr );
 #endif

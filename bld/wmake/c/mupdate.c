@@ -154,9 +154,7 @@ STATIC void getStats( TARGET *targ )
 }
 
 
-#ifdef __WATCOMC__
 #pragma on (check_stack);
-#endif
 STATIC BOOLEAN targExists( TARGET *targ )
 /***************************************/
 {
@@ -179,9 +177,8 @@ STATIC BOOLEAN targExists( TARGET *targ )
     }
     return( FALSE );
 }
-#ifdef __WATCOMC__
 #pragma off(check_stack);
-#endif
+
 
 STATIC void getDate( TARGET *targ )
 /*********************************/
@@ -208,9 +205,7 @@ STATIC void getDate( TARGET *targ )
 
 STATIC BOOLEAN checkForAutoDeps( TARGET *targ, char *name, time_t *max_time );
 
-#ifdef __WATCOMC__
 #pragma on (check_stack);
-#endif
 STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
 /******************************************************************/
 {
@@ -278,12 +273,10 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     if( Glob.cont ) {
         return( RET_WARN );
     }
-    exit( ExitSafe( EXIT_ERROR ) );
+    ExitSafe( EXIT_ERROR );
     return( RET_ERROR );
 }
-#ifdef __WATCOMC__
 #pragma off(check_stack);
-#endif
 
 
 STATIC time_t maxDepTime( time_t max_time, DEPEND *dep )
@@ -503,11 +496,7 @@ STATIC RET_T IsOutOfDate (TARGET *targ, TARGET *deptarg,
  */
 
     getDate( targ );
-    if ( targ->existing && targ->attr.existsonly )
-        return (RET_SUCCESS);
     getDate( deptarg );
-    if ( deptarg->existing && deptarg->attr.existsonly )
-        return (RET_SUCCESS);
     if( dateCmp( targ->date, deptarg->date ) < 0 ) {
         *outofdate = TRUE;
         if(Glob.show_offenders)
@@ -697,8 +686,6 @@ STATIC RET_T imply( TARGET *targ,
             /* try to find this file on path or in targets */
             ret = TrySufPath( buf, buf, &imptarg, FALSE );
             switch( ret ) {
-            case RET_WARN:
-                break;
             case RET_ERROR:
                 if( ! Glob.microsoft ) {
                     slistDef = slistEmptyTargDepPath;
@@ -820,7 +807,7 @@ STATIC RET_T tryImply( TARGET *targ, BOOLEAN must )
    assert ( depend != NULL );
 
    tlist = depend->targs;
-   currentEnd = outTList = NULL;
+   outTList = NULL;
    while ( tlist != NULL ) {
        temp = NULL;
        // In Microsoft it is possible to have macros in the

@@ -56,12 +56,10 @@ char near *near EditOpts[] =  {
 int NumEditOpts = (sizeof( EditOpts )/sizeof( char near * ) );
 
 /* mouse data */
-#if !defined( __LINUX__ ) || defined( PREBUILD )
 int             MouseRow;
 int             MouseCol;
-int             MouseStatus;
-#endif
 int             MouseSpeed=4;
+int             MouseStatus;
 int             MouseDoubleClickSpeed=3;
 int             MouseRepeatStartDelay=5;
 int             MouseRepeatDelay;

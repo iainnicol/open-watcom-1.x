@@ -41,7 +41,7 @@
 #include "wglbl.h"
 #include "winst.h"
 #include "wmsg.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 #include "wctl3d.h"
 #include "wstrdup.h"
 #include "wgetfn.h"

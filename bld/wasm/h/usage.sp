@@ -1,6 +1,6 @@
 :segment ENGLISH
 Usage:   wasm [options] asm_file [options] [@env_var]
-:segment qnx|linux
+:segment qnx
 Options:
 :elsesegment
 Options:                    ( /option is also supported )
@@ -51,11 +51,9 @@ Options:                    ( /option is also supported )
 -nt=<name>          set name of text segment
 -o                  allow C form of octal constants
 -zq or -q           operate quietly
--zld                suppress generation of file dependency info in object file
--? or h             print this message
+-?                  print this message
 -w<number>          set warning level number
 -we                 treat all warnings as errors
--wx                 set warning level to the highest level
 
 :elsesegment JAPANESE
 Žg—p•û–@: wasm [options] file [options] [@env_var]

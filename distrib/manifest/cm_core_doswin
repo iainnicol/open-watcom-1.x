@@ -2,9 +2,10 @@
 
 binw\batchbox.pif
 binw\cmdedit.exe
-binw\dmpobj.exe
+binw\d4grun.exe
 binw\fcenable.exe
 binw\ms2wlink.exe
+binw\w32run.exe
 binw\wasm.exe
 binw\wdis.exe
 binw\wlib.exe
@@ -13,3 +14,4 @@ binw\wlink.lnk
 binw\wmake.exe
 binw\wstrip.exe
 binw\wtouch.exe
+binw\x32run.exe

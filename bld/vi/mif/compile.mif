@@ -1,24 +1,17 @@
-c_dirs_root = $(vi_dir)/$(host_OS)
-!ifeq host_OS linux
-!ifdef prebuild
-c_dirs_root = $(vi_dir)/noui
-!else
-c_dirs_root = $(vi_dir)/unix
-!endif
-!endif
+c_dirs_root = $(vi_dir)\$(host_OS)
 !ifdef curses
-c_dirs_root = $(vi_dir)/curses
+c_dirs_root = $(vi_dir)\curses
 !endif
 
 !ifdef sys_windowed
 ! ifeq host_OS nt
-c_dirs_root = $(vi_dir)/nt;$(vi_dir)/win
+c_dirs_root = $(vi_dir)\nt;$(vi_dir)\win
 ! else
-c_dirs_root = $(vi_dir)/win
+c_dirs_root = $(vi_dir)\win
 ! endif
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/dos;$(sdk_dir)/misc;$(vi_dir)/ctl
+c_dirs = $(vi_dir)\c;$(c_dirs_root);$(vi_dir)\dos;$(sdk_dir)\misc;$(vi_dir)\ctl
 !else
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui
+c_dirs = $(vi_dir)\c;$(c_dirs_root);$(vi_dir)\ui
 !endif
 
 .c : $(c_dirs)
@@ -60,7 +53,7 @@ extra_c_flags_386_win = -zw -s
 
 extra_c_flags_386 = $(extra_c_flags_386_$(host_OS))
 
-extra_c_flags = $(extra_c_flags_trmem) $(extra_c_flags_debug) -DNOUSE3D=1 -ai
+extra_c_flags = $(extra_c_flags_trmem) $(extra_c_flags_debug) -dNOUSE3D=1 -ai
 
 .c.obj:
         $(cc) $(cflags) $(extra_c_flags_$[&) $[@ -fo=.obj
@@ -76,20 +69,14 @@ extra_c_flags = $(extra_c_flags_trmem) $(extra_c_flags_debug) -DNOUSE3D=1 -ai
 !endif
 
 
-#!ifeq host_CPU 386
-#wasm_flags = -3
-#!endif
-#.asm.obj:
-#        wasm $(wasm_flags) $[*
+!ifeq host_CPU 386
+wasm_flags = -3
+!endif
+.asm.obj:
+        wasm $(wasm_flags) $[*
+#       masm $(masm_flags) /Mx /Zd $[*;
 
-!ifdef __LINUX__
-.ctl.ch:
-        $(bld_bin)/parsectl $[@ $[&.ch Ctl_$^&
-.dyn.dh:
-        $(bld_bin)/parsedyn $[@ $[&.dh Dyn_$^&
-!else
 .ctl.ch:
         $(bld_bin)\parsectl $[@ $[&.ch Ctl_$^&
 .dyn.dh:
         $(bld_bin)\parsedyn $[@ $[&.dh Dyn_$^&
-!endif
