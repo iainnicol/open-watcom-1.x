@@ -24,10 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Internal header with defined to support the multi-thread
-*               runtime library.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #ifndef _THREAD_H_INCLUDED
 #define _THREAD_H_INCLUDED
@@ -60,9 +61,6 @@
 #if defined(__QNX__)
   #include <semaphor.h>
   #include <sys/types.h>
-#elif defined(__LINUX__)
-// TODO: Linux thread stuff goes here!
-  #include <sys/types.h>
 #else
   #include "sigdefn.h"
 #endif
@@ -76,8 +74,6 @@ typedef struct  semaphore_object {
         void            *semaphore;
   #elif defined(__QNX__)
         sem_t           semaphore;
-  #elif defined(__LINUX__)
-    // TODO: Linux semaphore goes here!
   #else
         unsigned long   semaphore;
   #endif
@@ -110,6 +106,9 @@ _WCRTLINK void __CloseSemaphore( semaphore_object * );
  *     - must be the same size as struct thread_ctl
  *       in plusplus\cpplib\runtime\h\cpplib.h
  */
+// Note: this has changed for 32bit code in 10.0
+//       now the C++ library will register how much thread data it wants
+//       in an initializer
 struct wcpp_thread_ctl {
     void *autos;
     void *d0;
@@ -128,7 +127,7 @@ struct wcpp_thread_ctl {
 /* stack checking routine assumes "__stklowP" is first field */
 typedef struct thread_data {
     unsigned                    __stklowP;
-    #if !defined(__QNX__) && !defined(__LINUX__)
+    #if !defined(__QNX__)
         int                     __errnoP;
         int                     __doserrnoP;
     #endif
@@ -141,7 +140,7 @@ typedef struct thread_data {
     char                        __asctimeP[26];
     char                        __allocated;    // vs auto
     char                        __resize;       // storage has realloc pending
-    #if !defined(__QNX__) && !defined(__LINUX__)
+    #if !defined(__QNX__)
         __EXCEPTION_RECORD      *xcpt_handler;
         sigtab                  signal_table[__SIGLAST+1];
     #endif
@@ -152,8 +151,6 @@ typedef struct thread_data {
         unsigned long           thread_id;
     #elif defined(__QNX__)
         pid_t                   thread_id;
-    #elif defined(__LINUX__)
-        // TODO: Linux thread ID!
     #endif
     #if defined(__NT__)
         void                    *thread_handle;
@@ -178,7 +175,7 @@ typedef struct thread_data {
     // prototype for thread data init function
     int __initthread( void *p );
 
-    #define __THREADDATAPTR     ((*__GetThreadPtr)())
+    #define __THREADDATAPTR     ((thread_data *)(*__GetThreadPtr)())
     #if defined(__OS2__) || defined(_NETWARE_CLIB)
         typedef struct thread_data_vector {
             thread_data *data;
@@ -194,13 +191,13 @@ typedef struct thread_data {
     #endif
     #if defined(__QNX__)
         // QNX uses magic memory for thread specific data
-        extern struct thread_data *__MultipleThread();
+        extern void *__MultipleThread();
     #endif
 #else
     extern int _WCFAR *_threadid;
     extern thread_data **__ThreadData;
-    extern struct thread_data * __MultipleThread();
-    #define __THREADDATAPTR     (__MultipleThread())
+    extern void *__MultipleThread();
+    #define __THREADDATAPTR     ((thread_data *)__MultipleThread())
 #endif
 
 extern  unsigned        __GetMaxThreads(void);
@@ -211,4 +208,3 @@ extern  unsigned        __MaxThreads;
 
 #pragma pack(__pop);
 #endif
-

@@ -36,7 +36,7 @@
 #ifdef __NT__
     #include <windows.h>
 #else
-    #ifdef __UNIX__
+    #ifdef __QNX__
         #include <unistd.h>
     #else
         #include <io.h>
