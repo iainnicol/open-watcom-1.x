@@ -212,6 +212,8 @@ static int output( int i )
     /*
      * Output operand size prefix
      */
+    if( ins->cpu & NO_OPPRFX )
+        rCode->prefix.opsiz = FALSE;
     switch( ins->byte1_info ) {
     case F_16:
         if( rCode->use32 ) rCode->prefix.opsiz = TRUE;

@@ -2337,6 +2337,12 @@ static int check_size( void )
             break;
         }
         break;
+    case T_CVTSD2SI:
+    case T_CVTTSD2SI:
+    case T_CVTSS2SI:
+    case T_CVTTSS2SI:
+    case T_MOVNTI:
+        break;
     case T_MOVD:
 #if 0    
         op1_size = OperandSize( op1 );

@@ -170,8 +170,8 @@ static void FarCallToNear()
             break;
         }
     }
-    AsmWarn( 4, CALL_FAR_TO_NEAR );
-//    AsmNote( CALL_FAR_TO_NEAR );
+    if( Parse_Pass == PASS_2 )
+        AsmWarn( 4, CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
     strcpy( buffer, "CALL NEAR PTR " );
     for( i++; AsmBuffer[i]->token != T_FINAL; i++ ) {

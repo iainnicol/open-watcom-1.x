@@ -237,7 +237,7 @@ _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
     movntdq     DGROUP:L$1,xmm1
     movnti      cs:0aH[bx+di],ebx
     movnti      cs:0aH[ebx+eax*2],ebx
-    movnti      DGROUP:L$1,ebx
+    movnti      DGROUP:L$2,ebx
     movntpd     cs:0aH[bx+di],xmm1
     movntpd     cs:0aH[ebx+eax*2],xmm1
     movntpd     DGROUP:L$1,xmm1
@@ -593,6 +593,8 @@ _TEXT		ENDS
 _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 L$1:
     DB	0, 0, 0, 0, 0, 0, 0, 0
+L$2:
+    DB	0, 0, 0, 0
 
 _DATA		ENDS
 		END

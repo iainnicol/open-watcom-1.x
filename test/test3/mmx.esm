@@ -208,7 +208,7 @@ _DATA		SEGMENT	DWORD PUBLIC USE32 'DATA'
 L$1:
     DB	0, 0, 0, 0, 0, 0, 0, 0
 L$2:
-    DB	0, 0, 0, 0, 0, 0
+    DB	0, 0, 0, 0
 
 _DATA		ENDS
 		END

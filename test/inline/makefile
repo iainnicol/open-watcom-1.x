@@ -2,6 +2,7 @@
 .IGNORE
 
 objs = &
+3dnow &
 486 &
 adc &
 add &
@@ -22,6 +23,7 @@ amodes6 &
 and &
 bt &
 bug &
+calljmp &
 cc2 &
 cmp &
 cmpx &
@@ -55,6 +57,7 @@ lod &
 lxs &
 misc &
 misc2 &
+mmx &
 modes &
 modes1 &
 modes2 &
@@ -79,6 +82,9 @@ sbb &
 scas &
 setcc &
 shld &
+sse &
+sse2 &
+sse3 &
 sub &
 test &
 try &
@@ -100,12 +106,6 @@ asmbug12 &
 asmbug13
 
 dev_objs = &
-3dnow &
-calljmp &
-mmx &
-sse &
-sse2 &
-sse3
 
 init_3dnow = K3D
 init_mmx = MMX

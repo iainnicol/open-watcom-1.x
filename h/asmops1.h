@@ -75,6 +75,8 @@ enum asm_cpu {
         P_SSE2  = 0x0400,         /* SSE extension instructions */
         P_SSE3  = 0x0800,         /* SSE extension instructions */
 
+        NO_OPPRFX  = P_MMX | P_SSE | P_SSE2 | P_SSE3,
+
         P_FPU_MASK = 0x0007,
         P_CPU_MASK = 0x0070,
         P_EXT_MASK = 0x0F80
