@@ -36,6 +36,7 @@
 
 extern void    FrlFree( void *, void * );  
 extern void    FrlFini( void ** ); 
+extern void    *FrlAlloc( void ***, int ); // not quite clear about the triple indirection?
 
 #endif
 

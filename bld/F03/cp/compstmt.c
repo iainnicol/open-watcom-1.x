@@ -49,12 +49,12 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "frl.h"
 
 #include <string.h>
 #include <ctype.h>
 
 extern  void            ChkPntLst(void);
-extern  pointer         FrlAlloc(void **,int);
 extern  sym_id          LkSym(void);
 extern  void            MakeITList(void);
 extern  void            FreeITNodes(itnode *);

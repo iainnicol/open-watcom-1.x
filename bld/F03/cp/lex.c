@@ -44,10 +44,10 @@
 #include "prdefn.h"
 #include "ferror.h"
 #include "comio.h"
+#include "frl.h"
 
 #include <string.h>
 
-extern  void            *FrlAlloc(void **,int);
 extern  void            InitScan(void);
 extern  void            Scan(void);
 
