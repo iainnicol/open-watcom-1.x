@@ -30,6 +30,5 @@
 
 
 #define _BANVER 1200
-//#define _BETAVER 2
-//#define _BANEXTRA " Limited Availability"
-//#define _BANEXSHORT " LA"
+#define _BANEXTRA 
+#define _BANEXSHORT
