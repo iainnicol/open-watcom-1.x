@@ -37,7 +37,7 @@ HANDLE  Instance;
 HWND    DesktopWindow;
 DWORD   WindowsFlags;
 
-int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int PASCAL LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     dataseg=dataseg;heap=heap;cmdline=cmdline;
     Instance=hmod;
@@ -46,7 +46,7 @@ int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int __export WINAPI WEP( int res )
+int far PASCAL WEP( int res )
 {
     res = res;
     return( 1 );

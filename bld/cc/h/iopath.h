@@ -29,8 +29,7 @@
 *
 ****************************************************************************/
 
-
-#if defined(__QNX__)
+#if defined(__QNX__) || defined(__LINUX__)
  #define C_PATH         "../c"
  #define H_PATH         "../h"
  #define PATH_SEP       "/"
@@ -50,3 +49,4 @@
 #define MBR_EXT         ".mbr"
 #define C_EXT           ".c"
 #define CPP_EXT         ".i"
+

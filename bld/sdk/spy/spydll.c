@@ -48,7 +48,7 @@ typedef callstruct __FAR *LPCALLMSG;
 
 static HHOOK            callHookHandle, getHookHandle;
 static BOOL             isFiltering = FALSE;
-static HANDLE           dllInstance;
+static HINSTANCE        dllInstance;
 
 #ifndef __NT__
  void (WINAPI *HandleMessage)( LPMSG pmsg );
@@ -95,7 +95,7 @@ BOOL WINAPI LibMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
 
 #else
 
-int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     dataseg = dataseg;
     heap = heap;
@@ -105,7 +105,7 @@ int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int __export WINAPI WEP( int res )
+int WINAPI WEP( int res )
 {
     res = res;
 

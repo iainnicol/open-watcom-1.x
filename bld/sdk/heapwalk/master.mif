@@ -18,7 +18,7 @@ cflags= -zq-2-s-zu-d1-zW-fpc-w4 -fo=$[&.obj -i=$(sdk_dir)\misc;$(wdisasmdir)h;$(
 !ifndef on_build_machine
 cflags += -d2
 !endif
- 
+
 rc = wrc
 
 .EXTENSIONS:

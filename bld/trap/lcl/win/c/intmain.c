@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int PASCAL LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     hmod = hmod;
     dataseg = dataseg;
@@ -42,7 +42,7 @@ int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int __export WINAPI WEP( int res )
+int FAR PASCAL WEP( int res )
 {
     res = res;
 

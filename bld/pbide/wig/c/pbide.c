@@ -92,7 +92,7 @@ int __stdcall DLLMain( long hdll, long reason, long reserved )
 
 #else
 
-int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
+int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     hmod = hmod;
     dataseg = dataseg;
@@ -101,7 +101,7 @@ int WINAPI LibMain( HANDLE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
     return( 1 );
 }
 
-int __export WINAPI WEP( int res )
+int WINAPI WEP( int res )
 {
     res = res;
     return( 1 );

@@ -31,6 +31,8 @@ md %relroot%\%defrel%\h\os2\GL
 md %relroot%\%defrel%\h\os21x
 md %relroot%\%defrel%\qh
 md %relroot%\%defrel%\qh\sys
+md %relroot%\%defrel%\lh
+md %relroot%\%defrel%\lh\sys
 md %relroot%\%defrel%\lib286
 md %relroot%\%defrel%\lib386
 md %relroot%\%defrel%\nlm
@@ -50,6 +52,7 @@ md %relroot%\%defrel%\lib386\nt
 md %relroot%\%defrel%\lib386\os2
 md %relroot%\%defrel%\lib386\win
 md %relroot%\%defrel%\lib386\qnx
+md %relroot%\%defrel%\lib386\linux
 md %relroot%\%defrel%\libaxp
 md %relroot%\%defrel%\libaxp\nt
 md %relroot%\%defrel%\samples\clibexam
@@ -137,6 +140,9 @@ md %relroot%\%defrel%\samples\win\edit\win32
 md %relroot%\%defrel%\samples\win\edit\win386
 md %relroot%\%defrel%\src\cpplib
 md %relroot%\%defrel%\src\editdll
+md %relroot%\%defrel%\src\editdll\win
+md %relroot%\%defrel%\src\editdll\nt
+md %relroot%\%defrel%\src\editdll\os2
 md %relroot%\%defrel%\src\inc
 md %relroot%\%defrel%\src\os2
 md %relroot%\%defrel%\src\startup
