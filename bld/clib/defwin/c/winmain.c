@@ -24,9 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Default Windowing - Start/exit Windows Win16, WIN386 and Win32
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #include "variety.h"
 #include <malloc.h>
@@ -37,14 +39,7 @@
 #ifdef __NT__
     #include <ctype.h>
 #endif
-#include "defwin.h"
 
-#ifndef __NT__
-#pragma aux __init_default_win "*";
-char    __init_default_win;
-#endif
-
-#ifdef DEFAULT_WINDOWING
 
 static char *mainClass;
 extern char __WinTitleBar[20];          /* Text for window title bar */
@@ -72,6 +67,9 @@ _WCRTLINK int   __InitDefaultWin()
 
 _WCRTLINK void  __FiniDefaultWin() {}
 
+#else
+#pragma aux __init_default_win "*";
+char    __init_default_win;
 #endif
 
 _WCRTLINK extern int        ___Argc;    /* argument count */
@@ -80,7 +78,7 @@ _WCRTLINK extern char **    ___Argv;    /* argument vector */
 /*
  * DefaultWinMain - main windows entry point
  */
-_WCRTLINK int PASCAL DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
+_WCRTLINK int PASCAL DefaultWinMain( HANDLE inst, HANDLE previnst,
         LPSTR cmd, int show, int (*pmain)( int, char ** ) )
 {
     int rc;
@@ -243,5 +241,3 @@ static int windowsInit( HANDLE inst, int showcmd )
     return( TRUE );
 
 } /* windowsInit */
-
-#endif

@@ -254,9 +254,9 @@ static bool WinSpawnWait( char *cmd )
     if( buff[0] == '\0' ) return( FALSE );
     toolhelp = LoadModule( buff, &parm );
     if( toolhelp < HINSTANCE_ERROR ) return( FALSE );
-    taskfirst = (BOOL WINAPI(*)(TASKENTRY FAR*))GetProcAddress( toolhelp, "TaskFirst" );
+    taskfirst = GetProcAddress( toolhelp, "TaskFirst" );
     if( taskfirst == NULL ) return( FALSE );
-    tasknext = (BOOL WINAPI(*)(TASKENTRY FAR*))GetProcAddress( toolhelp, "TaskNext" );
+    tasknext = GetProcAddress( toolhelp, "TaskNext" );
     if( tasknext == NULL ) return( FALSE );
     task.dwSize = sizeof( task );
     do {

@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-#if !defined(__UNIX__)
+#if !defined(__QNX__)
  #include <direct.h>
 #endif
 #include <env.h>

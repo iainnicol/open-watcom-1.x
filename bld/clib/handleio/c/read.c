@@ -55,6 +55,11 @@
 #include "defwin.h"
 
 
+#if defined(DEFAULT_WINDOWING) && defined( __WINDOWS__ )
+    extern short _WCI86FAR pascal _lread( short, char _WCI86FAR *, short );
+#endif
+
+
 #if defined(__WINDOWS_386__)
     int __read
 #else
@@ -200,7 +205,7 @@
 
 #if defined( __WINDOWS_386__ )
 #define MAXBUFF 0x8000
-_WCRTLINK int read( int handle, void *buffer, unsigned len )
+_WCRTLINK int read( int handle, char *buffer, unsigned len )
 {
     unsigned    total=0,readamt;
     int         rc;
@@ -219,7 +224,7 @@ _WCRTLINK int read( int handle, void *buffer, unsigned len )
         if( rc != readamt ) return( total );
 
         len -= readamt;
-        buffer = ((char*)buffer) + readamt;
+        buffer += readamt;
     }
     return( total );
 

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for setenv()
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -58,7 +59,6 @@ extern _WCRTLINK int __wsetenv( const wchar_t *name, const wchar_t *newvalue, in
 // the wide and MBCS environments consistent.
 _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newvalue, int overwrite )
 {
-#ifndef __UNIX__
 #ifdef __WIDECHAR__
     char *              otherName;
     char *              otherNewval;
@@ -72,14 +72,13 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
 #endif
     size_t              otherNameLen;
     size_t              otherNewvalLen;
-#endif
     int                 rc;
 #ifdef __NT__
     BOOL                osRc;
 #endif
 
     /*** Ensure variable is deleted if newvalue=="" ***/
-    #ifndef __UNIX__
+    #ifndef __QNX__
         if( newvalue != NULL  &&  *newvalue == NULLCHAR ) {
             if( overwrite  ||  __F_NAME(getenv,_wgetenv)(name) == NULL ) {
                 newvalue = NULL;
@@ -103,11 +102,6 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     #ifdef __WIDECHAR__
         if( _RWD_wenviron == NULL )  __create_wide_environment();
     #endif
-    #ifdef __UNIX__
-    
-    rc = __F_NAME(_setenv,__wsetenv)( name, newvalue, overwrite );
-
-    #else
     if( __F_NAME(_setenv,__wsetenv)( name, newvalue, overwrite )  !=  0 ) {
         return( -1 );
     }
@@ -148,7 +142,6 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     rc = __F_NAME(__wsetenv,_setenv)( otherName, otherNewval, overwrite );
     lib_free( otherName );
     if( otherNewval != NULL )  lib_free( otherNewval );
-    #endif
     return( rc );
 }
 
@@ -290,7 +283,7 @@ static int findenv( const CHAR_TYPE *name, const CHAR_TYPE *newvalue )
                         return( index1 + 1 );   /* return index origin 1 */
                     }
                 }
-#if defined(__UNIX__)
+#ifdef __QNX__
                 if( *p1 != *p2 ) break;
 #else
                 /* case independent search */
@@ -307,4 +300,3 @@ static int findenv( const CHAR_TYPE *name, const CHAR_TYPE *newvalue )
         return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );/* not found */
     }
 #endif
-

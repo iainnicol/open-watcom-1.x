@@ -56,7 +56,6 @@
 #include "msysdep.h"
 #include "mautodep.h"
 #if defined( __WINDOWS__ )
-#define STRICT
 #include <windows.h>
 #endif
 

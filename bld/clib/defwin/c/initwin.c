@@ -24,24 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Default Windowing - Initialize and finalize Win32 and OS/2
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include "rtinit.h"
-#include "defwin.h"
+
+_WCRTLINK extern void __InitDefaultWin( void );
+_WCRTLINK extern void __FiniDefaultWin( void );
 
 #if defined(_M_IX86)
  #pragma aux __init_default_win "*";
 #endif
 char __init_default_win;
-
-#ifdef DEFAULT_WINDOWING
-
-_WCRTLINK extern void __InitDefaultWin( void );
-_WCRTLINK extern void __FiniDefaultWin( void );
 
 #if defined(__SW_BR)
     // need a thunking layer
@@ -52,5 +50,4 @@ _WCRTLINK extern void __FiniDefaultWin( void );
 #else
     AXI( __InitDefaultWin, INIT_PRIORITY_LIBRARY )
     AYI( __FiniDefaultWin, INIT_PRIORITY_LIBRARY )
-#endif
 #endif
