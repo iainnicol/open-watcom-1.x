@@ -114,11 +114,7 @@ extra_objs = linkio.obj virtmem.obj
 !ifeq host_OS qnx
 extra_objs = posixio.obj virtmem.obj
 !else
-!ifeq host_OS linux
-extra_objs = posixio.obj virtmem.obj
-!else
 extra_objs = ntio.obj virtpage.obj
-!endif
 !endif
 !endif
 
@@ -153,6 +149,10 @@ extra_c_flags_objorl = /i=$(orl_dir)\h
 extra_c_flags_dbgdwarf = /i=$(dwarf_dir)\dw\h
 extra_c_flags_loadpe = /i=..\h;$(wrc_dir)\h;$(wres_dir)\h /dINSIDE_WLINK
 extra_c_flags_loados2 = /i=$(wres_dir)\h
+
+!ifdef use_os2tk_stuff
+extra_c_flags_loados2 += ;$(inc_dirs_sys)
+!endif
 
 exe_cflags = $+$(cflags)$-
 
@@ -199,7 +199,7 @@ extend = exe
 
 # and finally, the miscellaneous macro definitions
 
-inc_dirs = ..\h;$(watcom_dir)\h;$(inc_dirs_sys)
+inc_dirs = ..\h;$(watcom_dir)\h;$(lang_root)\h;$(inc_dirs_sys_$(host_os))
 
 !ifndef execomp
 execomp = $(cc) -i$(inc_dirs)

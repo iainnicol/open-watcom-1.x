@@ -31,7 +31,9 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <unistd.h>
+#if !defined(__QNX__)
+#include <io.h>
+#endif
 #include "fileacc.h"
 #include <string.h>
 #include <errno.h>
@@ -39,7 +41,9 @@
 #include "seterrno.h"
 
 
-#if defined(__NETWARE__)
+#if defined(__QNX__)
+ extern int  __qread( int handle, char *buffer, unsigned len );
+#elif defined(__NETWARE__)
  #define __qread( h, b, l ) read( h, b, l )
  #define DOS_EOF_CHAR   0x1a
 #else
@@ -83,7 +87,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
         __ioalloc( fp );                        /* allocate buffer */
     }
     len_read = 0;
-#if !defined(__UNIX__)
+#if !defined(__QNX__)
     if( fp->_flag & _BINARY )
 #endif
     {
@@ -130,7 +134,7 @@ _WCRTLINK size_t fread( void *_buf, size_t size, size_t n, FILE *fp )
                 if( __fill_buffer( fp ) == 0 )  break;
             }
         } /* end for */
-#if !defined(__UNIX__)
+#if !defined(__QNX__)
     } else {
         for(;;) {
             int c;

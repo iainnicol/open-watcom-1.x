@@ -12,7 +12,7 @@
  #include <_comdef.h>
 #endif
 
-:segment QNX | LINUX
+:segment QNX
 #ifndef __TYPES_H_INCLUDED
  #include <sys/types.h>
 #endif
@@ -30,10 +30,8 @@ _WCRTLINK extern int execve( const char *__path, const char *const __argv[],
                             const char *const __envp[] );
 _WCRTLINK extern int execvp( const char *__file, const char *const __argv[] );
 
-:segment QNX | LINUX
-:include ext.sp
-:endsegment
 :segment QNX
+#if defined(_QNX_SOURCE) || !defined(NO_EXT_KEYS)
 
 /*
  *  Spawn flags passed to qnx_spawn()
@@ -82,7 +80,7 @@ _WCRTLINK extern int execvpe( const char *__file, const char *const __argv[],
 
 :: extra 'register' is used to prevent C++ compiler from entering a parser
 :: disambiguation stage (i.e., it has a use, so don't delete it) AFS
-:segment QNX | LINUX
+:segment QNX
 #if defined(__386__)
 _WCRTLINK extern int  _beginthread( register void (*__start_address)(void *),
    void *__stack_bottom, unsigned __stack_size, void *__arglist );
@@ -135,13 +133,13 @@ _WCRTLINK extern int   _cwait( int *__status, int __process_id,
 _WCRTLINK extern void  abort( void );
 _WCRTLINK extern void  exit( int __status );
 _WCRTLINK extern void  _exit( int __status );
-:segment QNX | LINUX
+:segment QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
 _WCRTLINK extern char *getcmd( char *__buffer );
 _WCRTLINK extern int   _bgetcmd( char *__buffer, int __len );
 _WCRTLINK extern char *_cmdname( char *__name );
-:segment QNX | LINUX
+:segment QNX
 #endif
 :endsegment
 _WCRTLINK extern char *getenv( const char *__name );
@@ -215,12 +213,12 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 #endif
 _WCRTLINK extern int getpid( void );
 _WCRTLINK extern int wait( int *__status );
-:elsesegment QNX | LINUX
+:elsesegment QNX
 extern pid_t getpid( void );
 extern pid_t wait( int *__status );
 :endsegment
 
-:segment QNX | LINUX
+:segment QNX
 #endif
 :endsegment
 

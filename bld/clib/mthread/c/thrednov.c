@@ -66,7 +66,7 @@ thread_data             *__FirstThreadData;
 
 static  int             CurrThrdID = 1;
 
-static thread_data *__SingleThread( void )
+static thread_data *__SingleThread()
 {
     return( __FirstThreadData );
 }
