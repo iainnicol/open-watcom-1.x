@@ -132,120 +132,171 @@ struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
     return( fixup );
 }
 
-int BackPatch( struct asm_sym *sym )
-/**********************************/
-/*
-- patching for forward reference label in Jmp instructions;
-- call only when a new label appears;
-*/
+#ifdef _WASM_
+
+#define SkipFixup() \
+    fixup->next = sym->fixup; \
+    sym->fixup = fixup
+
+#else
+
+#define SkipFixup() \
+    fixup->next = FixupHead; \
+    FixupHead = fixup
+
+static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
+{
+    long    disp;
+    char    *dst;
+
+    dst = fixup->fixup_loc + CodeBuffer;
+    disp = fixup->offset + Address - fixup->fixup_loc - size;
+    for( ; size > 0; size-- ) {
+        *(dst++) = disp;
+        disp >>= 8;
+    }
+}
+
+#endif
+
+static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
 {
     long                disp;
-    unsigned int        patch_addr;
-    struct asmfixup     *patch;
-    struct asmfixup     *next;
     long                max_disp;
     unsigned            size;
 #ifdef _WASM_
     dir_node            *seg;
-#endif
-    
-#ifdef _WASM_
-    patch = sym->fixup;
-    sym->fixup = NULL;
-#else
-    patch = FixupHead;
-    FixupHead = NULL;
-#endif
-    for( ; patch != NULL; patch = next ) {
-        next = patch->next;
-#ifdef _WASM_
-        seg = GetSeg( sym );
-        if( seg == NULL || patch->def_seg != seg ) {
-            /* can't backpatch if fixup location is in diff seg than symbol */
-            patch->next = sym->fixup;
-            sym->fixup = patch;
-            continue;
+
+    // all relative fixups should occure only at first pass and they signal forward references
+    // they must be removed after patching or skiped ( next processed as normal fixup )
+    seg = GetSeg( sym );
+    if( seg == NULL || fixup->def_seg != seg ) {
+        /* can't backpatch if fixup location is in diff seg than symbol */
+        SkipFixup();
+        return( NOT_ERROR );
+    } else if( Parse_Pass != PASS_1 ) {
+    } else if( sym->mem_type == T_FAR ) {
+        // convert far call to near, only at first pass
+        switch( fixup->fixup_type ) {
+        case FIX_RELOFF32_CALL:
+        case FIX_RELOFF16_CALL:
+            PhaseError = TRUE;
+            sym->offset++;
+            AsmByte( 0 );
+            AsmFree( fixup );
+            return( NOT_ERROR );
         }
-#else
-        if( patch->name != sym->name ) {
-            patch->next = FixupHead;
-            FixupHead = patch;
-            continue;
-        }
-#endif
-        size = 0;
-        switch( patch->fixup_type ) {
-        case FIX_RELOFF8:
-            size = 1;
-            /* fall through */
-        case FIX_RELOFF16:
-            if( size == 0 ) size = 2;
-            /* fall through */
+    } else if( sym->mem_type == T_NEAR ) {
+        // near forward reference, only at first pass
+        switch( fixup->fixup_type ) {
+        case FIX_RELOFF32_ONLY:
+        case FIX_RELOFF32_CALL:
         case FIX_RELOFF32:
-            if( size == 0 ) size = 4;
-            patch_addr = patch->fixup_loc;
-            // calculate the displacement
-            disp = patch->offset + Address - patch_addr - size;
-            max_disp = (1UL << ((size * 8)-1)) - 1;
-            if( disp > max_disp || disp < (-max_disp-1) ) {
-#ifdef _WASM_
-                PhaseError = TRUE;
-                switch( size ) {
-                case 1:
-                    if( Code->use32 ) {
-                        sym->offset += 3;
-                        AsmByte( 0 );
-                        AsmByte( 0 );
-                    } else {
-                        sym->offset += 1;
-                        AsmByte( 0 );
-                    }
-                    break;
-                case 2:
-                    sym->offset += 2;
-                    AsmByte( 0 );
-                    AsmByte( 0 );
-                case 4:
-#if 0
+        case FIX_RELOFF16_ONLY:
+        case FIX_RELOFF16_CALL:
+        case FIX_RELOFF16:
+            AsmFree( fixup );
+            return( NOT_ERROR );
+        }
+    }
+#else
+    if( fixup->name != sym->name ) {
+        SkipFixup();
+        return( NOT_ERROR );
+    }
+#endif
+    size = 0;
+    switch( fixup->fixup_type ) {
+    case FIX_RELOFF32_ONLY:
+    case FIX_RELOFF32_CALL:
+    case FIX_RELOFF32:
+        size = 2;
+        /* fall through */
+    case FIX_RELOFF16_ONLY:
+    case FIX_RELOFF16_CALL:
+    case FIX_RELOFF16:
+        size++;
+        /* fall through */
+    case FIX_RELOFF8_ONLY:
+    case FIX_RELOFF8_EXTEND:
+    case FIX_RELOFF8_JXX:
+    case FIX_RELOFF8:
+        size++;
+        // calculate the displacement
+        disp = fixup->offset + Address - fixup->fixup_loc - size;
+        max_disp = (1UL << ((size * 8)-1)) - 1;
+        if( disp > max_disp || disp < (-max_disp-1) ) {
+#ifndef _WASM_
+            AsmError( JUMP_OUT_OF_RANGE );
+            FixupHead = NULL;
+            return( ERROR );
+        } else {
+            PatchCodeBuffer( fixup, size );
+#else
+            PhaseError = TRUE;
+            switch( size ) {
+            case 1:
+                switch( fixup->fixup_type ) {
+                case FIX_RELOFF8_ONLY:
                     AsmError( JUMP_OUT_OF_RANGE );
                     sym->fixup = NULL;
                     return( ERROR );
-#else
-                    AsmWarn( 4, JUMP_OUT_OF_RANGE );
-                    return( NOT_ERROR );
-#endif
+                case FIX_RELOFF8_EXTEND:
+                    sym->offset++;
+                    AsmByte( 0 );
+                    /* fall through */
+                case FIX_RELOFF8_JXX:
+                    sym->offset++;
+                    AsmByte( 0 );
+                    /* fall through */
+                case FIX_RELOFF8:
+                    if( Code->use32 ) {
+                        sym->offset += 2;
+                        AsmByte( 0 );
+                        AsmByte( 0 );
+                    }
+                    sym->offset++;
+                    AsmByte( 0 );
+                    break;
                 }
-#else
-                AsmError( JUMP_OUT_OF_RANGE );
-                FixupHead = NULL;
-                return( ERROR );
-#endif
-            }
-            // patching
-            // fixme 93/02/15 - this can screw up badly if it is on pass 1
-#ifdef _WASM_
-            if( Parse_Pass != PASS_1 && !PhaseError ) {
-#endif
-                while( size > 0 ) {
-                    CodeBuffer[patch_addr] = disp;
-                    disp >>= 8;
-                    patch_addr++;
-                    size--;
-                }
-#ifdef _WASM_
+                break;
+            case 2:
+            case 4:
+                AsmWarn( 4, JUMP_OUT_OF_RANGE );
+                break;
             }
 #endif
-            AsmFree( patch );
-            break;
-        default:
+        }
+        AsmFree( fixup );
+        break;
+    default:
+        SkipFixup();
+        break;
+    }
+    return( NOT_ERROR );
+}
+
+int BackPatch( struct asm_sym *sym )
+/**********************************/
+/*
+- patching for forward reference labels in Jmp/Call instructions;
+- call only when a new label appears;
+*/
+{
+    struct asmfixup     *fixup;
+    struct asmfixup     *next;
+    
 #ifdef _WASM_
-            patch->next = sym->fixup;
-            sym->fixup = patch;
+    fixup = sym->fixup;
+    sym->fixup = NULL;
 #else
-            patch->next = FixupHead;
-            FixupHead = patch;
+    fixup = FixupHead;
+    FixupHead = NULL;
 #endif
-            break;
+    for( ; fixup != NULL; fixup = next ) {
+        next = fixup->next;
+        if( DoPatch( sym, fixup ) == ERROR ) {
+            return( ERROR );
         }
     }
     return( NOT_ERROR );
@@ -336,15 +387,22 @@ struct fixup *CreateFixupRec( int index )
     
     if( !Modend ) {
         switch( fixup->fixup_type ) {
+        case FIX_RELOFF8_ONLY:
+        case FIX_RELOFF8_EXTEND:
+        case FIX_RELOFF8_JXX:
         case FIX_RELOFF8:
             fixnode->self_relative = TRUE;
             fixnode->loc_method = FIX_LO_BYTE;
             break;
+        case FIX_RELOFF16_ONLY:
+        case FIX_RELOFF16_CALL:
         case FIX_RELOFF16:
             fixnode->self_relative = TRUE;
         case FIX_OFF16:
             fixnode->loc_method = FIX_OFFSET;
             break;
+        case FIX_RELOFF32_ONLY:
+        case FIX_RELOFF32_CALL:
         case FIX_RELOFF32:
             fixnode->self_relative = TRUE;
         case FIX_OFF32:

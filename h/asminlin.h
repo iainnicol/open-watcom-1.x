@@ -73,9 +73,16 @@ enum sym_type {
 
 enum fixup_types {
         FIX_SEG,
-        FIX_RELOFF8,
-        FIX_RELOFF16,
-        FIX_RELOFF32,
+        FIX_RELOFF8_ONLY,       /* forward reference explicit J... SHORT */
+        FIX_RELOFF8_EXTEND,     /* forward reference JXX (SHORT 8086), can be extend by JMP NEAR */
+        FIX_RELOFF8_JXX,        /* forward reference JXX (SHORT/NEAR 386) */
+        FIX_RELOFF8,            /* forward reference JMP (SHORT/NEAR/FAR) */
+        FIX_RELOFF16_ONLY,      /* forward reference explicit JMP/CALL NEAR */
+        FIX_RELOFF16_CALL,      /* forward reference CALL (NEAR or converted FAR to NEAR) */
+        FIX_RELOFF16,           /* forward reference JMP (NEAR/FAR) */
+        FIX_RELOFF32_ONLY,      /* forward reference explicit JMP/CALL NEAR */
+        FIX_RELOFF32_CALL,      /* forward reference CALL (NEAR or converted FAR to NEAR) */
+        FIX_RELOFF32,           /* forward reference JMP (NEAR/FAR) */
         FIX_OFF16,
         FIX_OFF32,
         FIX_PTR16,
