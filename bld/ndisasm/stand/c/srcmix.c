@@ -165,11 +165,6 @@ extern void GetSourceFile( section_ptr sec )
         if( SourceFile != NULL ) {
             return;
         }
-        _makepath( SourceFileName, drive, dir, file_name, ".asm" );
-        SourceFile = fopen( SourceFileName, "r" );
-        if( SourceFile != NULL ) {
-            return;
-        }
         _makepath( SourceFileName, drive, dir, file_name, ".*" );
         NoSource( SourceFileName );
         MemFree( SourceFileName );
@@ -205,11 +200,6 @@ extern void GetSourceFile( section_ptr sec )
         return;
     }
     _makepath( SourceFileName, drive, dir, file_name, ".for" );
-    SourceFile = fopen( SourceFileName, "r" );
-    if( SourceFile != NULL ) {
-        return;
-    }
-    _makepath( SourceFileName, drive, dir, file_name, ".asm" );
     SourceFile = fopen( SourceFileName, "r" );
     if( SourceFile != NULL ) {
         return;

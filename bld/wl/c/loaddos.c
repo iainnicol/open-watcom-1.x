@@ -24,11 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  utilities for processing creation of DOS EXE file
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+/*
+   DOSLOAD : utilities for processing creation of DOS EXE file
+
+*/
 #include <string.h>
 #include "linkstd.h"
 #include <exedos.h>

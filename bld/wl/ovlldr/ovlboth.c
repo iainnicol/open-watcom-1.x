@@ -24,10 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  overlay routines used by both overlaying schemes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+/* OVLBOTH:       overlay routines used by both overlaying schemes.
+*/
 
 #include <dos.h>
 #include <stddef.h>

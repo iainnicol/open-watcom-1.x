@@ -24,11 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Overlay loader.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+
+/* OVLLDR:       Overlay loader.
+*/
 
 #include <dos.h>
 #include <stddef.h>
