@@ -46,6 +46,7 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "comio.h"
+#include "inout.h"
 
 #include "compcfg.h"
 
@@ -53,12 +54,8 @@
 #include <ctype.h>
 #include <string.h>
 
-extern  bool            SetLst(bool);
-extern  void            LFNewPage(void);
+
 extern  char            *SkipBlanks(char *);
-extern  void            LFSkip(void);
-extern  void            PrtLstNL(char *);
-extern  void            PrtLst(char *);
 extern  uint            TypeSize(uint);
 extern  void            MacroDEFINE(char *,uint);
 extern  void            MacroUNDEFINE(char *,uint);

@@ -43,6 +43,7 @@
 #include "progsw.h"
 #include "fmemmgr.h"
 #include "ferror.h"
+#include "inout.h"
 
   #include "fio.h"
   #include "sdfile.h"
@@ -64,7 +65,6 @@ extern  int             MkHexConst(char *,char *,int);
 extern  void            Suicide(void);
 extern  char            *SkipBlanks(char *);
 extern  int             Spawn(void (*)());
-extern  void            ReadSrc(void);
 extern  aux_info        *AuxLookupName(char *,int);
 extern  sym_id          SymFind(char *,uint);
 extern  void            FreeChain(void **);

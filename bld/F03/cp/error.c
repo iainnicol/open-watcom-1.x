@@ -51,12 +51,6 @@
 #include <string.h>
 
 
-extern  void            PrintErr(char *);
-extern  void            JustErr(char *);
-extern  void            PrtLstNL(char *);
-extern  void            PrtErrNL(void);
-extern  bool            SetLst(bool);
-extern  bool            WasStmtListed(void);
 extern  void            BldErrCode(unsigned int,char *);
 extern  int             CarrotType(unsigned int);
 extern  void            MsgPrintErr(uint,...);

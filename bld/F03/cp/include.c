@@ -42,8 +42,8 @@
 #include "insert.h"
 #include "recog.h"
 #include "comio.h"
+#include "inout.h"
 
-extern  void            Include(char *);
 extern  void            AdvanceITPtr(void);
 extern  char            *MkNodeStr(itnode *);
 extern  void            FrNodeStr(char *);

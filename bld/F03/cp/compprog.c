@@ -44,6 +44,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "comio.h"
+#include "inout.h"
 
 extern  void            BIInit();
 extern  void            BIEnd();
@@ -54,8 +55,6 @@ extern  void            FrlInit(void **);
 extern  void            FrlFini(void **);
 extern  void            TrapInit(void);
 extern  void            TrapFini(void);
-extern  bool            SetLst(bool);
-extern  void            Conclude(void);
 extern  void            CompStatement(void);
 extern  void            InitCSList(void);
 extern  bool            CheckCSList(byte);

@@ -50,11 +50,12 @@
 #include "insert.h"
 #include "recog.h"
 #include "frl.h"
+#include "inout.h"
 
 #include <string.h>
 #include <ctype.h>
 
-extern  void            ChkPntLst(void);
+
 extern  sym_id          LkSym(void);
 extern  void            MakeITList(void);
 extern  void            FreeITNodes(itnode *);
