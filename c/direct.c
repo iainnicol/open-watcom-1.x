@@ -90,6 +90,7 @@ extern dir_node         *CurrProc;
 extern File_Info        AsmFiles;
 extern char             *CurrString;    // Current Input Line
 extern char             EndDirectiveFound;
+extern dir_node         *SegOverride;
 
 qdesc                   *LnameQueue = NULL; // queue of LNAME structs
 seg_list                *CurrSeg;       // points to stack of opened segments
@@ -2215,12 +2216,17 @@ int SetAssume( int i )
 
         if( token_cmp( &segloc, TOK_ERROR, TOK_ERROR ) != ERROR ) {
             info->error = TRUE;
+            info->flat = FALSE;
+            info->symbol = NULL;
         } else if( token_cmp( &segloc, TOK_FLAT, TOK_FLAT ) != ERROR ) {
             DefFlatGroup();
             info->flat = TRUE;
+            info->error = FALSE;
+            info->symbol = NULL;
         } else {
             sym = AsmGetSymbol( segloc );
             info->symbol = sym;
+            info->flat = FALSE;
             info->error = FALSE;
         }
 
@@ -2326,24 +2332,20 @@ int FixOverride( int index )
 /* Fix segment or group override */
 {
     struct asm_sym      *sym;
-    dir_node            *tmp;
 
     sym = AsmLookup( AsmBuffer[index]->string_ptr );
     /**/myassert( sym != NULL );
 
-    tmp = GetSeg( sym );
-    if( tmp != NULL ) {
-        Frame = FRAME_SEG;
-        Frame_Datum = sym->segidx;
+    SegOverride = GetSeg( sym );
+    if( SegOverride != NULL ) {
         return( NOT_ERROR );
     }
 
-    tmp = get_grp( sym );
-    if( tmp != NULL ) {
-        Frame = FRAME_GRP;
-        Frame_Datum = sym->grpidx;
+    SegOverride = get_grp( sym );
+    if( SegOverride != NULL ) {
         return( NOT_ERROR );
     }
+
     AsmError( SYNTAX_ERROR );
     return( ERROR );
 }
@@ -2440,6 +2442,7 @@ enum assume_reg GetAssume( struct asm_sym* sym, enum assume_reg def )
 /*********************************************************************/
 {
     enum assume_reg reg;
+    dir_node *grp_or_seg = SegOverride;
 
     if( ( def != ASSUME_NOTHING ) && ( AssumeTable[def].flat ) ) {
         Frame = FRAME_GRP;
@@ -2447,24 +2450,47 @@ enum assume_reg GetAssume( struct asm_sym* sym, enum assume_reg def )
         return( def );
     }
 
-    reg = search_assume( get_grp( sym ), def );
-    if( reg != ASSUME_NOTHING ) {
-        Frame = FRAME_GRP;
-        Frame_Datum = sym->grpidx;
-        return( reg );
-    }
-
-    reg = search_assume( GetSeg( sym ), def );
-    if( reg != ASSUME_NOTHING ) {
-        Frame = FRAME_SEG;
-        Frame_Datum = sym->segidx;
-    } else {
-        if( sym->state == SYM_EXTERNAL ) {
-            Frame = FRAME_EXT;
-            Frame_Datum = GetDirIdx( sym->name, TAB_EXT );
+    // first search for segment
+    if( SegOverride == NULL || SegOverride->sym.state == SYM_SEG ) {
+        if( SegOverride == NULL ) {
+            grp_or_seg = GetSeg( sym );
+        }
+        reg = search_assume( grp_or_seg, def );
+        if( reg != ASSUME_NOTHING ) {
+            Frame = FRAME_SEG;
+            Frame_Datum = AssumeTable[reg].symbol->segidx;
+            return( reg );
         }
     }
-    return( reg );
+    
+    // second search for group
+    if( SegOverride == NULL || SegOverride->sym.state == SYM_GRP ) {
+        if( SegOverride == NULL ) {
+            grp_or_seg = get_grp( sym );
+        }
+        reg = search_assume( grp_or_seg, def );
+        if( reg != ASSUME_NOTHING ) {
+            Frame = FRAME_GRP;
+            Frame_Datum = AssumeTable[reg].symbol->grpidx;
+            return( reg );
+        }
+    }
+    
+    if( def != ASSUME_NOTHING ) {
+        if( ( AssumeTable[def].symbol != NULL ) && ( Code->info.token != T_LEA ) ) {
+            if( AssumeTable[def].symbol->segidx != 0 ) {
+                Frame = FRAME_SEG;
+                Frame_Datum = AssumeTable[def].symbol->segidx;
+                return( def );
+            }
+            if( AssumeTable[def].symbol->grpidx != 0 ) {
+                Frame = FRAME_GRP;
+                Frame_Datum = AssumeTable[def].symbol->grpidx;
+                return( def );
+            }
+        }
+    }
+    return( ASSUME_NOTHING );
 }
 
 int ModuleEnd( int count )

@@ -98,7 +98,6 @@ struct asm_code {
     struct asm_ins  info;
     signed char     extended_ins;
     unsigned char   sib;
-    memtype         distance;       // short / near / far / empty
     unsigned        use32:1;
     unsigned        indirect:1;     // CALL/JMP indirect jump
     unsigned        mem_type_fixed:1;
