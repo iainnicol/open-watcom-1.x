@@ -35,7 +35,6 @@
 #include "asmins.h"
 #include "asmerr.h"
 #include "asmsym.h"
-#include "asmalloc.h"
 #include "asmeval.h"
 #include "asmdefs.h"
 
@@ -48,28 +47,11 @@ extern void             DefFlatGroup();
 static int              TakeOut[ MAX_TOKEN ];
 static int              TokCnt;
 
-static struct asm_tok   *Store;
-static unsigned         StoreNum;
-static expr_list        *ExprListCache;
+static struct asm_tok   Store[ MAX_TOKEN ];
 
-static void expr_free( expr_list *expr )
+static void init_expr( expr_list *new )
 {
-    if( expr != NULL ) {
-        expr->string = (void *)ExprListCache;
-        ExprListCache = expr;
-    }
-}
-
-static expr_list *create_expr( void )
-{
-    expr_list   *new;
-
-    if( ExprListCache != NULL ) {
-        new = ExprListCache;
-        ExprListCache = (void *)new->string;
-    } else {
-        new = AsmAlloc( sizeof( expr_list ) );
-    }
+    new->empty    = TRUE;
     new->type     = EMPTY;
     new->label    = EMPTY;
     new->override = EMPTY;
@@ -84,11 +66,11 @@ static expr_list *create_expr( void )
     new->string   = NULL;
     new->sym      = NULL;
     new->mbr      = NULL;
-    return( new );
 }
 
 static void TokenAssign( expr_list *t1, expr_list *t2 )
 {
+    t1->empty    = t2->empty;
     t1->type     = t2->type;
     t1->label    = t2->label;
     t1->override = t2->override;
@@ -185,18 +167,19 @@ static int get_precedence( int i )
     return( ERROR );
 }
 
-static expr_list *get_operand( int i )
+static int get_operand( expr_list *new, int i )
 {
-    expr_list   *new;
     char        *tmp;
 
-    new = create_expr();
+    init_expr( new );
     switch( AsmBuffer[i]->token ) {
     case T_NUM:
+        new->empty = FALSE;
         new->type = EXPR_CONST;
         new->value = AsmBuffer[i]->value;
         break;
     case T_STRING:
+        new->empty = FALSE;
         new->type = EXPR_CONST;
         new->string = AsmBuffer[i]->string_ptr;
         new->value = 0;
@@ -206,6 +189,7 @@ static expr_list *get_operand( int i )
         }
         break;
     case T_REG:
+        new->empty = FALSE;
         new->type = EXPR_REG;
         new->base_reg = i;
         break;
@@ -214,6 +198,7 @@ static expr_list *get_operand( int i )
         if( new->sym != NULL ) {
             if( ( new->sym->state == SYM_STRUCT_FIELD )
                 || ( new->sym->state == SYM_STRUCT ) ) {
+                new->empty = FALSE;
                 new->value = new->sym->offset;
                 new->mbr = new->sym;
                 new->sym = NULL;
@@ -222,15 +207,14 @@ static expr_list *get_operand( int i )
             }
         }
     case T_RES_ID:
+        new->empty = FALSE;
         new->type = EXPR_ADDR;
         new->label = i;
         break;
     default:
-        expr_free( new );
-        new = NULL;
-        break;
+        return( ERROR );
     }
-    return( new );
+    return( NOT_ERROR );
 }
 
 static int_8 is_optr( int i )
@@ -385,7 +369,7 @@ static void fix_struct_value( expr_list *token )
     }
 }
 
-static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
+static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
 /* Perform the operation between token_1 and token_2 */
 {
     char                token;
@@ -405,6 +389,7 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
             MakeConst( token_2 );
             if( token_2->type != EXPR_CONST ) {
                 AsmError( POSITIVE_SIGN_CONSTANT_EXPECTED );
+                return( ERROR );
             }
             token_1->type = EXPR_CONST;
             token_1->value = token_2->value;
@@ -418,6 +403,7 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
             MakeConst( token_2 );
             if( token_2->type != EXPR_CONST ) {
                 AsmError( NEGATIVE_SIGN_CONSTANT_EXPECTED );
+                return( ERROR );
             }
             token_1->type = EXPR_CONST;
             token_1->value = -token_2->value;
@@ -446,6 +432,7 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 if( token_1->sym != NULL ) {
                     if( token_2->sym != NULL ) {
                         AsmError( SYNTAX_ERROR );
+                        return( ERROR );
                     }
                 } else if( token_2->sym != NULL ) {
                     token_1->label = token_2->label;
@@ -518,6 +505,7 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 if( token_1->sym != NULL ) {
                     if( token_2->sym != NULL ) {
                         AsmError( SYNTAX_ERROR );
+                        return( ERROR );
                     }
                 } else if( token_2->sym != NULL ) {
                     token_1->label = token_2->label;
@@ -596,7 +584,8 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                         return( ERROR );
                     }
                     sym = token_1->sym;
-                    if( sym == NULL ) return( ERROR );
+                    if( sym == NULL )
+                        return( ERROR );
 
                     if( Parse_Pass > PASS_1 && sym->state == SYM_UNDEFINED ) {
                         AsmError( LABEL_NOT_DEFINED );
@@ -604,7 +593,8 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                     }
                     token_1->value += sym->offset;
                     sym = token_2->sym;
-                    if( sym == NULL ) return( ERROR );
+                    if( sym == NULL )
+                        return( ERROR );
 
                     if( Parse_Pass > PASS_1 && sym->state == SYM_UNDEFINED ) {
                         AsmError( LABEL_NOT_DEFINED );
@@ -723,7 +713,8 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 && token_1->idx_reg == EMPTY ) {
 
                 sym = token_1->sym;
-                if( sym == NULL ) return( ERROR );
+                if( sym == NULL )
+                    return( ERROR );
 
                 if( AsmBuffer[token_1->label]->token == T_RES_ID ) {
                     /* Kludge for "FLAT" */
@@ -817,7 +808,8 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                 if( token_2->mbr != NULL ) {
                     sym = token_2->mbr;
                 }
-                if( sym == NULL ) return( ERROR );
+                if( sym == NULL )
+                    return( ERROR );
                 switch( AsmBuffer[index]->value ) {
                 case T_LENGTH:
                     token_1->value = sym->first_length;
@@ -854,6 +846,7 @@ static int_8 calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
             }
             break;
     }
+    token_1->empty = FALSE;
     return( NOT_ERROR );
 }
 
@@ -862,11 +855,9 @@ enum process_flag {
     PROC_OPERAND
 };
 
-static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag proc_flag )
+static int evaluate( expr_list *accumulator, int *i, int end, bool flag_msg, enum process_flag proc_flag )
 {
-    expr_list           *token_1 = NULL;
-    expr_list           *token_2 = NULL;
-    int_8               start_token_2;
+    expr_list           operand;
     char                token_needed;
     int                 curr_operator;
     int                 next_operator;
@@ -880,49 +871,51 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
     /* Look at first token, which may be an unary operator or an operand */
     /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
-    if( cmp_token( *i, T_OP_BRACKET ) ) {
-        (*i)++;
-        if( *i > end ) {
-            if( flag_msg ) AsmError( OPERAND_EXPECTED );
-            return( NULL );
-        }
-        token_1 = evaluate( i, end, flag_msg, PROC_BRACKET );
-        if( token_1 == NULL ) {
-            return( NULL );
-        }
-        if( cmp_token( *i, T_CL_SQ_BRACKET ) ) {
-            // error open ( close ]
-            if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
-            expr_free( token_1 );
-            return( NULL );
-        }
-    } else if( is_unary( *i, TRUE ) ) {
-        token_needed = TRUE;
-    } else if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
-        if( *i == 0 ) {
-            return( NULL );
-        }
-        /**/myassert( !cmp_token( (*i)-1, T_CL_BRACKET ) );
-        (*i)++;
-        token_1 = evaluate( i, end, flag_msg, PROC_BRACKET );
-        if( token_1 == NULL ) {
-            return( NULL );
-        }
-        token_1->indirect = TRUE;
-        if( cmp_token( *i, T_CL_BRACKET ) ) {
-            // error open [ close )
-            if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
-            expr_free( token_1 );
-            return( NULL );
-        }
-        if( !cmp_token( *i, T_CL_SQ_BRACKET ) ) {
-            op_sq_bracket++;
+    if( accumulator->empty ) {
+        if( cmp_token( *i, T_OP_BRACKET ) ) {
+            (*i)++;
+            if( *i > end ) {
+                if( flag_msg ) AsmError( OPERAND_EXPECTED );
+                return( ERROR );
+            }
+            if( evaluate( accumulator, i, end, flag_msg, PROC_BRACKET ) == ERROR ) {
+                return( ERROR );
+            }
+            if( cmp_token( *i, T_CL_SQ_BRACKET ) ) {
+                // error open ( close ]
+                if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
+                return( ERROR );
+            }
+            (*i)++;
+        } else if( is_unary( *i, TRUE ) ) {
+            token_needed = TRUE;
+        } else if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
+            if( *i == 0 ) {
+                return( ERROR );
+            }
+            /**/myassert( !cmp_token( (*i)-1, T_CL_BRACKET ) );
+            (*i)++;
+            if( evaluate( accumulator, i, end, flag_msg, PROC_BRACKET ) == ERROR ) {
+                return( ERROR );
+            }
+            accumulator->indirect = TRUE;
+            if( cmp_token( *i, T_CL_BRACKET ) ) {
+                // error open [ close )
+                if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
+                return( ERROR );
+            }
+            if( !cmp_token( *i, T_CL_SQ_BRACKET ) ) {
+                op_sq_bracket++;
+            }
+            (*i)++;
+        } else {
+            if( get_operand( accumulator, *i ) == ERROR ) {
+                return( ERROR );
+            }
+            (*i)++;
         }
     } else {
-        token_1 = get_operand( *i );
-        if( token_1 == NULL ) {
-            return( NULL );
-        }
+        token_needed = FALSE;
     }
 
     /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
@@ -930,17 +923,14 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
     /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
     if( !token_needed ) {
-
-        (*i)++;
         if( *i > end ) {
-            /* no operator is found; return token_1 as result */
+            /* no operator is found; result is in accumulator */
             if( op_sq_bracket ) {
                 // error missing ]
                 if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
-                expr_free( token_1 );
-                return( NULL );
+                return( ERROR );
             } else {
-                return( token_1 );
+                return( NOT_ERROR );
             }
         }
         /* Read the operator */
@@ -948,20 +938,18 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
             if( op_sq_bracket != 0 ) {
                 // error close ) but [ is open
                 if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
-                expr_free( token_1 );
-                return( NULL );
+                return( ERROR );
             } else {
-                return( token_1 );
+                return( NOT_ERROR );
             }
         } else if( cmp_token( *i, T_CL_SQ_BRACKET ) ) {
-            return( token_1 );
+            return( NOT_ERROR );
         } else if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
             AsmBuffer[*i]->token = '+';
             op_sq_bracket++;
         } else if( !is_optr(*i) ) {
             if( flag_msg ) AsmError( OPERATOR_EXPECTED );
-            expr_free( token_1 );
-            return( NULL );
+            return( ERROR );
         }
     }
 
@@ -975,17 +963,14 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
 
         if( *i > end ) {
             if( flag_msg ) AsmError( OPERAND_EXPECTED );
-            expr_free( token_1 );
-            return( NULL );
+            return( ERROR );
         }
 
-        start_token_2 = *i;
+        init_expr( &operand );
         if( cmp_token( *i, T_OP_BRACKET ) ) {
             (*i)++;
-            token_2 = evaluate( i, end, flag_msg, PROC_BRACKET );
-            if( token_2 == NULL ) {
-                expr_free( token_1 );
-                return( NULL );
+            if( evaluate( &operand, i, end, flag_msg, PROC_BRACKET ) == ERROR ) {
+                return( ERROR );
             }
             if( cmp_token( *i, T_CL_BRACKET ) ) {
                 (*i)++;
@@ -993,26 +978,19 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
         } else if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
             op_sq_bracket++;
             (*i)++;
-            token_2 = evaluate( i, end, flag_msg, PROC_BRACKET );
-            if( token_2 == NULL ) {
-                expr_free( token_1 );
-                return( NULL );
+            if( evaluate( &operand, i, end, flag_msg, PROC_BRACKET ) == ERROR ) {
+                return( ERROR );
             }
         } else if( is_unary( *i, TRUE ) ) {
-            token_2 = evaluate( i, end, flag_msg, PROC_OPERAND );
-            if( token_2 == NULL ) {
-                expr_free( token_1 );
-                return( NULL );
+            if( evaluate( &operand, i, end, flag_msg, PROC_OPERAND ) == ERROR ) {
+                return( ERROR );
             }
         } else if( is_optr( *i ) ) {
             if( flag_msg ) AsmError( OPERAND_EXPECTED );
-            expr_free( token_1 );
-            return( NULL );
+            return( ERROR );
         } else {
-            token_2 = get_operand( *i );
-            if( token_2 == NULL ) {
-                expr_free( token_1 );
-                return( NULL );
+            if( get_operand( &operand, *i ) == ERROR ) {
+                return( ERROR );
             }
             (*i)++;
         }
@@ -1037,9 +1015,7 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
             if( !is_optr( *i ) || is_unary( *i, FALSE ) ||
                 cmp_token( *i, T_OP_BRACKET ) ) {
                 if( flag_msg ) AsmError( OPERATOR_EXPECTED );
-                expr_free( token_1 );
-                expr_free( token_2 );
-                return( NULL );
+                return( ERROR );
             } else if( !cmp_token( *i, T_CL_BRACKET ) &&
                        !cmp_token( *i, T_CL_SQ_BRACKET ) ) {
                 if( cmp_token( *i, T_OP_SQ_BRACKET ) ) {
@@ -1051,12 +1027,8 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
                     }
                 } else {
                     if( get_precedence( *i ) < get_precedence( curr_operator ) ) {
-                        (*i) = start_token_2;
-                        expr_free( token_2 );
-                        token_2 = evaluate( i, end, flag_msg, PROC_OPERAND );
-                        if( token_2 == NULL ) {
-                            expr_free( token_1 );
-                            return( NULL );
+                        if( evaluate( &operand, i, end, flag_msg, PROC_OPERAND ) == ERROR ) {
+                            return( ERROR );
                         }
                         while( ( *i <= end )
                             && ( op_sq_bracket > 0 )
@@ -1075,16 +1047,9 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
         /* Now evaluate */
         /*::::::::::::::*/
 
-        if( token_1 == NULL ) {
-            /* the operator is unary */
-            token_1 = create_expr();
+        if( calculate( accumulator, &operand, curr_operator ) == ERROR ) {
+            return( ERROR );
         }
-        if( calculate( token_1, token_2, curr_operator ) == ERROR ) {
-            expr_free( token_1 );
-            expr_free( token_2 );
-            return( NULL );
-        }
-        expr_free( token_2 );
 
     } while ( ( next_operator == TRUE )
         || ( ( proc_flag == PROC_BRACKET ) 
@@ -1093,10 +1058,9 @@ static expr_list *evaluate( int *i, int end, bool flag_msg, enum process_flag pr
             && ( *i < end ) ) );
     if( op_sq_bracket ) {
         if( flag_msg ) AsmError( BRACKETS_NOT_BALANCED );
-        expr_free( token_1 );
-        return( NULL );
+        return( ERROR );
     }
-    return( token_1 );
+    return( NOT_ERROR );
 }
 
 static int is_expr( int i )
@@ -1275,7 +1239,6 @@ static int fix( expr_list *res, int start, int end )
     int                 old_start;
     int                 old_end;
     int                 need_number;
-    unsigned            num;
 
     MakeConst( res );
     if( res->type == EXPR_CONST ) {
@@ -1346,12 +1309,6 @@ static int fix( expr_list *res, int start, int end )
 
         old_start = start;
         old_end = end;
-
-        num = end - start + 1;
-        if( num > StoreNum ) {
-            AsmFree( Store );
-            Store = AsmAlloc( num * sizeof( Store[0] ) );
-        }
 
         for( i = start; i <= end; i++ ) {
             /* Store the original AsmBuffer[] data */
@@ -1485,7 +1442,7 @@ extern int EvalExpr( int count, int start_tok, int end_tok, bool flag_msg )
     int         start;          // position of first token of an expression
     int         num;            // number of tokens in the expression
     bool        final = FALSE;
-    expr_list   *result;
+    expr_list   result;
 
     if( AsmBuffer[end_tok]->token == T_FINAL ) final = TRUE;
 
@@ -1513,18 +1470,17 @@ extern int EvalExpr( int count, int start_tok, int end_tok, bool flag_msg )
                 // skip number
             } else {
                 i = start;
-                result = evaluate( &i, i + num, flag_msg, PROC_BRACKET );
-                if( result == NULL ) {
+                init_expr( &result );
+                if( evaluate( &result, &i, i + num, flag_msg, PROC_BRACKET ) == ERROR ) {
                     return( ERROR );
                 }
-                i = fix( result, start, start + num );
+                i = fix( &result, start, start + num );
                 if( count != TokCnt ) {
                     /* we just changed the number of tokens, so update
                      * count & end_tok appropriately */
                     end_tok += TokCnt - count;
                     count = TokCnt;
                 }
-                expr_free( result );
             }
         }
         i++;
@@ -1537,24 +1493,4 @@ extern int EvalExpr( int count, int start_tok, int end_tok, bool flag_msg )
     }
 
     return( TokCnt );
-}
-
-void AsmEvalInit( void )
-{
-    ExprListCache = NULL;
-    Store = NULL;
-    StoreNum = 0;
-}
-
-void AsmEvalFini( void )
-{
-    void        *next;
-
-    AsmFree( Store );
-
-    while( ExprListCache != NULL ) {
-        next = ExprListCache->string;
-        AsmFree( ExprListCache );
-        ExprListCache = next;
-    }
 }

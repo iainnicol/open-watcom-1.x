@@ -1211,8 +1211,6 @@ void WriteObjModule( void )
 
     CodeBuffer = codebuf;
 
-    AsmEvalInit();
-
     write_init();
 
     Parse_Pass = PASS_1;
@@ -1270,6 +1268,5 @@ void WriteObjModule( void )
     AsmSymFini();
     FreeIncludePath();
     write_fini();
-    AsmEvalFini();
 }
 
