@@ -49,7 +49,7 @@
 #include "namemgr.h"  // WOMP callback NameGet routine declaration
 #include "directiv.h"
 #include "queues.h"
-#include "util.h"
+#include "womputil.h"
 
 #include "myassert.h"
 

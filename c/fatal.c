@@ -34,7 +34,7 @@
 
 #include "objprs.h"
 #include "asmalloc.h"
-#include "util.h"
+#include "womputil.h"
 #include "fatal.h"
 
 typedef void (*err_act)();
