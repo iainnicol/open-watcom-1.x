@@ -37,7 +37,6 @@
 #include "io.h"
 #include "fcntl.h"
 #ifdef __WINDOWS__
-#define STRICT
 #include <windows.h>
 #endif
 

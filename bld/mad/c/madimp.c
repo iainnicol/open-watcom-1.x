@@ -133,7 +133,6 @@ mad_imp_routines        MadImpInterface = {
 #elif defined( __WINDOWS__)
 
 #include <stdlib.h>
-#define STRICT
 #include <windows.h>
 #include <i86.h>
 

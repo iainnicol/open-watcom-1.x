@@ -45,7 +45,6 @@
   #define INCL_WINDIALOGS
   #include <os2.h>
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
-  #define STRICT
   #include <windows.h>
 #endif
 

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define STRICT
 #include <windows.h>
 // this is defined by windows.h - MS are such idiots
 #undef IGNORE
