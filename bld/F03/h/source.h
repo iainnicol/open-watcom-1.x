@@ -48,8 +48,7 @@
 // INCLUDE option flags:
 
 #define INC_LIB_MEMBER  0x01    //  including from a library member
-#define INC_DATA_OPTION 0x02    //  C$DATA option specified
-                                //  (this is only used for main file)
+
 #define INC_PENDING     0x04    //  c$include pending
 #define CONC_PENDING    0x08    //  conclude pending
 

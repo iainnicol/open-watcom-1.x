@@ -279,9 +279,11 @@ static  uint    SrcRead() {
     return( len );
 }
 
-
-void    ReadSrc() {
-//=================
+/*
+*  Read a single record/line from source file
+*/
+void    ReadSrc()
+{
 
     uint        len;
 
@@ -290,20 +292,23 @@ void    ReadSrc() {
     // then indicate EOF since the main source file may have
     // the C$DATA option in it in which case "CurrFile" will
     // not be NULL after calling "Conclude()".
-    if( CurrFile->flags & INC_DATA_OPTION ) {
-        ProgSw |= PS_SOURCE_EOF;
-    } else {
-        len = SrcRead();
-        if( ProgSw & PS_INC_EOF ) {
-            CurrFile->flags |= CONC_PENDING;
-            if( CurrFile->link == NULL ) {
-                ProgSw |= PS_SOURCE_EOF;
-            }
-        } else {
-            CurrFile->rec++;
-            SrcBuff[ len ] = NULLCHAR;
+    
+    /* read a record from source file */
+    len = SrcRead();
+    
+    /* Reached EOF */
+    if( ProgSw & PS_INC_EOF ) {
+        CurrFile->flags |= CONC_PENDING;
+        if( CurrFile->link == NULL ) {
+            ProgSw |= PS_SOURCE_EOF;
         }
+    /* not at EOF, yet */
+    } else {
+        CurrFile->rec++;
+        /* make the line a C string */ 
+        SrcBuff[ len ] = NULLCHAR;
     }
+
 }
 
 
