@@ -682,19 +682,21 @@ static void write_linnum( void )
     bool        need_32;
 
     count = GetLinnumData( &ldata, &need_32 );
-    if( ldata == NULL )
+    if( count == 0 )
         return;
+    if( ldata == NULL ) {
+        AsmError( NO_MEMORY );
+    } else {
+        objr = ObjNewRec( CMD_LINNUM );
+        objr->is_32 = need_32;
+        objr->d.linnum.num_lines = count;
+        objr->d.linnum.lines = ldata;
+        objr->d.linnum.d.base.grp_idx = GetCurrGrp(); // fixme ?
+        objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->segrec->d.segdef.idx;
+        objr->d.linnum.d.base.frame = 0; // fixme ?
 
-    objr = ObjNewRec( CMD_LINNUM );
-    objr->is_32 = need_32;
-    objr->d.linnum.num_lines = count;
-    objr->d.linnum.lines = ldata;
-
-    objr->d.linnum.d.base.grp_idx = GetCurrGrp(); // fixme ?
-    objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->segrec->d.segdef.idx;
-    objr->d.linnum.d.base.frame = 0; // fixme ?
-
-    write_record( objr, TRUE );
+        write_record( objr, TRUE );
+    }
 }
 
 #ifdef SEPARATE_FIXUPP_16_32

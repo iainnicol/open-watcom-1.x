@@ -361,7 +361,6 @@ int GetLinnumData( linnum_data **ldata, bool *need32 )
     int         count, i;
 
     count = QCount( LinnumQueue );
-    ldata = NULL;
     if( count == 0 )
         return( count );
     *need32 = FALSE;
@@ -369,10 +368,13 @@ int GetLinnumData( linnum_data **ldata, bool *need32 )
     for( i = 0; i < count; i++ ) {
         node = QDequeue( LinnumQueue );
         next = (linnum_data *)(node->data);
-        (*ldata)[i].number = next->number;
-        (*ldata)[i].offset = next->offset;
-        if( next->offset > 0xffffUL )
-            *need32 = TRUE;
+        if( *ldata != NULL ) {
+            (*ldata)[i].number = next->number;
+            (*ldata)[i].offset = next->offset;
+            if( next->offset > 0xffffUL ) {
+                *need32 = TRUE;
+            }
+        }
         AsmFree( next );
         AsmFree( node );
     }
