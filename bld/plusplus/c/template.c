@@ -707,8 +707,8 @@ void TemplateDeclFini( void )
         }
     }
 
-	FreeArgsDefaultsOK( data->args );
-	data->args = NULL;
+    FreeArgsDefaultsOK( data->args );
+    data->args = NULL;
 
     StackPop( &currentTemplate );
 }
@@ -1132,10 +1132,12 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
                 }
                 else {
                     void (*last_source)( void );
+                    REWRITE *save_token;
                     REWRITE *last_rewrite;
                     REWRITE *defarg_rewrite;
 
                     ParseFlush();
+                    save_token = RewritePackageToken();
                     last_source = SetTokenSource( RewriteToken );
                     defarg_rewrite = tinfo->defarg_list[i];
                     last_rewrite = RewriteRewind( defarg_rewrite );
@@ -1149,7 +1151,13 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
 
                     RewriteClose( last_rewrite );
                     ResetTokenSource( last_source );
+                    RewriteRestoreToken( save_token );
                 }
+            }
+
+            if( parm == NULL ) {
+                something_went_wrong = TRUE;
+                break;
             }
 
             if( parm->op != PT_TYPE ) {
@@ -1187,7 +1195,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
             }
         }
 
-	decl_scope = ScopeEnd( SCOPE_TEMPLATE_INST );
+        decl_scope = ScopeEnd( SCOPE_TEMPLATE_INST );
     }
     if( something_went_wrong ) {
         NodeFreeDupedExpr( parms );
@@ -1937,6 +1945,7 @@ static void freeDefns( void )
         } RingIterEnd( member )
         for( i = 0; i < tinfo->num_args; ++i ) {
             RewriteFree( tinfo->defarg_list[i] );
+            tinfo->defarg_list[i] = NULL;
         }
     } RingIterEnd( tinfo )
     RingIterBeg( allFunctionTemplates, curr_fn ) {
@@ -2223,6 +2232,7 @@ static void saveTemplateInfo( void *p, carve_walk_base *d )
     SYMBOL save_sym;
     TEMPLATE_MEMBER *member;
     void *nti;
+    void *defarg_index;
     unsigned i;
     auto void *member_buff[2];
 
@@ -2248,6 +2258,10 @@ static void saveTemplateInfo( void *p, carve_walk_base *d )
     for( i = 0; i < s->num_args; ++i ) {
         nti = TypeGetIndex( s->type_list[i] );
         PCHWrite( &nti, sizeof( nti ) );
+    }
+    for( i = 0; i < s->num_args; ++i ) {
+        defarg_index = RewriteGetIndex( s->defarg_list[i] );
+        PCHWrite( &defarg_index, sizeof( defarg_index ) );
     }
     RingIterBeg( s->member_defns, member ){
         member_buff[0] = RewriteGetIndex( member->defn );
@@ -2359,8 +2373,10 @@ pch_status PCHReadTemplates( void )
     unsigned j;
     size_t arg_names_size;
     size_t type_list_size;
+    size_t defarg_list_size;
     char **arg_names;
     TYPE *type_list;
+    REWRITE **defarg_list;
     CLASS_INST *ci;
     FN_TEMPLATE_DEFN *ftd;
     TEMPLATE_INFO *ti;
@@ -2424,11 +2440,16 @@ pch_status PCHReadTemplates( void )
         type_list_size = ti->num_args * sizeof( TYPE );
         type_list = CPermAlloc( type_list_size );
         ti->type_list = type_list;
+        defarg_list_size = ti->num_args * sizeof( REWRITE * );
+        defarg_list = CPermAlloc( defarg_list_size );
+        ti->defarg_list = defarg_list;
         PCHRead( arg_names, arg_names_size );
         PCHRead( type_list, type_list_size );
+        PCHRead( defarg_list, defarg_list_size );
         for( j = 0; j < ti->num_args; ++j ) {
             arg_names[j] = NameMapIndex( arg_names[j] );
             type_list[j] = TypeMapIndex( type_list[j] );
+            defarg_list[j] = RewriteMapIndex( defarg_list[j] );
         }
         for(;;) {
             PCHRead( member_buff, sizeof( member_buff ) );
