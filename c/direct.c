@@ -886,30 +886,14 @@ static uint checkword( char **token )
     return( NOT_ERROR );
 }
 
-uint GetDirIdx( char *name, int tab )
+uint GetExtIdx( struct asm_sym *sym )
 /***********************************/
 {
     dir_node            *dir;
-    struct asm_sym              *sym;
-
-    sym = AsmGetSymbol( name );
 
     dir = (dir_node *)sym;
     /**/myassert( dir != NULL );
-
-    switch( tab ) {
-    case TAB_SEG:
-        return( dir->e.seginfo->segrec->d.segdef.idx );
-    case TAB_EXT:
-        return( dir->e.extinfo->idx );
-    case TAB_COMM:
-        return( dir->e.comminfo->idx );
-    case TAB_GRP:
-        return( dir->e.grpinfo->idx );
-    default:
-        /**/myassert( 0 ); /* should only be called with the above values */
-    }
-    return( ERROR );
+    return( dir->e.extinfo->idx );
 }
 
 uint_32 GetCurrAddr( void )
@@ -2207,7 +2191,7 @@ static int SetAssumeCSCurrSeg( void )
         info->error = TRUE;
     } else {
         if( CurrSeg->seg->e.seginfo->group != NULL )
-            info->symbol = &get_grp( &CurrSeg->seg->sym )->sym;
+            info->symbol = GetGrp( &CurrSeg->seg->sym );
         else
             info->symbol = &CurrSeg->seg->sym;
         info->flat = FALSE;
@@ -2327,15 +2311,15 @@ uint GetGrpIdx( struct asm_sym *sym )
     return( ((dir_node *)sym)->e.grpinfo->idx );
 }
 
-extern dir_node *get_grp( struct asm_sym *sym )
-/*********************************************/
-/* get ptr to sym's group */
+extern struct asm_sym *GetGrp( struct asm_sym *sym )
+/**************************************************/
+/* get ptr to sym's group sym */
 {
     dir_node            *curr;
 
     curr = GetSeg( sym );
     if( curr != NULL )
-        return( (dir_node *)curr->e.seginfo->group );
+        return( curr->e.seginfo->group );
     return( NULL );
 }
 
@@ -2476,7 +2460,7 @@ enum assume_reg GetPrefixAssume( struct asm_sym *sym, enum assume_reg prefix )
         Frame_Datum = GetGrpIdx( sym_assume );
     }
     if( ( sym->segment == sym_assume )
-        || ( &get_grp( sym )->sym == sym_assume )
+        || ( GetGrp( sym ) == sym_assume )
         || ( sym->state == SYM_EXTERNAL ) ) {
         return( prefix );
     } else {
@@ -2512,7 +2496,7 @@ enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
     // second search for group
     if( ( SegOverride == NULL ) || ( SegOverride->state == SYM_GRP ) ) {
         if( SegOverride == NULL ) {
-            sym_over = &get_grp( sym )->sym;
+            sym_over = GetGrp( sym );
         }
         reg = search_assume( sym_over, def );
         if( reg != ASSUME_NOTHING ) {

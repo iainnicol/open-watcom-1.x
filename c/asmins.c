@@ -126,9 +126,9 @@ void find_frame( struct asm_sym *sym )
         case SYM_INTERNAL:
         case SYM_PROC:
             if( sym->segment != NULL ) {
-                if( get_grp( sym ) != NULL ) {
+                if( GetGrp( sym ) != NULL ) {
                     Frame = FRAME_GRP;
-                    Frame_Datum = GetGrpIdx( &get_grp( sym )->sym );
+                    Frame_Datum = GetGrpIdx( GetGrp( sym ) );
                 } else {
                     Frame = FRAME_SEG;
                     Frame_Datum = GetSegIdx( sym->segment );
@@ -1231,15 +1231,12 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     int                 index = EMPTY;
     int                 base = EMPTY;
     struct asm_sym      *sym;
-    struct asmfixup     *fixup;
     char                base_lock = FALSE;
     enum fixup_types    fixup_type;
     int                 flag;
 #ifdef _WASM_
     int                 sym32;
 #endif
-
-    fixup = NULL;
 
     Code->data[Opnd_Count] = opndx->value;
     Code->info.opnd_type[Opnd_Count] = OP_M;
@@ -1428,7 +1425,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             }
         }
 
-        fixup = AddFixup( sym, fixup_type, OPTJ_NONE );
+        AddFixup( sym, fixup_type, OPTJ_NONE );
 
         if( Modend ) {
             GetAssume( sym, ASSUME_NOTHING );
@@ -1441,7 +1438,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
 #else
         fixup_type = ( Code->use32 ) ? FIX_OFF32 : FIX_OFF16;
 
-        fixup = AddFixup( sym, fixup_type, OPTJ_NONE );
+        AddFixup( sym, fixup_type, OPTJ_NONE );
 
         if( mem2code( ss, index, base, sym ) == ERROR ) {
             return( ERROR );

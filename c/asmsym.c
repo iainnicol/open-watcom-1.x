@@ -139,7 +139,9 @@ static struct asm_sym **AsmFind( char *name )
     sym = &AsmSymHead;
 #endif
     for( ; *sym; sym = &((*sym)->next) ) {
-        if( stricmp( name, (*sym)->name ) == 0 ) return( sym );
+        if( stricmp( name, (*sym)->name ) == 0 ) {
+            return( sym );
+        }
     }
     return( sym );
 }
@@ -191,13 +193,14 @@ static void FreeASym( struct asm_sym *sym )
 /*****************************************/
 {
 #ifdef _WASM_
-    struct asmfixup     *fix;
+    struct asmfixup     *fixup;
 
     for( ;; ) {
-        fix = sym->fixup;
-        if( fix == NULL ) break;
-        sym->fixup = fix->next;
-        AsmFree( fix );
+        fixup = sym->fixup;
+        if( fixup == NULL )
+            break;
+        sym->fixup = fixup->next;
+        AsmFree( fixup );
     }
 #endif
     AsmFree( sym->name );
@@ -221,7 +224,8 @@ int AsmChangeName( char *old, char *new )
         strcpy( sym->name, new );
 
         sym_ptr = AsmFind( new );
-        if( *sym_ptr != NULL ) return( ERROR );
+        if( *sym_ptr != NULL )
+            return( ERROR );
 
         sym->next = *sym_ptr;
         *sym_ptr = sym;
@@ -307,7 +311,7 @@ void AsmSymFini()
 
     FreeAllQueues();
 
-#if defined( _WASM_ ) && defined( DEBUG_OUT )
+#if defined( DEBUG_OUT )
     DumpASym();
 #endif
 
@@ -317,7 +321,8 @@ void AsmSymFini()
         next = sym_table[i];
         for( ;; ) {
             sym = next;
-            if( sym == NULL ) break;
+            if( sym == NULL )
+                break;
             dir = (dir_node *)sym;
             next = sym->next;
             FreeInfo( dir );
@@ -326,19 +331,21 @@ void AsmSymFini()
     }
 
 #else
-    struct asmfixup     *fix;
+    struct asmfixup     *fixup;
 
     for( ;; ) {
         sym = AsmSymHead;
-        if( sym == NULL ) break;
+        if( sym == NULL )
+            break;
         AsmSymHead = sym->next;
         FreeASym( sym );
     }
     for( ;; ) {
-        fix = FixupHead;
-        if( fix == NULL ) break;
-        FixupHead = fix->next;
-        AsmFree( fix );
+        fixup = FixupHead;
+        if( fixup == NULL )
+            break;
+        FixupHead = fixup->next;
+        AsmFree( fixup );
     }
 #endif
 }
@@ -489,7 +496,8 @@ void DumpASym( void )
         next = sym_table[i];
         for( ;; ) {
             sym = next;
-            if( sym == NULL ) break;
+            if( sym == NULL )
+                break;
             next = sym->next;
             DumpSymbol( sym );
         }

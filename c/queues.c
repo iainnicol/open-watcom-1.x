@@ -136,7 +136,7 @@ uint GetPublicData(
         *grp = 0;
     } else {
         *seg = GetSegIdx( curr_seg );
-        *grp = GetGrpIdx( &get_grp( curr_seg )->sym );
+        *grp = GetGrpIdx( GetGrp( curr_seg ) );
     }
     curr = start;
     for( count = 0; curr != NULL; curr = curr->next ) {

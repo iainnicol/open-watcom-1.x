@@ -93,8 +93,8 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
     fixup = AsmAlloc( sizeof( struct asmfixup ) );
     if( fixup != NULL ) {
         fixup->external = 0;
-        fixup->name = sym->name;
 #ifdef _WASM_
+        fixup->sym = sym;
         fixup->offset = sym->offset;
         fixup->def_seg = (CurrSeg != NULL) ? CurrSeg->seg : NULL;
         fixup->frame = Frame;                   // this is just a guess
@@ -102,6 +102,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
         fixup->next = sym->fixup;
         sym->fixup = fixup;
 #else
+        fixup->name = sym->name;
         fixup->next = FixupHead;
         FixupHead = fixup;
         fixup->offset = 0;
@@ -381,7 +382,7 @@ struct fixup *CreateFixupRec( int index )
         }
     }
     
-    sym = AsmGetSymbol( fixup->name );
+    sym = fixup->sym;
     if( sym == NULL )
         return( NULL );
     
@@ -404,7 +405,7 @@ struct fixup *CreateFixupRec( int index )
         }
         
         fixnode->lr.target = TARGET_GRP;
-        fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_GRP );
+        fixnode->lr.target_datum = GetGrpIdx( sym );
         if( fixup->frame != EMPTY ) {
             fixnode->lr.frame = fixup->frame;
             fixnode->lr.frame_datum = fixup->frame_datum;
@@ -421,7 +422,7 @@ struct fixup *CreateFixupRec( int index )
         }
         
         fixnode->lr.target = TARGET_SEG;
-        fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_SEG );
+        fixnode->lr.target_datum = GetSegIdx( sym );
         if( fixup->frame != EMPTY ) {
             fixnode->lr.frame = fixup->frame;
             fixnode->lr.frame_datum = fixup->frame_datum;
@@ -455,7 +456,7 @@ struct fixup *CreateFixupRec( int index )
             } else {
                 fixnode->lr.target = TARGET_EXT;
             }
-            fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_EXT );
+            fixnode->lr.target_datum = GetExtIdx( sym );
             
             if( fixup->frame == FRAME_GRP && fixup->frame_datum == 0 ) {
                 /* set the frame to the frame of the corresponding segment */

@@ -345,8 +345,8 @@ extern uint             GetGrpIdx( struct asm_sym * );
 extern uint             GetSegIdx( struct asm_sym * );
 /* get symbol's segment index, from the symbol itself */
 
-extern uint             GetDirIdx( char *, int );
-/* Get the index of either a segment, a group or an extrn defn */
+extern uint             GetExtIdx( struct asm_sym * );
+/* Get the index of an extrn defn */
 
 extern int              GlobalDef( int );       // define an global symbol
 extern int              ExtDef( int );          // define an external symbol
@@ -382,7 +382,7 @@ extern uint_32          GetCurrSegStart(void);
 
 #define GetSeg( x )     (dir_node *)x->segment
 
-extern dir_node         *get_grp( struct asm_sym * );
+extern struct asm_sym   *GetGrp( struct asm_sym * );
 
 extern void             AssumeInit( void );     // init all assumed-register table
 extern int              SetAssume( int );       // Assume a register
