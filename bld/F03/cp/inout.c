@@ -76,10 +76,6 @@ extern  void            SDInitIO(void);
 extern  void            MsgFormat(char *,char *,...);
 extern  int             CopyMaxStr(char *,char *,int);
 extern  int             MakeName(char *,char *,char *);
-#if _TARGET == _VAX
-extern  void            SDSetSpool(file_handle);
-extern  bool            GetCatFile(void);
-#endif
 
 extern  char            FFCtrlSeq[];
 extern  char            SkipCtrlSeq[];
@@ -96,9 +92,7 @@ extern  file_attr       PrtAttr;
 extern  file_attr       TrmAttr;
 extern  file_attr       ErrAttr;
 extern  file_handle     FStdOut;
-#if _TARGET == _VAX
-extern  char            CatFileName[];
-#endif
+
 extern  character_set   CharSetInfo;
 
 #define _Copyright "1984"
@@ -241,9 +235,6 @@ static  uint    SrcRead() {
 
     uint        len;
     file_handle fp;
-#if _TARGET == _VAX
-    source      *cat_file;
-#endif
     char        msg[81];
 
     fp = CurrFile->fileptr;
@@ -258,18 +249,6 @@ static  uint    SrcRead() {
     } else {
         len = SDRead( fp, SrcBuff, SRCLEN );
         if( SDEof( fp ) ) {
-#if _TARGET == _VAX
-            if( ( CurrFile->link == NULL ) && GetCatFile() ) {
-                Include( CatFileName );
-                if( CurrFile->link != NULL ) {
-                    cat_file = CurrFile;
-                    CurrFile = cat_file->link;
-                    CurrFile->link = cat_file;
-                    cat_file->link = NULL;
-                    cat_file->rec = CurrFile->rec;
-                }
-            }
-#endif
             ProgSw |= PS_INC_EOF;
         } else if( SDError( fp, msg ) ) {
             InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
@@ -632,12 +611,6 @@ static  void    OpenListingFile( bool reopen ) {
         GetLstName( name );
         if( Options & OPT_TYPE ) {
             SDSetAttr( TrmAttr );
-#if _TARGET != _VAX
-        // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
-        // and set the spooling bit
-        } else if( Options & OPT_PRINT ) {
-            SDSetAttr( PrtAttr );
-#endif
         } else { // DISK file
             SDSetAttr( DskAttr );
         }
@@ -649,10 +622,6 @@ static  void    OpenListingFile( bool reopen ) {
             if( ListBuff == NULL ) {
                 CloseLst();
                 InfoError( MO_DYNAMIC_OUT );
-#if _TARGET == _VAX
-            } else if( Options & OPT_PRINT ) {
-                SDSetSpool( ListFile );
-#endif
             }
         }
         SDInitAttr();
@@ -768,9 +737,7 @@ void    GetLstName( char *buffer ) {
 
     if( Options & OPT_TYPE ) {
         strcpy( buffer, SDTermOut );
-#if ( _TARGET != _VAX ) && ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
-    // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
-    //             and set the spooling bit
+#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
     // On QNX, there is no /PRINT option
     } else if( Options & OPT_PRINT ) {
         strcpy( buffer, SDPrtName );

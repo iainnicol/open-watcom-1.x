@@ -289,12 +289,6 @@ static  void    Phi() {
                         AltReturn();
                     }
                 }
-#if _TARGET == _VAX
-            } else if( ( opr2 == OPR_DIV ) ||     // pass arugment by value
-                       ( opr2 == OPR_AMP ) ||     // pass argument by address
-                       ( opr2 == OPR_FLD ) ) {    // pass arugment by descriptor
-                PassBy( opr2 );
-#endif
             }
         }
     }
@@ -372,32 +366,6 @@ static  void    AltReturn() {
     CITNode = itptr;
 }
 
-
-#if _TARGET == _VAX
-
-static  void    PassBy( int opr) {
-//================================
-
-    itnode      *itptr;
-
-    if( CITNode->link->opn != OPN_PHI ) {
-        itptr = CITNode;
-        CITNode = CITNode->link;
-        itptr->link = NULL;
-        FreeITNodes( itptr );
-        CITNode->opr = itptr->opr;     // must come before DSTable[]()
-        DSTable[ CITNode->opn ]();
-    }
-    if( opr == OPR_DIV ) {
-        CITNode->pass_by |= PASS_BY_VALUE;
-    } else if( opr == OPR_AMP ) {
-        CITNode->pass_by |= PASS_BY_REF;
-    } else {
-        CITNode->pass_by |= PASS_BY_DESCR;
-    }
-}
-
-#endif
 
 
 static  void    OprEqu() {

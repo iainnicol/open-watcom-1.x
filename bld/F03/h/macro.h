@@ -42,7 +42,7 @@
 
 // #define _370   0    // no longer used
 #define _8086  1
-#define _VAX   2
+// #define _VAX   2    // no longer used
 #define _80386 3
 #define _AXP   4
 #define _PPC   5

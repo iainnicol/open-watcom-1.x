@@ -62,10 +62,6 @@
 
 #define OPR_FLD         0x15    // %
 
-#if _TARGET == _VAX
-//  special operators
-#define OPR_AMP 0x16    //  pass by address
-#endif
 
 //  arithmetic operators
 

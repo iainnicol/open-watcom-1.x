@@ -85,9 +85,6 @@ static  itnode  *NewITNode( ) {
         new->chsize = 0;
         new->is_unsigned = 0;
         new->is_catparen = 0;
-#if _TARGET == _VAX
-        new->pass_by = 0;
-#endif
     }
     return( new );
 }
@@ -227,10 +224,8 @@ static  byte    LkUpOpr() {
     case ':':   return( OPR_COL );
     case '%':   return( OPR_FLD );
     case '.':   return( OPR_DPT );
-#if _TARGET == _VAX
-    case '&':   return( OPR_AMP );
-#endif
     }
+
     Error( SX_INV_OPR );
     return( OPR_PHI );
 }

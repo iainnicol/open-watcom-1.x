@@ -691,7 +691,7 @@ void    FOHex( uint width ) {
 
     if( typ != PT_CHAR ) {
         len *= 2;
-#if ( _TARGET == _VAX ) || ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if  ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
         HexFlip( (char *)&IORslt, len );
 #endif
         BToHS( (char *)&IORslt , len, IOCB->buffer );
@@ -713,7 +713,7 @@ void    FOHex( uint width ) {
 }
 
 
-#if ( _TARGET == _VAX ) || ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
 static  void    HexFlip( char *src, int len ) {
 //=============================================
 
