@@ -76,10 +76,6 @@ extern  void            SDInitIO(void);
 extern  void            MsgFormat(char *,char *,...);
 extern  int             CopyMaxStr(char *,char *,int);
 extern  int             MakeName(char *,char *,char *);
-#if _EDITOR == _ON
-extern  bool            SDIsInternal(file_handle);
-extern  file_handle     EdOpenf(char *,int);
-#endif
 #if _TARGET == _VAX
 extern  void            SDSetSpool(file_handle);
 extern  bool            GetCatFile(void);
@@ -193,40 +189,15 @@ void    OpenSrc() {
 
     erase_err = ErrFile == NULL;
     SDInitAttr();
-#if _EDITOR == _ON
-    fp = NULL;
-    if( SrcExtn == ForExtn ) {
-        // try editor buffer without file extension
-        fp = EdOpenf( SrcName, READ_FILE );
-    }
+    MakeName( SrcName, SrcExtn, bld_name );
+    fp = SDOpen( bld_name, READ_FILE );
     if( fp != NULL ) {
-        SrcExtn = NULL;
-        SrcInclude( SrcName );
-        CurrFile->fileptr = fp;
+       SrcInclude( bld_name );
+       CurrFile->fileptr = fp;
     } else {
-        // try editor buffer with file extension
-        MakeName( SrcName, SrcExtn, bld_name );
-        fp = EdOpenf( bld_name, READ_FILE );
-        if( fp != NULL ) {
-            SrcInclude( bld_name );
-            CurrFile->fileptr = fp;
-        } else {
-            // try file called <include_name>.FOR.
-#else
-            MakeName( SrcName, SrcExtn, bld_name );
-#endif
-            fp = SDOpen( bld_name, READ_FILE );
-            if( fp != NULL ) {
-                SrcInclude( bld_name );
-                CurrFile->fileptr = fp;
-            } else {
-                SDError( NULL, err_msg );
-                InfoError( SM_OPENING_FILE, bld_name, err_msg );
-            }
-#if _EDITOR == _ON
-        }
+       SDError( NULL, err_msg );
+       InfoError( SM_OPENING_FILE, bld_name, err_msg );
     }
-#endif
     if( erase_err ) {
         CloseErr();
         Erase( ErrExtn );
@@ -344,41 +315,25 @@ void    Include( char *inc_name ) {
     MakeName( bld_name, SDSrcExtn( bld_name ), bld_name );
     if( AlreadyOpen( inc_name ) ) return;
     if( AlreadyOpen( bld_name ) ) return;
-#if _EDITOR == _ON
-    fp = EdOpenf( inc_name, READ_FILE );
+    // try file called <include_name>.FOR.
+    fp = SDOpen( bld_name, READ_FILE );
     if( fp != NULL ) {
-        SrcInclude( inc_name );
-        CurrFile->fileptr = fp;
-    } else {   // guess editor buffer <include_name>.FOR.
-        fp = EdOpenf( bld_name, READ_FILE );
-        if( fp != NULL ) {
-            SrcInclude( bld_name );
-            CurrFile->fileptr = fp;
-        } else {
-#endif
-            // try file called <include_name>.FOR.
-            fp = SDOpen( bld_name, READ_FILE );
-            if( fp != NULL ) {
-                SrcInclude( bld_name );
-                CurrFile->fileptr = fp;
-            } else {
-                // get error message before next i/o
-                SDError( NULL, err_msg );
-                // try library
-                fp = IncSearch( inc_name );
-                if( fp != NULL ) {
-                    // SrcInclude( inc_name ) now done in LIBSUPP
-                    CurrFile->fileptr = fp;
-                    CurrFile->flags |= INC_LIB_MEMBER;
-                } else {
-                    // could not open include file
-                    InfoError( SM_OPENING_FILE, bld_name, err_msg );
-                }
-            }
-#if _EDITOR == _ON
-        }
+       SrcInclude( bld_name );
+       CurrFile->fileptr = fp;
+    } else {
+       // get error message before next i/o
+       SDError( NULL, err_msg );
+       // try library
+       fp = IncSearch( inc_name );
+       if( fp != NULL ) {
+          // SrcInclude( inc_name ) now done in LIBSUPP
+          CurrFile->fileptr = fp;
+          CurrFile->flags |= INC_LIB_MEMBER;
+       } else {
+          // could not open include file
+          InfoError( SM_OPENING_FILE, bld_name, err_msg );
+       }
     }
-#endif
     // clear RetCode so that we don't get "file not found" returned
     // because we could not open include file
     RetCode = _SUCCESSFUL;
