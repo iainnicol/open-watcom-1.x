@@ -984,12 +984,11 @@ static boolean tokenMakesPTREE( unsigned token )
 void ParseFlush( void )
 /*********************/
 {
-    if( tokenMakesPTREE( currToken ) ) {
-#if 0
+    if( tokenMakesPTREE( currToken ) && yylval.tree ) {
+#ifndef NDEBUG
         // NYI: we have a problem when this triggers!
         switch( currToken ) {
         case Y_GLOBAL_ID:
-        case Y_GLOBAL_TYPENAME:
         case Y_GLOBAL_TEMPLATE_NAME:
         case Y_GLOBAL_OPERATOR:
         case Y_GLOBAL_TILDE:
@@ -1010,7 +1009,7 @@ void ParseFlush( void )
         case Y_TEMPLATE_SCOPED_TILDE:
         case Y_TEMPLATE_SCOPED_TIMES:
             ++ErrCount;
-            puts( "ParseFlush with mult-token" );
+            puts( "ParseFlush with multi-token" );
         }
 #endif
         PTreeFreeSubtrees( yylval.tree );
@@ -2377,6 +2376,8 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn, boolean defer_defn )
     DECL_SPEC *new_type;
     REWRITE *last_rewrite;
     REWRITE *save_token;
+    PTREE save_tree;
+    int save_yytoken;
     void (*last_source)( void );
     auto error_state_t check;
     auto TOKEN_LOCN locn;
@@ -2385,9 +2386,14 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn, boolean defer_defn )
         return( NULL );
     }
     CErrCheckpoint( &check );
+
     save_token = RewritePackageToken();
+    save_yytoken = currToken;
+    save_tree = yylval.tree;
+    yylval.tree = NULL;
     SrcFileGetTokenLocn( &locn );
     ParseFlush();
+
     LinkagePushCpp();
     newClassInstStack( &instantiate_state );
     if( defer_defn ) {
@@ -2444,9 +2450,13 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn, boolean defer_defn )
     }
     deleteStack( &instantiate_state );
     LinkagePop();
+
     SrcFileResetTokenLocn( &locn );
     RewriteRestoreToken( save_token );
     ParseFlush();
+    currToken = save_yytoken;
+    yylval.tree = save_tree;
+
     if( new_type != NULL ) {
         if( CErrOccurred( &check ) ) {
             PTypeRelease( new_type );
