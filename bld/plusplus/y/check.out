@@ -1,127 +1,143 @@
 s/r conflict in state 14 on Y_LEFT_BRACE:
-	shift to 226
-388 (184): enum-specifier <- enum-key
+	shift to 227
+387 (183): enum-specifier <- enum-key
 
-Sample sentence(s) for reduce of rule 388:
+Sample sentence(s) for reduce of rule 387:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .Y_LEFT_BRACE
   Will never shift token 'Y_LEFT_BRACE' in this context
-Sample sentence(s) for shift to state 226:
+Sample sentence(s) for shift to state 227:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .
 Y_LEFT_BRACE Y_RIGHT_BRACE Y_COMMA Y_CLASS 
 ---
 
 s/r conflict in state 38 on Y_TEMPLATE_SCOPED_TIMES:
-	shift to 237
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+	shift to 238
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_TIMES
   Will never shift token 'Y_TEMPLATE_SCOPED_TIMES' in this context
-Sample sentence(s) for shift to state 237:
+Sample sentence(s) for shift to state 238:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_TIMES Y_SCOPED_ID Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
 ---
 
 s/r conflict in state 38 on Y_TEMPLATE_SCOPED_TILDE:
-	shift to 238
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+	shift to 239
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_TILDE
   Will never shift token 'Y_TEMPLATE_SCOPED_TILDE' in this context
-Sample sentence(s) for shift to state 238:
+Sample sentence(s) for shift to state 239:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_TILDE Y_ID Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
 ---
 
 s/r conflict in state 38 on Y_TEMPLATE_SCOPED_OPERATOR:
-	shift to 239
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+	shift to 240
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_OPERATOR
   Will never shift token 'Y_TEMPLATE_SCOPED_OPERATOR' in this context
-Sample sentence(s) for shift to state 239:
+Sample sentence(s) for shift to state 240:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_OPERATOR Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
 s/r conflict in state 38 on Y_TEMPLATE_SCOPED_ID:
-	shift to 241
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+	shift to 242
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_ID
   Will never shift token 'Y_TEMPLATE_SCOPED_ID' in this context
-Sample sentence(s) for shift to state 241:
+Sample sentence(s) for shift to state 242:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_ID Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
 r/r conflict in state 39 on Y_LEFT_PAREN:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_TEMPLATE Y_LT Y_GT Y_TYPE_NAME .
 Y_LEFT_PAREN Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_TEMPLATE Y_LT Y_GT Y_TYPE_NAME .
 Y_LEFT_PAREN Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
 r/r conflict in state 39 on Y_RIGHT_PAREN:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_TEMPLATE Y_LT Y_GT Y_TYPE_NAME .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_TEMPLATE Y_LT Y_GT Y_TYPE_NAME .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
 r/r conflict in state 39 on Y_LEFT_BRACKET:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_TEMPLATE Y_LT Y_GT Y_TYPE_NAME .
 Y_LEFT_BRACKET Y_RIGHT_BRACKET Y_LEFT_BRACE Y_RIGHT_BRACE Y_CLASS 
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_TEMPLATE Y_LT Y_GT Y_TYPE_NAME .Y_LEFT_BRACKET
   Will never shift token 'Y_LEFT_BRACKET' in this context
 ---
 
-s/r conflict in state 50 on Y_SCOPED_TYPE_NAME:
+s/r conflict in state 50 on Y_SCOPED_TEMPLATE_NAME:
 	shift to 89
-322 (142): decl-specifiers <- non-type-decl-specifiers
+321 (141): decl-specifiers <- non-type-decl-specifiers
 
-Sample sentence(s) for reduce of rule 322:
+Sample sentence(s) for reduce of rule 321:
+  Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
+Y_AUTO .
+Y_SCOPED_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_TIMES Y_COMMA 
+Y_CLASS Y_LEFT_BRACE Y_STRUCT 
+Sample sentence(s) for shift to state 89:
+  Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
+Y_AUTO .
+Y_SCOPED_TEMPLATE_NAME Y_LT Y_GT Y_COMMA Y_CLASS Y_LEFT_BRACE 
+Y_STRUCT 
+---
+
+s/r conflict in state 50 on Y_SCOPED_TYPE_NAME:
+	shift to 90
+321 (141): decl-specifiers <- non-type-decl-specifiers
+
+Sample sentence(s) for reduce of rule 321:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .Y_SCOPED_TYPE_NAME
   Will never shift token 'Y_SCOPED_TYPE_NAME' in this context
-Sample sentence(s) for shift to state 89:
+Sample sentence(s) for shift to state 90:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_SCOPED_TYPE_NAME Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
 s/r conflict in state 50 on Y_GLOBAL_TEMPLATE_NAME:
-	shift to 91
-322 (142): decl-specifiers <- non-type-decl-specifiers
+	shift to 92
+321 (141): decl-specifiers <- non-type-decl-specifiers
 
-Sample sentence(s) for reduce of rule 322:
+Sample sentence(s) for reduce of rule 321:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_TIMES Y_COMMA 
 Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for shift to state 91:
+Sample sentence(s) for shift to state 92:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT Y_COMMA Y_CLASS Y_LEFT_BRACE 
@@ -129,115 +145,115 @@ Y_STRUCT
 ---
 
 s/r conflict in state 50 on Y_GLOBAL_TYPE_NAME:
-	shift to 92
-322 (142): decl-specifiers <- non-type-decl-specifiers
+	shift to 93
+321 (141): decl-specifiers <- non-type-decl-specifiers
 
-Sample sentence(s) for reduce of rule 322:
+Sample sentence(s) for reduce of rule 321:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .Y_GLOBAL_TYPE_NAME
   Will never shift token 'Y_GLOBAL_TYPE_NAME' in this context
-Sample sentence(s) for shift to state 92:
+Sample sentence(s) for shift to state 93:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_GLOBAL_TYPE_NAME Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
 s/r conflict in state 50 on Y_TEMPLATE_NAME:
-	shift to 138
-322 (142): decl-specifiers <- non-type-decl-specifiers
+	shift to 139
+321 (141): decl-specifiers <- non-type-decl-specifiers
 
-Sample sentence(s) for reduce of rule 322:
+Sample sentence(s) for reduce of rule 321:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_TIMES Y_COMMA Y_CLASS 
 Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for shift to state 138:
+Sample sentence(s) for shift to state 139:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_TEMPLATE_NAME Y_LT Y_GT Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
 s/r conflict in state 50 on Y_TYPE_NAME:
-	shift to 96
-322 (142): decl-specifiers <- non-type-decl-specifiers
+	shift to 97
+321 (141): decl-specifiers <- non-type-decl-specifiers
 
-Sample sentence(s) for reduce of rule 322:
+Sample sentence(s) for reduce of rule 321:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .Y_TYPE_NAME
   Will never shift token 'Y_TYPE_NAME' in this context
-Sample sentence(s) for shift to state 96:
+Sample sentence(s) for shift to state 97:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_AUTO .
 Y_TYPE_NAME Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 124 on Y_NAMESPACE_NAME:
-	shift to 292
-391 (187): enum-key <- Y_ENUM
+s/r conflict in state 125 on Y_NAMESPACE_NAME:
+	shift to 293
+390 (186): enum-key <- Y_ENUM
 
-Sample sentence(s) for reduce of rule 391:
+Sample sentence(s) for reduce of rule 390:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .Y_NAMESPACE_NAME
   Will never shift token 'Y_NAMESPACE_NAME' in this context
-Sample sentence(s) for shift to state 292:
+Sample sentence(s) for shift to state 293:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .
 Y_NAMESPACE_NAME Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 124 on Y_TEMPLATE_NAME:
-	shift to 293
-391 (187): enum-key <- Y_ENUM
+s/r conflict in state 125 on Y_TEMPLATE_NAME:
+	shift to 294
+390 (186): enum-key <- Y_ENUM
 
-Sample sentence(s) for reduce of rule 391:
+Sample sentence(s) for reduce of rule 390:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .
 Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_TIMES Y_COMMA Y_CLASS 
 Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for shift to state 293:
+Sample sentence(s) for shift to state 294:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .
 Y_TEMPLATE_NAME Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 124 on Y_TYPE_NAME:
-	shift to 294
-391 (187): enum-key <- Y_ENUM
+s/r conflict in state 125 on Y_TYPE_NAME:
+	shift to 295
+390 (186): enum-key <- Y_ENUM
 
-Sample sentence(s) for reduce of rule 391:
+Sample sentence(s) for reduce of rule 390:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .Y_TYPE_NAME
   Will never shift token 'Y_TYPE_NAME' in this context
-Sample sentence(s) for shift to state 294:
+Sample sentence(s) for shift to state 295:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .
 Y_TYPE_NAME Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 124 on Y_ID:
-	shift to 295
-391 (187): enum-key <- Y_ENUM
+s/r conflict in state 125 on Y_ID:
+	shift to 296
+390 (186): enum-key <- Y_ENUM
 
-Sample sentence(s) for reduce of rule 391:
+Sample sentence(s) for reduce of rule 390:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .Y_ID
   Will never shift token 'Y_ID' in this context
-Sample sentence(s) for shift to state 295:
+Sample sentence(s) for shift to state 296:
   Y_ID Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ENUM .
 Y_ID Y_COMMA Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 166 on Y_TEMPLATE_SCOPED_TILDE:
-	shift to 238
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+s/r conflict in state 167 on Y_TEMPLATE_SCOPED_TILDE:
+	shift to 239
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_TILDE
   Will never shift token 'Y_TEMPLATE_SCOPED_TILDE' in this context
-Sample sentence(s) for shift to state 238:
+Sample sentence(s) for shift to state 239:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT .
@@ -245,32 +261,32 @@ Y_TEMPLATE_SCOPED_TILDE Y_ID Y_RIGHT_BRACKET Y_DOT Y_NAMESPACE_NAME
 Y_RIGHT_PAREN Y_DEFARG_END $eof 
 ---
 
-s/r conflict in state 166 on Y_TEMPLATE_SCOPED_OPERATOR:
-	shift to 239
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+s/r conflict in state 167 on Y_TEMPLATE_SCOPED_OPERATOR:
+	shift to 240
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_OPERATOR
   Will never shift token 'Y_TEMPLATE_SCOPED_OPERATOR' in this context
-Sample sentence(s) for shift to state 239:
+Sample sentence(s) for shift to state 240:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_OPERATOR Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 166 on Y_TEMPLATE_SCOPED_ID:
-	shift to 241
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+s/r conflict in state 167 on Y_TEMPLATE_SCOPED_ID:
+	shift to 242
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT .Y_TEMPLATE_SCOPED_ID
   Will never shift token 'Y_TEMPLATE_SCOPED_ID' in this context
-Sample sentence(s) for shift to state 241:
+Sample sentence(s) for shift to state 242:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT .
@@ -278,11 +294,11 @@ Y_TEMPLATE_SCOPED_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN
 Y_DEFARG_END $eof 
 ---
 
-r/r conflict in state 227 on Y_RIGHT_BRACE:
-305 (131): namespace-body <-
+r/r conflict in state 228 on Y_RIGHT_BRACE:
+304 (130): namespace-body <-
 273 (111): start-restart-declarations <-
 
-Sample sentence(s) for reduce of rule 305:
+Sample sentence(s) for reduce of rule 304:
   Y_NAMESPACE Y_LEFT_BRACE .
 Y_RIGHT_BRACE Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 Sample sentence(s) for reduce of rule 273:
@@ -290,146 +306,146 @@ Sample sentence(s) for reduce of rule 273:
 Y_RIGHT_BRACE Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-r/r conflict in state 260 on Y_LEFT_BRACE:
-572 (23c): class-specifier <- class-key class-name
-571 (23b): start-class <-
+r/r conflict in state 261 on Y_LEFT_BRACE:
+571 (23b): class-specifier <- class-key class-name
+570 (23a): start-class <-
 
-Sample sentence(s) for reduce of rule 572:
+Sample sentence(s) for reduce of rule 571:
   Y_UNION Y_ID .Y_LEFT_BRACE
   Will never shift token 'Y_LEFT_BRACE' in this context
-Sample sentence(s) for reduce of rule 571:
+Sample sentence(s) for reduce of rule 570:
   Y_UNION Y_ID .
 Y_LEFT_BRACE Y_CLASS 
 ---
 
-s/r conflict in state 260 on Y_COLON:
-	shift to 518
-572 (23c): class-specifier <- class-key class-name
+s/r conflict in state 261 on Y_COLON:
+	shift to 519
+571 (23b): class-specifier <- class-key class-name
 
-Sample sentence(s) for reduce of rule 572:
+Sample sentence(s) for reduce of rule 571:
   Y_UNION Y_ID .Y_COLON
   Will never shift token 'Y_COLON' in this context
-Sample sentence(s) for shift to state 518:
+Sample sentence(s) for shift to state 519:
   Y_UNION Y_ID .
 Y_COLON Y_PROTECTED Y_PUBLIC Y_VIRTUAL Y_PRIVATE Y_TEMPLATE_NAME Y_LT 
 Y_GT Y_LEFT_BRACE Y_CLASS 
 ---
 
-s/r conflict in state 273 on Y_LT:
-	shift to 522
+s/r conflict in state 274 on Y_LT:
+	shift to 523
 186 (0ba): class-name-id <- Y_GLOBAL_TEMPLATE_NAME (unit production)
 
 Sample sentence(s) for reduce of rule 186:
   Y_UNION Y_GLOBAL_TEMPLATE_NAME .Y_LT
   Will never shift token 'Y_LT' in this context
-Sample sentence(s) for shift to state 522:
+Sample sentence(s) for shift to state 523:
   Y_UNION Y_GLOBAL_TEMPLATE_NAME .
 Y_LT Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 277 on Y_LT:
-	shift to 523
+s/r conflict in state 278 on Y_LT:
+	shift to 524
 182 (0b6): class-name-id <- Y_TEMPLATE_NAME (unit production)
 
 Sample sentence(s) for reduce of rule 182:
   Y_UNION Y_TEMPLATE_NAME .Y_LT
   Will never shift token 'Y_LT' in this context
-Sample sentence(s) for shift to state 523:
+Sample sentence(s) for shift to state 524:
   Y_UNION Y_TEMPLATE_NAME .
 Y_LT Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 297 on Y_TIMES:
-	shift to 98
+s/r conflict in state 298 on Y_TIMES:
+	shift to 99
 218 (0da): conversion-function-type <- type-specifiers
 
 Sample sentence(s) for reduce of rule 218:
   Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_OPERATOR Y_INT .Y_TIMES
   Will never shift token 'Y_TIMES' in this context
-Sample sentence(s) for shift to state 98:
+Sample sentence(s) for shift to state 99:
   Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_OPERATOR Y_INT .
 Y_TIMES Y_LEFT_BRACE Y_RIGHT_BRACE Y_CLASS 
 ---
 
-s/r conflict in state 297 on Y_AND:
-	shift to 99
+s/r conflict in state 298 on Y_AND:
+	shift to 100
 218 (0da): conversion-function-type <- type-specifiers
 
 Sample sentence(s) for reduce of rule 218:
   Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_OPERATOR Y_INT .Y_AND
   Will never shift token 'Y_AND' in this context
-Sample sentence(s) for shift to state 99:
+Sample sentence(s) for shift to state 100:
   Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_OPERATOR Y_INT .
 Y_AND Y_LEFT_BRACE Y_RIGHT_BRACE Y_CLASS 
 ---
 
-s/r conflict in state 338 on Y_LEFT_BRACKET:
-	shift to 553
+s/r conflict in state 339 on Y_LEFT_BRACKET:
+	shift to 554
 222 (0de): operator-function-type <- Y_NEW
 
 Sample sentence(s) for reduce of rule 222:
   Y_USING Y_GLOBAL_OPERATOR Y_NEW .Y_LEFT_BRACKET
   Will never shift token 'Y_LEFT_BRACKET' in this context
-Sample sentence(s) for shift to state 553:
+Sample sentence(s) for shift to state 554:
   Y_USING Y_GLOBAL_OPERATOR Y_NEW .
 Y_LEFT_BRACKET Y_RIGHT_BRACKET Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
 ---
 
-s/r conflict in state 339 on Y_LEFT_BRACKET:
-	shift to 554
+s/r conflict in state 340 on Y_LEFT_BRACKET:
+	shift to 555
 223 (0df): operator-function-type <- Y_DELETE
 
 Sample sentence(s) for reduce of rule 223:
   Y_USING Y_GLOBAL_OPERATOR Y_DELETE .Y_LEFT_BRACKET
   Will never shift token 'Y_LEFT_BRACKET' in this context
-Sample sentence(s) for shift to state 554:
+Sample sentence(s) for shift to state 555:
   Y_USING Y_GLOBAL_OPERATOR Y_DELETE .
 Y_LEFT_BRACKET Y_RIGHT_BRACKET Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
 ---
 
-s/r conflict in state 351 on Y_LT:
-	shift to 345
+s/r conflict in state 353 on Y_LT:
+	shift to 347
 178 (0b2): make-id <- Y_TEMPLATE_NAME (unit production)
 
 Sample sentence(s) for reduce of rule 178:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_THIS Y_DOT Y_TEMPLATE_NAME .
 Y_LT Y_STRING Y_DEFARG_END $eof 
-Sample sentence(s) for shift to state 345:
+Sample sentence(s) for shift to state 347:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_THIS Y_DOT Y_TEMPLATE_NAME .
-Y_LT Y_GT Y_TEMPLATE_SCOPED_OPERATOR Y_CLASS Y_LEFT_BRACE Y_STRUCT 
+Y_LT Y_GT Y_TEMPLATE_SCOPED_ID Y_DEFARG_END $eof 
 ---
 
-s/r conflict in state 550 on Y_TIMES:
-	shift to 98
+s/r conflict in state 551 on Y_TIMES:
+	shift to 99
 220 (0dc): conversion-function-ptr-declarator <- ptr-operator
 
 Sample sentence(s) for reduce of rule 220:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .Y_TIMES
   Will never shift token 'Y_TIMES' in this context
-Sample sentence(s) for shift to state 98:
+Sample sentence(s) for shift to state 99:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .
 Y_TIMES Y_LEFT_BRACE Y_RIGHT_BRACE Y_CLASS 
 ---
 
-s/r conflict in state 550 on Y_AND:
-	shift to 99
+s/r conflict in state 551 on Y_AND:
+	shift to 100
 220 (0dc): conversion-function-ptr-declarator <- ptr-operator
 
 Sample sentence(s) for reduce of rule 220:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .Y_AND
   Will never shift token 'Y_AND' in this context
-Sample sentence(s) for shift to state 99:
+Sample sentence(s) for shift to state 100:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .
 Y_AND Y_LEFT_BRACE Y_RIGHT_BRACE Y_CLASS 
 ---
 
-r/r conflict in state 591 on Y_RIGHT_BRACE:
-399 (18f): linkage-body <-
+r/r conflict in state 593 on Y_RIGHT_BRACE:
+398 (18e): linkage-body <-
 273 (111): start-restart-declarations <-
 
-Sample sentence(s) for reduce of rule 399:
+Sample sentence(s) for reduce of rule 398:
   Y_EXTERN Y_STRING Y_LEFT_BRACE .
 Y_RIGHT_BRACE Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 Sample sentence(s) for reduce of rule 273:
@@ -437,176 +453,176 @@ Sample sentence(s) for reduce of rule 273:
 Y_RIGHT_BRACE Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 606 on Y_TEMPLATE_SCOPED_TIMES:
-	shift to 237
-378 (17a): qualified-type-specifier <- template-class-id (unit production)
+s/r conflict in state 608 on Y_TEMPLATE_SCOPED_TIMES:
+	shift to 238
+377 (179): qualified-type-specifier <- template-class-id (unit production)
 
-Sample sentence(s) for reduce of rule 378:
+Sample sentence(s) for reduce of rule 377:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_LEFT_PAREN Y_INT 
 Y_LEFT_PAREN Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_TIMES Y_EQUAL Y_STRING Y_RIGHT_PAREN 
-Sample sentence(s) for shift to state 237:
+Sample sentence(s) for shift to state 238:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_LEFT_PAREN Y_INT 
 Y_LEFT_PAREN Y_TEMPLATE_NAME Y_LT Y_GT .
 Y_TEMPLATE_SCOPED_TIMES Y_RIGHT_PAREN 
 ---
 
-s/r conflict in state 642 on Y_TIMES:
-	shift to 767
+s/r conflict in state 644 on Y_TIMES:
+	shift to 769
 129 (081): dynamic-type-id <- type-specifiers
 
 Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_INT .
 Y_TIMES Y_STRING Y_DEFARG_END $eof 
-Sample sentence(s) for shift to state 767:
+Sample sentence(s) for shift to state 769:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_INT .
 Y_TIMES Y_DEFARG_END $eof 
 ---
 
-r/r conflict in state 824 on Y_SEMI_COLON:
-484 (1e4): declarator-id <- qualified-id-expression (unit production)
-308 (134): access-declaration <- qualified-id-expression
+r/r conflict in state 826 on Y_SEMI_COLON:
+483 (1e3): declarator-id <- qualified-id-expression (unit production)
+307 (133): access-declaration <- qualified-id-expression
 
-Sample sentence(s) for reduce of rule 484:
+Sample sentence(s) for reduce of rule 483:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_SCOPED_ID .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 308:
+Sample sentence(s) for reduce of rule 307:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_SCOPED_ID .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 825 on Y_COLON:
-	shift to 911
-427 (1ab): actual-declarator <- declarator-id
+s/r conflict in state 827 on Y_COLON:
+	shift to 913
+426 (1aa): actual-declarator <- declarator-id
 
-Sample sentence(s) for reduce of rule 427:
+Sample sentence(s) for reduce of rule 426:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_ID .Y_COLON
   Will never shift token 'Y_COLON' in this context
-Sample sentence(s) for shift to state 911:
+Sample sentence(s) for shift to state 913:
   Y_UNION Y_LEFT_BRACE Y_ID Y_COMMA Y_ID .
 Y_COLON Y_SIZEOF Y_TYPE_NAME Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
 ---
 
-r/r conflict in state 829 on Y_SEMI_COLON:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
-309 (135): access-declaration <- qualified-type-specifier
+r/r conflict in state 831 on Y_SEMI_COLON:
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
+308 (134): access-declaration <- qualified-type-specifier
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 309:
+Sample sentence(s) for reduce of rule 308:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-r/r conflict in state 829 on Y_COLON:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
+r/r conflict in state 831 on Y_COLON:
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_COLON Y_SIZEOF Y_TYPE_NAME Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_COLON Y_SIZEOF Y_TYPE_NAME Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE 
 Y_STRUCT 
 ---
 
-r/r conflict in state 829 on Y_SEMI_COLON:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
-309 (135): access-declaration <- qualified-type-specifier
+r/r conflict in state 831 on Y_SEMI_COLON:
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
+308 (134): access-declaration <- qualified-type-specifier
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 309:
+Sample sentence(s) for reduce of rule 308:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_SEMI_COLON Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-r/r conflict in state 829 on Y_LEFT_PAREN:
-481 (1e1): declarator-id <- qualified-type-specifier
-360 (168): simple-type-specifier <- qualified-type-specifier (unit production)
+r/r conflict in state 831 on Y_LEFT_PAREN:
+480 (1e0): declarator-id <- qualified-type-specifier
+359 (167): simple-type-specifier <- qualified-type-specifier (unit production)
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 480:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_LEFT_PAREN Y_CLASS Y_LEFT_BRACE Y_STRUCT 
-Sample sentence(s) for reduce of rule 360:
+Sample sentence(s) for reduce of rule 359:
   Y_UNION Y_LEFT_BRACE Y_PUBLIC Y_COLON Y_TYPE_NAME .
 Y_LEFT_PAREN Y_CLASS Y_LEFT_BRACE Y_STRUCT 
 ---
 
-s/r conflict in state 875 on Y_TIMES:
-	shift to 767
+s/r conflict in state 877 on Y_TIMES:
+	shift to 769
 141 (08d): partial-ptr-declarator <- Y_TEMPLATE_SCOPED_TIMES cv-qualifiers-opt
 
 Sample sentence(s) for reduce of rule 141:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT 
 Y_TEMPLATE_SCOPED_TIMES .
 Y_TIMES Y_STRING Y_DEFARG_END $eof 
-Sample sentence(s) for shift to state 767:
+Sample sentence(s) for shift to state 769:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT 
 Y_TEMPLATE_SCOPED_TIMES .
 Y_TIMES Y_DEFARG_END $eof 
 ---
 
-s/r conflict in state 876 on Y_TIMES:
-	shift to 767
+s/r conflict in state 878 on Y_TIMES:
+	shift to 769
 137 (089): partial-ptr-declarator <- Y_SCOPED_TIMES cv-qualifiers-opt
 
 Sample sentence(s) for reduce of rule 137:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT Y_SCOPED_TIMES .
 Y_TIMES Y_STRING Y_DEFARG_END $eof 
-Sample sentence(s) for shift to state 767:
+Sample sentence(s) for shift to state 769:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT Y_SCOPED_TIMES .
 Y_TIMES Y_DEFARG_END $eof 
 ---
 
-s/r conflict in state 877 on Y_TIMES:
-	shift to 767
+s/r conflict in state 879 on Y_TIMES:
+	shift to 769
 135 (087): partial-ptr-declarator <- Y_TIMES cv-qualifiers-opt
 
 Sample sentence(s) for reduce of rule 135:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT Y_TIMES .
 Y_TIMES Y_STRING Y_DEFARG_END $eof 
-Sample sentence(s) for shift to state 767:
+Sample sentence(s) for shift to state 769:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT Y_TIMES .
 Y_TIMES Y_DEFARG_END $eof 
 ---
 
-s/r conflict in state 930 on Y_TIMES:
-	shift to 767
+s/r conflict in state 932 on Y_TIMES:
+	shift to 769
 139 (08b): partial-ptr-declarator <- template-class-id Y_TEMPLATE_SCOPED_TIMES cv-qualifiers-opt
 
 Sample sentence(s) for reduce of rule 139:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT 
 Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_TIMES .
 Y_TIMES Y_STRING Y_DEFARG_END $eof 
-Sample sentence(s) for shift to state 767:
+Sample sentence(s) for shift to state 769:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_GLOBAL_NEW Y_INT 
 Y_TEMPLATE_NAME Y_LT Y_GT Y_TEMPLATE_SCOPED_TIMES .
 Y_TIMES Y_DEFARG_END $eof 
 ---
 
 unit reduction states removed:              98
-unit reduction optimizations:             3703
-actions combined:                          113
-parser states:                             899
+unit reduction optimizations:             3745
+actions combined:                          114
+parser states:                             901
 # states (1 reduce only):                  397
 reduce/reduce conflicts:                    11
-shift/reduce conflicts:                     34
+shift/reduce conflicts:                     35
 number of rules not reduced:                 0
 bytes used in tables:                    34961
 table space utilization:                    54
