@@ -2099,7 +2099,7 @@ PTREE ParseMemInit( void )
     return( mem_init_tree );
 }
 
-PTREE ParseDefArg( void )
+PTREE ParseGenericDefArg( int start_tok )
 /***********************/
 {
     int t;
@@ -2107,12 +2107,17 @@ PTREE ParseDefArg( void )
     p_action what;
     PTREE defarg_tree;
 
-    newExprStack( &defarg_start, Y_DEFARG_SPECIAL );
+    newExprStack( &defarg_start, start_tok );
     syncLocation();
     /* do parse */
     for(;;) {
         do {
             t = yylex( &defarg_start );
+#ifndef NDEBUG
+            if( PragDbgToggle.dump_parse ){
+                printf("ParseGenericDefArg t = %d - '%s'\n", t, yytoknames[ t ]);
+            }
+#endif
             what = doAction( t, &defarg_start );
         } while( what == P_RELEX );
         if( what != P_SHIFT ) break;
@@ -2141,6 +2146,21 @@ PTREE ParseDefArg( void )
     }
     deleteStack( &defarg_start );
     return( defarg_tree );
+}
+
+PTREE ParseDefArg( )
+{
+    return ParseGenericDefArg( Y_DEFARG_SPECIAL );
+}
+
+PTREE ParseTemplateIntDefArg( )
+{
+    return ParseGenericDefArg( Y_TEMPLATE_INT_DEFARG_SPECIAL );
+}
+
+PTREE ParseTemplateTypeDefArg( )
+{
+    return ParseGenericDefArg( Y_TEMPLATE_TYPE_DEFARG_SPECIAL );
 }
 
 DECL_INFO *ParseException( void )

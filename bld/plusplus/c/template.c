@@ -36,6 +36,7 @@
 #include "cgfront.h"
 #include "errdefns.h"
 #include "rewrite.h"
+#include "preproc.h"
 #include "ring.h"
 #include "stack.h"
 #include "memmgr.h"
@@ -47,6 +48,10 @@
 #include "template.h"
 #include "pcheader.h"
 #include "initdefs.h"
+#ifndef NDEBUG
+#include "pragdefn.h"
+#include "dbg.h"
+#endif
 
 #define BLOCK_TEMPLATE_INFO     16
 #define BLOCK_CLASS_INST        32
@@ -106,6 +111,9 @@ static struct {
 } activeInstantiations;
 
 static SUICIDE_CALLBACK templateSuicide;
+
+static void injectTemplateParm( SCOPE scope, PTREE parm, char *name );
+
 
 static void templateSuicideHandler( void )
 {
@@ -258,7 +266,6 @@ static TYPE setArgIndex( SYMBOL sym, unsigned index )
 static void injectGenericTypes( DECL_INFO *args )
 {
     char *name;
-    PTREE def_arg;
     DECL_INFO *curr;
     SYMBOL sym;
     unsigned index;
@@ -273,12 +280,6 @@ static void injectGenericTypes( DECL_INFO *args )
             curr->type = setArgIndex( sym, index );
             ++index;
             sym = ScopeInsert( GetCurrScope(), sym, name );
-            def_arg = curr->defarg_expr;
-            if( def_arg != NULL ) {
-                PTreeErrorExpr( def_arg, ERR_NO_TYPE_DEFAULTS );
-                PTreeFreeSubtrees( def_arg );
-                curr->defarg_expr = NULL;
-            }
         } else if( name == NULL ) {
             if( ! unnamed_diagnosed ) {
                 CErr1( ERR_NO_UNNAMED_TEMPLATE_ARGS );
@@ -310,7 +311,7 @@ void TemplateDeclInit( TEMPLATE_DATA *data, DECL_INFO *args )
     injectGenericTypes( args );
 }
 
-static unsigned getArgList( DECL_INFO *args, TYPE *type_list, char **names )
+static unsigned getArgList( DECL_INFO *args, TYPE *type_list, char **names, REWRITE **defarg_list )
 {
     DECL_INFO *curr;
     unsigned count;
@@ -323,6 +324,16 @@ static unsigned getArgList( DECL_INFO *args, TYPE *type_list, char **names )
         if( names != NULL ) {
             names[count] = curr->name;
         }
+        if( defarg_list != NULL ) {
+            /*
+            //  Ensure that we NULL out curr->defarg_rewrite or else
+            //  when we delete the DECL_INFO, the rewrite element gets
+            //  freed as well. The rewrite info will be freed when the
+            //  the template info is freed.
+            */
+            defarg_list[count] = curr->defarg_rewrite;
+			curr->defarg_rewrite = NULL;
+        }
         ++count;
     } RingIterEnd( curr )
     return( count );
@@ -330,7 +341,7 @@ static unsigned getArgList( DECL_INFO *args, TYPE *type_list, char **names )
 
 static unsigned getTinfoArgList( DECL_INFO *args, TEMPLATE_INFO *tinfo )
 {
-    return( getArgList( args, tinfo->type_list, tinfo->arg_names ) );
+    return( getArgList( args, tinfo->type_list, tinfo->arg_names, tinfo->defarg_list ) );
 }
 
 static TEMPLATE_INFO *newTemplateInfo( TEMPLATE_DATA *data )
@@ -340,7 +351,7 @@ static TEMPLATE_INFO *newTemplateInfo( TEMPLATE_DATA *data )
     unsigned arg_count;
 
     args = data->args;
-    arg_count = getArgList( args, NULL, NULL );
+    arg_count = getArgList( args, NULL, NULL, NULL );
     tinfo = RingCarveAlloc( carveTEMPLATE_INFO, &allClassTemplates );
     tinfo->instantiations = NULL;
     tinfo->member_defns = NULL;
@@ -350,6 +361,7 @@ static TEMPLATE_INFO *newTemplateInfo( TEMPLATE_DATA *data )
     tinfo->arg_names = CPermAlloc( arg_count * sizeof( char * ) );
     tinfo->sym = NULL;
     tinfo->type_list = CPermAlloc( arg_count * sizeof( TYPE ) );
+    tinfo->defarg_list = CPermAlloc( arg_count * sizeof( REWRITE * ) );
     tinfo->defn = data->defn;
     tinfo->defn_found = FALSE;
     tinfo->free = FALSE;
@@ -424,7 +436,7 @@ static boolean templateArgListsSame( DECL_INFO *args, TEMPLATE_INFO *tinfo )
     unsigned i;
     DECL_INFO *curr;
 
-    curr_count = getArgList( args, NULL, NULL );
+    curr_count = getArgList( args, NULL, NULL, NULL );
     if( curr_count != tinfo->num_args ) {
         return( FALSE );
     }
@@ -458,9 +470,9 @@ static char **getUniqueArgNames( DECL_INFO *args, TEMPLATE_INFO *tinfo )
 
     arg_names = tinfo->arg_names;
     if( ! sameArgNames( args, arg_names ) ) {
-        arg_count = getArgList( args, NULL, NULL );
+        arg_count = getArgList( args, NULL, NULL, NULL );
         arg_names = CPermAlloc( arg_count * sizeof( char * ) );
-        getArgList( args, NULL, arg_names );
+        getArgList( args, NULL, arg_names, NULL );
     }
     return( arg_names );
 }
@@ -515,6 +527,10 @@ static void addClassTemplateMember( TEMPLATE_DATA *data, SYMBOL sym )
     char **arg_names;
     DECL_INFO *args;
     TEMPLATE_INFO *tinfo;
+
+    if( ( NULL == data) || ( NULL == sym) ){
+        return;
+    }
 
     if( ! data->member_found ) {
         return;
@@ -681,7 +697,6 @@ void TemplateDeclFini( void )
         }
         addClassTemplateMember( data, sym );
     }
-    FreeArgs( data->args );
     if( CErrOccurred( &(data->errors) ) ) {
         if( sym != NULL ) {
             sym->u.tinfo->corrupted = TRUE;
@@ -691,6 +706,10 @@ void TemplateDeclFini( void )
             defineAllClassDecls( sym );
         }
     }
+
+	FreeArgsDefaultsOK( data->args );
+	data->args = NULL;
+
     StackPop( &currentTemplate );
 }
 
@@ -734,7 +753,7 @@ static FN_TEMPLATE_DEFN *buildFunctionDefn( REWRITE *r, SYMBOL sym )
         return( NULL );
     }
     args = data->args;
-    count = getArgList( args, NULL, NULL );
+    count = getArgList( args, NULL, NULL, NULL );
     arg_names = CPermAlloc( count * sizeof( char * ) );
     type_list = CPermAlloc( count * sizeof( TYPE ) );
     fn_defn = RingCarveAlloc( carveFN_TEMPLATE_DEFN, &allFunctionTemplates );
@@ -743,7 +762,7 @@ static FN_TEMPLATE_DEFN *buildFunctionDefn( REWRITE *r, SYMBOL sym )
     fn_defn->num_args = count;
     fn_defn->arg_names = arg_names;
     fn_defn->type_list = type_list;
-    getArgList( args, type_list, arg_names );
+    getArgList( args, type_list, arg_names, NULL );
     return( fn_defn );
 }
 
@@ -980,11 +999,13 @@ static PTREE templateParmSimpleEnough( TYPE arg_type, PTREE parm )
             if( parm->cgop == CO_ADDR_OF ) {
                 sym_parm = parm->u.subtree[0];
                 if( sym_parm->op == PT_SYMBOL ) {
+                    PTREE oldparm = parm;
                     parm->u.subtree[0] = NULL;
-                    PTreeFreeSubtrees( parm );
                     /* reduce parm to a PT_SYMBOL */
                     parm = sym_parm;
                     if( okForTemplateParm( parm ) ) {
+                        /* Only delete oldparm if we are returning success */
+                        PTreeFreeSubtrees( oldparm );
                         parm->type = arg_type;
                         return( parm );
                     }
@@ -996,11 +1017,13 @@ static PTREE templateParmSimpleEnough( TYPE arg_type, PTREE parm )
         if( parm->cgop == CO_CONVERT ) {
             sym_parm = parm->u.subtree[1];
             if( sym_parm->op == PT_SYMBOL ) {
+                PTREE oldparm = parm;
                 parm->u.subtree[1] = NULL;
-                PTreeFreeSubtrees( parm );
                 /* reduce parm to a PT_SYMBOL */
                 parm = sym_parm;
                 if( okForTemplateParm( parm ) ) {
+                    /* Only delete oldparm if we are returning success */
+                    PTreeFreeSubtrees( oldparm );
                     parm->type = arg_type;
                     return( parm );
                 }
@@ -1064,30 +1087,76 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
     PTREE list;
     PTREE parm;
     TYPE arg_type;
-    unsigned msg;
     unsigned num_parms;
     unsigned i;
     boolean something_went_wrong;
+    TOKEN_LOCN  start_locn;
 
     parms = NodeReverseArgs( &num_parms, parms );
     something_went_wrong = FALSE;
+
     if( tinfo->corrupted ) {
         something_went_wrong = TRUE;
-    } else if( num_parms != tinfo->num_args ) {
-        msg = ERR_TOO_FEW_TEMPLATE_PARAMETERS;
-        if( num_parms > tinfo->num_args ) {
-            msg = ERR_TOO_MANY_TEMPLATE_PARAMETERS;
-        }
-        CErr1( msg );
-        something_went_wrong = TRUE;
     } else if( ! something_went_wrong ) {
+        SCOPE decl_scope;
+        /*
+        // Check for argument overflow
+        */
+        if( num_parms > tinfo->num_args ) {
+            CErr1( ERR_TOO_MANY_TEMPLATE_PARAMETERS );
+            something_went_wrong = TRUE;
+            NodeFreeDupedExpr( parms );
+            parms = NULL;
+            return (parms); /* from loop */
+        }
+
+        SrcFileGetTokenLocn( &start_locn );
+
+        list = parms;
         i = 0;
-        for( list = parms; list != NULL; list = list->u.subtree[0] ) {
+
+        for( i = 0; ; list = list->u.subtree[0] ) {
             arg_type = TypedefRemove( tinfo->type_list[i] );
-            if( arg_type->id == TYP_GENERIC ) {
+            if( arg_type->id == TYP_GENERIC || arg_type->id == TYP_CLASS ) {
                 arg_type = NULL;
             }
+
             parm = list->u.subtree[1];
+            if( parm == NULL ) {
+                if( tinfo->defarg_list[i] == NULL ) {
+#ifndef NDEBUG
+                    if( PragDbgToggle.dump_parse ){
+                        printf(__FILE__ " %d tinfo->defarg_list[i] == NULL\n", __LINE__);
+                    }
+#endif
+                    /* the rewrite stuff would have killed our location so approximate */
+                    SetErrLoc(&start_locn);
+                    CErr1( ERR_TOO_FEW_TEMPLATE_PARAMETERS);
+                    something_went_wrong = TRUE;
+                    break;  /* from for loop */
+                }
+                else {
+                    void (*last_source)( void );
+                    REWRITE *last_rewrite;
+                    REWRITE *defarg_rewrite;
+
+                    ParseFlush();
+                    last_source = SetTokenSource( RewriteToken );
+                    defarg_rewrite = tinfo->defarg_list[i];
+                    last_rewrite = RewriteRewind( defarg_rewrite );
+
+                    if( arg_type != NULL ) {
+                        parm = ParseTemplateIntDefArg();
+                    }
+                    else {
+                        parm = ParseTemplateTypeDefArg();
+                    }
+
+                    RewriteClose( last_rewrite );
+                    ResetTokenSource( last_source );
+                }
+            }
+
             if( parm->op != PT_TYPE ) {
                 if( arg_type != NULL ) {
                     parm = processIndividualParm( arg_type, parm );
@@ -1106,8 +1175,27 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
                     something_went_wrong = TRUE;
                 }
             }
+
+            if(something_went_wrong)
+                break;
+
+            /*
+            //  Moved the scoping to just around the injection points
+            //  as the code above is in the wrong scope.
+            */
+            decl_scope = ScopeBegin( SCOPE_TEMPLATE_INST );
+            injectTemplateParm( decl_scope, parm, tinfo->arg_names[i] );
             list->u.subtree[1] = parm;
+            decl_scope = ScopeEnd( SCOPE_TEMPLATE_INST );
+
             ++i;
+            if( i >= tinfo->num_args )
+                break;
+
+            if( list->u.subtree[0] == NULL )
+            {
+              list->u.subtree[0] = PTreeBinary( CO_LIST, NULL, NULL );
+            }
         }
     }
     if( something_went_wrong ) {
@@ -1286,53 +1374,56 @@ static SYMBOL templateArgTypedef( TYPE type )
     return tsym;
 }
 
-static void injectTemplateParms( TEMPLATE_INFO *tinfo, SCOPE scope, PTREE parms )
+static void injectTemplateParm( SCOPE scope, PTREE parm, char *name )
 {
-    PTREE list;
-    PTREE parm;
-    char **pname;
-    char *name;
     SYMBOL addr_sym;
     SYMBOL sym;
     TYPE parm_type;
+
+    parm_type = parm->type;
+    switch( parm->op ) {
+    case PT_INT_CONSTANT:
+        sym = templateArgSym( SC_STATIC, parm_type );
+        DgStoreConstScalar( parm, parm_type, sym );
+        break;
+    case PT_TYPE:
+        sym = templateArgTypedef( parm_type );
+        break;
+    case PT_SYMBOL:
+        addr_sym = parm->u.symcg.symbol;
+        if( PointerType( parm_type ) != NULL ) {
+            parm_type = MakePointerTo( addr_sym->sym_type );
+        } else {
+            parm_type = addr_sym->sym_type;
+        }
+        sym = templateArgSym( SC_ADDRESS_ALIAS, parm_type );
+        sym->u.alias = addr_sym;
+        break;
+    DbgDefault( "template parms are corrupted" );
+    }
+    if( sym != NULL ) {
+        sym = ScopeInsert( scope, sym, name );
+    }
+}
+
+static void injectTemplateParms( TEMPLATE_INFO *tinfo, SCOPE scope, PTREE parms )
+{
+    PTREE list;
+    char **pname;
+    char *name;
 
     pname = NULL;
     if( tinfo != NULL ) {
         pname = tinfo->arg_names;
     }
     for( list = parms; list != NULL; list = list->u.subtree[0] ) {
-        sym = NULL;
-        parm = list->u.subtree[1];
-        parm_type = parm->type;
-        switch( parm->op ) {
-        case PT_INT_CONSTANT:
-            sym = templateArgSym( SC_STATIC, parm_type );
-            DgStoreConstScalar( parm, parm_type, sym );
-            break;
-        case PT_TYPE:
-            sym = templateArgTypedef( parm_type );
-            break;
-        case PT_SYMBOL:
-            addr_sym = parm->u.symcg.symbol;
-            if( PointerType( parm_type ) != NULL ) {
-                parm_type = MakePointerTo( addr_sym->sym_type );
-            } else {
-                parm_type = addr_sym->sym_type;
-            }
-            sym = templateArgSym( SC_ADDRESS_ALIAS, parm_type );
-            sym->u.alias = addr_sym;
-            break;
-        DbgDefault( "template parms are corrupted" );
-        }
         if( pname != NULL ) {
             name = *pname;
             ++pname;
         } else {
             name = NameDummy();
         }
-        if( sym != NULL ) {
-            sym = ScopeInsert( scope, sym, name );
-        }
+        injectTemplateParm( scope, list->u.subtree[1], name );
     }
 }
 
@@ -1838,6 +1929,7 @@ static void processNewFileSyms( NAME_SPACE *ns, SYMBOL old_last, SYMBOL curr_las
 
 static void freeDefns( void )
 {
+    unsigned i;
     REWRITE *r;
     TEMPLATE_INFO *tinfo;
     TEMPLATE_MEMBER *member;
@@ -1852,6 +1944,9 @@ static void freeDefns( void )
             member->defn = NULL;
             RewriteFree( r );
         } RingIterEnd( member )
+        for( i = 0; i < tinfo->num_args; ++i ) {
+            RewriteFree( tinfo->defarg_list[i] );
+        }
     } RingIterEnd( tinfo )
     RingIterBeg( allFunctionTemplates, curr_fn ) {
         r = curr_fn->defn;
