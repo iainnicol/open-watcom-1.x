@@ -33,6 +33,8 @@
 #define ASMSYM_H
 
 #include "watcom.h"
+#include "asmops2.h"
+#include "asmglob.h"
 
 enum fixup_types {
         FIX_SEG,
@@ -84,29 +86,32 @@ struct asmfixup {
 };
 
 typedef enum {
-        MT_EMPTY,
-        MT_ERROR,
+        MT_EMPTY  = EMPTY,
+        MT_ERROR  = ERROR,
 
-        MT_BYTE,
-        MT_SBYTE,
-        MT_WORD,
-        MT_SWORD,
-        MT_DWORD,
-        MT_SDWORD,
-        MT_QWORD,
-        MT_FWORD,
-        MT_TBYTE,
+        MT_BYTE   = T_BYTE,
+        MT_WORD   = T_WORD,
+        MT_DWORD  = T_DWORD,
+        MT_QWORD  = T_QWORD,
+        MT_FWORD  = T_FWORD,
+        MT_TBYTE  = T_TBYTE,
 
-        MT_SHORT,
-        MT_NEAR,
-        MT_FAR,
+        MT_SHORT  = T_SHORT,
+        MT_NEAR   = T_NEAR,
+        MT_FAR    = T_FAR,
 
-        MT_STRUCT,
+        MT_PTR    = T_PTR,
 
-        MT_PTR,
+#ifdef _WASM_
+        MT_SBYTE  = T_SBYTE,
+        MT_SWORD  = T_SWORD,
+        MT_SDWORD = T_SDWORD,
 
-        MT_PROC,
-        MT_ABS
+        MT_STRUCT = T_STRUCT,
+
+        MT_PROC   = T_PROC,
+        MT_ABS    = T_ABS
+#endif
 
 } memtype;
 
