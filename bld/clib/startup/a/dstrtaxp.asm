@@ -24,7 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  C/C++ Alpha AXP NT 32-bit DLL and widechar DLL startup code.
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 

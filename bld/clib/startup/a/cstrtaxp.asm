@@ -24,7 +24,7 @@
 //*
 //*  ========================================================================
 //*
-//* Description:  C/C++ Alpha AXP NT 32-bit console startup code.
+//* Description:  Open Watcom C/C++32 Alpha AXP NT starup code.
 //*
 //*****************************************************************************
 

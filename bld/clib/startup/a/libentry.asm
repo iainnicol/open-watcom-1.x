@@ -24,7 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  C/C++ Windows 16-bit DLL startup code.
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 

@@ -24,7 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  C/C++ DOS 32-bit AutoCAD ADS console startup code.
+;* Description:  Watcom C/C++32 AutoCAD ADS startup code.
 ;*
 ;*****************************************************************************
 

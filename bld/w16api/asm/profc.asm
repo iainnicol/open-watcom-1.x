@@ -54,48 +54,48 @@ DGROUP	GROUP	_DATA
 _TEXT	SEGMENT	BYTE PUBLIC USE16 'CODE'
 	ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 
-PubProc PROFINSCHK
+PubProc ProfInsChk
         PROF_FN 0
         xor     ah,ah
-EndProc PROFINSCHK
+EndProc ProfInsChk
 
-PubProc PROFSETUP
+PubProc ProfSetup
         push    bp
         mov     bp,sp
         mov     bx,8H[bp]
         mov     cx,6H[bp]
         PROF_FN 1
         pop     bp
-EndProc PROFSETUP, 4
+EndProc ProfSetup, 4
 
-PubProc PROFSAMPRATE
+PubProc ProfSampRate
         push    bp
         mov     bp,sp
         mov     bx,8H[bp]
         mov     cx,6H[bp]
         PROF_FN 2
         pop     bp
-EndProc PROFSAMPRATE, 4
+EndProc ProfSampRate, 4
 
-PubProc PROFSTART
+PubProc ProfStart
         PROF_FN 3
-EndProc PROFSTART
+EndProc ProfStart
 
-PubProc PROFSTOP
+PubProc ProfStop
         PROF_FN 4
-EndProc PROFSTOP
+EndProc ProfStop
 
-PubProc PROFCLEAR
+PubProc ProfClear
         PROF_FN 5
-EndProc PROFCLEAR
+EndProc ProfClear
 
-PubProc PROFFLUSH
+PubProc ProfFlush
         PROF_FN 6
-EndProc PROFFLUSH
+EndProc ProfFlush
 
-PubProc PROFFINISH
+PubProc ProfFinish
         PROF_FN 7
-EndProc PROFFINISH
+EndProc ProfFinish
 
 _TEXT	ENDS
 

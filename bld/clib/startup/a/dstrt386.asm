@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  C/C++ Windows NT 32-bit DLL and widechar DLL startup code.
-;*               C/C++ OS/2 32-bit DLL and widechar DLL startup code.
+;* Description:  Open Watcom C/C++32 DLL startup code.
 ;*
 ;*****************************************************************************
 
