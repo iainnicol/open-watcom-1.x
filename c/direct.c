@@ -2284,8 +2284,16 @@ int SetAssume( int i )
             info->flat = TRUE;
             info->error = FALSE;
             info->symbol = NULL;
+        } else if( token_cmp( &segloc, TOK_NOTHING, TOK_NOTHING ) != ERROR ) {
+            info->flat = FALSE;
+            info->error = FALSE;
+            info->symbol = NULL;
         } else {
             sym = AsmGetSymbol( segloc );
+            if( ( sym == NULL ) && ( Parse_Pass != PASS_1 ) ){
+                AsmErr( SYMBOL_S_NOT_DEFINED, segloc );
+                return( ERROR );
+            }
             info->symbol = sym;
             info->flat = FALSE;
             info->error = FALSE;
