@@ -1,12 +1,15 @@
 
 objs = &
 allign &
+callimpl &
 datamix1 &
 datamix2 &
+jmpimpl &
 jmpshrt &
 lea &
 lsxxx &
 mseg &
+msgseg32 &
 opi8u &
 plsintr &
 proccall &
