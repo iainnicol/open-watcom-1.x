@@ -87,7 +87,6 @@ typedef struct asm_sym {
 
 extern struct asm_sym *AsmLookup( char *name );
 extern struct asm_sym *AsmGetSymbol( char *name );
-extern void AsmSymFini(void);
 
 #ifdef _WASM_
 

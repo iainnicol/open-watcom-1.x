@@ -172,6 +172,5 @@ int OperandSize( enum operand_type opnd );
 int InRange( unsigned long val, unsigned bytes );
 int cpu_directive( int i );
 int AsmParse( void );
-void AsmInit( int cpu, int fpu, int use32 );
 
 #endif

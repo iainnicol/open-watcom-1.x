@@ -95,18 +95,15 @@
 
 #ifdef _WASM_
 
-#define     Address         ( GetCurrAddr() )
 #define MEM_TYPE( op, typ ) ( (op) == T_##typ || (op) == T_S##typ )
 
 #else
 
-extern uint_32              Address;
 #define MEM_TYPE( op, typ ) ( (op) == T_##typ )
 
 #endif
 
 /* global variables */
-extern unsigned char    *CodeBuffer;
 extern struct asm_tok   *AsmBuffer[];
 extern struct asm_code  *Code;
 extern int_8            Frame;

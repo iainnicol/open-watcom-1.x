@@ -60,8 +60,6 @@
 #define SEPARATE_FIXUPP_16_32 1
 
 extern char             *ScanLine( char *, int );
-extern void             AsmLine( char * );
-extern void             AsmSymFini( void );
 extern void             FreeIncludePath( void );
 extern void             PrepAnonLabels( void );
 extern void             CheckForOpenConditionals();

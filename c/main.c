@@ -499,9 +499,10 @@ static void do_init_stuff( char **cmdline )
     char        *dst;
     char        buff[80];
 
-    if( !MsgInit() ) exit(1);
+    if( !MsgInit() )
+        exit(1);
 
-    AsmInit(-1, -1, -1);                // initialize hash table
+    AsmInit( -1, -1, -1, -1 );                // initialize hash table
     strcpy( buff, "__WASM__=" );
     dst = &buff[ strlen(buff) ];
     src = (char *)FingerMsg[0];
@@ -522,7 +523,8 @@ static void do_init_stuff( char **cmdline )
     set_build_target();
     get_os_include();
     env = getenv( "INCLUDE" );
-    if( env != NULL ) AddStringToIncludePath( env );
+    if( env != NULL )
+        AddStringToIncludePath( env );
     if( !Options.quiet && !Options.banner_printed ) {
         Options.banner_printed = TRUE;
         trademark();
