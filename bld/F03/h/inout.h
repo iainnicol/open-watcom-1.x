@@ -37,6 +37,38 @@
 /* needs #include "standard.h" */
 
 extern void    CompErr( uint );
+extern bool    isErrFileOpen(void);
+extern void    OpenErr(void); 
+extern void    InitComIO(void);
+extern void    InitMemIO(void);
+extern void    FiniComIO(void);
+extern void    OpenSrc(void);
+extern void    IOPurge(void);
+extern void    ReadSrc(void);
+extern void    Include(char *);
+extern bool    SetLst(bool);
+extern void    SrcInclude( char *);
+extern void    Conclude(void);
+extern void    PrintErr(char *);
+extern void    PrtErrNL(void);
+extern void    JustErr(char *);
+extern void    CloseErr(void);
+extern void    TOutNL(char *);
+extern void    TOut(char *);
+extern void    OpenLst(void);
+extern void    ChkPntLst(void);
+extern bool    WasStmtListed(void);
+extern void    GetBanner(char *);
+extern void    GetCopyright(char *);
+extern void    GetTrademark(char *);
+extern void    GetMoreInfo(char *);
+extern void    PrtBanner(void);
+extern void    PrtLstNL(char *);
+extern void    PrtLst(char *);
+extern void    CloseLst(void);
+extern void    LFEndSrc(void);
+extern void    LFNewPage(void);
+extern void    LFSkip(void);
 
 
 #endif
