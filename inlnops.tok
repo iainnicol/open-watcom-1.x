@@ -399,6 +399,12 @@ popad
 popf
 popfd
 por
+prefetch
+prefetchnta
+prefetcht0
+prefetcht1
+prefetcht2
+prefetchw
 psadbw
 pslld
 psllq

@@ -858,6 +858,13 @@ ins (T_POPFD,           OP_NONE,     F_32,   OP_NONE,    no_RM,  0x9D,     0x00,
 
 ins (T_POR,             OP_MMX,      F_0F,   OP_MMX|OP_M,no_WDS, 0xeb,     0x00,                     P_586, NO_PREFIX)
 
+ins (T_PREFETCH,           OP_MMX|OP_M,      F_0F,   OP_NONE,no_WDS, 0x0d,     0x00,                     P_686, NO_PREFIX)
+ins (T_PREFETCHNTA,           OP_MMX|OP_M,      F_0F,   OP_NONE,no_WDS, 0x18,     0x00,                     P_686, NO_PREFIX)
+ins (T_PREFETCHT0,           OP_MMX|OP_M,      F_0F,   OP_NONE,no_WDS, 0x18,     0x08,                     P_686, NO_PREFIX)
+ins (T_PREFETCHT1,           OP_MMX|OP_M,      F_0F,   OP_NONE,no_WDS, 0x18,     0x10,                     P_686, NO_PREFIX)
+ins (T_PREFETCHT2,           OP_MMX|OP_M,      F_0F,   OP_NONE,no_WDS, 0x18,     0x18,                     P_686, NO_PREFIX)
+ins (T_PREFETCHW,           OP_MMX|OP_M,      F_0F,   OP_NONE,no_WDS, 0x0d,     0x08,                     P_686, NO_PREFIX)
+
 insa(T_PRIVATE,         OP_SPECIAL,  0,      0,          0,      0,        OP_RES_ID,                0,     0)
 insa(T_PROC,            OP_SPECIAL,  0,      0,          0,      0,        OP_DIRECTIVE,             0,     0)
 insa(T_PROTO,           OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
