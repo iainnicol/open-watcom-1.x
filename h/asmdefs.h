@@ -37,7 +37,8 @@
 #define IS_CALL( inst )     ( inst == T_CALL || inst == T_CALLF )
 #define IS_JMP( inst )      ( inst >= T_JA && inst <= T_JZ )
 #define IS_BRANCH( inst )   ( IS_JMP( inst ) || IS_CALL( inst ) )
-#define IS_JUMPF( inst )    ( inst == T_CALLF || inst == T_JMPF )
+#define IS_JMPCALLF( inst )  ( inst == T_CALLF || inst == T_JMPF )
+#define IS_JMPCALLN( inst )  ( inst == T_CALL || inst == T_JMP )
 #define IS_ANY_BRANCH( inst )    \
             ( IS_BRANCH( inst ) || ( ( inst >= T_LOOP ) && ( inst <= T_LOOPZW ) ) )
 
