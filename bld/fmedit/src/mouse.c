@@ -33,7 +33,6 @@
 /* MOUSE.C - routines to handle the mouse interactions */
 
 #include "limits.h"
-#define STRICT
 #include "windows.h"
 
 #include "fmedit.def"

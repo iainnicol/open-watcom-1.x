@@ -100,7 +100,7 @@ unsigned ReqProg_load( void )
     unsigned            a,b;
     private_msg         pmsg;
     char                sig[sizeof(DWORD)];
-    HTASK               tid;
+    WORD                tid;
     DWORD               csip;
     prog_load_req       *acc;
     prog_load_ret       *ret;
@@ -127,7 +127,7 @@ unsigned ReqProg_load( void )
     src = parm;
     if( *src == '#' ) {
         src++;
-        tid = (HTASK)strtol( src, NULL, 16 );
+        tid = strtol( src, NULL, 16 );
     } else {
         while( *src != 0 ) {
             if( !isdigit( *src ) ) {
@@ -136,7 +136,7 @@ unsigned ReqProg_load( void )
             src++;
         }
         if( *src == 0 && src != parm ) {
-            tid = (HTASK)atoi( parm );
+            tid = atoi( parm );
         }
     }
     if( tid != 0 ) {
@@ -215,7 +215,7 @@ unsigned ReqProg_load( void )
         loadp.reserved = 0L;
         DebuggerState = LOADING_DEBUGEE;
         DebugeeInstance = LoadModule( exe_name, (LPVOID) &loadp );
-        if( (UINT)DebugeeInstance < 32 ) {
+        if( DebugeeInstance < 32 ) {
             Out((OUT_ERR,"Debugee did not load %d", DebugeeInstance));
             ret->err = WINERR_NOLOAD;
             LoadingDebugee = FALSE;
@@ -228,7 +228,7 @@ unsigned ReqProg_load( void )
     if( pmsg == START_BP_HIT ) {
 
         ret->err = 0;
-        ret->task_id = (unsigned_32)DebugeeTask;
+        ret->task_id = DebugeeTask;
 
         /*
          * look for 32-bit windows application

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define STRICT
 #include <windows.h>
 #include <stdarg.h>
 #include <string.h>
@@ -51,11 +50,11 @@ static int              (TRAPENTRY*GetHwndFunc)();
 extern trap_version     TrapVer;
 extern unsigned         (TRAPENTRY*ReqFunc)( unsigned, mx_entry *,
                                              unsigned, mx_entry * );
-static HINSTANCE    dll;
+static HANDLE           dll;
 
 int HardModeRequired;
 
-HINSTANCE toolhelp;
+HANDLE toolhelp;
 
 void KillTrap()
 {
@@ -70,7 +69,7 @@ void KillTrap()
     UnLockInput = NULL;
     GetHwndFunc = NULL;
     FreeLibrary( dll );
-    if( (UINT)toolhelp > 32 ) FreeLibrary( toolhelp );
+    if( toolhelp > 32 ) FreeLibrary( toolhelp );
 }
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
@@ -119,19 +118,19 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
     dll = LoadLibrary( trpfile );
     SetErrorMode( prev );
-    if( (UINT)dll < 32 ) {
+    if( dll < 32 ) {
         strcpy( buff, TC_ERR_CANT_LOAD_TRAP );
         return( buff );
     }
-    InitFunc = (trap_version(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)2 );
-    FiniFunc = (void(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)3 );
-    ReqFunc  = (unsigned (TRAPENTRY*)(unsigned,mx_entry*,unsigned,mx_entry*)) GetProcAddress( dll, (LPSTR)4 );
-    HookFunc = (void(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)5 );
-    InfoFunction = (void(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)6 );
-    HardModeCheck = (int(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)7 );
-    SetHardMode = (void(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)12 );
-    UnLockInput = (void(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)13 );
-    GetHwndFunc = (int(TRAPENTRY*)()) GetProcAddress( dll, (LPSTR)8 );
+    InitFunc = (LPVOID) GetProcAddress( dll, (LPSTR)2 );
+    FiniFunc = GetProcAddress( dll, (LPSTR)3 );
+    ReqFunc  = (LPVOID) GetProcAddress( dll, (LPSTR)4 );
+    HookFunc = GetProcAddress( dll, (LPSTR)5 );
+    InfoFunction = GetProcAddress( dll, (LPSTR)6 );
+    HardModeCheck = GetProcAddress( dll, (LPSTR)7 );
+    SetHardMode = GetProcAddress( dll, (LPSTR)12 );
+    UnLockInput = GetProcAddress( dll, (LPSTR)13 );
+    GetHwndFunc = GetProcAddress( dll, (LPSTR)8 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( InitFunc == NULL || FiniFunc == NULL || ReqFunc == NULL ||
         HookFunc == NULL || GetHwndFunc == NULL ||

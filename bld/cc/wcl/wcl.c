@@ -35,10 +35,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
-#ifndef __UNIX__
+#include <io.h>
 #include <direct.h>
-#endif
 #include <process.h>
 #include <malloc.h>
 #include <conio.h>
@@ -75,11 +73,7 @@
   #define STACKSIZE   "4096"            /* default stack size              */
   #define _NAME_      "C/C++16 "
 #endif
-#ifdef __UNIX__
-#define OBJ_EXT     ".o"
-#else
 #define OBJ_EXT     ".obj"
-#endif
 #define LINK        "wlink"             /* WATCOM linker                   */
 #define TEMPFILE    "@__WCL__.LNK"      /* temporary linker directive file */
 #define NULLCHAR    '\0'
@@ -158,23 +152,13 @@ void    *MemAlloc( int );
 void    MakeName( char *, char * );
 void    AddName( char *, FILE * );
 char    *MakePath( char * );
-#ifndef __UNIX__
 char    *GetName( char * );
-#endif
 void    Usage( void );
-#if defined( __UNIX__ )
-  #define _dos_switch_char() '-'
-#elif defined( __OS2 ) || defined( __NT )
+#if defined( __OS2 ) || defined( __NT )
   #define _dos_switch_char() '/'
 #else
   extern  int     _dos_switch_char();
 #endif
-#ifdef __UNIX__
-  #define EXE_EXT ""
-#else
-  #define EXE_EXT ".exe"
-#endif
-
 
 enum {
 #undef pick
@@ -708,14 +692,14 @@ static char *SrcName( char *name )
         }
     }
     if( stricmp( p, ".asm" ) == 0 ) {
-        exename = "wasm" EXE_EXT;
+        exename = "wasm.exe";
         cc_name = "wasm";
     } else {
-        exename = CC EXE_EXT;            // assume C compiler
+        exename = CC ".exe";            // assume C compiler
         cc_name = CC;
         if( ! Flags.force_c ) {
             if( Flags.force_c_plus || useCPlusPlus( p ) ) {
-                exename = CCXX EXE_EXT;  // use C++ compiler
+                exename = CCXX ".exe";  // use C++ compiler
                 cc_name = CCXX;
             }
         }
@@ -729,10 +713,8 @@ static  int  CompLink( void )
 {
     int         rc;
     char        *p;
-#ifndef __UNIX__
     char        *file;
     char        *path;
-#endif
     char        *cc_name;
     struct directives *d_list;
     char        errors_found;
@@ -760,8 +742,6 @@ static  int  CompLink( void )
         Fputnl( "system os2v2", Fp );           /* 04-feb-92 */
   #elif defined(__NT)
         Fputnl( "system nt", Fp );
-  #elif defined(__LINUX__)
-        Fputnl( "system linux", Fp );
   #else
         Fputnl( "system dos4g", Fp );
   #endif
@@ -793,13 +773,11 @@ static  int  CompLink( void )
         strcpy( Word, p );
         cc_name = SrcName( Word );      /* if no extension, assume .c */
 
-#ifndef __UNIX__
         file = GetName( Word );         /* get first matching filename */
         path = MakePath( Word );        /* isolate path portion of filespec */
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
-#endif
             if( ! FileExtension( Word, OBJ_EXT ) ) { // if not .obj, compile
                 if( ! Flags.be_quiet ) {
                     PrintMsg( "       %s %s %s", cc_name, Word, CC_Opts );
@@ -815,14 +793,9 @@ static  int  CompLink( void )
                     }
                     errors_found = 1;           /* 21-jan-92 */
                 }
-#ifdef __UNIX__
-                p = strrchr( Word, '.' );
-                if( p != NULL )  *p = NULLCHAR;
-#else
                 p = strrchr( file, '.' );
                 if( p != NULL )  *p = NULLCHAR;
                 strcpy( Word, file );
-#endif
             }
             AddName( Word, Fp );
             if( Exe_Name[0] == '\0' ) {
@@ -830,17 +803,15 @@ static  int  CompLink( void )
                 if( p != NULL )  *p = NULLCHAR;
                 strcpy( Exe_Name, Word );
             }
-#ifndef __UNIX__
             file = GetName( NULL );     /* get next filename */
         }
-#endif
         p = strtok( NULL, " " );        /* get next filespec */
     }
     if( errors_found )  return( 1 );            /* 21-jan-92 */
     BuildLinkFile();
 
     if( ( Obj_List != NULL || Flags.do_link )  &&  Flags.no_link == FALSE ) {
-        FindPath( "wlink" EXE_EXT, PathBuffer );
+        FindPath( "wlink.exe", PathBuffer );
         if( ! Flags.be_quiet ) {
             puts( "" );
         }
@@ -855,7 +826,7 @@ static  int  CompLink( void )
             return( 2 );        /* return 2 to show Temp_File already closed */
         }
         if( Flags.do_cvpack ){
-            FindPath( "cvpack" EXE_EXT, PathBuffer );
+            FindPath( "cvpack.exe", PathBuffer );
             rc = spawnlp( P_WAIT, PathBuffer, "cvpack", Exe_Name, NULL );
             if( rc != 0 ) {
                 if( rc == -1  ||  rc == 255 ) {
@@ -993,7 +964,7 @@ static  char  *MakePath( char *path )
     return( strdup( path ) );
 }
 
-#ifndef __UNIX__
+
 static  char  *GetName( char *path )
 /**********************************/
 {
@@ -1020,7 +991,7 @@ static  char  *GetName( char *path )
     closedir( dirp );
     return( NULL );
 }
-#endif
+
 
 void FindPath( char *name, char *buf )
 /************************************/

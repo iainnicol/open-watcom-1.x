@@ -81,12 +81,8 @@ DECLARE_INTERFACE_(I,IUnknown) \
 
 #endif /* __OBJC__ */
 
-#ifdef _GUID_DEFINED
-# warning _GUID_DEFINED is deprecated, use GUID_DEFINED instead
-#endif
-
-#if ! (defined _GUID_DEFINED || defined GUID_DEFINED) /* also defined in winnt.h */
-#define GUID_DEFINED
+#ifndef _GUID_DEFINED /* also defined in winnt.h */
+#define _GUID_DEFINED
 typedef struct _GUID
 {
     unsigned long Data1;
@@ -94,7 +90,7 @@ typedef struct _GUID
     unsigned short Data3;
     unsigned char Data4[8];
 } GUID,*REFGUID,*LPGUID;
-#endif /* GUID_DEFINED */
+#endif /* _GUID_DEFINED */
 #ifndef UUID_DEFINED
 #define UUID_DEFINED
 typedef GUID UUID;

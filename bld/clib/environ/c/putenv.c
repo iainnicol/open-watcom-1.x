@@ -24,9 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for putenv()
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #include "variety.h"
 #include "widechar.h"
@@ -59,7 +61,6 @@ extern int __wputenv( const wchar_t *env_string );
 // it calls call __create_wide_environment, causing similar bad things.
 _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
 {
-#ifndef __UNIX__
 #ifdef __WIDECHAR__
     char *              otherStr;
     const size_t        charsize = sizeof(wchar_t);
@@ -71,7 +72,6 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
 #endif
     size_t              otherStrLen;
     int                 rc;
-#endif
 #ifdef __NT__
     CHAR_TYPE *         name;
     CHAR_TYPE *         value;
@@ -131,9 +131,6 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
     #ifdef __WIDECHAR__
         if( _RWD_wenviron == NULL )  __create_wide_environment();
     #endif
-    #ifdef __UNIX__
-    return __F_NAME(__putenv,__wputenv)( env_string );
-    #else
     if( __F_NAME(__putenv,__wputenv)( env_string )  !=  0 )  return( -1 );
 
     /*** Update the other environment ***/
@@ -153,8 +150,6 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
     }
     rc = __F_NAME(__wputenv,__putenv)( otherStr );
     return( rc );
-
-    #endif
 }
 
 
@@ -250,7 +245,7 @@ static int findenv( const CHAR_TYPE *env_string, int delete_var )
 
         for( envp=__F_NAME(_RWD_environ,_RWD_wenviron); p1=*envp; ++envp ) {
             for( p2 = env_string; *p2; ++p1, ++p2 ) {
-#if defined(__UNIX__)
+#ifdef __QNX__
                 if( *p1 != *p2 ) break;
 #else
                 /* case independent search */
@@ -294,4 +289,3 @@ static int findenv( const CHAR_TYPE *env_string, int delete_var )
         return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );/* not found */
     }
 #endif
-

@@ -142,12 +142,7 @@ typedef struct tagSQL_NUMERIC_STRUCT {
 } SQL_NUMERIC_STRUCT;
 #endif  /* ODBCVER >= 0x0300 */
 #if (ODBCVER >= 0x0350)
-
 #ifdef _GUID_DEFINED
-# warning _GUID_DEFINED is deprecated, use GUID_DEFINED instead
-#endif
-
-#if defined _GUID_DEFINED || defined GUID_DEFINED
 typedef GUID SQLGUID;
 #else
 typedef struct tagSQLGUID{
@@ -156,7 +151,7 @@ typedef struct tagSQLGUID{
     WORD Data3;
     BYTE Data4[ 8 ];
 } SQLGUID;
-#endif  /* GUID_DEFINED */
+#endif  /* _GUID_DEFINED */
 #endif  /* ODBCVER >= 0x0350 */
 #endif     /* RC_INVOKED */
 #ifdef __cplusplus
