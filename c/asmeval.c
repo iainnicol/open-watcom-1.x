@@ -546,6 +546,17 @@ static int calculate( expr_list *token_1,expr_list *token_2, uint_8 index )
                     token_1->indirect |= token_2->indirect;
                 }
 
+            } else if( check_both( token_1, token_2, EXPR_CONST, EXPR_REG ) ) {
+
+                if( token_2->type == EXPR_REG ) {
+                    token_1->base_reg = token_2->base_reg;
+                    token_1->idx_reg = token_2->idx_reg;
+                    token_2->base_reg = EMPTY;
+                    token_2->idx_reg = EMPTY;
+                }
+                token_1->value += token_2->value;
+                token_1->indirect |= token_2->indirect;
+                token_1->type = EXPR_ADDR;
             } else {
                 /* Error */
                 AsmError( SYNTAX_ERROR );
