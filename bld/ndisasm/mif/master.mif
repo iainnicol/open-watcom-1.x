@@ -1,9 +1,5 @@
 proj_name = wdis
 
-!ifndef wdis_autodepends
-wdis_autodepends = .AUTODEPEND
-!endif
-
 .EXTENSIONS: .rc .msg
 
 !ifeq host_os linux
@@ -20,10 +16,8 @@ all: $(exe_name) .SYMBOLIC
 !include defrule.mif
 !include deftarg.mif
 
-!include $(orl_dir)/client.mif
+!include orl.mif
 !include wres.mif
-
-xlibs = $(orl_lib) $(wres_lib)
 
 !include ../mif/dis.mif
 
@@ -31,7 +25,7 @@ xlibs = $(orl_lib) $(wres_lib)
 disasm_trmem=1
 !endif
 
-extra_l_flags = option map
+extra_l_flags = library $(orl_lib) option map
 extra_l_flags_qnx = op res=wdis.u, off=8k
 
 oflags_i86 = -of
@@ -86,8 +80,8 @@ wdisasm_objs = $(stand_objs) $(dis_objs) demangle.obj trmemcvr.obj
 wdisasm_objs += trmem.obj
 !endif
 
-$(exe_name) : $(proj_name).res $(dis_prereq) $(wdisasm_objs) $(pre_deps_$(host_os)) $(xlibs)
-        $(linker) $(lflags) name $@ file {$(wdisasm_objs)} lib {$(xlibs)}
+$(exe_name) : $(proj_name).res $(dis_prereq) $(wdisasm_objs) $(pre_deps_$(host_os)) $(orl_lib) $(wres_lib)
+        $(linker) $(lflags) name $@ file { $(wdisasm_objs) } lib $(wres_lib)
 !ifeq host_os osi
         w32bind $^&.rex $^@ $(tools_root)/os2ldr.exe
         rm -f $^&.rex

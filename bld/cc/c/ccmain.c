@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  C compiler top level driver module and file I/O.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -1294,9 +1295,14 @@ static void ParseInit()
     SymInit();
     SpcSymInit();
     StringInit();
+#ifndef NEWCFE
+        QuadInit();
+#endif
     InitDataQuads();
     ExprInit();
+#ifdef NEWCFE
     StmtInit();
+#endif
     SegInit();                                  /* 02-feb-92 */
 }
 

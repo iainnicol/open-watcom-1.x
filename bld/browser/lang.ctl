@@ -9,6 +9,10 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> build rel2 ]
 
+cdsay <PROJDIR>/contain/lib/objwin
+wmake -i -h
+cdsay <PROJDIR>/contain/lib/obj32
+wmake -i -h
 cdsay <PROJDIR>/dlgprs/o
 wmake -i -h
 cdsay <PROJDIR>/gen
@@ -36,6 +40,10 @@ cdsay .
 
 [ BLOCK <1> clean ]
 #==================
+   cdsay <PROJDIR>/contain/lib/objwin
+   wmake -i -h clean
+   cdsay <PROJDIR>/contain/lib/obj32
+   wmake -i -h clean
    cdsay <PROJDIR>/dlgprs/o
    wmake -i -h clean
    cdsay <PROJDIR>/gen

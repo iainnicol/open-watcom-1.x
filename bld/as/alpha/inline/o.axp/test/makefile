@@ -1,0 +1,10 @@
+#pmake: cpu_axp os_nt
+
+host_os  = nt
+host_cpu = axp
+
+cpu = alpha
+inline_as = 1
+test_inline_as = 1
+
+!include $(as_dir)/mif/master.mif
