@@ -1319,6 +1319,15 @@ static boolean cantHaveDefaultArgs( int err_msg, DECL_INFO *dinfo )
     return( FALSE );
 }
 
+/*
+//  cantHaveDefaultArgGaps
+//      Supposedly checks for gaps in default arguments. Don't think it works!
+//  called from:
+//      ForceNoDefaultArgs  (called from FinishDeclarator)
+//      FreeArgsDefaultsOK  (only called from template.c)
+//      FreeArgs            (only called from template.c (not any more!))
+//      checkUsefulParms    (called from FinishDeclarator)
+*/
 static boolean cantHaveDefaultArgGaps( DECL_INFO *dinfo )
 {
     boolean transition_detected;
@@ -1344,6 +1353,43 @@ static boolean cantHaveDefaultArgGaps( DECL_INFO *dinfo )
     return( FALSE );
 }
 
+/*
+//  cantHaveDefaultArgGapsEx
+//
+//  checks the DECL_INFO ring that there are no gaps in default arguments
+//      called from:
+//          FreeArgsDefaultsOK  (only called from template.c)
+*/
+static boolean cantHaveDefaultArgGapsEx( DECL_INFO *dinfo )
+{
+    boolean transition_detected;
+    DECL_INFO *prev_init;
+    DECL_INFO *curr;
+
+    transition_detected = FALSE;
+    prev_init = NULL;
+    RingIterBeg( dinfo, curr ) {
+        if( curr->has_defarg ) {
+            if( prev_init == NULL ) {
+                if( transition_detected ) {
+                    SetErrLoc( &curr->generic_sym->locn->tl);
+                    CErr1( ERR_DEFAULT_ARGS_MISSING );
+                    return( TRUE );
+                }
+                transition_detected = TRUE;
+            }
+            prev_init = curr;
+        } else {
+            if( prev_init != NULL ){
+                SetErrLoc( &curr->generic_sym->locn->tl);
+                CErr1( ERR_DEFAULT_ARGS_MISSING );
+                return( TRUE );
+            }
+        }
+    } RingIterEnd( curr )
+    return( FALSE );
+}
+
 void ForceNoDefaultArgs( DECL_INFO *dinfo, int err_msg )
 /******************************************************/
 {
@@ -1354,6 +1400,13 @@ void ForceNoDefaultArgs( DECL_INFO *dinfo, int err_msg )
     if( cantHaveDefaultArgs( err_msg, parms )){
         removeDefaultArgs( parms );
     }
+}
+
+void FreeArgsDefaultsOK( DECL_INFO * dinfo)
+{
+    if(!cantHaveDefaultArgGaps( dinfo ))
+        cantHaveDefaultArgGapsEx( dinfo );
+    freeDeclList( &dinfo );
 }
 
 void FreeArgs( DECL_INFO *dinfo )

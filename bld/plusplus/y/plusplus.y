@@ -260,6 +260,8 @@ Modified        By              Reason
 %token Y_EXCEPTION_SPECIAL
 %token Y_MEM_INIT_SPECIAL
 %token Y_DEFARG_SPECIAL
+%token Y_TEMPLATE_INT_DEFARG_SPECIAL    /*  experimental */
+%token Y_TEMPLATE_TYPE_DEFARG_SPECIAL   /*  experimental */
 %token Y_CLASS_INST_SPECIAL
 
 /*** terminator tokens for "special" parsing ***/
@@ -325,6 +327,7 @@ Modified        By              Reason
 
 %type <rewrite> ctor-initializer
 %type <rewrite> defarg-check
+%type <rewrite> template-defarg-rewrite
 
 %type <dspec> type-specifiers
 %type <dspec> type-specifier
@@ -399,7 +402,6 @@ Modified        By              Reason
 %type <tree> expression-list
 %type <tree> expression-list-opt
 %type <tree> template-assignment-expression
-%type <tree> template-assignment-expression-opt
 %type <tree> template-conditional-expression
 %type <tree> template-logical-or-expression
 %type <tree> template-logical-and-expression
@@ -440,6 +442,7 @@ Modified        By              Reason
 %type <tree> field-expression
 %type <tree> field-name
 %type <tree> new-placement
+%type <tree> class-name-id  /* experimental */
 %type <tree> make-id
 %type <tree> literal
 %type <tree> strings pragma-id
@@ -450,6 +453,7 @@ Modified        By              Reason
 %type <tree> mem-initializer-list
 %type <tree> mem-initializer-item
 %type <tree> template-parameter-expression
+%type <tree> template-arg-list-opt
 %type <tree> template-arg-list
 %type <tree> template-class-pre-instantiation
 %type <tree> template-class-pre-id
@@ -494,6 +498,16 @@ goal-symbol
         t = YYEOFTOKEN;
     }
     | Y_DEFARG_SPECIAL assignment-expression Y_DEFARG_END
+    {
+        $$ = $2;
+        t = YYEOFTOKEN;
+    }
+    | Y_TEMPLATE_INT_DEFARG_SPECIAL logical-or-expression Y_DEFARG_END
+    {
+        $$ = $2;
+        t = YYEOFTOKEN;
+    }
+    | Y_TEMPLATE_TYPE_DEFARG_SPECIAL type-id Y_DEFARG_END
     {
         $$ = $2;
         t = YYEOFTOKEN;
@@ -604,14 +618,6 @@ template-assignment-expression
         $$ = PTreeReplaceLeft( $2, $1 );
         $$ = PTreeReplaceRight( $$, $3 );
     }
-    | Y_THROW template-assignment-expression-opt
-    { $$ = setLocation( PTreeUnary( CO_THROW, $2 ), &yylp[1] ); }
-    ;
-
-template-assignment-expression-opt
-    : /* nothing */
-    { $$ = NULL; }
-    | template-assignment-expression
     ;
 
 assignment-expression
@@ -1033,6 +1039,25 @@ make-id
     | Y_TYPE_NAME
     | Y_TEMPLATE_NAME
     | Y_NAMESPACE_NAME
+    ;
+
+class-name-id
+    : Y_ID
+    | Y_TYPE_NAME
+    | Y_TEMPLATE_NAME
+    | Y_NAMESPACE_NAME
+    | Y_GLOBAL_ID
+    | Y_GLOBAL_TYPE_NAME
+    | Y_GLOBAL_TEMPLATE_NAME
+    | Y_GLOBAL_NAMESPACE_NAME
+    | Y_SCOPED_ID
+    | Y_SCOPED_TYPE_NAME
+    | Y_SCOPED_TEMPLATE_NAME
+    | Y_SCOPED_NAMESPACE_NAME
+    | Y_TEMPLATE_SCOPED_ID
+    | Y_TEMPLATE_SCOPED_TYPE_NAME
+    | Y_TEMPLATE_SCOPED_TEMPLATE_NAME
+    | Y_TEMPLATE_SCOPED_NAMESPACE_NAME
     ;
 
 destructor-name
@@ -2099,9 +2124,13 @@ arg-declaration-list
 
 template-arg-declaration-list
     : template-arg-declaration
-    { $$ = AddArgument( NULL, $1 ); }
+    { 
+        $$ = AddArgument( NULL, $1 ); 
+    }
     | template-arg-declaration-list Y_COMMA template-arg-declaration
-    { $$ = AddArgument( $1, $3 ); }
+    { 
+        $$ = AddArgument( $1, $3 ); 
+    }
     ;
 
 arg-decl-specifiers
@@ -2186,17 +2215,44 @@ defarg-check
 simple-template-arg-declaration
     : arg-decl-specifiers
     { $$ = DeclSpecDeclarator( $1 ); }
-    | arg-decl-specifiers Y_EQUAL template-assignment-expression
-    { $$ = DeclSpecDeclarator( $1 ); $$->defarg_expr = $3; }
+    | arg-decl-specifiers simple-arg-no-id template-defarg-copy
+    { $$ = $2; }
     | arg-decl-specifiers declarator
     { $$ = $2; }
-    | arg-decl-specifiers declarator Y_EQUAL template-assignment-expression
-    { $$ = $2; $$->defarg_expr = $4; }
+    | arg-decl-specifiers declarator template-defarg-copy
+    { $$ = $2; }
     | arg-decl-specifiers abstract-declarator
     { $$ = $2; }
-    | arg-decl-specifiers abstract-declarator Y_EQUAL template-assignment-expression
-    { $$ = $2; $$->defarg_expr = $4; }
+    | arg-decl-specifiers abstract-declarator template-defarg-copy
+    { $$ = $2; }
     ;
+
+template-defarg-copy
+    : template-defarg-rewrite Y_EQUAL
+    { }
+    | template-defarg-rewrite Y_DEFARG_GONE_SPECIAL
+    {
+        DECL_INFO *dinfo;
+
+	dinfo = $<dinfo>0;
+	dinfo->defarg_rewrite = $1;
+	dinfo->has_defarg = TRUE;
+	TokenLocnAssign( dinfo->init_locn, yylp[2] );
+    }
+    ;
+
+template-defarg-rewrite
+    : /* nothing */
+    {
+        if( t != Y_EQUAL ) {
+            what = P_SYNTAX;
+            $$ = NULL;
+        } else {
+            $$ = RewritePackageTemplateDefArg( NULL );
+            t = Y_DEFARG_GONE_SPECIAL;
+        }
+    }
+     ;
 
 ctor-declarator
     : Y_LEFT_PAREN abstract-args Y_RIGHT_PAREN cv-qualifiers-opt except-spec-opt
@@ -2390,7 +2446,7 @@ no-class-name
     ;
 
 class-name
-    : make-id
+    : class-name-id
     {
         CLASS_DECL decl_type;
         CLNAME_STATE after_name;
@@ -2710,12 +2766,12 @@ template-class-id
     ;
 
 template-class-instantiation
-    : Y_TEMPLATE_NAME Y_LT template-arg-list
+    : Y_TEMPLATE_NAME Y_LT template-arg-list-opt
     {
         $$ = TemplateClassInstantiation( $1, $3, TCI_NULL );
         setWatchColonColon( state, $$ );
     }
-    | Y_GLOBAL_TEMPLATE_NAME Y_LT template-arg-list
+    | Y_GLOBAL_TEMPLATE_NAME Y_LT template-arg-list-opt
     {
         $$ = TemplateClassInstantiation( MakeTemplateId( $1 ), $3, TCI_NULL );
         setWatchColonColon( state, $$ );
@@ -2734,6 +2790,13 @@ template-class-pre-instantiation
         $1 = MakeTemplateId( $1 );
         $$ = setLocation( PTreeBinary( CO_STORAGE, $1, $3 ), &yylp[2] );
     }
+    ;
+
+template-arg-list-opt
+    : /* nothing */
+    { $$ = PTreeBinary( CO_LIST, NULL, NULL ); }
+    | template-arg-list
+    { $$ = $1; }
     ;
 
 template-arg-list
