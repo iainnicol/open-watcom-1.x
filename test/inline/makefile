@@ -123,8 +123,8 @@ reverse.exe : reverse.c
 $(objs) : .SYMBOLIC
     @echo $@ ================================================================
     @rm -f $@.c
-    @vi -d -q -k ":r $@.asm\n:so toc.vi\n:0r cinit.vi\n:w $@.c\n:q!\n"
-    @$(testcomp) $@.c -s -ot -zm -zq -wx -wcd=301 -fo=.obj >$(nulldevice)
+    @vi -d -q -k ":r $@.asm\n:so toc.vi\n:0r cinit.vi\n:$$r cexit.vi\n:w $@.c\n:q!\n"
+    @$(testcomp) $@.c -s -ot -zm -zq -wx -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
     @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
     @..\reverse $@.lst
