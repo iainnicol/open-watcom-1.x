@@ -4,12 +4,12 @@ DGROUP		GROUP	_DATA
 _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
     emms        
-    movd        dword ptr DGROUP:L$2,mm7
-    movd        dword ptr cs:0aH[bx+di],mm7
-    movd        dword ptr cs:0aH[ebx+eax*2],mm7
-    movd        mm1,dword ptr DGROUP:L$2
-    movd        mm1,dword ptr cs:0aH[bx+di]
-    movd        mm1,dword ptr cs:0aH[ebx+eax*2]
+    movd        DGROUP:L$2,mm7
+    movd        cs:0aH[bx+di],mm7
+    movd        cs:0aH[ebx+eax*2],mm7
+    movd        mm1,DGROUP:L$2
+    movd        mm1,cs:0aH[bx+di]
+    movd        mm1,cs:0aH[ebx+eax*2]
     movd        mm3,ebx
     movd        ebx,mm7
     movq        DGROUP:L$1,mm1

@@ -96,10 +96,10 @@ _TEXT		SEGMENT	DWORD PUBLIC USE32 'CODE'
     pmulhrw     mm1,DGROUP:L$1
     pmulhrw     mm1,cs:0aH[bx+di]
     pmulhrw     mm1,cs:0aH[ebx+eax*2]
-    prefetch    dword ptr DGROUP:L$1
-    prefetch    dword ptr cs:0aH[bx+di]
-    prefetch    dword ptr cs:0aH[ebx+eax*2]
-    prefetchw   dword ptr DGROUP:L$2
+    prefetch    DGROUP:L$1
+    prefetch    cs:0aH[bx+di]
+    prefetch    cs:0aH[ebx+eax*2]
+    prefetchw   DGROUP:L$2
     pswapd      mm1,mm7
     pswapd      mm1,DGROUP:L$1
     pswapd      mm1,cs:0aH[bx+di]

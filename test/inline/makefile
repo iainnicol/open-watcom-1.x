@@ -99,6 +99,19 @@ asmbug11 &
 asmbug12 &
 asmbug13
 
+dev_objs = &
+3dnow &
+mmx &
+sse &
+sse2 &
+sse3
+
+init_3dnow = K3D
+init_mmx = MMX
+init_sse = XMM
+init_sse2 = XMM2
+init_sse3 = XMM3
+
 .exe : ..
 .c : ..
 
@@ -117,14 +130,30 @@ log_file=testcomp.log
 .BEFORE
     @%create $(log_file)
 
-all : clean $(objs) .SYMBOLIC
+all : clean $(objs) $(dev_objs) .SYMBOLIC
 
 !ifdef objs
 !ifneq objs
 $(objs) : .SYMBOLIC
     @echo $@ ================================================================
     @rm -f $@.c
-    @vi -d -q -k ":r $@.asm\n:so toc.vi\n:0r cinit.vi\n:$$r cexit.vi\n:w $@.c\n:q!\n"
+    @vi -d -q -k ":so createc.vi $@ $(init_$^@)\n"
+    @$(testcomp) $@.c -s -os -zq -fo=.obj >$(nulldevice)
+    @wdis -a -l $@.obj >$(nulldevice)
+    @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
+    @wmake -h -f ../checki.mif name=$@ log_file=$(log_file)
+!endif
+!endif
+
+!ifdef dev_objs
+!ifneq dev_objs
+$(dev_objs) : .SYMBOLIC
+    @echo .
+    @echo $@ ==============================================================
+    @echo DEVELOPMENT - $^@.asm
+    @echo ==============================================================
+    @rm -f $@.c
+    @vi -d -q -k ":so createc.vi $@ $(init_$^@)\n"
     @$(testcomp) $@.c -s -os -zq -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
     @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
