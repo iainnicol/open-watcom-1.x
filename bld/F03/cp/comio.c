@@ -209,12 +209,7 @@ void    LinePrint() {
     char        buffer[8];
 
     ISNNumber++;
-#if _OPT_CG == _ON
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
-    FmtInteger( buffer, CurrFile->rec, 7 );
-#else
     FmtInteger( buffer, ISNNumber, 7 );
-#endif
     PrintLineInfo( buffer );
 }
 
@@ -222,15 +217,11 @@ void    LinePrint() {
 void    ComPrint() {
 //==================
 
-#if _OPT_CG == _ON
     char        buffer[8];
 
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
     FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
-#else
-    PrintLineInfo( "       " );
-#endif
 }
 
 
