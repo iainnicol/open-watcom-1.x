@@ -1,7 +1,0 @@
-#pmake: build all os_dos os_nt os_os2 os_linux cpu_386 dwarf
-model = f
-host_CPU = 386
-host_OS = nt
-
-!include ../dw.mif
-

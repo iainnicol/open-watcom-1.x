@@ -1,7 +1,0 @@
-
-#include <windows.h>
-#include "resource.h"
-
-ApplIcon    ICON     PRELOAD FIXED setup.ico
-BITMAP_SPLASH	BITMAP	"../splash.bmp"
-#include "gui.rc"

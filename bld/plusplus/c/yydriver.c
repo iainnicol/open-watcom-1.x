@@ -1304,9 +1304,11 @@ static void pushRestartDecl( PARSE_STACK *state )
     restart->reset_scope = GetCurrScope();
 
 #ifndef NDEBUG
-    printf("===============================================================================\n");
-    printf("*** pushRestartDecl: 0x%.08X 0x%.08X\n", state, restart);
-    printf("===============================================================================\n");
+    if( PragDbgToggle.dump_parse ){
+        printf("===============================================================================\n");
+        printf("*** pushRestartDecl: 0x%.08X 0x%.08X\n", state, restart);
+        printf("===============================================================================\n");
+    }
 #endif
 }
 
@@ -1329,9 +1331,11 @@ static void popRestartDecl( PARSE_STACK *state )
 
     DbgStmt( restart = state->restart );
 #ifndef NDEBUG
-    printf("===============================================================================\n");
-    printf("*** popRestartDecl: 0x%.08X 0x%.08X\n", state, restart);
-    printf("===============================================================================\n");
+    if( PragDbgToggle.dump_parse ){
+        printf("===============================================================================\n");
+        printf("*** popRestartDecl: 0x%.08X 0x%.08X\n", state, restart);
+        printf("===============================================================================\n");
+    }
 #endif
     restartDeclOK( restart );
     DbgAssert( restart->gstack == restart->state->gstack );
@@ -2095,7 +2099,7 @@ PTREE ParseMemInit( void )
     return( mem_init_tree );
 }
 
-PTREE ParseDefArg( void )
+PTREE ParseGenericDefArg( int start_tok )
 /***********************/
 {
     int t;
@@ -2103,12 +2107,17 @@ PTREE ParseDefArg( void )
     p_action what;
     PTREE defarg_tree;
 
-    newExprStack( &defarg_start, Y_DEFARG_SPECIAL );
+    newExprStack( &defarg_start, start_tok );
     syncLocation();
     /* do parse */
     for(;;) {
         do {
             t = yylex( &defarg_start );
+#ifndef NDEBUG
+            if( PragDbgToggle.dump_parse ){
+                printf("ParseGenericDefArg t = %d - '%s'\n", t, yytoknames[ t ]);
+            }
+#endif
             what = doAction( t, &defarg_start );
         } while( what == P_RELEX );
         if( what != P_SHIFT ) break;
@@ -2137,6 +2146,21 @@ PTREE ParseDefArg( void )
     }
     deleteStack( &defarg_start );
     return( defarg_tree );
+}
+
+PTREE ParseDefArg( )
+{
+    return ParseGenericDefArg( Y_DEFARG_SPECIAL );
+}
+
+PTREE ParseTemplateIntDefArg( )
+{
+    return ParseGenericDefArg( Y_TEMPLATE_INT_DEFARG_SPECIAL );
+}
+
+PTREE ParseTemplateTypeDefArg( )
+{
+    return ParseGenericDefArg( Y_TEMPLATE_TYPE_DEFARG_SPECIAL );
 }
 
 DECL_INFO *ParseException( void )
@@ -2201,6 +2225,17 @@ void ParseDecls( void )
 
     for(;;) {
         if( CurToken == T_EOF ) break;
+
+        /*
+        // We have seen a case where a macro subsitution was returned, leaving 
+        // us with T_BAD_CHAR rather than T_BAD_TOKEN. For now,just die and 
+        // get the hell out of parsing.
+        */
+        if( CurToken == T_BAD_CHAR){
+            CErr1( ERR_SYNTAX );    /* CErr1( BadTokenInfo ); ? */
+            break;
+        }
+
         newDeclStack( &decl_state );
         syncLocation();
         pushDefaultDeclSpec( &decl_state );
@@ -2216,11 +2251,6 @@ void ParseDecls( void )
             }
             if( what > P_SPECIAL ) {
                 if( what > P_ERROR ) {
-#ifndef NDEBUG
-                    fflush(stdout);
-                    fflush(stderr);
-#endif
-
                     switch( what ) {
                     case P_SYNTAX:
                         syntaxError();
