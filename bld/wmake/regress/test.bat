@@ -1,4 +1,4 @@
-@echo %regress% off
+@echo off
 SET TRMEM_CODE=1
 
 if not exist ERROR.OUT  goto not_exist 
@@ -11,8 +11,7 @@ REM -- test1 - Multiple Dependents Test
 REM ===========================
 echo *****************************************************************
 cd TEST1
-:: %comspec% /c call  ... rather than call ... to isolate echo off changes
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
     
 :tst2
@@ -21,7 +20,7 @@ REM -- TEST2 - Implicit Rules Test
 REM ===========================
 echo *****************************************************************
 cd IMPLICIT
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
     
 :tst3
@@ -30,7 +29,7 @@ REM -- FORTEST - FOR LOOP TEST
 REM ===========================
 echo *****************************************************************
 cd FORTEST
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
 
 :tst4
@@ -39,7 +38,7 @@ REM -- PRETEST - PRE COMPILER TEST
 REM ===========================
 echo *****************************************************************
 cd PRETEST
-%comspec% /c call DOPRE.BAT %1 ..\ERROR.OUT
+call DOPRE %1 ..\ERROR.OUT
 cd ..
 
 :tst5
@@ -48,7 +47,7 @@ REM -- UPDTEST - UPDATE TEST
 REM ===========================
 echo *****************************************************************
 cd UPDTEST
-%comspec% /c call DOUPD.BAT %1 ..\ERROR.OUT
+call DOUPD %1 ..\ERROR.OUT
 cd ..
 
 :tst6
@@ -58,7 +57,7 @@ REM -- ERRTEST - ERROR TEST
 REM ===========================
 echo *****************************************************************
 cd ERRTEST
-%comspec% /c call ERROR.BAT %1 ..\ERROR.OUT
+call ERROR %1 ..\ERROR.OUT
 cd ..
 
 :tst7
@@ -68,7 +67,7 @@ REM -- INLINE TEST -
 REM ===========================
 echo *****************************************************************
 cd INLINE
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
 
 :tst8
@@ -77,7 +76,7 @@ REM -- PREPROCESS TEST -
 REM ===========================
 echo *****************************************************************
 cd PREPROC
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
 
 :tst9
@@ -86,7 +85,7 @@ REM -- MACROS TEST -
 REM ===========================
 echo *****************************************************************
 cd MACROS
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
 
 :tst10
@@ -95,7 +94,7 @@ REM -- MISC TEST -
 REM ===========================
 echo *****************************************************************
 cd MISC
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
 
 :tst11
@@ -104,7 +103,7 @@ REM -- LONG FILENAME TEST -
 REM ===========================
 echo *****************************************************************
 cd LONGFILE
-%comspec% /c call TEST.BAT %1 ..\ERROR.OUT
+call TEST %1 ..\ERROR.OUT
 cd ..
 
 
@@ -117,6 +116,6 @@ if exist ERROR.OUT echo !!!!!!!! ERRORS FOUND !!!!!!!!!!
 if exist ERROR.OUT echo look at ERROR.OUT for listing 
 goto done
 :usage
-echo %0 progname (e.g. %0 wmake)
+echo %0 <prgname>
 
 :done
