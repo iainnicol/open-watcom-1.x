@@ -591,6 +591,7 @@ static void parseForStmt( void )
 
     nextYYToken();
     mustRecog( T_LEFT_PAREN );
+    openScope();
     if( CurToken == T_SEMI_COLON ) {
         mustRecog( T_SEMI_COLON );
     } else {
@@ -635,7 +636,6 @@ static void parseForStmt( void )
             jumpBlkLabel( &loop->outside, O_IF_FALSE );
         }
     }
-    openScope();
 }
 
 
