@@ -1464,7 +1464,10 @@ extern int EvalExpr( int count, int start_tok, int end_tok, bool flag_msg )
                 i++;
                 num++;
             }
-            if( num == 0 && AsmBuffer[start]->token == T_REG ) {
+            if( num == 1 && AsmBuffer[start]->token == T_REG && AsmBuffer[start+1]->token == T_COLON ) {
+                // Massive kludge ahead:
+                // skip register+colon
+            } else if( num == 0 && AsmBuffer[start]->token == T_REG ) {
                 // skip register
             } else if( num == 0 && AsmBuffer[start]->token == T_NUM ) {
                 // skip number
