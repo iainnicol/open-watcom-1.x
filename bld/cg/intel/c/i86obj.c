@@ -2451,9 +2451,9 @@ extern  void    OWLOutLineNum( cg_linenum line, bool label_line );
 extern  void    OutLineNum( cg_linenum line, bool label_line )
 {
     if (_IsTargetModel( OWL )) {
-        OMFOutLineNum(line, label_line);
-    } else {
         OWLOutLineNum(line, label_line);
+    } else {
+        OMFOutLineNum(line, label_line);
     }
 }
 
@@ -3061,8 +3061,16 @@ extern  void    OutIBytes( byte pat, offset len ) {
 extern  void    OutDataLong( long value ) {
 /*****************************************/
 
-    OutDataInt( value );
-    OutDataInt( value >> 16 );
+    if( _IsTargetModel( OWL ) ) {
+        offset val = _TargetBigInt( value );
+        /* OWL writes */
+        printf( "OWL outdatalong write %x\n", value );
+        ObjBytes( (byte *)&val, 4 );
+        return;
+    } else {
+        OutDataInt( value );
+        OutDataInt( value >> 16 );
+    }
 }
 
 

@@ -468,6 +468,7 @@ extern  void    OWLDefSegment( seg_id id, seg_attr attr, char *str, uint align, 
 
     section_def         *new;
     owl_section_type    type;
+    bool                do_beg_ccu = FALSE;
 
     align = align;
     use_16 = use_16;
@@ -480,7 +481,7 @@ extern  void    OWLDefSegment( seg_id id, seg_attr attr, char *str, uint align, 
         if( codeSection == BACKSEGS ) {
             codeSection = id;
             if( _IsModel( DBG_DF ) ) {
-                DFBegCCU( id, NULL );
+                do_beg_ccu = TRUE;
             }
         }
     } else if( attr & INIT ) {
@@ -498,6 +499,10 @@ extern  void    OWLDefSegment( seg_id id, seg_attr attr, char *str, uint align, 
         }
     }
     new->owl_handle = OWLSectionInit( owlFile, str, type, 16 );
+#if 0   // Currently called from OMFDefSegment
+    if( do_beg_ccu )
+        DFBegCCU( id, NULL );   // Must be after OWLSectionInit()
+#endif
 }
 
 extern void    OutFileStart( int line ){
