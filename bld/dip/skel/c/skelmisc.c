@@ -65,7 +65,7 @@ dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpStartup( void )
+dip_status      DIPENTRY DIPImpStartup()
 {
     //TODO:
 /*
