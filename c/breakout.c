@@ -195,8 +195,6 @@ int directive( int i, long direct )
     case T_TYPEDEF:
     case T_UNION:
     case T_WIDTH:
-    case T_DOT_STARTUP:
-    case T_DOT_EXIT:
         AsmError( NOT_SUPPORTED );
         return( ERROR );
     case T_ORG:
@@ -223,6 +221,8 @@ int directive( int i, long direct )
     case T_NAME:
         // no expand parameters
         break;
+    case T_DOT_STARTUP:
+    case T_DOT_EXIT:
     default:
         /* expand any constants in all other directives */
         //if( Parse_Pass == PASS_1 ) {
@@ -291,7 +291,7 @@ int directive( int i, long direct )
         return( ForDirective ( i+1, IRP_REPEAT ) );
     case T_DOT_STARTUP:
     case T_DOT_EXIT:
-        return( Startup ( i+1 ) );
+        return( Startup ( i ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( ERROR );
