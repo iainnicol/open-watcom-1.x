@@ -403,8 +403,9 @@ extern int              AddAlias( int );
 extern void             FreeInfo( dir_node * );
 extern void             push( void **stack, void *elt );
 extern void             *pop( void **stack );
-
 extern uint_32          GetCurrSegAlign( void );
+extern void             wipe_space( char *token );
+extern void             SetModuleDefSegment32( int flag );
 
 /*---------------------------------------------------------------------------
  *   included from write.c

@@ -43,16 +43,15 @@
 
 #include "myassert.h"
 
+#define    MAX_EQU_NESTING      20
+
 extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
-extern void             wipe_space( char *token );
 extern int              AsmScan( char * );
 extern void             GetInsString( enum asm_token , char *, int );
 extern int              MakeLabel( char *symbol_name, memtype mem_type );
 
-static int createconstant( char *name, bool value, int start, bool redefine, bool expand_early );
-
-#define    MAX_EQU_NESTING      20
+static int              createconstant( char *, bool, int, bool, bool );
 
 static label_list *label_cmp( char *name, label_list *head )
 {

@@ -42,14 +42,15 @@
 #endif
 
 struct asmfixup         *InsFixups[3];
-struct fixup            *FixupListHead; // head of list of fixups
-struct fixup            *FixupListTail;
 
 #ifndef _WASM_
 
 struct asmfixup         *FixupHead;
 
 #else
+
+struct fixup            *FixupListHead; // head of list of fixups
+struct fixup            *FixupListTail;
 
 void add_frame( void )
 /********************/

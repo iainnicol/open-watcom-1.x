@@ -106,7 +106,6 @@ static typeinfo TypeInfo[] = {
 extern char             *ScanLine( char * );
 extern int              InputQueueFile( char * );
 extern void             InputQueueLine( char * );
-extern void             GetInsString( enum asm_token, char *, int );
 
 static char *Check4Mangler( int *i );
 void         find_use32( void );

@@ -48,7 +48,6 @@ extern int              InputQueueFile( char * );
 extern int              AsmScan( char * );
 extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
-extern void             wipe_space( char *token );
 extern char             *get_curr_filename( void );
 extern void             PushMacro( char *, bool );
 extern bool             GetQueueMacroHidden( void );

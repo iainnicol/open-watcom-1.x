@@ -47,7 +47,6 @@ extern int              OrgDirective( int );
 extern int              AlignDirective( uint_16, int );
 extern int              LabelDirective( int );
 extern int              StructDef( int );
-extern void             GetInsString( enum asm_token , char *, int );
 extern int              ForDirective( int, enum irp_type );
 
 int directive( int i, long direct )

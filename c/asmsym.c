@@ -284,8 +284,6 @@ struct asm_sym *AllocDSym( char *name, int add_symbol )
     }
 }
 
-#endif
-
 struct asm_sym *AsmGetSymbol( char *name )
 /****************************************/
 {
@@ -294,6 +292,7 @@ struct asm_sym *AsmGetSymbol( char *name )
     sym_ptr = AsmFind( name );
     return( *sym_ptr );
 }
+#endif
 
 void AsmSymFini()
 /***************/

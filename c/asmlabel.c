@@ -40,6 +40,7 @@
 #include "directiv.h"
 
 extern int                  AddFieldToStruct( int );
+
 static unsigned             AnonymousCounter = 0;
 
 void PrepAnonLabels( void )
@@ -146,6 +147,7 @@ int MakeLabel( char *symbol_name, memtype mem_type )
     return( NOT_ERROR );
 }
 
+#ifdef _WASM_
 int LabelDirective( int i )
 /*************************/
 {
@@ -153,7 +155,6 @@ int LabelDirective( int i )
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );
     }
-#ifdef _WASM_
     if( AsmBuffer[i+1]->token == T_ID ) {
         asm_sym *sym;
 
@@ -162,7 +163,6 @@ int LabelDirective( int i )
             return( MakeLabel( AsmBuffer[i-1]->string_ptr, T_STRUCT ) );
         }
     }
-#endif
     if( AsmBuffer[i+1]->token != T_RES_ID ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );
@@ -193,4 +193,4 @@ int LabelDirective( int i )
         return( ERROR );
     }
 }
-
+#endif
