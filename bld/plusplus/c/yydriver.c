@@ -393,7 +393,8 @@ static PTREE makeId( void )
     return( t );
 }
 
-static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control )
+static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
+                              SYMBOL_NAME *psym_name )
 {
     char *name;
     SYMBOL_NAME sym_name;
@@ -408,6 +409,9 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control )
     } else {
         ExtraRptIncrementCtr( lookup_other );
         sym_name = ScopeYYMember( scope, name );
+    }
+    if( psym_name != NULL ) {
+        *psym_name = sym_name;
     }
     if( sym_name != NULL ) {
         if( sym_name->name_syms == NULL ) {
@@ -454,7 +458,8 @@ static int doId( void )
     if( LAToken == T_LT ) {
         control |= LK_LT_AHEAD;
     }
-    id_check = lexCategory( GetCurrScope(), id, control );
+    id_check = lexCategory( GetCurrScope(), id, control,
+                            &yylval.tree->sym_name );
     return( lookupToken[ id_check ] );
 }
 
@@ -627,7 +632,8 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id, unsigned ctrl
                 /* so S::S( T x ) {} works if T is a nested type */
                 return( Y_SCOPED_ID );
             }
-            id_check = lexCategory( scope, id, LK_NULL );
+            id_check = lexCategory( scope, id, LK_NULL,
+                                    &yylval.tree->sym_name );
             switch( id_check ) {
             case LK_ID:
                 return( Y_SCOPED_ID );
@@ -705,7 +711,8 @@ static int templateScopedChain( PARSE_STACK *state )
                 /* template instantiation errors may have occured */
                 if( template_class_type != NULL ) {
                     scope = template_class_type->u.c.scope;
-                    if( lexCategory( scope, id, LK_NULL ) != LK_ID ) {
+                    if( lexCategory( scope, id, LK_NULL,
+                                     &yylval.tree->sym_name ) != LK_ID ) {
                         return( Y_TEMPLATE_SCOPED_TYPE_NAME );
                     }
                 }
@@ -769,7 +776,8 @@ static int globalChain( PARSE_STACK *state )
             return( scopedChain( state, tree, id, CH_NULL ) );
         }
         yylval.tree = makeBinary( CO_STORAGE, tree, id );
-        id_check = lexCategory( GetFileScope(), id, LK_LEXICAL );
+        id_check = lexCategory( GetFileScope(), id, LK_LEXICAL,
+                                &yylval.tree->sym_name );
         return( globalLookupToken[ id_check ] );
     case T_OPERATOR:
         yylval.tree = makeUnary( CO_OPERATOR, tree );
@@ -822,7 +830,8 @@ int yylex( PARSE_STACK *state )
             break;
         case Y_TYPE_NAME:
             // this is the only kind of id that can change in an ambiguity zone
-            id_check = lexCategory( GetCurrScope(), yylval.tree, LK_LEXICAL );
+            id_check = lexCategory( GetCurrScope(), yylval.tree, LK_LEXICAL,
+                                    &yylval.tree->sym_name );
             if( id_check != LK_TYPE ) {
                 yylval.tree->type = NULL;
                 token = Y_ID;
