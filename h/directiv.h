@@ -406,6 +406,16 @@ extern void             *pop( void **stack );
 
 extern uint_32          GetCurrSegAlign( void );
 
-#include "write.h"
+/*---------------------------------------------------------------------------
+ *   included from write.c
+ *---------------------------------------------------------------------------*/
+
+extern dir_node         *CurrProc;      // current procedure
+extern uint             LineNumber;
+
+extern void             FlushCurrSeg( void );
+extern void             AddFlist( char const *filename );
+extern void             OutSelect( bool );
+extern void             WriteObjModule( void );
 
 #endif
