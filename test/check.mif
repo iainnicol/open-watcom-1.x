@@ -1,6 +1,10 @@
+!ifeq testname
+testname=testasm
+!endif
+
 .nocheck
 .before
-    @%create testasm.tmp
+    @%create $(testname).tmp
     @set CHK_CHECK=-@diff -i -b $(name).tmp $(name).chk
     @set ESM_CHECK1=-@wdis -l=$(name).dis -a $(name).obj
     @set ESM_CHECK2=-@diff -i -b $(name).dis $(name).esm
@@ -8,24 +12,24 @@
     @set EMP_CHECK2=-@diff -i -b $(name).lst $(name).emp
 
 all: $(name).tmp $(name).chk $(name).obj $(name).esm $(name).emp .symbolic
-    @%append testasm.log $(name) ================================================================
+    @%append $(testname).log $(name) ================================================================
     @SET TESTASM=Test OK
-    $(%CHK_CHECK) >>testasm.log
+    $(%CHK_CHECK) >>$(testname).log
     @if errorlevel 1 @SET TESTASM=!!! Test unsuccessful !!!
     $(%ESM_CHECK1)
-    $(%ESM_CHECK2) >>testasm.log
+    $(%ESM_CHECK2) >>$(testname).log
     @if errorlevel 1 @SET TESTASM=!!! Test unsuccessful !!!
     $(%EMP_CHECK1)
-    $(%EMP_CHECK2) >>testasm.log
+    $(%EMP_CHECK2) >>$(testname).log
     @if errorlevel 1 @SET TESTASM=!!! Test unsuccessful !!!
-    @%append testasm.log $(%TESTASM)
+    @%append $(testname).log $(%TESTASM)
     @echo $(%TESTASM)
 
 $(name).tmp: .existsonly
     @%create $(name).tmp
 
 $(name).chk: .existsonly
-    @set CHK_CHECK=-@diff -i -b $(name).tmp testasm.tmp
+    @set CHK_CHECK=-@diff -i -b $(name).tmp $(testname).tmp
 
 $(name).obj: .existsonly
     @set ESM_CHECK1=@%null

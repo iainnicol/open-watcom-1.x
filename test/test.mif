@@ -16,19 +16,23 @@ nulldevice=nul
 
 all : clean $(objs) $(dev_objs) .SYMBOLIC
 
+!ifneq objs
 $(objs) : .SYMBOLIC
     @echo $^@ ================================================================
     @$(testasm) -q -zld -wx -nm=$^@.asm $(asm_flags_$^@) $^@.asm -fr=$^@.tmp >$(nulldevice)
-    @wmake -h -f ../check.mif name=$^@
+    @wmake -h -f ../check.mif name=$^@ testname=testasm
+!endif
 
+!ifneq dev_objs
 $(dev_objs) : .SYMBOLIC
     @echo .
     @echo ==============================================================
     @echo DEVELOPMENT - $^@.asm 
     @echo ==============================================================
     @$(testasm) -q -zld -wx -nm=$^@.asm $(asm_flags_$^@) $^@.asm -fr=$^@.tmp >$(nulldevice)
-    @wmake -h -f ../check.mif name=$^@
+    @wmake -h -f ../check.mif name=$^@ testname=testasm
     @echo .
+!endif
 
 clean : .SYMBOLIC
     @rm -f *.obj *.err *.dis *.lst *.tmp mem.trk

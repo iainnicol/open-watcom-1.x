@@ -1,13 +1,17 @@
+!ifeq testname
+testname=testcomp
+!endif
+
 .nocheck
 .before
     @set CHK_CHECK=-@diff -i -b $(name).lst $(name).chk
 
 all: $(name).chk .symbolic
-    @%append testcomp.log $(name) ================================================================
+    @%append $(testname).log $(name) ================================================================
     @SET TESTCOMP=Test OK
-    $(%CHK_CHECK) >>testcomp.log
+    $(%CHK_CHECK) >>$(testname).log
     @if errorlevel 1 @SET TESTCOMP=!!! Test unsuccessful !!!
-    @%append testcomp.log $(%TESTCOMP)
+    @%append $(testname).log $(%TESTCOMP)
     @echo $(%TESTCOMP)
 
 $(name).chk: .existsonly
