@@ -62,15 +62,12 @@
 
 #include "directiv.h"
 #include "watcom.h"
-#include "womp.h"
-#include "objrec.h"
-#include "pcobj.h"
 #include "myassert.h"
 #include "fixup.h"
-#include "queue.h"
 
 #endif
 
+extern int              match_phase_1( void );
 extern int              ptr_operator( memtype, uint_8 );
 extern int              jmp( struct asm_sym *sym );
 extern int              check_jump( struct asm_sym * );
@@ -111,7 +108,6 @@ extern char             *CurrString;    // Current Input Line
 dir_node                *SegOverride;
 
 static int              in_epilogue = 0;
-extern seg_list         *CurrSeg;
 extern void             SetModuleDefSegment32( int flag );
 
 #else
@@ -1534,7 +1530,7 @@ int check_override_x( expr_list *opndx )
     switch( AsmBuffer[index]->token ) {
     case T_REG:
 //        Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[index]->value].position].opcode;
-//            break;
+        break;
     case T_ID:      // Segment or Group override
         if( FixOverride(index) != NOT_ERROR )
             return( ERROR );
@@ -2889,16 +2885,26 @@ static int check_size( void )
             AsmError( SEGMENT_TOO_BIG );
             state = ERROR;
         }
-        // offset can only be 16-bit if CPU is 286 and down
-        if( !Code->use32 && op2 > OP_I16 ) {
-            AsmError( OFFSET_TOO_BIG );
-            state = ERROR;
+        if( (Code->info.cpu&(P_CPU_MASK|P_PM)) <= P_286p ) {
+            // offset can only be 16-bit if CPU is 286 and down
+            if( op2 > OP_I16 ) {
+                AsmError( OFFSET_TOO_BIG );
+                state = ERROR;
+            }
         }
         // swap the 2 opnds to make output easier
+        if( InsFixups[OPND2] != NULL ) {
+            // absolute segment + offset nnnn,offset
+            Code->info.opnd_type[OPND1] = Code->info.opnd_type[OPND2];
+            InsFixups[OPND1] = InsFixups[OPND2];
+            InsFixups[OPND2] = NULL;
+        } else {
+            // absolute ptr nnnn,nnnn
+            Code->info.opnd_type[OPND1] = Code->use32 ? OP_I32 : OP_I16;
+        }
         temp = Code->data[OPND1];
         Code->data[OPND1] = Code->data[OPND2];
         Code->data[OPND2] = temp;
-        Code->info.opnd_type[OPND1] = Code->use32 ? OP_I32 : OP_I16;
         Code->info.opnd_type[OPND2] = OP_I16;
         break;
     case T_MOVSX:

@@ -43,7 +43,6 @@
 
 #ifdef _WASM_
     #include "directiv.h"
-    #include "myassert.h"
 #endif
 
 extern int_8                    PhaseError;
@@ -53,11 +52,8 @@ int jmp( struct asm_sym *sym );
 
 #ifdef _WASM_
 
-extern seg_list         *CurrSeg;       // points to stack of opened segments
-
 extern void             InputQueueLine( char * );
 extern void             GetInsString( enum asm_token, char *, int );
-extern uint_32          GetCurrAddr( void );
 extern int              SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, enum prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
@@ -505,12 +501,22 @@ int jmp( struct asm_sym *sym )                // Bug: can't handle indirect jump
                 SET_OPSIZ( Code, SymIs32( sym ));
                 find_frame( sym );
 #endif
-                if( oper_32( Code )) {
-                    fixup_type = FIX_PTR32;
-                    Code->info.opnd_type[Opnd_Count] = OP_J48;
+                if( Opnd_Count == OPND2 ) {
+                    if( oper_32( Code ) ) {
+                        fixup_type = FIX_OFF32;
+                        Code->info.opnd_type[Opnd_Count] = OP_I32;
+                    } else {
+                        fixup_type = FIX_OFF16;
+                        Code->info.opnd_type[Opnd_Count] = OP_I16;
+                    }
                 } else {
-                    fixup_type = FIX_PTR16;
-                    Code->info.opnd_type[Opnd_Count] = OP_J32;
+                    if( oper_32( Code ) ) {
+                        fixup_type = FIX_PTR32;
+                        Code->info.opnd_type[Opnd_Count] = OP_J48;
+                    } else {
+                        fixup_type = FIX_PTR16;
+                        Code->info.opnd_type[Opnd_Count] = OP_J32;
+                    }
                 }
                 break;
             case T_BYTE:

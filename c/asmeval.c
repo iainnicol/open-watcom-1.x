@@ -904,7 +904,7 @@ static int calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
                     token_2->expr_type = token_1->expr_type;
                 }
                 TokenAssign( token_1, token_2 );
-            } else {
+            } else if( Parse_Pass > PASS_1 ) {
                 AsmError( ONLY_SEG_OR_GROUP_ALLOWED );
                 return( ERROR );
             }
