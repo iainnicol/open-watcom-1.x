@@ -52,13 +52,7 @@ static  unsigned char   CharIndex( char chr ) {
 
     if( chr == '$' ) return( 26 );
     if( chr == '_' ) return( 27 );
-#if _CSET == _EBCDIC
-    if( chr <= 'I' ) return( chr - 'A' );
-    if( chr <= 'R' ) return( chr - 'J' + 9 );
-    if( chr <= 'Z' ) return( chr - 'S' + 18 );
-#else
     return( chr - 'A' );
-#endif
 }
 
 

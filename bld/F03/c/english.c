@@ -45,79 +45,7 @@
 
 #if !defined( __RT__ )
 
-#if _CSET == _EBCDIC
 
-// EBCDIC character set:
-// =====================
-
-static const byte __FAR CharSet[] = {
-//    00     01     02     03     04     05     06     07
-     C_EL,  C_BC,  C_BC,  C_BC,  C_BC,  C_TC,  C_BC,  C_BC, // NUL to BEL
-//    08     09     0A     0B     0C     0D     0E     0F
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    10     11     12     13     14     15     16     17
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    18     19     1A     1B     1C     1D     1E     1F
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    20     21     22     23     24     25     26     27
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    28     29     2A     2B     2C     2D     2E     2F
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    30     31     32     33     34     35     36     37
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    38     39     3A     3B     3C     3D     3E     3F
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    40     41     42     43     44     45     46     47
-     C_SP,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // SP  to ?
-//    48     49     4A @   4B .   4C <   4D (   4E +   4F |
-     C_BC,  C_BC,  C_BC,  C_DP,  C_BC,  C_OP,  C_SG,  C_BC, // ?   to |
-//    50 &   51     52     53     54     55     56     57
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // &   to ?
-//    58     59     5A !   5B 0x   5C *   5D )   5E ;   5F ~
-     C_BC,  C_BC,  C_CM,  C_AL,  C_OP,  C_OP,  C_BC,  C_BC, // ?   to ~
-//    60 -   61 /   62     63     64     65     66     67
-     C_SG,  C_OP,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // -   to ?
-//    68     69     6A |   6B ,   6C %   6D _   6E >   6F ?
-     C_BC,  C_BC,  C_BC,  C_OP,  C_BC,  XC_AL, C_BC,  C_BC, // ?   to ?
-//    70     71     72     73     74     75     76     77
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    78     79 `   7A :   7B &   7C @   7D '   7E =   7F "
-     C_BC,  C_BC,  C_OP,  C_BC,  C_BC,  C_AP,  C_OP,  C_BC, // ?   to "
-//    80     81 a   82 b   83 c   84 d   85 e   86 f   87g
-     C_BC,  LC_AL, LC_AL, LC_CS, LC_EX, LC_EX, LC_AL, LC_AL,// ?   to g
-//    88 h   89 i   8A     8B     8C     8D     8E     8F
-     LC_HL, LC_AL, C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // h   to ?
-//    90     91 j   92  k  93 l   94 m   95 n   96 o   97 p
-     C_BC,  LC_AL, LC_AL, LC_AL, LC_AL, LC_AL, LC_OL, LC_AL,// ?   to p
-//    98 q   99 r   9A     9B     9C     9D     9E     9F
-     LC_EX, LC_AL, C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // q   to ?
-//    A0     A1 ~   A2 s   A3 t   A4 u   A5 v   A6 w   A7 x
-     C_BC,  C_BC,  LC_AL, LC_AL, LC_AL, LC_AL, LC_AL, LC_HX,// ?   to x
-//    A8 y   A9 z   AA     AB     AC     AD     AE     AF
-     LC_AL, LC_AL, C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // y   to ?
-//    B0     B1     B2     B3     B4     B5     B6     B7
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    B8     B9     BA     BB     BC     BD     BE     BF
-     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // ?   to ?
-//    C0 {   C1 A   C2 B   C3 C   C4 D   C5 E   C6 F   C7 G
-     C_BC,  C_AL,  C_AL,  C_CS,  C_EX,  C_EX,  C_AL,  C_AL, // {   to G
-//    C8 H   C9 I   CA     CB     CC     CD     CE     CF
-     C_HL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // H   to ?
-//    D0 }   D1 J   D2 K   D3 L   D4 M   D5 N   D6 O   D7 P
-     C_BC,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_OL,  C_AL, // }   to P
-//    D8 Q   D9 R   DA     DB     DC     DD     DE     DF
-     C_EX,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // Q   to ?
-//    E0 \   E1     E2 S   E3 T   E4 U   E5 V   E6 W   E7X
-     C_BC,  C_BC,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_HX, // \   to X
-//    E8 Y   E9 Z   EA     EB     EC     ED     EE     EF
-     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // Y   to ?
-//    F0 0   F1 1   F2 2   F3 3   F4 4   F5 5   F6 6   F7 7
-     C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI, // 0   to 7
-//    F8 8   F9 9   FA |   FB     FC     FD     FE     FF
-     C_DI,  C_DI,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC  // 8   to 'FF'
-};
-
-#else
 
 // ASCII character set:
 // ====================
@@ -225,7 +153,6 @@ static const byte __FAR CharSet[] = {
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC   // 0xF8 to $FF
 };
 
-#endif
 
 #endif
 

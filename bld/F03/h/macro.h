@@ -34,13 +34,13 @@
 // ======================
 
 #define _ASCII  0
-#define _EBCDIC 1
+// #define _EBCDIC 1   // no longer used
 #define _KANJI  2
 
 // Define CPU targets:
 // ====================
 
-#define _370   0    // no longer used
+// #define _370   0    // no longer used
 #define _8086  1
 #define _VAX   2
 #define _80386 3
