@@ -225,7 +225,8 @@ static int get_watcom_argument_string( char *buffer, uint_8 size, uint_8 *parm_n
 {
     int parm = *parm_number;
 
-    if( parm > 3 ) return( FALSE );
+    if( parm > 3 )
+        return( FALSE );
     switch( size ) {
     case 1:
         sprintf( buffer, parm_reg[A_BYTE][parm] );
@@ -396,7 +397,8 @@ static void push_proc( dir_node *proc )
 static dir_node *pop_proc( void )
 /***********************************/
 {
-    if( ProcStack == NULL ) return( NULL );
+    if( ProcStack == NULL )
+        return( NULL );
     return( (dir_node *)pop( &ProcStack ) );
 }
 
@@ -606,10 +608,10 @@ void FreeInfo( dir_node *dir )
         break;
     case SYM_CONST:
 #ifdef DEBUG_OUT
-        if(( dir->e.constinfo->count > 0 ) && ( dir->e.constinfo->data[0].token != T_NUM )) {
-            DebugMsg(( "freeing const(String): %s = ", dir->sym.name ));
+        if( ( dir->e.constinfo->count > 0 ) && ( dir->e.constinfo->data[0].token != T_NUM ) ) {
+            DebugMsg( ( "freeing const(String): %s = ", dir->sym.name ) );
         } else {
-            DebugMsg(( "freeing const(Number): %s = ", dir->sym.name ));
+            DebugMsg( ( "freeing const(Number): %s = ", dir->sym.name ) );
         }
 #endif
         for( i=0; i < dir->e.constinfo->count; i++ ) {
@@ -1990,7 +1992,7 @@ void ModuleInit( void )
 
 void SetModuleDefSegment32( int flag )
 {
-    if(( CurrSeg == NULL ) && (( ModuleInfo.init == 0 ) || ( ModuleInfo.cmdline == TRUE ))) {
+    if( ( CurrSeg == NULL ) && ( ( ModuleInfo.init == 0 ) || ( ModuleInfo.cmdline == TRUE ) ) ) {
         ModuleInfo.defseg32 = flag;
     }
 }
@@ -2042,7 +2044,9 @@ void DefFlatGroup()
 
     if( MAGIC_FLAT_GROUP == 0 ) {
         grp = CreateGroup( "FLAT" );
-        if( grp != NULL ) MAGIC_FLAT_GROUP = grp->sym.grpidx;
+        if( grp != NULL ) {
+            MAGIC_FLAT_GROUP = grp->sym.grpidx;
+        }
     }
 }
 
@@ -2930,7 +2934,8 @@ parms:
         }
 
         sym = AsmLookup( token );
-        if( sym == NULL ) return( ERROR );
+        if( sym == NULL )
+            return( ERROR );
 
         if( sym->state != SYM_UNDEFINED ) {
             AsmError( SYMBOL_ALREADY_DEFINED );

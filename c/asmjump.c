@@ -101,7 +101,9 @@ static void jumpExtend( int far_flag )
 
     /* there MUST be a conditional jump instruction in asmbuffer */
     for( i=0; ; i++ ) {
-        if( AsmBuffer[i]->token==T_INSTR && IS_JMP( AsmBuffer[i]->value ) ) break;
+        if( AsmBuffer[i]->token==T_INSTR && IS_JMP( AsmBuffer[i]->value ) ) {
+            break;
+        }
     }
 
     AsmWarn( 4, EXTENDING_JUMP );
@@ -785,7 +787,7 @@ int ptr_operator( memtype mem_type, uint_8 fix_mem_type )
             }
         }
     } else {
-        if(( mem_type != EMPTY ) && ( Code->mem_type_fixed == FALSE )) {
+        if( ( mem_type != EMPTY ) && ( Code->mem_type_fixed == FALSE ) ) {
 #ifdef _WASM_
             if( mem_type != T_STRUCT ) {
 #endif

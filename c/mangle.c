@@ -36,6 +36,7 @@
 #include "directiv.h"
 #include "mangle.h"
 
+
 /* constants used by the name manglers ( changes ) */
 #define     NORMAL              0
 #define     USCORE_FRONT        1
