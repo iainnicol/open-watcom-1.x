@@ -120,11 +120,6 @@ typedef struct {
 #define OBJ_EXT "obj"
 #endif
 
-typedef struct queuenode {
-    void *next;
-    void *data;
-} queuenode;
-
 /* stuff used by condasm.c,
  * here since we need it so we can tell asmeval where to go if
  * we are in the middle of a false ifdef

@@ -43,7 +43,6 @@
 #include "asmalloc.h"
 #include "asmins.h"
 #include "asmsym.h"
-#include "directiv.h"
 #include "fatal.h"
 #include "asmerr.h"
 #include "asmdefs.h"
@@ -51,7 +50,6 @@
 
 #include "memutil.h"
 
-#include "womp.h"
 #include "objprs.h"
 #include "genmsomf.h"
 #ifdef __OSI__

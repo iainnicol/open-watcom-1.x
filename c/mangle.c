@@ -38,9 +38,7 @@
 #include "asmerr.h"
 #include "directiv.h"
 #include "asmins.h"
-
-extern char *CMangler( struct asm_sym *sym, char *buffer );
-extern char *AsmMangler( struct asm_sym *sym, char *buffer );
+#include "mangle.h"
 
 /* constants used by the name manglers ( changes ) */
 #define     NORMAL              0

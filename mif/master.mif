@@ -105,6 +105,7 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
     insthash.obj        &
     asmjump.obj         &
     autodept.obj        &
+    queues.obj          &
     finger.obj
 
 !ifdef prebuild

@@ -42,7 +42,6 @@
 
 #ifdef _WASM_
 #include "directiv.h"
-#include "myassert.h"
 #include "asmerr.h"
 #include "asmalloc.h"
 #include "condasm.h"
@@ -94,7 +93,6 @@ extern void             AsmError( int );
 extern void             OutSelect( bool );
 
 extern char             write_to_file;
-extern seg_list         *CurrSeg;
 extern File_Info        AsmFiles;
 extern uint_8           CheckSeg;
 extern dir_node         *CurrProc;

@@ -35,9 +35,9 @@
 
 #ifndef _DIRECT_FIX_
 
-#include "womp.h"
-#include "pcobj.h"
+#include <stdlib.h>
 #include "objrec.h"
+#include "asmglob.h"
 #include "asmsym.h"
 
 #define MAX_LNAME       255
@@ -303,7 +303,8 @@ typedef struct a_definition_struct {
     dir_node        *curr_struct;
 } a_definition_struct;
 
-extern a_definition_struct Definition;
+extern a_definition_struct      Definition;
+extern uint                     LnamesIdx;      // Number of LNAMES definition
 
 typedef struct {
     dist_type   distance;        // stack distance;
@@ -352,6 +353,8 @@ typedef struct {
 
 extern assume_info      AssumeTable[ASSUME_LAST];
 extern module_info      ModuleInfo;
+
+extern seg_list         *CurrSeg;       // points to stack of opened segments
 
 /*---------------------------------------------------------------------------*/
 
@@ -446,9 +449,6 @@ extern int NameDirective( int );
 extern int Comment( int, int ); /* handle COMMENT directives */
 
 extern int AddAlias( int );
-extern void FreePubQueue( void );
-extern void FreeAliasQueue( void );
-extern void FreeLnameQueue( void );
 extern void FreeInfo( dir_node * );
 extern void push( void **stack, void *elt );
 extern void *pop( void **stack );

@@ -39,9 +39,6 @@
 #include "directiv.h"
 #include "asmdefs.h"
 
-#include "womp.h"
-#include "pcobj.h"
-#include "objrec.h"
 #include "myassert.h"
 
 extern void             AsmError( int );
@@ -49,9 +46,6 @@ extern direct_idx       FindClassLnameIdx( char *name );
 extern uint_32          GetCurrSegAlign( void );
 extern void             FlushCurrSeg( void );
 extern bool             CheckHaveSeg( void );
-
-/* stupid global vars that we may as well use since they are there */
-extern seg_list         *CurrSeg;       // points to stack of opened segments
 
 typedef unsigned char   byte;
 
@@ -80,8 +74,6 @@ int ChangeCurrentLocation( bool relative, int_32 value  )
         value += GetCurrAddr();
     }
     FlushCurrSeg();
-
-//    CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length = value;
 
     CurrSeg->seg->e.seginfo->current_loc = value;
     CurrSeg->seg->e.seginfo->start_loc = value;

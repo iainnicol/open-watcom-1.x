@@ -119,7 +119,6 @@ extern uint             LineNumber;
 extern int              Token_Count;    // number of tokens on line
 
 struct asm_sym;
-extern int              match_phase_1( void );
 extern void             AsmByte( unsigned char );
 
 #ifdef _WASM_

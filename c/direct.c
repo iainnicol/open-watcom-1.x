@@ -43,12 +43,11 @@
 #include "asmsym.h"
 #include "asmerr.h"
 
-#include "womp.h"
-#include "pcobj.h"
-#include "objrec.h"
+#include "write.h"
+#include "queues.h"
+
 #include "myassert.h"
 #include "fixup.h"
-#include "queue.h"
 #include "asmexpnd.h"
 
 #include "asmdefs.h"
@@ -93,16 +92,12 @@ extern char             *CurrString;    // Current Input Line
 extern char             EndDirectiveFound;
 extern dir_node         *SegOverride;
 
-qdesc                   *LnameQueue = NULL; // queue of LNAME structs
 seg_list                *CurrSeg;       // points to stack of opened segments
 uint                    LnamesIdx;      // Number of LNAMES definition
 obj_rec                 *ModendRec;     // Record for Modend
 
 assume_info             AssumeTable[ASSUME_LAST];
 symbol_queue            Tables[TAB_LAST];// tables of definitions
-qdesc                   *PubQueue = NULL; // queue of pubdefs
-qdesc                   *GlobalQueue = NULL; // queue of global / externdefs
-qdesc                   *AliasQueue = NULL; // queue of aliases
 module_info             ModuleInfo;
 
 //proc_stack_node               *ProcStackTop = NULL;
@@ -394,24 +389,6 @@ static void dir_add( dir_node *new, int tab )
     }
 }
 
-static dir_node *AllocADir( char *name ) {
-    dir_node *dir;
-
-    dir = AsmAlloc( sizeof( dir_node ) );
-    if( dir != NULL ) {
-        if( InitAsmSym( &dir->sym, name ) == NULL ) {
-            AsmFree( dir );
-            return( NULL );
-        } else {
-            dir->next = NULL;
-            dir->prev = NULL;
-            dir->line = 0;
-            dir->e.seginfo = NULL;
-        }
-    }
-    return( dir );
-}
-
 static void dir_init( dir_node *dir, int tab )
 /*****************************************/
 /* Change node and insert it into the table specified by tab */
@@ -557,16 +534,11 @@ dir_node *dir_insert( char *name, int tab )
     dir_node            *new;
 
     /**/myassert( name != NULL );
-    new = AllocADir( name );
-    if( new == NULL ) {
-        AsmError( NO_MEMORY );
-        return( NULL );
-    }
+
     /* don't put class lnames into the symbol table - separate name space */
-    if( tab != TAB_CLASS_LNAME ) {
-        AsmAdd( &new->sym );
-    }
-    dir_init( new, tab );
+    new = (dir_node *)AllocDSym( name, ( tab != TAB_CLASS_LNAME ) );
+    if( new != NULL )
+        dir_init( new, tab );
     return( new );
 }
 
@@ -738,9 +710,10 @@ direct_idx GetLnameIdx( char *name )
     dir_node            *dir;
 
     sym = AsmGetSymbol( name );
-    if( sym == NULL ) return( LNAME_NULL );
-    dir = (dir_node *)sym;
+    if( sym == NULL )
+        return( LNAME_NULL );
 
+    dir = (dir_node *)sym;
     if( sym->state == SYM_UNDEFINED ) {
         return( LNAME_NULL );
     } else if( sym->state == SYM_GRP ) {
@@ -756,7 +729,6 @@ direct_idx InsertClassLname( char *name )
 /***************************************/
 {
     dir_node            *dir;
-    struct queuenode    *node;
 
     if( strlen( name ) > MAX_LNAME ) {
         AsmError( LNAME_TOO_LONG );
@@ -767,14 +739,7 @@ direct_idx InsertClassLname( char *name )
 
     /* put it into the lname table */
 
-    node = AsmAlloc( sizeof( queuenode ) );
-    node ->data = (void *)dir;
-
-    if( LnameQueue == NULL ) {
-        LnameQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( LnameQueue );
-    }
-    QEnqueue( LnameQueue, node );
+    AddLnameData( dir );
 
     return( LnamesIdx );
 }
@@ -782,20 +747,7 @@ direct_idx InsertClassLname( char *name )
 direct_idx FindClassLnameIdx( char *name )
 /****************************************/
 {
-    void                **ptr;
-    queuenode           *node;
-    dir_node            *dir;
-
-    if( LnameQueue == NULL ) return( LNAME_NULL);
-    for( ptr = LnameQueue->head; ptr != NULL; ptr = *(void **)ptr ) {
-        node = (queuenode *)ptr;
-        dir = (dir_node *)node->data;
-        if( dir->sym.state != SYM_CLASS_LNAME ) continue;
-        if( stricmp( dir->sym.name, name ) == 0 ) {
-            return( dir->e.lnameinfo->idx );
-        }
-    }
-    return( LNAME_NULL );
+    return( FindLnameIdx( name ) );
 }
 
 direct_idx LnameInsert( char *name )
@@ -803,7 +755,6 @@ direct_idx LnameInsert( char *name )
 {
     struct asm_sym      *sym;
     dir_node            *dir;
-    struct queuenode    *node;
 
     sym = AsmGetSymbol( name );
 
@@ -832,63 +783,9 @@ direct_idx LnameInsert( char *name )
 
     /* put it into the lname table */
 
-    node = AsmAlloc( sizeof( queuenode ) );
-    node ->data = (void *)dir;
-
-    if( LnameQueue == NULL ) {
-        LnameQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( LnameQueue );
-    }
-    QEnqueue( LnameQueue, node );
+    AddLnameData( dir );
 
     return( LnamesIdx );
-}
-
-void FreePubQueue( void )
-/***********************/
-{
-    if( PubQueue != NULL ) {
-        while( PubQueue->head != NULL ) {
-            AsmFree( QDequeue( PubQueue ) );
-        }
-        AsmFree( PubQueue );
-    }
-}
-
-void FreeAliasQueue( void )
-/*************************/
-{
-    if( AliasQueue != NULL ) {
-        while( AliasQueue->head != NULL ) {
-            queuenode   *node;
-
-            node = QDequeue( AliasQueue );
-            AsmFree( node->data );
-            AsmFree( node );
-        }
-        AsmFree( AliasQueue );
-    }
-}
-
-void FreeLnameQueue( void )
-/***********************/
-{
-    dir_node *dir;
-    queuenode *node;
-
-    if( LnameQueue != NULL ) {
-        while( LnameQueue->head != NULL ) {
-            node = QDequeue( LnameQueue );
-            dir = (dir_node *)node->data;
-            if( dir->sym.state == SYM_CLASS_LNAME ) {
-                AsmFree( dir->e.lnameinfo );
-                AsmFree( dir->sym.name );
-                AsmFree( dir );
-            }
-            AsmFree( node );
-        }
-        AsmFree( LnameQueue );
-    }
 }
 
 void wipe_space( char *token )
@@ -1073,7 +970,6 @@ int GlobalDef( int i )
     int                 type;
     struct asm_sym      *sym;
     dir_node            *dir;
-    struct queuenode    *qnode;
     int                 lang_type;
 
     mangle_type = Check4Mangler( &i );
@@ -1122,14 +1018,8 @@ int GlobalDef( int i )
         SetMangler( sym, mangle_type, lang_type );
 
         /* put the symbol in the globaldef table */
-        qnode = AsmAlloc( sizeof( queuenode ) );
-        qnode->data = (void *)dir;
 
-        if( GlobalQueue == NULL ) {
-            GlobalQueue = AsmAlloc( sizeof( qdesc ) );
-            QInit( GlobalQueue );
-        }
-        QEnqueue( GlobalQueue, qnode );
+        AddGlobalData( dir );
     }
     return( NOT_ERROR );
 }
@@ -1238,20 +1128,6 @@ static char *Check4Mangler( int *i )
     return( mangle_type );
 }
 
-static void MakePublic( void *node )
-{
-    struct queuenode    *qnode;
-
-    qnode = AsmAlloc( sizeof( queuenode ) );
-    qnode->data = node;
-
-    if( PubQueue == NULL ) {
-        PubQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( PubQueue );
-    }
-    QEnqueue( PubQueue, qnode );
-}
-
 int PubDef( int i )
 /*****************/
 {
@@ -1303,14 +1179,14 @@ int PubDef( int i )
             }
         } else {
             node = dir_insert( token, TAB_PUB );
-            MakePublic( node );
+            AddPublicData( node );
             sym = &node->sym;
         }
         SetMangler( sym, mangle_type, lang_type );
         if( !sym->public ) {
             /* put it into the pub table */
             sym->public = TRUE;
-            MakePublic( node );
+            AddPublicData( node );
         }
     }
     return( NOT_ERROR );
@@ -1462,11 +1338,9 @@ void find_use32( void )
         Use32 = ModuleInfo.defseg32;
     } else {
         Use32 = CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32;
-#ifdef _WASM_
         if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )) {
             AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
         }
-#endif
     }
 }
 
@@ -1566,7 +1440,9 @@ int SegDef( int i )
                     classidx = FindClassLnameIdx( token );
                     if( classidx == LNAME_NULL ) {
                         classidx = InsertClassLname( token );
-                        if( classidx == LNAME_NULL ) return( ERROR );
+                        if( classidx == LNAME_NULL ) {
+                            return( ERROR );
+                        }
                     }
                     seg->d.segdef.class_name_idx = classidx;
                     Globals.code_seg = ( stricmp( token, "code" ) == 0 );
@@ -3498,7 +3374,6 @@ int AddAlias( int i )
 /*******************/
 {
     /* takes directive of form: <alias_name> alias <substitute_name> */
-    struct queuenode    *qnode;
     char *tmp;
 
     if( i < 0 ) {
@@ -3515,18 +3390,14 @@ int AddAlias( int i )
 
     /* aliases are stored as:  <len><alias_name><len><substitute_name> */
 
-    qnode = AsmAlloc( sizeof( queuenode ) );
     tmp = AsmAlloc( strlen( AsmBuffer[i]->string_ptr ) +
                     strlen( AsmBuffer[i+2]->string_ptr ) + 2 );
+    AddAliasData( tmp );
+
     strcpy( tmp, AsmBuffer[i]->string_ptr );
-    qnode->data = (void *)tmp;
     tmp += strlen( tmp ) + 1 ;
     strcpy( tmp, AsmBuffer[i+2]->string_ptr );
-    if( AliasQueue == NULL ) {
-        AliasQueue = AsmAlloc( sizeof( qdesc ) );
-        QInit( AliasQueue );
-    }
-    QEnqueue( AliasQueue, qnode );
+
     return( NOT_ERROR );
 }
 

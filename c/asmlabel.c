@@ -43,11 +43,6 @@
 #ifdef _WASM_
     #include "directiv.h"
 
-    #include "womp.h"
-    #include "pcobj.h"
-    #include "objrec.h"
-    #include "myassert.h"
-
     extern int_8                PhaseError;
 
     extern int                  AddFieldToStruct( int );

@@ -49,9 +49,6 @@
 #include "asmdefs.h"
 #include "asmeval.h"
 
-#include "womp.h"
-#include "pcobj.h"
-#include "objrec.h"
 #include "myassert.h"
 #include "fixup.h"
 #include "asmexpnd.h"

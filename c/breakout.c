@@ -42,7 +42,6 @@
 #include "asmins.h"
 #include "directiv.h"
 #include "condasm.h"
-#include "myassert.h"
 #include "asmerr.h"
 #include "asmexpnd.h"
 #include "asmdefs.h"
@@ -57,7 +56,6 @@ extern int              ForDirective( int, enum irp_type );
 
 /* global vars */
 extern dir_node         *CurrProc;
-extern seg_list         *CurrSeg;
 
 int directive( int i, long direct )
 /* Handle all directives */

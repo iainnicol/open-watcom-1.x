@@ -35,7 +35,6 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include "asmglob.h"
-#include "womp.h"
 #include "objprs.h"
 #include "asmalloc.h"
 

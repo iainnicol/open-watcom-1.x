@@ -51,13 +51,12 @@
 #include "asmdefs.h"
 #include "asmeval.h"
 
-#include "womp.h"
+#include "write.h"
+#include "queues.h"
+
 #include "objio.h"
 #include "objprs.h"
-#include "objrec.h"
-#include "pcobj.h"
 #include "fixup.h"
-#include "queue.h"
 #include "autodept.h"
 
 // use separate fixupp and fixupp32 records
@@ -83,12 +82,7 @@ extern void             CheckProcOpen( void );
 extern pobj_state       pobjState;      // for WOMP interface
 extern File_Info        AsmFiles;
 extern pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
-extern seg_list         *CurrSeg;       // points to stack of opened segments
 extern symbol_queue     Tables[];       // tables of definitions
-extern qdesc            *PubQueue;      // queue of pubdefs
-extern qdesc            *GlobalQueue;   // queue of global / externdefs
-extern qdesc            *AliasQueue;    // queue of aliases
-extern qdesc            *LnameQueue;    // queue of LNAME structs
 extern struct fixup     *FixupListHead; // head of list of fixups ( from WOMP )
 extern struct fixup     *FixupListTail;
 extern uint_32          BufSize;
@@ -110,7 +104,6 @@ int_8                   Use32;          // if 32-bit code is use
 unsigned long           PassTotal;      // Total number of ledata bytes generated
 int_8                   PhaseError;
 char                    EndDirectiveFound = FALSE;
-extern qdesc            *LinnumQueue;// queue of linnum_data structs
 
 extern uint             segdefidx;      // Number of Segment definition
 extern uint             extdefidx;      // Number of Extern definition
@@ -179,9 +172,6 @@ static void FreeFlist( void )
 
 static void write_init( void )
 {
-#ifndef _WASM_
-    Address     = 0;
-#endif
     BufSize     = 0;
     FixupListHead = NULL;
     FixupListTail = NULL;
@@ -400,50 +390,21 @@ static void write_seg( void )
         write_record( objr, FALSE );
     }
 }
+
 static void write_lnames( void )
 {
     obj_rec     *objr;
     uint        total_size = 0;
-    uint        total_num = 0;
-    uint        i = 0;
     char        *lname = NULL;
-    uint        len;
-    dir_node    *dir;
-    queuenode   *curr;
-
-    if( LnameQueue == NULL ) {
-        return;
-    }
 
     objr = ObjNewRec( CMD_LNAMES );
     objr->d.lnames.first_idx = 1;
     objr->d.lnames.num_names = LnamesIdx;
-
-    for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
-        dir = (dir_node *)(curr->data);
-        myassert( dir != NULL );
-        total_size += 1 + strlen( dir->sym.name );
-        total_num++;
-    }
-
+    total_size = GetLnameData( &lname );
     if( total_size > 0 ) {
-        lname = AsmAlloc( total_size * sizeof( char ) + 1 );
-        for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
-            dir = (dir_node *)(curr->data);
-
-            len = strlen( dir->sym.name );
-            lname[i] = (char)len;
-            i++;
-            strcpy( lname+i, dir->sym.name );
-            //For the Q folks... strupr( lname+i );
-            i += len; // overwrite the null char
-        }
         ObjAttachData( objr, lname, total_size );
     }
-
     ObjCanFree( objr );
-    /**/myassert( total_num == LnamesIdx );
-    if( total_num == 0 ) return;
     write_record( objr, TRUE );
 }
 
@@ -451,29 +412,7 @@ static void write_global( void )
 /******************************/
 /* turn the globals into either externs or publics as appropriate */
 {
-    queuenode           *curr;
-    struct asm_sym      *sym;
-
-    if( GlobalQueue == NULL ) return;
-    for( ; ; ) {
-        curr = (queuenode *)QDequeue( GlobalQueue );
-        if( curr == NULL ) break;
-        sym = (asm_sym *)curr->data;
-        if( sym->state == SYM_UNDEFINED ) {
-            dir_change( (dir_node *)curr->data, TAB_EXT );
-            AsmFree( curr );
-        } else {
-            /* make this record a pubdef */
-            sym->public = TRUE;
-            if( PubQueue == NULL ) {
-                PubQueue = AsmAlloc( sizeof( qdesc ) );
-                QInit( PubQueue );
-            }
-            QEnqueue( PubQueue, curr );
-        }
-    }
-    AsmFree( GlobalQueue );
-    GlobalQueue = NULL;
+    GetGlobalData();
 }
 
 static void write_ext( void )
@@ -529,17 +468,11 @@ static int opsize( memtype mem_type )
 {
     switch( mem_type ) {
     case EMPTY:     return( 0 );
-#ifdef _WASM_
     case T_SBYTE:
-#endif
     case T_BYTE:    return( 1 );
-#ifdef _WASM_
     case T_SWORD:
-#endif
     case T_WORD:    return( 2 );
-#ifdef _WASM_
     case T_SDWORD:
-#endif
     case T_DWORD:   return( 4 );
     case T_FWORD:   return( 6 );
     case T_QWORD:   return( 8 );
@@ -740,47 +673,18 @@ static int write_autodep( void )
     return NOT_ERROR;
 }
 
-static long QCount( qdesc *q ) {
-/****************************/
-/* count the # of entries in the queue, if the retval is -ve we have an error */
-    long        count = 0;
-    void        *curr = 0;
-
-    if( q == NULL ) return( 0 );
-    for( curr = q->head; curr !=NULL; curr = *(void **)curr ) {
-        count++;
-        if( count < 0 ) return( -1 );
-    }
-    return( count );
-}
-
 static void write_linnum( void )
 /******************************/
 {
-    queuenode   *node;
     linnum_data *ldata;
-    linnum_data *next;
-    int         count, i;
+    int         count;
     obj_rec     *objr;
     bool        need_32;
 
-    count = QCount( LinnumQueue );
+    count = GetLinnumData( &ldata, &need_32 );
+    if( ldata == NULL )
+        return;
 
-    if( count == 0 ) return;
-
-    need_32 = FALSE;
-    ldata = AsmAlloc( count * sizeof( linnum_data ) );
-    for( i = 0; i < count; i++ ) {
-        node = QDequeue( LinnumQueue );
-        next = (linnum_data *)(node->data);
-        ldata[i].number = next->number;
-        ldata[i].offset = next->offset;
-        if( next->offset > 0xffffUL ) need_32 = TRUE;
-        AsmFree( next );
-        AsmFree( node );
-    }
-    AsmFree( LinnumQueue );
-    LinnumQueue = NULL;
     objr = ObjNewRec( CMD_LINNUM );
     objr->is_32 = need_32;
     objr->d.linnum.num_lines = count;
@@ -917,22 +821,13 @@ static void put_public_procs_in_public_table( void )
 /**************************************************/
 {
     dir_node            *proc;
-    struct queuenode    *qnode;
 
     for( proc = Tables[TAB_PROC].head; proc != NULL; proc = proc->next ) {
 
         /* put it into the pub table */
         if( !proc->sym.public ) {
             proc->sym.public = TRUE;
-
-            qnode = AsmAlloc( sizeof( queuenode ) );
-            qnode->data = (void *)proc;
-
-            if( PubQueue == NULL ) {
-                PubQueue = AsmAlloc( sizeof( qdesc ) );
-                QInit( PubQueue );
-            }
-            QEnqueue( PubQueue, qnode );
+            AddPublicData( proc );
         }
     }
 }
@@ -941,17 +836,15 @@ static void write_alias()
 /***********************/
 {
     obj_rec             *objr;
-    queuenode           *curr;
     char                *alias;
     char                *subst;
     char                *new;
     char                len1;
     char                len2;
+    bool                first = TRUE;
 
-    if( AliasQueue == NULL ) return;
-    for( curr = AliasQueue->head; curr != NULL; curr = curr->next ) {
+    while( ( alias = GetAliasData( first ) ) != NULL ) {
         /* output an alias record for this alias */
-        alias = (char *)curr->data;
         subst = alias + strlen( alias ) + 1;
 
         len1 = strlen( alias );
@@ -971,6 +864,7 @@ static void write_alias()
         objr = ObjNewRec( CMD_ALIAS );
         ObjAttachData( objr, new, len1+len2+2);
         write_record( objr, TRUE );
+        first = FALSE;
     }
 }
 
@@ -978,95 +872,40 @@ static int write_pub()
 /*********************/
 /* note that procedures with public or export visibility are written out here */
 {
-    queuenode           *curr;
-    queuenode           *first;
-    struct asm_sym      *sym;
-
-    dir_node            *pub;
     obj_rec             *objr;
     struct pubdef_data  *data;
     uint                i;
     uint                count = 0;
     uint                seg;
     uint                grp;
-    uint                static_def;
+    char                cmd;
+    bool                first = TRUE;
+    bool                need32 = FALSE;
 
     put_public_procs_in_public_table();
 
-    if( PubQueue == NULL ) return( NOT_ERROR );
-
-    for( first = PubQueue->head; first != NULL ; first = curr ) {
-        static_def = FALSE;
-        sym = (asm_sym *)first->data;
-        if( sym->state == SYM_UNDEFINED ) {
-            AsmErr( SYMBOL_S_NOT_DEFINED, sym->name );
-            return( ERROR );
-        }
-        seg = sym->segidx;
-        grp = sym->grpidx;
-        curr = first;
-        for( count = 0; curr != NULL; curr = curr->next ) {
-            if( count == MAX_PUB_SIZE ) break; // don't let the records get too big
-            sym = (asm_sym *)curr->data;
-            if( sym->segidx != seg ) break;
-            if( sym->state == SYM_PROC ) {
-                if( ((dir_node *)sym)->e.procinfo->visibility == VIS_PRIVATE ) {
-                    if( !static_def ) {
-                        if( curr != first ) break;
-                        static_def = TRUE;
-                    } /* else we are just continuing a static def. */
-                }
-            }
-            count++;
-            /* if we don't get to here, this entry is part of the next pubdef */
-        }
-        NameArray = AsmAlloc( count * sizeof( char * ) );
-        for( i = 0; i < count; i++ ) {
-            NameArray[i] = NULL;
-        }
+    while( ( count = GetPublicData( &seg, &grp, &cmd, &NameArray, &data, &need32, first) ) > 0 ) {
 
         /* create a public record for this segment */
-        objr = ObjNewRec( static_def ? CMD_STATIC_PUBDEF : CMD_PUBDEF );
+
+        objr = ObjNewRec( cmd );
+        objr->is_32 = need32;
         objr->d.pubdef.base.grp_idx = grp;
         objr->d.pubdef.base.seg_idx = seg;
         objr->d.pubdef.base.frame = 0;
-        data = AsmAlloc( count * sizeof( struct pubdef_data ) );
-
-
-        for( curr = first, i = 0; i < count; i++, curr = curr->next ) {
-            sym = (asm_sym *)curr->data;
-            if( sym->segidx != seg ) break;
-            if( sym->offset > 0xffffUL ) objr->is_32 = TRUE;
-
-            NameArray[i] = Mangle( sym, NULL );
-
-            (*(data+i)).name = i;
-            /* No namecheck is needed by name manager */
-            if( sym->state != SYM_CONST ) {
-                (*(data+i)).offset = sym->offset;
-            } else {
-                pub = (dir_node *)sym;
-                if( pub->e.constinfo->data[0].token != T_NUM  ) {
-                    AsmWarn( 2, PUBLIC_CONSTANT_NOT_NUMERIC );
-                    (*(data+i)).offset = 0;
-                } else {
-                    (*(data+i)).offset = pub->e.constinfo->data[0].value;
-                }
-            }
-            (*(data+i)).type.idx = 0;
-        }
         objr->d.pubdef.num_pubs = count;
         objr->d.pubdef.pubs = data;
         objr->d.pubdef.free_pubs = TRUE;
         write_record( objr, TRUE );
 
-        /* free the table */
+        /* free the names table */
         for( i = 0; i < count; i++ ) {
             if( NameArray[i] != NULL ) {
                 AsmFree( NameArray[i] );
             }
         }
         AsmFree( NameArray );
+        first = FALSE;
     }
     return( NOT_ERROR );
 }

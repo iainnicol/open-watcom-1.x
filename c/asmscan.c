@@ -46,11 +46,7 @@
 
 #ifdef _WASM_
 
-#include "directiv.h"
 #include "watcom.h"
-#include "womp.h"
-#include "objrec.h"
-#include "pcobj.h"
 #include "fixup.h"
 #include "namemgr.h"
 

@@ -47,13 +47,10 @@
 #include "asmfixup.h"
 
 #ifdef _WASM_
-#include "womp.h"
 #include "fixup.h"
 #include "directiv.h"
 
 #include "watcom.h"
-#include "objrec.h"
-#include "pcobj.h"
 #include "myassert.h"
 #endif
 
@@ -68,7 +65,6 @@ struct asmfixup         *FixupHead;
 #else
 
 extern int_8            PhaseError;
-extern seg_list         *CurrSeg;       // points to stack of opened segments
 
 void add_frame( void )
 /********************/
