@@ -1,5 +1,5 @@
 #! /bin/sh
-RELEASE=1.1.0
+RELEASE=1.2.0
 LABEL=open_watcom_$RELEASE
 PREFIX=open_watcom_$RELEASE
 P4OPT=-f
