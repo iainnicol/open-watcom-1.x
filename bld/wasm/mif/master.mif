@@ -1,48 +1,35 @@
 proj_name = wasm
-
-!ifndef wasm_autodepends
-wasm_autodepends = .AUTODEPEND
-!endif
-
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
-!ifdef bootstrap
-exc_name = $(proj_name)
-!else ifeq host_OS qnx
+!ifeq host_OS qnx
 exc_name = $(proj_name).qnx
 !else
 exc_name = $(proj_name).exe
 !endif
 link_name = $(proj_name).lnk
+!include cproj.mif
+#!include deftarg.mif
 
 .OPTIMIZE
 
-!ifdef bootstrap
-inc_dirs = -I. -I"$(proj_path)/h" -I"$(womp_dir)/h" -I"$(watcom_dir)/h" &
--I"$(wres_dir)/h" -I"$(trmem_dir)"
-!else
-inc_dirs = .;$(proj_path)/h;$(womp_dir)/h;$(watcom_dir)/h;$(wres_dir)/h;$(trmem_dir)
-!endif
+inc_dirs = ..\h;$(womp_dir)\h;$(womp_dir);$(trmem_dir)
 
-libs = -L$(clib_dir)/$(%OBJDIR) -lwatcom
+.BEFORE
+        @set include=$(inc_path)
 
 #cflags stuff
 #########
-extra_c_flags =-D_WASM_
-extra_c_flags_386 =-fpc
 !ifeq release 0
-extra_c_flags += -DTRMEM -DDEBUG_OUT
-extra_c_flags_386 += -of
+extra_c_flags =/dTRMEM /dDEBUG_OUT /d_WASM_
+extra_c_flags_386 = /fpc /of
+!else
+extra_c_flags =/d_WASM_
+extra_c_flags_386 = /fpc
 !endif
-
 #lflags stuff
 #########
-extra_l_flags = option map,symfile,stack=12k
+extra_l_flags = option map,quiet,symfile,stack=12k
 extra_l_flags_qnx = option offset=16k, res=usage.u
 
-.c : $(proj_path)/c;$(womp_dir)/c;$(wres_dir)/c;$(trmem_dir);$(watcom_dir)/c
+.c      : ..\c;$(womp_dir)\c;$(trmem_dir)
 
 
 proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
@@ -84,73 +71,40 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
     asmdata.obj         &
     insthash.obj        &
     asmjump.obj         &
-    autodept.obj        &
     finger.obj
-
-wres_obj =              &
-    loadstr.obj         &
-    wriidfn.obj         &
-    wrfindrs.obj        &
-    wrgetli.obj         &
-    ropenfro.obj        &
-    wrinitdi.obj        &
-    wrreaddi.obj        &
-    wrfreedi.obj        &
-    rclosef.obj         &
-    wridcmp.obj         &
-    wrerror.obj         &
-    ralliae.obj         &
-    wrrfrr.obj          &
-    wridexby.obj        &
-    wrrewrid.obj        &
-    wrrftr.obj          &
-    wrrhr.obj           &
-    mrrdrh.obj          &
-    wrfree.obj          &
-    wridfnoo.obj        &
-    wraddres.obj        &
-    wriswrf.obj         &
-    wridnacm.obj        &
-    resseek.obj         &
-    rduint32.obj        &
-    rrnamoor.obj        &
-    rduint16.obj        &
-    wridfrst.obj        &
-    wridfrnu.obj        &
-    wrfirres.obj        &
-    rduint8.obj         &
-    rrdstr.obj          &
-    varstr.obj          
-
-proj_obj += $(wres_obj)
 
 !ifeq release 0
 proj_obj += trmem.obj trmemcvr.obj
 !endif
 
+#implicit rules
+#####
+.c.obj: .AUTODEPEND
+        $(CC) $(cflags) $(extra_c_flags_$[&) $[@
+
 #explicit rules
 ######
 
-$(exc_name) : fullops.gh inlnops.gh wmpmsg.gh $(link_name) $(proj_name).res $(proj_obj)
+$(exc_name) : ..\h\fullops.h ..\h\inlnops.h $(link_name) $(proj_name).res $(proj_obj)
 !ifeq  host_OS qnx
         @%make usage.u
 !endif
-!ifdef bootstrap
-        @%make usage.u
-        $(cc) -o $^@ $(proj_obj) $(libs)
-!else
-        $(linker) @$(link_name)
+        $(LINKER) @$(link_name)
 !ifeq host_OS osi
-        $(bld_bin)/w32bind $(proj_name).rex $@ $(tools_root)/os2ldr.exe
-        @rm -f $(proj_name).rex
+        $(bld_bin)\w32bind $(proj_name).rex $@ $(tools_root)\os2ldr.exe
+        erase $(proj_name).rex
 !endif
-!endif
-        wstrip -a -r -q $@ . $(proj_name)
+        wstrip /a /r /q $@ . $(proj_name)
 
 
 $(link_name) : $(__MAKEFILES__)
         @%write $^@ $(lflags)
         @%append  $^@ file { $(proj_obj) }
+!ifeq host_CPU 386
+        @%append $^@  lib $(wres_dir)\lib\wresf.lib
+!else ifeq host_CPU axp
+        @%append $^@  lib $(wres_dir)\lib\wresaxp.lib
+!endif
 !ifeq host_OS osi
         @%append  $^@ name $(proj_name).rex
 !else
@@ -160,50 +114,66 @@ $(link_name) : $(__MAKEFILES__)
 ###################################################################
 # resource stuff
 
-$(proj_name).res : $(proj_path)/h/$(proj_name).rc $(proj_path)/h/asmshare.msg $(proj_path)/h/$(proj_name).msg usage.rc usagej.rc msg.gh wasmmsg.gh
-        $(rc) -bt=windows -d_WASM_ -r -zk0 -fo=$^@ $[@
+$(proj_name).res : ../h/$(proj_name).rc ../h/asmshare.msg ../h/$(proj_name).msg usage.rc usagej.rc ../h/msg.gh ../h/wasmmsg.gh
+        $(RC) /bt=windows /d_WASM_ /r /zk0 /fo=$^@ ..\h\$(proj_name).rc
 
-usage.rc : $(proj_path)/h/usage.sp
-        wsplice -kIS_RC -kENGLISH -k$(host_OS) -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $< $^@
+usage.rc : ../h/usage.sp
+        $(bld_bin)\wsplice -kIS_RC -kENGLISH -k$(host_OS) -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" ../h/usage.sp usage.rc
 
-usagej.rc : $(proj_path)/h/usage.sp
-        wsplice -kIS_RC -kJAPANESE -k$(host_OS) -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" $< $^@
+usagej.rc : ../h/usage.sp
+        $(bld_bin)\wsplice -kIS_RC -kJAPANESE -k$(host_OS) -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" ../h/usage.sp usagej.rc
 
-usage.u : $(proj_path)/h/usage.sp
-        $(bld_bin)/wsplice -kENGLISH -k$(host_OS) -t8 -u $[@ $^@
+../h/msg.gh : ../h/asmshare.msg
+        @SET OLD_CWD=$+$(%cwd)$-
+        @cd ..\h
+        vi -d -i "-k:g!/^pick/d\n:w!t.msg\n:q!\n" asmshare.msg
+        vi -d -s makemsg.vi t.msg
+        del t.msg
+        @cd $(%OLD_CWD)
 
-usagej.u : $(proj_path)/h/usage.sp
-        $(bld_bin)/wsplice -kJAPANESE -k$(host_OS) -t8 -u $[@ $^@
+../h/wasmmsg.gh : ../h/$(proj_name).msg
+        @SET OLD_CWD=$+$(%cwd)$-
+        @cd ..\h
+        vi -q -d -i "-k:g!/^pick/d\n:w!t.msg\n:q!\n" $(proj_name).msg
+        vi -d -s makewmsg.vi t.msg
+        del t.msg
+        @cd $(%OLD_CWD)
 
-msg.gh : $(proj_path)/h/asmshare.msg
-!ifdef __LINUX__
-        perl $(sdk_dir)/misc/msgtoh.pl < $[@ | sed -e '/0$$/d' > $^@
-!else
-        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@" $[@
-!endif
+usage.u : ../h/usage.sp
+        $(bld_bin)\wsplice -kENGLISH -k$(host_OS) -t8 -u ../h/usage.sp usage.u
 
-wasmmsg.gh : $(proj_path)/h/$(proj_name).msg
-!ifdef __LINUX__
-        perl $(sdk_dir)/misc/msgtoh.pl < $[@ | &
-        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_WASM_RC_BASE/' > $^@
-!else
-        $(vi) -s $(proj_path)/h/makewmsg.vi -p"$^@" $[@
-!endif
+usagej.u : ../h/usage.sp
+        $(bld_bin)\wsplice -kJAPANESE -k$(host_OS) -t8 -u ../h/usage.sp usagej.u
 
 ###################################################################
 
-inlnops.gh: $(proj_path)/inlnops.tok ./mkopcode.exe
-        $]@ $(proj_path)/inlnops.tok $^@
+..\h\inlnops.h: ..\inlnops.tok ..\mkopcode.exe
+        ..\mkopcode ..\inlnops.tok $^@
 
-fullops.gh: $(proj_path)/fullops.tok $(proj_path)/inlnops.tok ./mkopcode.exe
-        $]@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $^@
+..\h\fullops.h: ..\fullops.tok ..\inlnops.tok ..\mkopcode.exe
+        ..\mkopcode ..\fullops.tok ..\inlnops.tok $^@
 
-wmpmsg.gh : $(womp_dir)/womp.msg
-!ifdef __LINUX__
-        perl $(sdk_dir)/misc/msgtoh.pl < $< | sed '/0$$/d' > $^@
-!else
-        $(vi) -s $(womp_dir)/h/makemsg.vi -p"$^@" $[@
-!endif
+..\mkopcode.exe: ..\mkopcode.c
+        $(bld_cl) $[@ /fe=$^@
+        del mkopcode.obj
 
-./mkopcode.exe: $(proj_path)/mkopcode.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+clean: .SYMBOLIC .EXPLICIT
+        @if exist *.?bj @del *.?bj
+        @if exist *.lnk @del *.lnk
+        @if exist *.exe @del *.exe
+        @if exist *.lib @del *.lib
+        @if exist *.rc  @del *.rc
+        @if exist *.res @del *.res
+        @if exist *.lst @del *.lst
+        @if exist *.err @del *.err
+        @if exist *.pch @del *.pch
+        @if exist *.map @del *.map
+        @if exist *.sym @del *.sym
+        @if exist *.tmp @del *.tmp
+        @if exist *.ilk @del *.ilk
+        @if exist *.gh  @del *.gh
+	@if exist ..\h\msg.gh @del ..\h\msg.gh
+	@if exist ..\h\wasmmsg.gh @del ..\h\wasmmsg.gh
+	@if exist ..\h\inlnops.h @del ..\h\inlnops.h
+	@if exist ..\h\fullops.h @del ..\h\fullops.h
+	@if exist ..\mkopcode.exe @del ..\mkopcode.exe

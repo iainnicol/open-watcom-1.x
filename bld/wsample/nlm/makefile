@@ -1,5 +1,4 @@
 #pmake: all build os_nov cpu_386
-host_cpu = 386
 
 !include cproj.mif
 
@@ -53,6 +52,7 @@ xname = wsample
     @%append tmp.lnk lib wresfs
     @%append tmp.lnk lib $(%devdir)\clib\library\nw_clib.386\ms_s\clibs.lib
     @%append tmp.lnk module clib
+
     wlink @tmp.lnk
     wstrip /q /a /r ..\bin\$(xname).nlm . $(xname).res
 
@@ -64,7 +64,7 @@ xname = wsample
     $(comp386) $[* $cflags
 
 .asm.obj: .AUTODEPEND
-    $(as) $[@ -5 -e -mf -we -fr=$^&.err
+    $(as_i86) $[@ -5 -e -mf -we -fr=$^&.err
 #    erase $^&.err
 
 #
@@ -75,7 +75,7 @@ xname = wsample
 #
 
 $(xname).res : ..\h\wsample.rc ..\h\wmsg.h .AUTODEPEND
-        wrc /zk0 /r /dNLM /bt=windows /fo=$^. ..\h\wsample.rc
+        wrc /zk0 /r /dNLM /bt=windows /ad /fo=$^. ..\h\wsample.rc
 
 clean : .symbolic
     @rm -f *.obj *.res *.lnk *.map *.err

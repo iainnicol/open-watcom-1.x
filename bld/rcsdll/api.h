@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  SCM interface definitions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -51,7 +52,7 @@ extern "C" {
     typedef const char *rcsstring;
     typedef void *rcsdata;
     #define RCSAPI
-#elif defined( __UNIX__ )
+#elif defined( __QNX__ )
     typedef const char *rcsstring;
     typedef void *rcsdata;
     #define RCSAPI

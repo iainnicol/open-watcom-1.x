@@ -32,7 +32,7 @@
 
 #include "cover.h"
 
-BOOL PASCAL _Cover_EnumWindows( WNDENUMPROC p, LPARAM param )
+BOOL PASCAL _Cover_EnumWindows( FARPROC p, DWORD param )
 {
     return( EnumWindows( SetProc( p, GETPROC_ENUMWINDOWS ), param ) );
 }

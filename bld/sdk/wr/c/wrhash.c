@@ -50,7 +50,7 @@
 #include "wrfindt.h"
 #include "wrctl3d.h"
 #include "wrlist.h"
-#include "wrcmsg.gh"
+#include "wrcmsg.h"
 #include "wrhash.h"
 #include "editsym.h"
 #include "addsym.h"

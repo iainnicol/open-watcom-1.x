@@ -137,7 +137,7 @@ mad_imp_routines        MadImpInterface = {
 #include <windows.h>
 #include <i86.h>
 
-#pragma aux (pascal) MADLOAD
+#pragma aux (pascal) MADLOAD export
 
 typedef void (DIGENTRY INTER_FUNC)();
 
@@ -210,7 +210,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst,
 #error MADIMP.C not configured for system
 #endif
 
-#if defined(__DOS__) || defined(__LINUX__)
+#if defined(__DOS__) || defined(__QNX__)
     const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
 #endif
 

@@ -29,7 +29,7 @@ disasm = $(build_root)\wdisasm\vid\ofw
 .EXTENSIONS: .asm .c .h
 
 dip_os = nt
-!include $(dip_dir)/client.mif
+!include $(dip_dir)\client.mif
 
 objs = global.obj param.obj procctl.obj dipcli.obj memory.obj&
         drwatcom.obj drproc.obj handler.obj sym.obj memview.obj&
@@ -59,7 +59,7 @@ $(name).exe : $(msgh) $(objs) $(lnk) $(name).res
         $(RC) -k $(name).res
 
 $(msgh) : $(mastermsg)
-        $(vi) -s ../../misc/msgtoh.vi -p"$(msgh)" $(mastermsg)
+        vi -i -q "-k :source ..\\\\..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
         del obj\*.obj
 
 $(mastermsg) : $(msgfiles)

@@ -14,10 +14,13 @@
 
 name = wacc
 
-sys_object =    wmain.obj winfo.obj wacc.obj whndl.obj &
-                whints.obj wstat.obj &
-                wtoolbar.obj wribbon.obj wedit.obj &
-                wvk2str.obj wdel.obj wnewitem.obj &
-                wkey.obj wsvobj.obj wacc2rc.obj
+sys_object =    wmain.sbj winfo.sbj wacc.sbj whndl.sbj &
+                whints.sbj wstat.sbj &
+                wtoolbar.sbj wribbon.sbj wedit.sbj &
+                wvk2str.sbj wdel.sbj wnewitem.sbj &
+                wkey.sbj wsvobj.sbj wacc2rc.sbj
 
-!include ../../mif/master.mif
+!include ..\..\mif\master.mif
+
+$(name).res: $(name).rc rename.dlg w_rc.h sys_rc.h wmsgfile.h &
+             accedit.dlg accabout.dlg acckey.dlg wacc.men

@@ -41,7 +41,7 @@
 #include "madsys.h"
 #include "drwatcom.h"
 
-#include "rcstr.gh"
+#include "rcstr.h"
 
 #undef wdpick
 #define wdpick( r, e, j ) r,(char *)__##r,

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implemenation of utime().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,13 +33,13 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stddef.h>
-#include <sys/types.h>
+#include <sys\types.h>
 #include <time.h>
 #include <dos.h>
 #include "dosfunc.h"
-#include <sys/stat.h>
+#include <sys\stat.h>
 #include <errno.h>
-#include <sys/utime.h>
+#include <sys\utime.h>
 #include "rtdata.h"
 #include "seterrno.h"
 #ifdef __WIDECHAR__

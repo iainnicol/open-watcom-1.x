@@ -53,7 +53,7 @@
 #include "ctl3d.h"
 #include "win1632.h"
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.h"
 #ifndef __NT__
 #include "toolhelp.h"
 #endif

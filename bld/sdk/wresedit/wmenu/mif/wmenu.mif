@@ -14,10 +14,13 @@
 
 name = wmenu
 
-sys_object =    wmain.obj w_menu.obj winfo.obj whndl.obj &
-                whints.obj wstat.obj  &
-                wtoolbar.obj wribbon.obj wedit.obj &
-                wdel.obj wnewitem.obj &
-                wsvobj.obj wprev.obj wmen2rc.obj
+sys_object =    wmain.sbj w_menu.sbj winfo.sbj whndl.sbj &
+                whints.sbj wstat.sbj  &
+                wtoolbar.sbj wribbon.sbj wedit.sbj &
+                wdel.sbj wnewitem.sbj &
+                wsvobj.sbj wprev.sbj wmen2rc.sbj
 
-!include ../../mif/master.mif
+!include ..\..\mif\master.mif
+
+$(name).res: $(name).rc rename.dlg w_rc.h sys_rc.h wmsgfile.h &
+             wmenu.men menabout.dlg menedit.dlg

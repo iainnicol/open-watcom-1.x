@@ -7,13 +7,13 @@ all : $(objfiles) $(libname).lib .symbolic
 $(libname).lib : $(objs) $(libs) .precious
     $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ $(objs) $(libs)
 !ifeq linkage dynamic
-    $(vi) -s $(lib_misc_dir)/vi/export.vi tmp.def
-    cat ../../../export.$(processor) tmp.def > tmp2.def
+    vi -q -s $(lib_misc_dir)\vi\export.vi tmp.def
+    cat ..\..\..\export.$(processor) tmp.def > tmp2.def
     sort < tmp2.def > tmp3.def
     uniq tmp3.def > export.def
-    @rm -f tmp.def
-    @rm -f tmp2.def
-    @rm -f tmp3.def
+    @erase tmp.def
+    @erase tmp2.def
+    @erase tmp3.def
 !endif
 !ifdef runtime_library_source
     if exist 386sqrt.obj $(librarian) $(lib_flags) $^@ -+386sqrt.obj
@@ -22,18 +22,18 @@ $(libname).lib : $(objs) $(libs) .precious
     wtouch compile.tim
 
 .cpp.obj :
-    *$(cpp) $[@ -i"$(include_c_path)" $(build_target) $(cpp_flags)
+    *$(cpp) $[@ $(include_c_path) $(build_target) $(cpp_flags)
 
 .c.obj :
-    *$(cc) $[@ -i"$(include_c_path)" $(build_target) $($^&_flags) $(c_flags)
+    *$(cc) $[@ $(include_c_path) $(build_target) $($^&_flags) $(c_flags)
 
 .asm.obj :
     *$(as) $[@ $(include_a_path) $(build_target) $($^&_flags) $(a_flags)
 
-.c   : ../../../c
-.cpp : ../../../cpp
-.asm : ../../../a;$(emu286)/asm;$(emu386)/asm
+.c   : ..\..\..\c
+.cpp : ..\..\..\cpp
+.asm : ..\..\..\a;$(emu286)\asm;$(emu386)\asm
 
-!include $(mathlib_dir)/clean.mif
-!include $(mathlib_dir)/updlib.mif
-!include $(mathlib_dir)/project.mif
+!include $(mathlib_dir)\clean.mif
+!include $(mathlib_dir)\updlib.mif
+!include $(mathlib_dir)\project.mif

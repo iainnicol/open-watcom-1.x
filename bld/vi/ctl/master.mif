@@ -1,7 +1,10 @@
 proj_name = vi
-
 name = vi
 
+.extensions:
+.extensions: .exe .obj .h .c .mif
+
+.mif: $(mif_path)
 !include cproj.mif
 !include defrule.mif
 
@@ -29,12 +32,12 @@ all: parsectl.exe parsedyn.exe
 .c: ..
 
 parsectl.exe : parsectl.obj
-        $(linker) $(lflags) name $^@ op map file { $< }
-        @cp $^. $(bld_bin)
+        wlink $(lflags) name $^@ op map,quiet file { $< }
+        @copy $^. $(bld_bin)
 
 parsedyn.exe : parsedyn.obj
-        $(linker) $(lflags) name $^@ op map file { $< }
-        @cp $^. $(bld_bin)
+        wlink $(lflags) name $^@ op map,quiet file { $< }
+        @copy $^. $(bld_bin)
 
 clean: .SYMBOLIC .EXPLICIT
         @if exist *.?bj @del *.?bj

@@ -268,7 +268,6 @@ extern  void    ScratchObj() {
 /****************************/
 
     AbortObj = TRUE;
-    CloseObj();
 }
 
 static void FlushBuffers( handle h )

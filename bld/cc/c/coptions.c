@@ -265,10 +265,6 @@ local void SetTargSystem()                               /* 07-aug-90 */
     {
         TargSys = TS_QNX;
     }
-    else if( strcmp( SwData.sys_name, "OS2" ) == 0 )
-    {
-        TargSys = TS_OS2;
-    }
     else
     {
         TargSys = TS_OTHER;
@@ -1102,6 +1098,7 @@ void Set_ZE()           { CompFlags.extensions_enabled = 1; }
 void Set_ZG()           { CompFlags.generate_prototypes = 1; }
 
 void Set_ZI()           { CompFlags.extra_stats_wanted = 1; }
+#ifdef __WATCOMC__
 void Set_ZKU()
 {
     CompFlags.use_unicode = 1;
@@ -1133,12 +1130,13 @@ void Set_ZK3()
     CompFlags.use_unicode = 0;          /* 24-mar-00 */
     SetDBChar( 3 );                     /* set double-byte char type */
 }
-#if _OS != _LINUX
+#if _OS != __LINUX__
 void Set_ZKL()
 {
     CompFlags.use_unicode = 0;          /* 05-jun-91 */
     SetDBChar( -1 );                   /* set double-byte char type to defualt */
 }
+#endif
 #endif
 void Set_ZL()                   { CompFlags.emit_library_with_main = 0; }
 void Set_ZLF()                  { CompFlags.emit_library_any  = 1; }
@@ -1464,7 +1462,7 @@ struct option const CFE_Options[] = {
     { "zk1",    0,              Set_ZK1 },
     { "zk2",    0,              Set_ZK2 },
     { "zk3",    0,              Set_ZK3 },
-#if _OS != _LINUX
+#if _OS != __LINUX__
     { "zkl",    0,              Set_ZKL },
 #endif
     { "zku*",   0,              Set_ZKU },
@@ -1759,7 +1757,6 @@ static void InitCPUModInfo()
     CodeClassName = NULL;
     PCH_FileName  = NULL;
     TargetSwitches = 0;
-    TargSys = TS_OTHER;
 #if _MACHINE == _ALPHA | _MACHINE == _PPC | _MACHINE == _SPARC
     TextSegName   = ".text";
     DataSegName   = ".data";
@@ -1772,6 +1769,7 @@ static void InitCPUModInfo()
     TextSegName   = "";
     DataSegName   = "";
     GenCodeGroup  = "";
+    TargSys = TS_OTHER;
     CompFlags.register_conv_set = 0;
     CompFlags.register_conventions = 1;
     GenSwitches = MEMORY_LOW_FAILS;

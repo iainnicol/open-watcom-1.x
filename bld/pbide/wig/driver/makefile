@@ -23,7 +23,7 @@ $(name).lib: ..\owindll\$(name).dll
         wtouch $^@
         rm $^@
         wlib $^@ +$[@
-        cp $[@
+        copy $[@
 
 $(dlnk) : makefile
         %create $(dlnk)

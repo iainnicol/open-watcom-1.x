@@ -50,7 +50,7 @@
 #include "wde_wres.h"
 #include "wdefutil.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.gh"
+#include "wdemsgs.h"
 #include "wdewait.h"
 #include "wdegoto.h"
 #include "wdectl3d.h"

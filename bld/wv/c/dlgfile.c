@@ -62,14 +62,14 @@ extern bool             KillProgOvlay(void);
 extern char             *TxtBuff;
 extern input_stack      *InpStack;
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
   #define ALLFILES      "All Files\0*\0"
 #else
   #define ALLFILES      "All Files\0*.*\0"
 #endif
 
 static char *SourceFilter = {
-#if defined(__UNIX__)
+#if defined(__QNX__)
     "C/C++ Files (*.c *.C *.cpp *.cc *.h *.hpp)\0*.c;*.C;*.cpp;*.cc;*.h;*.hpp\0"
 #else
     "C/C++ Files (*.c *.cpp *.cc *.h *.hpp)\0*.c;*.cpp;*.cc;*.h;*.hpp\0"
@@ -86,20 +86,20 @@ static char *ConfigFilter = {
 
 
 static char *ExeFilter = {
-#if !defined(__UNIX__)
+#if !defined(__QNX__)
     "EXE Files (*.exe *exp *.com)\0*.exe;*.exp;*.com\0"
 #endif
     ALLFILES
 };
 
 static char *SymFilter = {
-#if defined(__UNIX__)
+#if defined(__QNX__)
     ALLFILES
 #else
     "EXE Files (*.exe *exp *.com *.dll)\0*.exe;*.exp;*.com;*.dll\0"
 #endif
     "SYM Files (*.sym)\0*.sym\0"
-#if !defined(__UNIX__)
+#if !defined(__QNX__)
     ALLFILES
 #endif
 };

@@ -44,7 +44,7 @@
 #include "wrmsg.h"
 #include "wresall.h"
 #include "wrinfo.h"
-#include "wrcmsg.gh"
+#include "wrcmsg.h"
 #include "wrdata.h"
 #include "wrdatai.h"
 

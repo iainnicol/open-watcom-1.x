@@ -68,4 +68,4 @@ global: .symbolic
     -rm -f *.err *.exe *.obj *.lib *.lnk *.wlb *.map
 
 reference : .symbolic msgencod.exe
-    cp msgencod.exe ../bin
+    copy msgencod.exe ..\bin

@@ -1,5 +1,5 @@
-LIBRARY OS2SM
 EXPORTS
+LIBRARY OS2SM
     WININITSESSIONMGR                           @1
     WINSETFGNDWINDOW                            @2
     SHLUNLOADPUBLICFONTS                        @3

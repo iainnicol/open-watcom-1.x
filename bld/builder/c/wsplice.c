@@ -74,12 +74,17 @@
 #include <ctype.h>
 #include <limits.h>
 #include <sys/stat.h>
-#ifdef __UNIX__
+#ifdef __QNX__
 #include <utime.h>
 #else
 #include <sys/utime.h>
 #endif
-#include "watcom.h"
+#ifndef _MAX_PATH2
+#define _MAX_PATH2 PATH_MAX+4
+#endif
+#ifdef __USE_BSD
+#define stricmp strcasecmp
+#endif
 
 //#define local static
 #define local
@@ -174,9 +179,6 @@ local unsigned RecordInitialize(); // - initialize for record processing
 local void OutputString();      // - send string to output file
 local void PutNL();             // - output a newline
 local void AddIncludePathList();// - add to list of include paths
-local void ProcessRecord(int,char *); // - PROCESS A RECORD OF INPUT
-local void EatWhite(void);      // - eat white space
-local int Expr(void);
 
                                 // DATA (READ ONLY)
 
@@ -246,7 +248,7 @@ enum                            // PROCESSING MODES
 
 
 int main(                  // MAIN-LINE
-    int arg_count,          // - # arguments
+    unsigned arg_count,     // - # arguments
     char *param[] )         // - arguments list
 {
 #define src_file param[ count ]         // - name of source file
@@ -256,8 +258,8 @@ int main(                  // MAIN-LINE
     SEGMENT *seg;           // - segment structure
     struct utimbuf      dest_time;
     struct stat         src_time;
-    char                *src = NULL;
-    char                *tgt = NULL;
+    char                *src;
+    char                *tgt;
 
     ErrCount = 0;
     if( arg_count < 3 ) {
@@ -492,7 +494,7 @@ local void OutputString( char *p, char *record )
 
 local void PutNL()
 {
-#if !defined( __UNIX__ )
+#if !defined( __QNX__ )
     if( !UnixStyle ) fputc( '\r', OutputFile );
 #endif
     fputc( '\n', OutputFile );
@@ -659,11 +661,7 @@ local void AddIncludePathList(  // ADD TO PATH LIST
         Error( "Unable to allocate %d bytes for path list entry: %s", size, path );
     } else {
         memcpy( lptr->path, path, size + 1 );
-#ifdef __UNIX__
-        lptr->path[size] = '/';
-#else
         lptr->path[size] = '\\';
-#endif
         lptr->path[size+1] = 0;
         lptr->next = NULL;
         p = IncPathList;

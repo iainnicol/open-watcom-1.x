@@ -120,7 +120,7 @@ extern const char FAR * SuffixList;
 extern const char FAR * MSSuffixList;
 extern const char FAR * MSBuiltIn;
 
-extern int ExitSafe( int rc );
+extern void ExitSafe( int rc );
 extern void Header( void );
 
 #endif

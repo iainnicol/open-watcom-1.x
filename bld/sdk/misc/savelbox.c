@@ -46,7 +46,7 @@
 #include "ctl3d.h"
 #endif
 #include "ldstr.h"
-#include "rcstr.gh"
+#include "rcstr.h"
 
 /*
  * writeListBoxContents

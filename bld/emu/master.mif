@@ -4,13 +4,8 @@ proj_name = emu
 !include deftarg.mif
 !include defrule.mif
 
-!ifndef emu_autodepends
-emu_autodepends = .AUTODEPEND
-!endif
-
-.ERASE
-
-.EXTENSIONS: .psm
+.EXTENSIONS:
+.EXTENSIONS: .exp .lib .pl3 .obj .qbj .asm .psm .c .inc
 
 INCS = &
  386flda.inc 386fldc.inc 386fldm.inc 386fldd.inc 386ldi4.inc &
@@ -21,41 +16,51 @@ INCS = &
  consts.inc fpubits.inc fpucc.inc memops.inc stkops.inc &
  tagtab.inc tentab.inc xception.inc
 
-.inc : ../inc
-.c : ../../emu86/c
-.psm : ../asm
-.asm : ../asm
+.inc : ..\inc
+.c : ..\..\emu86\c
+.psm : ..\asm
+.asm : ..\asm
 
-extra_a_flags = -i"$(mathlib_dir)/h;$(emu386)/inc"
-extra_a_flags_dos = -d_OS=_PLDT -dSEGMENTED
-extra_a_flags_qnx = -d_OS=_QNX -dSEGMENTED
-extra_a_flags_win = -mf -d_OS=_PLDT -d__WIN387__
-extra_c_flags_qnx = -oais-s-w3 -i"$(new_qnx_h)" -dQNX32
+cflags = -oais -s -zq -w3
+
+as_flags = -zq -i$(mathlib_dir)\h -bt=$(host_OS) $[@
+
+.psm.obj:
+    $(as) -mf $(as_flags) -i$(watcom_dir)\h\;$(comp_cfg_dir)\h
 
 !ifeq host_OS dos
 
+extra_as_flags = /d_OS=_PLDT
+
 emu387.lib: emu387.obj 386inite.obj
-    $(librarian) -s -t -n -b $@ +emu387.obj +386inite.obj
+    $(librarian) /q /s /t /n /b $@ +emu387.obj +386inite.obj
 
 !else ifeq host_OS qnx
 
-emu387: qnxemu87.obj emu387.obj fpeqnx.obj
-    $(linker) $(lflags) name $^@ file { $< } opt priv=0,map,long,quiet,res=../../emu86/emu87.u
+extra_as_flags = /d_OS=_QNX
+
+.c.obj:
+    $(libcomp386) -r-fpr $[* $(cflags) -i$(new_qnx_h) -DQNX32 -bt=qnx
+
+objs = qnxemu87.obj emu387.obj fpeqnx.obj
+
+emu387: $(objs)
+    $(linker) $(lflags) name $^@ file { $(objs) } opt priv=0,map,long,quiet,res=..\..\emu86\emu87.u
 
 !else ifeq host_OS win
 
-INCS += win30vxd.inc
+emu387w.obj: emu387.asm $(INCS) win30vxd.inc
+    $(as) -mf -d_OS=_PLDT -d__WIN387__ -I$(mathlib_dir)\h;$(emu386)\inc -fo=$^@ $[@
 
 !else
 
 emu387.lib: 386stub.obj
-    $(librarian) -s -t -n -b $@ +386stub.obj
+    $(librarian) /q /s /t /n /b $@ +386stub.obj
 
 !endif
 
-.psm.obj: .AUTODEPEND
-    $(as) $(aflags) $(extra_a_flags_$[&) $[@ -fo=$@ -mf -i"$(watcom_dir)/h/;$(comp_cfg_dir)/h"
+386sqrt.obj: 386sqrt.psm 386sqrt.inc 386fdld.inc 386ldfd.inc xception.inc
 
-emu387.obj: emu387.asm .AUTODEPEND
-    $(as) $(aflags) $(extra_a_flags_$[&) $[@
+emu387.obj: ..\asm\emu387.asm $(INCS)
+    $(as) $(as_flags) $(extra_as_flags) /dSEGMENTED /I$(emu386)\inc
     wtouch compile.tim

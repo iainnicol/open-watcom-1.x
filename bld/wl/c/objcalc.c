@@ -454,7 +454,7 @@ extern void CalcAddresses( void )
             }
             flat = ROUND_UP( flat + size, FmtData.objalign );
         }
-        if( FmtData.type & (MK_QNX_FLAT|MK_PE|MK_ELF) ) {
+        if( FmtData.type & (MK_QNX_FLAT|MK_PE) ) {
             ReallocFileSegs();
         }
     } else if( FmtData.type & MK_QNX ) {

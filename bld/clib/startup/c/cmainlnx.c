@@ -40,6 +40,8 @@
 #include "rtdata.h"
 #include "syslinux.h"
 
+_WCRTLINK char ** _WCNEAR environ;  /* pointer to environment table */
+char    * _WCNEAR __env_mask;
 int     _argc;                      /* argument count  */
 char    **_argv;                    /* argument vector */
 
@@ -55,11 +57,12 @@ extern int main( int, char **, char ** );
 void __cdecl _LinuxMain(int argc, char **argv, char **arge)
 {
 //    thread_data *tdata;
+    char **argep = arge;
 
-    // Initialise the heap. To do this we call sbrk() with
+    // Initialise the heap. To do this we call sys_brk() with
     // a value of 0, which will return the current top of the
     // process address space which is where we start the heap.
-    _curbrk             = (unsigned)sbrk(0);
+    _curbrk             = sys_brk(0);
 
     // TODO: Need to find the end of the stack from the kernel! For now
     //       we make it big enough to cover the heap. This will work, but
@@ -68,6 +71,9 @@ void __cdecl _LinuxMain(int argc, char **argv, char **arge)
     _argc               = argc;
     _argv               = argv;
     environ             = arge;
+    while ( *argep != NULL )
+        argep++;
+    __env_mask = (char *) argep;
     __FPE_handler =     &__null_FPE_rtn;
     __InitRtns( 1 );
 //    tdata = __alloca( __ThreadDataSize );
@@ -77,3 +83,10 @@ void __cdecl _LinuxMain(int argc, char **argv, char **arge)
     _amblksiz = 8 * 1024;       /* set minimum memory block allocation  */
     exit(main(argc,argv,arge));
 }
+
+_WCRTLINK void __exit(unsigned ret_code)
+{
+    __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+    sys_exit(ret_code);
+}
+

@@ -37,10 +37,6 @@
 #include <signal.h>
 #include <unistd.h>
 
-#ifndef __WATCOMC__
-#include "clibext.h"
-#endif
-
 #include "mtypes.h"
 
 //
@@ -201,6 +197,7 @@ extern int OSCorrupted( void );
 extern RET_T TouchFile( const char *name );
 extern autodep_ret_t SysOBJAutoDep( char *, time_t, BOOLEAN (*)(time_t,time_t), time_t*);
 extern BOOLEAN IdenticalAutoDepTimes( time_t, time_t );
+extern time_t SysDOSStampToTime( unsigned short date, unsigned short time );
 extern void InitHardErr( void );
 extern DLL_CMD* OSFindDLL( char const *cmd_name );
 extern void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name );

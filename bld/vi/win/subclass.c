@@ -37,7 +37,7 @@
 proc_entry  *procHead;
 proc_entry  *procTail;
 
-void SubclassGenericAdd( HWND hwnd, WNDPROC proc )
+void SubclassGenericAdd( HWND hwnd, LPVOID proc )
 {
     proc_entry *newProc;
 

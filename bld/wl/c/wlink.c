@@ -116,18 +116,11 @@ extern int RunLinker( char *cmd )
 
 #elif _LINKER == _WLINK                 // it's the standalone linker
 
-#ifndef __WATCOMC__
-char **_argv;
-#endif
-
 extern int main( int argc, char ** argv )
 /***************************************/
 {
     argc = argc;        /* to avoid a warning */
     argv = argv;
-#ifndef __WATCOMC__
-    _argv = argv;
-#endif
     InitSubSystems();
     LinkMainLine( NULL );
     FiniSubSystems();
@@ -189,6 +182,7 @@ extern void ResetSubSystems( void )
     ResetMsg();
     VirtMemInit();
     ResetMisc();
+    ResetSym();
     Root = NewSection();
     ResetDBI();
     ResetMapIO();
@@ -377,9 +371,6 @@ static void ResetMisc( void )
     OvlFName = NULL;
     CurrMod = NULL;
     StackSize = 0x1000;
-    // set case sensitivity for symbols
-    ResetSym();
-    SetSymCase();
 }
 
 static void DoDefaultSystem( void )

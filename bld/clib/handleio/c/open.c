@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of open() and sopen().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -38,7 +39,7 @@
 #include <errno.h>
 #include <io.h>
 #include <fcntl.h>
-#include <sys/stat.h>
+#include <sys\stat.h>
 #include <share.h>
 #include "dos.h"
 #include "dosfunc.h"

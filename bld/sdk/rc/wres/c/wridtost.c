@@ -29,12 +29,13 @@
 *
 ****************************************************************************/
 
+
 #include <stdlib.h>
 #include <string.h>
 #include "wresrtns.h"
 #include "util.h"
 #include "reserr.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
+#if defined( UNIX )
 #include "clibext.h"
 #endif
 

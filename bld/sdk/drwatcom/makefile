@@ -22,7 +22,7 @@ disasm = $(build_root)\wdisasm\vid\olw
 .EXTENSIONS: .asm .c .h .dlg
 
 dip_os = win
-!include $(dip_dir)/client.mif
+!include $(dip_dir)\client.mif
 
 objs =  drwatcom.obj fault.obj globals.obj &
         notify.obj winproc.obj debug.obj dump.obj disasm.obj &
@@ -40,7 +40,7 @@ $(name).exe : $(msgh) $(objs) $(lnk) $(name).res
 
 .ERASE
 $(msgh) : $(mastermsg)
-        $(vi) -s $(sdk_misc)/msgtoh.vi -p"$(msgh)" $(mastermsg)
+        vi -i -q "-k :source ..\\\\misc\\\\msgtoh.vi $(msgh)\n" $(mastermsg)
         del obj\*.obj
 
 $(mastermsg) : $(msgfiles)

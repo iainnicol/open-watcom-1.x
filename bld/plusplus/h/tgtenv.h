@@ -24,14 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Get appropriate language environment for target.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #ifndef __TGTENV_H__
 
-#include "langenvd.h"
+// GET APPROPRIATE LANGUAGE ENVIRONMENT FOR TARGET
+//
+
+#include "LangEnvD.h"
 
 #if _INTEL_CPU
 

@@ -46,7 +46,7 @@
 #include "wmain.h"
 #include "weditsym.h"
 #include "wsvobj.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 #include "wmen2rc.h"
 
 /****************************************************************************/

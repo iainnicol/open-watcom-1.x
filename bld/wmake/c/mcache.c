@@ -48,7 +48,6 @@
 #include "mpathgrp.h"
 #include "mrcmsg.h"
 #include "msg.h"
-#include "autodept.h"
 
 
 #if defined( __DOS__ ) || defined( __OS2__ ) || defined( __WINDOWS__ ) || defined( __NT__ )
@@ -129,6 +128,16 @@ STATIC DHEADPTR cacheHead;
 #   define  myFree(ptr)         FreeSafe(ptr)
 #   define  myCmp(f,n)          FNameCmp(f,n)
 #endif
+
+
+/*
+ * convert a Dos packed date/time to a time_t
+ */
+STATIC time_t d2t( DOSDATE_T date, DOSDATE_T time )
+/*************************************************/
+{
+    return( SysDOSStampToTime( date, time ) );
+}
 
 
 STATIC void freeDirectList( DHEADPTR dhead )
@@ -418,7 +427,7 @@ STATIC RET_T regStat( const char *filename, time_t *ptime )
 
     assert( entry != NULL );
 
-    *ptime = _DOSStampToTime( entry->d_date, entry->d_time );
+    *ptime = d2t( entry->d_date, entry->d_time );
 
     closedir( parent );
 
@@ -519,7 +528,7 @@ extern RET_T CacheTime( const char *fullpath, time_t *ptime )
 #endif
         switch( maybeCache( fullpath, &centry ) ) {
         case CACHE_OK:
-            *ptime = _DOSStampToTime( centry->ce_date, centry->ce_time );
+            *ptime = d2t( centry->ce_date, centry->ce_time );
             return( RET_SUCCESS );
         case CACHE_NOT_ENUF_MEM:
             break;

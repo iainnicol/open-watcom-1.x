@@ -38,9 +38,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/wait.h>
 #include <sys/time.h>
-#include <sys/times.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/ptrace.h>
@@ -79,13 +77,7 @@ long sys_open(const char * filename, int flags, int mode)
 int sys_getdents(u_int fd, struct dirent *dirp, u_int count)
 {
     u_long res = sys_call3(SYS_getdents, fd, (u_long)dirp, count);
-    __syscall_return(int,res);
-}
-
-long sys_socketcall(int call, u_long *args)
-{
-    u_long res = sys_call2(SYS_socketcall, call, (u_long)args);
-    __syscall_return(long, res);
+    __syscall_return(int,res);    
 }
 
 _WCRTLINK char *getcwd( char *__buf, size_t __size )
@@ -134,7 +126,7 @@ _WCRTLINK int unlink( const char *filename )
 
 _WCRTLINK time_t time( time_t *t )
 {
-    u_long res = sys_call1(SYS_time, (u_long)t);
+    u_long res = sys_call1(SYS_time, (u_long)time);
     __syscall_return(int,res);
 }
 
@@ -218,7 +210,7 @@ _WCRTLINK int nice( int __val )
 
 _WCRTLINK int select( int __width, fd_set * __readfds, fd_set * __writefds, fd_set * __exceptfds, struct timeval * __timeout )
 {
-    u_long res = sys_call5(SYS__newselect, __width, (u_long)__readfds, (u_long)__writefds, (u_long)__exceptfds, (u_long)__timeout);
+    u_long res = sys_call5(SYS_select, __width, (u_long)__readfds, (u_long)__writefds, (u_long)__exceptfds, (u_long)__timeout);
     __syscall_return(int,res);
 }
 
@@ -275,31 +267,16 @@ _WCRTLINK int execve( const char *__path, const char *const __argv[],
 _WCRTLINK int sigaction(int __signum, const struct sigaction *__act,
                             struct sigaction *__oldact)
 {
-    /* given the sigaction layout we must use rt_sigaction
-       this requires Linux kernel 2.2 or higher (probably not
-       a big deal nowadays) */
-    u_long res = sys_call4(SYS_rt_sigaction, __signum, (u_long)__act,
-                           (u_long)__oldact, sizeof( sigset_t ) );
+    u_long res = sys_call3(SYS_sigaction, __signum, (u_long)__act,
+                           (u_long)__oldact);
     __syscall_return(int,res);
 }
 
-_WCRTLINK int sigprocmask(int __how, const sigset_t *__set, sigset_t *__oldset)
-{
-    u_long res = sys_call3(SYS_sigprocmask, __how, (u_long)__set,
-                           (u_long)__oldset);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK pid_t waitpid(pid_t __pid, __WAIT_STATUS __stat_loc, int __options)
+_WCRTLINK pid_t waitpid (pid_t __pid, int *__stat_loc, int __options)
 {
     u_long res = sys_call3(SYS_waitpid, __pid, (u_long)__stat_loc,
                            (u_long)__options);
     __syscall_return(pid_t,res);
-}
-
-_WCRTLINK pid_t wait(__WAIT_STATUS __stat_loc)
-{
-    return waitpid( -1, __stat_loc, 0 );
 }
 
 _WCRTLINK int pipe( int __fildes[2] )
@@ -310,145 +287,19 @@ _WCRTLINK int pipe( int __fildes[2] )
 
 _WCRTLINK int rename( const char *__old, const char *__new )
 {
-    u_long res = sys_call2(SYS_rename, (u_long)__old, (u_long)__new);
+    int res = sys_call2(SYS_rename, (u_long)__old, (u_long)__new);
     __syscall_return(int,res);
 }
-
+    
 _WCRTLINK int truncate( const char *__path, off_t __length )
 {
-    u_long res = sys_call2(SYS_truncate, (u_long)__path, __length);
+    int res = sys_call2(SYS_truncate, (u_long)__path, __length);
     __syscall_return(int,res);
 }
 
 _WCRTLINK int ftruncate( int __fd, off_t __length )
 {
-    u_long res = sys_call2(SYS_ftruncate, __fd, __length);
+        int res = sys_call2(SYS_ftruncate, __fd, __length);
     __syscall_return(int,res);
 }
-
-_WCRTLINK int chmod( const char *__path, mode_t __mode )
-{
-    u_long res = sys_call2(SYS_chmod, (u_long)__path, __mode);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int fchmod( int __fd, mode_t __mode )
-{
-    u_long res = sys_call2(SYS_fchmod, __fd, __mode);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK pid_t getpid( void )
-{
-    u_long res = sys_call0(SYS_getpid);
-    __syscall_return(pid_t,res);
-}
-
-_WCRTLINK pid_t getppid( void )
-{
-    u_long res = sys_call0(SYS_getppid);
-    __syscall_return(pid_t,res);
-}
-
-_WCRTLINK int dup( int __oldfd )
-{
-    u_long res = sys_call1(SYS_dup, __oldfd);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int dup2( int __oldfd, int __newfd )
-{
-    u_long res = sys_call2(SYS_dup2, __oldfd, __newfd);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int kill( pid_t __pid, int __sig )
-{
-    u_long res = sys_call2(SYS_kill, __pid, __sig);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int nanosleep( const struct timespec *__rqtp,
-                         struct timespec *__rmtp )
-{
-    u_long res = sys_call2( SYS_nanosleep, (u_long)__rqtp, (u_long)__rmtp );
-    __syscall_return(int,res);
-}
-
-_WCRTLINK clock_t times( struct tms *__buf )
-{
-    u_long res = sys_call1( SYS_times, (u_long)__buf );
-    __syscall_return(clock_t,res);
-}
-
-_WCRTLINK pid_t  getpgrp( void )
-{
-    u_long res = sys_call0(SYS_getpgrp);
-    __syscall_return(pid_t,res);
-}
-
-_WCRTLINK gid_t  getgid( void )
-{
-    u_long res = sys_call0(SYS_getgid);
-    __syscall_return(gid_t,res);
-}
-
-_WCRTLINK gid_t  getegid( void )
-{
-    u_long res = sys_call0(SYS_getegid);
-    __syscall_return(gid_t,res);
-}
-
-_WCRTLINK uid_t  getuid( void )
-{
-    u_long res = sys_call0(SYS_getuid);
-    __syscall_return(uid_t,res);
-}
-
-_WCRTLINK uid_t  geteuid( void )
-{
-    u_long res = sys_call0(SYS_geteuid);
-    __syscall_return(uid_t,res);
-}
-
-_WCRTLINK int    setegid( gid_t __newegroup )
-{
-    u_long res = sys_call2(SYS_setregid, -1, __newegroup);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int    seteuid( uid_t __neweuserid )
-{
-    u_long res = sys_call2(SYS_setreuid, -1, __neweuserid);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int    setgid( gid_t __newgroup )
-{
-    u_long res = sys_call1(SYS_setgid, __newgroup);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int    setpgid( pid_t __pid, pid_t __pgroupid )
-{
-    u_long res = sys_call2(SYS_setpgid, __pid, __pgroupid);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int    setregid(gid_t real, uid_t effective)
-{
-    u_long res = sys_call2(SYS_setregid, real, effective);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int    setreuid(uid_t real, uid_t effective)
-{
-    u_long res = sys_call2(SYS_setreuid, real, effective);
-    __syscall_return(int,res);
-}
-
-_WCRTLINK int    setuid( uid_t __newuserid )
-{
-    u_long res = sys_call1(SYS_setuid, __newuserid);
-    __syscall_return(int,res);
-}
+        

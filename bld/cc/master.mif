@@ -1,8 +1,8 @@
 .continue
 .erase
 
-.EXTENSIONS:
-.EXTENSIONS:  .exe .exp .lib .obj .cpp .c .asm .h .gh .mif
+.extensions:
+.extensions: .qnx .exe .exp .obj .cbj .c .asm .h .gh .mif
 
 .mif: $(mif_path)
 
@@ -10,20 +10,12 @@ proj_name = cc
 
 !include cproj.mif
 !include deftarg.mif
-!include defrule.mif
-
 !include mlibs.mif
 !include binname.mif
 
 # CODEGEN stuff
-!include $(cg_dir)/mif/fe.mif
-!include $(cg_dir)/mif/hostos.mif
-
-!ifdef bootstrap
-cg_inc_dirs = -I$(cfloat_dir)/h -I$(watcom_dir)/h -I$(owl_dir)/h &
-  -I$(cg_dir)/h -I$(cg_dir)/intel/h -I$(cg_dir)/intel/$(target_CPU)/h
-!endif
-
+!include $(cg_dir)\mif\fe.mif
+!include $(cg_dir)\mif\hostos.mif
 
 !ifndef cc_version
 cc_version      = tree
@@ -33,54 +25,44 @@ cc_version      = tree
 patch_level=0
 !endif
 
-extra_c_flags_386= -3r -fpc
+extra_c_flags_386= -3r -fpc -zc
 
 !ifeq cg_dll 1
 extra_c_flags = -D_CGDLL
 !endif
 
-defines_tree    = -DNEWCFE
+defines_tree    = -dNEWCFE
 
-defines = $(defines_$(cc_version)) -Dlocal=static
+defines = $(defines_$(cc_version)) -dlocal=static
 # international data files
 intname = wcc$(target_cpu)
 
-!ifndef bootstrap
 !ifeq release 1
 opts_cscan_386  = -5r
-extra_c_flags_cscan = $(opts_cscan_$(host_cpu))
+extra_opts_cscan = $(opts_cscan_$(host_cpu)) -oaxt
 !endif
-!endif
-extra_c_flags_cgen386 = -DBY_C_FRONT_END
-extra_c_flags_idedll  = -bd
-!ifdef __LINUX__
-extra_c_flags_intlload = -D__header=\"fesupp.h\"
-!else
-extra_c_flags_intlload = -D__header="fesupp.h"
-!endif
-extra_c_flags_cmsg = -D__target_CPU=$(intname)
-opts_cdata_nt = -DLARGEST_QUAD_INDEX=500
-opts_cdata_os2 = -DLARGEST_QUAD_INDEX=500
-extra_c_flag_cdata = $(opts_cdata_$(host_OS))
+extra_opts_cgen386 = -dBY_C_FRONT_END
+extra_opts_idedll  = -bd
+extra_opts_intlload = -d__header="fesupp.h"
+extra_opts_cmsg = -d__target_CPU=$(intname)
 
 # WASM stuff
 !ifeq target_cpu axp
 inline_asm_dir = $(as_dir)
-inline_asm_h = $(as_dir)/alpha/h;$(as_dir)/h;$(owl_dir)/h
+inline_asm_h = $(as_dir)\alpha\h;$(as_dir)\h;$(owl_dir)\h
 !else
 !ifeq target_cpu ppc
 inline_asm_dir = $(as_dir)
-inline_asm_h = $(as_dir)/ppc/h;$(as_dir)/h;$(owl_dir)/h
+inline_asm_h = $(as_dir)\ppc\h;$(as_dir)\h;$(owl_dir)\h
 !else
-!include $(wasm_dir)/mif/inline.mif
+!include $(wasm_dir)\mif\inline.mif
 inline_asm_dir = $(wasm_dir)
-inline_asm_h = $(wasm_dir)/h
-pre_deps_wasm = inlnops.gh
+inline_asm_h = $(wasm_dir)\h
 !endif
 !endif
 
 #dwarf stuff
-!include $(dwarf_dir)/dw/client.mif
+!include $(dwarf_dir)\dw\client.mif
 dwarf_deps = $(dwarf_dw_dep)
 dwarf_lib  = $(dwarf_dw_lib)
 
@@ -90,22 +72,23 @@ cdrv_objs = cdrvdll.obj
 
 #host dependant goop
 pre_deps_qnx = wcc.u
-pre_deps_osi = $(tools_root)/os2ldr.exe
+pre_deps_osi = $(tools_root)\os2ldr.exe
 
 # other goofy stuff
-pre_obj_deps = $(pre_deps_wasm) $(pre_deps_$(host_os)) code$(target_cpu).gh &
-        usage.gh msgtxt.gh msgdefs.gh msgattr.gh weights.gh keywords.gh
+pre_obj_deps = $(pre_deps_$(host_os)) $(cc_dir)\h\code$(target_cpu).gh usage.gh msgtxt.gh msgdefs.gh msgattr.gh
 
 pre_obj_deps += $(intname)01.int
-
 #
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
 #
-extra_l_flags_qnx= option stack=16k,offset=24k, res=wcc.u, priv=3
-extra_l_flags_nt = option stack=1024k commit stack=32k
-extra_l_flags_dos = option stack=32k
+extra_l_flags_qnx= OPTION stack=16k,offset=24k, res=wcc.u, priv=3
+extra_l_flags_nt = OPTION stack=1024k COMMIT stack=32k
+extra_l_flags_dos = OPTION stack=32k
 
-extra_l_flags = option map
+extra_l_flags = OPTION map, caseexact, quiet
+
+# options for single source utility compilations
+wcl_util_opts = -ox-zq
 
 # final executable extensions for the various hosts
 final_exe_dos   = exe
@@ -126,50 +109,36 @@ wlink_opt_nt_axp_dll    = sys ntaxp_dll
 as_lib_ppc      = 1
 as_lib_axp      = 1
 
-xname = $(bin_dir)/wcc$(target_cpu)c.$(final_exe_$(host_os))
-dxname = $(bin_dir)/wcc$(target_cpu)d.$(final_exe_$(host_os))
-dllexet = $(bin_dir)/wcc$(target_cpu)t
-dllexe = $(bin_dir)/wcc$(target_cpu)e
-dllname = $(bin_dir)/wccd$(target_cpu)e
-cxname = $(bin_dir)/wcc$(target_cpu)s.$(final_exe_$(host_os))
+xname = $(bin_dir)\wcc$(target_cpu)c.$(final_exe_$(host_os))
+dxname = $(bin_dir)\wcc$(target_cpu)d.$(final_exe_$(host_os))
+dllexet = $(bin_dir)\wcc$(target_cpu)t
+dllexe = $(bin_dir)\wcc$(target_cpu)e
+dllname = $(bin_dir)\wccd$(target_cpu)e
+cxname = $(bin_dir)\wcc$(target_cpu)s.$(final_exe_$(host_os))
 
 # systems where version resources must be added to .DLL
 build_rc_nt_386 = nt
 
-!ifdef bootstrap
-inc_dirs = -I. -I../h
-inc_dirs += -I$(cc_dir)/h $(cg_inc_dirs)
-inc_dirs += -I$(inline_asm_h)
-inc_dirs += -I$(dwarf_dir)/dw/h
-inc_dirs += -I$(comp_cfg_dir)/h
-inc_dirs += -I$(fe_misc_dir)/h
-
-ldflags = -L$(clib_dir)/$(%OBJDIR) -L$(wres_dir)/$(%OBJDIR) 
-libs = $(dwarf_dir)/dw/$(%OBJDIR)/dwf.lib -lwatcom -lwres
-
-!else
-
-inc_dirs =.;
-inc_dirs +=$(cc_dir)/h;$(cg_inc_dirs);
+inc_dirs =
+inc_dirs +=$(cc_dir)\h;$(cg_inc_dirs);
 inc_dirs +=$(inline_asm_h);
-inc_dirs +=$(dwarf_dir)/dw/h;
-inc_dirs +=$(comp_cfg_dir)/h;
-inc_dirs +=$(fe_misc_dir)/h
-
-!endif
+inc_dirs +=$(dwarf_dir)\dw\h;
+inc_dirs +=$(comp_cfg_dir)\h;
+inc_dirs +=$(fe_misc_dir)\h;
 
 .BEFORE
         @set INCLUDE=$(inc_path)
 
-.c: $(cc_dir)/c;$(inline_asm_dir)/c;$(watcom_dir)/c;$(fe_misc_dir)/c
-.h: $(cc_dir)/h;$(inline_asm_h);$(watcom_dir)/h
-.gh: $(cc_dir)/h
+.c: $(cc_dir)\c;$(inline_asm_dir)\c;$(watcom_dir)\c;$(fe_misc_dir)\c
+.h: $(cc_dir)\h;$(inline_asm_h);$(watcom_dir)\h
+.gh: $(cc_dir)\h
 
-extra_c_flags += $(defines)
+.c.obj:
+        $(cc) $(cflags) $(defines) $(extra_opts_$[&) $[*
 
-!ifdef bootstrap
-def_targ = wcc$(target_CPU)
-!endif
+.c.cbj:
+        $(cc) $(cflags) $(defines) $(extra_opt_$[&) -fo=.cbj -dLARGEST_QUAD_INDEX=500 $[*
+
 !ifndef def_targ
 !ifdef on_build_machine
 def_targ_os2    = $(dllexe).exe
@@ -189,44 +158,35 @@ target: $(def_targ) .SYMBOLIC
         @%null
 
 # Our stuff
-!include $(cc_dir)/deps.mif
-!include $(cc_dir)/ccobjs.mif
+!include $(cc_dir)\deps.mif
+!include $(cc_dir)\ccobjs.mif
 
-!ifdef bootstrap
-xname = wcc$(target_cpu)
-dwarf_deps =
-!endif
-
-$(xname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_deps) $(cc_dir)/ccobjs.mif
-!ifdef bootstrap
-	$(cc) $(ldflags) -o $@ $(cc_objs) $(libs) $(cg_deps)
-!else
+$(xname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_deps) $(cc_dir)\ccobjs.mif
         @%make linkfile
         @%append $^&.lnk $(cg_libs)
         $(linker) $(lflags) @$^&.lnk
 !ifeq   host_os osi
-        $(bld_bin)/w32bind $^&.rex $^&.exe $(bld_bin)/os2ldr.exe
-        rm -f $^&.rex
+        $(bld_bin)\w32bind $^&.rex $^&.exe $(bld_bin)\os2ldr.exe
+        erase $^&.rex
 !endif
 !ifeq   host_os qnx
 !ifdef  on_build_machine
         serialize $(xname) wcc
 !endif
 !endif
-!endif
 
-$(dxname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_debug_deps) $(cc_dir)/ccobjs.mif
+$(dxname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_debug_deps) $(cc_dir)\ccobjs.mif
         @%make linkfile
         @%append $^&.lnk $(cg_debug_libs)
         $(linker) $(lflags) @$^&.lnk
 
-$(cxname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_stub_deps) $(cc_dir)/ccobjs.mif
+$(cxname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_stub_deps) $(cc_dir)\ccobjs.mif
         @%make linkfile
         @%append $^&.lnk $(cg_stub_libs)
         $(linker) $(lflags) @$^&.lnk
 !ifeq   host_os osi
-        $(bld_bin)/w32bind $^&.rex $^&.exe $(tools_root)/os2ldr.exe
-        rm -f $^&.rex
+        $(bld_bin)\w32bind $^&.rex $^&.exe $(tools_root)\os2ldr.exe
+        erase $^&.rex
 !endif
 !ifeq   host_os qnx
 !ifdef  on_build_machine
@@ -234,17 +194,13 @@ $(cxname): eraseall.obj $(pre_obj_deps) $(cc_objs) $(dwarf_deps) $(cg_stub_deps)
 !endif
 !endif
 
-!ifdef build_rc_$(host_os)_$(host_cpu)
-rc_objs = cc.rc
-!endif
-
 #
 # Note this is just hammered in cause I don't know what
 # I'm doing
 #
-$(dllname).dll : $(pre_obj_deps) $(rc_objs) $(dll_objs) $(dwarf_deps) $(cg_debug_deps) $(cc_dir)/ccobjs.mif
-        @if exist $^&.lnk @rm -f $^&.lnk
-        @%write $^&.lnk name $@
+$(dllname).dll : $(pre_obj_deps) $(dll_objs) $(dwarf_deps) $(cg_debug_deps) $(cc_dir)\ccobjs.mif
+        @if exist $^&.lnk @erase $^&.lnk
+        @%write $^&.lnk name $^@
         @%append $^&.lnk OP map
         @%append $^&.lnk OP caseexact
         @%append $^&.lnk OP SYMFILE
@@ -263,23 +219,26 @@ $(dllname).dll : $(pre_obj_deps) $(rc_objs) $(dll_objs) $(dwarf_deps) $(cg_debug
 !endif
         $(linker) $(ldebug_$(host_cpu))  @$^&.lnk
 !ifdef build_rc_$(host_os)_$(host_cpu)
+        $(bld_cl) $(fe_misc_dir)\c\genverrc.c $(wcl_util_opts) -d_VERSION=$(bld_ver)
+        genverrc ..\rc\r_$(host_os)$(host_cpu).rc cc.rc $$ $^@ $(patch_level)
+        del genverrc.*
         $(rc) -q -bt=$(build_rc_$(host_os)_$(host_cpu)) cc.rc $^@
 !endif
 
 $(dllname).lib : $(dllname).dll
-    @if exist $(dllname).lib @rm -f $(dllname).lib
+    @if exist $(dllname).lib @erase $(dllname).lib
     $(librarian) -n -c $(dllname).lib +$(dllname).dll
 
 $(dllexet).exe : $(cdrv_objs) $(dllname).lib
-        @if exist $^&.lnk @rm -f $^&.lnk
-        @%write $^&.lnk name $@
+        @if exist $^&.lnk @erase $^&.lnk
+        @%write $^&.lnk name $^@
         @for %i in ( $(cdrv_objs) ) do @%append $^&.lnk file %i
         @%append $^&.lnk lib $(dllname).lib
         $(linker) $(lflags) @$^&.lnk
 
 $(dllexe).exe : $(dlldrv_obj) $(dllname).lib
-        @if exist $^&.lnk @rm -f $^&.lnk
-        @%write $^&.lnk name $@
+        @if exist $^&.lnk @erase $^&.lnk
+        @%write $^&.lnk name $^@
         @for %i in ( $(dlldrv_obj) ) do @%append $^&.lnk file %i
         @%append $^&.lnk lib $(dllname).lib
         $(linker) $(lflags)  @$^&.lnk
@@ -288,95 +247,73 @@ $(dllexe).exe : $(dlldrv_obj) $(dllname).lib
 #
 
 linkfile: .procedure
-        @if exist $^&.lnk @rm -f $^&.lnk
-        @%write $^&.lnk name $@
+        @if exist $^&.lnk @erase $^&.lnk
+        @%write $^&.lnk name $^*
         @%append $^&.lnk $(wlink_opt_$(host_os))
         @%append $^&.lnk $(wlink_opt_common)
         @for %i in ( $(cc_objs) ) do @%append $^&.lnk file %i
-#       @for %i in ( $(cg_objs) ) do @%append $^&.lnk file $(o_dir)/%i
-#       @for %i in ( $($(host_os)_objs) ) do @%append $^&.lnk file $(o_dir)/%i
-#       @for %i in ( $(mem_objs) ) do @%append $^&.lnk file $(o_dir)/%i
+#       @for %i in ( $(cg_objs) ) do @%append $^&.lnk file $(o_dir)\%i
+#       @for %i in ( $($(host_os)_objs) ) do @%append $^&.lnk file $(o_dir)\%i
+#       @for %i in ( $(mem_objs) ) do @%append $^&.lnk file $(o_dir)\%i
         @%append $^&.lnk lib $(dwarf_lib)
 !ifdef as_lib_$(target_cpu)
         @%append $^&.lnk lib $(asinline_axp_lib)
 !endif
-
-!ifeq target_cpu axp
-
-codeaxp.gh :
-        echo // Dummy file > $@
-
-!else ifeq target_cpu ppc
-
-codeppc.gh :
-        echo // Dummy file > $@
-
-!else  # Intel i86 or 386
-
-code$(target_cpu).gh : xcode$(target_cpu).tmp ./mkcode.exe
-        $]@ $[@ $^@
+$(cc_dir)\h\codei86.gh : ..\a\codei86.asm ..\a\mkcode.c
+        wasm -i=$(watcom_dir)\h ..\a\codei86.asm
+        wcc -zq -ox ..\a\mkcode.c @ipaths
+!ifdef __OS2__
+        wcl -l=os2 mkcode.obj codei86.obj -fe=mkcode -zq
+!else
+        wcl  mkcode.obj codei86.obj -fe=mkcode -zq
 !endif
+        mkcode
+        erase mkcode.obj
+        erase mkcode.exe
+        erase codei86.obj
 
-xcode$(target_cpu).tmp: ../a/code$(target_cpu).asm
-        $(as) $(aflags) $(extra_a_flags_$[&) $[@
-        $(linker) format dos com op nodefault file code$(target_cpu).obj name $^@ disable 1023,1080
+$(cc_dir)\h\code386.gh : ..\a\code386.asm ..\a\mkcode.c
+        wasm -i=$(watcom_dir)\h ..\a\code386.asm
+        wcc386 -zq $(popt) -ox ..\a\mkcode.c @ipaths
+        wcl386 mkcode.obj code386.obj -fe=mkcode -zq
+        mkcode
+        erase mkcode.obj
+        erase mkcode.exe
+        erase code386.obj
 
-./mkcode.exe: ../a/mkcode.c
-        $(bld_cl) $[@ $(wcl_util_opts)
+$(cc_dir)\h\codeaxp.gh :
+        echo // Dummy file > $@
+
+$(cc_dir)\h\codeppc.gh :
+        echo // Dummy file > $@
 
 usage.gh: ../usage.sp
-        wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os)  "-f\"%s\0\"" ../usage.sp usage.gh
+        $(bld_bin)\wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os)  "-f\"%s\0\"" ../usage.sp usage.gh
 
-wcc.u: ../usage.sp msgencod.exe intlbin.exe
-        wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) -u -t8 ../usage.sp wcc.u
-
-./usageenc.exe: $(fe_misc_dir)/c/usageenc.c ../jusage.sp
+wcc.u: ../usage.sp
+        $(bld_bin)\wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) -u -t8 ../usage.sp wcc.u
+usage01.int : $(fe_misc_dir)\c\usageenc.c ../jusage.sp
+        $(bld_bin)\wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) ../jusage.sp usageenc.in
         $(bld_cl) $[@ $(wcl_util_opts)
+        usageenc.exe usageenc.in usage01.int
+        del usageenc.*
+msgtxt.gh msgdefs.gh msgattr.gh errors01.int : $(fe_misc_dir)\c\msgencod.c ..\gml\cerrs.gml
+    $(bld_cl) $[@ $(wcl_util_opts)
+    msgencod.exe -i -ip -q -g ..\gml\cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
+    del msgencod.*
+$(intname)01.int : $(fe_misc_dir)\c\intlbin.c errors01.int usage01.int
+    $(bld_cl) $[@ $(wcl_util_opts)
+    intlbin.exe $(intname)
+    del intlbin.*
 
-usage01.int : ./usageenc.exe ../jusage.sp
-        wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) ../jusage.sp usageenc.int
-        $[@ usageenc.int usage01.int
-
-./msgencod.exe: $(fe_misc_dir)/c/msgencod.c
-        $(bld_cl) $[@ $(wcl_util_opts)
-
-msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ./msgencod.exe ../gml/cerrs.gml
-        $[@ -i -ip -q -g ../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
-
-./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-        $(bld_cl) $[@ $(wcl_util_opts)
-
-$(intname)01.int : ./intlbin.exe errors01.int usage01.int
-        $[@ $(intname)
-
-./genverrc.exe: $(fe_misc_dir)/c/genverrc.c
-        $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
-
-cc.rc : ./genverrc.exe ../rc/r_$(host_os)$(host_cpu).rc
-        $[@ ../rc/r_$(host_os)$(host_cpu).rc cc.rc $$ $(dllname).dll $(patch_level)
-
-./mkopcode.exe: $(wasm_dir)/mkopcode.c
-        $(bld_cl) $[@ $(wcl_util_opts)
-
-inlnops.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
-        $[@ $(wasm_dir)/inlnops.tok $^@
-
-key_objs = ../h/c.key ../h/pc.key ../h/seh.key ../h/dummy.key
-
-./findhash.exe : ../../fe_misc/c/findhash.c
-        $(bld_cl) $[@ $(wcl_util_opts)
-
-weights.gh keywords.gh : ./findhash.exe $(key_objs)
-        $[@ -q $(key_objs)
-
-eraseall.obj : ../compile.gbl
-        rm -f *.?bj
-        wtouch eraseall.obj
+eraseall.obj : ..\compile.gbl
+    if exist *.?bj erase *.?bj
+    wtouch eraseall.obj
 
 bin_dir_nt      = binnt
 bin_dir_os2     = binp
 bin_dir_dos     = binw
 
 install: $(dxname) .SYMBOLIC .EXPLICIT
-        cp $(dxname) $(%watcom)/$(bin_dir_$(host_os))/wcc$(target_cpu).exe
+        cp $(dxname) $(%watcom)\$(bin_dir_$(host_os))\wcc$(target_cpu).exe
 wccexed: $(dxname) .SYMBOLIC .EXPLICIT

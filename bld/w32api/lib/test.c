@@ -67,7 +67,6 @@
 #include <setupapi.h>
 #include <aclapi.h>
 #include <security.h>
-#include <secext.h>
 #include <schnlsp.h>
 #include <shlwapi.h>
 

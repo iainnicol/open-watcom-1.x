@@ -42,7 +42,7 @@
 #include "wrfindt.h"
 #include "wrmem.h"
 #include "wrmsg.h"
-#include "wrcmsg.gh"
+#include "wrcmsg.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

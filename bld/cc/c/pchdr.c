@@ -32,7 +32,6 @@
 
 #include "cvars.h"
 #include "pragdefn.h"
-#include "autodept.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -50,7 +49,7 @@
 #ifndef O_BINARY
     #define O_BINARY  0
 #endif
-#if defined(SH_DENYWR) && !defined(SOPEN_DEFINED)
+#ifdef SH_DENYWR
     #define sopen4 sopen
 #else
     #define sopen4(a,b,c,d) open((a),(b),(d))
@@ -972,8 +971,7 @@ static int VerifyIncludes()
             }
         }
         if( flist->rwflag ){
-            mtime = _getFilenameTimeStamp( flist->name );
-            if( flist->mtime != mtime || mtime == 0 ){
+            if( (SrcFileTime( flist->name, &mtime ) != 0 ) || flist->mtime != mtime ){
                 PCHNote( PCHDR_INCFILE_CHANGED, flist->name  );
           #if 0
                 printf( "%s old %d new %d\n",flist->name, flist->mtime, mtime );

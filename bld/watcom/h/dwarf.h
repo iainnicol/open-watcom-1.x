@@ -35,6 +35,10 @@
 
 #pragma pack(push, 1)
 
+#ifndef __WATCOMC__
+#define _WCUNALIGNED
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #include "wreglbl.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "wremsgs.h"
 #include "statwnd.h"
 #include "wreribbn.h"
 #include "wrestat.h"

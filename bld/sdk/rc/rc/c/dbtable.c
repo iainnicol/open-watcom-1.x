@@ -29,18 +29,18 @@
 *
 ****************************************************************************/
 
+
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
-#include "rctypes.h"
+#include "types.h"
 #include "dbtable.h"
 #include "rcmem.h"
-#include <fcntl.h>
-#include <unistd.h>
+#include "fcntl.h"
+#include "io.h"
 #include "write.h"
 #include "iortns.h"
-
-#if defined(__UNIX__) && !defined(__WATCOMC__)
+#ifdef UNIX
     #include "clibext.h"
 #endif
 
@@ -130,9 +130,7 @@ RcStatus OpenTable( char *fname, char *path ) {
     RcStatus    status;
 
     status = RS_OK;
-#ifndef __UNIX__
     _searchenv( fname, "PATH", path );
-#endif
     if( path[0] == '\0' ) return( RS_FILE_NOT_FOUND );
     fp = RcOpen( path, O_RDONLY | O_BINARY );
     if( fp == -1 ) {

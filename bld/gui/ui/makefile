@@ -4,12 +4,12 @@ proj_name = gui
 
 type=ui
 !ifndef axp
-xflags=-of
+xflags=/of
 !endif
 !ifeqi os nt
-plat_inc +=$(watcom_h);$(%watcom)/h/nt;
+plat_inc +=$(watcom_h);$(%watcom)\h\nt;
 !else
-plat_inc +=$(watcom_h);$(%watcom)/h/win;
+plat_inc +=$(watcom_h);$(%watcom)\h\win;
 !endif
 
 wv_sysobjs = &
@@ -92,7 +92,7 @@ wv_sysobjs = &
           guiclen.obj &
 
 help_objext=obj
-!include $(help_dir)/help.mif
+!include $(help_dir)\help.mif
 
 wv_sysobjs += $(help_objs)
 
@@ -109,9 +109,9 @@ sys_hooks = &
 
 sysobjs = $(wv_sysobjs) $(sys_hooks) $(sys_dep_objs)
 
-sysinclude +=;$(ui_dir)/h;$(watcom_dir)/h;$(sdk_dir)/rc/wres/h
+sysinclude +=;$(ui_dir)\h;$(watcom_dir)\h;$(sdk_dir)\rc\wres\h
 
-!include ../../makefile
+!include ..\..\makefile
 
 guikey.obj :    guikey.c
            $(compile)
@@ -120,6 +120,6 @@ guixdraw.obj    : guixdraw.c guimin.h guidraw.h
 guixloop.obj    : guixloop.c guimin.h
 guixutil.obj    : guixutil.c guimin.h
 guisize.obj     : guisize.c guimin.h
-guixmain.obj    : guixmain.c $(guidir)/h/guix.h
-guixmdi.obj     : guixmdi.c $(guidir)/h/guix.h
+guixmain.obj    : guixmain.c $(guidir)\h\guix.h
+guixmdi.obj     : guixmdi.c $(guidir)\h\guix.h
 
