@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#if defined(__UNIX__)
+#if defined(__QNX__)
  #include <utime.h>
 #else
  #include <sys/utime.h>

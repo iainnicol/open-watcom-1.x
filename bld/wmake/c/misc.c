@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
  #include <dirent.h>
 #else
  #include <direct.h>
@@ -45,7 +45,7 @@
 #include "mpathgrp.h"
 #include "mtypes.h"
 
-#if ! defined(__UNIX__)
+#if ! defined(__QNX__)
  #define CHECK_MASK( attr ) if((attr & IGNORE_MASK)==0) break
 #endif
 

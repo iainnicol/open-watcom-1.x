@@ -36,8 +36,8 @@ J("Usage:  wclaxp [options] file(s)")
 E("Usage:  wcl386 [options] file(s)")
 J("Usage:  wcl386 [options] file(s)")
 #else
-E("Usage:  wcl [options] file(s)")
-J("Usage:  wcl [options] file(s)")
+E("Usage:  wcc [options] file(s)")
+J("Usage:  wcc [options] file(s)")
 #endif
 E("Options:  ( /option is also accepted )")
 J("Options:  ( /option is also accepted )")
