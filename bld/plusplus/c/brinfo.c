@@ -607,7 +607,7 @@ static void brinfIcDclSym       // PUT OUT A SYMBOL DECLARATION
 }
 
 
-static void typeUsage           // TYPE USAGE
+static typeUsage                // TYPE USAGE
     ( TYPE type                 // - the type
     , TOKEN_LOCN* locn )        // - reference location
 {

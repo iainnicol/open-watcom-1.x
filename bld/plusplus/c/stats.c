@@ -214,7 +214,7 @@ static REPO_STAT* reposStat     // GET REPOSITORY STATISTICS FOR SRCFILE
 }
 
 
-static void reportOnType        // SET UP TYPE REFERENCE
+static reportOnType             // SET UP TYPE REFERENCE
     ( SRCFILE curr              // - current source file
     , TYPE type                 // - a type
     , SYMBOL sym )              // - symbol for type
@@ -239,7 +239,7 @@ static void reportOnType        // SET UP TYPE REFERENCE
 }
 
 
-static void extraRptTypeUsage   // TYPE USAGE
+static extraRptTypeUsage        // TYPE USAGE
     ( TYPE type )               // - the type
 {
     SRCFILE current = SrcFileCurrent();
