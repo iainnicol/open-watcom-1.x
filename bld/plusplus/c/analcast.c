@@ -205,6 +205,7 @@ static PTREE stripOffCast       // STRIP CAST NODES
             ctl->expr = right;
         }
         PTreeFree( old->u.subtree[0] );
+        old->u.subtree[0] = NULL;
         PTreeFree( old );
     }
     return ctl->expr;
@@ -778,6 +779,7 @@ static boolean castCtor         // APPLY CTOR
                     ctl->conv_fun = NULL;
                     inp_node = NodeRvalue( inp_node->u.subtree[1] );
                     PTreeFree( ctl->expr->u.subtree[1] );
+                    ctl->expr->u.subtree[1] = NULL;
                     node = NodeCopyClassObject( temp, inp_node );
                 } else {
                     temp = NodeArg( temp );
@@ -811,6 +813,7 @@ static boolean castCtor         // APPLY CTOR
             } else {
                 inp_node = inp_node->u.subtree[1];
                 PTreeFree( ctl->expr->u.subtree[1] );
+                ctl->expr->u.subtree[1] = NULL;
                 node = CopyOptimize( src_node
                                    , inp_node
                                    , temp
@@ -3002,6 +3005,7 @@ static PTREE commonCastEx       // EXPLICIT CAST FOR COMMON
         if( NodeIsBinaryOp( expr, CO_CONVERT )
          && final_type == NodeType( expr->u.subtree[1] ) ) {
             PTreeFree( expr->u.subtree[0] );
+            expr->u.subtree[0] = NULL;
             retn = expr->u.subtree[1];
             PTreeFree( expr );
         } else {
