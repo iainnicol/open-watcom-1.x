@@ -268,7 +268,8 @@ void KwEnable(                  // ENABLE A KEYWORD TOKEN FROM T_ID
 ;
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     char *name,                 // - macro name
-    unsigned value )            // - value for special macro
+    unsigned value,             // - value for special macro
+    unsigned flags )            // - macro flags
 ;
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro

@@ -87,11 +87,10 @@ typedef struct special_macro_name SPECIAL_MACRO_NAME;
 static struct special_macro_name {
     char        *name;
     int         value;
+    unsigned    flags;
 } SpcMacros[] = {
-#define pick( s, i )    { s, i },
+#define pick( s, i, f )    { s, i, f },
 #include "specmac.h"
-    // Ugly code to support alternate spellings for MACRO_FUNCTION
-    { "__func__", MACRO_FUNCTION },
     { NULL, 0 }
 };
 
@@ -121,10 +120,7 @@ static void macroInit(          // MACRO PROCESSING -- INITIALIZATION
     InitialMacroFlag = MACRO_DEFINED_BEFORE_FIRST_INCLUDE;
     MacroStorageInit();
     for( mac = SpcMacros; mac->name != NULL; ++mac ) {
-        macptr = MacroSpecialAdd( mac->name, mac->value );
-        if( mac->value == MACRO_FUNCTION ) {
-            MacroCanBeRedefined( macptr );
-        }
+        macptr = MacroSpecialAdd( mac->name, mac->value, mac->flags );
     }
     TimeInit();     /* grab time and date for __TIME__ and __DATE__ */
     carveNESTED_MACRO = CarveCreate( sizeof( NESTED_MACRO ), 16 );
@@ -340,16 +336,19 @@ static int file_name_copy(       // COPY STRING, ESCAPING ANY BACKSLASHES
 
 #define _FUNCTION_expandable    (CompFlags.cpp_output == 0)
 
-static int genFUNCTION( void )
+static int genFUNCTION(
+    int spec_macro )
 {
     SYMBOL sym;
     size_t len;
     VBUF buff;
     char *name;
 
+    DbgAssert( ( spec_macro == MACRO_FUNCTION )
+             || ( spec_macro == MACRO_FUNC ) );
+
     if( ! _FUNCTION_expandable ) {
-        DbgAssert( SpcMacros[ MACRO_FUNCTION ].value == MACRO_FUNCTION );
-        name = SpcMacros[ MACRO_FUNCTION ].name;
+        name = SpcMacros[ spec_macro ].name;
         len = strlen( name );
         memcpy( Buffer, name, len + 1 );
         TokenLen = len;
@@ -392,7 +391,8 @@ int SpecialMacro(               // EXECUTE A SPECIAL MACRO
         TokenLen = stpcpy( Buffer, __Time ) - Buffer + 1;
         return( T_STRING );
     case MACRO_FUNCTION:
-        return( genFUNCTION() );
+    case MACRO_FUNC:
+        return( genFUNCTION( fmentry->parm_count ) );
     case MACRO_CPLUSPLUS:
         Buffer[0] = '1';
         Buffer[1] = '\0';
@@ -704,7 +704,8 @@ static int isExpandable( MEPTR curr_mac, MACRO_TOKEN *mtok, int macro_parm )
     int lparen;
 
     if( curr_mac->macro_defn == 0 ) {  /* if special macro */
-        if( curr_mac->parm_count == MACRO_FUNCTION ) {
+        if( ( curr_mac->parm_count == MACRO_FUNCTION )
+          || ( curr_mac->parm_count == MACRO_FUNCTION ) ) {
             if( ! _FUNCTION_expandable ) {
                 return( 0 );
             }
