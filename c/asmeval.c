@@ -1193,7 +1193,7 @@ static int fix_parant( void )
     TakeOut[store] = -1;        // Mark the end
     return( NOT_ERROR );
 }
-
+#if 0
 static int ConvMemType( memtype x )
 {
     switch( x ) {
@@ -1229,7 +1229,7 @@ static int ConvMemType( memtype x )
         return( EMPTY );
     }
 }
-
+#endif
 static int fix( expr_list *res, int start, int end )
 /* Convert the result in res into tokens and put them back in AsmBuffer[] */
 {
@@ -1274,8 +1274,10 @@ static int fix( expr_list *res, int start, int end )
 
         if( res->instr != EMPTY ) {
             size++;
+#if 0
         } else if( res->mbr != NULL && ConvMemType( res->mbr->mem_type ) != EMPTY ) {
             size += 2;
+#endif
         }
 
         if( res->type != EXPR_REG ) {
@@ -1336,11 +1338,13 @@ static int fix( expr_list *res, int start, int end )
         if( res->instr != EMPTY ) {
             AsmBuffer[start]->token = T_UNARY_OPERATOR;
             AsmBuffer[start++]->value = Store[res->instr-old_start].value;
+#if 0
         } else if( res->mbr != NULL && ConvMemType( res->mbr->mem_type ) != EMPTY ) {
             AsmBuffer[start]->token = T_RES_ID;
             AsmBuffer[start++]->value = ConvMemType( res->mbr->mem_type );
             AsmBuffer[start]->token = T_RES_ID;
             AsmBuffer[start++]->value = T_PTR;
+#endif
         }
 
         if( res->override != EMPTY ) {
