@@ -40,11 +40,8 @@
 #include "namecod.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
-
-extern  bool            ReqName(int);
-extern  bool            RecComma(void);
-extern  bool            ReqEOS(void);
 extern  sym_id          LkSym(void);
 extern  void            AdvanceITPtr(void);
 extern  int             IFLookUp(void);

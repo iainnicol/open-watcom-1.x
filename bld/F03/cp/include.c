@@ -40,11 +40,11 @@
 #include "errcod.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
+
 
 extern  void            Include(char *);
 extern  void            ComRead(void);
-extern  bool            RecLiteral(void);
-extern  bool            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
 extern  char            *MkNodeStr(itnode *);
 extern  void            FrNodeStr(char *);

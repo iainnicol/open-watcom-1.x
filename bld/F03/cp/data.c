@@ -41,25 +41,12 @@
 #include "segsw.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 #include <ctype.h>
 #include <string.h>
 
-extern  bool            RecDiv(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecEOS(void);
-extern  bool            RecOpenParen(void);
-extern  bool            RecCloseParen(void);
-extern  bool            RecCat(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecComma(void);
-extern  bool            RecName(void);
-extern  bool            RecTrmOpr(void);
-extern  bool            RecNumber(void);
-extern  bool            ReqComma(void);
-extern  bool            ReqName(int);
-extern  bool            ReqDiv(void);
-extern  bool            ReqNOpn(void);
+
 extern  label_id        GDataProlog(void);
 extern  void            GBegDList(void);
 extern  void            GDataItem(itnode *);

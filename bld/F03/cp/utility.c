@@ -46,12 +46,10 @@
 #include "frl.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
-extern  bool            RecNOpn(void);
-extern  bool            RecCloseParen(void);
-extern  bool            RecMin(void);
 extern  void            GetConst(void);
 extern  void            GetIntConst(void);
 extern  void            EatExpr(void);

@@ -45,21 +45,9 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
-extern  bool            RecComma(void);
-extern  bool            ReqComma(void);
-extern  bool            ReqEquSign(void);
-extern  bool            RecOpenParen(void);
-extern  bool            RecCloseParen(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecTrmOpr(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecNumber(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecIntVar(void);
-extern  bool            RecArrName(void);
-extern  bool            RecName(void);
-extern  bool            RecEOS(void);
+
 extern  bool            ClassIs(unsigned_16);
 extern  int             RecIOKW(void);
 extern  void            BoolExpr(void);

@@ -43,10 +43,10 @@
 #include "cpopt.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  label_id        NextLabel(void);
 extern  void            GStmtLabel(sym_id);
-extern  bool            RecNumber(void);
 extern  sym_id          STStmtNo(unsigned_32);
 extern  unsigned_32     GetStmtNum(sym_id);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);

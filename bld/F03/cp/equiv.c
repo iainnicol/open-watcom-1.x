@@ -43,20 +43,10 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
-extern  bool            ReqNOpn(void);
-extern  bool            RecNOpn(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            RecOpenParen(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqName(int);
-extern  bool            RecColon(void);
-extern  bool            ReqColon(void);
-extern  bool            ReqEOS(void);
-extern  bool            RecComma(void);
 extern  void            AdvanceITPtr(void);
 extern  bool            CIntExpr(void);
 extern  sym_id          LkSym(void);

@@ -41,6 +41,7 @@
 #include "global.h"
 #include "ifnames.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  void            BackTrack(void);
 extern  void            PushOpn(itnode *);
@@ -49,7 +50,6 @@ extern  void            ConstCat(int);
 extern  sym_id          GStartCat(int,int);
 extern  void            GStopCat(int,sym_id);
 extern  void            AdvanceITPtr(void);
-extern  bool            ReqNOpn(void);
 extern  void            FreeOneNode(itnode *);
 extern  void            FreeITNodes(itnode *);
 extern  void            GCatArg(itnode *);

@@ -42,6 +42,7 @@
 #include "units.h"
 #include "global.h"
 #include "ferror.h"
+#include "recog.h"
 
 extern  sym_id          LkSym(void);
 extern  void            InitIO(void);
@@ -51,15 +52,6 @@ extern  void            Unit(void);
 extern  void            FormatIdd(void);
 extern  void            IOList(void);
 extern  bool            Permission(int);
-extern  bool            RecOpenParen(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqComma(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecTrmOpr(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecEOS(void);
-extern  bool            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
 extern  void            GStartIO(void);
 extern  void            GNullEofStmt(void);

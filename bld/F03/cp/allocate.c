@@ -41,20 +41,12 @@
 #include "opr.h"
 #include "falloc.h"
 #include "insert.h"
+#include "recog.h"
 
-extern  bool            RecTrmOpr(void);
-extern  bool            RecNOpn(void);
-extern  void            ReqNOpn(void);
-extern  void            ReqMul(void);
+
 extern  void            AdvanceITPtr(void);
-extern  void            ReqOpenParen();
-extern  bool            ReqName(int);
 extern  sym_id          LkSym(void);
-extern  bool            RecComma(void);
-extern  void            ReqCloseParen(void);
-extern  void            ReqEOS(void);
 extern  void            IntegerExpr(void);
-extern  bool            RecNextOpr(int);
 extern  void            GSLoBound(int,sym_id);
 extern  void            GSHiBound(int,sym_id);
 extern  void            GSHiBoundLo1(int,sym_id);
@@ -73,7 +65,6 @@ extern  void            GAllocEOL(void);
 extern  void            IntSubExpr(void);
 extern  void            CkSize4(void);
 extern  sym_id          CkAssignOk(void);
-extern  bool            RecKeyWord(char *);
 
 static  char            *StatKW = { "STAT" };
 static  char            *LocKW = { "LOCATION" };

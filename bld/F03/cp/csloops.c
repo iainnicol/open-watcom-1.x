@@ -43,6 +43,7 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  void            CkTypeDeclared(void);
 extern  void            AddCSNode(byte);
@@ -55,16 +56,6 @@ extern  void            Match(void);
 extern  void            CSCond(label_id);
 extern  void            EatDoParm(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNumber(void);
-extern  bool            RecNOpr(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecComma(void);
-extern  bool            RecName(void);
-extern  bool            ReqDoVar(void);
-extern  bool            ReqNextOpr(byte,int);
-extern  bool            ReqNOpn(void);
-extern  bool            RecKeyWord(char *);
 extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);
 extern  label_id        NextLabel(void);

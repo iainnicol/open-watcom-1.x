@@ -40,6 +40,7 @@
 #include "opr.h"
 #include "fmemmgr.h"
 #include "ferror.h"
+#include "recog.h"
 
 #include <limits.h>
 
@@ -54,16 +55,6 @@ extern  void            AdvanceITPtr(void);
 extern  bool            ConstExpr(int);
 extern  bool            SelectExpr(void);
 extern  label_id        NextLabel(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecComma(void);
-extern  bool            RecColon(void);
-extern  bool            ReqNOpn(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqEOS(void);
-extern  bool            RecKeyWord(char *);
-extern  bool            RecEOS(void);
 extern  void            GLabel(label_id);
 extern  void            FiniSelect(void);
 extern  void            InitSelect(void);

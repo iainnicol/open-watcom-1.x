@@ -42,6 +42,7 @@
 #include "parmtype.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern  void            DetSubList(void);
 extern  void            DetCallList(void);
@@ -64,13 +65,6 @@ extern  int             TypeSize(uint);
 extern  void            GILCnvTo(uint,uint);
 extern  void            CnvTo(itnode*,uint,uint);
 extern  void            UpdateNode(itnode *,itnode *);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecNOpn(void);
-extern  bool            RecColon(void);
-extern  bool            RecCloseParen(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecOpenParen(void);
-extern  bool            ReqCloseParen(void);
 extern  void            BackTrack(void);
 extern  void            MoveDown(void);
 extern  void            KillOpnOpr(void);

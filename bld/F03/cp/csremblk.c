@@ -40,6 +40,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 extern void             BIOutSymbol( sym_id ste_ptr );
 extern void             BIStartRBorEP( sym_id ste_ptr );
@@ -54,8 +55,6 @@ extern  void            Match(void);
 extern  bool            EmptyCSList(void);
 extern  void            CSExtn(void);
 extern  void            CSNoMore(void);
-extern  bool            ReqEOS(void);
-extern  bool            ReqName(int);
 extern  sym_id          LkSym(void);
 extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);

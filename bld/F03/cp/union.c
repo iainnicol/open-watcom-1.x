@@ -40,9 +40,8 @@
 #include "segsw.h"
 #include "prdefn.h"
 #include "insert.h"
+#include "recog.h"
 
-extern  void            ReqNOpn(void);
-extern  void            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
 extern  void            STUnion(void);
 extern  void            STMap(void);

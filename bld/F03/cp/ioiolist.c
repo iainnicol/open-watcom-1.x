@@ -39,19 +39,8 @@
 #include "stmtsw.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
-extern  bool            RecComma(void);
-extern  bool            ReqComma(void);
-extern  bool            RecOpenParen(void);
-extern  bool            RecCloseParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            RecEquSign(void);
-extern  bool            RecTrmOpr(void);
-extern  bool            RecNOpn(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecArrName(void);
-extern  bool            RecEOS(void);
 extern  void            ChkAssumed(void);
 extern  void            TermDo(void);
 extern  void            ImpDo(void);

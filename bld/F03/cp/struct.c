@@ -36,15 +36,8 @@
 #include "namecod.h"
 #include "errcod.h"
 #include "insert.h"
+#include "recog.h"
 
-extern  void            ReqNOpn(void);
-extern  void            ReqDiv(void);
-extern  bool            ReqName(int);
-extern  bool            RecOpenParen(void);
-extern  bool            RecDiv(void);
-extern  bool            RecCat(void);
-extern  bool            RecComma(void);
-extern  void            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
 extern  sym_id          VarDecl(uint);
 extern  sym_id          FieldDecl(void);

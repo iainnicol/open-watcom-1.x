@@ -42,6 +42,7 @@
 #include "cpopt.h"
 #include "ferror.h"
 #include "insert.h"
+#include "recog.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,11 +50,6 @@
 
 extern  void            MoveDown(void);
 extern  void            DSName(void);
-extern  bool            RecTrmOpr(void);
-extern  bool            RecPlus(void);
-extern  bool            RecMin(void);
-extern  bool            RecComma(void);
-extern  bool            RecCloseParen(void);
 extern  uint            TypeSize(uint);
 extern  void            FreeITNodes(itnode *);
 extern  void            FreeOneNode(itnode *);
