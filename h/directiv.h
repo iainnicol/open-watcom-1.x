@@ -154,6 +154,7 @@ typedef struct {
     uint_32     start_loc;      // starting offset of current ledata or lidata
     unsigned    readonly:1;     // if the segment is readonly
     unsigned    ignore:1;       // ignore this if the seg is redefined
+    unsigned    iscode:1;       // segment is belonging to "*CODE" class
     direct_idx  lname_idx;
     uint_32     current_loc;    // current offset in current ledata or lidata
 } seg_info;
@@ -331,7 +332,6 @@ extern void             IdxInit( void );
 extern direct_idx       GetLnameIdx( char * );
 
 extern direct_idx       LnameInsert( char * );  // Insert a lname
-extern direct_idx       FindClassLnameIdx( char * ); // find index for given name
 extern uint_32          GetCurrAddr( void );    // Get offset from current segment
 
 extern uint             GetCurrSeg( void );
