@@ -189,13 +189,13 @@ void OutSelect( bool starts )
     unsigned long       curr;
 
     if( starts ) {
-        if( !Options.output_data_in_code_records || Globals.data_in_code 
+        if( !Options.output_comment_data_in_code_records || Globals.data_in_code 
             || !Globals.code_seg )
             return;
         Globals.sel_start = GetCurrAddr();
         Globals.data_in_code = TRUE;
     } else {
-        if( !Options.output_data_in_code_records || !Globals.data_in_code )
+        if( !Options.output_comment_data_in_code_records || !Globals.data_in_code )
             return;
         Globals.sel_idx = CurrSeg->seg->sym.segidx;
         Globals.data_in_code = FALSE;
