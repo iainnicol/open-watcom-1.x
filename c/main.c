@@ -105,7 +105,7 @@ global_options Options = {
     /* module_name      */      NULL,
 
     #ifdef DEBUG_OUT
-    /* debug            */      FALSE,
+    /* debug            */      0,
     #endif
     /* default_name_mangler */  NULL,
     /* allow_c_octals   */      FALSE,
@@ -806,8 +806,12 @@ static void parse_token( char *token, int nesting_level )
                     // make d2 different sometime
     #ifdef DEBUG_OUT
                 case '6':
-                    Options.debug = TRUE;
-                    DebugMsg(( "debugging output on \n" ));
+                    Options.debug = 1;
+                    DebugMsg(( "debugging output 1 on \n" ));
+                    break;
+                case '7':
+                    Options.debug = 2;
+                    DebugMsg(( "debugging output 2 on \n" ));
                     break;
     #endif
                 default:

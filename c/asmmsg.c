@@ -85,6 +85,16 @@ void DoDebugMsg( const char *format, ... )
 /****************************************/
 {
     va_list args;
+    if( Options.debug != 1 ) return;
+
+    va_start( args, format );
+    vprintf( format, args );
+    va_end( args );
+}
+void DoDebugMsg1( const char *format, ... )
+/****************************************/
+{
+    va_list args;
     if( !Options.debug ) return;
 
     va_start( args, format );

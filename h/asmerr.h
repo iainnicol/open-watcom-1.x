@@ -38,9 +38,12 @@
 
 #ifdef DEBUG_OUT
     extern void DoDebugMsg( const char *format, ... );
+    extern void DoDebugMsg1( const char *format, ... );
 #   define DebugMsg( x ) DoDebugMsg x
+#   define DebugMsg1( x ) DoDebugMsg1 x
 #else
 #   define DebugMsg( x )
+#   define DebugMsg1( x )
 #endif
 // use DebugMsg((....)) to call it
 
