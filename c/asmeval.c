@@ -160,6 +160,7 @@ static expr_list *get_operand( int i )
         new->type = EXPR_CONST;
         new->value = AsmBuffer[i]->value;
         break;
+    case T_TEXT:
     case T_STRING:
         new->type = EXPR_CONST;
         new->string = AsmBuffer[i]->string_ptr;
@@ -213,6 +214,7 @@ static int_8 is_optr( int i )
     case T_NUM:
     case T_ID:
     case T_RES_ID:
+    case T_TEXT:
     case T_STRING:
     case T_PATH:
     case T_OP_BRACKET:
@@ -1010,6 +1012,7 @@ static int is_expr( int i )
             } else {
                 return( TRUE );
             }
+        case T_TEXT:
         case T_STRING:
             return( TRUE );
         default:
@@ -1079,8 +1082,11 @@ static int fix( expr_list *res, int start, int end )
         if( res->string == NULL ) {
             AsmBuffer[ start ]->token = T_NUM;
             AsmBuffer[ start++ ]->value = res->value;
+        } else if( AsmBuffer[ start ]->token == T_STRING ) {
+            AsmBuffer[ start++ ]->string_ptr = res->string;
         } else {
-            AsmBuffer[ start ]->token = T_STRING;
+//            AsmBuffer[ start ]->token = T_STRING;
+            AsmBuffer[ start ]->token = T_TEXT;
             AsmBuffer[ start++ ]->string_ptr = res->string;
         }
 

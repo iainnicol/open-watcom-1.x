@@ -309,6 +309,7 @@ static int array_element( asm_sym *sym, char start_pos, char no_of_bytes )
                 Last_Element_Size = no_of_bytes;
             }
             break;
+        case T_TEXT:
         case T_STRING:
             if( no_of_bytes != 1 ) {
                 if( AsmBuffer[cur_pos]->value > no_of_bytes ) {

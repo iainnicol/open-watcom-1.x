@@ -229,14 +229,16 @@ int conditional_error_directive( int i )
         }
         break;
     case T_ERRB:
-        if( AsmBuffer[i+1]->token == T_STRING &&
+//        if( AsmBuffer[i+1]->token == T_STRING &&
+        if( AsmBuffer[i+1]->token == T_TEXT &&
             check_blank( AsmBuffer[i+1]->string_ptr ) ) {
             AsmErr( FORCED_BLANK, AsmBuffer[i+1]->string_ptr );
             return( ERROR );
         }
         break;
     case T_ERRNB:
-        if( AsmBuffer[i+1]->token != T_STRING ||
+//        if( AsmBuffer[i+1]->token != T_STRING ||
+        if( AsmBuffer[i+1]->token != T_TEXT ||
             !check_blank( AsmBuffer[i+1]->string_ptr ) ) {
             AsmErr( FORCED_NOT_BLANK, AsmBuffer[i+1]->string_ptr );
             return( ERROR );

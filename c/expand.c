@@ -216,7 +216,8 @@ int ExpandProcString( int index )
     for( i=0; i < Token_Count; i++ ) {
         if( i != index ) {
             // if( expand_directive_string( buffer, i ) == ERROR ) return( ERROR );
-            if( AsmBuffer[i]->token == T_STRING &&
+//            if( AsmBuffer[i]->token == T_STRING &&
+            if( AsmBuffer[i]->token == T_TEXT &&
                 *AsmBuffer[i]->string_ptr == '\0' ) {
                 strcat( buffer, "<>" );
             } else {
@@ -366,6 +367,7 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
     new = AsmAlloc( count * sizeof( struct asm_tok ) );
     for( i=0; i < count; i++ ) {
         switch( AsmBuffer[start+i]->token ) {
+        case T_TEXT:
         case T_STRING:
             if( AsmBuffer[start+i]->value == 0 ) {
                 i--;

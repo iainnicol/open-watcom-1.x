@@ -327,7 +327,8 @@ static int macro_exam( int i )
                 i++;
                 if( *AsmBuffer[i]->string_ptr == '=' ) {
                     i++;
-                    if( AsmBuffer[i]->token != T_STRING ) {
+//                    if( AsmBuffer[i]->token != T_STRING ) {
+                    if( AsmBuffer[i]->token != T_TEXT ) {
                         AsmError( SYNTAX_ERROR );
                         return( ERROR );
                     }
@@ -539,7 +540,8 @@ int ExpandMacro( int tok_count)
         buffer[0]='\0';
         if( count < tok_count ) {
             if( AsmBuffer[count]->token == T_COMMA ||
-                ( AsmBuffer[count]->token == T_STRING &&
+//                ( AsmBuffer[count]->token == T_STRING &&
+                ( AsmBuffer[count]->token == T_TEXT &&
                   strlen( AsmBuffer[count]->string_ptr ) == 0 ) ) {
                 /* blank parm */
 
@@ -583,6 +585,8 @@ int ExpandMacro( int tok_count)
                             strcat( buffer, next_char );
                         } else if( AsmBuffer[count]->token == T_NUM ) {
                             itoa( AsmBuffer[count]->value, buffer+strlen( buffer ), 10 );
+                        } else if( AsmBuffer[count]->token == T_TEXT ) {
+                            strcat( buffer, AsmBuffer[count]->string_ptr );
                         } else if( AsmBuffer[count]->token == T_STRING ) {
                             char        *src;
                             char        *dst;

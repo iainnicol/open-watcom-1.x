@@ -1639,6 +1639,7 @@ int Include( int i )
 {
     switch( AsmBuffer[i]->token ) {
     case T_ID:
+    case T_TEXT:
     case T_STRING:
     case T_PATH:
         return( InputQueueFile( AsmBuffer[i]->string_ptr ) );

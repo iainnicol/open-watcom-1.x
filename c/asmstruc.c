@@ -116,7 +116,8 @@ int InitializeStructure( asm_sym *sym, int i )
     dir = (dir_node *)struct_symbol;
 
     PushLineQueue();
-    if( AsmBuffer[i+1]->token != T_STRING ) {
+//    if( AsmBuffer[i+1]->token != T_STRING ) {
+    if( AsmBuffer[i+1]->token != T_TEXT ) {
         AsmError( SYNTAX_ERROR ); // fixme
         return( ERROR );
     }
@@ -194,22 +195,29 @@ int AddFieldToStruct( int loc )
         if( AsmBuffer[i]->string_ptr != NULL ) {
             count += strlen( AsmBuffer[i]->string_ptr ) + 1;
         }
-        if( AsmBuffer[i]->token == T_STRING ) count += 2;
+//        if( AsmBuffer[i]->token == T_STRING ) count += 2;
+        if( AsmBuffer[i]->token == T_TEXT || AsmBuffer[i]->token == T_STRING ) count += 2;
     }
 
     f->value = AsmAlloc( count + 1 );
     f->value[0] = '\0';
 
     for( i = loc + 1; AsmBuffer[i]->token != T_FINAL; i++ ) {
-        if( AsmBuffer[i]->token == T_STRING ) {
+//        if( AsmBuffer[i]->token == T_STRING ) {
+        if( AsmBuffer[i]->token == T_TEXT ) {
             strcat( f->value, "<" );
-        }
+        } else if( AsmBuffer[i]->token == T_STRING ) {
+            strcat( f->value, "'" );
+        }            
         if( AsmBuffer[i]->string_ptr != NULL ) {
             strcat( f->value, AsmBuffer[i]->string_ptr );
         }
-        if( AsmBuffer[i]->token == T_STRING ) {
+//        if( AsmBuffer[i]->token == T_STRING ) {
+        if( AsmBuffer[i]->token == T_TEXT ) {
             strcat( f->value, ">" );
-        }
+        } else if( AsmBuffer[i]->token == T_STRING ) {
+            strcat( f->value, "'" );
+        }            
         strcat( f->value, " " );
     }
 

@@ -585,28 +585,31 @@ static void output( void )
     if( Options.debug ) {
         int             i;
 
-        DebugMsg(("Line: %d ", LineNumber ));
-        DebugMsg(("Output :"));
+        DebugMsg1(("Line: %d ", LineNumber ));
+        DebugMsg1(("Output :"));
         for( i = 0; i < Token_Count; i++ ) {
             switch( AsmBuffer[i]->token ) {
                 case T_NUM:
-                    DebugMsg(( " %d ", AsmBuffer[i]->value ));
+                    DebugMsg1(( " %d ", AsmBuffer[i]->value ));
+                    break;
+                case T_TEXT:
+                    DebugMsg1(( " <%s> ", AsmBuffer[i]->string_ptr));
                     break;
                 case T_STRING:
-                    DebugMsg(( " '%s' ", AsmBuffer[i]->string_ptr));
+                    DebugMsg1(( " '%s' ", AsmBuffer[i]->string_ptr));
                     break;
                 case T_OP_SQ_BRACKET:
-                    DebugMsg(( " %s ", "[" ));
+                    DebugMsg1(( " %s ", "[" ));
                     break;
                 case T_CL_SQ_BRACKET:
-                    DebugMsg(( " %s ", "]" ));
+                    DebugMsg1(( " %s ", "]" ));
                     break;
                 default:
-                    DebugMsg((" %s ", AsmBuffer[i]->string_ptr ));
+                    DebugMsg1((" %s ", AsmBuffer[i]->string_ptr ));
                     break;
             }
         }
-        DebugMsg(("\n"));
+        DebugMsg1(("\n"));
     } /* if Options.debug */
     return;
 }

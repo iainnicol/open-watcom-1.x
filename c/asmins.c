@@ -1893,6 +1893,7 @@ int AsmParse()
                 }
             }
             break;
+        case T_TEXT:
         case T_STRING:
             if( last_opnd != OP_NONE ) {
                 AsmError( SYNTAX_ERROR );

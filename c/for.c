@@ -75,7 +75,8 @@ int ForDirective( int i, bool is_char )
         }
     }
     i++;
-    if( AsmBuffer[i]->token != T_STRING ) {
+//    if( AsmBuffer[i]->token != T_STRING ) {
+    if( AsmBuffer[i]->token != T_TEXT ) {
         AsmError( PARM_REQUIRED );
         return( ERROR );
     }

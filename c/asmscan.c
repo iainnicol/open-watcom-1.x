@@ -442,6 +442,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
                     (*output)++;
                     (*input) += strlen( *input );
                     buf->token = T_STRING;
+//                    buf->token = T_TEXT;
                     buf->value = 0;
                     break;
                 } /* default do nothing */
@@ -470,16 +471,18 @@ static int get_string( struct asm_tok *buf, char **input, char **output )
 
     symbol_o = **input;
 
-    buf->token = T_STRING;
     switch( symbol_o ) {
     case '"':
     case '\'':
+        buf->token = T_STRING;
         symbol_c = 0;
         break;  // end of string marker is the same
     case '<':
+        buf->token = T_TEXT;
         symbol_c = '>';
         break;
     case '{':
+        buf->token = T_TEXT;
         symbol_c = '}';
         break;
     default:
@@ -487,6 +490,7 @@ static int get_string( struct asm_tok *buf, char **input, char **output )
          * so just copy it until we hit something that looks like the end
          */
 
+        buf->token = T_TEXT;
         for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
             *(*output)++ = *(*input)++; /* keep the 2nd one */
         }

@@ -80,6 +80,7 @@ enum state {
         T_RES_ID,
         T_ID,
         T_REG,
+        T_TEXT,
         T_STRING,
         T_DIRECTIVE,
         T_DIRECT_EXPR,
