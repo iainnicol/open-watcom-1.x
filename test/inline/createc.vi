@@ -5,7 +5,7 @@ read %1.asm
 #
 # convert each asm source line to c pragma aux line
 #
-%s/^.*$/#pragma aux p\# = "&"\nvoid r\#() { p\#(); }
+%s/^.*$/extern void p\#( void );\n#pragma aux p\# = "&"\nvoid r\#() { p\#(); }
 #
 # C++ open
 #

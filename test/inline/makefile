@@ -101,6 +101,7 @@ asmbug13
 
 dev_objs = &
 3dnow &
+calljmp &
 mmx &
 sse &
 sse2 &
@@ -138,7 +139,7 @@ $(objs) : .SYMBOLIC
     @echo $@ ================================================================
     @rm -f $@.c
     @vi -d -q -k ":so createc.vi $@ $(init_$^@)\n"
-    @$(testcomp) $@.c -s -os -zq -fo=.obj >$(nulldevice)
+    @$(testcomp) $@.c -s -os -zq -wx -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
     @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
     @wmake -h -f ../checki.mif name=$@ log_file=$(log_file)
@@ -154,7 +155,7 @@ $(dev_objs) : .SYMBOLIC
     @echo ==============================================================
     @rm -f $@.c
     @vi -d -q -k ":so createc.vi $@ $(init_$^@)\n"
-    @$(testcomp) $@.c -s -os -zq -fo=.obj >$(nulldevice)
+    @$(testcomp) $@.c -s -os -zq -wx -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
     @vi -d -q -k ":so fixlst.vi\nZZ" $@.lst
     @wmake -h -f ../checki.mif name=$@ log_file=$(log_file)
