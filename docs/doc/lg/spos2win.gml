@@ -71,7 +71,6 @@ is any of the following:
 .note DOSSEG
 .do end
 .note ELIMINATE
-.note [NO]FARCALLS
 .note HEAPSIZE=n
 .note IMPFILE[=imp_file]
 .note IMPLIB[=imp_lib]

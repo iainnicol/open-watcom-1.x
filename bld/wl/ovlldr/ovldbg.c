@@ -24,15 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Overlay debugger support.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+// OVLDBG:       Overlay debugger support.
+
 #include <stddef.h>
 #include <dos.h>
 #if defined(OVL_MULTITHREAD)
-#include "novlldr.h"
+#include "movlldr.h"
 #elif defined(OVL_WHOOSH)
 #include "novlldr.h"
 #else
@@ -262,7 +265,7 @@ static int CheckVecAddr( ovl_addr far * data )
     data->addr = MK_FP(FP_SEG(address),vect->target+(unsigned)&vect->target+2);
     data->sect = vect->sec_num;
 #elif defined( OVL_WHOOSH )
-    if( vect->u.i.cs_over == OVV_CS_OVERRIDE ) {
+    if( vect->u.i.cs_over == CS_OVERRIDE ) {
         data->sect = (vect->u.i.tab_addr - FP_OFF(__OVLTAB__.entries))
                                                     / sizeof(ovltab_entry) + 1;
         data->addr = MK_FP( vect->target.seg, vect->target.off );

@@ -85,6 +85,7 @@
 #endif
 #define LINK        "wlink"             /* Open Watcom linker              */
 #define TEMPFILE    "@__WCL__.LNK"      /* temporary linker directive file */
+                                        /* mask for illegal file types     */
 static  char    *Cmd;               /* command line parameters            */
 static  char    *Word;              /* one parameter                      */
 static  char    *SystemName;        /* system to link for                 */
@@ -94,20 +95,17 @@ static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmd  */
 static  char    CC_Path[_MAX_PATH]; /* path name for wcc.exe              */
 static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
         FILE    *Fp;                /* file pointer for Temp_Link         */
-static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
+static  char    *Link_Name;         /* name for Temp_Link if /fd specified*/
 static  char    *Temp_Link;         /* temporary linker directive file    */
-                                    /* Temp_Link concurrent usages clash  */
         struct  list *Obj_List;     /* linked list of object filenames    */
 static  struct directives *Directive_List; /* linked list of directives   */
+static  char    Switch_Chars[4];    /* valid switch characters            */
         char    Exe_Name[_MAX_PATH];/* name of executable                 */
         char    *Map_Name;          /* name of map file                   */
         char    *Obj_Name;          /* object file name pattern           */
 static  char    *StackSize;         /* size of stack                      */
 static  char    DebugFlag;          /* debug info wanted                  */
 static  char    Conventions;        /* 'r' for -3r or 's' for -3s         */
-static  char    *CmdCopy;           /* just a copy of the pointer         */
-static  size_t  CmdLen;             /* and Cmd's length so no overflow    */
-static  char    Switch_Chars[4];    /* valid switch characters            */
 
 struct  flags   Flags;
 
@@ -136,18 +134,27 @@ void    Usage( void );
 #endif
 
 
+char *EnglishMsgs[] = {
 #undef pick
+#undef E
+#undef J
+#define E(msg)  msg
+#define J(msg)
 #define pick(code,english)      english
-
-extern const char *WclMsgs[] = {
 #include "wclmsg.h"
 };
 
-static const char *EnglishHelp[] = {
-#include "wclhelp.h"
-NULL
+char *JapaneseMsgs[] = {
+#undef pick
+#undef E
+#undef J
+#define E(msg)
+#define J(msg)  msg
+#define pick(code,japanese)     japanese
+#include "wclmsg.h"
 };
 
+char    **WclMsgs = EnglishMsgs;
 
 void print_banner( void )
 {
@@ -207,16 +214,9 @@ void  main()
         exit( 1 );
     }
 
-    CmdCopy = Cmd;
-    if(CmdCopy)
-        CmdLen = strlen( CmdCopy );
-
     Temp_Link = TEMPFILE;
-    errno = 0; /* Standard C does not require fopen failure to set errno */
     if( ( Fp = fopen( &Temp_Link[ 1 ], "w" ) ) == NULL ) {
-        /* Message before banner decision as '@' option uses Fp in Parse() */
-        PrintMsg( WclMsgs[ UNABLE_TO_OPEN_TEMPORARY_FILE ], Temp_Link+1,
-            strerror( errno ) );
+        PrintMsg( WclMsgs[ UNABLE_TO_OPEN_TEMPORARY_FILE ] );
         exit( 1 );
     }
     Map_Name = NULL;
@@ -387,28 +387,6 @@ static  int  Parse( void )
                 Word[ len ] = NULLCHAR;
                 wcc_option = 1;         /* assume its a wcc option */
                 switch( tolower( *Cmd ) ) {
-
-                case 'b':               /* possibly -bcl */
-                    if( ('c' == tolower( Word[0] )) && ('l' == tolower( Word[1] )) && ('=' == tolower( Word[2] )) ){
-                        char *  temp_cmd = strdup( Cmd + 1 + len);   /* copy from bcl option */
-                        char *  sys_name = strdup( &Word[3] );
-                        if( (NULL == sys_name) || (NULL == temp_cmd)){
-                            PrintMsg( WclMsgs[ OUT_OF_MEMORY ] );
-                            exit( 1 );
-                        }
-
-                        /* Sanity check */
-                        if( (CmdLen + ( 2 * strlen(sys_name) ) + 8) > ( MAX_CMD*2 ) ){
-                            PrintMsg( WclMsgs[ OUT_OF_MEMORY ] );
-                            exit( 1 );
-                        }
-
-                        sprintf(Cmd, "bt=%s -l=%s", sys_name, sys_name);
-                        strcat(Cmd, temp_cmd);
-                        end = Cmd - 1;
-                        wcc_option = 0;
-                    }
-                    break;
 
                 case 'f':               /* files option */
                     end = ScanFName( end, len );
@@ -789,22 +767,7 @@ static  int  CompLink( void )
     if( ( Obj_List != NULL || Flags.do_link )  &&  Flags.no_link == FALSE ) {
         FindPath( "wlink" EXE_EXT, PathBuffer );
         if( ! Flags.be_quiet ) {
-#if 1
             puts( "" );
-#else
-            // Michal Necasek thinks this makes excessively noisy output.
-            // I disagree but put it in disabled to serve us both.
-            // Walter Briscoe 2004-07-23
-            FILE        *atfp = fopen( Temp_Link+1, "r" );
-            char        buffer[_MAX_PATH];
-
-            PrintMsg( "       %s %s\n", LINK, Temp_Link );
-            if( atfp != NULL ) {
-                while( fgets( buffer, sizeof(buffer), atfp ) != NULL )
-                    fputs( buffer, stdout );
-                (void)fclose( atfp );
-            } /* Ignore failure to open file! */
-#endif
         }
         fflush( stdout );
         rc = spawnlp( P_WAIT, PathBuffer, LINK, Temp_Link, NULL );
@@ -844,28 +807,39 @@ static  char  *SkipSpaces( char *ptr )
 static  void  MakeName( char *name, char *ext )
 /*********************************************/
 {
-    /* If the last '.' is before the last path seperator character */
-    if( strrchr( name, '.' ) <= strpbrk( name, PATH_SEP_STR ) ) {
+    if( strrchr( name, '.' ) <= strstr( name, PATH_SEP_STR ) ) {
         strcat( name, ext );
     }
 }
 
 
+char *EnglishHelp[] = {
+    #undef E
+    #undef J
+    #define E(msg)      msg,
+    #define J(msg)
+    #include "wclhelp.h"
+ NULL };
+
+char *JapaneseHelp[] = {
+    #undef E
+    #undef J
+    #define E(msg)
+    #define J(msg)      msg,
+    #include "wclhelp.h"
+ NULL };
+
 static  void  Usage( void )
 /*************************/
 {
-    char const  **list;
-    char const  *p;
+    char        **list;
+    char        *p;
     int         lines_printed;
     unsigned int i, n;
     auto        char buf[82];
-#ifndef __UNIX__
-    int const   paging = isatty( fileno( stdout ) );
-    int const   height = 25; /* Number of lines assumed on screen */
-#endif
 
     print_banner();
-    lines_printed = 4;
+    lines_printed = 3;
     list = EnglishHelp;
     while( *list ) {
         memset( buf, ' ', 80 );
@@ -878,12 +852,16 @@ static  void  Usage( void )
             }
             n = (n+1) / 2;                      /* half way through list */
 #ifndef __UNIX__
-            if( paging && lines_printed != 0 && lines_printed + n > height ) {
-                fputs( WclMsgs[ PRESS_ANY_KEY_TO_CONTINUE ], stdout );
-                fflush( stdout );
-                getch();
-                puts( "" );
-                lines_printed = 0;
+            if( isatty( fileno( stdout ) ) ) {
+                if( lines_printed != 0 ) {
+                    if( lines_printed + n > 25 ) {
+                        fputs( WclMsgs[ PRESS_ANY_KEY_TO_CONTINUE ], stdout );
+                        fflush( stdout );
+                        getch();
+                        puts( "" );
+                        lines_printed = 0;
+                    }
+                }
             }
 #endif
             puts( buf );

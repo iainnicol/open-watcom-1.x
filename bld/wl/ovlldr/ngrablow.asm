@@ -24,12 +24,18 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Grab low memory for the overlay loader
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 
 
-;        page    64,110
+        page    64,110
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+;<>
+;<> NGRABLOW:   Grab low memory for the overlay loader
+;<>
+;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
         include struct.inc
         include novlldr.inc

@@ -52,7 +52,7 @@ extern char *DebugOptions[] = {
         "debug dwarf\n",
 };
 
-void PrintMsg( const char *fmt, ... )
+void PrintMsg( char *fmt, ... )
 {
     char        c;
     int         i;

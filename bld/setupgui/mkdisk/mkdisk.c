@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Utility to create setup.inf files for Watcom installer.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -90,7 +91,7 @@ enum {
     DELETE_DIR
 };
 
-char                    *Product;
+char                    *Version;
 long                    DiskSize;
 int                     BlockSize;
 char                    *RelRoot;
@@ -117,15 +118,12 @@ LIST                    *BeforeList = NULL;
 LIST                    *EndList = NULL;
 LIST                    *DeleteList = NULL;
 LIST                    *ForceDLLInstallList = NULL;
-LIST                    *ErrMsgList = NULL;
-LIST                    *SetupErrMsgList = NULL;
 unsigned                DiskNum;
 unsigned                MaxDiskFiles;
 int                     FillFirst = 1;
 int                     Lang = 1;
 int                     Upgrade = FALSE;
 char                    *Include;
-const char              MkdiskInf[] = "mkdisk.inf";
 
 
 static char *mygets( char *buf, unsigned len, FILE *fp )
@@ -233,7 +231,7 @@ int CheckParms( int *pargc, char **pargv[] )
 
     FillFirst = 1;
     if( *pargc > 1 ) {
-        while( ((*pargv)[1] != NULL) && ((*pargv)[1][0] == '-') ) {
+        while( (*pargv)[1][0] == '-' ) {
             if( (*pargv)[1][1] == '0' ) {
                 FillFirst = 0;
             } else if( tolower( (*pargv)[1][1] ) == 'l' ) {
@@ -251,8 +249,6 @@ int CheckParms( int *pargc, char **pargv[] )
                 Include = (*pargv)[1]+2;
             } else if( tolower( (*pargv)[1][1] ) == 'u' ) {
                 Upgrade = TRUE;
-            } else {
-                printf( "Unrecognized option %s\n", (*pargv)[1] );
             }
             ++*pargv;
             --*pargc;
@@ -261,10 +257,10 @@ int CheckParms( int *pargc, char **pargv[] )
     argc = *pargc;
     argv = *pargv;
     if( argc != 6 ) {
-        printf( "Usage: mkdisk [-x] <product> <size> <file_list> <pack_dir> <rel_root>\n" );
+        printf( "Usage: MKDISK [-x] <version> <size> <file_list> <pack_dir> <rel_root>\n" );
         return( FALSE );
     }
-    Product = argv[ 1 ];
+    Version = argv[ 1 ];
     size = argv[ 2 ];
     if( strcmp( size, "360" ) == 0 ) {
         DiskSize = DISK_360;
@@ -286,14 +282,10 @@ int CheckParms( int *pargc, char **pargv[] )
         printf( "SIZE must be one of 360, 720, 1.2, 1.4\n" );
         return( FALSE );
     }
+    RelRoot  = argv[ 5 ];
     PackDir  = argv[ 4 ];
     if( stat( PackDir, &stat_buf ) != 0 ) {  // exists
         printf( "\nDirectory '%s' does not exist\n", PackDir );
-        return( FALSE );
-    }
-    RelRoot  = argv[ 5 ];
-    if( stat( RelRoot, &stat_buf ) != 0 ) {  // exists
-        printf( "\nDirectory '%s' does not exist\n", RelRoot );
         return( FALSE );
     }
     return( TRUE );
@@ -304,58 +296,30 @@ int ReadList( FILE *fp )
 //======================
 
 {
-    char        *path;
-    char        *old_path;
-    char        *file;
-    char        *rel_fil;
-    char        *condition;
-    char        *patch;
-    char        *dst_var;
-    char        buf[ 512 ];
-    char        redist;
+    char                *path;
+    char                *old_path;
+    char                *file;
+    char                *rel_fil;
+    char                *condition;
+    char                *patch;
+    char                *dst_var;
+    char                buf[ 512 ];
+    char                redist;
     int         no_error;
 
-    printf( "Checking files...\n" );
+    printf( "checking files" );
     no_error = TRUE;
     while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
         buf[ strlen( buf ) - 1 ] = '\0';
         redist = buf[0];
-        path = strtok( buf + 1, " \t" );
-        if( path == NULL ) {
-            printf( "Invalid list file format - 'path' not found\n" );
-            exit( 2 );
-        }
+        path = strtok( buf+1, " \t" );
         old_path = strtok( NULL, " \t" );
-        if( old_path == NULL ) {
-            printf( "Invalid list file format - 'old path' not found\n" );
-            exit( 2 );
-        }
         if( stricmp( path, old_path ) == 0 ) old_path = NULL;
         file = strtok( NULL, " \t" );
-        if( file == NULL ) {
-            printf( "Invalid list file format - 'file' not found\n" );
-            exit( 2 );
-        }
         rel_fil = strtok( NULL, " \t" );
-        if( rel_fil == NULL ) {
-            printf( "Invalid list file format - 'rel file' not found\n" );
-            exit( 2 );
-        }
         patch = strtok( NULL, " \t" );
-        if( patch == NULL ) {
-            printf( "Invalid list file format - 'patch' not found\n" );
-            exit( 2 );
-        }
         dst_var = strtok( NULL, " \t" );
-        if( dst_var == NULL ) {
-            printf( "Invalid list file format - 'destination' not found\n" );
-            exit( 2 );
-        }
         condition = strtok( NULL, "\0" ); // rest of line
-        if( condition == NULL ) { // no packfile
-            condition = dst_var;
-            dst_var = ".";
-        }
         while( *condition == ' ' ) ++condition;
         while( *dst_var == ' ' ) ++dst_var;
         if( strcmp( dst_var, "." ) == 0 ) {
@@ -394,6 +358,7 @@ int AddPathTree( char *path, int target )
 
 int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file, char *patch, char *dst_var, char *cond )
 /*******************************************************************************************************************/
+
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *new, *curr;
@@ -451,10 +416,8 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
     } else {
         cmp_size = stat_buf.st_size;
     }
-#if 0
-    printf( "\r%s                              \r", file );
-    fflush( stdout );
-#endif
+//    printf( "\r%s                              \r", file );
+//    fflush( stdout );
     act_size = RoundUp( act_size, 512 );
     cmp_size = RoundUp( cmp_size, BlockSize );
 
@@ -586,6 +549,7 @@ int AddFile( char *path, char *old_path, char redist, char *file, char *rel_file
 
 int AddTarget( char *target )
 //===========================
+
 {
     int                 count;
     LIST                *new, *curr;
@@ -628,6 +592,7 @@ int AddTarget( char *target )
 
 int AddPath( char *path, int target, int parent )
 //===============================================
+
 {
     int                 count;
     PATH_INFO           *new, *curr;
@@ -681,29 +646,27 @@ static void AddToList( LIST *new, LIST **list )
 }
 
 
-#define STRING_include          "include="
-#define STRING_icon             "icon="
-#define STRING_supplimental     "supplimental="
-#define STRING_ini              "ini="
-#define STRING_auto             "auto="
-#define STRING_cfg              "cfg="
-#define STRING_autoset          "autoset="
-#define STRING_spawnafter       "spawnafter="
-#define STRING_spawnbefore      "spawnbefore="
-#define STRING_spawnend         "spawnend="
-#define STRING_env              "env="
-#define STRING_dialog           "dialog="
-#define STRING_boottext         "boottext="
-#define STRING_exe              "exe="
-#define STRING_label            "label="
-#define STRING_deletedialog     "deletedialog="
-#define STRING_deletefile       "deletefile="
-#define STRING_deletedir        "deletedir="
-#define STRING_language         "language="
-#define STRING_upgrade          "upgrade="
-#define STRING_forcedll         "forcedll="
-#define STRING_errmsg           "errmsg="
-#define STRING_setuperrmsg      "setuperrmsg="
+#define STRING_include "include="
+#define STRING_icon "icon="
+#define STRING_supplimental "supplimental="
+#define STRING_ini "ini="
+#define STRING_auto "auto="
+#define STRING_cfg "cfg="
+#define STRING_autoset "autoset="
+#define STRING_spawnafter "spawnafter="
+#define STRING_spawnbefore "spawnbefore="
+#define STRING_spawnend "spawnend="
+#define STRING_env "env="
+#define STRING_dialog "dialog="
+#define STRING_boottext "boottext="
+#define STRING_exe "exe="
+#define STRING_label "label="
+#define STRING_deletedialog "deletedialog="
+#define STRING_deletefile "deletefile="
+#define STRING_deletedir "deletedir="
+#define STRING_language "language="
+#define STRING_upgrade "upgrade="
+#define STRING_forcedll "forcedll="
 
 #define STRING_IS( buf, new, string ) \
         ( strnicmp( buf, string, sizeof( string ) - 1 ) == 0 && \
@@ -787,7 +750,7 @@ void ReadSection( FILE *fp, char *section, LIST **list )
     Setup = "setup.exe";
     for( ;; ) {
         if( mygets( SectionBuf, sizeof( SectionBuf ), fp ) == NULL ) {
-            printf( "%s section not found in '%s'\n", section, MkdiskInf );
+            printf( "%s section not found in 'mkdisk.inf'\n", section );
             return;
         }
         if( SectionBuf[ 0 ] == '#' || SectionBuf[ 0 ] == '\0' ) continue;
@@ -869,10 +832,6 @@ void ReadSection( FILE *fp, char *section, LIST **list )
             free( new );
         } else if( STRING_IS( SectionBuf, new, STRING_forcedll ) ) {
             AddToList( new, &ForceDLLInstallList );
-        } else if( STRING_IS( SectionBuf, new, STRING_errmsg ) ) {
-            AddToList( new, &ErrMsgList );
-        } else if( STRING_IS( SectionBuf, new, STRING_setuperrmsg ) ) {
-            AddToList( new, &SetupErrMsgList );
         } else {
             new->item = strdup( SectionBuf );
             AddToList( new, list );
@@ -888,12 +847,12 @@ void ReadInfFile()
     FILE                *fp;
     char                ver_buf[ 80 ];
 
-    fp = fopen( MkdiskInf, "r" );
+    fp = fopen( "mkdisk.inf", "r" );
     if( fp == NULL ) {
-        printf( "Cannot open '%s'\n", MkdiskInf );
+        printf( "Cannot open 'mkdisk.inf'\n" );
         return;
     }
-    sprintf( ver_buf, "[%s]", Product );
+    sprintf( ver_buf, "[%s]", Version );
     ReadSection( fp, ver_buf, &AppSection );
     fclose( fp );
 }
@@ -1185,20 +1144,6 @@ int CreateScript( long init_size, unsigned padding )
     if( ForceDLLInstallList != NULL ) {
         fprintf( fp, "\n[ForceDLLInstall]\n" );
         for( list = ForceDLLInstallList; list != NULL; list = list->next ) {
-            fprintf( fp, "%s\n", list->item );
-        }
-    }
-
-    if( ErrMsgList != NULL ) {
-        fprintf( fp, "\n[ErrorMessage]\n" );
-        for( list = ErrMsgList; list != NULL; list = list->next ) {
-            fprintf( fp, "%s\n", list->item );
-        }
-    }
-
-    if( SetupErrMsgList != NULL ) {
-        fprintf( fp, "\n[SetupErrorMessage]\n" );
-        for( list = SetupErrMsgList; list != NULL; list = list->next ) {
             fprintf( fp, "%s\n", list->item );
         }
     }
