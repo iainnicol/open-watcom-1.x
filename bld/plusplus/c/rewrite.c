@@ -626,6 +626,44 @@ REWRITE *RewritePackageDefArg( PTREE multi )
     return( NULL );
 }
 
+REWRITE *RewritePackageTemplateDefArg( PTREE multi )
+/******************************************/
+{
+    REWRITE *r;
+    unsigned angle_depth;
+    TOKEN_LOCN locn;
+    auto TOKEN_LOCN start_locn;
+
+    DbgAssert( CurToken == T_EQUAL );
+    NextToken();
+    SrcFileGetTokenLocn( &start_locn );
+    r = newREWRITE( T_DEFARG_END, &locn );
+    captureMulti( r, multi, &locn );
+    angle_depth = 0;
+    for(;;) {
+        if( CurToken == T_EOF ) {
+            defArgError( r, &start_locn );
+            break;
+        }
+        switch( CurToken ) {
+        case T_LT:
+            ++angle_depth;
+            break;
+        case T_COMMA :
+        case T_GT:
+            if( angle_depth == 0 ) {
+                UndoNextToken();
+                return( r );
+            }
+            --angle_depth;
+            break;
+        }
+        saveToken( r, &locn );
+        NextToken();
+    }
+    return( NULL );
+}
+
 static REWRITE *templateError( REWRITE *r, TOKEN_LOCN *locn )
 {
     CErr1( ERR_CLASS_TEMPLATE_REWRITE_ERROR );
