@@ -33,10 +33,6 @@
 #include "errcod.h"
 #include "xfflags.h"
 #include "rundat.h"
-#if _OPT_CG == _OFF
-#include "mathopt.h"
-#include "fcboth.h"
-#endif
 
 #include <signal.h>
 #if _OPSYS == _PCDOS
@@ -219,13 +215,6 @@ static  void    ProcessIOvFl() {
     // Set flag so that we report an overflow when we read an integer
     // regardless of whether user wants integer overflows reported
     __XcptFlags |= XF_IOVERFLOW;
-#if _OPT_CG == _OFF
-    if( !(MathOptions & MATH_INT_OVER) ) return;
-#if ( _OPSYS == _PCDOS ) && defined( __386__ )
-    _movestack( _STACKLOW+512 );
-#endif
-    RTErr( KO_IOVERFLOW );
-#endif
 }
 
 #endif
