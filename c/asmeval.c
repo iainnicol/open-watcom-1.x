@@ -1023,7 +1023,7 @@ static int calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
                 || ( AsmBuffer[index + 1]->value != T_PTR ) ) {
                 // Missing PTR operator
                 if( error_msg )
-                    AsmError( SYNTAX_ERROR );
+                    AsmError( MISSING_PTR_OPERATOR );
                 token_1->type = EXPR_UNDEF;
                 return( ERROR );
             }
