@@ -247,7 +247,7 @@ int directive( int i, long direct )
     case T_EXTERNDEF:
         return( Parse_Pass == PASS_1 ? GlobalDef(i+1) : NOT_ERROR );
     case T_DOT_MODEL:
-        return( Parse_Pass == PASS_1 ? Model(i) : NOT_ERROR );
+        return( Model(i) );
     case T_INCLUDE:
         return( Include(i+1) );
     case T_INCLUDELIB:

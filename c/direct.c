@@ -1960,27 +1960,7 @@ static void module_prologue( int type )
             InputQueueLine( "DGROUP GROUP _DATA" );
             break;
     }
-
-    /* Generates codes for assume */
-    if( type == MOD_FLAT ) {
-        InputQueueLine( "ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:ERROR,GS:ERROR");
-    } else {
-        InputQueueLine( "ASSUME DS:DGROUP, SS:DGROUP" );
-        switch( type ) {
-            case MOD_TINY:
-                InputQueueLine( "ASSUME CS:DGROUP, ES:DGROUP" );
-                break;
-            case MOD_SMALL:
-            case MOD_COMPACT:
-            case MOD_MEDIUM:
-            case MOD_LARGE:
-            case MOD_HUGE:
-                strcpy( buffer, "ASSUME CS:" );
-                strcat( buffer, Options.text_seg );
-                InputQueueLine( buffer );
-                break;
-        }
-    }
+    ModelAssumeInit();
 }
 
 void ModuleInit( void )
@@ -2059,6 +2039,11 @@ int Model( int i )
     char        *token;
     int         initstate = 0;
     uint        type;           // type of option
+
+    if( Parse_Pass != PASS_1 ) {
+        ModelAssumeInit();
+        return( NOT_ERROR );
+    }
 
     if( ModuleInfo.init && !ModuleInfo.cmdline ) {
         AsmError( MODEL_DECLARED_ALREADY );
@@ -2157,6 +2142,33 @@ void AssumeInit( void )
         AssumeTable[reg].symbol = NULL;
         AssumeTable[reg].error = FALSE;
         AssumeTable[reg].flat = FALSE;
+    }
+}
+
+static void ModelAssumeInit( void )
+/**********************************/
+{
+    char        buffer[ MAX_LINE_LEN ];
+
+    /* Generates codes for assume */
+    if( ModuleInfo.model == MOD_FLAT ) {
+        InputQueueLine( "ASSUME CS:FLAT,DS:FLAT,SS:FLAT,ES:FLAT,FS:ERROR,GS:ERROR");
+    } else {
+        switch( ModuleInfo.model ) {
+            case MOD_TINY:
+                InputQueueLine( "ASSUME CS:DGROUP, DS:DGROUP, ES:DGROUP, SS:DGROUP" );
+                break;
+            case MOD_SMALL:
+            case MOD_COMPACT:
+            case MOD_MEDIUM:
+            case MOD_LARGE:
+            case MOD_HUGE:
+                strcpy( buffer, "ASSUME CS:" );
+                strcat( buffer, Options.text_seg );
+                strcat( buffer, ", DS:DGROUP, SS:DGROUP" );
+                InputQueueLine( buffer );
+                break;
+        }
     }
 }
 
