@@ -117,7 +117,7 @@ int InitializeStructure( asm_sym *sym, int i )
 
     PushLineQueue();
 //    if( AsmBuffer[i+1]->token != T_STRING ) {
-    if( AsmBuffer[i+1]->token != T_TEXT ) {
+    if(( AsmBuffer[i+1]->token != T_STRING ) && ( AsmBuffer[i+1]->token != T_TEXT )) {
         AsmError( SYNTAX_ERROR ); // fixme
         return( ERROR );
     }
