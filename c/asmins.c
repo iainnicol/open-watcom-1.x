@@ -1118,13 +1118,44 @@ static int idata( long value )
 
     switch( Code->mem_type ) {
     case MT_EMPTY:
-        if( Code->info.token == T_PUSH ) { // sigh. another special case
-            if( value < SCHAR_MAX  &&  value >= SCHAR_MIN ) {
+        if( Code->info.token == T_PUSH ) {
+            if( Code->use32 ) {
+                if( (int_8)value == (int_32)value ) {
+                    op_type = OP_I8;
+                } else {
+                    op_type = OP_I32;
+                }
+            } else {
+                if( (unsigned long)value > USHRT_MAX ) {
+                    SET_OPSIZ_32( Code );
+                    if( (int_8)value == (int_32)value ) {
+                        op_type = OP_I8;
+                    } else {
+                        op_type = OP_I32;
+                    }
+                } else {
+                    if( (int_8)value == (int_16)value ) {
+                        op_type = OP_I8;
+                    } else {
+                        op_type = OP_I16;
+                    }
+                }
+            }
+            break;
+        } else if( Code->info.token == T_PUSHW ) {
+            SET_OPSIZ_16( Code );
+            if( (int_8)value == (int_16)value ) {
                 op_type = OP_I8;
-            } else if( Code->use32 ) {
-                op_type = OP_I32;
             } else {
                 op_type = OP_I16;
+            }
+            break;
+        } else if( Code->info.token == T_PUSHD ) {
+            SET_OPSIZ_32( Code );
+            if( (int_8)value == (int_32)value ) {
+                op_type = OP_I8;
+            } else {
+                op_type = OP_I32;
             }
             break;
         }
@@ -2221,13 +2252,6 @@ int AsmParse( void )
         }
     }
     switch( rCode->info.token ) {
-    case T_PUSH:
-        if( rCode->use32
-         && rCode->info.opnd_type[OPND1] == OP_I16 ) {
-            /* special case: "PUSH IMMED16" in a use32 needs a 32-bit constant */
-            rCode->info.opnd_type[OPND1] = OP_I32;
-        }
-        break;
     case T_LODS:
     case T_SCAS:
     case T_STOS:
