@@ -28,8 +28,6 @@
 *
 ****************************************************************************/
 
-#ifdef __WATCOMC__
-
 #include "variety.h"
 #include <stdlib.h>
 #include <errno.h>
@@ -62,15 +60,5 @@ _WCRTLINK void __set_doserrno( unsigned int err )
     {
         _RWD_doserrno = err;
     }
-#endif
-
-#else
-
-#include <errno.h>
-void __set_errno( unsigned int err )
-    {
-        errno = err;
-    }
-
 #endif
 

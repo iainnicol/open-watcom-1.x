@@ -1,10 +1,10 @@
-xchg ax,si
-xchg ax,dx
-xchg eax,ebp
-xchg eax,ebp
+xchg si,ax
+xchg dx,ax
+xchg ebp,eax
+xchg ebp,eax
 xchg bh,cl
-xchg byte ptr x,ah
+xchg ah,byte ptr x
 xchg bx,cx
-xchg word ptr x,di
+xchg di,word ptr x
 xchg ebx,ecx
-xchg dword ptr x,esp
+xchg esp,dword ptr x

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Object file output for RISC architectures.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -558,8 +559,7 @@ extern  void    OutLineNum( cg_linenum line, bool label_line ) {
         line = info.line;
     }
     if( currSection->start != line ){  // Else we get two func starts
-        if( currSection->func != NULL ) // FIXME: added check to prevent crashes - MN
-            OWLDebugFuncLine( currSection->func, line, lc );
+        OWLDebugFuncLine( currSection->func, line, lc );
         currSection->line = line;
     }
 }

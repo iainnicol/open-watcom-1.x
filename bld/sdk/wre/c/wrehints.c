@@ -43,7 +43,7 @@
 #include "wrelist.h"
 #include "wrehints.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "wremsgs.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

@@ -17,6 +17,5 @@ bt_windows_386=-d__WIN386__
 bt_windows    =$(bt_windows_$(processor)) -bt=WINDOWS
 bt_winnt      =-bt=NT
 bt_linux      =-bt=linux
-bt_snap       =-bt=SNAP
 
 build_target = $(bt_$(system))

@@ -3,6 +3,6 @@
 host_os  = qnx
 host_cpu = i86
 
-memory_model_i86 = m
+MODEL = M
 
-!include ../qnx.mif
+!include ..\makefile

@@ -3,4 +3,6 @@
 host_os  = dos
 host_cpu = 386
 
-!include ../wlink.mif
+release_wlink = 1
+
+!include ..\wlink.mif

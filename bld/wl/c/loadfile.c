@@ -653,9 +653,9 @@ static void ExecWlib( void )
  * in the following: +12 for options, +2 for spaces, +1 for @, +4 for quotes
  *                  and +1 for nullchar
 */
-    _ChkAlloc( cmdline, namelen + impnamelen +15 +2 +1 +4 +1 );
-    memcpy( cmdline, "-c -b -n -q -ii \"", 17 );
-    temp = cmdline + 14;
+    _ChkAlloc( cmdline, namelen + impnamelen +12 +2 +1 +4 +1 );
+    memcpy( cmdline, "-b -n -q -ii \"", 14 );
+    temp = cmdline + 11;
     if( LinkState & HAVE_ALPHA_CODE ) {
         *temp = 'a';
     } else if( LinkState & HAVE_PPC_CODE ) {
@@ -699,8 +699,8 @@ static void ExecWlib( void )
     } else {
         libtype = "-ii";
     }
-    retval = spawnlp( P_WAIT, "wlib.exe", "wlib.exe", "-c", "-b", "-n", "-q",
-                  libtype, FmtData.implibname, atfname, NULL );
+    retval = spawnlp( P_WAIT, "wlib.exe", "wlib.exe", "-b", "-n", "-q",
+                      libtype, FmtData.implibname, atfname, NULL );
     if( retval == -1 ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", "wlib.exe" );
     }
@@ -748,7 +748,7 @@ extern void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
         utoa( ordinal, currpos, 10 );
         currpos += strlen( currpos );
     }
-#if _OS != _QNX && _OS != _LINUX
+#if _OS != _QNX
     *currpos++ = '\r';
 #endif
     *currpos = '\n';

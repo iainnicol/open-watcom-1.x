@@ -24,7 +24,7 @@ librarian_i86   = *wlib
 librarian_axp   = *wlib
 librarian_ppc   = *wlib
 
-as_386          = *wasm
+as_386          = *wasm -3
 as_i86          = *wasm
 as_axp          = *wasaxp
 as_ppc          = *wasppc
@@ -57,20 +57,16 @@ ldebug_386      = debug all
 ldebug_axp      = debug dwarf
 ldebug_ppc      = debug dwarf
 
-mode_cflags_r   = -oaxt -d1-dNDEBUG
+mode_cflags_r   = -oaxt -d1
 mode_lflags_r   = $(ldebug_$(host_cpu))
-mode_aflags_r   = -dNDEBUG
 mode_cflags_d   = -od -d2
 mode_lflags_d   = $(ldebug_$(host_cpu))
-mode_aflags_d   = -d1
 !ifeq release 1
 mode_cflags     = $(mode_cflags_r)
 mode_lflags     = $(mode_lflags_r)
-mode_aflags     = $(mode_aflags_r)
 !else
 mode_cflags     = $(mode_cflags_d)
 mode_lflags     = $(mode_lflags_d)
-mode_aflags     = $(mode_aflags_d)
 !endif
 
 !ifndef $(proj_name)_nosymfile
@@ -87,29 +83,26 @@ model_switch_i86        = $(mem_model_i86)
 model_switch_i86        = -m$(memory_model_i86)
 !endif
 
-!ifndef memory_model_386
-memory_model_386 = f
-!endif
-
 !ifdef mem_model_386
 model_switch_386        = $(mem_model_386)
 !else ifdef memory_model_386
 model_switch_386        = -m$(memory_model_386)
 !endif
 
-cflags_all      =-w4-we
-!ifdef __LINUX__
-cflags_all      += -fo=.obj
+!ifndef memory_model_386
+memory_model_386 = f
 !endif
 
-cflags_386      = $(model_switch_$(host_cpu))
+
+cflags_all      =-zq-w4-we
+!ifeq release 1
+cflags_all      +=-dNDEBUG
+!endif
+
+cflags_386      = $(model_switch_$(host_cpu))-zc
 cflags_i86      = $(model_switch_$(host_cpu))
 cflags_axp      =
 cflags_ppc      =
-
-!ifndef suppress_zc
-cflags_386      += -zc
-!endif
 
 cflags_nt       = -bt=nt
 cflags_win      = -bt=windows
@@ -140,30 +133,6 @@ cflags_os2     += -br
 
 proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os))
 cflags           = $(cflags_all) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(mode_cflags) $(proj_c_flags)
-proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os))
-cppflags         = $(cppflags_all) $(proj_cpp_flags)
-
-aflags_all      =-w4
-!ifdef __LINUX__
-aflags_all      += -fo=.obj
-!endif
-
-aflags_386      = -3
-aflags_i86      =
-aflags_axp      =
-aflags_ppc      =
-
-aflags_nt       = -bt=nt
-aflags_win      = -bt=windows
-aflags_os2      = -bt=os2
-aflags_qnx      = -bt=qnx
-aflags_osi      = -bt=osi
-aflags_dos      = -bt=dos
-aflags_nov      = -bt=netware
-aflags_linux    = -bt=linux
-
-proj_a_flags     = $(extra_a_flags) $(extra_a_flags_$(host_cpu)) $(extra_a_flags_$(host_os))
-aflags           = $(aflags_all) $(aflags_$(host_cpu)) $(aflags_$(host_os)) $(mode_aflags) $(proj_a_flags)
 
 lflags_dos_i86   = sys dos
 lflags_nt_axp    = sys ntaxp
@@ -177,11 +146,7 @@ lflags_win_386   = sys win386
 lflags_win_i86   = sys windows
 lflags_nov_386   = sys novell
 lflags_osi_386   = sys osi
-!ifdef __LINUX__
-lflags_linux_386 = sys bld_linux
-!else
 lflags_linux_386 = sys linux
-!endif
 
 !ifdef sys_windowed
 # this is really stupid
@@ -210,41 +175,6 @@ rc_flags_axp    = -d__AXP__
 
 rc_flags        = $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu))
 
-!ifdef __LINUX__
-
-!ifdef use_os2tk_hdrs
-inc_dirs_sys_os2_386 = $(os2_toolkit)/h;
-inc_dirs_sys_os2_i86 = $(os2_ddk)/base/h;
-!else
-inc_dirs_sys_os2_386 = $(dev_dir)/os2api/incl32;
-inc_dirs_sys_os2_i86 = $(dev_dir)/os2api/incl16;
-!endif
-inc_dirs_sys_nt    = $(dev_dir)/w32api/include;
-inc_dirs_sys_win   = $(hdr_dir)/dos/win;$(dev_dir)/w16api/include;
-inc_dirs_sys_os2   = $(inc_dirs_sys_os2_$(host_cpu))
-inc_dirs_sys_dos   =
-inc_dirs_sys_nov   =
-inc_dirs_sys_qnx   =
-inc_dirs_sys_linux =
-
-inc_dirs_lang_qnx     = $(hdr_dir)/qnx;
-inc_dirs_lang_linux   = $(hdr_dir)/linux;
-inc_dirs_lang_netware = $(ow_nwoss_root)/common/h;
-
-!ifdef inc_dirs_lang_$(host_os)
-inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
-!else
-inc_dirs_lang   = $(hdr_dir)/dos;
-!endif
-
-inc_dirs_sys    = $(inc_dirs_lang)$(inc_dirs_sys_$(host_os))
-inc_path        = $(inc_dirs);$(inc_dirs_$(host_os))$(inc_dirs_sys)$(watcom_dir)/h
-
-yacc            = $(bld_bin)/wyacc
-re2c            = $(bld_bin)/re2c
-
-!else
-
 !ifdef use_os2tk_hdrs
 inc_dirs_sys_os2_386 = $(os2_toolkit)\h;
 inc_dirs_sys_os2_i86 = $(os2_ddk)\base\h;
@@ -254,37 +184,32 @@ inc_dirs_sys_os2_i86 = $(lang_root)\h\os21x;
 !endif
 inc_dirs_sys_nt    = $(lang_root)\h\nt;
 inc_dirs_sys_win   = $(lang_root)\h\win;
-inc_dirs_sys_os2   = $(inc_dirs_sys_os2_$(host_cpu))
+inc_dirs_sys_os2   = $(inc_dirs_sys_os2_$(host_cpu));
 inc_dirs_sys_dos   =
 inc_dirs_sys_nov   =
 inc_dirs_sys_qnx   =
 inc_dirs_sys_linux =
 
-inc_dirs_lang_qnx     = $(lang_root)\qh;
-inc_dirs_lang_linux   = $(lang_root)\lh;
-inc_dirs_lang_netware = $(ow_nwoss_root)\common\h;
+inc_dirs_lang_qnx     = $(lang_root)\qh
+inc_dirs_lang_linux   = $(lang_root)\lh
+inc_dirs_lang_netware = $(ow_nwoss_root)\common\h
 
 !ifdef inc_dirs_lang_$(host_os)
 inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
 !else
-inc_dirs_lang   = $(lang_root)\h;
+inc_dirs_lang   = $(lang_root)\h
 !endif
 
-inc_dirs_sys    = $(inc_dirs_lang)$(inc_dirs_sys_$(host_os))
-inc_path        = $(inc_dirs);$(inc_dirs_$(host_os))$(inc_dirs_sys)$(watcom_dir)\h
-
-yacc            = $(bld_bin)\yacc
-re2c            = $(bld_bin)\re2c
-
-!endif
+inc_dirs_sys    = $(inc_dirs_lang);$(inc_dirs_sys_$(host_os))
+inc_path        = $(inc_dirs);$(inc_dirs_$(host_os));$(inc_dirs_sys)$(watcom_dir)\h
 
 cc              = $(cc_$(host_cpu))
 cpp             = $(cpp_$(host_cpu))
 linker          = $(linker_$(host_cpu))
 librarian       = $(librarian_$(host_cpu))
 as              = $(as_$(host_cpu))
-vi              = vi -q -d -i
-rc_aui          = $(rc) -bt=windows -r
+yacc            = $(bld_bin)\yacc
+re2c            = $(bld_bin)\re2c
 
 !include bhost.mif
 !include local.mif

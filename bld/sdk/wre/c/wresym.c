@@ -54,7 +54,7 @@
 #include "wrestrdp.h"
 #include "wrewait.h"
 #include "wrtmpfil.h"
-#include "wremsgs.gh"
+#include "wremsgs.h"
 #include "preproc.h"
 
 /****************************************************************************/

@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <i86.h>
 #include <malloc.h>
 #include "linkstd.h"
 #include "newmem.h"

@@ -1,9 +1,14 @@
-!include cproj.mif
-!include deftarg.mif
-!include defrule.mif
+.extensions:
+.extensions: .exe .obj .c .h
+.extensions: .mif
 
 .c: $(orl_dir)\test\c;$(trmem_dir)
 .h: $(orl_dir)\test\h;$(trmem_dir)
+.mif: $(mif_path)
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
 
 obj             = .obj
 exe             = .exe

@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+
 #include <string.h>
 #include <stdio.h>
 
@@ -620,7 +621,7 @@ void MDISetMaximized( int setting )
  */
 void MDITile( int is_horz )
 {
-#if defined( __UNIX__ )
+#if defined( UNIX )
     return;
 #else
 #ifndef __OS2_PM__
@@ -679,7 +680,7 @@ void MDITile( int is_horz )
  */
 void MDICascade( void )
 {
-#if defined( __UNIX__ )
+#if defined( UNIX )
     return;
 #else
 #ifndef __OS2_PM__

@@ -1,22 +1,15 @@
 #pmake: all build os_nov cpu_386
-host_cpu = 386
 
 !include cproj.mif
-
-!ifdef __LINUX__
-description = \'OpenWatcom Execution Sampler Version 1.0\'
-!else
-description = 'OpenWatcom Execution Sampler Version 1.0'
-!endif
 
 objects = realmode.obj nwhooks.obj sample.obj sampdata.obj sampnlm.obj &
           io.obj sysio.obj settime.obj wmsg.obj pitstuff.obj cpuspeed.obj
 
-cflags = -zq -bt=netware-3s-mf-d1-oax-w3 -dREPORT_TYPE= -dFAR_PTR= -dNETWARE -fi=watcom.h -zp1
+cflags = /bt=netware/3s/mf/d1/oax/w3 /dREPORT_TYPE= /dFAR_PTR= /dNETWARE /fiwatcom.h /zq /zp1
 
 .BEFORE
-#        set include=$(nwdir);$(nwsrc);$(dig_dir)/h;$(%include)
-        set include=$(ow_nwoss_root)/common/h;$(ow_nwoss_root)/nw4/h;$(nwsrc);$(dig_dir)/h;$(%include)
+#        set include=$(nwdir);$(nwsrc);$(dig_dir)\h;$(%include)
+        set include=$(ow_nwoss_root)\common\h;$(ow_nwoss_root)\nw4\h;$(nwsrc);$(dig_dir)\h;$(%include)
 
 imports = &
     FileServerMajorVersionNumber &
@@ -41,27 +34,29 @@ imports = &
 
 xname = wsample
 
-../bin/$(xname).nlm : $(xname).res  $objects makefile
-    @%write $(%debug) tmp.lnk name $^@
+..\bin\$(xname).nlm : $(xname).res  $objects makefile
+    @%write $(%debug) tmp.lnk name ..\bin\$(xname)
     @%append tmp.lnk option osname='Novell NLM'
-    @%append tmp.lnk format novell nlm $(description)
+    @%append tmp.lnk format novell nlm 'OpenWatcom Execution Sampler Version 1.0'
     @%append tmp.lnk debug novell
     @%append tmp.lnk debug all
     @%append tmp.lnk option map
     @%append tmp.lnk option caseexact
+    @%append tmp.lnk option quiet
     @%append tmp.lnk option stack=10k
     @%append tmp.lnk option nodefault
     @for %i in ($objects) do @%append tmp.lnk file %i
     @for %i in ($(imports)) do @%append tmp.lnk import %i
-    @%append tmp.lnk import @$(ow_nwoss_root)/common/imp/owclib.imp
-    @%append tmp.lnk libpath $(wres_dir)/lib
+    @%append tmp.lnk import @$(ow_nwoss_root)\common\imp\owclib.imp
+    @%append tmp.lnk libpath $(wres_dir)\lib
     @%append tmp.lnk lib wresfs
-    @%append tmp.lnk lib $(%devdir)/clib/library/nw_clib.386/ms_s/clib3s.lib
+    @%append tmp.lnk lib $(%devdir)\clib\library\nw_clib.386\ms_s\clibs.lib
     @%append tmp.lnk module clib
-    $(linker) @tmp.lnk
-    wstrip -q -a -r $^@ . $(xname).res
 
-.c: .;../c
+    wlink @tmp.lnk
+    wstrip /q /a /r ..\bin\$(xname).nlm . $(xname).res
+
+.c: .;..\c
 
 .asm: .
 
@@ -69,7 +64,7 @@ xname = wsample
     $(comp386) $[* $cflags
 
 .asm.obj: .AUTODEPEND
-    $(as) $[@ -5 -e -mf -we -fr=$^&.err
+    $(as_i86) $[@ -5 -e -mf -we -fr=$^&.err
 #    erase $^&.err
 
 #
@@ -79,9 +74,9 @@ xname = wsample
 #   ad          - add autodepends information for wmake
 #
 
-$(xname).res : ../h/wsample.rc ../h/wmsg.h .AUTODEPEND
-    $(rc_aui) -zk0 -dNLM -fo=$^. $[@
+$(xname).res : ..\h\wsample.rc ..\h\wmsg.h .AUTODEPEND
+        wrc /zk0 /r /dNLM /bt=windows /ad /fo=$^. ..\h\wsample.rc
 
 clean : .symbolic
     @rm -f *.obj *.res *.lnk *.map *.err
-    @rm -f ../bin/$(xname).nlm
+    @rm -f ..\bin\$(xname).nlm

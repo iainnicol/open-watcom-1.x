@@ -42,6 +42,8 @@ The following lists these executable file formats.
 DOS executable files
 .bull
 ELF executable files
+:cmt. .bull
+:cmt. executable files that run under Ergo's OS/386
 .bull
 executable files that run under FlashTek's DOS extender
 .bull
@@ -50,10 +52,14 @@ executable files that run under Phar Lap's 386|DOS-Extender
 executable files that run under Tenberry Software's DOS/4G and DOS/4GW
 DOS extenders
 .bull
-NetWare Loadable Modules (NLMs) that run under Novell's NetWare
+executable files that run under Autodesk's AutoCAD Development System
+.bull
+NetWare Loadable Modules (NLMs) that run under Novell's NetWare 
 operating system
 .bull
 OS/2 executable files including Dynamic Link Libraries
+:cmt. .bull
+:cmt. PenPoint executable files including Dynamic Link Libraries
 .bull
 QNX executable files
 .bull
@@ -74,9 +80,9 @@ OS/2
 .bull
 QNX
 .bull
-Windows NT/2000/XP
+Windows NT
 .bull
-Windows 95/98/Me
+Windows 95
 .endbull
 .if '&target' eq 'QNX' .do begin
 .im tutqnx

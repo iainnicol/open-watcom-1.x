@@ -98,7 +98,7 @@ static char *guardStateNames[] = {    // - names of guard states
 
 typedef struct open_file OPEN_FILE;    // ACTIVE FILE (BEING READ)
 
-typedef struct _src_file {
+struct src_file {
     SRCFILE     sister;         // - ring of files for #line directives
     SRCFILE     parent;         // - NULL or including source file
     SRCFILE     unique;         // - next in unique list
@@ -1456,7 +1456,9 @@ void SrcFileScanCppComment()
 boolean IsSrcFilePrimary(       // DETERMINE IF PRIMARY SOURCE FILE
     SRCFILE sf )                // - a source file
 {
-    return(( sf != NULL ) && sf->primary );
+    boolean is_primary = ( sf != NULL ) && ( sf->parent == NULL );
+    DbgAssert( is_primary == ((sf!=NULL)&&(sf->primary)) );
+    return is_primary;
 }
 
 
@@ -1512,7 +1514,7 @@ void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
 boolean IsSrcFileLibrary(       // DETERMINE IF SOURCE FILE IS #include <file.h>
     SRCFILE sf )                // - a source file
 {
-    return(( sf != NULL ) && sf->lib_inc );
+    return ( sf != NULL ) && sf->lib_inc;
 }
 
 
@@ -1574,10 +1576,10 @@ void SrcFilePoint(              // SET CURRENT SRCFILE
 }
 
 
-time_t SrcFileTimeStamp(       // GET TIME STAMP FOR FILE
+time_t *SrcFileTimeStamp(       // GET TIME STAMP FOR FILE
     SRCFILE srcfile )           // - source file
 {
-    return srcfile->time_stamp;
+    return &srcfile->time_stamp;
 }
 
 

@@ -29,25 +29,26 @@
 *
 ****************************************************************************/
 
+
 #define USAGE_MSG_BASE  500
 
 #ifdef WR_COMPILED
-#include "wrcmsg.gh"
+#include "wrcmsg.h"
 #else
 #define MSG_LANG_SPACING        1000
 
 #define MSG_USE_E_BASE  (USAGE_MSG_BASE + RLE_ENGLISH*MSG_LANG_SPACING)
 #define MSG_USE_J_BASE  (USAGE_MSG_BASE + RLE_JAPANESE*MSG_LANG_SPACING)
 
-    #ifdef __UNIX__
+    #ifdef UNIX
         // JCS - With gcc, angle brackets indicates a system include file so an
         //  rcmsg.h file in this directory will not be found
-        #include "rcmsg.gh"
+        #include "rcmsg.h"
     #else
         // DRW - rcmsg is included with angle brackets because when this file is
         //      included by the linker it want to use the rcmsg.h from the include
         //      path not the one in this directory
-        #include <rcmsg.gh>
+        #include <rcmsg.h>
     #endif
 
 #endif
@@ -63,7 +64,7 @@ enum {
 
 extern void RcWarning( unsigned errornum, ... );
 extern void RcError(unsigned int ,... );
-#if !defined(__AXP__) && defined(__WATCOMC__)
+#ifndef __AXP__
 #pragma aux RcFatalError aborts;
 #endif
 extern void RcFatalError( unsigned int, ... );

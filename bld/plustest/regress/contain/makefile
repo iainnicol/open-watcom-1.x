@@ -1,7 +1,7 @@
 plustest_name = contain
 # this is a long test so quit if something goes wrong
 no_continue = yes
-!include ../environ.mif
+!include ..\environ.mif
 
 !ifdef test1
 save_out = $(arch)_1
@@ -243,7 +243,7 @@ cont.lnk : $(__MAKEFILES__)
     @%append $^@ FILE memchk
     
 save : .symbolic
-    if exist exec.out cp exec.out $(save_out).sav
+    if exist exec.out copy exec.out $(save_out).sav
     
 global : .symbolic
     @%make common_clean

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for direct 'calls' to inline functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -45,7 +46,9 @@ extern "C" {
  void *_inline_memset( void *__s, int __c, size_t __n );
  char *_inline_strcat( char *__s1, const char *__s2 );
  char *_inline_strchr( const char *__s, int __c );
- int  _inline_strcmp( const char *__s1, const char *__s2 );
+ #if defined(M_I86)
+  int  _inline_strcmp( const char *__s1, const char *__s2 );
+ #endif
  char *_inline_strcpy( char *__s1, const char *__s2 );
  size_t _inline_strlen( const char *__s );
  void _WCFAR *_inline__fmemchr( const void _WCFAR *__s, int __c, size_t __n );

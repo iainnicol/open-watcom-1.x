@@ -37,7 +37,7 @@
     Some trickyness here. The symbol brk is defined as a function in the
     QNX version of stdlib, but it's a type in the debugger. Sigh.
 */
-#ifdef __UNIX__
+#ifdef __QNX__
     #define brk break_point
 #endif
 

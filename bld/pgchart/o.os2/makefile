@@ -4,10 +4,10 @@
 #
 
 libname =       charto
-model =         -3r -mf -bt=OS2
+model =         /3r /mf /bt=OS2
 module =        $[&
 cdecl =
 fard =
 _386 =          386
 
-!include ../pgchart.mif
+!include ..\pgchart.mif

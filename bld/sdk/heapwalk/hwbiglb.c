@@ -271,7 +271,7 @@ void RedrawBox( TextBoxHdl hdl, int index ) {
 
     TBinfo      *info;
     RECT        area;
-    LRESULT     ret;
+    WORD        ret;
 
     info = (TBinfo *)GetWindowLong( (HWND)hdl, 0 );
     if( index == -1 ) {
@@ -323,7 +323,7 @@ void SetBoxFont( TextBoxHdl hwnd, HFONT font ) {
     TBinfo              *info;
     unsigned            itemcnt;
     DWORD               style;
-    LRESULT             top;
+    WORD                top;
 
     info = (TBinfo *)GetWindowLong( hwnd, 0 );
     style = GetWindowLong( info->boxhwnd, GWL_STYLE );
@@ -343,7 +343,7 @@ void SetListBoxForAdd( TextBoxHdl hwnd, BOOL add ) {
     TBinfo              *info;
     DWORD               style;
     unsigned            itemcnt;
-    LRESULT             top;
+    WORD                top;
 
     info = (TBinfo *)GetWindowLong( hwnd, 0 );
     style = GetWindowLong( info->boxhwnd, GWL_STYLE );

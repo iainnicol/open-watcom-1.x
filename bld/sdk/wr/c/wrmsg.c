@@ -34,7 +34,7 @@
 #include <windows.h>
 #include "ldstr.h"
 #include "wrmsg.h"
-#include "wrcmsg.gh"
+#include "wrcmsg.h"
 
 /* routine to create a message box */
 void WRDisplayMsg( const char *msg )

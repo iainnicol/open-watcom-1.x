@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 implementation of stat().
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -42,8 +43,8 @@
 #endif
 /* most includes should go after this line */
 #include <stddef.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <sys\types.h>
+#include <sys\stat.h>
 #include <errno.h>
 #include <string.h>
 #include <direct.h>

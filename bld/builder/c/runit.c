@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Built-in builder commands.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,63 +33,15 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include <stdlib.h>
-#ifdef __UNIX__
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#else
 #include <direct.h>
-#include <dos.h>
-#endif
-#if defined(__WATCOMC__) || !defined(__UNIX__)
 #include <env.h>
-#endif
-#include "watcom.h"
+#include <dos.h>
 #include "builder.h"
 
 #define BSIZE   256
 #define SCREEN  79
 const char Equals[] =   "========================================"\
                         "========================================";
-
-extern bool Quiet;
-
-#ifdef __UNIX__
-
-int __fnmatch(const char *pattern, const char *string) {
-
-    if( *string == 0 ) {
-        while( *pattern == '*' ) ++pattern;
-        return(( *pattern == 0 ) ? 1 : 0 );
-    }
-    switch( *pattern ) {
-    case '*':
-        if( *string == '.' ) {
-            return( __fnmatch( pattern + 1, string ));
-        } else if( __fnmatch( pattern + 1, string )) {
-            return( 1 );
-        } else {
-            return( __fnmatch( pattern, string + 1 ));
-        }
-    case '?':
-        if(( *string == 0 ) || ( *string == '.' )) {
-            return( 0 );
-        } else {
-            return( __fnmatch( pattern + 1, string + 1 ));
-        }
-    case 0:
-        return( *string == 0 );
-    default:
-        if( *pattern != *string ) {
-            return( 0 );
-        } else {
-            return( __fnmatch( pattern + 1, string + 1 ));
-        }
-    }
-}
-
-#endif
 
 static void LogDir( char *dir )
 {
@@ -127,17 +80,13 @@ static unsigned ProcSet( char *cmd )
 void ResetArchives( copy_entry *list )
 {
     copy_entry  *next;
-#ifndef __UNIX__
     unsigned    attr;
-#endif
 
     while( list != NULL ) {
         next = list->next;
-#ifndef __UNIX__
         if( _dos_getfileattr( list->src, &attr ) == 0 ) {
             _dos_setfileattr( list->src, attr & ~_A_ARCH );
         }
-#endif
         free( list );
         list = next;
     }
@@ -151,36 +100,30 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
     char        *end;
     char        buff[_MAX_PATH2];
     char        full[_MAX_PATH];
-    char        srcdir[_MAX_PATH];
     char        *drive;
     char        *dir;
     char        *fn;
     char        *ext;
     DIR                 *directory;
     struct dirent       *dent;
-#ifndef __UNIX__
     FILE        *fp;
     unsigned    attr;
-#else
-    char        pattern[_MAX_PATH];
-#endif
 
-    strcpy( srcdir, src );
     end = &dst[strlen(dst)-1];
     while( end[0] == ' ' || end[0] == '\t' ) {
         --end;
     }
     end[1] = '\0';
-    if( strchr( srcdir, '*' ) == NULL && strchr( srcdir, '?' ) == NULL ) {
+    if( strchr( src, '*' ) == NULL && strchr( src, '?' ) == NULL ) {
         /* no wild cards */
         head = Alloc( sizeof( *head ) );
         head->next = NULL;
-        _fullpath( head->src, srcdir, sizeof( head->src ) );
+        _fullpath( head->src, src, sizeof( head->src ) );
         switch( *end ) {
         case '\\':
         case '/':
             /* need to append source file name */
-            _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
+            _splitpath2( src, buff, &drive, &dir, &fn, &ext );
             _makepath( full, NULL, dst, fn, ext );
             _fullpath( head->dst, full, sizeof( head->dst ) );
             break;
@@ -188,7 +131,6 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
             _fullpath( head->dst, dst, sizeof( head->dst ) );
             break;
         }
-#ifndef __UNIX__
         if( test_abit ) {
             fp = fopen( head->dst, "rb" );
             if( fp != NULL ) fclose( fp );
@@ -199,17 +141,11 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
                 head = NULL;
             }
         }
-#endif
         return( head );
     }
-#ifdef __UNIX__
-    _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
-    _makepath( srcdir, drive, dir, NULL, NULL );
-    _makepath( pattern, NULL, NULL, fn, ext );
-#endif
-    directory = opendir( srcdir );
+    directory = opendir( src );
     if( directory == NULL ) {
-        Log( FALSE, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
+        Log( FALSE, "Can not open source directory '%s': %s\n", src, strerror( errno ) );
         return( NULL );
     }
     head = NULL;
@@ -217,27 +153,10 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
     for( ;; ) {
         dent = readdir( directory );
         if( dent == NULL ) break;
-#ifdef __UNIX__
-        {
-            struct stat buf;
-            size_t len = strlen( srcdir );
-
-            if( __fnmatch(pattern, dent->d_name) == 0 )
-                continue;
-
-            strcat( srcdir, dent->d_name );
-            stat( srcdir, &buf );
-            srcdir[len] = '\0';
-            if ( S_ISDIR( buf.st_mode ) )
-                continue;
-        }
-#else
-        if( dent->d_attr & (_A_SUBDIR|_A_VOLID) )
-            continue;
-#endif
+        if( dent->d_attr & (_A_SUBDIR|_A_VOLID) ) continue;
         curr = Alloc( sizeof( *curr ) );
         curr->next = NULL;
-        _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
+        _splitpath2( src, buff, &drive, &dir, &fn, &ext );
         _makepath( full, drive, dir, dent->d_name, NULL );
         _fullpath( curr->src, full, sizeof( curr->src ) );
         strcpy( full, dst );
@@ -248,7 +167,6 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
             break;
         }
         _fullpath( curr->dst, full, sizeof( curr->dst ) );
-#ifndef __UNIX__
         if( test_abit ) {
             fp = fopen( curr->dst, "rb" );
             if( fp != NULL ) fclose( fp );
@@ -258,7 +176,6 @@ static copy_entry *BuildList( char *src, char *dst, bool test_abit )
                 continue;
             }
         }
-#endif
         *owner = curr;
         owner = &curr->next;
     }
@@ -311,16 +228,6 @@ static unsigned ProcOneCopy( char *src, char *dst )
     /* set the date back? */
     fclose( sp );
     fclose( dp );
-#ifdef __UNIX__
-    {
-        /* copy permissions: mostly necessary for the "x" bit */
-        struct stat buf;
-        stat( src, &buf );
-        // some files is copied from the source tree with the read-only permission
-        // for next run we need the write permission for the current user as minimum
-        chmod( dst, buf.st_mode | S_IWUSR );
-    }
-#endif
     return( 0 );
 }
 
@@ -436,8 +343,6 @@ unsigned RunIt( char *cmd )
         }
     } else if( BUILTIN( "SET" ) ) {
         res = ProcSet( SkipBlanks( cmd + sizeof( "SET" ) ) );
-    } else if( BUILTIN( "ECHO" ) ) {
-        Log( Quiet, "%s\n", SkipBlanks( cmd + sizeof( "ECHO" ) ) );
     } else if( BUILTIN( "COPY" ) ) {
         res = ProcCopy( SkipBlanks( cmd + sizeof( "COPY" ) ), FALSE );
     } else if( BUILTIN( "ACOPY" ) ) {

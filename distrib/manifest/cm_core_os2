@@ -4,7 +4,6 @@ binp\ctags.exe
 binp\cvpack.exe
 binp\dll\wlibd.dll
 binp\dll\wlink.dll
-binp\dmpobj.exe
 binp\fcenable.exe
 binp\ms2wlink.exe
 binp\nmpbind.exe
@@ -14,5 +13,4 @@ binp\wlib.exe
 binp\wlink.exe
 binp\wlink.lnk
 binp\wmake.exe
-binp\wstrip.exe
 binp\wtouch.exe

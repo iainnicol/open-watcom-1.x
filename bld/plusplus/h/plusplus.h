@@ -112,7 +112,7 @@ typedef unsigned        RTF;        // type for run-time function code
 typedef unsigned        LINE_NO;    // a line number
 typedef unsigned        COLUMN_NO;  // a column number
 typedef short           fe_seg_id;  // segment ids (must be a signed type)
-typedef struct _src_file *SRCFILE;  // SOURCE FILE (PERMANENT)
+typedef struct src_file *SRCFILE;   // SOURCE FILE (PERMANENT)
 typedef struct symbol   *SYMBOL;    // symbol pointer
 typedef struct type     *TYPE;      // type pointer
 
@@ -133,9 +133,7 @@ enum {
     TS_CHEAP_WINDOWS,
     TS_NETWARE,
     TS_OS2,
-    TS_QNX,
     TS_NETWARE5,
-    TS_LINUX,
     TS_MAX
 };
 

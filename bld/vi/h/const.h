@@ -60,7 +60,7 @@ typedef enum {
     USE_UNDO_UNDO = 0x02
 } linedel_flags;
 
-#if defined( __UNIX__ )
+#if defined( __QNX__ )
     #define _A_NORMAL       0x00    /* Normal file - read/write permitted */
     #define _A_RDONLY       0x01    /* Read-only file */
     #define _A_HIDDEN       0x02    /* Hidden file */
@@ -79,7 +79,7 @@ typedef enum {
 #endif
 
 #define NAMEWIDTH 14
-#ifdef __UNIX__
+#ifdef __QNX__
     #define TMP_NAME_LEN        18
 #else
     #define TMP_NAME_LEN        14
@@ -95,7 +95,6 @@ typedef enum {
 
 #define Tab( col, ta ) ( ( ta == 0 ) ? 0 : ( (((col-1)/ta)+1)*ta - (col-1) ) )
 
-#ifndef __LINUX__
 #ifndef __WIN__
     typedef enum {
         FALSE = 0,
@@ -108,13 +107,6 @@ typedef enum {
     typedef char bool;
     #define FALSE       0
     #define TRUE        1
-#endif
-#else
-#ifndef FALSE
-    typedef char bool;
-    #define FALSE       0
-    #define TRUE        1
-#endif
 #endif
 
 #define INITIAL_MATCH_COUNT     4
@@ -260,7 +252,7 @@ typedef enum {
 /*
  * Name of environment variable to set the prompt.
  */
-#ifdef __UNIX__
+#ifdef __QNX__
     #define PROMPT_ENVIRONMENT_VARIABLE "PS1"
 #else
     #define PROMPT_ENVIRONMENT_VARIABLE "PROMPT"

@@ -29,8 +29,9 @@
 *
 ****************************************************************************/
 
+
 #include <stdio.h>
-#if !defined( __UNIX__ ) || defined( __WATCOMC__ )
+#ifndef UNIX
     #include <conio.h>
 #endif
 #include <stdlib.h>

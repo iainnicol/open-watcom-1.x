@@ -28,29 +28,8 @@
 *
 ****************************************************************************/
 
-/* started by Kendall Bennett
-   continued by Bart Oldeman -- thanks to Andi Kleen's stepper.c example
-
-   still to do:
-   * complete watchpoints
-   * combine global into a struct (like the QNX trap file ) to make it a little
-     clearer what is global and what not.
-   * implement thread support
-   * implement corefile post-mortem support
-*/
-
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <process.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <limits.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "trpimp.h"
@@ -61,43 +40,13 @@
 #include "dbg386.h"
 #include "linuxcomm.h"
 
-static pid_t            OrigPGrp;
+// TODO: Need signals and execve() in runtime library to make this work!!
 
 static watch_point  wpList[ MAX_WP ];
 static int          wpCount = 0;
 static pid_t        pid;
-static int          attached;
 static u_short      flatCS;
 static u_short      flatDS;
-static long         orig_eax;
-static long         last_eip;
-static int          last_sig;
-static int          at_end;
-
-#if 0
-void Out( char *str )
-{
-    write( 1, (char *)str, strlen( str ) );
-}
-
-void OutNum( unsigned long i )
-{
-    char numbuff[16];
-    char *ptr;
-
-    ptr = numbuff+10;
-    *--ptr = '\0';
-    do {
-        *--ptr = ( i % 16 ) + '0';
-        if (*ptr > '9') *ptr += 'A' - '9' - 1;
-        i /= 16;
-    } while( i != 0 );
-    Out( ptr );
-}
-#else
-#define Out(x)
-#define OutNum(x)
-#endif
 
 static unsigned WriteMem( void *ptr, addr_off offv, unsigned size )
 {
@@ -110,8 +59,7 @@ static unsigned WriteMem( void *ptr, addr_off offv, unsigned size )
      * need to do for now.
      */
     for (count = size; count >= 4; count -= 4) {
-        if (sys_ptrace(PTRACE_POKETEXT, pid, offv,
-                       (void *)(*(unsigned_32*)data)) != 0)
+        if (sys_ptrace(PTRACE_POKETEXT, pid, offv, data) != 0)
             return size - count;
         data += 4;
         offv += 4;
@@ -125,9 +73,6 @@ static unsigned WriteMem( void *ptr, addr_off offv, unsigned size )
         u_long  val;
         if (sys_ptrace(PTRACE_PEEKTEXT, pid, offv, &val) != 0)
             return size - count;
-        Out("readmem:"); 
-        OutNum( val );
-        Out(" ");
         switch (count) {
             case 1:
                 val &= 0xFFFFFF00;
@@ -144,13 +89,9 @@ static unsigned WriteMem( void *ptr, addr_off offv, unsigned size )
                        ((u_long)(*((unsigned_8*)(data+2))) << 16);
                 break;
             }
-        Out("writemem:");
-        OutNum( val );
-        Out(" ");
-        if (sys_ptrace(PTRACE_POKETEXT, pid, offv, (void *)val) != 0)
+        if (sys_ptrace(PTRACE_POKETEXT, pid, offv, &val) != 0)
             return size - count;
         }
-        
     return size;
 }
 
@@ -214,7 +155,6 @@ unsigned ReqMap_addr()
 {
     map_addr_req    *acc;
     map_addr_ret    *ret;
-    unsigned long    val;
 
     // TODO: This appears to a segment and offset address in the
     //       process disk image address space to a real segment/offset
@@ -231,18 +171,8 @@ unsigned ReqMap_addr()
     ret = GetOutPtr(0);
     ret->lo_bound = 0;
     ret->hi_bound = ~(addr48_off)0;
-    sys_ptrace(PTRACE_PEEKUSER, pid, offsetof(user_struct,start_code), &val);
-    ret->out_addr.offset = acc->in_addr.offset + val + 0x8048100;
-    OutNum(acc->in_addr.segment);
-    OutNum(acc->handle);
-    if ( acc->in_addr.segment == MAP_FLAT_DATA_SELECTOR ||
-         acc->in_addr.segment == flatDS ) {
-        sys_ptrace(PTRACE_PEEKUSER, pid, offsetof(user_struct,u_tsize), &val);
-        ret->out_addr.offset += val;
-        ret->out_addr.segment = flatDS;
-    } else {
-        ret->out_addr.segment = flatCS;
-    }
+    ret->out_addr.offset = acc->in_addr.offset;
+    ret->out_addr.segment = flatDS;
     return( sizeof( *ret ) );
 }
 
@@ -378,8 +308,6 @@ static void ReadCPU( struct x86_cpu *r )
 
     memset( r, 0, sizeof( *r ) );
     if (sys_ptrace(PTRACE_GETREGS, pid, 0, &regs) == 0) {
-        last_eip = regs.eip;
-        orig_eax = regs.orig_eax;
         r->eax = regs.eax;
         r->ebx = regs.ebx;
         r->ecx = regs.ecx;
@@ -442,15 +370,6 @@ static void WriteCPU( struct x86_cpu *r )
 {
     user_regs_struct    regs;
 
-    /* the kernel uses an extra register orig_eax
-       If orig_eax >= 0 then it will check eax for
-       certain values to see if it needs to restart a
-       system call.
-       If it restarts a system call then it will set
-       eax=orig_eax and eip-=2.
-       If orig_eax < 0 then eax is used as is.
-    */
-
     regs.eax = r->eax;
     regs.ebx = r->ebx;
     regs.ecx = r->ecx;
@@ -460,14 +379,6 @@ static void WriteCPU( struct x86_cpu *r )
     regs.ebp = r->ebp;
     regs.esp = r->esp;
     regs.eip = r->eip;
-    if ( regs.eip != last_eip ) {
-        /* eip is actually changed! This means that
-           the orig_eax value does not make sense;
-           set it to -1 */
-        orig_eax = -1;
-        last_eip = regs.eip;
-    }
-    regs.orig_eax = orig_eax;
     regs.eflags = r->efl;
     regs.cs = r->cs;
     regs.ds = r->ds;
@@ -489,7 +400,6 @@ static void WriteFPU( struct x86_fpu *r )
     regs.fcs = r->ip_err.p.segment;
     regs.foo = r->op_err.p.offset;
     regs.fos = r->op_err.p.segment;
-    memcpy(regs.st_space,r->reg,sizeof(r->reg));
     sys_ptrace(PTRACE_SETFPREGS, pid, 0, &regs);
 }
 
@@ -515,197 +425,13 @@ unsigned ReqWrite_regs( void )
     return( 0 );
 }
 
-static int SplitParms( char *p, char *args[], unsigned len )
-{
-    int     i;
-    char    endc;
-
-    i = 0;
-    if( len == 1 ) goto done;
-    for( ;; ) {
-        for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p != ' ' && *p != '\t' ) break;
-            ++p;
-            --len;
-        }
-        if( len == 0 ) goto done;
-        if( *p == '"' ) {
-            --len;
-            ++p;
-            endc = '"';
-        } else {
-            endc = ' ';
-        }
-        if( args != NULL ) args[i] = p;
-        ++i;
-        for( ;; ) {
-            if( len == 0 ) goto done;
-            if( *p == endc
-                || *p == '\0'
-                || (endc == ' ' && *p == '\t' ) ) {
-                if( args != NULL ) {
-                    *p = '\0';  //NYI: not a good idea, should make a copy
-                }
-                ++p;
-                --len;
-                if( len == 0 ) goto done;
-                break;
-            }
-            ++p;
-            --len;
-        }
-    }
-done:
-    return( i );
-}
-
-static pid_t RunningProc( char *name, char **name_ret )
-{
-    pid_t       pidd;
-    char        ch;
-    char        *start;
-
-    start = name;
-
-    for( ;; ) {
-        ch = *name;
-        if( ch != ' ' && ch != '\t' ) break;
-        ++name;
-    }
-    if( name_ret != NULL ) *name_ret = name;
-    pidd = 0;
-    for( ;; ) {
-        if( *name < '0' || *name > '9' ) break;
-        pidd = (pidd*10) + (*name - '0');
-        ++name;
-    }
-    if( *name != '\0') return( 0 );
-    return( pidd );
-}
-
 unsigned ReqProg_load()
 {
+    // TODO: Load the debuggee program!
     // TODO: Get the FlatCS and FlatDS register values from the process context
     //       of the debuggee!!
-    char                        **args;
-    char                        *parms;
-    char                        *parm_start;
-    int                         i;
-    char                        exe_name[255];
-    char                        *name;
-    pid_t                       save_pgrp;
-    prog_load_req               *acc;
-    prog_load_ret               *ret;
-    unsigned                    len;
-    int                         status;
-
     flatDS = DS();
     flatCS = CS();
-
-    acc = GetInPtr( 0 );
-    ret = GetOutPtr( 0 );
-
-    last_sig = -1;
-    at_end = FALSE;
-    parms = (char *)GetInPtr( sizeof( *acc ) );
-    parm_start = parms;
-    len = GetTotalSize() - sizeof( *acc );
-    if( acc->true_argv ) {
-        i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
-                i++;
-            }
-            ++parms;
-            --len;
-        }
-        args = __alloca( i * sizeof( *args ) );
-        parms = parm_start;
-        len = GetTotalSize() - sizeof( *acc );
-        i = 1;
-        for( ;; ) {
-            if( len == 0 ) break;
-            if( *parms == '\0' ) {
-                args[ i++ ] = parms + 1;
-            }
-            ++parms;
-            --len;
-        }
-        args[ i-1 ] = NULL;
-    } else {
-        while( *parms != '\0' ) {
-            ++parms;
-            --len;
-        }
-        ++parms;
-        --len;
-        i = SplitParms( parms, NULL, len );
-        args = __alloca( (i+2) * sizeof( *args ) );
-        args[ SplitParms( parms, &args[1], len ) + 1 ] = NULL;
-    }
-    args[0] = parm_start;
-    attached = TRUE;
-    pid = RunningProc( args[0], &name );
-    if( pid == 0 || sys_ptrace( PTRACE_ATTACH, pid, 0, 0 ) == -1 ) {
-        attached = FALSE;
-        args[0] = name;
-        if( FindFilePath( TRUE, args[0], exe_name ) == 0 ) {
-            exe_name[0] = '\0';
-        }
-        save_pgrp = getpgrp();
-        setpgid( 0, OrigPGrp );
-        pid = fork();
-        if ( pid == -1 )
-            return( 0 );
-        if ( pid == 0 ) {
-            if ((long)sys_ptrace( PTRACE_TRACEME, 0, 0, 0 ) < 0) {
-                exit( 1 );
-            }
-            execve( exe_name, (const char **)args, (const char **)environ );
-            exit( 1 ); /* failsafe */
-        }
-        setpgid( 0, save_pgrp );
-    }
-    ret->flags = 0;
-    if( pid != -1 && pid != 0 ) {
-        int status;
-        
-        ret->task_id = pid;
-        ret->flags |= LD_FLAG_IS_PROT | LD_FLAG_IS_32;
-        /* wait until it hits _start (upon execve) or
-           gives us a SIGSTOP (if attached) */
-        if ( waitpid ( pid, &status, 0 ) < 0 )
-            goto fail;
-        if ( !WIFSTOPPED( status ) )
-            goto fail;
-        if( attached ) {
-            ret->flags |= LD_FLAG_IS_STARTED;
-            if ( WSTOPSIG( status ) != SIGSTOP )
-                goto fail;
-        } else {
-            if ( WSTOPSIG( status ) != SIGTRAP )
-                goto fail;
-        }
-        errno = 0;
-    }
-    ret->err = errno;
-    if( ret->err != 0 ) {
-        pid = 0;
-    }
-    return( sizeof( *ret ) );
-fail:
-    if ( pid != 0 && pid != -1 ) {
-        if ( attached ) {
-            sys_ptrace( PTRACE_DETACH, pid, 0, 0 );
-            attached = FALSE;
-        } else {            
-            sys_ptrace( PTRACE_KILL, pid, 0, 0 );    
-            waitpid( pid, &status, 0 );
-        }
-    }
-    pid = 0;
     return( 0 );
 }
 
@@ -713,18 +439,7 @@ unsigned ReqProg_kill()
 {
     prog_kill_ret   *ret;
 
-    if ( pid != 0 && !at_end ) {
-        if ( attached ) {
-            sys_ptrace( PTRACE_DETACH, pid, 0, 0 );
-            attached = FALSE;
-        } else {            
-            int status;
-            sys_ptrace( PTRACE_KILL, pid, 0, 0 );    
-            waitpid( pid, &status, 0 );
-        }
-    }
-    at_end = FALSE;
-    pid = 0;
+    // TODO: Kill the debuggee process!
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -765,17 +480,17 @@ u_long GetDR6( void )
 
 static void SetDR6( u_long val )
 {
-    sys_ptrace(PTRACE_POKEUSER, pid, O_DEBUGREG(6), (void *)val);
+    sys_ptrace(PTRACE_POKEUSER, pid, O_DEBUGREG(6), &val);
 }
 
 static void SetDR7( u_long val )
 {
-    sys_ptrace(PTRACE_POKEUSER, pid, O_DEBUGREG(7), (void *)val);
+    sys_ptrace(PTRACE_POKEUSER, pid, O_DEBUGREG(7), &val);
 }
 
 static u_long SetDRn( int i, u_long linear, long type )
 {
-    sys_ptrace(PTRACE_POKEUSER, pid, O_DEBUGREG(i), (void *)linear);
+    sys_ptrace(PTRACE_POKEUSER, pid, O_DEBUGREG(i), &linear);
     return( ( type << DR7_RWLSHIFT(i) )
 //        | ( DR7_GEMASK << DR7_GLSHIFT(i) ) | DR7_GE
           | ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
@@ -889,80 +604,8 @@ unsigned ReqClear_watch( void )
 
 static unsigned ProgRun( int step )
 {
-    static int          ptrace_sig = 0;
-    user_regs_struct    regs;
-    int                 status;
-    prog_go_ret         *ret;
-    void                (*old)(int);
-    
-    if ( pid == 0 )
-        return 0;
-    ret = GetOutPtr( 0 );
-
-    if ( at_end ) {
-        ptrace_sig = 0;
-        ret->conditions = COND_TERMINATE;
-        goto end;
-    }
-
-    /* we only want child-generated SIGINTs now */
-    old = signal( SIGINT, SIG_IGN );
-    if ( step ) {
-        sys_ptrace( PTRACE_SINGLESTEP, pid, 0, (void *)ptrace_sig );
-    } else {
-        sys_ptrace( PTRACE_CONT, pid, 0, (void *)ptrace_sig );
-    }
-    waitpid ( pid, &status, 0 );
-    signal( SIGINT, old );
-    if ( WIFSTOPPED( status ) ) {
-        switch( ( ptrace_sig = WSTOPSIG( status ) ) ) {
-        case SIGSEGV:
-        case SIGILL:
-        case SIGFPE:
-        case SIGABRT:
-        case SIGBUS:
-        case SIGQUIT:
-        case SIGSYS:
-            last_sig = ptrace_sig;
-            ret->conditions = COND_EXCEPTION;
-            ptrace_sig = 0;
-            break;
-        case SIGINT:
-            ret->conditions = COND_USER;
-            ptrace_sig = 0;
-            break;
-        case SIGTRAP:
-            ret->conditions = step ? COND_TRACE : COND_BREAK;
-            Out("sigtrap");
-            ptrace_sig = 0;
-            break;
-        }
-    } else if ( WIFEXITED( status ) ) {
-        at_end = TRUE;
-        ret->conditions = COND_TERMINATE;
-        ptrace_sig = 0;
-        goto end;
-    }    
-    if (sys_ptrace(PTRACE_GETREGS, pid, 0, &regs) == 0) {
-        Out( " eip " );
-        OutNum( regs.eip );
-        Out( " " );
-        if ( ret->conditions == COND_BREAK ) {
-            Out("decrease eip(sigtrap)" );
-            regs.orig_eax = -1;
-            regs.eip--;
-            sys_ptrace(PTRACE_SETREGS, pid, 0, &regs);
-        }
-        orig_eax = regs.orig_eax;
-        last_eip = regs.eip;
-        ret->program_counter.offset = regs.eip;
-        ret->program_counter.segment = regs.cs;
-        ret->stack_pointer.offset = regs.esp;
-        ret->stack_pointer.segment = regs.ss;
-        ret->conditions |= COND_CONFIG;
-    }
- end:
-    return( sizeof( *ret ) );
+    // TODO: Figure out how to run and step the debuggee!!
+    return( 0 );
 }
 
 unsigned ReqProg_step()
@@ -999,27 +642,15 @@ unsigned ReqFile_string_to_fullpath()
     int                         len;
     char                        *name;
     char                        *fullname;
-    pid_t                       pidd;
-    char                        procfile[20];
 
-    pidd = 0;
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );
     ret = GetOutPtr( 0 );
     fullname = GetOutPtr( sizeof( *ret ) );
     exe = ( acc->file_type == TF_TYPE_EXE ) ? TRUE : FALSE;
-    if( exe ) {
-        pidd = RunningProc( name, &name );
-    }
-    if( pidd != 0 ) {
-        sprintf( procfile, "/proc/%d/exe", pidd );
-        len = readlink( procfile, fullname, PATH_MAX );
-        if ( len < 0 )
-            len = 0;
-        fullname[len] = '\0';
-    } else {
-        len = FindFilePath( exe, name, fullname );
-    }
+    // TODO: Need to find out how to get the name of the
+    //       running process first...
+    len = FindFilePath( exe, name, fullname );
     if( len == 0 ) {
         ret->err = ENOENT;      /* File not found */
     } else {
@@ -1032,53 +663,12 @@ unsigned ReqGet_message_text()
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
-    static const char *const ExceptionMsgs[] = {
-        "",
-        TRP_QNX_hangup,
-        TRP_QNX_user_interrupt,
-        TRP_QNX_quit,
-        TRP_EXC_illegal_instruction,
-        TRP_QNX_trap,
-        TRP_QNX_abort,
-        TRP_QNX_bus_error,
-        TRP_QNX_floating_point_error,
-        TRP_QNX_process_killed,
-        TRP_QNX_user_signal_1,
-        TRP_EXC_access_violation "(SIGSEGV)",
-        TRP_QNX_user_signal_2,
-        TRP_QNX_broken_pipe,
-        TRP_QNX_alarm,
-        TRP_QNX_process_termination,
-        TRP_EXC_floating_point_stack_check,
-        TRP_QNX_child_stopped,
-        TRP_QNX_process_continued,
-        TRP_QNX_process_stopped,
-        "", /* sigtstp */
-        "", /* sigttin */
-        "", /* sigttou */
-        TRP_QNX_urgent,
-        "", /* sigxcpu */
-        "", /* sigxfsz */
-        "", /* sigvtalarm */
-        "", /* sigprof */
-        TRP_QNX_winch,
-        TRP_QNX_poll,
-        TRP_QNX_power_fail,
-        TRP_QNX_sys,
-        ""
-    };
 
+    // TODO: Eventually need to get OS exception error information here
+    //       so we can display for the user in the debugger!
     ret = GetOutPtr( 0 );
     err_txt = GetOutPtr( sizeof(*ret) );
-    if( last_sig == -1 ) {
-        err_txt[0] = '\0';
-    } else if( last_sig > ( (sizeof(ExceptionMsgs) / sizeof(char *) - 1) ) ) {
-        strcpy( err_txt, TRP_EXC_unknown );
-    } else {
-        strcpy( err_txt, ExceptionMsgs[ last_sig ] );
-        last_sig = -1;
-        ret->flags = MSG_NEWLINE | MSG_ERROR;
-    }
+    err_txt[0] = '\0';
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
@@ -1131,11 +721,10 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, int remote )
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;
-    OrigPGrp = getpgrp();
-
     return( ver );
 }
 
 void TRAPENTRY TrapFini()
 {
 }
+

@@ -55,13 +55,11 @@ non-zero based 32-bit x86 DOS/4GW executable
 synonym for "netware"
 .note os2
 16-bit x86 OS/2 executable
-.note os2_dll
+.note os2 dll
 16-bit x86 OS/2 Dynamic Link Library
-.note os2_pm
-16-bit x86 OS/2 Presentation Manager executable
 .note os2v2
 32-bit x86 OS/2 executable
-.note os2v2_dll
+.note os2v2 dll
 32-bit x86 OS/2 Dynamic Link Library
 .note os2v2_pm
 32-bit x86 OS/2 Presentation Manager executable
@@ -88,9 +86,9 @@ conventions
 .note windows_dll
 16-bit x86 Windows 3.x Dynamic Link Library
 .note win95
-32-bit x86 Windows 9x executable
+32-bit x86 Windows 95 executable
 .note win95 dll
-32-bit x86 Windows 9x Dynamic Link Library
+32-bit x86 Windows 95 Dynamic Link Library
 .note nt
 32-bit x86 Windows NT character-mode executable
 .note nt_win
@@ -109,6 +107,12 @@ AXP Windows NT Dynamic Link Library
 .do end
 .note win386
 32-bit x86 &company extended Windows 3.x executable or Dynamic Link Library
+.note ads
+32-bit x86 AutoCAD Development System executable
+.note eadi
+32-bit x86 Emulation AutoCAD Device Interface
+.note fadi
+32-bit x86 Floating-point AutoCAD Device Interface
 .endnote
 .np
 The various systems that we have listed above are defined in special

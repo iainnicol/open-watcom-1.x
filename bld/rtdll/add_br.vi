@@ -1,5 +1,3 @@
-set magic
-set magicstring = ()
 atomic
     %s/^\+\+'(___iob)'/++'\1_br'/
     %s/^\+\+'(___IsDBCS)'/++'\1_br'/

@@ -31,7 +31,7 @@
 
 
 #include <watcom.h>
-#pragma pack( 1 )
+#pragma pack( 1 );
 
 typedef struct {
     uint_16     cpu_type;
@@ -134,7 +134,7 @@ typedef struct {
 } coff_sym_section;
 
 typedef struct {
-    union {
+    union type {
         uint_32         symbol_table_index;
         uint_32         RVA;
     };
@@ -563,4 +563,4 @@ typedef coff_sym_file CoffAuxSymFile;
 typedef coff_sym_section CoffAuxSymSecDef;
 typedef coff_line_num CoffLineNum;
 #endif
-#pragma pack()
+#pragma pack();

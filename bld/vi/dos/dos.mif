@@ -1,5 +1,5 @@
 objdostimeroot = &
-        int.ubj
+        int.ubj int24.obj
 
 objdossizeroot = &
         dosmain.ybj
@@ -14,3 +14,6 @@ objdossize = &
 
 extraobjs = $(objdossize)
 extraobjsroot = $(objdostimeroot) $(objdossizeroot)
+
+int24.obj : ..\dos\int24.asm
+        $(as_i86) $[@

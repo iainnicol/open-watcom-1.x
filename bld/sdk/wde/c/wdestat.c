@@ -40,7 +40,7 @@
 #include "statwnd.h"
 #include "wdemsgbx.h"
 #include "wdestat.h"
-#include "wdemsgs.gh"
+#include "wdemsgs.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

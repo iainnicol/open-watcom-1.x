@@ -317,11 +317,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
         SetHintText( IEAppTitle );
         return 0;
-#ifdef __NT__
-    case WM_DROPFILES:
-        OpenImage((HANDLE)wparam);
-        break;
-#endif
+
     case WM_MOVE:
         _wpi_getwindowrect( hwnd, &rcmain );
         if( !ImgedConfigInfo.ismaximized ) {
@@ -436,7 +432,7 @@ MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 
         case IMGED_OPEN:
             if( !ImgedIsDDE ) {
-                OpenImage(NULL);
+                OpenImage();
             }
             break;
 

@@ -56,7 +56,7 @@ OS2_TK=dummy
 
 .BEFORE
     @echo **************************************************************
-    @echo $(dotarget) : $(hbook)/$(book_src) : $(book_title)
+    @echo $(hbook)/$(book_src) : $(book_title)
     @echo **************************************************************
 
 #
@@ -84,7 +84,7 @@ gml_drivers= &
 .EXTENSIONS: .hlp .hpj .cnt .rtf .hh .h .cn1
 
 all : $(hbook).hlp $(hbook).h $(hbook).cnt .SYMBOLIC
-    @%null
+    @copy $(hbook).h $(guitools_dir)\win95 > nul
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh $(hbook).cnt
     $(%WIN95HC) -xn $*.hpj
@@ -108,8 +108,6 @@ $(hbook).cnt : $(hbook).cn1
 
 $(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs) $(gml_drivers)
     @%make compile_gml_to_xxx
-    @copy $(hbook).h $(guitools_dir)\win95 > nul
-
 
 ####################################################
 #
@@ -121,7 +119,7 @@ $(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs) $(g
 .EXTENSIONS: .hlp .hpj .hh .h .rtf
 
 all : $(hbook).hlp $(hbook).h .SYMBOLIC
-    @%null
+    @copy $(hbook).h $(guitools_dir)\win > nul
 
 $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
 !ifeq hbook cmix
@@ -137,7 +135,6 @@ $(hbook).hpj : $(proj_objs)
 
 $(hbook).rtf $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs) $(gml_drivers)
     @%make compile_gml_to_xxx
-    @copy $(hbook).h $(guitools_dir)\win > nul
 
 
 ####################################################
@@ -150,14 +147,13 @@ $(hbook).rtf $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs) $(gml_drivers)
 .EXTENSIONS: .ihp .ib .h
 
 all : $(hbook).ihp $(hbook).h .SYMBOLIC
-    @%null
+    @copy $(hbook).h $(guitools_dir)\ib > nul
 
 $(hbook).ihp : $(hbook).ib $(hbook).h
     $(pgm_HCDOS) -h 25 -w 80 $(hbook).ib $(hbook).ihp
 
 $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs) $(gml_drivers)
     @%make compile_gml_to_xxx
-    @copy $(hbook).h $(guitools_dir)\ib > nul
 
 
 ####################################################
@@ -170,7 +166,7 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs) $(gml_drivers)
 .EXTENSIONS: .htm .h
 
 all : $(hbook).htm $(hbook).h .SYMBOLIC
-    @%null
+        @%null
 
 $(hbook).htm $(hbook).h : $(book_objs) $(proj_objs) $(gml_drivers)
 !ifdef book_bmroot
@@ -196,21 +192,6 @@ $(hbook).ps : $(book_objs) $(proj_objs)
     %make prepare_wgml_opts
     -$(gml_path)\wgml $(book_src) ( file $(optfile_wgml)
 
-####################################################
-#
-# make Portable Document Format documentation
-#
-####################################################
-!else ifeq dotarget pdf
-
-.EXTENSIONS: .pdf .ps
-.ps : ../ps
-
-all : $(hbook).pdf .SYMBOLIC
-    @%null
-
-$(hbook).pdf : $(hbook).ps
-    -ps2pdf12 -r600 $[@ $(hbook).pdf
 
 ####################################################
 #
@@ -223,7 +204,7 @@ $(hbook).pdf : $(hbook).ps
 .IGNORE
 
 all : $(hbook).inf $(hbook).hlp $(hbook).h .SYMBOLIC
-    @%null
+    @copy $(hbook).h $(guitools_dir)\os2 > nul
 
 $(hbook).inf : $(hbook).ipf
     set ipfcartwork=$(book_incs)
@@ -239,7 +220,6 @@ $(hbook).hlp : .symbolic
 
 $(hbook).ipf $(hbook).h : $(book_objs) $(proj_objs) $(gml_drivers)
     @%make compile_gml_to_xxx
-    @copy $(hbook).h $(guitools_dir)\os2 > nul
 
 !endif
 

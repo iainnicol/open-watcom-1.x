@@ -1,6 +1,4 @@
 #pmake: all build serv remote os_nov cpu_386 ser x86
-host_CPU = 386
-host_OS = nov
 
 !ifndef nlm_ver
 nlm_ver = 3
@@ -8,9 +6,8 @@ nlm_ver = 3
 os = nlm
 srv = ser
 cpu = x86
-which = SERVER
 
 extra_objs = $(remote_objs) $(nlm_objs) sernlm.obj busywait.obj
 
-!include $(trap_dir)/lcl/nlm/nlm.mif
-!include $(trap_dir)/master.mif
+!include $(trap_dir)\lcl\nlm\nlm.mif
+!include $(trap_dir)\serv.mif

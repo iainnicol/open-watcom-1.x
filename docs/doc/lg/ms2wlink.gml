@@ -1,6 +1,14 @@
 .*
 .*
 .*
+.if '&target' eq 'FOX' .do begin
+.pa
+.bd Notes
+.pa
+.bd Notes
+.do end
+.if '&target' ne 'FOX' .do begin
+.*
 .section Converting Microsoft Response Files to Directive Files
 .*
 .np
@@ -48,5 +56,8 @@ do not have to create a &lnkname directive file to link your
 application.
 .np
 Note that &m2wcmdup can also process module-definition files used for
-creating OS/2 applications.
+creating OS/2
+:cmt. and PenPoint
+applications.
 .*
+.do end

@@ -42,7 +42,7 @@ typedef struct proc_entry {
 
 void SubclassGenericInit( void );
 void SubclassGenericFini( void );
-void SubclassGenericAdd( HWND, WNDPROC );
+void SubclassGenericAdd( HWND, LPVOID );
 void SubclassGenericRemove( HWND );
 WNDPROC SubclassGenericFindOldProc( HWND );
 

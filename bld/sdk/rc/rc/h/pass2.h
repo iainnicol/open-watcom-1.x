@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+
 #ifndef EXEFMT_INCLUDED
 #define EXEFMT_INCLUDED
 
@@ -40,7 +41,7 @@
 #include "exerespe.h"
 #include "exeseg.h"
 #include "exeres.h"
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
+#ifdef UNIX
     #include "clibext.h"
 #endif
 

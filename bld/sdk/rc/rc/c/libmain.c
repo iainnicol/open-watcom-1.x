@@ -31,12 +31,8 @@
 
 
 #include <stdio.h>
-#ifdef __OS2__
-#include <os2def.h>
-#else
 #define STRICT
 #include <windows.h>
-#endif
 #include "rcdll.h"
 
 #ifdef __NT__
@@ -55,7 +51,7 @@ BOOL WINAPI LibMain( HINSTANCE inst, DWORD reason, LPVOID *ptr )
     return( TRUE );
 }
 
-#elif defined(__WINDOWS__)
+#else
 
 int WINAPI LibMain( HANDLE inst, WORD wDataSeg, WORD wHeapSize,
                         LPSTR lpszCmdLine )
@@ -80,15 +76,4 @@ int WINAPI WEP( int res )
     return( 1 );
 }
 
-#else
-
-unsigned APIENTRY LibMain( unsigned hmod, unsigned termination ) {
-/*
-    if( termination != 0 ) {
-        return( __dll_terminate() );
-    }
-    return( __dll_initialize() );
-*/
-    return( 1 );
-}
 #endif

@@ -14,26 +14,13 @@
 
 name = wacc
 
-sys_object =    wmain.obj winfo.obj wacc.obj whndl.obj &
-                whints.obj wstat.obj &
-                wtoolbar.obj wribbon.obj wedit.obj &
-                wvk2str.obj wdel.obj wnewitem.obj &
-                wkey.obj wsvobj.obj wacc2rc.obj
+sys_object =    wmain.sbj winfo.sbj wacc.sbj whndl.sbj &
+                whints.sbj wstat.sbj &
+                wtoolbar.sbj wribbon.sbj wedit.sbj &
+                wvk2str.sbj wdel.sbj wnewitem.sbj &
+                wkey.sbj wsvobj.sbj wacc2rc.sbj
 
-extra_c_flags_wmain= -fh
-extra_c_flags_winfo= -fh
-extra_c_flags_wacc= -fh
-extra_c_flags_whndl= -fh
-extra_c_flags_whints= -fh
-extra_c_flags_wstat= -fh
-extra_c_flags_wtoolbar= -fh
-extra_c_flags_wribbon= -fh
-extra_c_flags_wedit= -fh
-extra_c_flags_wvk2str= -fh
-extra_c_flags_wdel= -fh
-extra_c_flags_wnewitem= -fh
-extra_c_flags_wkey= -fh
-extra_c_flags_wsvobj= -fh
-extra_c_flags_wacc2rc= -fh
+!include ..\..\mif\master.mif
 
-!include ../../mif/master.mif
+$(name).res: $(name).rc rename.dlg w_rc.h sys_rc.h wmsgfile.h &
+             accedit.dlg accabout.dlg acckey.dlg wacc.men

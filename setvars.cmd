@@ -21,12 +21,6 @@ set owroot=d:\openwatcom
 REM Change this to point to your Watcom 11.0c directory
 set watcom=c:\c\wc11
 
-REM Change this to the install location of GhostScript for PDF creation (only if you want it)
-set GHOSTSCRIPT=C:\gs\gs7.04
-
-REM temporary sub-directory for pre-build OW tools
-set OBJDIR=prebuild
-
 REM Change this to point to your OS/2 Toolkit directory
 set os2tkroot=c:\Toolkit
 

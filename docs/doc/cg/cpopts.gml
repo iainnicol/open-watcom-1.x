@@ -1297,11 +1297,9 @@ when the host operating system is DOS,
 when the host operating system is OS/2,
 .note NT
 when the host operating system is Windows NT (including Windows 95),
+or
 .note QNX
 when the host operating system is QNX.
-or
-.note LINUX
-when the host operating system is Linux.
 .endnote
 .np
 It also prevents the compiler from defining the default target macro.
@@ -1333,13 +1331,9 @@ if the compiler was being run under DOS,
 if using the OS/2 hosted compiler,
 .kwm __NT__
 if using the Windows NT or Windows 95 hosted compiler,
-.kwm __QNX__
-.kwm __UNIX__
-if using the QNX hosted version.
 or
-.kwm __LINUX__
-.kwm __UNIX__
-if using the Linux hosted version.
+.kwm __QNX__
+if using the QNX hosted version.
 Any string consisting of letters, digits, and the underscore character
 may be used for the target name.
 .np
@@ -1396,12 +1390,6 @@ Defines the macro
 Causes the compiler to use stack-based calling conventions.
 Also defines the macro
 .kwm __NETWARE_386__.
-.note QNX
-Defines the macro
-.kwm __UNIX__.
-.note LINUX
-Defines the macro
-.kwm __UNIX__.
 :cmt. .note penpoint
 :cmt. (32-bit only)
 :cmt. Causes the compiler to use stack-based calling conventions unless
@@ -1415,7 +1403,7 @@ target name.
 .if &e'&$SWbw eq 1 .do begin
 :OPT refid='SWbw' name='bw'.
 .ix 'options' 'bw'
-(Win16 only)
+(OS/2, Win16, Win32 only)
 This option causes the compiler to import a special symbol so that the
 default windowing library code is linked into your application.
 The presence of
@@ -2760,6 +2748,12 @@ The compiler will generate an object file in Phar Lap Easy OMF-386
 The macro
 .kwm __SW_EZ
 will be predefined if "ez" is selected.
+.if '&target' eq 'PP' .do begin
+.fn begin
+Any options marked with a "&optdag" must not be used for PenPoint
+application development.
+.fn end
+.do end
 .do end
 .*
 .if &e'&$SWfc eq 1 .do begin
@@ -2939,11 +2933,11 @@ processing that the compiler does by default (see "ft" above).
 :OPT refid='SWfzh' name='fzh'.
 .ix 'options' 'fzh'
 (C++ only)
-This option can be used to stop the compiler from automatically adding
-extensions to include files. The default behaviour of the compiler is to
-search for the specified file, then to try known extensions if the file
-specifier does not have an extension. Thus, #include <string> could be
-matched by 'string', 'string.h' or 'string.hpp' (see "fzs" below). The
+This option can be used to stop the compiler from automatically adding 
+extensions to include files. The default behaviour of the compiler is to 
+search for the specified file, then to try known extensions if the file 
+specifier does not have an extension. Thus, #include <string> could be 
+matched by 'string', 'string.h' or 'string.hpp' (see "fzs" below). The 
 macro
 .kwm __SW_FZH
 will be defined when this switch is used.
@@ -2953,11 +2947,11 @@ will be defined when this switch is used.
 :OPT refid='SWfzs' name='fzs'.
 .ix 'options' 'fzs'
 (C++ only)
-This option can be used to stop the compiler from automatically adding
-extensions to source files. The default behaviour of the compiler is to
-search for the specified file, then to try known extensions if the file
-specifier does not have an extension. Thus, 'src_file' could be matched
-by 'src_file', 'src_file.cpp' or 'src_file.cc' (see "fzh" above). The
+This option can be used to stop the compiler from automatically adding 
+extensions to source files. The default behaviour of the compiler is to 
+search for the specified file, then to try known extensions if the file 
+specifier does not have an extension. Thus, 'src_file' could be matched 
+by 'src_file', 'src_file.cpp' or 'src_file.cc' (see "fzh" above). The 
 macro
 .kwm __SW_FZS
 will be defined when this switch is used.
@@ -3075,7 +3069,7 @@ object file.
 :OPT refid='SWzlf' name='zlf'.&optdag.
 .ix 'options' 'zlf'
 The "zlf" option tells the compilers to emit references for all default
-library information into the compiled object file. See also the options
+library information into the compiled object file. See also the options 
 "zl", "zld" and "zls".
 .do end
 .*
@@ -3084,8 +3078,8 @@ library information into the compiled object file. See also the options
 .ix 'options' 'zls'
 The "zls" option tells the compilers to remove automatically inserted
 symbols. These symbols are usually used to force symbol references
-to be fixed up from the run-time libraries. An example would be
-the symbol __DLLstart_, that is inserted into any object file that has
+to be fixed up from the run-time libraries. An example would be 
+the symbol __DLLstart_, that is inserted into any object file that has 
 a DllMain() function defined within its source file.
 .do end
 .*
@@ -3307,12 +3301,25 @@ void main( )
 }
 .exam end
 .np
+.if &version ge 110 .do begin
 In the above example, the default alignment "zp8" will cause the
 pointer and integer items to be aligned on even addresses
 although the array "date" is 9 bytes in length.
 The items are 2-byte aligned when sizeof(item) is 2 and 4-byte
 aligned when sizeof(item) is 4.
-.np
+.do end
+.el .if &version ge 107 .do begin
+In the above example, the default alignment "zp4" will cause the
+pointer and integer items to be aligned on even addresses
+although the array "date" is 9 bytes in length.
+The items are 2-byte aligned when sizeof(item) is 2 and 4-byte
+aligned when sizeof(item) is 4.
+.do end
+.el .do begin
+In the above example, the default alignment "zp1" will cause the
+pointer and integer items to be aligned on odd addresses since the
+array "date" is 9 bytes in length.
+.do end
 On computer systems that have a 16-bit (or 32-bit) bus, improved
 performance can be obtained when pointer, integer and floating-point
 items are aligned on an even boundary.
@@ -4027,7 +4034,8 @@ char *birds[ 3 ] = { "robin", "finch", "wren" };
 .pc
 In the above example, the constant variable
 .id cvar
-is placed in the "CONST2" segment.
+is placed in the "CONST2" segment by the 16-bit C compiler and the
+16-bit and 32-bit C++ compilers.
 .np
 The "_BSS" segment contains uninitialized data such as scalars,
 structures, or arrays.

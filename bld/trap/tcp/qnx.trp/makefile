@@ -1,14 +1,11 @@
 #pmake: all trap remote os_qnx cpu_i86 cpu_386 tcp x86
-host_CPU = 386
-host_OS = qnx
 
 os = qnx
 srv = tcp
 cpu = x86
-which = TRAP
 
 extra_objs = $(remote_objs) qtcpsupp.obj
-extra_libs = $(watcom_dir)/lib/qnx/socket3r.lib
-inc_dirs = $(watcom_dir)/qnx_h
+extra_libs = $(watcom_dir)\lib\qnx\socket3r.lib
+extra_incs = $(watcom_dir)\qnx_h
 
-!include $(trap_dir)/master.mif
+!include $(trap_dir)\trap.mif

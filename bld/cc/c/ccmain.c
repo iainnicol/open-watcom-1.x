@@ -38,7 +38,6 @@
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-#include "autodept.h"
 #include <stdarg.h>
 #include <signal.h>
 #include <ctype.h>
@@ -138,7 +137,9 @@ int FrontEnd( char **cmdline )
 #endif
     InitGlobalVars();
     CMemInit();
+#ifdef __WATCOMC__
     InitMsg();
+#endif
     InitPurge();
 
     SwitchChar = _dos_switch_char();
@@ -148,7 +149,9 @@ int FrontEnd( char **cmdline )
     #endif
     DoCCompile( cmdline );
     PurgeMemory();
+#ifdef __WATCOMC__
     FiniMsg();
+#endif
     CMemFini();
     GlobalCompFlags.cc_first_use = FALSE;
     return( ErrCount );
@@ -707,7 +710,7 @@ int OpenSrcFile( char *filename, int delimiter )
             i = 0;
             while( *p == ' ' ) ++p;                     /* 28-feb-95 */
             for(;;) {
-                if( *p == INCLUDE_SEP || *p == ';' ) break;
+                if( *p == INCLUDE_SEP ) break;
                 if( *p == '\0' ) break;
                 if( i < sizeof(buff)-2 ) {
                     buff[i++] = *p;
@@ -724,7 +727,7 @@ int OpenSrcFile( char *filename, int delimiter )
                 buff[i-SEP_LEN] = '\0';
             }
             if( TryOpen( buff, PATH_SEP, filename, "" ) != 0 ) return(1);
-            if( *p == INCLUDE_SEP || *p == ';' ) ++p;
+            if( *p == INCLUDE_SEP ) ++p;
         } while( *p != '\0' );
     }
     if( delimiter != '<' ) {                        /* 17-mar-91 */
@@ -872,6 +875,18 @@ int TryOpen( char *prefix, char *separator, char *filename, char *suffix )
     return( 0 );
 }
 
+int SrcFileTime( char const *filename, time_t *mtime )
+{
+    struct stat statbuf;
+
+    if( stat( filename, &statbuf ) == 0 ) {
+        *mtime = statbuf.st_mtime;
+        return( 0 );
+    }
+    *mtime = 0;
+    return( -1 );
+}
+
 static FNAMEPTR FindFlist( char const *filename )
 { // find a flist
     FNAMEPTR    flist;
@@ -907,7 +922,7 @@ FNAMEPTR AddFlist( char const *filename )
         flist->fullpath = NULL;
         strcpy( flist->name, filename );
         *lnk = flist;
-        flist->mtime = _getFilenameTimeStamp( filename );
+        SrcFileTime( filename, &flist->mtime );
     }
     return( flist );
 }
@@ -1027,7 +1042,7 @@ static char *IncPathElement(     // GET ONE PATH ELEMENT FROM INCLUDE LIST
     length = 0;
     for( ; ; ) {
         if( *path == '\0' ) break;
-        if( *path == INCLUDE_SEP || *path == ';' ) {
+        if( *path == INCLUDE_SEP ) {
             ++path;
             if( length != 0 ) {
                 break;

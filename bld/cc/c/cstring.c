@@ -47,17 +47,14 @@
 
 extern TREEPTR         CurFuncNode;
 
+#ifdef __WATCOMC__
 static int OpenUnicodeFile( char *filename )
 {
     int         handle;
     char        fullpath[ _MAX_PATH ];
 
-#if defined(__UNIX__)
-#if defined(__WATCOMC__)
+#if defined(__QNX__)
     _searchenv( filename, "ETC_PATH", fullpath );
-#else
-    fullpath[0] = '\0';
-#endif
     if( fullpath[0] == '\0' ) {
         #define ETC "/etc/"
         strcpy( fullpath, ETC );
@@ -85,12 +82,23 @@ static void ReadUnicodeFile( int handle )
     }
 }
 
-void LoadUnicodeTable( long codePage )
+char *LoadUnicodeTable( char *str )
 {
+    int         i;
     int         handle;
     char        filename[8+1+3+1];
 
-    sprintf( filename, "unicode.%3.3d", codePage );
+    if( *str == '=' ) ++str;
+    strcpy( filename, "unicode." );
+    for( i = 8; i <= 10; i++ ) {
+        if( *str == '/' )  break;
+        if( *str == '\0' ) break;
+        if( *str == '-'  ) break;
+        if( *str == ' '  ) break;
+        if( *str == '\t' ) break;
+        filename[i] = *str++;
+    }
+    filename[i] = '\0';
     handle = OpenUnicodeFile( filename );
     if( handle != -1 ) {
         ReadUnicodeFile( handle );
@@ -99,8 +107,9 @@ void LoadUnicodeTable( long codePage )
         CBanner();
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
-    return;
+    return( str );
 }
+#endif
 
 void StringInit()
 {

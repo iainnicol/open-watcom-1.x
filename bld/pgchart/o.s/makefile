@@ -4,10 +4,10 @@
 #
 
 libname =       charts
-model =         -ms
+model =         /ms
 module =        $[&
 cdecl =         _loadds
 fard =
 _386 =
 
-!include ../pgchart.mif
+!include ..\pgchart.mif

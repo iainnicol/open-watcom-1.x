@@ -2,4 +2,6 @@
 host_os  = dos
 host_cpu = i86
 
-!include ../mif/master.mif
+large = 1
+
+!include ..\mif\master.mif

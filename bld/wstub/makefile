@@ -1,19 +1,20 @@
-#pmake: all build os_dos os_win cpu_i86 cpu_386
-
-host_OS = DOS
-host_CPU = i86
-
-all : wstub.exe wstubq.exe
-
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
+all : .symbolic wstub.exe wstubq.exe
+        @%null
 wstub.exe : wstub.obj
-        $(linker) file $[@ name $^@ op map sys dos
+        wlink file wstub option quiet sys dos op map
 wstubq.exe : wstubq.obj
-        $(linker) file $[@ name $^@ op map sys dos
+        wlink file wstubq option quiet sys dos op map
 wstub.obj : wstub.c
-        $(cc) -bt=dos $[@ -oaxs -fo=$^@
+        $(comp286) wstub /oaxs /zq
 wstubq.obj : wstub.c
-        $(cc) -bt=dos $[@ -oaxs -dQUIET -fo=$^@
+        $(comp286) wstub /oaxs /zq /dQUIET=1 /fo=wstubq
+
+clean : .symbolic
+        @if exist *.?bj del *.?bj
+        @if exist *.exe del *.exe
+        @if exist *.lst del *.lst
+        @if exist *.err del *.err
+        @if exist *.map del *.map
+        @if exist *.dmp del *.dmp
+        @if exist *.sym del *.sym
+        @if exist *.tmp del *.tmp

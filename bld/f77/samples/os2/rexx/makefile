@@ -1,8 +1,7 @@
-dll_opts        = -bd -d1
+dll_opts        = /bd /d1
 ext             = for
 cmp             = wfc386
-linker          = wlink
-opts            = -q -xline -expl
+opts            = /q /xline /expl
 
 all : .symbolic ezrxfunc.dll
     @%null

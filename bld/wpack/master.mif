@@ -4,9 +4,9 @@ proj_name = wpack
 !include deftarg.mif
 !include defrule.mif
 
-inc_dirs = $(wpack_dir)/h;$(wtouch_dir);$(wtouch_dir)/$(host_os)$(host_cpu)
+inc_dirs = $(wpack_dir)\h;$(wtouch_dir);$(wtouch_dir)\$(host_os)$(host_cpu)
 
-.c: ../c;$(wtouch_dir)
+.c: ..\c;$(wtouch_dir)
 
 objs =               &
         common.obj   &
@@ -20,7 +20,5 @@ objs =               &
         wildargv.obj &
         wpack.obj
 
-extra_l_flags = op map
-
 $(proj_name).exe : $(objs)
-        $(linker) $(lflags) name $^@ file { $< }
+        $(linker) option quiet,map $(lflags) name $^. file { $< }

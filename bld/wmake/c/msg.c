@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 #include <stdio.h>
-#ifdef __WATCOMC__
 #include <conio.h>
-#endif
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -259,7 +257,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
             switch( ch ) {
                 /* case statements are sorted in ascii order */
             case 'D' :
-                dest = strDec2( dest, (UINT16)va_arg( args, unsigned ) );
+                dest = strDec2( dest, va_arg( args, UINT16 ) );
                 positnArg( args, (UINT16)sizeof(UINT16) );
                 break;
             case 'C' :
@@ -291,11 +289,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 dest = fStrApp( dest, msgbuff );
                 break;
             case 'Z' :
-#ifdef __UNIX__
-                strcpy( msgbuff, strerror( errno ) );
-#else
                 MsgGet( SYS_ERR_0+errno , msgbuff );
-#endif
                 dest = strApp( dest, msgbuff );
                 break;
             case 'c' :
@@ -303,7 +297,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 positnArg( args, (UINT16)sizeof(int) );
                 break;
             case 'd' :
-                dest = strDec( dest, (UINT16)va_arg( args, unsigned ) );
+                dest = strDec( dest, va_arg( args, UINT16 ) );
                 positnArg( args, (UINT16)sizeof(UINT16) );
                 break;
 #ifdef CACHE_STATS
@@ -319,11 +313,11 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 positnArg( args, (UINT16)sizeof(char *) );
                 break;
             case 'u' :
-                dest = strDec5( dest, (UINT16)va_arg( args, unsigned ) );
+                dest = strDec5( dest, va_arg( args, UINT16 ) );
                 positnArg( args, (UINT16)sizeof(UINT16) );
                 break;
             case 'x' :
-                dest = strHex( dest, (UINT16)va_arg( args, unsigned ) );
+                dest = strHex( dest, va_arg( args, UINT16 ) );
                 positnArg( args, (UINT16)sizeof(UINT16) );
                 break;
             default :
@@ -498,7 +492,7 @@ extern void PrtMsg( enum MsgClass num, ... )
         PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
     }
     if( class == ( FTL & CLASS_MSK ) ) {
-        exit( ExitSafe( EXIT_FATAL ) );
+        ExitSafe( EXIT_FATAL );
     }
 }
 #pragma off(check_stack);
@@ -526,7 +520,7 @@ extern void Usage( void )
             PrtMsg( INF|PRNTSTR, msgbuff );
         }
     }
-    exit( ExitSafe( EXIT_OK ) );
+    ExitSafe( EXIT_OK );
 }
 
 
@@ -591,12 +585,12 @@ static void reOrder( va_list args, char *paratype )
         case 'D':
         case 'd':
         case 'x':
-            ArgValue[i].ui16 = (UINT16)va_arg( args, unsigned );
+            ArgValue[i].ui16 = va_arg( args, UINT16 );
             break;
         case 'C':
         case 'c':
         case 'M':
-            ArgValue[i].i = (UINT16)va_arg( args, unsigned );
+            ArgValue[i].i = va_arg( args, UINT16 );
             break;
         case 'E':
         case 's':
@@ -624,6 +618,6 @@ void positnArg( va_list args, UINT16 size )
     UINT16      i; /* to avoid a compiler warning */
 
     if( USEARGVALUE && ( size < (UINT16)sizeof(MSG_ARG) ) ) {
-        i = (UINT16)va_arg( args, unsigned );
+        i = va_arg( args, UINT16 );
     }
 }

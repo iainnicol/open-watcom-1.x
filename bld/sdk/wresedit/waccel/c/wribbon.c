@@ -41,7 +41,7 @@
 #include "sys_rc.h"
 #include "wribbon.h"
 #include "wmsg.h"
-#include "wmsgfile.gh"
+#include "wmsgfile.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

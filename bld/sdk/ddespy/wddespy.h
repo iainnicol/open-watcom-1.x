@@ -50,7 +50,7 @@
 #ifndef NOUSE3D
  #include "ctl3d.h"
 #endif
-#include "rcstr.gh"
+#include "rcstr.h"
 #include "ldstr.h"
 #include "hint.h"
 #include "cbfilt.h"
