@@ -1,9 +1,0 @@
-#pmake: all os_nt cpu_PPC
-
-host_OS         = nt
-host_CPU        = ppc
-
-# code generator project definitions
-target_CPU      = ppc
-
-!include ../master.mif
