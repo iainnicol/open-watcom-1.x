@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #if defined( __OS2__ )
   #define INCL_DOSEXCEPTIONS
@@ -72,7 +73,7 @@ extern  char __test8087( void );
     value [al];
 #endif
 
-#if !defined(__UNIX__) && !defined(__OS2_386__)
+#if !defined(__QNX__) && !defined(__OS2_386__)
 
 struct  _87state {              /* 80x87 save area */
 #if defined(__386__)
@@ -152,11 +153,11 @@ static void __rest_8087( struct _87state * __fs )
 {
     __frstor( __fs );
 }
-#endif  /* !__UNIX__ && && !__OS2__ */
+#endif  /* ! __QNX__ && && !__OS2__ */
 
 unsigned char __init_8087()
 {
-#if !defined(__UNIX__) && !defined(__OS2_386__)
+#if !defined(__QNX__) && !defined(__OS2_386__)
     if( _RWD_real87 != 0 ) {            /* if our emulator, don't worry */
         _RWD_Save8087 = __save_8087;    /* point to real save 8087 routine */
         _RWD_Rest8087 = __rest_8087;    /* point to real restore 8087 routine */
@@ -203,17 +204,6 @@ void __chk8087()
     _RWD_real87 = __r87;
     _RWD_8087 = __87;
     if( _RWD_8087 != 0 ) __init_80x87( _RWD_8087cw );
-}
-
-#elif defined( __LINUX__ )
-
-void __chk8087()
-{
-    // TODO: We really need to call Linux and determine if the machine
-    //       has a real FPU or not, so we can properly work with an FPU
-    //       emulator.
-    _RWD_8087 = __init_80x87( _RWD_8087cw );
-    _RWD_real87 = _RWD_8087;
 }
 
 #elif defined( __NETWARE__ )
@@ -287,4 +277,3 @@ void __chk8087()
 }
 
 #endif
-

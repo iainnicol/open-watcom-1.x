@@ -82,7 +82,11 @@ static int is_directory( const CHAR_TYPE *name )
         #ifdef __WIDECHAR__
             curr_ch = *name;
         #else
-            curr_ch = _mbsnextc( name );
+            #ifdef __QNX__
+                curr_ch = *name;
+            #else
+                curr_ch = _mbsnextc( name );
+            #endif
         #endif
         if( curr_ch == NULLCHAR ) break;
         if( prev_ch == '*' ) break;
@@ -90,7 +94,11 @@ static int is_directory( const CHAR_TYPE *name )
         #ifdef __WIDECHAR__
             ++name;
         #else
-            name = _mbsinc( name );
+            #ifdef __QNX__
+                name++;
+            #else
+                name = _mbsinc( name );
+            #endif
         #endif
     }
     if( curr_ch == NULLCHAR ) {
@@ -178,7 +186,11 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,__wopendir)( const CHAR_TYPE *dirname,
             #ifdef __WIDECHAR__
                 curr_ch = *dirname;
             #else
-                curr_ch = _mbsnextc( dirname );
+                #ifdef __QNX__
+                    curr_ch = *dirname;
+                #else
+                    curr_ch = _mbsnextc( dirname );
+                #endif
             #endif
             pathname[i] = *dirname;
             #ifndef __WIDECHAR__

@@ -24,9 +24,11 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  C library setjmp/longjmp support for 386 processors
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
+
 
 .386p
 include mdef.inc
