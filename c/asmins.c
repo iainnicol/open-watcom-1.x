@@ -1517,8 +1517,6 @@ static int proc_check( void )
     return TRUE;
 }
 
-#endif
-
 int check_override_x( expr_list *opndx )
 /***************************************/
 /* Check if there is a register, segment or group override */
@@ -1542,6 +1540,8 @@ int check_override_x( expr_list *opndx )
     return( NOT_ERROR );
 }
 
+#endif
+
 static int process_address( expr_list *opndx )
 /*
   parse the memory reference operand
@@ -1555,8 +1555,10 @@ static int process_address( expr_list *opndx )
     char                base_lock = FALSE;
     enum fixup_types    fixup_type;
     int                 flag;
+#ifdef _WASM_
     int                 type;
     char                field_flag = 0;
+#endif
 
     fixup = NULL;
     ConstantOnly = FALSE;
@@ -1946,6 +1948,21 @@ static int process_address( expr_list *opndx )
 
 static int process_const( expr_list *opndx )
 {
+    if( ( Code->info.token == T_IMUL )
+        && ( Code->info.opnd_type[OPND1] & OP_R ) ) {
+        if( Opnd_Count == OPND2 ) {
+            Code->info.rm_byte = ( Code->info.rm_byte & ~BIT_345 )
+                          | ( ( Code->info.rm_byte & BIT_012 ) << 3 );
+        } else if( Opnd_Count == OPND3 ) {
+            Code->info.opnd_type[OPND1] = Code->info.opnd_type[OPND2];
+            Code->info.opnd_type[OPND2] = OP_NONE;
+            Code->data[OPND1] = Code->data[OPND2];
+            Code->data[OPND2] = 0;
+            InsFixups[OPND1] = InsFixups[OPND2];
+            InsFixups[OPND2] = NULL;
+            Opnd_Count = OPND2;
+        }
+    }
     Code->data[Opnd_Count] = opndx->value;
     Code->info.opnd_type[Opnd_Count] = OP_I;
     if( idata( Code->data[Opnd_Count] ) == ERROR )
@@ -2062,16 +2079,6 @@ static int process_reg( expr_list *opndx )
         Code->info.rm_byte |= MOD_11;
         // fill the r/m field
         Code->info.rm_byte |= reg;
-#if 0        
-        // special case for IMUL ( it has 3 opnds )
-        if( Code->info.token == T_IMUL ) {
-            /* if IMUL has 2 opnds only, and we are
-               now parsing the second opnd, then fill bit-345 field */
-            if( AsmBuffer[i + 1]->token == T_COMMA  &&  i+3 >= Token_Count ) {
-                Code->info.rm_byte |= ( reg << 3 );
-            }
-        }
-#endif        
     } else {
         // the second operand
         if( ( Code->info.token == T_XCHG ) 
@@ -2208,6 +2215,7 @@ int AsmParse( void )
                 rCode->info.token = AsmBuffer[i]->value;
                 break;
             }
+#ifdef _WASM_
             if( ( AsmBuffer[i+1]->token == T_DIRECTIVE
                 && ( AsmBuffer[i+1]->value == T_EQU
                 || AsmBuffer[i+1]->value == T_EQU2
@@ -2216,6 +2224,7 @@ int AsmParse( void )
                 i--;
                 continue;
             }
+#endif
             i++;
             if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR )
                 return( ERROR );
@@ -2538,20 +2547,6 @@ int AsmParse( void )
             curr_ptr_type = EMPTY;
             if( Opnd_Count == OPND2 ) {
                 switch( rCode->info.token ) {
-                case T_IMUL:
-                    if( rCode->info.opnd_type[OPND1] & OP_R ) {
-                        if( AsmBuffer[i + 1]->token == T_NUM ) {
-                            rCode->info.opnd_type[OPND1] = rCode->info.opnd_type[OPND2];
-                            rCode->info.opnd_type[OPND2] = OP_NONE;
-                            rCode->data[OPND1] = rCode->data[OPND2];
-                            rCode->data[OPND2] = 0;
-                            InsFixups[OPND1] = InsFixups[OPND2];
-                            InsFixups[OPND2] = NULL;
-                            break;
-                        }
-                    }
-                    AsmError( INVALID_IMUL_FORMAT );
-                    return( ERROR );
                 case T_SHLD:
                 case T_SHRD:
                     switch( AsmBuffer[i + 1]->token ) {
