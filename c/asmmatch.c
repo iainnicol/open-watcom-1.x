@@ -771,6 +771,9 @@ static int match_phase_3( int *i, enum operand_type determinant )
                         cur_opnd = OP_I32;
                         Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
                         break;
+                    default:
+                        AsmError( INVALID_INSTRUCTION_OPERANDS );
+                        break;
                     }
                 }
                 if( output( *i ) == ERROR )
