@@ -29,9 +29,7 @@
 *
 ****************************************************************************/
 
-#ifndef STRICT
-#define STRICT
-#endif
+
 #include <windows.h>
 #include "win1632.h"
 #include <stdlib.h>
