@@ -121,7 +121,7 @@ dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
     return( ret );
 }
 
-dip_status      DIPENTRY DIPImpStartup(void)
+dip_status      DIPENTRY DIPImpStartup()
 {
 /*
         Return DS_OK if startup initialization when OK, or a DS_ERR|DS_?
