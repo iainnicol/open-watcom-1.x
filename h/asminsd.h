@@ -513,6 +513,10 @@ ins (T_FWORD,           OP_SPECIAL,  0,      OP_SPECIAL, 0,      0,        OP_RE
 ins (T_FXAM,            OP_NONE,     0,      OP_NONE,    0,      0xD9,     0xE5,                     P_87,  NO_PREFIX)
 ins (T_FXCH,            OP_NONE,     0,      OP_NONE,    0,      0xD9,     0xC9,                     P_87,  NO_PREFIX)
 ins (T_FXCH,            OP_STI,      0,      OP_NONE,    0,      0xD9,     0xC8,                     P_87,  NO_PREFIX)
+
+ins (T_FXRSTOR,           OP_M,      F_0F,   OP_NONE,no_WDS, 0xae,     0x08,                     P_686, NO_PREFIX)
+ins (T_FXSAVE,           OP_M,      F_0F,   OP_NONE,no_WDS, 0xae,     0x00,                     P_686, NO_PREFIX)
+
 ins (T_FXTRACT,         OP_NONE,     0,      OP_NONE,    0,      0xD9,     0xF4,                     P_87,  NO_PREFIX)
 ins (T_FYL2X,           OP_NONE,     0,      OP_NONE,    0,      0xD9,     0xF1,                     P_87,  NO_PREFIX)
 ins (T_FYL2XP1,         OP_NONE,     0,      OP_NONE,    0,      0xD9,     0xF9,                     P_87,  NO_PREFIX)

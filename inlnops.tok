@@ -241,6 +241,8 @@ fwait
 fword
 fxam
 fxch
+fxrstor
+fxsave
 fxtract
 fyl2x
 fyl2xp1
