@@ -326,7 +326,7 @@ typedef struct {
 
 /*---------------------------------------------------------------------------*/
 
-enum {
+enum assume_reg {
     ASSUME_DS=0,
     ASSUME_ES,
     ASSUME_SS,
@@ -419,11 +419,11 @@ extern dir_node *GetSeg( struct asm_sym *sym );
 extern void             AssumeInit( void );     // init all assumed-register table
 extern int              SetAssume( int );       // Assume a register
 
-extern int              GetAssume( struct asm_sym*, int );
+extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
    frame_datum of its fixup */
 
-extern int              GetPrefixAssume( struct asm_sym*, int );
+extern enum assume_reg  GetPrefixAssume( struct asm_sym*, enum assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
 extern int              FixOverride( int );
