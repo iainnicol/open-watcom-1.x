@@ -48,6 +48,7 @@
     #endif
 #elif defined __WINDOWS__
     #include <windows.h>
+    #include <win16.h>
 #endif
 #include <string.h>
 #include <mbstring.h>
@@ -65,7 +66,7 @@
 
 #ifdef __NT__
     unsigned int __MBCodePage = CP_OEMCP;       /* default code page */
-#elif !defined(__UNIX__)
+#elif !defined(__QNX__)
     unsigned int __MBCodePage = 0;              /* default code page */
 #endif
 

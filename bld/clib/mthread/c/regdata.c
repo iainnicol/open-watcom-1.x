@@ -47,10 +47,9 @@ _WCRTLINK unsigned __RegisterThreadDataSize( unsigned size )
     _AccessTDList();
     offset = __ThreadDataSize;
     __ThreadDataSize += size;
-    #if !defined(__UNIX__) && !defined(_NETWARE_CLIB)
+    #if !defined( __QNX__ ) && !defined( _NETWARE_CLIB )
         __ResizeThreadDataList();
     #endif
     _ReleaseTDList();
     return( offset );
 }
-

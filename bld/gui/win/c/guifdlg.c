@@ -51,7 +51,6 @@
 #endif
 
 #ifndef __OS2_PM__
-    #define STRICT
     #include <windows.h>
     #if !defined(__NT__)  &&  !defined(__WINDOWS_386__) && !defined(WILLOWS)
         #include <commdlg.h>

@@ -84,10 +84,9 @@ U32     CDECL main( S32 argc, CHAR* argv[], U32 instance ) {
 
 #include "fapptype.h"
 
-#define STRICT
 #include <win386.h>
 
-extern  int     PASCAL  DefaultWinMain(HINSTANCE,HINSTANCE,LPSTR,int,int(*)(int,char**));
+extern  int     PASCAL  DefaultWinMain(HANDLE,HANDLE,LPSTR,int,int(*)(int,char**));
 extern  int             Spawn(void (*)());
 extern  void            FMAIN();
 extern  int             main(int,char **);
@@ -95,12 +94,12 @@ extern  int             main(int,char **);
 extern  char            __FAppType;
 
 
-intstar4        FWINMAIN( HINSTANCE thisinst, HINSTANCE previnst, LPSTR cmdline,
+intstar4        FWINMAIN( HANDLE thishandle, HANDLE prevhandle, LPSTR cmdline,
                           int cmdshow ) {
 //============================================================================
 
     __FAppType = FAPP_DEFAULT_GUI;
-    DefaultWinMain( thisinst, previnst, cmdline, cmdshow, &main );
+    DefaultWinMain( thishandle, prevhandle, cmdline, cmdshow, &main );
     return( 1 );
 }
 

@@ -1214,7 +1214,7 @@ void VpeMain::addOldProject( const WFileName& filename )
         }
     }
     _oldProjects.insertAt( 0, new WFileName( filename ) );
-    for( i=_oldProjects.count(); i > MAXOLDPROJECTS; ) {
+    for( i=_oldProjects.count(); i>4; ) {
         i--;
         delete _oldProjects.removeAt( i );
     }
