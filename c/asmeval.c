@@ -36,7 +36,7 @@
 #include "asmdefs.h"
 
 #ifdef _WASM_
-  #include "myassert.h"
+#include "myassert.h"
 #else
 //  FIXME!!
 #define myassert(x)
