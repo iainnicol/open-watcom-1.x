@@ -40,6 +40,8 @@
 #include "fcgbls.h"
 #include "opn.h"
 #include "cpopt.h"
+#include "recog.h"
+
 
 extern  void            GSPProlog(void);
 extern  void            EmitOp(unsigned_16);
@@ -53,7 +55,6 @@ extern  void            IfExpr(void);
 extern  sym_id          StaticAlloc(int,int);
 extern  label_id        NextLabel(void);
 extern  int             TypeSize(uint);
-extern  bool            RecNOpn(void);
 extern  bool            TypeCmplx(int typ);
 extern  void            GenType(itnode *);
 extern  void            DumpType(uint,uint);
