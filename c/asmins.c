@@ -2334,8 +2334,21 @@ static int check_size( void )
 #endif        
         break;
     case T_MOV:
-        // to optimize MOV
-        if( ( op1 == OP_M ) || ( op2 == OP_M ) ) {
+        if( op1 & OP_SR ) {
+            op2_size = OperandSize( op2 );
+            if( ( op2_size == 2 ) || ( op2_size == 4 ) ) {
+//                Code->prefix.opsiz = FALSE;
+                return( state );
+            }
+        } else if( op2 & OP_SR ) {
+            op1_size = OperandSize( op1 );
+            if( ( op1_size == 2 ) || ( op1_size == 4 ) ) {
+//                if( op1 == OP_M )
+//                    Code->prefix.opsiz = FALSE;
+                return( state );
+            }
+        } else if( ( op1 == OP_M ) || ( op2 == OP_M ) ) {
+            // to optimize MOV
             temp = Code->info.rm_byte;
             if( Code->info.opnd_type[OPND1] & OP_A ) {
                 temp = ( temp & BIT_67 ) | ( ( temp & BIT_012 ) << 3 ) | ( ( temp & BIT_345 ) >> 3 );
@@ -2356,10 +2369,6 @@ static int check_size( void )
                     Code->info.opnd_type[OPND2] &= ~OP_A;
                 }
             }
-        } else if( ( op1 & OP_SR ) && ( op2 & OP_R32 ) ) {
-            return( state );
-        } else if( ( op1 & OP_R32 ) && ( op2 & OP_SR ) ) {
-            return( state );
         } else if( ( op1 & OP_SPEC_REG ) || ( op2 & OP_SPEC_REG ) ) {
             Code->prefix.opsiz = FALSE;
             return( state );
