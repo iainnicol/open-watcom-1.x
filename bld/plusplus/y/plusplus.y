@@ -2250,7 +2250,7 @@ template-defarg-rewrite
             what = P_SYNTAX;
             $$ = NULL;
         } else {
-            $$ = RewritePackageTemplateDefArg( NULL );
+            $$ = RewritePackageTemplateDefArg();
             t = Y_DEFARG_GONE_SPECIAL;
         }
     }

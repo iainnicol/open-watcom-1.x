@@ -626,11 +626,14 @@ REWRITE *RewritePackageDefArg( PTREE multi )
     return( NULL );
 }
 
-REWRITE *RewritePackageTemplateDefArg( PTREE multi )
+REWRITE *RewritePackageTemplateDefArg( void )
 /******************************************/
 {
     REWRITE *r;
     unsigned angle_depth;
+    unsigned brace_depth;
+    unsigned bracket_depth;
+    unsigned paren_depth;
     TOKEN_LOCN locn;
     auto TOKEN_LOCN start_locn;
 
@@ -638,24 +641,60 @@ REWRITE *RewritePackageTemplateDefArg( PTREE multi )
     NextToken();
     SrcFileGetTokenLocn( &start_locn );
     r = newREWRITE( T_DEFARG_END, &locn );
-    captureMulti( r, multi, &locn );
-    angle_depth = 0;
+    angle_depth = brace_depth = bracket_depth = paren_depth = 0;
     for(;;) {
         if( CurToken == T_EOF ) {
             defArgError( r, &start_locn );
             break;
         }
         switch( CurToken ) {
-        case T_LT:
-            ++angle_depth;
+        case T_LEFT_BRACE:
+            ++brace_depth;
             break;
-        case T_COMMA :
-        case T_GT:
-            if( angle_depth == 0 ) {
-                UndoNextToken();
-                return( r );
+        case T_LEFT_BRACKET:
+            ++bracket_depth;
+            break;
+        case T_LEFT_PAREN:
+            ++paren_depth;
+            break;
+        case T_RIGHT_BRACE:
+            if( brace_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
             }
-            --angle_depth;
+            --brace_depth;
+            break;
+        case T_RIGHT_BRACKET:
+            if( bracket_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            --bracket_depth;
+            break;
+        case T_RIGHT_PAREN:
+            if( paren_depth == 0 ) {
+                return( defArgError( r, &start_locn ) );
+            }
+            --paren_depth;
+            break;
+        case T_LT:
+            /* for non-type template arguments this should always be
+             * parsed as less-than */
+            if( ( brace_depth == 0 ) && ( bracket_depth == 0 )
+              && ( paren_depth == 0 ) ) {
+                ++angle_depth;
+            }
+            break;
+        case T_COMMA:
+        case T_GT:
+            if( ( brace_depth == 0 ) && ( bracket_depth == 0 )
+              && ( paren_depth == 0 ) ) {
+                if( angle_depth == 0 ) {
+                    UndoNextToken();
+                    return( r );
+                }
+                else if( CurToken == T_GT ) {
+                    --angle_depth;
+                }
+            }
             break;
         }
         saveToken( r, &locn );
