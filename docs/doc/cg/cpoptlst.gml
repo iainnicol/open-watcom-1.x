@@ -768,11 +768,6 @@
 ~b~b~b~b~b~b
 .br
 .*
-:CMT. .note zev
-:hotlink refid='SWzev'.
-~b~b~b~b~b~b
-.br
-.*
 :CMT. .note zff
 :hotlink refid='SWzffp'.
 ~b~b~b~b~b~b
@@ -830,11 +825,6 @@
 .*
 :CMT. .note zld
 :hotlink refid='SWzld'.
-~b~b~b~b~b~b
-.br
-.*
-:CMT. .note zls
-:hotlink refid='SWzls'.
 ~b~b~b~b~b~b
 .br
 .*

@@ -78,7 +78,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(setlocale,_wsetlocale)( int category, CHAR_TYPE co
                     _LOCALESETTING[LC_NUMERIC]  = i;
                     _LOCALESETTING[LC_TIME]     = i;
                     _LOCALESETTING[LC_MONETARY] = i;
-#if defined( __UNIX__ )
+#if defined( __QNX__ )
                     _LOCALESETTING[LC_MESSAGES] = i;
 #endif
                 }

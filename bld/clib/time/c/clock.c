@@ -32,11 +32,9 @@
 
 #include "variety.h"
 #include <time.h>
-#if defined(__QNX__)
+#ifdef __QNX__
 #include <sys/types.h>
 #include <sys/timers.h>
-#elif defined(__LINUX__)
-#include <sys/time.h>
 #endif
 #include <rtinit.h>
 #include "timedata.h"
@@ -49,24 +47,17 @@ static time_t  init_seconds;
 
 static void get_clock_time(time_t *secs, clock_t *milliseconds)
 {
-#if defined(__QNX__)
+#ifdef __QNX__
     struct timespec timer;
 
     getclock(TIMEOFDAY, &timer);
-    *secs = (time_t)timer.tv_sec;
+    *secs       = (time_t)timer.tv_sec;
     *milliseconds = (clock_t)(timer.tv_nsec / (1000000000 / CLOCKS_PER_SEC));
-#elif defined(__LINUX__)
-    struct timeval tv;
-    struct timezone tz;
-
-    gettimeofday(&tv,&tz);
-    *secs = tv.tv_sec;
-    *milliseconds = tv.tv_usec / 1000;
 #else
     struct tm t;
 
     *milliseconds = (clock_t)__getctime(&t);
-    *secs = mktime(&t);
+    *secs       = mktime(&t);
 #endif
 } /* get_clock_time() */
 
@@ -87,7 +78,7 @@ _WCRTLINK clock_t clock(void)
      * Make sure we won't overflow.
      */
     if (new_seconds > MAX_SECONDS)
-        return -1;
+            return -1;
 
     /*
      * `ticks' right now contains the number of milliseconds of seconds since
@@ -106,4 +97,3 @@ static void __clock_init(void)
 } /* __clock_init() */
 
 AXI( __clock_init, INIT_PRIORITY_LIBRARY )
-

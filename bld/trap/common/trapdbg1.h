@@ -24,15 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Declares internal variables used by trap debugging code.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
 
 #ifdef DEBUG_TRAP
 
 #include <watcom.h>
 
-uint_8                   DBG_Indent = 0;
-uint_8                   DBG_Lines = 0;
+extern uint_8                   DBG_Indent = 0;
+extern uint_8                   DBG_Lines = 0;
+
 
 #endif  /* #ifdef DEBUG_TRAP */
