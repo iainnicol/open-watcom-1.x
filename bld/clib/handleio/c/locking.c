@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#ifdef __UNIX__
+#ifdef __QNX__
 #include <fcntl.h>
 #else
 #include <dos.h>
@@ -46,7 +46,7 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-#ifdef __UNIX__
+#ifdef __QNX__
 _WCRTLINK int (locking)( int handle, int mode, long nbytes )
 {
     int                 cmd;
@@ -83,7 +83,7 @@ _WCRTLINK int (locking)( int handle, int mode, long nbytes )
         flock_buff.l_type = F_RDLCK;
         break;
     default:
-        errno = ENOSYS;
+        errno = ENOTSUP;
         return( -1 );
     }
     tries = 10;
