@@ -37,4 +37,17 @@ pick( "__cplusplus",    MACRO_CPLUSPLUS )
 pick( "__FUNCTION__",   MACRO_FUNCTION )
 // Can't have the following here because the IDs need to be unique!
 // pick( "__func__",       MACRO_FUNCTION )
+
+// alternative tokens for C++
+pick( "and",            MACRO_ALT_AND )
+pick( "bitand",         MACRO_ALT_BITAND )
+pick( "and_eq",         MACRO_ALT_AND_EQ )
+pick( "or",             MACRO_ALT_OR )
+pick( "bitor",          MACRO_ALT_BITOR )
+pick( "or_eq",          MACRO_ALT_OR_EQ )
+pick( "xor",            MACRO_ALT_XOR )
+pick( "xor_eq",         MACRO_ALT_XOR_EQ )
+pick( "not",            MACRO_ALT_NOT )
+pick( "not_eq",         MACRO_ALT_NOT_EQ )
+pick( "compl",          MACRO_ALT_COMPL )
 #undef pick

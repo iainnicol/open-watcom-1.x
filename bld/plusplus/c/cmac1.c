@@ -399,6 +399,28 @@ int SpecialMacro(               // EXECUTE A SPECIAL MACRO
         U32ToU64( 1, &Constant64 );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
+    case MACRO_ALT_AND:
+        return( T_ALT_AND_AND );
+    case MACRO_ALT_BITAND:
+        return( T_ALT_AND );
+    case MACRO_ALT_AND_EQ:
+        return( T_ALT_AND_EQUAL );
+    case MACRO_ALT_OR:
+        return( T_ALT_OR_OR );
+    case MACRO_ALT_BITOR:
+        return( T_ALT_OR );
+    case MACRO_ALT_OR_EQ:
+        return( T_ALT_OR_EQUAL );
+    case MACRO_ALT_XOR:
+        return( T_ALT_XOR );
+    case MACRO_ALT_XOR_EQ:
+        return( T_ALT_XOR_EQUAL );
+    case MACRO_ALT_NOT:
+        return( T_ALT_EXCLAMATION );
+    case MACRO_ALT_NOT_EQ:
+        return( T_ALT_NE );
+    case MACRO_ALT_COMPL:
+        return( T_ALT_TILDE );
     }
     return( T_EOF );
 }
