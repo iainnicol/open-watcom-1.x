@@ -57,7 +57,6 @@ extern  extended                QTANH(extended);
 #endif
 
 
-#if _OPT_CG == _ON
 
 extended XQTANH( extended *arg ) {
 //============================
@@ -65,4 +64,3 @@ extended XQTANH( extended *arg ) {
     return( QTANH( *arg ) );
 }
 
-#endif

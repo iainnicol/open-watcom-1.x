@@ -49,7 +49,6 @@ single SIGN( single arg1, single arg2 ) {
     return( -fabs( arg1 ) );
 }
 
-#if _OPT_CG == _ON
 
 single XSIGN( single *arg1, single *arg2 ) {
 //==========================================
@@ -57,4 +56,3 @@ single XSIGN( single *arg1, single *arg2 ) {
     return( SIGN( *arg1, *arg2 ) );
 }
 
-#endif
