@@ -4,6 +4,8 @@ allign &
 datamix1 &
 datamix2 &
 jmpshrt &
+lea &
+lsxxx &
 mseg &
 opi8u &
 plsintr &
@@ -17,8 +19,6 @@ tbyte &
 testequ
 
 dev_objs = &
-irpexitm &
-lea &
-lsxxx
+irpexitm
 
 !include ../test.mif

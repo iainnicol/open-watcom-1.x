@@ -11,6 +11,7 @@ bitwise &
 bunk &
 c &
 dasm &
+data &
 dup &
 enter &
 fadd &
@@ -43,6 +44,8 @@ t07 &
 t08 &
 t09 &
 t10 &
+t11 &
+t12 &
 t13 &
 t14 &
 t15 &
@@ -76,10 +79,7 @@ timer &
 tmp
 
 dev_objs = &
-data &
 set386 &
-setjmp &
-t11 &
-t12
+setjmp
 
 !include ../test.mif
