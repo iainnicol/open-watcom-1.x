@@ -491,18 +491,6 @@ try truncated (8.3) header file specification
 do not try truncated (8.3) header file specification
 :optref refid='SWfx'.
 .do end
-.if &e'&$SWfzh eq 1 .do begin
-.note fzh
-(C++ only)
-do not automatically append extensions for include files
-:optref refid='SWfzh'.
-.do end
-.if &e'&$SWfzs eq 1 .do begin
-.note fzs
-(C++ only)
-do not automatically append extensions for source files
-:optref refid='SWfzs'.
-.do end
 .if &e'&$SWi eq 1 .do begin
 .note i=<directory>
 another include directory
@@ -533,17 +521,8 @@ remove default library information
 remove file dependency information
 :optref refid='SWzld'.
 .do end
-.if &e'&$SWzlf eq 1 .do begin
-.note zlf
-add default library information to object files
-:optref refid='SWzlf'.
-.do end
-.if &e'&$SWzls eq 1 .do begin
-.note zls
-remove automatically generated symbols references
-:optref refid='SWzls'.
-.do end
 .endnote
+.*
 .section Code Generation
 .*
 .begnote $compact $setptnt 10
@@ -2929,34 +2908,6 @@ This option can be used to disable the truncated header filename
 processing that the compiler does by default (see "ft" above).
 .do end
 .*
-.if &e'&$SWfzh eq 1 .do begin
-:OPT refid='SWfzh' name='fzh'.
-.ix 'options' 'fzh'
-(C++ only)
-This option can be used to stop the compiler from automatically adding 
-extensions to include files. The default behaviour of the compiler is to 
-search for the specified file, then to try known extensions if the file 
-specifier does not have an extension. Thus, #include <string> could be 
-matched by 'string', 'string.h' or 'string.hpp' (see "fzs" below). The 
-macro
-.kwm __SW_FZH
-will be defined when this switch is used.
-.do end
-.*
-.if &e'&$SWfzs eq 1 .do begin
-:OPT refid='SWfzs' name='fzs'.
-.ix 'options' 'fzs'
-(C++ only)
-This option can be used to stop the compiler from automatically adding 
-extensions to source files. The default behaviour of the compiler is to 
-search for the specified file, then to try known extensions if the file 
-specifier does not have an extension. Thus, 'src_file' could be matched 
-by 'src_file', 'src_file.cpp' or 'src_file.cc' (see "fzh" above). The 
-macro
-.kwm __SW_FZS
-will be defined when this switch is used.
-.do end
-.*
 .if &e'&$SWi eq 1 .do begin
 :OPT refid='SWi' name='i'.=<directory>
 .ix 'options' 'i'
@@ -3063,24 +3014,6 @@ to determine that this file needs to be recompiled if any of the
 referenced files has been modified since the object file was created.
 This option causes the compiler to not emit this information into the
 object file.
-.do end
-.*
-.if &e'&$SWzlf eq 1 .do begin
-:OPT refid='SWzlf' name='zlf'.&optdag.
-.ix 'options' 'zlf'
-The "zlf" option tells the compilers to emit references for all default
-library information into the compiled object file. See also the options 
-"zl", "zld" and "zls".
-.do end
-.*
-.if &e'&$SWzls eq 1 .do begin
-:OPT refid='SWzls' name='zls'.&optdag.
-.ix 'options' 'zls'
-The "zls" option tells the compilers to remove automatically inserted
-symbols. These symbols are usually used to force symbol references
-to be fixed up from the run-time libraries. An example would be 
-the symbol __DLLstart_, that is inserted into any object file that has 
-a DllMain() function defined within its source file.
 .do end
 .*
 :eOPTLIST.
@@ -4601,15 +4534,6 @@ The "zdl" option causes generation of code to load the DS register
 directly from DGROUP (rather than the default run-time call).
 This option causes the generation of a segment relocation.
 This option is used with the "zdp" option but not the "zdf" option.
-.do end
-.*
-.if &e'&$SWzev eq 1 .do begin
-:OPT refid='SWzev' name='zev'.&optdag.
-.ix 'options' 'zev'
-The "zev" option is an extension to the Watcom C compiler to allow
-arithmetic operations on void derived types. This option has been added
-for compatibility with some Unix compilers and is not ANSI compliant.
-The use of this option should be avoided.
 .do end
 .*
 .if &e'&$SWzffp eq 1 .do begin

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#define STRICT
 #include "windows.h"
 
 int PASCAL WinMain( HANDLE inst, HANDLE prev, LPSTR cmdline, int cmdshow)

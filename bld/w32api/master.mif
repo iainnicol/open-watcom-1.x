@@ -56,7 +56,6 @@ libs =               &
         psapi.lib &
         rapi.lib &
         rasapi32.lib &
-        rasdlg.lib &
         rpcdce4.lib &
         rpcns4.lib &
         rpcrt4.lib &

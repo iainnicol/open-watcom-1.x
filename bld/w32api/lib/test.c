@@ -45,7 +45,6 @@
 #include <odbcinst.h>
 #include <psapi.h>
 #include <ras.h>
-#include <rasdlg.h>
 #include <raserror.h>
 #include <rassapi.h>
 #include <richedit.h>
