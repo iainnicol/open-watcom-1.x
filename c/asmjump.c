@@ -192,7 +192,7 @@ static void FarCallToNear()
 }
 #endif
 
-int jmpx( expr_list *opndx )
+int jmp( expr_list *opndx )
 /*
   determine the displacement of jmp;
 */
