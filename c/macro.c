@@ -42,12 +42,12 @@
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "asmerr.h"
-#include "asmops1.h"
-#include "asmops2.h"
-#include "asmins1.h"
+#include "asmins.h"
 #include "namemgr.h"
 #include "asmsym.h"
 #include "asmerr.h"
+#include "asmdefs.h"
+#include "asmeval.h"
 
 #include "womp.h"
 #include "pcobj.h"
@@ -57,43 +57,29 @@
 #include "expand.h"
 
 #include "directiv.h"
-// #undef _DIRECT_H_
-// #define _DIRECT_FIX_
-// #include "directiv.h"
 
 extern char             *ReadTextLine( char * );
 extern void             FlushCurrSeg( void );
 extern void             AsmError( int );
 extern int              InputQueueFile( char * );
-extern int              AsmScan( char *, char * );
-extern struct fixup     *CreateFixupRec( int );
+extern int              AsmScan( char * );
 extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
 extern void             AsmTakeOut( char * );
-extern int              EvalExpr( int, int, int );
 extern dir_node         *dir_insert( char *name, int tab );
 extern void             wipe_space( char *token );
 extern char             *get_curr_filename( void );
 extern void             PushMacro( char *, bool );
+extern bool             GetQueueMacroHidden( void );
 
-extern  const struct asm_ins    ASMFAR AsmOpTable[];
-extern  uint            LineNumber;
-extern  struct asm_tok  *AsmBuffer[];   // buffer to store token
-extern  struct AsmCodeName AsmOpcode[];
-extern  char            StringBuf[];
-extern  char            Parse_Pass;     // phase of parsing
-extern  module_info     ModuleInfo;
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
 extern dir_node         *CurrProc;
-extern int_8            Use32;          // if 32-bit code is use
 extern File_Info        AsmFiles;
 extern char             *CurrString;    // Current Input Line
-extern char             EndDirectiveFound;
-extern char             AsmChars[];
-extern int              Token_Count;    // number of tokens on line
 extern int              MacroLocalVarCounter;
 
+int                     MacroExitState = 0;
 
 /* quick explanation:
  *
@@ -383,7 +369,10 @@ static int macro_exam( int i )
         while( isspace( *ptr ) ) ptr++;
         if( lineis( ptr, "for" )
          || lineis( ptr, "forc" )
-         || lineis( ptr, "irp" ) ) {
+         || lineis( ptr, "irp" )
+         || lineis( ptr, "irpc" )
+         || lineis( ptr, "rept" )
+         || lineis( ptr, "repeat" ) ) {
             nesting_depth++;
         }
         while( *ptr != '\0' && !isspace( *ptr ) ) ptr++; // skip 1st token
@@ -391,7 +380,10 @@ static int macro_exam( int i )
         if( lineis( ptr, "macro" )
          || lineis( ptr, "for" )
          || lineis( ptr, "forc" )
-         || lineis( ptr, "irp" ) ) {
+         || lineis( ptr, "irp" )
+         || lineis( ptr, "irpc" )
+         || lineis( ptr, "rept" )
+         || lineis( ptr, "repeat" ) ) {
             nesting_depth++;
         }
 
@@ -460,7 +452,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     }
 
     my_sprintf( buffer, lnode->line, count-1, parm_array );
-    new_line = AsmAlloc( strlen( (char*)buffer ) + 1 );
+    new_line = AsmAlloc( strlen( (char *)buffer ) + 1 );
     strcpy( new_line, buffer );
     return( new_line );
 }
@@ -584,7 +576,11 @@ int ExpandMacro( int tok_count)
                             next_char[0] = *( AsmBuffer[count]->string_ptr );
                             strcat( buffer, next_char );
                         } else if( AsmBuffer[count]->token == T_NUM ) {
-                            itoa( AsmBuffer[count]->value, buffer+strlen( buffer ), 10 );
+                            if( *AsmBuffer[count]->string_ptr == 0 ) {
+                                itoa( AsmBuffer[count]->value, buffer+strlen( buffer ), 10 );
+                            } else {
+                                strcpy( buffer+strlen( buffer ), AsmBuffer[count]->string_ptr );
+                            }
                         } else if( AsmBuffer[count]->token == T_TEXT ) {
                             strcat( buffer, AsmBuffer[count]->string_ptr );
                         } else if( AsmBuffer[count]->token == T_STRING ) {
@@ -592,7 +588,6 @@ int ExpandMacro( int tok_count)
                             char        *dst;
 
                             dst = &buffer[strlen(buffer)];
-                            *dst++ = '\'';
 
                             src = AsmBuffer[count]->string_ptr;
                             while( *src != '\0' ) {
@@ -601,7 +596,6 @@ int ExpandMacro( int tok_count)
                                 }
                                 *dst++ = *src++;
                             }
-                            *dst++ = '\'';
                             *dst = '\0';
                         } else {
                             strcat( buffer, AsmBuffer[count]->string_ptr );
@@ -612,6 +606,7 @@ int ExpandMacro( int tok_count)
                             free_parmlist( info->parmlist );
                             return( ERROR );
                         case STRING_EXPANDED:
+                            tok_count = Token_Count;
                             continue;
                         }
 
@@ -619,9 +614,8 @@ int ExpandMacro( int tok_count)
                             AsmBuffer[count]->string_ptr == NULL ||
                             AsmBuffer[count+1]->token == T_FINAL ) {
                             if( AsmBuffer[count+1]->token == T_FINAL ) count++;
-                            tok_count = EvalExpr( tok_count, exp_start, count-1 );
+                            tok_count = EvalExpr( tok_count, exp_start, count-1, TRUE );
                             expansion_flag = FALSE;
-                            Token_Count = tok_count;
                             count = exp_start;
                         }
                     }
@@ -650,7 +644,7 @@ int ExpandMacro( int tok_count)
             }
         } else if( lineis( line, "local" ) ) {
             if( nesting_depth == 0 ) {
-                AsmScan( line, StringBuf );
+                AsmScan( line );
                 if( macro_local() == ERROR ) return( ERROR );
                 AsmFree( line );
                 continue;
@@ -713,4 +707,21 @@ int MacroDef( int i, bool hidden )
     }
     sym->state = SYM_MACRO;
     return( macro_exam( i ) ) ;
+}
+
+int MacroEnd( bool exit_flag )
+/*******************/
+{
+    if( exit_flag ) {
+        MacroExitState = 2;
+    } else if( MacroExitState > 0 ) {
+        if( GetQueueMacroHidden() ) {
+            MacroExitState--;
+        } else {
+            MacroExitState = 0;
+        }
+    } else {
+        MacroExitState = 0;
+    }
+    return( 0 );
 }

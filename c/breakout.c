@@ -39,28 +39,25 @@
 #include "watcom.h"
 
 #include "asmglob.h"
-#include "asmops1.h"
-#include "asmops2.h"
+#include "asmins.h"
 #include "directiv.h"
 #include "condasm.h"
 #include "myassert.h"
 #include "asmerr.h"
 #include "expand.h"
+#include "asmdefs.h"
 
 /* prototypes */
 extern int              OrgDirective( int );
 extern int              AlignDirective( uint_16, int );
 extern int              LabelDirective( int );
-extern int              cpu_directive( uint_16 );
 extern int              StructDef( int );
 extern void             GetInsString( enum asm_token , char *, int );
-extern int              ForDirective( int, bool );
+extern int              ForDirective( int, enum irp_type );
 
 /* global vars */
-extern char             Parse_Pass;     // phase of parsing
-extern int              Token_Count;
-extern module_info      ModuleInfo;     // general info about the module
 extern dir_node         *CurrProc;
+extern seg_list         *CurrSeg;
 
 int directive( int i, long direct )
 /* Handle all directives */
@@ -71,6 +68,10 @@ int directive( int i, long direct )
     switch( direct ) {
     case T_DOT_286C:
         direct = T_DOT_286;
+    case T_DOT_8086:
+    case T_DOT_186:
+    case T_DOT_286:
+    case T_DOT_286P:
     case T_DOT_386:
     case T_DOT_386P:
     case T_DOT_486:
@@ -79,11 +80,6 @@ int directive( int i, long direct )
     case T_DOT_586P:
     case T_DOT_686:
     case T_DOT_686P:
-        ModuleInfo.use32 = TRUE;
-    case T_DOT_8086:
-    case T_DOT_186:
-    case T_DOT_286:
-    case T_DOT_286P:
     case T_DOT_8087:
     case T_DOT_287:
     case T_DOT_387:
@@ -91,6 +87,7 @@ int directive( int i, long direct )
         ret = cpu_directive(direct);
         if( Parse_Pass != PASS_1 ) ret = NOT_ERROR;
         return( ret );
+    case T_DOT_DOSSEG:
     case T_DOT_DOSSEG:
         Globals.dosseg = TRUE;
         return( NOT_ERROR );
@@ -206,13 +203,29 @@ int directive( int i, long direct )
     case T_DOT_EXIT:
         AsmError( NOT_SUPPORTED );
         return( ERROR );
-    case T_EQU:
-    case T_EQU2:
-    case T_TEXTEQU:
+    case T_ORG:
+        ExpandTheWorld( 0, FALSE, TRUE );
+        break;
+    case T_EQU2:    // =
         /* expand any constants and simplify any expressions */
-        //if( Parse_Pass == PASS_1 ) {
-            ExpandTheWorld( 0, FALSE );
-        //}
+//        if( Parse_Pass == PASS_1 ) {
+            ExpandTheWorld( 0, FALSE, TRUE );
+//        }
+        break;
+    case T_EQU:     // EQU
+        /* expand any constants and simplify any expressions */
+//        if( Parse_Pass == PASS_1 ) {
+            ExpandTheWorld( 0, FALSE, TRUE );
+//        }
+        break;
+    case T_TEXTEQU: // TEXTEQU
+        /* expand any constants and simplify any expressions */
+//        if( Parse_Pass == PASS_1 ) {
+//            ExpandTheWorld( 0, FALSE, TRUE );
+//        }
+        break;
+    case T_NAME:
+        // no expand parameters
         break;
     default:
         /* expand any constants in all other directives */
@@ -251,6 +264,10 @@ int directive( int i, long direct )
         return( DefineConstant( i-1, TRUE, TRUE ) );
     case T_MACRO:
         return( MacroDef(i-1, FALSE ) );
+    case T_ENDM:
+        return( MacroEnd( FALSE ) );
+    case T_EXITM:
+        return( MacroEnd( TRUE ) );
     case T_LOCAL:
         return( Parse_Pass == PASS_1 ? LocalDef(i) : NOT_ERROR );
     case T_COMMENT:
@@ -269,9 +286,13 @@ int directive( int i, long direct )
         return( AlignDirective( direct, i ) );
     case T_FOR:
     case T_IRP:
-        return( ForDirective ( i+1, FALSE ) );
+        return( ForDirective ( i+1, IRP_WORD ) );
     case T_FORC:
-        return( ForDirective ( i+1, TRUE ) );
+    case T_IRPC:
+        return( ForDirective ( i+1, IRP_CHAR ) );
+    case T_REPT:
+    case T_REPEAT:
+        return( ForDirective ( i+1, IRP_REPEAT ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( ERROR );

@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <limits.h>
+#include <time.h>
 
 #include "myassert.h"
 #include "watcom.h"
@@ -43,10 +44,12 @@
 #include "asmglob.h"
 #include "asmerr.h"
 #include "asmsym.h"
-#include "asmops1.h"
+#include "asmins.h"
 #include "asmalloc.h"
 #include "fatal.h"
 #include "directiv.h"
+#include "asmdefs.h"
+#include "asmeval.h"
 
 #include "womp.h"
 #include "objio.h"
@@ -55,6 +58,7 @@
 #include "pcobj.h"
 #include "fixup.h"
 #include "queue.h"
+#include "autodept.h"
 
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
@@ -65,16 +69,13 @@ extern void             AsmError( int );
 extern void             FreeIncludePath( void );
 extern void             PrepAnonLabels( void );
 extern char             *Mangle( struct asm_sym *, char * );
-extern void             AsmEvalInit( void );
-extern void             AsmEvalFini( void );
 extern void             CheckForOpenConditionals();
 extern bool             PopLineQueue();
+extern void             set_cpu_parameters( void );
+extern void             set_fpu_parameters( void );
 
-extern uint_32          Address;
-extern unsigned char    *CodeBuffer;
 extern pobj_state       pobjState;      // for WOMP interface
 extern File_Info        AsmFiles;
-extern int              Token_Count;    // number of tokens on line
 extern pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
 extern seg_list         *CurrSeg;       // points to stack of opened segments
 extern symbol_queue     Tables[];       // tables of definitions
@@ -88,7 +89,8 @@ extern uint_32          BufSize;
 extern uint             LnamesIdx;      // Number of LNAMES definition
 extern obj_rec          *ModendRec;     // Record for Modend
 extern sim_seg          LastSimSeg;     // last opened simplified segment
-extern module_info      ModuleInfo;     // general info about the module
+
+extern int              MacroExitState;
 
 int                     MacroLocalVarCounter = 0; // counter for temp. var names
 char                    Parse_Pass;     // phase of parsing
@@ -109,7 +111,63 @@ extern uint             extdefidx;      // Number of Extern definition
 
 char                    **NameArray;
 
+typedef struct  fname_list {
+        struct  fname_list *next;
+        time_t  mtime;
+        char    *name;
+} FNAME, *FNAMEPTR;
+
 global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
+
+static FNAMEPTR FNames = NULL;
+
+void AddFlist( char const *filename )
+{
+    FNAMEPTR    flist;
+    FNAMEPTR    last;
+    int         index;
+    char        *fname;
+    char        buff[2*_MAX_PATH];
+        
+    if( !Options.emit_dependencies ) return;
+
+    index = 0;
+    last = FNames;
+    for( flist = last; flist != NULL; flist = flist->next ) {
+        if( strcmp( filename, flist->name ) == 0 ) return;
+        index++;
+        last = flist;
+    }
+    fname = _getFilenameFullPath( buff, filename, sizeof(buff) );
+    flist = (FNAMEPTR)AsmAlloc( sizeof( FNAME ) );
+    flist->name = (char *)AsmAlloc( strlen( fname ) + 1 );
+    strcpy( flist->name, fname );
+    flist->mtime = _getFilenameTimeStamp( fname );
+    flist->next = NULL;
+    if( FNames == NULL ) {
+        FNames = flist;
+    } else {
+        last->next = flist;
+    }
+    return;
+}
+
+static void FreeFlist( void )
+{
+    FNAMEPTR      curr;
+    FNAMEPTR      last;
+
+    if( !Options.emit_dependencies ) return;
+
+    for( curr = FNames; curr != NULL; ) {
+        AsmFree(curr->name);
+        last = curr;
+        curr = curr->next;
+        AsmFree(last);
+    }
+    FNames = NULL;
+    return;
+}
 
 static void write_init( void )
 {
@@ -265,7 +323,7 @@ static void write_export( void )
 static void write_grp( void )
 {
     dir_node    *curr;
-    dir_node    *seg_info;
+    dir_node    *segminfo;
     seg_list    *seg;
     obj_rec     *grp;
     uint        line;
@@ -288,15 +346,15 @@ static void write_grp( void )
 
         for( seg = curr->e.grpinfo->seglist; seg; seg = seg->next ) {
             writeseg = TRUE;
-            seg_info = (dir_node *)(seg->seg);
-            if( seg_info->sym.state != SYM_SEG ) {
+            segminfo = (dir_node *)(seg->seg);
+            if( segminfo->sym.state != SYM_SEG ) {
                 LineNumber = curr->line;
                 AsmError( SEG_NOT_DEFINED );
                 write_to_file = FALSE;
                 LineNumber = line;
             } else {
                 ObjPut8( grp, GRP_SEGIDX );
-                ObjPutIndex( grp, seg_info->e.seginfo->segrec->d.segdef.idx);
+                ObjPutIndex( grp, segminfo->e.seginfo->segrec->d.segdef.idx);
             }
         }
         if( write_to_file ) {
@@ -470,27 +528,27 @@ static void write_ext( void )
     }
 }
 
-static int opsize( unsigned mem_type )
+static int opsize( memtype mem_type )
 /************************************/
 {
     switch( mem_type ) {
-    case EMPTY:     return( 0 );
+    case MT_EMPTY:     return( 0 );
 #ifdef _WASM_
-    case T_SBYTE:
+    case MT_SBYTE:
 #endif
-    case T_BYTE:    return( 1 );
+    case MT_BYTE:    return( 1 );
 #ifdef _WASM_
-    case T_SWORD:
+    case MT_SWORD:
 #endif
-    case T_WORD:    return( 2 );
+    case MT_WORD:    return( 2 );
 #ifdef _WASM_
-    case T_SDWORD:
+    case MT_SDWORD:
 #endif
-    case T_DWORD:   return( 4 );
-    case T_FWORD:   return( 6 );
-    case T_PWORD:   return( 6 );
-    case T_QWORD:   return( 8 );
-    case T_TBYTE:   return( 10 );
+    case MT_DWORD:   return( 4 );
+    case MT_FWORD:   return( 6 );
+    case MT_PWORD:   return( 6 );
+    case MT_QWORD:   return( 8 );
+    case MT_TBYTE:   return( 10 );
     default:        return( 0 );
     }
 }
@@ -523,7 +581,7 @@ static void write_comm( void )
     uint        num = 0;
     uint        total_size = 0;
     uint        varsize = 0;
-    uint        mem_type;
+    uint        symsize;
     uint        i = 0;
     uint        j = 0;
     char        *name;
@@ -588,9 +646,9 @@ static void write_comm( void )
             }
             if( varsize > 1 ) varsize--; /* we already output 1 byte */
 
-            mem_type = opsize( curr->sym.mem_type );
+            symsize = opsize( curr->sym.mem_type );
             if( curr->e.comminfo->distance != T_FAR ) {
-                value *= mem_type;
+                value *= symsize;
             }
 
             for( j=0; j < varsize; j++ ) {
@@ -600,8 +658,8 @@ static void write_comm( void )
 
             if( curr->e.comminfo->distance == T_FAR ) {
                 /* mem type always needs <= 1 byte */
-                myassert( mem_type < UCHAR_MAX );
-                name[i++] = mem_type;
+                myassert( symsize < UCHAR_MAX );
+                name[i++] = symsize;
             }
         }
         ObjAttachData( objr, name, total_size );
@@ -624,23 +682,8 @@ static void write_header( void )
     if( Options.module_name != NULL ) {
         name = Options.module_name;
     } else {
-        _fullpath( full_name, AsmFiles.fname[ASM], sizeof( full_name ) );
-        name = full_name;
-        #if defined(__UNIX__)
-            if( full_name[0] == '/'
-             && full_name[1] == '/'
-             && (AsmFiles.fname[ASM][0] != '/' || AsmFiles.fname[ASM][1] != '/') ) {
-                /*
-                   if the _fullpath result has a node number and
-                   the user didn't specify one, strip the node number
-                   off before returning
-                */
-                name += 2;
-                while( *name != '/' ) ++name;
-            }
-        #endif
+        name = _getFilenameFullPath( full_name, AsmFiles.fname[ASM], sizeof( full_name ) );
     }
-    objr->is_32 = Use32;
     len = strlen( name );
     ObjAllocData( objr, len + 1 );
     ObjPutName( objr, name, len );
@@ -655,6 +698,49 @@ static int write_modend( void )
         return ERROR;
     }
     write_record( ModendRec, TRUE );
+    return NOT_ERROR;
+}
+
+static int write_autodep( void )
+{
+    obj_rec       *objr;
+    char          buff[2*PATH_MAX + 5];
+    unsigned int len;
+    FNAMEPTR      curr;
+    FNAMEPTR      last;
+
+    if( !Options.emit_dependencies ) return NOT_ERROR;
+
+    // add source file to autodependency list
+    AddFlist( AsmFiles.fname[ASM] );
+
+    for( curr = FNames; curr != NULL; ) {
+        objr = ObjNewRec( CMD_COMENT );
+        objr->d.coment.attr = 0x80;
+        objr->d.coment.class = CMT_DEPENDENCY;
+
+        len = strlen(curr->name);
+        *((time_t *)buff) = _timet2dos(curr->mtime);
+        *(buff + 4) = (unsigned char)len;
+        strcpy(buff + 5, curr->name);
+        len += 5;
+
+        ObjAttachData( objr, buff, len );
+
+        write_record( objr, TRUE );
+
+        AsmFree(curr->name);
+        last = curr;
+        curr = curr->next;
+        AsmFree(last);
+    }
+    FNames = NULL;
+    // one NULL dependency record must be on the end
+    objr = ObjNewRec( CMD_COMENT );
+    objr->d.coment.attr = 0x80;
+    objr->d.coment.class = CMT_DEPENDENCY;
+    ObjAttachData( objr, "", 0 );
+    write_record( objr, TRUE );
     return NOT_ERROR;
 }
 
@@ -990,7 +1076,9 @@ static void reset_seg_len( void )
             AsmError( SEG_NOT_DEFINED );
             continue;
         }
-        curr->e.seginfo->segrec->d.segdef.seg_length = 0;
+        if( curr->e.seginfo->segrec->d.segdef.combine != COMB_STACK ) {
+            curr->e.seginfo->segrec->d.segdef.seg_length = 0;
+        }
         curr->e.seginfo->start_loc = 0; // fixme ?
         curr->e.seginfo->current_loc = 0;
     }
@@ -1004,6 +1092,7 @@ static void writepass1stuff( void )
         return;
     }
     write_header();
+    write_autodep();
     if( Globals.dosseg ) write_dosseg();
     write_lib();
     write_lnames();
@@ -1020,11 +1109,15 @@ static void writepass1stuff( void )
 
 static unsigned long OnePass( char *string )
 {
+    set_cpu_parameters();
+    set_fpu_parameters();
+
     EndDirectiveFound = FALSE;
     PhaseError = FALSE;
     Modend = FALSE;
     PassTotal = 0;
     LineNumber = 0;
+    MacroExitState = 0;
 
     for(;;) {
         if( ScanLine( string, MAX_LINE_LEN ) == NULL ) break; // EOF
@@ -1081,9 +1174,13 @@ void WriteObjModule( void )
         PrepAnonLabels();
 
         curr_total = OnePass( string );
+        // remove all remaining lines and deallocate corresponding memory
+        while( ScanLine( string, MAX_LINE_LEN ) != NULL ) {
+        }
         while( PopLineQueue() ) {
         }
-        if( !PhaseError && prev_total == curr_total ) break;
+        if( !PhaseError && prev_total == curr_total )
+            break;
         ObjWriteClose( pobjState.file_out );
         /* This remove works around an NT networking bug */
         remove( AsmFiles.fname[OBJ] );
@@ -1093,10 +1190,13 @@ void WriteObjModule( void )
         }
         prev_total = curr_total;
     }
-    if( write_to_file && Options.error_count == 0 ) write_modend();
+    if( write_to_file && Options.error_count == 0 )
+        write_modend();
 
+    FreeFlist();
     AsmSymFini();
     FreeIncludePath();
     write_fini();
     AsmEvalFini();
 }
+

@@ -32,19 +32,19 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "asmops1.h"//
-#include "asmops2.h"
-#include "asmins1.h"
+#include "asmins.h"
 #include "asmalloc.h"
 #include "asmerr.h"
 #include "asmglob.h"
+#include "asmdefs.h"
 
 #ifdef __USE_BSD
 #define strnicmp strncasecmp
 #endif
 
-extern struct AsmCodeName           AsmOpcode[];
-extern char                         AsmChars[];
+#ifdef __USE_BSD
+#define strnicmp strncasecmp
+#endif
 
 #include "hash.h"
 

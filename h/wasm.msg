@@ -38,8 +38,8 @@ pick( EXT_DEF_DIFF,		"External definition different from previous one" ,
 				"外部定義が前の定義と異なります" )
 pick( MEMORY_NOT_FOUND,		"Memory model is not found in .MODEL" ,
 				".MODELの中にメモリモデルがありません" )
-pick( CANNOT_OPEN_INCLUDE_FILE,	"Cannot open include file" ,
-				"インクルード・ファイルをオープンできません" )
+pick( CANNOT_OPEN_INCLUDE_FILE,	"Cannot open include file %s" ,
+				"インクルード・ファイルをオープンできません %s" )
 pick( NAME_USED_ALREADY,	"Name is used already" ,
 				"名前は既に使用されています" )
 pick( LIBRARY_NAME_MISSING,	"Library name is missing" ,
@@ -202,3 +202,5 @@ pick( SYMBOL_PREVIOUSLY_DEFINED,"'%s' is already defined",
 				"'%s' は既に定義されています" )
 pick( UNCLOSED_CONDITIONALS,	"%u unclosed conditional directive(s) detected" ,
 				"%u 閉じていない条件擬似命令を検出しました" )
+pick( WRONG_CPU_FOR_32BIT_SEGMENT, "Wrong CPU type for 32-bit segment" , 
+                                "Wrong CPU type for 32-bit segment")

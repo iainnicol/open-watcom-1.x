@@ -48,18 +48,12 @@
 #include <malloc.h>
 
 #include "asmglob.h"
-#include "asmops1.h"
-#include "asmops2.h"
-#include "asmins.h" ////
+#include "asminsd.h"
 #include "asmerr.h"
 #include "asmsym.h"
 #include "asmalloc.h"
 #include "condasm.h"
 #include "asmdefs.h"
-
-#undef  asm_op
-#define asm_op
-#include "asmops2.h"
 
 #ifdef _WASM_
 
@@ -75,14 +69,11 @@
 
 #endif
 
-extern int              operator( int, uint_8 );
+extern int              ptr_operator( memtype, uint_8 );
 extern int              jmp( int i );
-extern void             MakeConstant( long );
 
-extern int              Token_Count;
-
-unsigned char   More_Array_Element = FALSE;
-unsigned char   Last_Element_Size;
+unsigned char           More_Array_Element = FALSE;
+unsigned char           Last_Element_Size;
 
 static struct asm_code  Code_Info;
 static char             ConstantOnly;           // 20-Aug-92
@@ -90,17 +81,17 @@ struct asm_code         *Code = &Code_Info;
 
 unsigned char           Opnd_Count;
 
-extern int              MakeLabel( char *, int );
+extern int              MakeLabel( char *, memtype );
 extern int              dup_array( asm_sym *, char, char );
 extern int              data_init( int, int );
 
 #ifdef _WASM_
 
-#define Address         ( GetCurrAddr() )
-
 extern void             InputQueueLine( char * );
 extern int              directive( int , long );
 extern void             GetInsString( enum asm_token, char *, int );
+extern int              SymIs32( struct asm_sym *sym );
+extern void             find_use32( void );
 
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
@@ -113,15 +104,18 @@ int_8                   AssumeError;    // Error about assumed register
 int_8                   Frame;          // Frame of current fixup
 uint_8                  Frame_Datum;    // Frame datum of current fixup
 extern char             *CurrString;    // Current Input Line
-extern char             EndDirectiveFound;
+
+static int              in_epilogue = 0;
+extern seg_list         *CurrSeg;
+extern void             SetModuleDefSegment32( int flag );
 
 #else
-
-extern uint_32          Address;
 
 #define     directive( i, value )   cpu_directive( value )
 
 #endif
+
+int                     curr_ptr_type;
 
 void make_inst_hash_table( void );
 
@@ -138,19 +132,19 @@ static void find_frame( struct asm_sym *sym )
     case SYM_PROC:
         if( Frame != EMPTY ) break;
         if( sym->grpidx != 0 ) {
-            Frame = F_GRP;
+            Frame = FRAME_GRP;
             Frame_Datum = sym->grpidx;
         } else {
-            Frame = F_SEG;
+            Frame = FRAME_SEG;
             Frame_Datum = sym->segidx;
         }
         break;
     case SYM_GRP:
-        Frame = F_GRP;
+        Frame = FRAME_GRP;
         Frame_Datum = sym->grpidx;
         break;
     case SYM_SEG:
-        Frame = F_SEG;
+        Frame = FRAME_SEG;
         Frame_Datum = sym->segidx;
         break;
     }
@@ -189,6 +183,7 @@ static void seg_override( int seg_reg )
     int                 default_seg;
 #ifdef _WASM_
     struct asm_sym      *sym;
+    int                 assume_seg;
 
     switch( seg_reg ) {
         case T_SS:
@@ -200,7 +195,7 @@ static void seg_override( int seg_reg )
         default:
             default_seg = PREFIX_DS;
     }
-    if( Code->seg_prefix == EMPTY ) {
+    if( Code->prefix.seg == EMPTY ) {
         if( Label_Idx != -1 ) {
             check_assume( default_seg );
         }
@@ -208,37 +203,37 @@ static void seg_override( int seg_reg )
         if( Label_Idx != -1 ) {
             sym = AsmLookup( AsmBuffer[Label_Idx]->string_ptr );
             /**/myassert( sym != NULL );
-            switch( Code->seg_prefix ) {
+            switch( Code->prefix.seg ) {
                 case PREFIX_ES:
-                    default_seg = ASSUME_ES;
+                    assume_seg = ASSUME_ES;
                     break;
                 case PREFIX_CS:
-                    default_seg = ASSUME_CS;
+                    assume_seg = ASSUME_CS;
                     break;
                 case PREFIX_SS:
-                    default_seg = ASSUME_SS;
+                    assume_seg = ASSUME_SS;
                     break;
                 case PREFIX_DS:
-                    default_seg = ASSUME_DS;
+                    assume_seg = ASSUME_DS;
                     break;
                 case PREFIX_FS:
-                    default_seg = ASSUME_FS;
+                    assume_seg = ASSUME_FS;
                     break;
                 case PREFIX_GS:
-                    default_seg = ASSUME_GS;
+                    assume_seg = ASSUME_GS;
                     break;
             }
-            if( GetPrefixAssume( sym, default_seg ) == ASSUME_NOTHING ) {
+            if( GetPrefixAssume( sym, assume_seg ) == ASSUME_NOTHING ) {
                 AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
             }
         }
     }
 
-    if( Code->seg_prefix == default_seg ) {
-        Code->seg_prefix = EMPTY;
+    if( Code->prefix.seg == default_seg ) {
+        Code->prefix.seg = EMPTY;
     }
 #else
-    if( Code->seg_prefix != EMPTY ) {
+    if( Code->prefix.seg != EMPTY ) {
         switch( seg_reg ) {
         case T_SS:
         case T_BP:
@@ -249,8 +244,8 @@ static void seg_override( int seg_reg )
         default:
             default_seg = PREFIX_DS;
         }
-        if( Code->seg_prefix == default_seg ) {
-            Code->seg_prefix = EMPTY;
+        if( Code->prefix.seg == default_seg ) {
+            Code->prefix.seg = EMPTY;
         }
     }
 #endif
@@ -290,27 +285,27 @@ static void check_assume( int default_reg )
             // AssumeError = TRUE;
             AsmWarn( 3, CANNOT_ADDRESS_WITH_ASSUMED_REGISTER );
         } else {
-            Code->seg_prefix = default_reg;
+            Code->prefix.seg = default_reg;
         }
     } else {
         switch( reg ) {
             case ASSUME_ES:
-                Code->seg_prefix = PREFIX_ES;
+                Code->prefix.seg = PREFIX_ES;
                 break;
             case ASSUME_CS:
-                Code->seg_prefix = PREFIX_CS;
+                Code->prefix.seg = PREFIX_CS;
                 break;
             case ASSUME_DS:
-                Code->seg_prefix = PREFIX_DS;
+                Code->prefix.seg = PREFIX_DS;
                 break;
             case ASSUME_GS:
-                Code->seg_prefix = PREFIX_GS;
+                Code->prefix.seg = PREFIX_GS;
                 break;
             case ASSUME_FS:
-                Code->seg_prefix = PREFIX_FS;
+                Code->prefix.seg = PREFIX_FS;
                 break;
             case ASSUME_SS:
-                Code->seg_prefix = PREFIX_SS;
+                Code->prefix.seg = PREFIX_SS;
                 break;
         }
     }
@@ -328,7 +323,7 @@ int check_override( int *i )
         if( AsmBuffer[index+1]->token == T_COLON ) {
         switch( AsmBuffer[index]->token ) {
                 case T_REG:
-                    Code->seg_prefix =
+                    Code->prefix.seg =
                        AsmOpTable[AsmOpcode[AsmBuffer[index]->value].position].opcode;
                     (*i) += 2;
                     if( *i >= Token_Count ) {
@@ -384,7 +379,7 @@ static int mem( int i )
 #endif
     fixup = NULL;
     ConstantOnly = TRUE;
-    if( Code->seg_prefix != EMPTY ) {
+    if( Code->prefix.seg != EMPTY ) {
         //fixme
         /* temporary fix -- we will probably have to change the structure of
          * the asm_code structure, to allow multiple seg. overrides per line
@@ -419,13 +414,13 @@ static int mem( int i )
                     AsmError( CANNOT_USE_386_ADDRESSING_MODE_WITH_CURRENT_CPU_SETTING );
                     return( ERROR );
                 }
-                if( !Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                if( !Code->use32 ) Code->prefix.adrsiz = TRUE;
                 break;
             case T_BX:
             case T_BP:
             case T_SI:
             case T_DI:
-                if( Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                if( Code->use32 ) Code->prefix.adrsiz = TRUE;
                 break;
             default:
                 AsmError( INVALID_MEMORY_POINTER );
@@ -494,7 +489,7 @@ static int mem( int i )
                 break;
             case T_TIMES :  // 386, cur reg is index
                 if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
-                    if( !Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                    if( !Code->use32 ) Code->prefix.adrsiz = TRUE;
                     index = AsmBuffer[i]->value;
                     switch( index ) {
                     case T_ESP:
@@ -506,7 +501,7 @@ static int mem( int i )
                         AsmError( INVALID_INDEX_REGISTER );
                         return( ERROR );
                     default:
-                        if( !Code->use32 ) Code->adrsiz = NOT_EMPTY;
+                        if( !Code->use32 ) Code->prefix.adrsiz = TRUE;
                         i += 2;
                         if( AsmBuffer[i]->token == T_NUM ) {
                             switch( AsmBuffer[i]->value ) {
@@ -605,16 +600,14 @@ static int mem( int i )
             if( sym->state == SYM_STRUCT ) {
                 /* kludge: ignore structures, people using MASM 6.x stuff */
                 i++;
-                if (Code->info.opnd_type[Opnd_Count] == OP_NONE) {
-                    Code->info.opnd_type[Opnd_Count] =  Code->use32 ? OP_I32 : OP_I16;
-                }
+                sym = field;
                 continue;
             } else if( sym->state == SYM_STRUCT_FIELD ) {
                 //ConstantOnly = TRUE;
                 Code->data[Opnd_Count] += sym->offset;
                 // fixme
-                if( operator( sym->mem_type, FALSE ) == ERROR ) return( ERROR );
-                //if( operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+                if( ptr_operator( sym->mem_type, FALSE ) == ERROR ) return( ERROR );
+                //if( ptr_operator( MT_PTR, FALSE ) == ERROR ) return( ERROR );
                 i++;
                 sym = field;
                 field_flag = 1;
@@ -635,8 +628,8 @@ static int mem( int i )
             switch( sym->state ) {
             case SYM_UNDEFINED:
                 // forward reference
-                if( Code->seg_prefix == EMPTY ) {
-                    Code->seg_prefix = PREFIX_CS;
+                if( Code->prefix.seg == EMPTY ) {
+                    Code->prefix.seg = PREFIX_CS;
                 }
                 break;
             case SYM_STACK:
@@ -657,14 +650,14 @@ static int mem( int i )
                 base_lock = TRUE;   // add lock
                 /* fall through */
             default:
-                if( Code->mem_type == EMPTY ) {
+                if( Code->mem_type == MT_EMPTY ) {
 #ifdef _WASM_
                     if( !Modend ) {
 #endif
-                        if( operator( sym->mem_type, FALSE ) == ERROR ) {
+                        if( ptr_operator( sym->mem_type, FALSE ) == ERROR ) {
                             return ERROR;
                         }
-                        if( operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+                        if( ptr_operator( MT_PTR, FALSE ) == ERROR ) return( ERROR );
 #ifdef _WASM_
                     }
 #endif
@@ -682,7 +675,6 @@ static int mem( int i )
             case SYM_SEG:
                 ConstantOnly = TRUE;
                 fix_type = FIX_SEG;
-                Code->mem_type = T_WORD;
                 Code->info.opnd_type[Opnd_Count] = OP_I16;
                 Code->info.opcode |= W_BIT;
                 break;
@@ -702,6 +694,9 @@ static int mem( int i )
         i++;
     }
 #ifdef _WASM_
+    if(( sym != NULL ) && ( index == EMPTY ) && ( base == EMPTY )) {
+        SET_ADRSIZ( Code, SymIs32( sym ));
+    }
     if( !ConstantOnly && !Modend )
 #else
     if( !ConstantOnly )
@@ -727,7 +722,7 @@ static int mem( int i )
                 return( ERROR );
             }
         } else {
-            if( operator( T_PTR, FALSE ) == ERROR ) return( ERROR );
+            if( ptr_operator( MT_PTR, FALSE ) == ERROR ) return( ERROR );
         }
     }
 #endif
@@ -763,23 +758,23 @@ int OperandSize( unsigned long opnd )
     } else if( opnd == OP_M ) {
         /* fixme */
         switch( Code->mem_type ) {
-        case EMPTY:     return( 0 );
+        case MT_EMPTY:     return( 0 );
 #ifdef _WASM_
-        case T_SBYTE:
+        case MT_SBYTE:
 #endif
-        case T_BYTE:    return( 1 );
+        case MT_BYTE:    return( 1 );
 #ifdef _WASM_
-        case T_SWORD:
+        case MT_SWORD:
 #endif
-        case T_WORD:    return( 2 );
+        case MT_WORD:    return( 2 );
 #ifdef _WASM_
-        case T_SDWORD:
+        case MT_SDWORD:
 #endif
-        case T_DWORD:   return( 4 );
-        case T_FWORD:   return( 6 );
-        case T_PWORD:   return( 6 );
-        case T_QWORD:   return( 8 );
-        case T_TBYTE:   return( 10 );
+        case MT_DWORD:   return( 4 );
+        case MT_FWORD:   return( 6 );
+        case MT_PWORD:   return( 6 );
+        case MT_QWORD:   return( 8 );
+        case MT_TBYTE:   return( 10 );
         }
     } else if( opnd & ( OP_M8_R8 | OP_M_B | OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U ) ) {
         return( 1 );
@@ -848,7 +843,7 @@ int mem2code( char ss, int index, int base )
         // direct memory
         // clear the rightmost 3 bits
         rCode->info.rm_byte &= BIT_345;
-        if( !rCode->use32 ) {
+        if( !addr_32( rCode )) {
             if( !InRange( rCode->data[Opnd_Count], 2 ) ) {
                 // expect 16-bit but got 32-bit address
                 AsmError( DISPLACEMENT_OUT_OF_RANGE );
@@ -974,28 +969,28 @@ static int comp_opt( uint direct )
 
     // follow Microsoft MASM
     static struct option {
-         uint_16        direct;
-         signed char    value;
-    }    processor[] = {
-                        T_DOT_NO87, P_NO87,
-                        T_DOT_8086, P_86,
-                        T_DOT_8087, P_87,
-                        T_DOT_186,  P_186,
-                        T_DOT_286,  P_286,
-                        T_DOT_287,  P_287,
-                        T_DOT_286P, P_286p,
-                        T_DOT_386,  P_386,
-                        T_DOT_387,  P_387,
-                        T_DOT_386P, P_386p,
-                        T_DOT_486,  P_486,
-                        T_DOT_486P, P_486p,
-                        T_DOT_586,  P_586,
-                        T_DOT_586P, P_586p,
-                        T_DOT_686,  P_686,
-                        T_DOT_686P, P_686p,
+        uint_16        direct;
+        signed char    value;
+    } processor[] = {
+        T_DOT_NO87, P_NO87,
+        T_DOT_8086, P_86,
+        T_DOT_8087, P_87,
+        T_DOT_186,  P_186,
+        T_DOT_286,  P_286,
+        T_DOT_287,  P_287,
+        T_DOT_286P, P_286p,
+        T_DOT_386,  P_386,
+        T_DOT_387,  P_387,
+        T_DOT_386P, P_386p,
+        T_DOT_486,  P_486,
+        T_DOT_486P, P_486p,
+        T_DOT_586,  P_586,
+        T_DOT_586P, P_586p,
+        T_DOT_686,  P_686,
+        T_DOT_686P, P_686p,
 
-                        NULL,   P_END,
-                       };
+        NULL,   P_END,
+    };
 
     for( i = 0; processor[i].value != P_END; i++ ) {
         if( direct == processor[i].direct ) {
@@ -1007,57 +1002,81 @@ static int comp_opt( uint direct )
 }
 
 #ifdef _WASM_
-void MakeCPUConstant( long i )
+static void MakeCPUConstant( int i )
 /****************************/
 {
-    MakeConstant( i );
+    MakeConstantUnderscored( i );
 
     switch( i ) {
     // fall right through
     case T_DOT_686P:
     case T_DOT_686:
-        MakeConstant( T_DOT_686 );
+        MakeConstantUnderscored( T_DOT_686 );
     case T_DOT_586P:
     case T_DOT_586:
-        MakeConstant( T_DOT_586 );
+        MakeConstantUnderscored( T_DOT_586 );
     case T_DOT_486P:
     case T_DOT_486:
-        MakeConstant( T_DOT_486 );
+        MakeConstantUnderscored( T_DOT_486 );
     case T_DOT_386P:
     case T_DOT_386:
-        MakeConstant( T_DOT_386 );
+        MakeConstantUnderscored( T_DOT_386 );
         break;
     case T_DOT_286P:
     case T_DOT_286:
-        MakeConstant( T_DOT_286 );
+        MakeConstantUnderscored( T_DOT_286 );
     }
     return;
 }
 #endif
 
-int cpu_directive( uint_16 i )
+int cpu_directive( int i )
 {
     int                 temp;
 
-    #ifdef _WASM_
-        MakeCPUConstant( (long)i );
-    #endif
-
     if( ( temp = comp_opt( i ) ) != EMPTY ) {
-        if( temp == P_NO87 ) {
+        if( i == T_DOT_NO87 ) {
             Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
         } else if( temp & P_FPU_MASK ) {
             Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
-            Code->info.cpu |= temp;             // turn on desired bit(s)
+            Code->info.cpu |= temp & P_FPU_MASK;        // turn on desired bit(s)
         } else {
-            Code->info.cpu &= ~(P_CPU_MASK|P_PM);
-            Code->info.cpu |= temp;
+            Code->info.cpu &= ~(P_CPU_MASK | P_PM);
+            Code->info.cpu |= temp & (P_CPU_MASK | P_PM);
         }
-        return( NOT_ERROR );
     } else {
         AsmError( UNKNOWN_DIRECTIVE );
         return( ERROR );
     }
+
+    #ifdef _WASM_
+        MakeCPUConstant( i );
+        switch( i ) {
+        case T_DOT_686P:
+        case T_DOT_686:
+        case T_DOT_586P:
+        case T_DOT_586:
+        case T_DOT_486P:
+        case T_DOT_486:
+        case T_DOT_386P:
+        case T_DOT_386:
+            SetModuleDefSegment32( TRUE );
+            find_use32();
+            break;
+        case T_DOT_286P:
+        case T_DOT_286:
+        case T_DOT_186:
+        case T_DOT_8086:
+            SetModuleDefSegment32( FALSE );
+            find_use32();
+            break;
+        default:
+            // set FPU
+            break;
+        }
+    #endif
+
+    return( NOT_ERROR );
 }
 
 
@@ -1073,9 +1092,9 @@ static int idata( long value )
      */
 
     switch( Code->mem_type ) {
-    case EMPTY:
+    case MT_EMPTY:
         switch( Code->distance ) {
-        case EMPTY:
+        case MT_EMPTY:
             if( Code->info.token == T_PUSH ) { // sigh. another special case
                 if( value < SCHAR_MAX  &&  value >= SCHAR_MIN ) {
                     op_type = OP_I8;
@@ -1087,7 +1106,7 @@ static int idata( long value )
                 break;
             }
             // fall through
-        case T_FAR:
+        case MT_FAR:
             if( value > SHRT_MAX  ||  value < SHRT_MIN ) {
                 op_type = OP_I32;
             } else if( value > SCHAR_MAX  ||  value < SCHAR_MIN ) {
@@ -1096,14 +1115,14 @@ static int idata( long value )
                 op_type = OP_I8;
             }
             break;
-        case T_NEAR:
+        case MT_NEAR:
             if( !Code->use32 ) {
                 op_type = OP_I16;
             } else {
                 op_type = OP_I32;
             }
             break;
-        case T_SHORT:
+        case MT_SHORT:
             if( value > SCHAR_MAX  ||  value < SCHAR_MIN ) {
                 // expect 8-bit but got 16 bit
                 AsmError( JUMP_OUT_OF_RANGE );
@@ -1115,7 +1134,7 @@ static int idata( long value )
         // no other possibilities
         }
         break;
-    case T_BYTE:
+    case MT_BYTE:
         if( !InRange( value, 1 ) ) {
             // expect 8-bit but got 16 bit
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
@@ -1125,7 +1144,7 @@ static int idata( long value )
         }
         break;
 #ifdef _WASM_
-    case T_SBYTE:
+    case MT_SBYTE:
         if( value > SCHAR_MAX || value < SCHAR_MIN ) {
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( ERROR );
@@ -1133,7 +1152,7 @@ static int idata( long value )
             op_type = OP_I8;
         }
         break;
-    case T_SWORD:
+    case MT_SWORD:
         if( value > SHRT_MAX  ||  value < SHRT_MIN ) {
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( ERROR );
@@ -1146,7 +1165,7 @@ static int idata( long value )
         Code->info.opcode |= W_BIT;
         break;
 #endif
-    case T_WORD:
+    case MT_WORD:
 #ifdef _WASM_
         if( Options.sign_value ) {
             if( !InRange( value, 2 ) ) {
@@ -1176,7 +1195,7 @@ static int idata( long value )
 #endif
         break;
 #ifdef _WASM_
-   case T_SDWORD:
+   case MT_SDWORD:
         if( value > SCHAR_MAX  ||  value < SCHAR_MIN ){
             op_type = OP_I32;
         } else {
@@ -1186,7 +1205,7 @@ static int idata( long value )
         Code->info.opcode |= W_BIT;
         break;
 #endif
-    case T_DWORD:
+    case MT_DWORD:
 #ifdef _WASM_
         if( Options.sign_value ) {
             if( value > UCHAR_MAX ) {
@@ -1221,9 +1240,9 @@ static int idata_float( long value )
 */
 {
     switch( Code->mem_type ) {
-    case EMPTY:
+    case MT_EMPTY:
         switch( Code->distance ) {
-        case EMPTY:
+        case MT_EMPTY:
             if( Code->info.token == T_PUSH ) { // sigh. another special case
                 if( !Code->use32 ) {
                     // expect 32-bit code but get 16-bit
@@ -1232,25 +1251,25 @@ static int idata_float( long value )
                 }
             }
             break;
-        case T_FAR:
-        case T_NEAR:
-        case T_SHORT:
+        case MT_FAR:
+        case MT_NEAR:
+        case MT_SHORT:
             AsmError( SYNTAX_ERROR );
             return( ERROR );
         }
         break;
 #ifdef _WASM_
-    case T_SBYTE:
-    case T_SWORD:
+    case MT_SBYTE:
+    case MT_SWORD:
 #endif
-    case T_BYTE:
-    case T_WORD:
+    case MT_BYTE:
+    case MT_WORD:
         AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
         return( ERROR );
 #ifdef _WASM_
-    case T_SDWORD:
+    case MT_SDWORD:
 #endif
-    case T_DWORD:
+    case MT_DWORD:
         // set w-bit
         Code->info.opcode |= W_BIT;
         break;
@@ -1307,7 +1326,7 @@ static int reg( int i )
     case OP_R16:
     case OP_R16_GEN:
         Code->info.opcode |= W_BIT;             // set w-bit
-        if( Code->use32 ) Code->opsiz = NOT_EMPTY;
+        if( Code->use32 ) Code->prefix.opsiz = TRUE;
         break;
     case OP_MMX:
         reg = (AsmBuffer[i]->value - T_MM0);
@@ -1354,7 +1373,7 @@ static int reg( int i )
     case OP_SR2:                                // 8086 segment register
         if( AsmBuffer[i + 1]->token == T_COLON ) {
             /* segment override */
-            Code->seg_prefix = AsmOpTable[temp].opcode;
+            Code->prefix.seg = AsmOpTable[temp].opcode;
             /* fixme - setup the frame here */
             return( i );
         }
@@ -1378,7 +1397,7 @@ static int reg( int i )
             return( ERROR );
         }
         Code->info.opcode |= W_BIT;             // set w-bit
-        if( !Code->use32 ) Code->opsiz = NOT_EMPTY;
+        if( !Code->use32 ) Code->prefix.opsiz = TRUE;
         break;
     case OP_TR:                 // Test registers
         switch( AsmBuffer[i]->value ) {
@@ -1531,7 +1550,45 @@ static int proc_check( void )
 #define IS_ANY_BRANCH( tok )    \
             ( IS_BRANCH( tok ) || ( (tok) >= T_LOOP && (tok) <= T_LOOPZW ) )
 
-int AsmParse()
+static memtype ConvMemType( int x )
+{
+    switch( x ) {
+    case T_NEAR:
+        return( MT_NEAR );
+    case T_FAR:
+        return( MT_FAR );
+    case T_SHORT:
+        return( MT_SHORT );
+    case T_BYTE:
+        return( MT_BYTE );
+    case T_WORD:
+        return( MT_WORD );
+    case T_DWORD:
+        return( MT_DWORD );
+    case T_QWORD:
+        return( MT_QWORD );
+    case T_TBYTE:
+        return( MT_TBYTE );
+    case EMPTY:
+        return( MT_EMPTY );
+#ifdef _WASM_
+    case T_SBYTE:
+        return( MT_SBYTE );
+    case T_SWORD:
+        return( MT_SWORD );
+    case T_SDWORD:
+        return( MT_SDWORD );
+#endif
+    case T_FWORD:
+        return( MT_FWORD );
+    case T_PWORD:
+        return( MT_FWORD );
+    default:
+        return( MT_ERROR );
+    }
+}
+
+int AsmParse( void )
 /************/
 /*
 - co-ordinate the parsing process;
@@ -1547,7 +1604,6 @@ int AsmParse()
     unsigned long       cur_opnd;
     unsigned long       last_opnd = OP_NONE;
     struct asm_code     *rCode = Code;
-    int                 use32;
 
 #ifdef _WASM_
     if( Use32 ) {
@@ -1564,15 +1620,16 @@ int AsmParse()
     rCode->info.token   = T_NULL;
     rCode->info.opcode  = 0;
     rCode->info.rm_byte = 0;
-    rCode->adrsiz       = EMPTY;
-    rCode->opsiz        = EMPTY;
-    rCode->mem_type     = EMPTY;
+    rCode->prefix.ins   = EMPTY;
+    rCode->prefix.seg   = EMPTY;
+    rCode->prefix.adrsiz = FALSE;
+    rCode->prefix.opsiz = FALSE;
+    rCode->mem_type     = MT_EMPTY;
     rCode->mem_type_fixed = FALSE;
-    rCode->distance     = EMPTY;
-    rCode->seg_prefix   = EMPTY;
-    rCode->prefix       = EMPTY;
+    rCode->distance     = MT_EMPTY;
     rCode->extended_ins = EMPTY;
     rCode->sib          = 0;            // assume ss is *1
+    rCode->indirect     = FALSE;
     i = 2;
     while( i > 0 ) {
         i--;
@@ -1581,6 +1638,7 @@ int AsmParse()
         InsFixups[i] = NULL;
     }
     Opnd_Count = 0;
+    curr_ptr_type = EMPTY;
 
     // check if continue initializing array
     if( More_Array_Element == TRUE ) {
@@ -1597,10 +1655,10 @@ int AsmParse()
 
     while( i < Token_Count ) {
         switch( AsmBuffer[i]->token ) {
-        case T_INS:
-            #ifdef _WASM_
-                ExpandTheWorld( i, FALSE );
-            #endif
+        case T_INSTR:
+#ifdef _WASM_
+                ExpandTheWorld( i, FALSE, TRUE );
+#endif
             if( last_opnd != OP_NONE ) {
                 // illegal operand is put before instruction
                 AsmError( SYNTAX_ERROR );
@@ -1615,18 +1673,22 @@ int AsmParse()
             case T_REPNE:
             case T_REPNZ:
             case T_REPZ:
-                rCode->prefix = AsmBuffer[i]->value;
+                rCode->prefix.ins = AsmBuffer[i]->value;
                 // prefix has to be followed by an instruction
-                if( AsmBuffer[i+1]->token != T_INS ) {
+                if( AsmBuffer[i+1]->token != T_INSTR ) {
                     AsmError( PREFIX_MUST_BE_FOLLOWED_BY_AN_INSTRUCTION );
                     return( ERROR );
                 }
                 break;
 #ifdef _WASM_
             case T_RET:
-                if( CurrProc != NULL ) {
-                    return Ret( i, Token_Count );
+                if(( CurrProc != NULL ) && ( in_epilogue == 0 )) {
+                    in_epilogue = 1;
+                    return Ret( i, Token_Count, FALSE );
                 }
+            case T_RETN:
+            case T_RETF:
+                in_epilogue = 0;
                 rCode->info.token = AsmBuffer[i]->value;
                 break;
 #endif
@@ -1634,8 +1696,7 @@ int AsmParse()
                 rCode->info.token = AsmBuffer[i]->value;
             }
             break;
-        case T_UNARY_OPERATOR:
-        {
+        case T_UNARY_OPERATOR: {
             int operator_loc = i;
 
             if( MEM_TYPE( rCode->mem_type, BYTE ) ) {
@@ -1666,7 +1727,7 @@ int AsmParse()
 #endif
                         }
                         break;
-                    case T_SEG2:
+                    case T_SEG:
                         if( sym->state == SYM_STACK ) {
                             AsmError( CANNOT_SEG_AUTO );
                         }
@@ -1674,17 +1735,10 @@ int AsmParse()
 
                     switch( AsmBuffer[operator_loc]->value ) {
                     case T_OFFSET:
-                    case T_SEG2:
-                        use32 = rCode->use32;
+                    case T_SEG:
                         if( AsmBuffer[operator_loc]->value == T_OFFSET ) {
-#ifdef _WASM_
-                            dir_node    *seg;
+                            int use32 = rCode->use32;
 
-                            seg = GetSeg( sym );
-                            if( seg != NULL ) {
-                                use32 = seg->e.seginfo->segrec->d.segdef.use_32;
-                            } else
-#endif
                             if( MEM_TYPE( rCode->mem_type, DWORD ) ) {
                                 use32 = 1;
                             } else if( MEM_TYPE( rCode->mem_type, WORD ) ) {
@@ -1692,46 +1746,45 @@ int AsmParse()
                             }
                             if( use32 ) {
                                 temp = FIX_OFF32;
-                                rCode->mem_type = T_DWORD;
+                                rCode->mem_type = MT_DWORD;
                             } else {
                                 temp = FIX_OFF16;
-                                rCode->mem_type = T_WORD;
+                                rCode->mem_type = MT_WORD;
                             }
                         } else {
                             temp = FIX_SEG;
-                            rCode->mem_type = T_WORD;
                         }
-                        #ifdef _WASM_
-                            find_frame( sym );
-                            if( sym->state != SYM_STRUCT_FIELD ) {
-                        #endif
-                                fixup = AddFixup( sym, temp );
-                                if( fixup == NULL ) return( ERROR );
-                        #ifdef _WASM_
-                            }
-                        #endif
+#ifdef _WASM_
+                        find_frame( sym );
+                        if( sym->state != SYM_STRUCT_FIELD ) {
+#endif
+                            fixup = AddFixup( sym, temp );
+                            if( fixup == NULL ) return( ERROR );
+#ifdef _WASM_
+                        }
+#endif
                         // fall through
-                    #ifdef _WASM_
+#ifdef _WASM_
                     case T_LENGTH:
                     case T_LENGTHOF:
                     case T_SIZE:
                     case T_SIZEOF:
-                    #endif
+#endif
                         switch( rCode->mem_type ) {
-                        case EMPTY:
-                            rCode->mem_type = T_WORD;
+                        case MT_EMPTY:
+                            rCode->mem_type = MT_WORD;
                             // no break
-                        #ifdef _WASM__
-                        case T_SWORD:   // 20-Aug-92
-                        #endif
-                        case T_WORD:
+#ifdef _WASM__
+                        case MT_SWORD:   // 20-Aug-92
+#endif
+                        case MT_WORD:
                             rCode->info.opcode |= W_BIT;
                             rCode->info.opnd_type[Opnd_Count] = OP_I16;
                             break;
-                        #ifdef _WASM_
-                        case T_SDWORD:  // 20-Aug-92
-                        #endif
-                        case T_DWORD:
+#ifdef _WASM_
+                        case MT_SDWORD:  // 20-Aug-92
+#endif
+                        case MT_DWORD:
                             rCode->info.opcode |= W_BIT;
                             rCode->info.opnd_type[Opnd_Count] = OP_I32;
                             break;
@@ -1741,15 +1794,15 @@ int AsmParse()
                     switch( AsmBuffer[operator_loc]->value ) {
                     /* specifics */
                     case T_OFFSET:
-                    #ifdef _WASM_
+#ifdef _WASM_
                         if( sym->state == SYM_STRUCT_FIELD ) {
                             Code->data[Opnd_Count] = sym->offset;
                         }
                         break;
-                    #endif
-                    case T_SEG2:
+#endif
+                    case T_SEG:
                         break;
-                    #ifdef _WASM_
+#ifdef _WASM_
                     case T_LENGTH:
                         Code->data[Opnd_Count] = sym->first_length;
                         break;
@@ -1762,7 +1815,7 @@ int AsmParse()
                     case T_SIZEOF:
                         Code->data[Opnd_Count] = sym->total_size;
                         break;
-                    #endif
+#endif
                     default:
                         AsmError( SYNTAX_ERROR );
                         return( ERROR );
@@ -1774,17 +1827,17 @@ int AsmParse()
                 }
             }
             cur_opnd = OP_I;
-            break;
         }
+            break;
         case T_RES_ID:
             if( rCode->info.token == T_NULL ) {
                 int name;
                 if( i == 0 ) {
-                    name=-1;
+                    name = -1;
                 } else if( i == 1 ) {
-                    name=0;
+                    name = 0;
                 } else if( i == 2 ) {
-                    name=0;
+                    name = 0;
                 }
                 return( ( data_init( name, i ) == ERROR ) ? ERROR : NOT_ERROR );
             } else if( last_opnd != OP_NONE && last_opnd != OP_M ) {
@@ -1794,7 +1847,7 @@ int AsmParse()
             if( AsmBuffer[i]->value == T_PTR ) {
                 if( AsmBuffer[i - 1]->token == T_RES_ID ) {
                     if( AsmBuffer[i - 1]->value != T_PTR ) {
-                        if( operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
+                        if( ptr_operator( MT_PTR, TRUE ) == ERROR ) {
                             return( ERROR );
                         }
                         break;
@@ -1803,8 +1856,7 @@ int AsmParse()
                 // find 'ptr' but no 'byte', 'word' etc in front of it
                 AsmError( NO_SIZE_GIVEN_BEFORE_PTR_OPERATOR );
                 return( ERROR );
-            }
-             else if( operator( AsmBuffer[i]->value, TRUE ) == ERROR ) {
+            } else if( ptr_operator( ConvMemType( AsmBuffer[i]->value ), TRUE ) == ERROR ) {
                 return( ERROR );
             }
             cur_opnd = OP_NONE;
@@ -1821,11 +1873,8 @@ int AsmParse()
                         return ERROR;
                     }
                 }
-                return( directive( i, AsmBuffer[i]->value ) );
-            } else {
-                EndDirectiveFound = TRUE;
-                return NOT_ERROR;
             }
+            return( directive( i, AsmBuffer[i]->value ) );
             break;
 #endif
         case T_ID:
@@ -1848,8 +1897,8 @@ int AsmParse()
                 return( ERROR );
             }
             if( i == 0 ) {   // a new label
-                #if ALLOW_STRUCT_INIT
-                #ifdef _WASM_
+#if ALLOW_STRUCT_INIT
+#ifdef _WASM_
                 sym = AsmGetSymbol( AsmBuffer[i]->string_ptr );
                 if( sym != NULL && sym->state == SYM_STRUCT &&
                     AsmBuffer[i+1]->token != T_DIRECTIVE ) {
@@ -1857,15 +1906,15 @@ int AsmParse()
                     AsmBuffer[i]->value = T_STRUCT;
                     return( ( data_init( -1,0 ) == ERROR ) ? ERROR : NOT_ERROR );
                 }
-                #endif
-                #endif
+#endif
+#endif
 
                 switch( AsmBuffer[i + 1]->token ) {
                 case T_COLON:
                     cur_opnd = OP_LABEL;
                     break;
-                #if ALLOW_STRUCT_INIT
-                #ifdef _WASM_
+#if ALLOW_STRUCT_INIT
+#ifdef _WASM_
                 case T_ID:
                     /* structure declaration */
                     sym = AsmGetSymbol( AsmBuffer[i+1]->string_ptr );
@@ -1876,8 +1925,8 @@ int AsmParse()
                         AsmBuffer[i + 1]->token = T_DIRECTIVE;
                         AsmBuffer[i + 1]->value = T_STRUCT;
                     }
-                #endif
-                #endif
+#endif
+#endif
                 case T_RES_ID:
                     if( data_init( i, i+1 ) == ERROR ) {
                         return( ERROR );
@@ -1964,6 +2013,7 @@ int AsmParse()
             break;
         case T_COMMA:
             cur_opnd = OP_NONE;
+            curr_ptr_type = EMPTY;
             if( Opnd_Count == OPND2 ) {
                 switch( rCode->info.token ) {
                 case T_IMUL:
@@ -2015,7 +2065,7 @@ int AsmParse()
                 cur_opnd = OP_M;
             } else if ( last_opnd == OP_LABEL ) {
                 if( AsmBuffer[i+1]->token != T_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1]->string_ptr,EMPTY )==ERROR ) {
+                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_EMPTY )==ERROR ) {
                          return( ERROR );
                     }
                 }
@@ -2117,13 +2167,13 @@ int AsmParse()
                 return( ERROR );
             }
             break;
-        #ifdef _WASM_
+#ifdef _WASM_
         case T_PERCENT:
             /* expansion operator */
             cur_opnd = OP_NONE;
-            ExpandTheWorld( i, FALSE );
+            ExpandTheWorld( i, FALSE, TRUE );
             break;
-        #endif
+#endif
         case T_NOOP:
             break;
         }
@@ -2176,19 +2226,19 @@ static void SizeString( unsigned op_size )
     /* size an string instruction based on it's operand's size */
     switch( op_size ) {
     case 1:
-        Code->mem_type = T_BYTE;
+        Code->mem_type = MT_BYTE;
         Code->info.opcode &= NOT_W_BIT;
-        if( Code->use32 ) Code->opsiz = EMPTY;
+        if( Code->use32 ) Code->prefix.opsiz = FALSE;
         break;
     case 2:
-        Code->mem_type = T_WORD;
+        Code->mem_type = MT_WORD;
         Code->info.opcode |= W_BIT;
-        Code->opsiz = Code->use32 ? NOT_EMPTY : EMPTY;
+        Code->prefix.opsiz = Code->use32 ? TRUE : FALSE;
         break;
     case 4:
-        Code->mem_type = T_DWORD;
+        Code->mem_type = MT_DWORD;
         Code->info.opcode |= W_BIT;
-        Code->opsiz = Code->use32 ? EMPTY : NOT_EMPTY;
+        Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
         break;
     }
 }
@@ -2233,7 +2283,7 @@ static int check_size( void )
             case OP_AL:
                 Code->info.opcode &= NOT_W_BIT;         // clear w-bit
             case OP_EAX:
-                if( Code->use32 ) Code->opsiz = EMPTY;
+                if( Code->use32 ) Code->prefix.opsiz = FALSE;
             }
         }
         break;
@@ -2245,11 +2295,11 @@ static int check_size( void )
             case OP_AL:
                 Code->info.opcode &= NOT_W_BIT;         // clear w-bit
             case OP_EAX:
-                if( Code->use32 ) Code->opsiz = EMPTY;
+                if( Code->use32 ) Code->prefix.opsiz = FALSE;
             }
         }
         break;
-    case T_INS2:
+    case T_INS:
     case T_CMPS:
         op_size = OperandSize( op1 );
         /* fall through */
@@ -2339,7 +2389,7 @@ static int check_size( void )
                 state = ERROR;
             }
             if( Code->use32 ) {
-                Code->opsiz = EMPTY;     // - don't need opnd size prefix
+                Code->prefix.opsiz = FALSE;     // - don't need opnd size prefix
             }
             break;
         case 2:
@@ -2358,10 +2408,10 @@ static int check_size( void )
         op1_size = OperandSize( op1 );
         switch( op1_size ) {
         case 2:
-            if( Code->use32 ) Code->opsiz = NOT_EMPTY;
+            if( Code->use32 ) Code->prefix.opsiz = TRUE;
             break;
         case 4:
-            if( Code->use32 ) Code->opsiz = EMPTY;
+            if( Code->use32 ) Code->prefix.opsiz = FALSE;
             break;
         default:
             AsmError( INVALID_SIZE );
@@ -2439,7 +2489,7 @@ static int check_size( void )
             if( op1_size == 0 ) {
                 switch( op2_size ) {
                 case 1:
-                    Code->mem_type = T_BYTE;
+                    Code->mem_type = MT_BYTE;
                     #ifdef _WASM_
                         if( Parse_Pass == PASS_1 && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_BYTE );
@@ -2447,17 +2497,17 @@ static int check_size( void )
                     #endif
                     break;
                 case 2:
-                    Code->mem_type = T_WORD;
+                    Code->mem_type = MT_WORD;
                     Code->info.opcode |= W_BIT;
                     #ifdef _WASM_
                         if( Parse_Pass == PASS_1 && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_WORD );
                         }
                     #endif
-                    if( Code->use32 ) Code->opsiz = NOT_EMPTY;
+                    if( Code->use32 ) Code->prefix.opsiz = TRUE;
                     break;
                 case 4:
-                    Code->mem_type = T_DWORD;
+                    Code->mem_type = MT_DWORD;
                     #ifdef _WASM_
                         if( Parse_Pass == PASS_1 && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_DWORD );
@@ -2484,9 +2534,51 @@ void AsmInit( int cpu, int fpu, int use32 )
         AsmBuffer[count] = &tokens[count];
     }
 
+    if( use32 < 0 ) use32 = 0; // default is 16-bit segment
+    if( cpu < 0 ) cpu = 0;     // default is 8086 CPU
+    if( fpu < 0 ) fpu = 1;     // default is FPU use
+    switch( use32 ) {
+    case 0:
+        Code->use32 = 0;
+        break;
+    case 1:
+        Code->use32 = 1;
+        break;
+    }
+    switch( cpu ) {
+    case 0:
+        Code->info.cpu |= P_86;
+        if( fpu ) Code->info.cpu |= P_87;
+        break;
+    case 1:
+        Code->info.cpu |= P_186;
+        if( fpu ) Code->info.cpu |= P_87;
+        break;
+    case 2:
+        Code->info.cpu |= P_286p;
+        if( fpu ) Code->info.cpu |= P_287;
+        break;
+    case 3:
+        Code->info.cpu |= P_386p;
+        if( fpu ) Code->info.cpu |= P_387;
+        break;
+    case 4:
+        Code->info.cpu |= P_486p;
+        if( fpu ) Code->info.cpu |= P_387;
+        break;
+    case 5:
+        Code->info.cpu |= P_586p;
+        if( fpu ) Code->info.cpu |= P_387;
+        break;
+    case 6:
+        Code->info.cpu |= P_686p;
+        if( fpu ) Code->info.cpu |= P_387;
+        break;
+    }
+
     // initialize AsmOpcode table to point to entry in AsmOpTable
     // token has its own value, e.g. T_AAA is 0, T_ADD is 1, etc.
-
+    
     if( AsmOpcode[1].position == 0 ) {  // if not initialized
         while( AsmOpcode[token_value].len != 0 ) {
             do {
@@ -2499,45 +2591,6 @@ void AsmInit( int cpu, int fpu, int use32 )
             AsmOpcode[token_value].position = pos;
             token_value++;
         }
-        switch( use32 ) {
-        case 0:
-            Code->use32 = 0;
-            break;
-        case 1:
-            Code->use32 = 1;
-            break;
-        }
-        if( fpu < 0 ) fpu = 0;
-        switch( cpu ) {
-        case 0:
-            Code->info.cpu |= P_86;
-            if( fpu ) Code->info.cpu |= P_87;
-            break;
-        case 1:
-            Code->info.cpu |= P_186;
-            if( fpu ) Code->info.cpu |= P_87;
-            break;
-        case 2:
-            Code->info.cpu |= P_286p;
-            if( fpu ) Code->info.cpu |= P_287;
-            break;
-        case 3:
-            Code->info.cpu |= P_386p;
-            if( fpu ) Code->info.cpu |= P_387;
-            break;
-        case 4:
-            Code->info.cpu |= P_486p;
-            if( fpu ) Code->info.cpu |= P_387;
-            break;
-        case 5:
-            Code->info.cpu |= P_586p;
-            if( fpu ) Code->info.cpu |= P_387;
-            break;
-        case 6:
-            Code->info.cpu |= P_686p;
-            if( fpu ) Code->info.cpu |= P_387;
-            break;
-        }
+        make_inst_hash_table();
     }
-    make_inst_hash_table();
 }

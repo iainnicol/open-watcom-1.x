@@ -38,9 +38,7 @@
 #include <malloc.h>
 
 #include "asmglob.h"
-#include "asmops1.h"//
-#include "asmops2.h"
-#include "asmins1.h"
+#include "asmins.h"
 #include "asmopnds.h"
 #include "asmerr.h"
 #include "asmsym.h"
@@ -55,11 +53,6 @@
 extern int_8                    PhaseError;
 
 #endif
-
-extern const struct asm_ins ASMFAR AsmOpTable[];
-
-extern int OperandSize( unsigned long opnd );
-extern int InRange( unsigned long, unsigned );
 
 #ifdef _WASM_
 extern int AddFloatingPointEmulationFixup( const struct asm_ins ASMFAR *, bool );
@@ -83,10 +76,14 @@ static int output( int i )
         AddLinnumData();
     }
 
+    if((( ins->cpu & P_FPU_MASK ) != P_NO87 ) && ( Options.floating_point == NO_FP_ALLOWED )) {
+        AsmError( NO_FP_WITH_FPC_SET );
+        return( ERROR );
+    }
     if(( Options.floating_point == DO_FP_EMULATION )
         && ( !rCode->use32 )
         && ( ins->allowed_prefix != NO_FWAIT )
-        && ( (ins->cpu&P_FPU_MASK) != P_NO87 )) {
+        && (( ins->allowed_prefix == FWAIT ) || (( ins->cpu&P_FPU_MASK ) != P_NO87 ))) {
             if( AddFloatingPointEmulationFixup( ins, FALSE ) == ERROR ) {
                 return( ERROR );
             }
@@ -102,17 +99,17 @@ static int output( int i )
     // some instructions have to add prefix when in 386/486 mode
     switch( ins->byte1_info ) {
     case F_16:
-        if( rCode->use32 ) rCode->opsiz = NOT_EMPTY;
+        if( rCode->use32 ) rCode->prefix.opsiz = TRUE;
         break;
     case F_32:
-        if( !rCode->use32 ) rCode->opsiz = NOT_EMPTY;
+        if( !rCode->use32 ) rCode->prefix.opsiz = TRUE;
         break;
     case F_0F:
         rCode->extended_ins = NOT_EMPTY;
         break;
     }
-    if( rCode->prefix != EMPTY ) {
-        if( rCode->prefix == T_LOCK ) {
+    if( rCode->prefix.ins != EMPTY ) {
+        if( rCode->prefix.ins == T_LOCK ) {
             if( ins->allowed_prefix != LOCK ) {
                 AsmError( LOCK_PREFIX_IS_NOT_ALLOWED_ON_THIS_INSTRUCTION );
                 return( ERROR );
@@ -123,39 +120,50 @@ static int output( int i )
                 return( ERROR );
             }
         }
-        AsmCodeByte( AsmOpTable[AsmOpcode[rCode->prefix].position].opcode );
+        AsmCodeByte( AsmOpTable[AsmOpcode[rCode->prefix.ins].position].opcode );
     }
 
-    if(( ins->token == T_FWAIT )
-        && ( (rCode->info.cpu&P_CPU_MASK) < P_386 )
-        && ( (ins->cpu&P_FPU_MASK) == P_87 )) {
+    if( ins->token == T_FWAIT ) {
+        if(( rCode->info.cpu&P_CPU_MASK ) < P_386 ) {
 #ifdef _WASM_
-        if( Options.floating_point == DO_FP_EMULATION ) {
-            AsmCodeByte( OP_NOP );
-        }
+            if(( Options.floating_point == DO_FP_EMULATION ) && ( !rCode->use32 )) {
+                AsmCodeByte( OP_NOP );
+            }
 #else
-        AsmCodeByte( OP_NOP );
+            AsmCodeByte( OP_NOP );
 #endif
-    } else if(( ins->allowed_prefix != NO_FWAIT )
-        && ( (rCode->info.cpu&P_CPU_MASK) < P_386 )
-        && ( (ins->cpu&P_FPU_MASK) != P_NO87 )) {
+        }
+    } else if( ins->allowed_prefix == FWAIT ) {
         AsmCodeByte( OP_WAIT );
+#ifdef _WASM_
+    } else if(( Options.floating_point == DO_FP_EMULATION )
+        && ( !rCode->use32 )
+        && ( ins->allowed_prefix != NO_FWAIT )
+        && (( ins->allowed_prefix == FWAIT ) || (( ins->cpu&P_FPU_MASK ) != P_NO87 ))) {
+        AsmCodeByte( OP_WAIT );
+#endif
+    } else if( ins->allowed_prefix != NO_FWAIT ) {
+        // implicit FWAIT synchronization for 8087 (CPU 8086/80186)
+        if((( rCode->info.cpu&P_CPU_MASK ) < P_286 )
+            && (( ins->cpu&P_FPU_MASK ) == P_87 )) {
+            AsmCodeByte( OP_WAIT );
+        }
     }
 
 #ifdef _WASM_
     if(( Options.floating_point == DO_FP_EMULATION )
+        && ( !rCode->use32 )
         && ( ins->allowed_prefix != NO_FWAIT )
-        && ( (rCode->info.cpu&P_CPU_MASK) < P_386 )
-        && ( (ins->cpu&P_FPU_MASK) != P_NO87 )) {
-            if( AddFloatingPointEmulationFixup( ins, TRUE ) == ERROR ) {
-                return( ERROR );
-            }
+        && (( ins->allowed_prefix == FWAIT ) || (( ins->cpu&P_FPU_MASK ) != P_NO87 ))) {
+        if( AddFloatingPointEmulationFixup( ins, TRUE ) == ERROR ) {
+            return( ERROR );
+        }
     }
 #endif
-    if( rCode->adrsiz != EMPTY ) {
+    if( rCode->prefix.adrsiz == TRUE ) {
         AsmCodeByte( ADRSIZ );
     }
-    if( rCode->opsiz != EMPTY ) {
+    if( rCode->prefix.opsiz == TRUE ) {
         /*
             Certain instructions use the ADDRSIZE prefix when they really
             should use OPERSIZE prefix (well, I think so!). Stupid Intel.
@@ -187,8 +195,8 @@ static int output( int i )
             }
         }
     }
-    if( rCode->seg_prefix != EMPTY ) {
-        AsmCodeByte( rCode->seg_prefix );
+    if( rCode->prefix.seg != EMPTY ) {
+        AsmCodeByte( rCode->prefix.seg );
     }
     if( rCode->extended_ins != EMPTY ) {
         // special case for some 286 and 386 instructions
@@ -247,7 +255,7 @@ static int output_data( unsigned long determinant, int index )
     case T_LODS:
     case T_MOVS:
     case T_OUTS:
-    case T_INS2:
+    case T_INS:
     case T_SCAS:
     case T_STOS:
     case T_XLAT:
@@ -331,7 +339,7 @@ int match_phase_1( void )
 
     // if nothing inside, no need to output anything
     if( Code->info.token == T_NULL ) {
-        if( Code->seg_prefix != EMPTY ) {
+        if( Code->prefix.seg != EMPTY ) {
             /* we have:     REG: on line */
             AsmError( SYNTAX_ERROR );
             return( ERROR );
@@ -347,8 +355,8 @@ int match_phase_1( void )
     case T_LGDT:
         /* kludge fix to allow "LIDT fword ptr foo" */
         switch( Code->mem_type ) {
-        case T_PWORD:
-        case T_FWORD:
+        case MT_PWORD:
+        case MT_FWORD:
             Code->info.opnd_type[OPND1] = OP_M_DW;
             break;
         }
@@ -364,7 +372,7 @@ int match_phase_1( void )
             AsmError( INVALID_INSTRUCTION_WITH_CURRENT_CPU_SETTING );
             return( ERROR );
         } else {
-            Code->opsiz = EMPTY;
+            Code->prefix.opsiz = FALSE;
         }
     }
 
@@ -393,9 +401,9 @@ int match_phase_1( void )
                     cur_opnd = OP_M_W;
                 } else if( MEM_TYPE( Code->mem_type, DWORD ) ) {
                     cur_opnd = OP_M_DW;
-                } else if( Code->mem_type == T_QWORD ) {
+                } else if( Code->mem_type == MT_QWORD ) {
                     cur_opnd = OP_M_QW;
-                } else if( Code->mem_type == T_TBYTE ) {
+                } else if( Code->mem_type == MT_TBYTE ) {
                     cur_opnd = OP_M_TB;
                 }
             }
@@ -418,11 +426,11 @@ int match_phase_1( void )
              break;
         case OP_R16:
             if( cur_opnd & asm_op1 ) {
-                temp_opsiz = Code->opsiz;
-                Code->opsiz = EMPTY;
+                temp_opsiz = Code->prefix.opsiz;
+                Code->prefix.opsiz = FALSE;
                 switch( match_phase_2( &i ) ) {
                 case EMPTY:
-                    Code->opsiz = temp_opsiz;
+                    Code->prefix.opsiz = temp_opsiz;
                     break;
                 case ERROR:
                     return( ERROR );
@@ -433,10 +441,10 @@ int match_phase_1( void )
             break;
         case OP_M16:
             if( cur_opnd & asm_op1 ) {
-                temp_opsiz = Code->opsiz;
+                temp_opsiz = Code->prefix.opsiz;
                 switch( match_phase_2( &i ) ) {
                 case EMPTY:
-                    Code->opsiz = temp_opsiz;
+                    Code->prefix.opsiz = temp_opsiz;
                     break;
                 case ERROR:
                     return( ERROR );
@@ -462,11 +470,11 @@ int match_phase_1( void )
         case OP_I8_U:
             if( cur_opnd & OP_I ) {
                 if( Code->data[OPND1] <= UCHAR_MAX ) {
-                    temp_opsiz = Code->opsiz;
+                    temp_opsiz = Code->prefix.opsiz;
                     Code->info.opnd_type[OPND1] = OP_I8;
                     switch( match_phase_2( &i ) ) {
                     case EMPTY:
-                        Code->opsiz = temp_opsiz;
+                        Code->prefix.opsiz = temp_opsiz;
                         break;
                     case ERROR:
                         return( ERROR );
@@ -587,7 +595,7 @@ int match_phase_3( int *i, unsigned long determinant )
             break;
         case OP_R16:
             if( cur_opnd & asm_op2 ) {
-                Code->opsiz = EMPTY;
+                Code->prefix.opsiz = FALSE;
                 if( output( *i ) == ERROR ) return( ERROR );
                 return( output_data( last_opnd, OPND1 ) );
             }
@@ -604,7 +612,7 @@ int match_phase_3( int *i, unsigned long determinant )
                             AsmWarn( 1, IMMEDIATE_CONSTANT_TOO_LARGE );
                         }
                     #endif
-                    Code->opsiz = EMPTY;
+                    Code->prefix.opsiz = FALSE;
                     cur_opnd = OP_I8;
                 } else if( last_opnd & OP_R16 ) {
                     // 16-bit register, so output 16-bit data
@@ -616,22 +624,22 @@ int match_phase_3( int *i, unsigned long determinant )
                     cur_opnd = OP_I16;
                 } else if( last_opnd & OP_R32 ) {
                     // 32-bit register, so output 32-bit data
-                    Code->opsiz = Code->use32 ? EMPTY : NOT_EMPTY;/* 12-feb-92 */
+                    Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;/* 12-feb-92 */
                     cur_opnd = OP_I32;
                 } else if( last_opnd & OP_M_ANY ) {
                     /* there is no reason this should be only for T_MOV */
                     switch( OperandSize( last_opnd ) ) {
                     case 1:
                         cur_opnd = OP_I8;
-                        Code->opsiz = EMPTY;
+                        Code->prefix.opsiz = FALSE;
                         break;
                     case 2:
                         cur_opnd = OP_I16;
-                        Code->opsiz = Code->use32 ? NOT_EMPTY : EMPTY;
+                        Code->prefix.opsiz = Code->use32 ? TRUE : FALSE;
                         break;
                     case 4:
                         cur_opnd = OP_I32;
-                        Code->opsiz = Code->use32 ? EMPTY : NOT_EMPTY;
+                        Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
                         break;
                     }
                 }
@@ -694,7 +702,7 @@ int match_phase_3( int *i, unsigned long determinant )
         case OP_M16:
             if( cur_opnd & OP_M &&
                    ( MEM_TYPE( Code->mem_type, WORD ) ||
-                     Code->mem_type == EMPTY ) ) {
+                     Code->mem_type == MT_EMPTY ) ) {
                 if( output( *i ) == ERROR ) return( ERROR );
                 if( output_data( last_opnd, OPND1 ) == ERROR ) return( ERROR );
                 return( output_data( cur_opnd, OPND2 ) );

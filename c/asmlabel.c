@@ -36,8 +36,8 @@
 #include "asmglob.h"
 #include "asmerr.h"
 #include "asmsym.h"
-#include "asmops1.h"//
-#include "asmops2.h"
+#include "asmins.h"
+#include "asmdefs.h"
 
 #ifdef _WASM_
     #include "directiv.h"
@@ -47,19 +47,12 @@
     #include "objrec.h"
     #include "myassert.h"
 
-    #define     Address         ( GetCurrAddr() )
-    extern char                 Parse_Pass;     // phase of parsing
     extern int_8                PhaseError;
 
     extern int                  AddFieldToStruct( int );
-#else
-    extern uint_32              Address;
 #endif
 
 extern void             AsmError( int );
-extern int              BackPatch( struct asm_sym * );
-
-extern  struct asm_tok  *AsmBuffer[];   // buffer to store token
 
 #ifdef _WASM_
     static unsigned             AnonymousCounter = 0;
@@ -85,7 +78,7 @@ void PrepAnonLabels( void )
 #endif
 
 #pragma off (unreferenced )
-int MakeLabel( char *symbol_name, int mem_type )
+int MakeLabel( char *symbol_name, memtype mem_type )
 /**********************************************/
 {
     struct asm_sym      *sym;
@@ -184,28 +177,36 @@ int LabelDirective( int i )
 
         sym = AsmGetSymbol( AsmBuffer[i+1]->string_ptr );
         if( sym != NULL && sym->state == SYM_STRUCT ) {
-            return( MakeLabel( AsmBuffer[i-1]->string_ptr, T_STRUCT ) );
+            return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_STRUCT ) );
         }
     }
 #endif
+    if( AsmBuffer[i+1]->token != T_RES_ID ) {
+        AsmError( INVALID_LABEL_DEFINITION );
+        return( ERROR );
+    }
     switch( AsmBuffer[i+1]->value ) {
     case T_NEAR:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR ));
     case T_FAR:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_FAR ));
     case T_BYTE:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_BYTE ));
     case T_WORD:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_WORD ));
     case T_DWORD:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_DWORD ));
     case T_FWORD:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_FWORD ));
     case T_PWORD:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_FWORD ));
     case T_QWORD:
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_QWORD ));
     case T_TBYTE:
-        if( AsmBuffer[i+1]->token == T_RES_ID ) {
-            return( MakeLabel( AsmBuffer[i-1]->string_ptr, AsmBuffer[i+1]->value ));
-        }
-        /* fall through */
+        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_TBYTE ));
     default:
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );
     }
-
 }
 

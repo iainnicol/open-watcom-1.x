@@ -20,6 +20,7 @@ compact
 .data
 .data?
 .dosseg
+dosseg
 dq
 dt
 echo
@@ -29,6 +30,7 @@ elseif
 end
 .endif
 endif
+endm
 endp
 ends
 .endw
@@ -49,6 +51,7 @@ equ2
 error
 even
 .exit
+exitm
 export
 extern
 externdef
@@ -85,6 +88,7 @@ include
 includelib
 invoke
 irp
+irpc
 label
 large
 le
@@ -132,6 +136,8 @@ pushcontext
 readonly
 record
 .repeat
+repeat
+rept
 .sall
 sbyte
 sdword

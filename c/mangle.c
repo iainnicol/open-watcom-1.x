@@ -37,6 +37,7 @@
 #include "asmalloc.h"
 #include "asmerr.h"
 #include "directiv.h"
+#include "asmins.h"
 
 extern char *CMangler( struct asm_sym *sym, char *buffer );
 extern char *AsmMangler( struct asm_sym *sym, char *buffer );
@@ -81,9 +82,9 @@ char *CMangler( struct asm_sym *sym, char *buffer )
             changes |= USCORE_BACK;
         } else {
             switch( sym->mem_type ) {
-            case T_NEAR:
-            case T_FAR:
-            case EMPTY:
+            case MT_NEAR:
+            case MT_FAR:
+            case MT_EMPTY:
                 changes |= USCORE_BACK;
                 break;
             default:
@@ -96,9 +97,9 @@ char *CMangler( struct asm_sym *sym, char *buffer )
             changes |= REM_USCORE_BACK;
         } else {
             switch( sym->mem_type ) {
-            case T_NEAR:
-            case T_FAR:
-            case EMPTY:
+            case MT_NEAR:
+            case MT_FAR:
+            case MT_EMPTY:
                 changes |= REM_USCORE_BACK;
                 break;
             default:
@@ -107,7 +108,7 @@ char *CMangler( struct asm_sym *sym, char *buffer )
         }
     }
     if( sym->state == SYM_PROC ) {
-        info = ((dir_node*)sym)->e.procinfo;
+        info = ((dir_node *)sym)->e.procinfo;
         if( info->langtype == LANG_C || info->langtype == LANG_STDCALL ) {
             changes |= USCORE_BACK;
         } else if( info->langtype >= LANG_BASIC && info->langtype <= LANG_PASCAL ) {

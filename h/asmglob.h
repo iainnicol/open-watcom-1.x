@@ -30,6 +30,8 @@
 
 
 #ifndef ASMGLOB_H
+#define ASMGLOB_H
+
 #include <stdio.h>
 #include <watcom.h>
 
@@ -88,9 +90,7 @@ enum naming_conventions {
                              */
 };
 
-#endif
-
-#if ( defined(_WASM_) && !defined( ASMSYM_H ) )
+#if defined( _WASM_ )
 
 #define DELIM                   " ,\t\0"
 #define T_UNDEFINED             -1
@@ -115,7 +115,7 @@ typedef struct {
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define OBJ_EXT "o"
 #else
 #define OBJ_EXT "obj"
@@ -159,9 +159,9 @@ typedef struct global_options {
     bool        output_data_in_code_records;
 
     /* error handling stuff */
-    char        error_count;
-    char        warning_count;
-    char        error_limit;
+    int         error_count;
+    int         warning_count;
+    int         error_limit;
     char        warning_level;
     char        warning_error;
 
@@ -177,6 +177,7 @@ typedef struct global_options {
     #endif
     char *      default_name_mangler;
     bool        allow_c_octals;
+    bool        emit_dependencies;
 } global_options;
 
 extern global_options Options;
@@ -195,6 +196,4 @@ extern global_vars Globals;
 
 #endif
 
-#ifndef ASMGLOB_H
-#define ASMGLOB_H
 #endif

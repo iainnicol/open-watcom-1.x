@@ -3,8 +3,8 @@ xchg dx,ax
 xchg ebp,eax
 xchg ebp,eax
 xchg bh,cl
-xchg ah,byte ptr x
+xchg byte ptr x,ah
 xchg bx,cx
-xchg di,word ptr x
+xchg word ptr x,di
 xchg ebx,ecx
-xchg esp,dword ptr x
+xchg dword ptr x,esp

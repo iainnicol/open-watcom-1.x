@@ -7,12 +7,9 @@ objs = &
 387 &
 a &
 alias &
-alignorg &
 anon &
-anthony &
 b &
 backquot &
-bar &
 beep &
 bigext &
 bug &
@@ -22,9 +19,7 @@ cmps &
 comm &
 current &
 data &
-dos16m &
 dosinite &
-dosstart &
 do_ax &
 dup &
 empty &
@@ -35,7 +30,6 @@ fcom &
 five &
 float &
 foo &
-fubar &
 g &
 getenv &
 hello &
@@ -43,7 +37,6 @@ ifs &
 include &
 ins &
 irp &
-jmp &
 jmpext &
 jmpfword &
 jmpsize &
@@ -52,13 +45,11 @@ kyb &
 l2 &
 l3 &
 labelbug &
-loader2 &
 lods &
 maaak &
 macro &
 macroloc &
 macrotst &
-main &
 mainnew &
 mangle &
 masmsuks &
@@ -67,8 +58,6 @@ movs &
 new &
 newbug &
 newmif &
-newproc &
-notcomm &
 offset &
 org &
 orgage &
@@ -92,9 +81,6 @@ stos &
 strmang &
 struct &
 structjn &
-t2 &
-test &
-testing &
 tmp &
 tn &
 wincall &
@@ -102,7 +88,33 @@ word &
 x &
 xx
 
-test : .SYMBOLIC
+dev_objs = &
+alignorg &
+anthony &
+bar &
+dos16m &
+dosstart &
+fubar &
+jmp &
+loader2 &
+main &
+newproc &
+notcomm &
+t2 &
+test
+
+asm_flags_x = -c
+
+!ifndef asm
+asm=wasm -q -zld
+!endif 
+
+count=1
+
+all : $(cmd_file) $(objs) $(dev_objs)
+	@call $(cmd_file)
+
+$(cmd_file) : .SYMBOLIC
 !ifndef asm
 asm=wasm
 !endif 
@@ -122,22 +134,48 @@ asm=wasm
 debug : .SYMBOLIC
 	@%create $(cmd_file)
 	@%write $(cmd_file) @echo off
-	@%write $(cmd_file) @echo %1.asm ======================================================
-	@%write $(cmd_file) @$(asm) %1.asm -q -d6 >null
-	@%write $(cmd_file) @if not exist %1.err goto next1
-	@%write $(cmd_file) @if not exist %1.chk goto next2
-        @%write $(cmd_file) @bdiff -b %1.err %1.chk
-	@%write $(cmd_file) goto next1
-	@%write $(cmd_file) :next2
-	@%write $(cmd_file) type %1.err
-	@%write $(cmd_file) :next1
-	@for %x in ($(objs)) do @call $(cmd_file) %x
+
+$(objs) : .SYMBOLIC
+	@%append $(cmd_file) @echo $^@.asm ======================================================
+	@%append $(cmd_file) @$(asm) $(asm_flags_$^@) $^@.asm >$^@.tmp 2>&1
+	@%append $(cmd_file) @if not exist $^@.chk goto next$^@a
+        @%append $(cmd_file) @diff -b $^@.tmp $^@.chk
+	@%append $(cmd_file) goto next$^@c
+	@%append $(cmd_file) :next$^@a
+	@%append $(cmd_file) type $^@.tmp
+	@%append $(cmd_file) :next$^@c
+	@%append $(cmd_file) @if not exist $^@.obj goto next$^@d
+	@%append $(cmd_file) @wdis -l=$^@.dis -a $^@.obj
+	@%append $(cmd_file) @if not exist $^@.esm goto next$^@b
+        @%append $(cmd_file) @diff -b $^@.dis $^@.esm
+	@%append $(cmd_file) :next$^@b
+	@%append $(cmd_file) @dmpobj -q -l -rec=FIXUPP $^@.obj
+	@%append $(cmd_file) @if not exist $^@.emp goto next$^@d
+        @%append $(cmd_file) @diff -b $^@.lst $^@.emp
+	@%append $(cmd_file) :next$^@d
+
+$(dev_objs) : .SYMBOLIC
+	@%append $(cmd_file) @echo .
+	@%append $(cmd_file) @echo ==============================================================
+	@%append $(cmd_file) @echo DEVELOPMENT - $^@.asm 
+	@%append $(cmd_file) @echo ==============================================================
+	@%append $(cmd_file) @echo .
+	@%append $(cmd_file) @$(asm) $(asm_flags_$^@) $^@.asm >$^@.tmp 2>&1
+	@%append $(cmd_file) @if not exist $^@.chk goto next$^@a
+        @%append $(cmd_file) @diff -b $^@.tmp $^@.chk
+	@%append $(cmd_file) goto next$^@c
+	@%append $(cmd_file) :next$^@a
+	@%append $(cmd_file) type $^@.tmp
+	@%append $(cmd_file) :next$^@c
+	@%append $(cmd_file) @if not exist $^@.obj goto next$^@d
+	@%append $(cmd_file) @wdis -l=$^@.dis -a $^@.obj
+	@%append $(cmd_file) @if not exist $^@.esm goto next$^@b
+        @%append $(cmd_file) @diff -b $^@.dis $^@.esm
+	@%append $(cmd_file) :next$^@b
+	@%append $(cmd_file) @dmpobj -q -l -rec=FIXUPP $^@.obj
+	@%append $(cmd_file) @if not exist $^@.emp goto next$^@d
+        @%append $(cmd_file) @diff -b $^@.lst $^@.emp
+	@%append $(cmd_file) :next$^@d
 
 clean : .SYMBOLIC
-	@%create $(cmd_file)
-	@%write $(cmd_file) @echo off
-	@%write $(cmd_file) @if exist %1.obj del %1.obj
-	@%write $(cmd_file) @if exist %1.err del %1.err
-	@for %x in ($(objs)) do @call $(cmd_file) %x
-	@if exist test_tmp.cmd del test_tmp.cmd
-	@if exist mem.trk erase mem.trk
+	rm -f *.obj *.err *.dis *.lst *.tmp test_tmp.cmd mem.trk

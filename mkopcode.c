@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "watcom.h"
 
 char Chars[3000];
 struct words {
@@ -123,7 +124,7 @@ main( int argc, char *argv[] )
     fprintf( out, "  #define asm_op(token,len,index) token\n" );
     fprintf( out, "  enum asm_token {\n" );
     fprintf( out, "#else\n" );
-    fprintf( out, "  char AsmChars[] = {\n" );
+    fprintf( out, "  extern char AsmChars[] = {\n" );
     for( i = 0; i < index; i++ ) {
         if( i % 10 == 0 )  fprintf( out, "/*%4d*/ ", i );
         fprintf( out, "'%c',", Chars[i] );
@@ -145,11 +146,10 @@ main( int argc, char *argv[] )
             prefix = "T_";
         }
         j = strlen(buf);
-        /*** Some special cases because of same name in pcobj.h ***/
-        if( stricmp( buf, "ABS" ) == 0 ||
-            stricmp( buf, "INS" ) == 0 ||
-            stricmp( buf, "SEG" ) == 0 ) {
-            suffix = "2";
+        if( *(buf + j - 1) == '?' ) {
+        // append suffix _UN if ? on end
+            suffix = "_UN";
+            *(buf + j - 1) = 0;
         } else if( *(buf + j - 1) == '?' ) {
         // append suffix _UN if ? on end
             suffix = "_UN";

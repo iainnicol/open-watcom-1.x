@@ -38,9 +38,7 @@
 #include <malloc.h>
 
 #include "asmglob.h"
-#include "asmops1.h"
-#include "asmops2.h"
-#include "asmins1.h"//
+#include "asmins.h"
 #include "asmopnds.h"
 #include "asmerr.h"
 #include "asmsym.h"
@@ -111,7 +109,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, int fixup_type )
     case T_LODS:
     case T_MOVS:
     case T_OUTS:
-    case T_INS2:
+    case T_INS:
     case T_SCAS:
     case T_STOS:
     case T_XLAT:
@@ -397,8 +395,8 @@ struct fixup *CreateFixupRec( int index )
                 return NULL;
             }
 
-            fixnode->lr.frame = F_GRP;
-            fixnode->lr.target = T_GRP;
+            fixnode->lr.frame = FRAME_GRP;
+            fixnode->lr.target = TARGET_GRP;
             fixnode->lr.frame_datum =
             fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_GRP );
 
@@ -409,8 +407,8 @@ struct fixup *CreateFixupRec( int index )
                 return NULL;
             }
 
-            fixnode->lr.frame = F_SEG;
-            fixnode->lr.target = T_SEG;
+            fixnode->lr.frame = FRAME_SEG;
+            fixnode->lr.target = TARGET_SEG;
             fixnode->lr.frame_datum =
             fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_SEG );
 
@@ -420,38 +418,38 @@ struct fixup *CreateFixupRec( int index )
 
             if( sym->state == SYM_EXTERNAL ) {
                 if( Modend ) {
-                    if( sym->mem_type == T_BYTE ||
-                        sym->mem_type == T_SBYTE ||
-                        sym->mem_type == T_WORD ||
-                        sym->mem_type == T_SWORD ||
-                        sym->mem_type == T_DWORD ||
-                        sym->mem_type == T_SDWORD ||
-                        sym->mem_type == T_FWORD ||
-                        sym->mem_type == T_PWORD ||
-                        sym->mem_type == T_QWORD ||
-                        sym->mem_type == T_TBYTE ||
-                        sym->mem_type == T_ABS2 ) {
+                    if( sym->mem_type == MT_BYTE ||
+                        sym->mem_type == MT_SBYTE ||
+                        sym->mem_type == MT_WORD ||
+                        sym->mem_type == MT_SWORD ||
+                        sym->mem_type == MT_DWORD ||
+                        sym->mem_type == MT_SDWORD ||
+                        sym->mem_type == MT_FWORD ||
+                        sym->mem_type == MT_PWORD ||
+                        sym->mem_type == MT_QWORD ||
+                        sym->mem_type == MT_TBYTE ||
+                        sym->mem_type == MT_ABS ) {
 
                         AsmError( MUST_BE_ASSOCIATED_WITH_CODE );
                         return NULL;
                     }
-                    fixnode->lr.target = T_EXTWD;
+                    fixnode->lr.target = TARGET_EXTWD;
                 } else {
-                    fixnode->lr.target = T_EXT;
+                    fixnode->lr.target = TARGET_EXT;
                 }
                 fixnode->lr.target_datum = GetDirIdx( fixup->name, TAB_EXT );
 
-                if( fixup->frame == F_GRP && fixup->frame_datum == 0 ) {
+                if( fixup->frame == FRAME_GRP && fixup->frame_datum == 0 ) {
                     /* set the frame to the frame of the corresponding segment */
                     fixup->frame_datum = GetGrpIdx( sym );
                 }
             } else {
                 /**/myassert( sym->segidx != 0 );
                 if( Modend ) {
-                    fixnode->lr.target = T_SEGWD;
-                    fixup->frame = F_TARG;
+                    fixnode->lr.target = TARGET_SEGWD;
+                    fixup->frame = FRAME_TARG;
                 } else {
-                    fixnode->lr.target = T_SEG;
+                    fixnode->lr.target = TARGET_SEG;
                 }
                 fixnode->lr.target_datum = sym->segidx;
             }
@@ -465,7 +463,7 @@ struct fixup *CreateFixupRec( int index )
             if( fixup->frame != EMPTY ) {
                 fixnode->lr.frame = (uint_8)fixup->frame;
             } else {
-                fixnode->lr.frame = F_TARG;
+                fixnode->lr.frame = FRAME_TARG;
             }
             fixnode->lr.frame_datum = fixup->frame_datum;
 
@@ -478,7 +476,7 @@ struct fixup *CreateFixupRec( int index )
         /*--------------------*/
 
         if( fixnode->lr.frame == ( fixnode->lr.target - 4 ) ) {
-            fixnode->lr.frame = F_TARG;
+            fixnode->lr.frame = FRAME_TARG;
         }
 
         fixnode->next = NULL;
@@ -517,7 +515,7 @@ int MakeFpFixup( struct asm_sym *sym )
     old_count = Opnd_Count;
     old_frame = Frame;
     Opnd_Count = 2;
-    Frame = F_LOC;
+    Frame = FRAME_LOC;
     AddFixup( sym, FIX_OFF16 );
     Frame = old_frame;
     Opnd_Count = old_count;

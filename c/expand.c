@@ -39,11 +39,11 @@
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "asmerr.h"
-#include "asmops1.h"
-#include "asmops2.h"
-#include "asmins1.h"
+#include "asmins.h"
 #include "namemgr.h"
 #include "asmsym.h"
+#include "asmdefs.h"
+#include "asmeval.h"
 
 #include "womp.h"
 #include "pcobj.h"
@@ -54,21 +54,16 @@
 
 #include "expand.h"
 #include "directiv.h"
-extern  char            StringBuf[];
-extern int              Token_Count;    // number of tokens on line
-extern  struct asm_tok  *AsmBuffer[];   // buffer to store token
+
 extern dir_node         *CurrProc;
-extern  char            Parse_Pass;     // phase of parsing
-extern int              LineNumber;
 
 extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
 extern void             wipe_space( char *token );
-extern int              AsmScan( char *, char * );
+extern int              AsmScan( char * );
 extern dir_node         *dir_insert( char *name, int tab );
-extern int              EvalExpr( int, int, int );
 extern void             GetInsString( enum asm_token , char *, int );
-extern int              MakeLabel( char *symbol_name, int mem_type );
+extern int              MakeLabel( char *symbol_name, memtype mem_type );
 
 #define    MAX_EQU_NESTING      20
 
@@ -108,7 +103,7 @@ void AddTokens( struct asm_tok **buffer, int start, int count )
     Token_Count += count;
 }
 
-int ExpandSymbol( int i, int early_only )
+int ExpandSymbol( int i, bool early_only )
 /***************************************/
 {
     struct asm_sym      *sym;
@@ -121,7 +116,8 @@ int ExpandSymbol( int i, int early_only )
     switch( sym->state ) {
     case SYM_CONST:
         dir = (dir_node *)sym;
-        if( !dir->e.constinfo->expand_early && early_only ) return( NOT_ERROR );
+        if(( dir->e.constinfo->expand_early == FALSE ) 
+            && ( early_only == TRUE )) return( NOT_ERROR );
         DebugMsg(( "Expand Constant: %s ->", sym->name ));
         /* insert the pre-scanned data for this constant */
         AddTokens( AsmBuffer, i, dir->e.constinfo->count - 1 );
@@ -278,17 +274,17 @@ int DefineConstant( int i, bool redefine, bool expand_early )
     return( createconstant( name, FALSE, i, redefine, expand_early ) );
 }
 
-int StoreConstant( char *name, char *value, int_8 redefine )
+int StoreConstant( char *name, char *value, bool redefine )
 /**********************************************************/
 {
-    AsmScan( value, StringBuf );
+    AsmScan( value );
     return( createconstant( name, FALSE, 0, redefine, FALSE ) );
 }
 
-void MakeConstant( long token )
+void MakeConstantUnderscored( int token )
 /*****************************/
 {
-    char buffer[20];
+    char buffer[23];
 
     /* define a macro */
     buffer[0]='\0';
@@ -296,10 +292,10 @@ void MakeConstant( long token )
     GetInsString( (enum asm_token)token, buffer+2, 18 );
     strcat( buffer, "__" );
     strupr( buffer );
-    createconstant( buffer, 1, 0, TRUE, FALSE );
+    createconstant( buffer, TRUE, 0, TRUE, FALSE );
 }
 
-static int createconstant( char *name, int value, int start, int_8 redefine, bool expand_early )
+static int createconstant( char *name, bool value, int start, bool redefine, bool expand_early )
 /**********************************************************************************************/
 {
     struct asm_tok      *new;
@@ -330,9 +326,8 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
             dir->e.constinfo->expand_early = expand_early;
             sym->grpidx = sym->segidx = sym->offset = 0;
             dir->e.constinfo->data = NULL;
-        } else  if( sym->state != SYM_CONST ||
-            ( !dir->e.constinfo->redefine && Parse_Pass == PASS_1 ) ) {
-
+        } else if(( sym->state != SYM_CONST )
+            || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
             /* error */
             AsmError( LABEL_ALREADY_DEFINED );
             return( ERROR );
@@ -359,7 +354,7 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
     }
 
     /* expand any constants */
-    if( ExpandTheWorld( start, FALSE ) == ERROR ) return( ERROR );
+    if( ExpandTheWorld( start, FALSE, TRUE ) == ERROR ) return( ERROR );
 
     for( i=start; AsmBuffer[i]->token != T_FINAL; i++ );
     count = i-start;
@@ -386,7 +381,7 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
                 sprintf( buff, ".$%x/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
                 AsmBuffer[start+i]->string_ptr = buff;
                 sym = AsmGetSymbol( buff );
-                if( sym == NULL ) MakeLabel( buff, T_NEAR );
+                if( sym == NULL ) MakeLabel( buff, MT_NEAR );
             }
             break;
         }
@@ -413,15 +408,15 @@ static int createconstant( char *name, int value, int start, int_8 redefine, boo
     return( NOT_ERROR );
 }
 
-int ExpandTheWorld( int start_pos, bool early_only )
+int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
 /**************************************************/
 {
-    int         val;
-
     if( ExpandAllConsts( start_pos, early_only ) == ERROR ) return( ERROR );
-    if( !early_only ) {
-        val = EvalExpr( Token_Count, start_pos, Token_Count );
-        if( val == ERROR ) val = 0;
+    if( early_only == FALSE ) {
+        int    val;
+
+        val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
+        if( val == ERROR ) return( ERROR );
         Token_Count = val;
     }
     return( NOT_ERROR );

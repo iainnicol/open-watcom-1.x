@@ -30,6 +30,8 @@
 
 
 #ifndef ASMSYM_H
+#define ASMSYM_H
+
 #include "watcom.h"
 
 enum fixup_types {
@@ -95,6 +97,34 @@ struct asmfixup {
 
 };
 
+typedef enum {
+        MT_EMPTY,
+        MT_ERROR,
+
+        MT_BYTE,
+        MT_SBYTE,
+        MT_WORD,
+        MT_SWORD,
+        MT_DWORD,
+        MT_SDWORD,
+        MT_QWORD,
+        MT_FWORD,
+        MT_PWORD,
+        MT_TBYTE,
+
+        MT_SHORT,
+        MT_NEAR,
+        MT_FAR,
+
+        MT_STRUCT,
+
+        MT_PTR,
+
+        MT_PROC,
+        MT_ABS
+
+} memtype;
+
 typedef struct asm_sym {
         struct asm_sym  *next;
         char            *name;
@@ -112,10 +142,12 @@ typedef struct asm_sym {
 #else
         long            addr;
 #endif
-        int             mem_type;
+        memtype         mem_type;
         enum sym_state  state;
         struct asmfixup *fixup;
 } asm_sym;
+
+extern char *InitAsmSym( struct asm_sym *sym, char *name );
 extern struct asm_sym *AsmLookup( char *name );
 extern struct asm_sym *AsmAdd( struct asm_sym *symbol );
 extern void AsmSymFini(void);
@@ -146,5 +178,4 @@ extern enum sym_type    AsmQueryType( char *name );
 
 extern struct asmfixup  *FixupHead;
 
-#define ASMSYM_H
 #endif

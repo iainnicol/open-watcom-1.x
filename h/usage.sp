@@ -1,6 +1,6 @@
 :segment ENGLISH
 Usage:   wasm [options] asm_file [options] [@env_var]
-:segment qnx
+:segment qnx|linux
 Options:
 :elsesegment
 Options:                    ( /option is also supported )
@@ -16,9 +16,9 @@ Options:                    ( /option is also supported )
     add p       protect mode
     add r       register calling conventions
     add s       stack calling conventions
-                ie: /2      /3s     /4pr    /5p
+                ie: -2      -3s     -4pr    -5p
 :segment HIDDEN
-    -3r_ or -3s_        just like /3r and /3s except assume the programmer
+    -3r_ or -3s_        just like -3r and -3s except assume the programmer
                         put uscores in the assembly file correctly
                         thus -3r_ doesn't add uscores, -3s_ removes uscores
 :endsegment
@@ -51,9 +51,11 @@ Options:                    ( /option is also supported )
 -nt=<name>          set name of text segment
 -o                  allow C form of octal constants
 -zq or -q           operate quietly
--?                  print this message
+-zld                suppress generation of file dependency info in object file
+-? or h             print this message
 -w<number>          set warning level number
 -we                 treat all warnings as errors
+-wx                 set warning level to the highest level
 
 :elsesegment JAPANESE
 Žg—p•û–@: wasm [options] file [options] [@env_var]

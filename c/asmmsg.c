@@ -39,9 +39,11 @@
 #include "watcom.h"
 #include "asmerr.h"
 #include "asmglob.h"
+#include "asmdefs.h"
 
-extern uint         LineNumber;
 extern File_Info    AsmFiles;   // files information
+
+extern char         *curr_src_line;
 
 extern void             MsgPrintf( int resourceid ); // don't use this
 extern int              MsgGet( int resourceid, char *buffer );
@@ -55,7 +57,7 @@ void print_include_file_nesting_structure( void );
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
 
-#ifdef __QNX__
+#ifdef __UNIX__
 #define errout stderr
 #else
 #define errout stdout
@@ -121,9 +123,12 @@ void AsmErr( int msgnum, ... )
 {
     va_list args1, args2;
 
+#ifdef DEBUG_OUT
+    printf( "%s\n", curr_src_line );
+#endif
     va_start( args1, msgnum );
     va_start( args2, msgnum );
-    if( ErrLimit == (char)-1  ||  ErrCount < ErrLimit ) {
+    if( ErrLimit == -1  ||  ErrCount < ErrLimit ) {
         PrtMsg( "Error!", msgnum, args1, args2 );
         va_end( args1 );
         va_end( args2 );
@@ -140,8 +145,10 @@ void AsmWarn( int level, int msgnum, ... )
 {
     va_list args1, args2;
 
-//    if( WngLvls[level] <= WngLevel )
     if( level <= WngLevel ) {
+#ifdef DEBUG_OUT
+        printf( "%s\n", curr_src_line );
+#endif
         va_start( args1, msgnum );
         va_start( args2, msgnum );
         if( !Options.warning_error ) {
