@@ -128,7 +128,9 @@ nulldevice=/dev/null
 nulldevice=nul
 !endif
 
+!ifndef log_file
 log_file=testcomp.log
+!endif
 
 .BEFORE
 #    @%create $(log_file)
@@ -142,6 +144,7 @@ $(objs) : .SYMBOLIC
     @echo $(testcomp) $^@.asm
     @echo ==============================================================
     @rm -f $@.c
+    @%append $(log_file) === $(testcomp) $^@ ===
     @vi -d -q -k ":so createc.vi $@ $(init_$^@)\n"
     @$(testcomp) $@.c -s -os -zq -wx -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
@@ -158,6 +161,7 @@ $(dev_objs) : .SYMBOLIC
     @echo DEVELOPMENT - $(testcomp) $^@.asm
     @echo ==============================================================
     @rm -f $@.c
+    @%append $(log_file) === $(testcomp) $^@ ===
     @vi -d -q -k ":so createc.vi $@ $(init_$^@)\n"
     @$(testcomp) $@.c -s -os -zq -wx -fo=.obj >$(nulldevice)
     @wdis -a -l $@.obj >$(nulldevice)
