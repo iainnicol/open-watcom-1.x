@@ -1,0 +1,104 @@
+
+objs = &
+387 &
+a &
+alias &
+anon &
+anthony &
+b &
+backquot &
+beep &
+bigext &
+bug &
+bunk &
+c &
+cmps &
+comm &
+current &
+data &
+dosinite &
+do_ax &
+dup &
+empty &
+error &
+f &
+farjmp &
+fcom &
+five &
+float &
+foo &
+g &
+getenv &
+hello &
+ifs &
+include &
+ins &
+irp &
+jmpext &
+jmpfword &
+jmpsize &
+jmptst &
+kyb &
+l2 &
+l3 &
+labelbug &
+lods &
+maaak &
+macro &
+macroloc &
+macrotst &
+main &
+mainnew &
+mangle &
+masmsuks &
+masmtest &
+movs &
+new &
+newbug &
+newmif &
+offset &
+org &
+orgage &
+outs &
+passtest &
+proc &
+proc3 &
+pub &
+pub2 &
+pubdef &
+q &
+qnxstrt &
+quote &
+scas &
+segoff &
+shell &
+size &
+sizebug &
+sizebug2 &
+stos &
+strmang &
+struct &
+structjn &
+test &
+tmp &
+tn &
+wincall &
+word &
+x &
+xx
+
+dev_objs = &
+alignorg &
+bar &
+dos16m &
+dosstart &
+fubar &
+jmp &
+loader2 &
+newproc &
+notcomm &
+t2
+
+asm_flags_x = -c
+
+!include ../test.mif
