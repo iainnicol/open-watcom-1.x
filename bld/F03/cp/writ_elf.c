@@ -46,11 +46,7 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 
-#if defined(__QNX__)
- #include <unistd.h>
-#else
- #include <direct.h>
-#endif
+#include <unistd.h>
 
 extern  void            Suicide();
 extern  void            SDWrite(file_handle,byte *,int);

@@ -49,7 +49,7 @@
 
 #include <string.h>
 #include <process.h>
-#include <io.h>
+#include <unistd.h>
 
 #if defined( __386__ )
   #define PAGE_SIZE     (16*1024)

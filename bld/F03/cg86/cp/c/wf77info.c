@@ -62,7 +62,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <dos.h>
 
 //=================== Back End Code Generation Routines ====================
 
