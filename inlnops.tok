@@ -91,6 +91,7 @@ cmovpo
 cmovs
 cmovz
 cmp
+cmpeqps
 cmppd
 cmpps
 cmps
