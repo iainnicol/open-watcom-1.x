@@ -1046,9 +1046,6 @@ int cpu_directive( uint_16 i )
     if( ( temp = comp_opt( i ) ) != EMPTY ) {
         if( temp == P_NO87 ) {
             Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
-            #ifdef _WASM_
-                Options.floating_point = NO_FP_ALLOWED;
-            #endif
         } else if( temp & P_FPU_MASK ) {
             Code->info.cpu &= ~P_FPU_MASK;              // turn off FPU bits
             Code->info.cpu |= temp;             // turn on desired bit(s)
