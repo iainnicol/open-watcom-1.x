@@ -2674,7 +2674,6 @@ member-declarator
     }
     | member-declaring-declarator Y_PURE_FUNCTION_SPECIAL Y_CONSTANT
     {
-        $$ = InsertDeclInfo( GetCurrScope(), $1 );
         if( $3->op != PT_INT_CONSTANT || $3->u.int_constant != 0 ) {
             CErr1( ERR_MUST_BE_ZERO );
         }
