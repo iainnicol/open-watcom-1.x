@@ -319,7 +319,7 @@ insa(T_ENDIF,           OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DI
 insa(T_ENDM,            OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
 insa(T_ENDP,            OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
 insa(T_ENDS,            OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
-ins (T_ENTER,           OP_I16,      0,      OP_I8,      no_RM,  0xC8,     0x00,                     P_186, NO_PREFIX)
+ins (T_ENTER,           OP_I16,      0,      OP_I8_U,    no_RM,  0xC8,     0x00,                     P_186, NO_PREFIX)
 insa(T_EQ,              OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_ARITHOP,               P_86,  0)
 insa(T_EQU,             OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
 insa(T_EQU2,            OP_SPECIAL,  0,      OP_NONE,    0,      0,        OP_DIRECTIVE,             0,     0)
