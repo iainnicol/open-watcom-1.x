@@ -64,7 +64,7 @@ hook_in_emulator:
     smsw        word ptr DGROUP:L$4
     and         word ptr DGROUP:L$4,6
     sub         esp,8
-    sidt        [esp]
+    sidt        fword ptr [esp]
     mov         ebx,dword ptr 2[esp]
     add         ebx,38H
     add         esp,8
