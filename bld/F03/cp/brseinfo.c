@@ -41,9 +41,6 @@
 #include "progsw.h"
 #include "brseinfo.h"
 #include "sdfile.h"
-#if _OPT_CG == _OFF
-#include "objutil.h"
-#endif
 #include "dw.h"
 #include "astype.h"
 #include "browscli.h"
@@ -64,9 +61,6 @@ extern  int             TypeSize(uint);
 extern  int             AllocName(int);
 extern  int             MakeName(char *,char *,char *);
 extern  char            *SDFName(char *fn);
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-extern  void            LoadDwarfOverlay( void );
-#endif
 static void             BIAdd2List(sym_list **,sym_id,dw_handle);
 static void             BIWalkList(sym_list **,func,int);
 static dw_handle        BIGetAnyType(sym_id);
@@ -99,9 +93,6 @@ extern  char            *TypeKW[];
 static dw_client        cBIId;
 static dw_loc_handle    justJunk;
 static char             fullPathName[ PATH_MAX + 1 ];
-#if _OPT_CG == _OFF
-static dw_handle        currProgHandle;
-#endif
 static dw_handle        subProgTyHandle;
 static unsigned_32      currState = 0;
 static sym_list         *fixStructs = NULL;
@@ -125,14 +116,9 @@ static  bool            BrInitialized;
  #define ARCHITECTURE   sizeof( long )
 #endif
 
-#if _OPT_CG == _ON
   #define _GenerateBrInfo()     ((Options & OPT_BROWSE) && \
                                  (BrInitialized) && \
                                  (ProgSw & PS_DONT_GENERATE))
-#else
-  #define _GenerateBrInfo()     ((Options & OPT_BROWSE) && \
-                                 (BrInitialized))
-#endif
 
 #define _isFundementalType( typ ) \
                         (((int)typ >= FIRST_BASE_TYPE) && ((int)typ <= LAST_BASE_TYPE))
@@ -145,18 +131,11 @@ void    BIInit() {
 
     BrInitialized = TRUE;
     if( !_GenerateBrInfo() ) return;
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-    LoadDwarfOverlay();
-#endif
     init_dwl.language = DWLANG_FORTRAN;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
     init_dwl.producer_name = "WATCOM FORTRAN 77";
     if ( !setjmp( init_dwl.exception_handler ) ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        CLIInit( &(init_dwl.funcs), FILE_SECTION );
-#else
         CLIInit( &(init_dwl.funcs), MEM_SECTION );
-#endif
         cBIId = DWInit( &init_dwl );
         justJunk = DWLocFini( cBIId, DWLocInit( cBIId ) );
         cu.source_filename=BIMKFullPath( CurrFile->name );
@@ -183,9 +162,6 @@ void    BIEnd() {
     char        fn[MAX_FILE+1];
 
     if( !_GenerateBrInfo() ) return;
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-    LoadDwarfOverlay();
-#endif
     MakeName( SDFName( SrcName ), BrowseExtn, fn );
     DWEndCompileUnit( cBIId );
     DWLocTrash( cBIId, justJunk );
@@ -202,9 +178,6 @@ void    BIStartSubroutine() {
 //===========================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) != SY_BLOCK_DATA ){
             BIOutSrcLine();
             BIOutSP( SubProgId );
@@ -217,9 +190,6 @@ void    BIFiniStartOfSubroutine() {
 //=================================
 
     if( _GenerateBrInfo() && (currState & BI_STATE_IN_SCOPE) ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ){
             BISolidifyFunction( SubProgId, subProgTyHandle );
         }
@@ -237,9 +207,6 @@ void    BIEndSubProg() {
 //======================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         if ( ( SubProgId->ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA ) {
             BIEndBlockData();
         } else {
@@ -254,9 +221,6 @@ void BIResolveUndefTypes() {
 //==========================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         BIWalkList( &fixStructs, &BIGetStructType, TRUE );
     }
 }
@@ -265,9 +229,6 @@ void    BIEndSF( sym_id ste_ptr ) {
 //=================================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         DWEndSubroutine ( cBIId );
         BIRefSymbol( BIGetHandle( ste_ptr ) );
         currState &= ~BI_STATE_IN_STMT_FUNC;
@@ -278,9 +239,6 @@ void    BIStartRBorEP( sym_id ste_ptr ) {
 //=======================================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         BIOutSP( ste_ptr );
         if ( ste_ptr->ns.flags & SY_SENTRY ) {
             BIOutDummies( ArgList );
@@ -292,9 +250,6 @@ void    BIEndRBorEP( void ) {
 //===========================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         DWEndSubroutine ( cBIId );
     }
 }
@@ -305,9 +260,6 @@ void    BIStartComBlock( sym_id ste_ptr ) {
     char        name[MAX_SYMLEN+1];
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         memset( name, 0, MAX_SYMLEN+1 );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         currState |= BI_STATE_IN_COMMON_BLOCK;
@@ -321,9 +273,6 @@ void    BIEndComBlock( void ) {
 //=============================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         currState &= ~BI_STATE_IN_COMMON_BLOCK;
         DWEndCommonBlock ( cBIId );
     }
@@ -335,9 +284,6 @@ void    BIStartBlockData( sym_id ste_ptr ) {
     char        name[MAX_SYMLEN+1];
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         memset( name, 0, MAX_SYMLEN+1 );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         DWBeginLexicalBlock( cBIId, 0,
@@ -349,9 +295,6 @@ void    BIEndBlockData( void ) {
 //==============================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         currState &= ~BI_STATE_IN_COMMON_BLOCK;
         DWEndLexicalBlock ( cBIId );
     }
@@ -361,9 +304,6 @@ void    BIOutComSymbol( sym_id ste_ptr ) {
 //========================================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         BIOutVar( ste_ptr );
     }
 }
@@ -376,9 +316,6 @@ void    BIOutNameList( sym_id ste_ptr ) {
     dw_handle   var;
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         if( !( ste_ptr->nl.dbh ) ) {
             strncpy( name, ste_ptr->nl.name, ste_ptr->nl.name_len );
             name[ste_ptr->nl.name_len] = 0;
@@ -411,9 +348,6 @@ void    BIOutSymbol( sym_id ste_ptr ) {
     dw_handle   temp;
 
     if( !_GenerateBrInfo() ) return;
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
     if (  !( currState & BI_STATE_IN_SCOPE ) ) {
         BISetHandle( ste_ptr, 0 );
         return;
@@ -498,9 +432,6 @@ void BISetSrcFile() {
     char        *name;
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         if ( !( ProgSw & PS_FATAL_ERROR ) && CurrFile ) {
             name = BIMKFullPath( CurrFile->name );
             DWSetFile( cBIId, name );
@@ -517,9 +448,6 @@ void BIOutSrcLine() {
 // Set Current Source Line
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         DWLineNum( cBIId, DW_LN_DEFAULT, SrcRecNum, 0, 0 );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
     }
@@ -529,36 +457,6 @@ void BIOutSrcLine() {
 static dw_handle BIGetHandle( sym_id ste_ptr) {
 //=============================================
 
-#if _OPT_CG == _OFF
-    entry_pt            *tmp;
-
-    if ( ( ste_ptr->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        switch ( ste_ptr->ns.flags & SY_SUBPROG_TYPE ) {
-        case( SY_PROGRAM ) :
-        case( SY_FUNCTION ) :
-        case( SY_SUBROUTINE ) :
-        case( SY_FN_OR_SUB ) :
-        case( SY_BLOCK_DATA ) :
-            if ( ste_ptr != SubProgId ) {
-                if ( ste_ptr->ns.flags & SY_SENTRY ) {
-                    tmp = Entries;
-                    while( tmp ) {
-                        if ( tmp->id == ste_ptr ) {
-                            return( tmp->dbh );
-                        }
-                        tmp = tmp->link;
-                    }
-                    return( 0 );
-                }
-                break;
-            } else {
-                return( currProgHandle );
-            }
-        case( SY_STMT_FUNC ):           return( ste_ptr->ns.si.sf.dbh );
-        case( SY_REMOTE_BLOCK ):        return( ste_ptr->ns.si.rb.dbh );
-        }
-    }
-#endif
     return( ste_ptr->ns.dbh );
 }
 
@@ -566,33 +464,6 @@ static dw_handle BIGetHandle( sym_id ste_ptr) {
 static void BISetHandle( sym_id ste_ptr, dw_handle handle ) {
 //===========================================================
 
-#if _OPT_CG == _OFF
-    if ( ( ste_ptr->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        switch ( ste_ptr->ns.flags & SY_SUBPROG_TYPE ) {
-        case( SY_PROGRAM ) :
-        case( SY_FUNCTION ) :
-        case( SY_SUBROUTINE ) :
-        case( SY_FN_OR_SUB ) :
-        case( SY_BLOCK_DATA ) :
-            if ( ste_ptr != SubProgId ) {
-                if ( ste_ptr->ns.flags & SY_SENTRY ) {
-                        ArgList->dbh = handle;
-                        return;
-                }
-                break;
-            } else {
-                currProgHandle = handle;
-                return;
-            }
-        case( SY_STMT_FUNC ):
-                ste_ptr->ns.si.sf.dbh = handle;
-                return;
-        case( SY_REMOTE_BLOCK ):
-                ste_ptr->ns.si.rb.dbh = handle;
-                return;
-        }
-    }
-#endif
     ste_ptr->ns.dbh = handle;
 }
 
@@ -601,9 +472,6 @@ static void BIRefSymbol( dw_handle handle ) {
 //===========================================
 
     if( _GenerateBrInfo() ) {
-#if ( _TARGET == _8086 ) && ( _OPT_CG == _OFF )
-        LoadDwarfOverlay();
-#endif
         DWReference( cBIId, SrcRecNum, 0, handle );
     }
 }
