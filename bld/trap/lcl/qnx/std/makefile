@@ -2,13 +2,10 @@
 #
 # Create the QNX STD.TRP
 #
-host_CPU = 386
-host_os = qnx
 
 os      = qnx
 srv     = lcl
 cpu     = x86
-which = TRAP
 
 extra_objs = &
         qnxacc.obj &
@@ -18,6 +15,6 @@ extra_objs = &
         supp.obj &
         core.obj
 
-inc_dirs = $(trap_dir)/lcl/h
+extra_incs = $(trap_dir)\lcl\h
 
-!include $(trap_dir)/master.mif
+!include $(trap_dir)\trap.mif

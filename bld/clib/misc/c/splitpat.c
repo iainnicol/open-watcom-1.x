@@ -33,7 +33,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )
+#ifndef __WIDECHAR__
     #include <mbstring.h>
 #endif
 
@@ -236,6 +236,9 @@ CHAR_TYPE           *drive,
     }
     copypart( dir, startp, fnamep - startp, _MAX_DIR - 1 );
     if( dotp == NULL ) dotp = path;
+#if defined(__UNIX__)
+    if( ext == NULL )  dotp = path;
+#endif
     copypart( fname, fnamep, dotp - fnamep, _MAX_FNAME - 1 );
     copypart( ext,   dotp,   path - dotp,   _MAX_EXT - 1);
 }

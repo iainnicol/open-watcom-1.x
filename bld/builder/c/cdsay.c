@@ -32,19 +32,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#ifdef __UNIX__
-#include <unistd.h>
-#else
 #include <direct.h>
 #include <dos.h>
-#endif
 #include <stdlib.h>
 #include <stdio.h>
-#include <limits.h>
-
-#ifndef _MAX_PATH
-#define _MAX_PATH PATH_MAX
-#endif
 
 #define BSIZE   256
 #define SCREEN  79
@@ -75,9 +66,7 @@ unsigned ChgDir( char *dir )
 {
     char        *end;
     unsigned    len;
-#ifndef __UNIX__
     unsigned    total;
-#endif
 
     if( dir[0] == '\0' ) return( 0 );
     len = strlen( dir );
@@ -91,11 +80,9 @@ unsigned ChgDir( char *dir )
         }
         break;
     }
-#ifndef __UNIX__
     if( len > 2 && dir[1] == ':' ) {
         _dos_setdrive( toupper( dir[0] ) - 'A' + 1, &total );
     }
-#endif
     return( chdir( dir ) );
 }
 
@@ -109,11 +96,7 @@ int main(int argc, char **argv)
     }
     if( res == 0 ) {
         getcwd( cwd, sizeof( cwd ) );
-#ifdef __UNIX__
-        LogDir( cwd );
-#else
         LogDir( strupr(cwd) );
-#endif
     }
     else {
         printf("Error! CDSAY: invalid directory\n");

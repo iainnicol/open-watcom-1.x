@@ -2,7 +2,6 @@ proj_name = cg
 
 !include cproj.mif
 !include deftarg.mif
-!include defrule.mif
 
-!include $(cg_dir)/mif/cg.mif
-!include $(cg_dir)/mif/hostos.mif
+!include $(cg_dir)\mif\cg.mif
+!include $(cg_dir)\mif\hostos.mif

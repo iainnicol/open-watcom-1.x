@@ -10,7 +10,7 @@ Usage: wcc [options] file [options]
 :endsegment
 ::
 Options:
-:segment !OS_qnx & !OS_linux
+:segment !OS_qnx
             ( /option is also accepted )
 :endsegment
 :segment T386
@@ -104,6 +104,7 @@ Options:
 -ms           small memory model (small code/small data)
 :elsesegment Ti86
 -mc           compact memory model (small code/large data)
+-mf           flat memory model (small code/small data assuming CS=DS=SS=ES)
 -mh           huge memory model (large  code/huge data)
 -ml           large memory model (large code/large data)
 -mm           medium memory model (large code/small data)

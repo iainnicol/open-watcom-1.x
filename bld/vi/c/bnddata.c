@@ -36,9 +36,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <string.h>
-#ifdef __WATCOMC__
 #include <share.h>
-#endif
 #include "vi.h"
 
 static char magicCookie[]="CGEXXX";

@@ -143,14 +143,14 @@ static int createNewFile( char *name, bool same_file )
             if( EditFlags.CRLFAutoDetect ) {
                 CurrentFile->check_for_crlf = TRUE;
             }
-        #ifdef __UNIX__
+        #ifdef __QNX__
             CurrentFile->attr = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
                                     S_IROTH | S_IWOTH ;
         #endif
         } else {
             rc = ERR_NO_ERR;
             EditFlags.NewFile = FALSE;
-            #ifdef __UNIX__
+            #ifdef __QNX__
             {
                 struct stat     sb;
                 stat( name, &sb );

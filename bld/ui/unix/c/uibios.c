@@ -33,9 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
-#if defined (__WATCOMC__)
-    #include <curses.h>
-#elif !defined( HP )
+#ifndef HP
     #include <curses.h>
     #include <termio.h>
 #else
@@ -119,7 +117,7 @@ void intern finibios()
     del_curterm( cur_term );
 }
 
-static unsigned RefreshForbid = 0;
+static unsigned RefreshForbid= 0;
 
 void forbid_refresh( void )
 {
@@ -143,6 +141,7 @@ void intern physupdate( SAREA *area )
         _ui_refresh(0);
     }
 }
+
 
 #if defined( QNX_DEBUG )
 #include <stdio.h>

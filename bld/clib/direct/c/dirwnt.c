@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 implementation of directory functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -36,7 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
-#include <sys/types.h>
+#include <sys\types.h>
 #include <direct.h>
 #include <dos.h>
 #include <windows.h>

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Browsing information generation routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -51,7 +52,7 @@
 #include "pcheader.h"
 #include "fname.h"
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
  #include <unistd.h>
 #else
  #include <direct.h>

@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <assert.h>
+#include <stdlib.h>
+
 #ifdef __OS2_PM__
 #define INCL_PM
 #define INCL_WINFRAMEMGR
@@ -37,15 +41,12 @@
 #define INCL_GPILCIDS
 #define INCL_GPIPRIMITIVES
 #include <os2.h>
+
 #define __FAR
 #else
 #define STRICT
 #include <windows.h>
 #endif
-
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
 
 #include "wpi.h"
 #include "mem.h"

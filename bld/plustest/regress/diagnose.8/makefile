@@ -2,11 +2,11 @@
 # 8.0.1 branch diagnostic test stream
 #
 plustest_name = diag8
-!include ../environ.mif
+!include ..\environ.mif
 
 diagnose_dir = ..\diagnose\source
 
-!include $(diagnose_dir)/diagnose.mif
+!include $(diagnose_dir)\diagnose.mif
 !ifeq arch 386
 opt_diag0253  += -ei	# make Intel match the AXP compiler for now
 !endif
@@ -71,7 +71,7 @@ diag_fc : .symbolic
     del *.err
     %create diagnose.fc
     for %i in ($(diags_0199_c)) do %append diagnose.fc source\%i $(opt_%i)
-    cp diagnose.fc jww.fc
+    copy diagnose.fc jww.fc
     -$(wpp_$(arch)) $(diagnose_opts) -fc=diagnose.fc -k >nul
     ..\..\bin\catfile /a *.err >diag0100.out
     del *.err
@@ -87,10 +87,10 @@ diag_fc : .symbolic
     del *.ser
     
 save : .symbolic
-    if exist diff0000.out cp diff0000.out s$(arch)_0000.sav
-    if exist diff0100.out cp diff0100.out s$(arch)_0100.sav
-    if exist diff0200.out cp diff0200.out s$(arch)_0200.sav
-    if exist diff$(arch).out cp diff$(arch).out s$(arch)_$(arch).sav
+    if exist diff0000.out copy diff0000.out s$(arch)_0000.sav
+    if exist diff0100.out copy diff0100.out s$(arch)_0100.sav
+    if exist diff0200.out copy diff0200.out s$(arch)_0200.sav
+    if exist diff$(arch).out copy diff$(arch).out s$(arch)_$(arch).sav
     
 global : .symbolic
     if exist *.ser del *.ser

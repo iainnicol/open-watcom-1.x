@@ -35,9 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(__WATCOMC__)
-    #include <sys/ioctl.h>
-#elif !defined( HP )
+#ifndef HP
     #include <termio.h>
 #else
     #include <stdarg.h>
@@ -54,24 +52,18 @@
 #include <term.h>
 #endif
 
-#ifndef __WATCOMC__
 #include <alloca.h>
-#endif
 #include <unistd.h>
 
 #include "stdui.h"
 #include "qnxuiext.h"
 #include "tixparse.h"
 #include "trie.h"
-#ifndef __WATCOMC__
 #include "clibext.h"
-#endif
-#if 0
 #include "stdtypes.h"
 #include "unixmisc.h"
 
 #include "wlangfmt.h"
-#endif
 
 extern char ui_tix_path[];
 extern int ui_tix_missing( const char *name );
@@ -131,14 +123,13 @@ FILE *ti_fopen( char *fnam )
             return( res );
         }
     }
-#if 0
+
     if( LS_QualifySqlAnyFile( fnam, fpath, sizeof(fpath) ) ) {
         res = fopen( fpath, "r" );
         if( res != NULL ) {
             return( res );
         }
     }
-#endif
 
     // finally, look in /usr/watcom/tix/<name>
 //    strcpy( fpath, TIX_PATH_NAME );

@@ -4,10 +4,10 @@
 #
 
 libname =       chartw
-model =         -ml -zW
+model =         /ml /zW
 module =        $[&
 cdecl =         _loadds
 fard =
 _386 =
 
-!include ../pgchart.mif
+!include ..\pgchart.mif

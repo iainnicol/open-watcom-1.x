@@ -35,8 +35,9 @@
 #include <string.hpp>
 #include <io.h>
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <sys\stat.h>
+#include <sys\types.h>
+#include <sys\stat.h>
 #include <wstd.h>
 
 // FileExcept -- indicate that an exceptional file condition has occured

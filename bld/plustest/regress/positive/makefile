@@ -1,9 +1,9 @@
 plustest_name = positive
-!include ../environ.mif
+!include ..\environ.mif
 
 positive_dir = source
 
-!include $(positive_dir)/positive.mif
+!include $(positive_dir)\positive.mif
 
 !ifdef test1
 cflags_386 = -d2-xss-mf
@@ -215,7 +215,7 @@ test.lnk : makefile
     @%append $^@ OPTION quiet, noredef
 
 save : .symbolic
-    if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+    if exist exec.out copy exec.out s$(arch)_$(alt_error).sav
 
 global : .symbolic
     @if exist failure del failure

@@ -8,7 +8,7 @@ proj_name = strip
 
 .EXTENSIONS: .gh .rc .msg .sp
 
-inc_dirs = $(wstrip_dir);$(watcom_dir)/h;$(dip_dir)/watcom/h
+inc_dirs = $(wstrip_dir);$(watcom_dir)\h;$(dip_dir)\watcom\h
 
 .c .rc .msg .sp: .. #$(wstrip_dir)
 
@@ -28,14 +28,14 @@ $(proj_name).exe : $(dependants)
         $(linker) option quiet $(lflags) name $^. file { $(objs) } lib $(wres_lib)
         wstrip -q -a -r $^@ . $(res_$(host_os))
 
-msg.gh : ../wstrip.msg
-        $(vi) -s $(sdk_dir)/misc/msgtoh.vi -p"$^@" $[@
+msg.gh : wstrip.msg
+        vi -q -s..\go.vi
 
 owstrip.res : wstrip.rc wstrip.msg msg.gh ousage.rc ousagej.rc
-        $(rc_aui) -zk0 -DDOS $[@ -fo=$^@
+        $(rc) -r -fo=$^@ -zk0 -DDOS $[@ -bt=windows
 
 qwstrip.res : wstrip.rc wstrip.msg msg.gh qusage.rc
-        $(rc_aui) -zk0 -DQNX $[@ -fo=$^@
+        $(rc) -r -fo=$^@ -zk0 -DQNX $[@ -bt=windows
 
 ousage.rc : usage.sp
         wsplice -kIS_RC -kDOS -kENGLISH -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" $[@ $^@
@@ -48,3 +48,4 @@ qusage.rc : usage.sp
 
 qwstrip.u : usage.sp
         wsplice -kENGLISH -kQNX -t8 -u $[@ $^@
+

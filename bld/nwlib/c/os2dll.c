@@ -32,10 +32,10 @@
 
 #include <os2.h>
 char *ImageName;
-extern char * _LpDllName;
+extern char * _LpDllname;
 unsigned __dll_initialize()
 {
-    ImageName = _LpDllName;
+    ImageName = _LpDllname;
     return( 1 );
 }
 

@@ -131,7 +131,6 @@ static char *validTargets[] = {
     "axp",
     "ppc",
     "dbg",
-    "linux",
     "qnx",
     "sparc",
     NULL
@@ -1042,9 +1041,6 @@ static char *strpcpy( char *d, char *s )
 
 static void makeFieldName( char *n, char *f )
 {
-    if( *n == '\\' ) {
-        n++;
-    }
     if( isalpha( *n ) ) {
         *f++ = *n++;
     } else {
@@ -1106,8 +1102,7 @@ static void startParserH( void )
         }
         if( o->is_timestamp ) {
             if( o->enumerate == NULL ) {
-                makeFieldName( o->name, tokbuff );
-                fprintf( ofp, "    unsigned     %s_timestamp;\n", tokbuff );
+                fprintf( ofp, "    unsigned     %s_timestamp;\n", o->name );
             }
         }
     }
@@ -1173,13 +1168,7 @@ static CODESEQ *addOptionCodeSeq( CODESEQ *code, OPTION *o )
             sensitive = 1;
         }
         for( code = *splice; code != NULL; code = *splice ) {
-            if( code->sensitive == sensitive ) {
-                if( sensitive ) {
-                    if( code->c == c ) break;
-                } else {
-                    if( tolower( code->c ) == tolower( c )) break;
-                }
-            }
+            if( code->c == c ) break;
             splice = &(code->sibling);
         }
         if( code == NULL ) {
@@ -1205,32 +1194,30 @@ static CODESEQ *reorderCode( CODESEQ *c )
     CODESEQ **s;
 
     h = c;
-    if( c->sibling != NULL ) {
-        a = NULL;
-        s = &h;
-        // accepting states move to the end
-        for( c = h; c != NULL; c = n ) {
-            n = c->sibling;
-            if( c->accept ) {
-                *s = n;
-                c->sibling = a;
-                a = c;
-            } else {
-                s = &(c->sibling);
-            }
+    a = NULL;
+    s = &h;
+    // accepting states move to the end
+    for( c = h; c != NULL; c = n ) {
+        n = c->sibling;
+        if( c->accept ) {
+            *s = n;
+            c->sibling = a;
+            a = c;
+        } else {
+            s = &(c->sibling);
         }
-        *s = a;
-        s = &(h->sibling);
-        // sensitive states move to the front
-        for( c = h; c != NULL; c = n ) {
-            n = c->sibling;
-            if( c->sensitive ) {
-                *s = n;
-                c->sibling = h;
-                h = c;
-            } else {
-                s = &(c->sibling);
-            }
+    }
+    *s = a;
+    s = &h;
+    // sensitive states move to the front
+    for( c = h; c != NULL; c = c->sibling ) {
+        n = c->sibling;
+        if( c->sensitive ) {
+            *s = n;
+            c->sibling = h;
+            h = c;
+        } else {
+            s = &(c->sibling);
         }
     }
     for( c = h; c != NULL; c = c->sibling ) {
@@ -1414,11 +1401,14 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, unsigned control )
 
 static void emitIfCode( CODESEQ *c, unsigned depth, unsigned control )
 {
+    char *recog_fn;
+
     if( c->sensitive ) {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG, c->c );
+        recog_fn = FN_RECOG;
     } else {
-        emitPrintf( depth, "if( %s( '%c' ) ) {\n", FN_RECOG_LOWER, tolower( c->c ) );
+        recog_fn = FN_RECOG_LOWER;
     }
+    emitPrintf( depth, "if( %s( '%c' ) ) {\n", recog_fn, c->c );
     ++depth;
     if( c->children ) {
         if( c->chain ) {
@@ -1470,7 +1460,7 @@ static void emitCode( CODESEQ *h, unsigned depth, unsigned control )
     }
     for( ; c != NULL; c = c->sibling ) {
         if( use_switch ) {
-            emitPrintf( depth - 1, "case '%c':\n", tolower( c->c ));
+            emitPrintf( depth - 1, "case '%c':\n", c->c );
             if( c->children ) {
                 if( c->chain ) {
                     emitPrintf( depth, "do {\n" );

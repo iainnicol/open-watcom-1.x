@@ -2,7 +2,6 @@
 
 host_cpu = i86
 host_os  = win
-sys_dll = 1
 
 op_sys=windows dll libfile libentry.obj export WEP RESIDENT
 os=windows
@@ -13,4 +12,4 @@ objs = pbide.obj errdll.obj
 libs = ddeml.lib
 ext = dll
 
-!include ../mif/master.mif
+!include ..\mif\master.mif

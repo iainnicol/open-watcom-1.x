@@ -1,30 +1,31 @@
+MODEL = l
 WINDOWS = 1
 !include wres.mif
 
 !ifneq host_CPU axp
-viper_lib       = $(viper_dir)/mviper/$(host_OS)/mviper.lib
+viper_lib       = $(viper_dir)\mviper\$(host_OS)\mviper.lib
 !else
-viper_lib       = $(viper_dir)/mviper/axp/mviper.lib
+viper_lib       = $(viper_dir)\mviper\axp\mviper.lib
 !endif
 
-wclass_dir_nt_386       = win/nt
-wclass_dir_nt_axp       = win/axp
+wclass_dir_nt_386       = win\nt
+wclass_dir_nt_axp       = win\axp
 wclass_dir_nt   = $(wclass_dir_nt_$(host_CPU))
-wclass_dir_os2  = pm/obj32
-wclass_dir_win  = win/obj
+wclass_dir_os2  = pm\obj32
+wclass_dir_win  = win\obj
 
-wclass_lib      = $(wclass_dir)/$(wclass_dir_$(host_OS))/wclass.lib
+wclass_lib      = $(wclass_dir)\$(wclass_dir_$(host_OS))\wclass.lib
 
 !ifeq host_CPU axp
-gui_lib         = $(gui_dir)/win/ntaxp/gui.lib
+gui_lib         = $(gui_dir)\win\guintaxp.lib
 !else
 !ifeq host_OS nt
-gui_lib         = $(gui_dir)/win/nt386/gui.lib
+gui_lib         = $(gui_dir)\win\guintf.lib
 !else
 !ifeq host_OS os2
-gui_lib         = $(gui_dir)/win/os2386/gui.lib
+gui_lib         = $(gui_dir)\win\guios2f.lib
 !else
-gui_lib         = $(gui_dir)/win/wini86/gui.lib
+gui_lib         = $(gui_dir)\win\guiwinl.lib
 !endif
 !endif
 !endif

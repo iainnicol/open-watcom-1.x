@@ -32,7 +32,7 @@
 #ifndef EXESEG_INCLUDED
 #define EXESEG_INCLUDED
 
-#include "rctypes.h"
+#include "types.h"
 
 typedef struct SegTable {
     uint_16             NumSegs;

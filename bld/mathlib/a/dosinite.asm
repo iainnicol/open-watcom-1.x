@@ -34,3 +34,4 @@
 ; this file includes from \emu
 _OS=_PLDT
 include dosinite.psm
+        end

@@ -40,7 +40,7 @@
 #include "wdeglbl.h"
 #include "wdemem.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.gh"
+#include "wdemsgs.h"
 #include "wderesin.h"
 #include "wdegeted.h"
 #include "wdeobjid.h"

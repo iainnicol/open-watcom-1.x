@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  I/O support routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -49,9 +50,8 @@
 #include "pcheader.h"
 #include "ring.h"
 #include "brinfo.h"
-#include "autodept.h"
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
  #include <dirent.h>
 #else
  #include <direct.h>
@@ -128,7 +128,7 @@ static char* extsOut[] =        // extensions for output files
 #define PATH_SEP                '\\'
 #define INC_PATH_SEP            ';'
 
-#elif defined(__UNIX__)
+#elif defined(__QNX__)
 
 static char* pathSrc[] =        // paths for source file
     {   "../C"
@@ -426,9 +426,9 @@ static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
         int doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
         int doInc = (!(CompFlags.dont_autogen_ext_inc) && ((FT_HEADER == typ)||(FT_LIBRARY == typ)));
         int doExt = (doSrc || doInc);
-
+        
         ext = openExt( NULL, nd, typ );
-
+        
         if(( ext == NULL ) && (doExt)) {
             for( ; ; ) {
                 ext = *exts++;
@@ -666,7 +666,7 @@ static void tempFname( char *fname )
     char    *env;
     int     i;
 
-    #if defined(__UNIX__)
+    #if defined(__QNX__)
         env = CppGetEnv( "TMPDIR" );
         if( env == NULL ) env = CppGetEnv( "TMP" );
     #else
@@ -723,8 +723,8 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
     auto char   fname[ _MAX_PATH ];
 
     mode = O_RDWR | O_CREAT | O_EXCL;
-    #if defined(__UNIX__)
-        // Unix files are always binary
+    #if defined(__QNX__)
+        // QNX files are always binary
         mode |= O_TEMP;
     #else
         mode |= O_BINARY;
@@ -764,7 +764,7 @@ static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
             break;
         }
     }
-    #if defined(__UNIX__)
+    #if defined(__QNX__)
         /* Under POSIX it's legal to remove a file that's open. The file
            space will be reclaimed when the handle is closed. This makes
            sure that the work file always gets removed. */
@@ -784,6 +784,8 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     char *buff,                 // - output buffer
     unsigned size )             // - output buffer size
 {
+    char *p;
+
     DbgAssert( size >= _MAX_PATH );
 #ifndef NDEBUG
     // caller should use return value only!
@@ -792,7 +794,23 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
     ++buff;
     --size;
 #endif
-    return _getFilenameFullPath( buff, name, size );
+    p = _fullpath( buff, name, size );
+    if( p == NULL ) p = name;
+    #if defined(__QNX__)
+        if( p[0] == '/' && p[1] == '/' ) {
+            if( name[0] != '/' || name[1] != '/' ) {
+                /*
+                   if the _fullpath result has a node number and
+                   the user didn't specify one, strip the node number
+                   off before returning
+                */
+                for( p += 2; *p != '/'; ++p ) {
+                    if( *p == '\0' ) break;
+                }
+            }
+        }
+    #endif
+    return( p );
 }
 
 
@@ -848,7 +866,7 @@ char *IoSuppIncPathElement(     // GET ONE PATH ELEMENT FROM INCLUDE LIST
     length = 0;
     for( ; ; ) {
         if( *path == '\0' ) break;
-        if( (*path == INC_PATH_SEP) || (*path == ';') ) {
+        if( *path == INC_PATH_SEP ) {
             ++path;
             if( length != 0 ) {
                 break;

@@ -29,12 +29,13 @@
 *
 ****************************************************************************/
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <malloc.h>
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
+#ifdef UNIX
     #include <alloca.h>
     #ifdef _AIX
         #define alloca __alloca
@@ -77,8 +78,6 @@ typedef char _WCI86FAR *   LPSTR;
 #include "phandle.h"
 
 WResDir    MainDir;
-
-extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance );
 
 static int GetString(   WResLangInfo    *res,
                         PHANDLE_INFO    hInstance,

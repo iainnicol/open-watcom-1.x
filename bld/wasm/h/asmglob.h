@@ -115,7 +115,7 @@ typedef struct {
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
 
-#ifdef __UNIX__
+#ifdef __QNX__
 #define OBJ_EXT "o"
 #else
 #define OBJ_EXT "obj"
@@ -177,7 +177,6 @@ typedef struct global_options {
     #endif
     char *      default_name_mangler;
     bool        allow_c_octals;
-    bool        emit_dependencies;
 } global_options;
 
 extern global_options Options;

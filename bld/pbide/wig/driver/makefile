@@ -17,13 +17,13 @@ dobj = driver.obj
 
 $(driver).exe : $(dobj) $(dlnk) driver.res $(name).lib
         wlink @$(dlnk)
-        $(rc) -k driver.res $^@
+        wrc -k driver.res $(driver).exe
 
 $(name).lib: ..\owindll\$(name).dll
         wtouch $^@
         rm $^@
         wlib $^@ +$[@
-        cp $[@
+        copy $[@
 
 $(dlnk) : makefile
         %create $(dlnk)
@@ -35,7 +35,7 @@ $(dlnk) : makefile
         @for %i in ($(dobj)) do @%append $(dlnk) file obj\%i
 
 driver.res : driver.rc driver.dlg
-        $(rc) $(rc_flags) -r driver.rc -fo=$^@
+        wrc -r -bt=windows driver.rc
 
 driver.obj : driver.c
         wcc $[* -bt=windows  -d2 -zW -zq -zq -fpc -w4 -ml -fo=obj\.obj

@@ -71,12 +71,12 @@
 !inject shrd.obj                 g16                                        w16
 !inject stkaxp.obj                          nta
 !inject stkppc.obj                              ntp
-!inject u64add.obj               g16                                        w16
-!inject u64div.obj               g16                                        w16
-!inject u64mul.obj               g16                                        w16
-!inject u64shift.obj             g16                                        w16
+!inject U64Add.obj               g16                                        w16
+!inject U64Div.obj               g16                                        w16
+!inject U64Mul.obj               g16                                        w16
+!inject U64Shift.obj             g16                                        w16
 
-!include ../../../../objlist.mif
+!include ..\..\..\..\objlist.mif
 
 086_fpi_postopts=-fpi
 286_fpi_postopts=-fpi

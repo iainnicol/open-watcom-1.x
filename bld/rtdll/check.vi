@@ -1,5 +1,3 @@
-set magic
-set magicstring = ()
 atomic
 	execute \e/^$\ndG
 	%s/ +/\n/g

@@ -51,7 +51,7 @@
 #include <direct.h>
 #include <sys/utime.h>
 #include "windows.h"
-#elif defined( __UNIX__ )
+#elif defined( __QNX__ )
 #include <dirent.h>
 #include <utime.h>
 #else

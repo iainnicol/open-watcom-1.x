@@ -24,7 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WIN386 interface for calling 16-bit Windows function
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 

@@ -29,6 +29,7 @@
 *
 ****************************************************************************/
 
+
 #ifdef __OS2_PM__
 
 #define INCL_PM
@@ -73,7 +74,7 @@ static BOOL                     classRegistered;
 static WPI_INST                 classHandle;
 static int                      wndHeight;
 
-#if defined( __UNIX__ )
+#if defined( UNIX )
 #define CB    LONG
 #elif defined(__WINDOWS_386__)
 #define CB      LONG FAR PASCAL

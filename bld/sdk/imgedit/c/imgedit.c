@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-#include "imgedit.h"
 #include <io.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include "imgedit.h"
 #include "title.h"
 #include "iedde.h"
 #include "wrdll.h"
@@ -281,9 +281,6 @@ static BOOL imgEditInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     InitTools( HMainWindow );
     GrayEditOptions();
 
-#ifdef __NT__
-    DragAcceptFiles(HMainWindow,TRUE);
-#endif
     //SetActiveWindow( HMainWindow );
     BringWindowToTop( HMainWindow );
     return( TRUE );

@@ -32,13 +32,9 @@
 
 #include "wres.h"
 
-#ifdef __WATCOMC__
 #pragma off (unreferenced);
-#endif
 WResDirWindow WResNextResource( WResDirWindow currwind, WResDir currdir )
-#ifdef __WATCOMC__
 #pragma on (unreferenced);
-#endif
 /***********************************************************************/
 {
     if( !WResIsEmptyWindow( currwind ) ) {

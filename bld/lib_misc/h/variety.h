@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Configuration for clib builds.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -148,13 +149,6 @@
         #define __OSI_386__
     #else
         #error unrecognized processor for OSI
-    #endif
-#elif defined(__SNAP__)
-    #if defined(__386__)
-        #define __PROTECT_MODE__
-        #define __SNAP_386__
-    #else
-        #error unrecognized processor for SNAP
     #endif
 #elif defined(__QNX__)
     #define __PROTECT_MODE__

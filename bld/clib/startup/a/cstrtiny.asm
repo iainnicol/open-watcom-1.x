@@ -33,3 +33,4 @@
 ; it is done this way to support the reuse of the source file
 __TINY__=1
 include cstrt086.asm
+        end

@@ -35,7 +35,7 @@
 #include "bool.h"
 
 typedef struct copy_entry copy_entry;
-struct copy_entry {
+typedef struct copy_entry {
     copy_entry  *next;
     char        src[_MAX_PATH];
     char        dst[_MAX_PATH];
@@ -64,9 +64,7 @@ extern FILE     *LogFile;
 
 void            LogFlush( void );
 void            Log( bool quiet, const char *, ... );
-void            LogStream( bool quiet, const char *str, size_t len );
 void            OpenLog( const char * );
-void            CloseLog( void );
 void            Fatal( const char *, ... );
 void            *Alloc( unsigned );
 char            *SkipBlanks( const char * );
@@ -74,6 +72,4 @@ unsigned        RunIt( char * );
 void            ResetArchives( copy_entry * );
 void            SysInit( int argc, char *argv[] );
 unsigned        SysRunCommand( const char * );
-unsigned        SysRunCommandPipe( const char *, int *readpipe );
-unsigned        SysChdir( char * );
-unsigned        SysDosChdir( char * );
+unsigned        SysChdir( const char * );

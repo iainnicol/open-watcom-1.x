@@ -3,6 +3,4 @@
 host_os  = qnx
 host_cpu = 386
 
-memory_model_386 = s
-
-!include ../master.mif
+!include ..\master.mif

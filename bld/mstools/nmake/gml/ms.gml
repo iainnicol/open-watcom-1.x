@@ -64,62 +64,62 @@
 :special. parse_t010101010101
 :usage. a way to reserve storage space for tagets and macros in OPT_STORAGE
 
-:cmt     A
-:option. A
+:cmt    /a
+:option. a
 :target. any
 :usage. build all evaluated targets
 
-:cmt     B
-:option. B
+:cmt    /b
+:option. b
 :target. any
 :internal.
 :usage. forces build even if timestamps are equal
 
-:cmt     C
-:option. C
+:cmt    /c
+:option. c
 :target. any
 :internal.
 :usage. suppress output messages
 
-:cmt     D
-:option. D
+:cmt    /d
+:option. d
 :target. any
 :usage. display build information
 
-:cmt     E
-:option. E
+:cmt    /e
+:option. e
 :target. any
 :internal.
 :usage. override env-var macros
 
-:cmt     F
-:option. F
+:cmt    /f
+:option. f
 :target. any
 :special. parse_F <filename>
 :usage. specifies filename as a makefile
 
-:cmt     HELP
-:option. HELP
+:cmt    /help
+:option. help
 :target. any
 :usage. display brief usage message
 
-:cmt     \?
+:cmt    /?
 :option. ?
 :target. any
 :usage. display brief usage message
 
-:cmt     I
-:option. I
+:cmt    /i
+:option. i
 :target. any
 :usage. ignore exit codes from commands
 
-:cmt     K
-:option. K
+:cmt    /k
+:option. k
 :target. any
 :usage. build unrelated targets on error
 
-:cmt     N
-:option. N
+:cmt    /n
+:option. n
 :target. any
 :usage. display commands but do not execute
    
@@ -127,39 +127,39 @@
 :target. any
 :usage. don't invoke the Watcom tool
 
-:cmt     NOLOGO
-:option. NOLOGO
+:cmt    /NOLOGO
+:option. nologo
 :target. any
 :usage. don't display copyright banner
 
-:cmt     P
-:option. P
+:cmt    /p
+:option. p
 :target. any
 :usage. display MAKE information
 
-:cmt     Q
-:option. Q
+:cmt    /q
+:option. q
 :target. any
 :usage. check time stamps but do not build
 
-:cmt     R
-:option. R
+:cmt    /r
+:option. r
 :target. any
 :internal.
 :usage. ignore predefined rules/macros
 
-:cmt     S
-:option. S
+:cmt    /s
+:option. s
 :target. any
 :usage. suppress executed-commands display
 
-:cmt     T
-:option. T
+:cmt    /t
+:option. t
 :target. any
 :usage. change time stamps but do not build
 
-:cmt     X
-:option. X
+:cmt    /x
+:option. x
 :target. any
 :special. parse_X <filename>
 :internal.

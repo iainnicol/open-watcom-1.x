@@ -41,7 +41,7 @@
 #include "wrstrdup.h"
 #include "wrinfoi.h"
 #include "wridfile.h"
-#include "wrcmsg.gh"
+#include "wrcmsg.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

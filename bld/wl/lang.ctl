@@ -3,8 +3,8 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <LANG_BLD>/master.ctl ]
-[ INCLUDE <LANG_BLD>/wproj.ctl ]
+[ INCLUDE <LANG_BLD>\master.ctl ]
+[ INCLUDE <LANG_BLD>\wproj.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -14,37 +14,33 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-#    <CPCMD> <devdir>/wl/qnx386/wl.exe <relroot>/rel2/qnx/binq/wlink
-#    <CPCMD> <devdir>/wl/qnx386/wl.sym <relroot>/rel2/qnx/sym/wlink.sym
-    <CPCMD> <devdir>/wl/ms2wlink/dosi86/ms2wlink.exe <relroot>/rel2/binw/ms2wlink.exe
-    <CPCMD> <devdir>/wl/ms2wlink/nt386/ms2wlink.exe <relroot>/rel2/binnt/ms2wlink.exe
-    <CPCMD> <devdir>/wl/ms2wlink/os2i86/ms2wlink.exe <relroot>/rel2/binp/ms2wlink.exe
-    <CPCMD> <devdir>/wl/fcenable/dosi86/fcenable.exe <relroot>/rel2/binw/fcenable.exe
-    <CPCMD> <devdir>/wl/fcenable/nt386/fcenable.exe <relroot>/rel2/binnt/fcenable.exe
-    <CPCMD> <devdir>/wl/fcenable/os2i86/fcenable.exe <relroot>/rel2/binp/fcenable.exe
+#    <CPCMD> <devdir>\wl\qnx\wl.exe <relroot>\rel2\qnx\binq\wlink
+#    <CPCMD> <devdir>\wl\qnx\wl.sym <relroot>\rel2\qnx\sym\wlink.sym
+    <CPCMD> <devdir>\wl\ms2wlink\dosi86\ms2wlink.exe <relroot>\rel2\binw\ms2wlink.exe
+    <CPCMD> <devdir>\wl\ms2wlink\nt386\ms2wlink.exe <relroot>\rel2\binnt\ms2wlink.exe
+    <CPCMD> <devdir>\wl\ms2wlink\os2i86\ms2wlink.exe <relroot>\rel2\binp\ms2wlink.exe
+    <CPCMD> <devdir>\wl\fcenable\dosi86\fcenable.exe <relroot>\rel2\binw\fcenable.exe
+    <CPCMD> <devdir>\wl\fcenable\nt386\fcenable.exe <relroot>\rel2\binnt\fcenable.exe
+    <CPCMD> <devdir>\wl\fcenable\os2i86\fcenable.exe <relroot>\rel2\binp\fcenable.exe
 # Removed: KB
-#    <CPCMD> <devdir>/wl/ovlldr/wovl.lib <relroot>/rel2/lib286/dos/wovl.lib
-#    <CPCMD> <devdir>/wl/ovlldr/wmovl.lib <relroot>/rel2/lib286/dos/wmovl.lib
+#    <CPCMD> <devdir>\wl\ovlldr\wovl.lib <relroot>\rel2\lib286\dos\wovl.lib
+#    <CPCMD> <devdir>\wl\ovlldr\wmovl.lib <relroot>\rel2\lib286\dos\wmovl.lib
 # /Removed: KB
-    <CPCMD> <devdir>/wl/wlbin.lnk <relroot>/rel2/binw/wlink.lnk
-    <CPCMD> <devdir>/wl/wlbinp.lnk <relroot>/rel2/binp/wlink.lnk
-    <CPCMD> <devdir>/wl/wlbinnt.lnk <relroot>/rel2/binnt/wlink.lnk
-#    <CPCMD> <devdir>/wl/wlaxpnt.lnk <relroot>/rel2/axpnt/wlink.lnk
-    <CPCMD> <devdir>/wl/wlsystem.lnk <relroot>/rel2/binw/wlsystem.lnk
-    <CPCMD> <devdir>/wl/dos386/wl.exe <relroot>/rel2/binw/wlink.exe
-#    <CPCMD> <devdir>/wl/386nec/wl.exe <relroot>/rel2/n98bw/wlink.exe
-    <CPCMD> <devdir>/wl/os2386.dll/wlstub.exe <relroot>/rel2/binp/wlink.exe
-    <CPCMD> <devdir>/wl/os2386.dll/wl.dll <relroot>/rel2/binp/dll/wlink.dll
-    <CPCMD> <devdir>/wl/nt386.dll/wlstub.exe <relroot>/rel2/binnt/wlink.exe
-    <CPCMD> <devdir>/wl/nt386.dll/wl.dll <relroot>/rel2/binnt/wlink.dll
-    <CPCMD> <devdir>/wl/nt386.rtd/wl.dll <relroot>/rel2/binnt/rtdll/wlink.dll
-#    <CPCMD> <devdir>/wl/ntaxp.dll/wlstub.exe <relroot>/rel2/axpnt/wlink.exe
-#    <CPCMD> <devdir>/wl/ntaxp.dll/wl.dll <relroot>/rel2/axpnt/wlink.dll
+    <CPCMD> <devdir>\wl\wlbin.lnk <relroot>\rel2\binw\wlink.lnk
+    <CPCMD> <devdir>\wl\wlbinp.lnk <relroot>\rel2\binp\wlink.lnk
+    <CPCMD> <devdir>\wl\wlbinnt.lnk <relroot>\rel2\binnt\wlink.lnk
+#    <CPCMD> <devdir>\wl\wlaxpnt.lnk <relroot>\rel2\axpnt\wlink.lnk
+    <CPCMD> <devdir>\wl\wlsystem.lnk <relroot>\rel2\binw\wlsystem.lnk
+    <CPCMD> <devdir>\wl\dos386\wl.exe <relroot>\rel2\binw\wlink.exe
+#    <CPCMD> <devdir>\wl\386nec\wl.exe <relroot>\rel2\n98bw\wlink.exe
+    <CPCMD> <devdir>\wl\os2dll\wlstub.exe <relroot>\rel2\binp\wlink.exe
+    <CPCMD> <devdir>\wl\os2dll\wl.dll <relroot>\rel2\binp\dll\wlink.dll
+    <CPCMD> <devdir>\wl\nt386\wlstub.exe <relroot>\rel2\binnt\wlink.exe
+    <CPCMD> <devdir>\wl\nt386\wl.dll <relroot>\rel2\binnt\wlink.dll
+    <CPCMD> <devdir>\wl\nt386dll\wl.dll <relroot>\rel2\binnt\rtdll\wlink.dll
+#    <CPCMD> <devdir>\wl\axp\wlstub.exe <relroot>\rel2\axpnt\wlink.exe
+#    <CPCMD> <devdir>\wl\axp\wl.dll <relroot>\rel2\axpnt\wlink.dll
 #   cat <devdir>\wl\wlsystem.lnk <devdir>\wl\wlqnx.lnk ><relroot>\rel2\qnx\etc\wlink.lnk
-# linux
-    <CPCMD> <devdir>/wl/wlbinl.lnk <relroot>/rel2/binl/wlink.lnk
-    <CPCMD> <devdir>/wl/linux386/wl.exe <relroot>/rel2/binl/wlink
-    <CPCMD> <devdir>/wl/linux386/wl.sym <relroot>/rel2/binl/wlink.sym
 
 [ BLOCK <1> clean ]
 #==================

@@ -31,13 +31,15 @@
 
 
 #ifndef _WASM_
-#include "inlnops.gh"
+#include "inlnops.h"
 #ifndef asm_op
 #error =================================
-#error Missing "inlnops.gh" include file?
+#error Missing "inlnops.h" include file?
 #error This is a generated file.
+#error You have to go into the WASM\H
+#error directory and type "wmake".
 #error =================================
 #endif
 #else
-#include "fullops.gh"
+#include "fullops.h"
 #endif

@@ -74,6 +74,15 @@ const char FAR *BuiltIns = {
     "__VERSION__=11\n"
 #ifdef DLLS_IMPLEMENTED
     "__LOADDLL__=\n"
+    "!loaddll wcc386 wccd386.dll\n"
+    "!loaddll wccaxp wccdaxp.dll\n"
+    "!loaddll wcc wccdi86.dll\n"
+    "!loaddll wpp386 wppd386.dll\n"
+    "!loaddll wppaxp wppdaxp.dll\n"
+    "!loaddll wpp wppdi86.dll\n"
+    "!loaddll wlink wlink.dll\n"
+    "!loaddll wlib wlibd.dll\n"
+    "!loaddll wrc wrc.dll\n"
 #endif
 
 #if defined( __DOS__ )
@@ -95,11 +104,9 @@ const char FAR *BuiltIns = {
 
 #elif defined( __QNX__ )
     "__QNX__=\n"
-    "__UNIX__=\n"
 
 #elif defined( __LINUX__ )    
     "__LINUX__=\n"
-    "__UNIX__=\n"
 
 #endif
 };
@@ -181,5 +188,5 @@ const char FAR* MSBuiltIn = {
  * The program 'cretype.exe' is used to rebuild this table.
  */
 extern const UINT8 IsArray[] = {
-#include "isarray.gh"
+#include "isarray.inc"
 };

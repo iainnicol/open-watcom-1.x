@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <term.h>
+#include "wcurses.h"
 #include "ctkeyb.h"
-
-unsigned short   ShftState;
 
 enum {
     EV_STICKY_FUNC      = 0xff0,

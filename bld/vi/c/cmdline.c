@@ -58,7 +58,7 @@
     #include "api.h"
 #endif
 
-#if defined( __WINDOWS__ ) && defined( VI_RCS )
+#ifdef __WINDOWS__
 static bool isOS2()
 {
     union {

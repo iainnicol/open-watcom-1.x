@@ -41,7 +41,7 @@
 #include "reserr.h"
 #include "tmpctl.h"
 #include "errprt.h"
-#include "rcldstr.h"
+#include "ldstr.h"
 #include "iortns.h"
 #include "preproc.h"
 

@@ -1,10 +1,9 @@
 VERSION = _WINNT
 model = f
 
-guilib  = $(guidir)/win/nt386/gui.lib
-guiinc  = $(guidir)/win/nt386
+guilib  = $(guidir)\win\guint$(model).lib
 guihdir = $(guidir)\h
-uilib   = $(uidir)/nt/nt386/ui.lib
+uilib   = $(uidir)\nt\uilib$(model).lib
 utillib = $(DBDIR)\utils\ut$(model)386t.lib
 
-!include ../setup.mif
+!include ..\setup.mif

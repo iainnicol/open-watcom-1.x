@@ -36,7 +36,7 @@
 /* strings */
 extern char near TITLE[];
 extern char near AUTHOR[];
-extern char near VERSIONT[];
+extern char near VERSION[];
 extern char near DATESTAMP_T[];
 extern char near DATESTAMP_D[];
 extern char near MSG_CHARACTERS[];
@@ -52,16 +52,10 @@ extern char near * near BoolStr[];
 extern int NumEditOpts;
 
 /* mouse data */
-#if defined( __LINUX__ ) && !defined( PREBUILD ) /* compatible with the ui lib */
-extern unsigned short MouseRow;
-extern unsigned short MouseCol;
-extern unsigned short MouseStatus;
-#else
 extern int MouseRow;
 extern int MouseCol;
-extern int MouseStatus;
-#endif
 extern int MouseSpeed;
+extern int MouseStatus;
 extern int MouseDoubleClickSpeed;
 extern int LastMouseEvent;
 extern int MouseRepeatStartDelay;

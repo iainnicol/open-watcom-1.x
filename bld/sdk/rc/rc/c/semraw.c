@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
+#include <io.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <errno.h>

@@ -31,6 +31,7 @@
 
 
 #include <stddef.h>
+#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,12 +39,9 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <process.h>
 #include <fcntl.h>
 #include <unistd.h>
-#ifdef __WATCOMC__
-#include <conio.h>
-#include <process.h>
-#endif
 
 #include "asmerr.h"
 #include "asmglob.h"
@@ -66,7 +64,6 @@ extern  int             trademark( void );
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
-#ifndef __UNIX__
 static const unsigned char PressReturn[] = {
 "    (Press return to continue)"
 };
@@ -82,7 +79,6 @@ static void output( const unsigned char *text )
     } while( *text );
     putchar( '\n' );
 }
-#endif
 
 static long res_seek( int handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -162,7 +158,6 @@ void MsgPrintf1( int resourceid, char *token )
     printf( msgbuf, token );
 }
 
-#ifndef __UNIX__
 static void Wait_for_return()
 {
     if( isatty( fileno(stdout) ) ) {
@@ -171,7 +166,6 @@ static void Wait_for_return()
         getch();
     }
 }
-#endif
 
 void PrintfUsage( int first_ln )
 {
@@ -186,12 +180,10 @@ void PrintfUsage( int first_ln )
         }
     #endif
     for( ;; first_ln++ ) {
-#ifndef __UNIX__
         if( ++count > 23 ) {
             Wait_for_return();
             count = 0;
         }
-#endif
         MsgGet( first_ln, msg_buff );
         if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) ) break;
         puts( msg_buff );
