@@ -2966,32 +2966,13 @@ int ProcDef( int i )
     }
 }
 
-int ProcEnd( int i )
-/******************/
+static void ProcFini( void )
 {
-    char        *name;
     proc_info   *info;
     label_list  *curr;
-    struct asm_sym      *sym;
 
-    if( CurrProc == NULL ) {
-        AsmError( NO_PROC_IS_CURRENTLY_DEFINED );
-        return( ERROR );
-    }
-    if( i < 0 ) {
-        AsmError( PROC_MUST_HAVE_A_NAME );
-        return( ERROR );
-    }
-    name = AsmBuffer[i]->string_ptr;
     info = CurrProc->e.procinfo;
-
-    sym = AsmGetSymbol( name );
-
-    if( (dir_node *)sym != CurrProc ) {
-        AsmError( PROC_NAME_DOES_NOT_MATCH );
-        return( ERROR );
-    }
-
+    
     if( Parse_Pass == PASS_1 ) {
         for( curr = info->paralist; curr; curr = curr->next ) {
             AsmTakeOut( curr->label );
@@ -3000,9 +2981,38 @@ int ProcEnd( int i )
             AsmTakeOut( curr->label );
         }
     }
-
     CurrProc = pop_proc();
-    return( NOT_ERROR );
+}
+
+int ProcEnd( int i )
+/******************/
+{
+    if( CurrProc == NULL ) {
+        AsmError( NO_PROC_IS_CURRENTLY_DEFINED );
+        return( ERROR );
+    } else if( i < 0 ) {
+        AsmError( PROC_MUST_HAVE_A_NAME );
+        ProcFini();
+        return( ERROR );
+    } else if( (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr ) == CurrProc ) {
+        ProcFini();
+        return( NOT_ERROR );
+    } else {
+        AsmError( PROC_NAME_DOES_NOT_MATCH );
+        ProcFini();
+        return( NOT_ERROR );
+    }
+}
+
+void CheckProcOpen( void )
+/******************/
+{
+    while( CurrProc != NULL ) {
+        if( Parse_Pass == PASS_1 ) {
+            AsmErr( PROC_IS_NOT_CLOSED, CurrProc->sym.name );
+        }
+        ProcFini();
+    }
 }
 
 int WritePrologue( void )

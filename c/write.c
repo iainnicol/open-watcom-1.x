@@ -78,6 +78,7 @@ extern void             CheckForOpenConditionals();
 extern bool             PopLineQueue();
 extern void             set_cpu_parameters( void );
 extern void             set_fpu_parameters( void );
+extern void             CheckProcOpen( void );
 
 extern pobj_state       pobjState;      // for WOMP interface
 extern File_Info        AsmFiles;
@@ -1195,6 +1196,7 @@ static unsigned long OnePass( char *string )
         AsmLine( string );
         if( EndDirectiveFound ) break;
     }
+    CheckProcOpen();
     return( PassTotal );
 }
 
