@@ -263,7 +263,6 @@ static int output_data( enum operand_type determinant, int index )
     }
 
 #ifdef _WASM_
-//    if( store_fixup( index ) == ERROR ) return( ERROR );
     store_fixup( index );
 #endif
 
@@ -665,11 +664,12 @@ int match_phase_3( int *i, enum operand_type determinant )
             return( output_data( OP_I8, OPND2 ) );
             break;
         case OP_I8:
-            if( cur_opnd == asm_op2 ) {
+            if( cur_opnd == OP_I8 ) {
                 /* do nothing yet */
-            } else if( ( last_opnd & OP_M16_R16 ) && ( cur_opnd & OP_I ) &&
-                ( MEM_TYPE( Code->mem_type, WORD ) ) &&
-                InsFixups[OPND2] == NULL ) {
+            } else if( ( cur_opnd & OP_I )
+                && ( InsFixups[OPND2] == NULL )
+                && ( ( last_opnd & OP_R16 )
+                    || ( last_opnd & OP_M16 ) && ( MEM_TYPE( Code->mem_type, WORD ) ) ) ) {
                 if( (int_8)Code->data[OPND2] ==
                     (int_16)Code->data[OPND2] ) {
                     Code->info.opnd_type[OPND2] = OP_I8;
@@ -677,9 +677,10 @@ int match_phase_3( int *i, enum operand_type determinant )
                 } else {
                     break;
                 }
-            } else if( ( last_opnd & OP_M32_R32 ) && ( cur_opnd & OP_I ) &&
-                ( MEM_TYPE( Code->mem_type, DWORD ) ) &&
-                InsFixups[OPND2] == NULL ) {
+            } else if( ( cur_opnd & OP_I )
+                && ( InsFixups[OPND2] == NULL )
+                && ( ( last_opnd & OP_R32 )
+                    || ( last_opnd & OP_M32 ) && ( MEM_TYPE( Code->mem_type, DWORD ) ) ) ) {
                 if( (int_8)Code->data[OPND2] ==
                     (int_32)Code->data[OPND2] ) {
                     Code->info.opnd_type[OPND2] = OP_I8;
