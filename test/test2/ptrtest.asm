@@ -3,10 +3,10 @@
 .data
     foo dd 1234h
 .code
-        mov word ptr foo[0], offset bar
+        mov dword ptr foo[0], offset bar
         mov word ptr foo[2], seg bar
 bar:    xor ax, ax
-        mov word ptr bar, offset bar
+        mov dword ptr bar, offset bar
         mov word ptr bar[2], seg bar
 
         mov ax, word ptr [bx]
