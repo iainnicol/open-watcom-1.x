@@ -49,7 +49,6 @@ extern void             InputQueueLine( char * );
 extern void             PushLineQueue(void);
 extern int              AsmScan( char * );
 extern void             GetInsString( enum asm_token , char *, int );
-extern int              MakeLabel( char *symbol_name, memtype mem_type );
 
 static int              createconstant( char *, bool, int, bool, bool );
 
@@ -66,7 +65,7 @@ static label_list *label_cmp( char *name, label_list *head )
 }
 
 
-void AddTokens( struct asm_tok **buffer, int start, int count )
+void AddTokens( ASM_TOK **buffer, int start, int count )
 /************************************************************/
 {
     int i;
@@ -349,9 +348,9 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
                 continue;
             }
             break;
+#if 0   // ?? I think it has no sense
         case T_ID:
-            if( AsmBuffer[start+i]->string_ptr[0] == '$'
-             && AsmBuffer[start+i]->string_ptr[1] == '\0' ) {
+            if( IS_SYM_COUNTER( AsmBuffer[start+i]->string_ptr ) ) {
                 char            buff[40];
                 /*
                     We want a '$' symbol to have the value at it's
@@ -360,9 +359,12 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
                 sprintf( buff, ".$%x/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
                 AsmBuffer[start+i]->string_ptr = buff;
                 sym = AsmGetSymbol( buff );
-                if( sym == NULL ) MakeLabel( buff, T_NEAR );
+                if( sym == NULL ) {
+                    MakeLabel( buff, T_NEAR );
+                }
             }
             break;
+#endif
         }
         new[i].token = AsmBuffer[start + i]->token;
         memcpy( new[i].bytes, AsmBuffer[start + i]->bytes, sizeof( new[i].bytes ) );

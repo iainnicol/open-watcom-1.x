@@ -5,7 +5,7 @@ Options:
 :elsesegment
 Options:                    ( /option is also supported )
 :endsegment
--{0,1,2,3,4,5}{p}{r,s}
+-{0,1,2,3,4,5,6}{p}{r,s}
     -0          8086 instructions
     -1          80186 instructions
     -2          80286 instructions
@@ -17,11 +17,6 @@ Options:                    ( /option is also supported )
     add r       register calling conventions
     add s       stack calling conventions
                 ie: -2      -3s     -4pr    -5p
-:segment HIDDEN
-    -3r_ or -3s_        just like -3r and -3s except assume the programmer
-                        put uscores in the assembly file correctly
-                        thus -3r_ doesn't add uscores, -3s_ removes uscores
-:endsegment
 -bt=<os>            set the build target to <os>
 -c                  disable outputting of data in code records
 -d<name>[=text]     define text macro

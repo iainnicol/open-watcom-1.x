@@ -41,6 +41,7 @@
 #include "asmdefs.h"
 #include "asmfixup.h"
 #include "mangle.h"
+#include "asmlabel.h"
 
 #include "myassert.h"
 
@@ -107,9 +108,9 @@ extern char             *ScanLine( char * );
 extern int              InputQueueFile( char * );
 extern void             InputQueueLine( char * );
 
-static char *Check4Mangler( int *i );
-void         find_use32( void );
-static int   token_cmp( char **token, int start, int end );
+static char             *Check4Mangler( int *i );
+static int              token_cmp( char **token, int start, int end );
+static void             ModelAssumeInit( void );
 
 extern  char            write_to_file;  // write if there is no error
 extern  uint_32         BufSize;
@@ -1056,7 +1057,9 @@ int GlobalDef( int i )
         GetSymInfo( sym );
         sym->offset = 0;
         sym->state = SYM_UNDEFINED;
+        // FIXME !! symbol can have different type
         sym->mem_type = TypeInfo[type].value;
+        // FIXME !! symbol can have different language type
         SetMangler( sym, mangle_type, lang_type );
 
         /* put the symbol in the globaldef table */
@@ -1067,7 +1070,7 @@ int GlobalDef( int i )
 }
 
 asm_sym *MakeExtern( char *name, memtype type, bool already_defd )
-/************************************************************/
+/****************************************************************/
 {
     dir_node    *ext;
     struct asm_sym *sym;
@@ -1098,7 +1101,6 @@ int ExtDef( int i )
     int                 type;
     memtype             mem_type;
     struct asm_sym      *sym;
-    struct asm_sym      *struct_sym;
     int                 lang_type;
 
     mangle_type = Check4Mangler( &i );
@@ -1120,8 +1122,7 @@ int ExtDef( int i )
         type = token_cmp( &typetoken, TOK_EXT_NEAR, TOK_EXT_ABS );
 
         if( type == ERROR ) {
-            struct_sym = AsmGetSymbol( AsmBuffer[i]->string_ptr );
-            if( struct_sym == NULL || struct_sym->state != SYM_STRUCT ) {
+            if( !IsLabelStruct( AsmBuffer[i]->string_ptr ) ) {
                 AsmError( INVALID_QUALIFIED_TYPE );
                 return( ERROR );
             }
@@ -1143,11 +1144,11 @@ int ExtDef( int i )
                 return( ERROR );
             }
         } else {
-            if( MakeExtern( token, mem_type, FALSE ) == NULL ) {
+            sym = MakeExtern( token, mem_type, FALSE );
+            if( sym == NULL ) {
                 return( ERROR );
             }
         }
-        sym = AsmGetSymbol( token );
         SetMangler( sym, mangle_type, lang_type );
     }
     return( NOT_ERROR );
@@ -1342,10 +1343,7 @@ int  SetCurrSeg( int i )
     default:
         break;
     }
-    if( CurrSeg != NULL )
-        Globals.code_seg = CurrSeg->seg->e.seginfo->iscode;
-    find_use32();
-    return( NOT_ERROR );
+    return( SetUse32() );
 }
 
 static int token_cmp( char **token, int start, int end )
@@ -1367,18 +1365,6 @@ static int token_cmp( char **token, int start, int end )
         }
     }
     return( ERROR );        // No type is found
-}
-
-void find_use32( void )
-{
-    if( CurrSeg == NULL ) {
-        Use32 = ModuleInfo.defseg32;
-    } else {
-        Use32 = CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32;
-        if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )) {
-            AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
-        }
-    }
 }
 
 int SegDef( int i )
@@ -1443,7 +1429,7 @@ int SegDef( int i )
         if( !defined ) {
             seg->d.segdef.align = ALIGN_PARA;
             seg->d.segdef.combine = COMB_INVALID;
-            seg->d.segdef.use_32 = ModuleInfo.defseg32;
+            seg->d.segdef.use_32 = ModuleInfo.defUse32;
             seg->d.segdef.class_name_idx = 1;
             /* null class name, in case none is mentioned */
             dirnode->e.seginfo->readonly = FALSE;
@@ -1457,7 +1443,7 @@ int SegDef( int i )
             if( !ignore ) {
                 seg->d.segdef.use_32 = oldobj->d.segdef.use_32;
             } else {
-                seg->d.segdef.use_32 = ModuleInfo.defseg32;
+                seg->d.segdef.use_32 = ModuleInfo.defUse32;
             }
             seg->d.segdef.class_name_idx = oldobj->d.segdef.class_name_idx;
         }
@@ -1643,10 +1629,7 @@ int SegDef( int i )
     default:
         return( ERROR );
     }
-    if( CurrSeg != NULL )
-        Globals.code_seg = CurrSeg->seg->e.seginfo->iscode;
-    find_use32();
-    return( NOT_ERROR );
+    return( SetUse32() );
 }
 
 int Include( int i )
@@ -1683,15 +1666,6 @@ int IncludeLib( int i )
         }
     }
     return( NOT_ERROR );
-}
-
-static int find_bit( void )
-{
-    if( ModuleInfo.defseg32 ) {
-        return( BIT32 );
-    } else {
-        return( BIT16 );
-    }
 }
 
 static void input_group( int type )
@@ -1811,7 +1785,7 @@ int SimSeg( int i )
         close_lastseg();
     }
     buffer[0] = '\0';
-    bit = find_bit();
+    bit = ( ModuleInfo.defUse32 ) ? BIT32 : BIT16;
     type = AsmBuffer[i]->value;
     i++; /* get past the directive token */
     if( i < Token_Count ) {
@@ -1946,7 +1920,7 @@ static void module_prologue( int type )
     int         bit;
     char        buffer[ MAX_LINE_LEN ];
 
-    bit = find_bit();
+    bit = ( ModuleInfo.defUse32 ) ? BIT32 : BIT16;
 
     /* Generates codes for code segment */
     strcpy( buffer, Options.text_seg );
@@ -1985,16 +1959,37 @@ void ModuleInit( void )
     ModuleInfo.langtype = LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
     ModuleInfo.use32 = FALSE;
-    ModuleInfo.defseg32 = FALSE;
+    ModuleInfo.defUse32 = FALSE;
     ModuleInfo.init = FALSE;
     ModuleInfo.cmdline = FALSE;
+    ModuleInfo.mseg = FALSE;
+    ModuleInfo.flat_idx = 0;
+    *ModuleInfo.name = 0;
 }
 
-void SetModuleDefSegment32( int flag )
+static int SetUse32( void )
 {
-    if( ( CurrSeg == NULL ) && ( ( ModuleInfo.init == 0 ) || ( ModuleInfo.cmdline == TRUE ) ) ) {
-        ModuleInfo.defseg32 = flag;
+    if( CurrSeg == NULL ) {
+        Use32 = ModuleInfo.defUse32;
+    } else {
+        Globals.code_seg = CurrSeg->seg->e.seginfo->iscode;
+        Use32 = CurrSeg->seg->e.seginfo->segrec->d.segdef.use_32;
+        if( Use32 && ( ( Code->info.cpu & P_CPU_MASK ) < P_386 ) ) {
+            AsmError( WRONG_CPU_FOR_32BIT_SEGMENT );
+            return( ERROR );
+        }
     }
+    return( NOT_ERROR );
+}
+
+int SetUse32Def( bool flag )
+{
+    if( CurrSeg == NULL                   // outside any segments
+        && ( !ModuleInfo.init             // model not defined
+            || ModuleInfo.cmdline ) ) {   // model defined on cmdline by -m?
+        ModuleInfo.defUse32 = flag;
+    }
+    return( SetUse32() );
 }
 
 static void get_module_name( void )
@@ -2099,9 +2094,8 @@ int Model( int i )
         switch( type ) {
         case TOK_FLAT:
             DefFlatGroup();
-            // TODO!! FLAT Model supposed 32-bit segments
-            ModuleInfo.defseg32 = 1;
-            find_use32();
+            SetUse32Def( TRUE );
+            // fall through
         case TOK_TINY:
         case TOK_SMALL:
         case TOK_COMPACT:
@@ -2120,6 +2114,7 @@ int Model( int i )
         case TOK_PROC_FORTRAN:
         case TOK_PROC_PASCAL:
         case TOK_PROC_C:
+        case TOK_PROC_WATCOM_C:
         case TOK_PROC_STDCALL:
         case TOK_PROC_SYSCALL:
             ModuleInfo.langtype = TypeInfo[type].value;
@@ -2808,11 +2803,7 @@ static memtype proc_exam( int i )
 
     /* Obtain all the default value */
 
-    if( ModuleInfo.model <= MOD_FLAT ) {
-        info->mem_type = T_NEAR;
-    } else {
-        info->mem_type = T_FAR;
-    }
+    info->mem_type = IS_PROC_FAR() ? T_FAR : T_NEAR;
     info->visibility = dir->sym.public ? VIS_PUBLIC : VIS_PRIVATE;
     info->parasize = 0;
     info->localsize = 0;
