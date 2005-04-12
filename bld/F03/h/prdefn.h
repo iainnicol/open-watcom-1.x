@@ -28,13 +28,15 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+#ifndef prdefn_h_
+#define prdefn_h_
 
 
 // Note : If you wish to add a new statement processor there are five files
 //        that need changing: PRDEFN.H, KWLIST.C, PROCTBL.C, CFTABLE.C
 
 typedef enum {
-    PR_NULL,
+    PR_NULL,            // INVALID PROC
     PR_ADMIT,           // ADMIT
     PR_ALLOCATE,        // ALLOCATE
     PR_ASSIGN,          // ASSIGN
@@ -121,6 +123,8 @@ typedef enum {
     PR_ASNMNT,          // assignment (=)
     PR_ARIF,            // arithmetic if
     PR_STMTFUNC         // statement function
-} stmtproc;
+} StmtProcType;
 
 #define PR_KW_MAX       (PR_WRITE - 1)
+
+#endif
