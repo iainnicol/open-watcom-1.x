@@ -44,6 +44,6 @@ typedef enum {
     SS_ISN_DONE          =  0x0080,
     SS_SF_REFERENCED     =  0x0100,
     SS_CONT_ERROR_ISSUED =  0x0200
-} StmtSwitchType;
+} StmtSwType;
 
 #endif
