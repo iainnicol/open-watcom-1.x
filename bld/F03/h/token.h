@@ -29,32 +29,41 @@
 *
 ****************************************************************************/
 
-
+// different classes of tokens recognized 
 typedef enum {
-    TO_OPR,
-    TO_NAM,
-    TO_LIT,
-    TO_LGL,
-    TO_INT,
-    TO_REA,
-    TO_DBL,
-    TO_EXT,
-    TO_OCT,
-    TO_HEX,
-    TO_FMT
+    TO_OPR,             // operator 
+    TO_NAM,             // name
+    TO_LIT,             // literal      
+    TO_LGL,             // logical  
+    TO_INT,             // numeric integer constant       
+    TO_REA,             // numeric real constant
+    TO_DBL,             // numeric double real constant
+    TO_EXT,             // numeric extended real constant
+    TO_OCT,             // octal constant   
+    TO_HEX,             // hex constant 
+    TO_FMT              // Format statement
 } token_class;
 
+
+// token type specification
+typedef enum {
+    TK_EOL      =   0x01,   // end of line
+    TK_LAST     =   0x02,   // last token in statement  
+    TK_LENSPEC  =   0x04,   // length specifier
+    TK_INCLUDE  =   0x08    // include directive
+} tokenType;
+
+
+// structure of element (token) in the internal text list 
 typedef struct token {
-    char        *start;
-    char        *stop;
-    int         line;
-    token_class class;
-    unsigned_8  flags;
-    byte        log;
-    byte        col;
+    char        *start; // start of lexem
+    char        *stop;  // end of lexem
+    int         line;   // continuation line counter
+    token_class class;  // class of token
+    tokenType   flags;  // token type
+    byte        log;    // flag for logical operators
+    byte        col;    // column counter
 } token;
 
-#define TK_EOL          0x01
-#define TK_LAST         0x02
-#define TK_LENSPEC      0x04
-#define TK_INCLUDE      0x08
+
+
