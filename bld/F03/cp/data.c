@@ -43,6 +43,7 @@
 #include "insert.h"
 #include "recog.h"
 
+
 #include <ctype.h>
 #include <string.h>
 
@@ -156,7 +157,7 @@ static  void    DoData() {
 
 // Process one vlist/dlist/ pair.
 
-    stmtproc    save_stmtproc;
+    StmtProcType    save_stmtproc;
 
     StmtSw |= SS_DATA_INIT;
     save_stmtproc = StmtProc;

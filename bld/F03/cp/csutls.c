@@ -55,7 +55,7 @@ extern  void            FreeLabel(label_id);
 
 extern  char            *StmtKeywords[];
 
-static  const stmtproc __FAR    CSWords[] = {
+static  const StmtProcType __FAR    CSWords[] = {
         0,
         PR_IF - 1,
         PR_ELSEIF - 1,
