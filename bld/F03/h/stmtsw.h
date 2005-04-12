@@ -28,15 +28,22 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+#ifndef STMTSW_H_
+#define STMTSW_H_
 
+// switch values for statement scanning 
+// used with global variable StmtSw
+typedef enum {
+    SS_HOLLERITH         =  0x0001,
+    SS_DATA_INIT         =  0x0002,
+    SS_COMMA_FOUND       =  0x0004,
+    SS_EQUALS_FOUND      =  0x0008,
+    SS_COMMA_THEN_EQ     =  0x0010,
+    SS_EQ_THEN_COMMA     =  0x0020,
+    SS_SCANNING          =  0x0040,
+    SS_ISN_DONE          =  0x0080,
+    SS_SF_REFERENCED     =  0x0100,
+    SS_CONT_ERROR_ISSUED =  0x0200
+} StmtSwitchType;
 
-#define SS_HOLLERITH            0x0001
-#define SS_DATA_INIT            0x0002
-#define SS_COMMA_FOUND          0x0004
-#define SS_EQUALS_FOUND         0x0008
-#define SS_COMMA_THEN_EQ        0x0010
-#define SS_EQ_THEN_COMMA        0x0020
-#define SS_SCANNING             0x0040
-#define SS_ISN_DONE             0x0080
-#define SS_SF_REFERENCED        0x0100
-#define SS_CONT_ERROR_ISSUED    0x0200
+#endif
