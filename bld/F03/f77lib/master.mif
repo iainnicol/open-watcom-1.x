@@ -1,0 +1,50 @@
+proj_name = f77lib
+
+f77lib_host_cpu_086 = i86
+f77lib_host_cpu_087 = i86
+f77lib_host_cpu_286 = i86
+f77lib_host_cpu_287 = i86
+f77lib_host_cpu_386 = 386
+f77lib_host_cpu_387 = 386
+f77lib_host_cpu_axp = axp
+f77lib_host_cpu_ppc = ppc
+host_cpu = $(f77lib_host_cpu_$(processor))
+
+f77lib_host_os_msdos   = dos
+f77lib_host_os_winnt   = nt
+f77lib_host_os_windows = win
+f77lib_host_os_os2     = os2
+f77lib_host_os_qnx     = qnx
+f77lib_host_os_netware = nov
+f77lib_host_os_linux   = linux
+host_os = $(f77lib_host_os_$(system))
+
+!include cproj.mif
+!include deftarg.mif
+
+!include ../../flags.mif
+!include ../../objects.mif
+
+#-------------------------------------------------------------------------------
+
+asm_src_i86 = ../../asmi86;../../../asmi86
+asm_src_386 = ../../asm386;../../../asm386
+asm_src_axp = ../../asmaxp;../../../asmaxp
+asm_src_ppc = ../../asmppc;../../../asmppc
+
+.asm: $(asm_src_$(host_cpu))
+
+.c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
+
+#-------------------------------------------------------------------------------
+
+$(libname).lib : $(files)
+    @%create $(libname).lbc
+    @for %%f in ($(files)) do @%append $(libname).lbc +%%f
+    $(librarian) $(lib_flags) $^@ @$(libname).lbc
+
+.c.obj : .autodepend
+    $(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
+
+.asm.obj : .autodepend
+    $(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
