@@ -39,15 +39,11 @@
 #include "parmtype.h"
 #include "global.h"
 #include "fcgbls.h"
+#include "objutil.h"
 
 extern  sym_id          STConst(void *,int,int);
 extern  byte            ParmType(int,int);
 extern  void            EmitOp(unsigned_16);
-extern  void            OutPtr(pointer);
-extern  void            OutU16(unsigned_16);
-extern  obj_ptr         ObjTell(void);
-extern  obj_ptr         ObjSeek(obj_ptr);
-extern  unsigned_16     ObjOffset(obj_ptr);
 extern  int             TypeSize(int);
 
 

@@ -38,9 +38,9 @@
 #include "global.h"
 #include "fcodes.h"
 #include "opn.h"
+#include "objutil.h"
 
 extern  void            EmitOp(unsigned_16);
-extern  void            OutPtr(void *);
 extern  void            SetOpn(itnode *,int);
 extern  sym_id          GTempString(int);
 

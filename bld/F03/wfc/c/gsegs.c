@@ -41,9 +41,8 @@
 #include "cg.h"
 #include "wf77segs.h"
 #include "cpopt.h"
+#include "fmemmgr.h"
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 
 global_seg              *GlobalSeg;
 

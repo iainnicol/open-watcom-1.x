@@ -37,9 +37,9 @@
 #include "ftnstd.h"
 #include "symflgs.h"
 #include "itdefn.h"
+#include "objutil.h"
 
 extern  int             ParmType(int,int);
-extern  void            OutU16(unsigned_16);
 
 
 void            DumpType( uint typ, uint size ) {

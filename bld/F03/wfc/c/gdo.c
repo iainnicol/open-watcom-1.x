@@ -43,15 +43,12 @@
 #include "stmtsw.h"
 #include "opn.h"
 #include "cpopt.h"
+#include "recog.h"
+#include "objutil.h"
 
 extern  void            EatDoParm(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            RecComma(void);
-extern  bool            ReqComma(void);
 extern  void            EmitOp(unsigned_16);
-extern  void            OutPtr(pointer);
-extern  void            OutU16(unsigned_16);
-extern  void            OutConst32(signed_32);
 extern  void            PushOpn(itnode *);
 extern  void            PushConst(signed_32);
 extern  sym_id          StaticAlloc(int,int);

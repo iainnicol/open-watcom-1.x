@@ -44,17 +44,15 @@
 #include "prdefn.h"
 #include "cpopt.h"
 #include "wf77aux.h"
+#include "recog.h"
+#include "objutil.h"
+
 
 extern  void            EmitOp(unsigned_16);
-extern  void            OutU16(unsigned_16);
-extern  void            OutPtr(pointer);
 extern  void            PushOpn(itnode *);
 extern  void            PushConst(signed_32);
 extern  label_id        NextLabel(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            RecColon(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecCloseParen(void);
 extern  void            GLabel(label_id);
 extern  void            GStmtAddr(sym_id);
 extern  void            GBranch(label_id);
@@ -63,8 +61,6 @@ extern  char            *STGetName(sym_id,char *);
 extern  sym_id          GTempString(int);
 extern  void            FreeLabel(label_id);
 extern  void            SymRef(itnode *);
-extern  obj_ptr         ObjTell(void);
-extern  obj_ptr         ObjSeek(obj_ptr);
 extern  void            SetOpn(itnode *,int);
 extern  void            GenType(itnode *);
 extern  void            DumpType(int,int);
