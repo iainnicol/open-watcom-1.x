@@ -34,8 +34,8 @@
 // ASMALLOC     : memory allocator for in-line assembler
 //
 
-extern  void            *FMemAlloc(unsigned);
-extern  void            FMemFree(void *);
+#include "standard.h"
+#include "fmemmgr.h"
 
 
 void    *AsmAlloc( unsigned amount ) {
