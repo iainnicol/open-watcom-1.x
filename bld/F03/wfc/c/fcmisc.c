@@ -41,6 +41,7 @@
 #include "tmpdefs.h"
 #include "global.h"
 #include "fcgbls.h"
+#include "objutil.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -56,7 +57,6 @@ extern  void            CGTrash(cg_name);
 
 extern  cg_name         XPop(void);
 extern  call_handle     InitCall(int);
-extern  void            *GetPtr(void);
 extern  void            *ConstBack(sym_id);
 extern  void            FreeTmps(void);
 
