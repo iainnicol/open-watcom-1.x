@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#define _DEVELOPMENT    _OFF    // are we developing?
-#define _MEMTRACK       _OFF    // memory tracking during development?
+//#define _DEVELOPMENT    _OFF  // are we developing? not used ?
+#define _MEMTRACK       _ON     // memory tracking during development?
 #define _8087           _OFF    // 8087 present?
-#define _EDITOR         _OFF    // editor interface available?
 #define _OBJECT         _OFF    // generate object files?
 #define _CSET           _ASCII  // character set?
 #define _TARGET         _80386  // target machine?
 #define _OPSYS          _NT     // operating system?
+//#define _OPT_CG         _ON     // optimizing code generator used? Only used with LG reoved on 2004/12/30
 #define BY_FORTRAN_FRONT_END    // identify yourself
 
 #define _SysMemAlloc    malloc  // define system memory manager
