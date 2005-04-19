@@ -38,6 +38,7 @@
 #include "fcodes.h"
 #include "global.h"
 #include "opn.h"
+#include "objutil.h"
 
 extern  void            AsgnChar(void);
 extern  void            SetOpn(itnode *,int);
@@ -45,8 +46,6 @@ extern  void            EmitOp(unsigned_16);
 extern  sym_id          SymRef(itnode *);
 extern  void            GenTypes(itnode *,itnode *);
 extern  void            PushOpn(itnode *);
-extern  void            OutPtr(void *);
-extern  void            OutU16(unsigned_16);
 
 
 void    AsgnOp( int typ1, int typ2, int opr ) {
