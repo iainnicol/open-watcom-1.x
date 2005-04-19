@@ -28,7 +28,8 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+#ifndef standard_h_
+#define standard_h_
 
 #include <stddef.h>
 #include <watcom.h>
@@ -52,4 +53,7 @@ typedef double          reallong;
 #define __FAR far
 #else
 #define __FAR
+#endif
+
+
 #endif
