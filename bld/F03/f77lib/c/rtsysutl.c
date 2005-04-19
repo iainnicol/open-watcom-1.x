@@ -327,27 +327,6 @@ int     _FileAttrs( ftnfile *fcb ) {
 //
 
 
-#if _TARGET == _VAX
-
-file_handle OpenRead( char *fn ) {
-//================================
-
-// Open a file for read.
-
-    return( Openf( fn, REC_TEXT | RDONLY ) );
-}
-
-
-file_handle OpenWrite( char *fn ) {
-//=================================
-
-// Open a file for write.
-
-    return( Openf( fn, REC_TEXT | WRONLY ) );
-}
-
-#endif
-
 
 void    CloseFile( ftnfile *fcb ) {
 //=================================
