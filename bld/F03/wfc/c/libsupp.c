@@ -38,6 +38,7 @@
 #include "sdfile.h"
 #include "global.h"
 #include "omodes.h"
+#include "inout.h"
 
 #include <string.h>
 #include <stdio.h>

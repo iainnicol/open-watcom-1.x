@@ -39,10 +39,10 @@
 #include "fcgbls.h"
 #include "fcodes.h"
 #include "opn.h"
+#include "objutil.h"
 
 extern  void            EmitOp(unsigned_16);
 extern  void            SetOpn(itnode *,byte);
-extern  void            OutPtr(void *);
 extern  sym_id          STConst(void *,int,int);
 extern  int             TypeSize(int);
 extern  void            GenType(itnode *);
