@@ -39,9 +39,9 @@
 #include "opn.h"
 #include "fcodes.h"
 #include "global.h"
+#include "objutil.h"
 
 extern  void            EmitOp(unsigned_16);
-extern  void            OutU16(unsigned_16);
 extern  void            SetOpn(itnode *,int);
 extern  void            GenType(itnode *);
 extern  void            GenTypes(itnode *,itnode *);
