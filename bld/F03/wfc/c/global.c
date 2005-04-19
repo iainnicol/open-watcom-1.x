@@ -47,6 +47,10 @@
 #include "ftnio.h"
 #include "cioconst.h"
 #include "fmtdef.h"
+#include "progsw.h"
+#include "segsw.h"
+#include "stmtsw.h"
+#include "prdefn.h"
 
 // The following files have been ordered so that variables are aligned on
 // an even address.  Be careful when you change them!
@@ -54,7 +58,7 @@
 #define gbl_defn
 #include "fmtdefn.h"
 gbl_defn        byte    Align_ciovars;
-#include "ciovars.h"
+//#include "ciovars.h" %GUT
 #include "gblboth.h"
 #include "fcdata.h"
 #include "gbldat.h"
