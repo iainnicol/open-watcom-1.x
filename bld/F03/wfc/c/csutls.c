@@ -39,31 +39,23 @@
 #include "errcod.h"
 #include "opr.h"
 #include "prdefn.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
-extern  void            *FMemAlloc(uint);
-extern  void            FMemFree(void *);
-extern  void            Error(int,...);
-extern  void            StmtExtension(uint);
-extern  void            StmtErr(int);
-extern  void            StmtPtrErr(int,void *);
+
 extern  void            AdvanceITPtr(void);
 extern  void            FreeITNodes(itnode *);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecColon(void);
-extern  bool            RecName(void);
-extern  bool            ReqEOS(void);
-extern  bool            RecEOS(void);
 extern  void            GBoolExpr(void);
 extern  void            GBrFalse(label_id);
 extern  void            FreeLabel(label_id);
 
 extern  char            *StmtKeywords[];
 
-static  const stmtproc __FAR    CSWords[] = {
+static  const StmtProcType __FAR    CSWords[] = {
         0,
         PR_IF - 1,
         PR_ELSEIF - 1,
