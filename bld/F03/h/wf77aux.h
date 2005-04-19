@@ -59,7 +59,9 @@ typedef struct pass_by {
     unsigned_16         info;
 } pass_by;
 
+
 #define BYTE_SEQ( len ) struct { byte_seq_len length; byte data[ len ]; }
+
 
 typedef struct aux_info {
     struct aux_info     *link;
@@ -85,6 +87,7 @@ typedef struct default_lib {
     struct default_lib  *link;
     char                lib[2]; // 1 for priority and 1 for NULLCHAR
 } default_lib;
+
 
 typedef struct arr_info {
     struct arr_info     *link;
