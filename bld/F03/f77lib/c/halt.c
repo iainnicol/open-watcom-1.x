@@ -77,37 +77,7 @@ extern  int             NumErrors;
 #pragma aux (lg_sym) DEBUG_STOPPED;
 #pragma aux (lg_sym) DEBUG_PAUSED;
 
-#ifdef _SA_LIBRARY
 
-extern  void            StdWriteNL(char *,int);
-extern  void            StdWrite(char *,int);
-
-#define IS_LG_TB( tb )  ( (tb)->line == TB_LG || (tb)->line == TB_LG_DB )
-
-#undef  GroupTable
-#undef  ErrWord
-#undef  GrpCodes
-extern  char            __FAR * __FAR GroupTable[];
-extern  char            __FAR ErrWord[];
-extern  char            __FAR GrpCodes[];
-extern  char            __FAR * __FAR LGGroupTable[];
-extern  char            __FAR LGErrWord[];
-extern  char            __FAR LGGrpCodes[];
-
-extern  char            __FAR * __FAR *PGroupTable;
-extern  char            __FAR *PErrWord;
-extern  char            __FAR *PGrpCodes;
-
-static  char            __FAR * __FAR *savePGroupTable;
-static  char            __FAR *savePErrWord;
-static  char            __FAR *savePGrpCodes;
-
-static void NoDebug( void ) {}
-
-void (*DEBUG_STOPPED)(void) = NoDebug;
-void (*DEBUG_PAUSED)(void) = NoDebug;
-
-#else
 
 #define ERR_PREF_SIZE   5
 #define ERR_CODE_SIZE   6
@@ -117,7 +87,6 @@ static  char            ErrorPref[] = { "*ERR*" };
 void (*DEBUG_STOPPED)(void) = DbStopped;
 void (*DEBUG_PAUSED)(void) = DbPaused;
 
-#endif
 
 
 unsigned_16     GetTraceLine() {
@@ -146,13 +115,9 @@ char            *GetTraceInfo() {
 }
 
 
-#ifdef _SA_LIBRARY
-static  void    PrintPlace( char *buff, uint lg_text, uint cg_text ) {
-//====================================================================
-#else
+
 static  void    PrintPlace( char *buff, uint lg_text ) {
 //======================================================
-#endif
 
 // Print an entry in the traceback chain.
 
@@ -160,9 +125,6 @@ static  void    PrintPlace( char *buff, uint lg_text ) {
     char        *ptr;
     uint        len;
 
-#ifdef _SA_LIBRARY
-    if( IS_LG_TB( ExCurr ) ) {
-#endif
         name = GetTraceInfo();
         ptr = name + strlen( name ) + sizeof( char );
         MsgBuffer( lg_text, buff );
@@ -176,87 +138,13 @@ static  void    PrintPlace( char *buff, uint lg_text ) {
             MsgBuffer( MS_TB_FILE, &buff[len],
                        name, (uint)GetTraceLine(), ptr + sizeof( byte ) );
         }
-#ifndef _SA_LIBRARY
+
         SendLine( buff );
-#else
-    } else {
-        MsgBuffer( cg_text, buff, ExCurr->line, ExCurr->name );
-    }
-    StdWriteNL( buff, strlen( buff ) );
-#endif
+
 }
 
 
-#ifdef _SA_LIBRARY
 
-void            TraceCalls( char *buff ) {
-//========================================
-
-// Produce a traceback of the calling subprograms.
-
-    obj_ptr             ex_line_ptr;
-    lg_traceback PGM    *ex_curr;
-    bool                first_lg_tb;
-
-    useLGTables();
-    ex_curr = ExCurr;         // save ExCurr, ExLinePtr for debugger
-    ex_line_ptr = ExLinePtr;
-    first_lg_tb = TRUE;
-    if( ExCurr != NULL ) {
-        PrintPlace( buff, MS_EXEC_IN, MS_TRACE_INFO );
-        for(;;) {
-            if( IS_LG_TB( ExCurr ) ) {
-                if( first_lg_tb ) {
-                    // save ExCurr, ExLinePtr for debugger
-                    ex_curr = ExCurr;
-                    ex_line_ptr = ExLinePtr;
-                    first_lg_tb = FALSE;
-                }
-                ExLinePtr = ExCurr->lineptr;
-            } else if( ExCurr->link != NULL &&
-                    IS_LG_TB( (lg_traceback PGM *)ExCurr->link ) ) {
-                // This is an extra traceback put here by the external
-                // interface code.  That code has no way of knowing that
-                // it is going to call a function that will do it's own
-                // traceback.
-                ExCurr = ExCurr->link;
-                ExLinePtr = ExCurr->lineptr;
-            }
-            ExCurr = ExCurr->link;
-            if( ExCurr == NULL ) break;
-            PrintPlace( buff, MS_CALLED_FROM_LG, MS_CALLED_FROM );
-        }
-    }
-    // restore ExCurr and ExLinePtr for debugger
-    ExCurr = ex_curr;
-    ExLinePtr = ex_line_ptr;
-    useDfltTables();
-}
-
-
-void    useLGTables() {
-//=====================
-
-    if( PGroupTable != LGGroupTable ) {
-        savePGroupTable = PGroupTable;
-        savePErrWord = PErrWord;
-        savePGrpCodes = PGrpCodes;
-        PGroupTable = LGGroupTable;
-        PErrWord = LGErrWord;
-        PGrpCodes = LGGrpCodes;
-    }
-}
-
-
-void    useDfltTables() {
-//=====================
-
-    PGroupTable = savePGroupTable;
-    PErrWord = savePErrWord;
-    PGrpCodes = savePGrpCodes;
-}
-
-#else
 
 
 void            TraceCalls( char *buff ) {
@@ -282,7 +170,6 @@ void            TraceCalls( char *buff ) {
     ExLinePtr = ex_line_ptr;
 }
 
-#endif
 
 
 static  void    StopPgm() {
@@ -294,13 +181,9 @@ static  void    StopPgm() {
     // or 2. spawned debugger command, leaving us in debugger
     // or 3. spawned Program, or program code (in RUNMAIN)
     __XcptFlags |= XF_FATAL_ERROR; // must be set here in case using debugger
-#ifndef _SA_LIBRARY
     if( ( RTFlags & DB_INSIDE ) == 0 ) {
         SwapIOCBs();
     }
-#else
-    useDfltTables();
-#endif
     Suicide();
 }
 
@@ -362,26 +245,7 @@ void    PAUSE_HANDLER() {
 }
 
 
-#ifdef _SA_LIBRARY
 
-extern  void    ErrHandler(int,va_list);
-
-
-void    RTErr( int err, ... ) { // really called LGRTErr()
-//=============================
-
-// Print a run time error message and halt exection.
-
-    va_list     args;
-
-    useLGTables();
-    va_start( args, err );
-    ErrHandler( err, args );
-    va_end( args );
-    useDfltTables();
-}
-
-#else
 
 
 void    WriteErr( int err, va_list args ) {
@@ -502,4 +366,3 @@ void    Pause( string PGM *ptr ) {
     SwapIOCBs();
 }
 
-#endif
