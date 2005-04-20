@@ -61,10 +61,6 @@ extern  int             Spawn(void (*)());
 extern  void            RMemFree(void *);
 extern  void            *RChkAlloc(uint);
 extern  void            *LocUnit(int);
-#if _TARGET == _VAX
-extern  file_handle     OpenRead(char *);
-extern  file_handle     OpenWrite(char *);
-#endif
 extern  void            F77Data(targ_addr *);
 extern  void            Program(void);
 extern  void            DebugInit(comp_options);

@@ -182,10 +182,7 @@ void    DoOpen() {
     OpenAction( fcb );
     fcb->flags &= ~FTN_FSEXIST;
     if( fcb->fileptr != NULL ) {
-#if _TARGET == _370
-        if( IOCB->iostmt != IO_WRITE )
-#endif
-            fcb->flags |= FTN_FSEXIST;
+        fcb->flags |= FTN_FSEXIST;
     }
     ChkIOErr( fcb );
 }
