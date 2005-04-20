@@ -99,28 +99,31 @@ void    InitScan() {
 
     if( Options & OPT_EXTEND_REAL ) {
         TokenREA = TO_DBL;
-        ExpREA = 'D';
+        ExpREA   = 'D';
         TokenDBL = TO_EXT;
-        ExpDBL = 'Q';
+        ExpDBL   = 'Q';
     } else {
         TokenREA = TO_REA;
-        ExpREA = 'E';
+        ExpREA   = 'E';
         TokenDBL = TO_DBL;
-        ExpDBL = 'D';
+        ExpDBL   = 'D';
     }
     TokenEXT = TO_EXT;
-    ExpEXT = 'Q';
-    Line = 0;
-    State = SNS;
-    TkCrsr = &TokenBuff[ 0 ];
-    LexToken.stop = TkCrsr;
-    LexToken.col = Column;
+    ExpEXT   = 'Q';
+    Line     = 0;
+    State    = SNS;
+    TkCrsr   = &TokenBuff[ 0 ];
+    
+    LexToken.stop  = TkCrsr;
+    LexToken.col   = Column;
     LexToken.flags = 0;
-    LexToken.line = 0;
+    LexToken.line  = 0;
+    
     SrcRecNum = CurrFile->rec;
     // at this point, the line has already been read
     // so just print it with an ISN in front
     LinePrint();
+    
     if( StmtType == STMT_CONT ) {
         Error( CC_NOT_INITIAL );
     }
@@ -135,23 +138,23 @@ void    Scan() {
 
 // Collect a token.
 
-    token_state state2;
-    char        ch;
-    token_state old_state;
-    char        *dpt = NULL;
-    byte        tab;
-    int         len;
-    int         hlen;
-    token_class class;
-    char_class  ch_class;
-    char_class  wasextch;
+    token_state     state2;
+    char            ch;
+    token_state     old_state;
+    char            *dpt = NULL;
+    byte            tab;
+    int             len;
+    int             hlen;
+    token_class     class;
+    charClassType   ch_class;
+    charClassType   wasextch;
 
     if( !(LexToken.flags & TK_LAST) ) {
         wasextch = 0;
         old_state = SNS;
         LexToken.start = LexToken.stop;
-        LexToken.col = Column;
-        LexToken.line = Line;
+        LexToken.col   = Column;
+        LexToken.line  = Line;
         for(;;) {
             ch = *Cursor;
             ch_class = CharSetInfo.character_set[ ch ];
