@@ -46,6 +46,7 @@
 #include "ferror.h"
 #include "inout.h"
 #include "comio.h"
+#include "scan.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -232,6 +233,83 @@ void    ComRead(void)
 }
 
 
+/*
+* Read comments in free soure format
+*
+*/
+void    ComReadFree(void)
+{
+
+char            *cursor;            // reference to current character in source buffer
+char            ch;                 // current character under investigation
+charClassType   chtype;             // the class of the tested character
+uint            column = 0;         // current column in src line
+bool            doneScan = FALSE;   // Indicator scan for non comment finished
+
+
+    // read record by record from source file
+    for( ;; ) {
+        // read record from file
+        ReadSrc(); // incorrect ::TODO: ??
+        // EOF or file conclusion pending
+        if( ProgSw & PS_SOURCE_EOF ) break;
+        if( CurrFile->flags & CONC_PENDING ) break;
+        
+        // init cursor position for src
+        cursor = SrcBuff;
+        ch     = *cursor; 
+        
+        // scan through src record/line
+        for( ;; ) {
+            // get character class under cursor 
+            chtype = CharSetInfo.character_set[ ch ];
+            
+            // not a comment line or comment 
+            if( C_CM != chtype ){
+                if( ProgSw & PS_SKIP_SOURCE ) break;
+                               
+                if( C_SP == chtype ) { // it is a blank
+                    column++;    
+                } else if ( C_EL == chtype ) { // it is EOL
+                    break;
+                } else if ( C_TC == chtype ) { //  it is a TAB : TODO mark as extension
+                    column += 8 - column % 8;  // TODO: rplace 8 by tablength variable
+                } else if ( CharSetInfo.is_double_byte_blank( cursor) ) {
+                    column +=2;
+                    cursor++;
+                } else {
+                    column++;
+                    doneScan = TRUE;
+                    break;
+                }
+                
+                cursor++; // next character              
+                
+            // it is a comment    
+            } else {
+                // process for possible options
+                Comment();
+                // quit if comment simulates EOF (TODO:When does this happen ?)
+                if ( ProgSw & PS_SOURCE_EOF ) {
+                    doneScan = TRUE;
+                    break;
+                }
+                // quit if $include encountered
+                if ( CurrFile->flags & INC_PENDING ) {
+                    doneScan = TRUE;
+                    break;
+                }
+            }        
+        } // for
+        if ( doneScan ) break;
+    } // for
+
+    // save data globaly
+    Cursor = cursor;
+    Column = column;
+}
+
+
 void    ProcInclude() {
 //=====================
 
@@ -325,7 +403,7 @@ void    FmtInteger( char *buff, int num, int width )
 /*
 * Process a comment for possible compiler directives.
 */ 
-static  void    Comment()
+static  void    Comment(void)
 {
     int old_srcrecnum;
     
