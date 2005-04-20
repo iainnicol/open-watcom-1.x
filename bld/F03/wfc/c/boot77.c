@@ -35,27 +35,20 @@
 #include "bglobal.h"
 #include "errcod.h"
 #include "cpopt.h"
+#include "fmemmgr.h"
+#include "inout.h"
 
 extern  void            SDInitIO(void);
-extern  void            InitComIO(void);
-extern  void            InitMemIO(void);
-extern  void            FiniComIO(void);
 extern  void            FiniProcCmd(void);
-extern  void            TOutNL(char *);
-extern  void            TOut(char *);
 extern  void            CLE(void);
 extern  void            InitOptions(void);
 extern  void            CmdOption(char *);
 extern  bool            ParseCmdLine(char **,char **,char **, char *);
 extern  char            *Batch(char *,uint);
-extern  void            GetBanner(char *);
-extern  void            GetCopyright(char *);
-extern  void            GetTrademark(char *);
-extern  void            GetMoreInfo(char *);
 extern  void            InitMacroProcessor(void);
 extern  void            FiniMacroProcessor(void);
-extern  void            FMemInit(void);
-extern  void            FMemFini(void);
+//extern  void            FMemInit(void);
+//extern  void            FMemFini(void);
 extern  void            SetDefaultOpts(void);
 extern  void            MsgBuffer(uint,char *,...);
 extern  void            ShowOptions(char *);
@@ -155,6 +148,7 @@ void    Compile( char *buffer ) {
 #else
   #define _CmpName "wfc386"
 #endif
+
 
 
 void    ShowUsage() {

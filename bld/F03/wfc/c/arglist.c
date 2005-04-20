@@ -39,15 +39,16 @@
 #include "parmtype.h"
 #include "progsw.h"
 #include "errcod.h"
+#include "fmemmgr.h"
+#include "insert.h"
 
 extern  byte            ImplType(char);
 extern  unsigned_16     ImplSize(char);
 extern  byte            ParmType(int,int);
-extern  void            FMemFree(void *);
 extern  void            GArgList(entry_pt *,uint,uint);
 extern  void            GArgInfo(sym_id,uint,uint);
 extern  sym_id          FindShadow(sym_id);
-extern  void            NamNamErr(int,sym_id,sym_id);
+
 
 
 static  void    GetImplType( sym_id sym ) {

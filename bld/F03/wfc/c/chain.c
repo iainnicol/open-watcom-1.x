@@ -35,8 +35,9 @@
 //
 
 #include "ftnstd.h"
+#include "fmemmgr.h"
 
-extern  void                    FMemFree(void *);
+//extern  void                    FMemFree(void *);
 
 
 void    FreeChain( void **head ) {
