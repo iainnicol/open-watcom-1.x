@@ -42,16 +42,13 @@
 #include "progsw.h"
 #include "global.h"
 #include "prdefn.h"
+#include "ferror.h"
+#include "comio.h"
+#include "frl.h"
+#include "scan.h"
 
 #include <string.h>
 
-extern  void            *FrlAlloc(void **,int);
-extern  void            Error(int,...);
-extern  void            InitScan(void);
-extern  void            Scan(void);
-extern  void            ComRead(void);
-extern  void            ComPrint(void);
-extern  void            Extension(int,...);
 
 extern  char            *StmtKeywords[];
 extern  char            *LogTab[];
@@ -88,9 +85,6 @@ static  itnode  *NewITNode( ) {
         new->chsize = 0;
         new->is_unsigned = 0;
         new->is_catparen = 0;
-#if _TARGET == _VAX
-        new->pass_by = 0;
-#endif
     }
     return( new );
 }
@@ -230,10 +224,8 @@ static  byte    LkUpOpr() {
     case ':':   return( OPR_COL );
     case '%':   return( OPR_FLD );
     case '.':   return( OPR_DPT );
-#if _TARGET == _VAX
-    case '&':   return( OPR_AMP );
-#endif
     }
+
     Error( SX_INV_OPR );
     return( OPR_PHI );
 }

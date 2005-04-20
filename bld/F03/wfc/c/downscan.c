@@ -40,22 +40,16 @@
 #include "fltcnv.h"
 #include "parmtype.h"
 #include "cpopt.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
-extern  void            OpndErr(int);
 extern  void            MoveDown(void);
 extern  void            DSName(void);
-extern  bool            RecTrmOpr(void);
-extern  bool            RecPlus(void);
-extern  bool            RecMin(void);
-extern  bool            RecComma(void);
-extern  bool            RecCloseParen(void);
 extern  uint            TypeSize(uint);
 extern  void            FreeITNodes(itnode *);
 extern  void            FreeOneNode(itnode *);
@@ -295,12 +289,6 @@ static  void    Phi() {
                         AltReturn();
                     }
                 }
-#if _TARGET == _VAX
-            } else if( ( opr2 == OPR_DIV ) ||     // pass arugment by value
-                       ( opr2 == OPR_AMP ) ||     // pass argument by address
-                       ( opr2 == OPR_FLD ) ) {    // pass arugment by descriptor
-                PassBy( opr2 );
-#endif
             }
         }
     }
@@ -378,32 +366,6 @@ static  void    AltReturn() {
     CITNode = itptr;
 }
 
-
-#if _TARGET == _VAX
-
-static  void    PassBy( int opr) {
-//================================
-
-    itnode      *itptr;
-
-    if( CITNode->link->opn != OPN_PHI ) {
-        itptr = CITNode;
-        CITNode = CITNode->link;
-        itptr->link = NULL;
-        FreeITNodes( itptr );
-        CITNode->opr = itptr->opr;     // must come before DSTable[]()
-        DSTable[ CITNode->opn ]();
-    }
-    if( opr == OPR_DIV ) {
-        CITNode->pass_by |= PASS_BY_VALUE;
-    } else if( opr == OPR_AMP ) {
-        CITNode->pass_by |= PASS_BY_REF;
-    } else {
-        CITNode->pass_by |= PASS_BY_DESCR;
-    }
-}
-
-#endif
 
 
 static  void    OprEqu() {

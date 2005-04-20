@@ -39,11 +39,11 @@
 #include "opn.h"
 #include "errcod.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
-extern  void            Error(int,...);
 extern  void            AdvError(uint);
-extern  void            OpndErr(uint);
-extern  void            KnownClassErr(uint,uint);
 extern  bool            CmpNode2Str(itnode *,char *);
 extern  sym_id          LkSym(void);
 extern  void            GetFunctionShadow(void);

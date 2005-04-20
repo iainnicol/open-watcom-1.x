@@ -38,6 +38,9 @@
 #include "omodes.h"
 #include "cioconst.h"
 #include "csetinfo.h"
+#include "fmemmgr.h"
+#include "comio.h"
+#include "inout.h"
 
 #include "banner.h"
 #ifdef _BANEXTRA
@@ -51,11 +54,7 @@
 
 extern  void            BISetSrcFile();
 extern  void            Suicide(void);
-extern  pointer         FMemAlloc(int);
-extern  void            FMemFree(void *);
 extern  void            InfoError(int,...);
-extern  void            Warning(int,...);
-extern  void            ComRead(void);
 extern  void            PrtOptions(void);
 extern  lib_handle      IncSearch(char *);
 extern  int             LibRead(lib_handle);
@@ -77,14 +76,6 @@ extern  void            SDInitIO(void);
 extern  void            MsgFormat(char *,char *,...);
 extern  int             CopyMaxStr(char *,char *,int);
 extern  int             MakeName(char *,char *,char *);
-#if _EDITOR == _ON
-extern  bool            SDIsInternal(file_handle);
-extern  file_handle     EdOpenf(char *,int);
-#endif
-#if _TARGET == _VAX
-extern  void            SDSetSpool(file_handle);
-extern  bool            GetCatFile(void);
-#endif
 
 extern  char            FFCtrlSeq[];
 extern  char            SkipCtrlSeq[];
@@ -101,9 +92,7 @@ extern  file_attr       PrtAttr;
 extern  file_attr       TrmAttr;
 extern  file_attr       ErrAttr;
 extern  file_handle     FStdOut;
-#if _TARGET == _VAX
-extern  char            CatFileName[];
-#endif
+
 extern  character_set   CharSetInfo;
 
 #define _Copyright "1984"
@@ -122,6 +111,26 @@ extern  character_set   CharSetInfo;
 #endif
 
 
+//
+// I/O variables for listings 
+// moved from ciovars.h
+//
+static char           *ListBuff;      // listing file buffer
+static file_handle    ListFile;       // file pointer for the listing file
+static int            ListCursor;     // offset into "ListBuff"
+
+static byte           ListCount;      // # of lines printed to listing file
+static byte           ListFlag;       // flag for listing file
+
+static char           *ErrBuff;       // error file buffer
+static file_handle    ErrFile;        // file pointer for the error file
+static int            ErrCursor;      // offset into "ErrBuff"
+
+static char           *TermBuff;      // terminal file buffer
+static file_handle    TermFile;       // file pointer for terminal
+static int            TermCursor;     // offset into "TermBuff"
+//
+//
 //========================================================================
 //
 //  Initialization routines
@@ -194,40 +203,15 @@ void    OpenSrc() {
 
     erase_err = ErrFile == NULL;
     SDInitAttr();
-#if _EDITOR == _ON
-    fp = NULL;
-    if( SrcExtn == ForExtn ) {
-        // try editor buffer without file extension
-        fp = EdOpenf( SrcName, READ_FILE );
-    }
+    MakeName( SrcName, SrcExtn, bld_name );
+    fp = SDOpen( bld_name, READ_FILE );
     if( fp != NULL ) {
-        SrcExtn = NULL;
-        SrcInclude( SrcName );
-        CurrFile->fileptr = fp;
+       SrcInclude( bld_name );
+       CurrFile->fileptr = fp;
     } else {
-        // try editor buffer with file extension
-        MakeName( SrcName, SrcExtn, bld_name );
-        fp = EdOpenf( bld_name, READ_FILE );
-        if( fp != NULL ) {
-            SrcInclude( bld_name );
-            CurrFile->fileptr = fp;
-        } else {
-            // try file called <include_name>.FOR.
-#else
-            MakeName( SrcName, SrcExtn, bld_name );
-#endif
-            fp = SDOpen( bld_name, READ_FILE );
-            if( fp != NULL ) {
-                SrcInclude( bld_name );
-                CurrFile->fileptr = fp;
-            } else {
-                SDError( NULL, err_msg );
-                InfoError( SM_OPENING_FILE, bld_name, err_msg );
-            }
-#if _EDITOR == _ON
-        }
+       SDError( NULL, err_msg );
+       InfoError( SM_OPENING_FILE, bld_name, err_msg );
     }
-#endif
     if( erase_err ) {
         CloseErr();
         Erase( ErrExtn );
@@ -251,9 +235,6 @@ static  uint    SrcRead() {
 
     uint        len;
     file_handle fp;
-#if _TARGET == _VAX
-    source      *cat_file;
-#endif
     char        msg[81];
 
     fp = CurrFile->fileptr;
@@ -268,18 +249,6 @@ static  uint    SrcRead() {
     } else {
         len = SDRead( fp, SrcBuff, SRCLEN );
         if( SDEof( fp ) ) {
-#if _TARGET == _VAX
-            if( ( CurrFile->link == NULL ) && GetCatFile() ) {
-                Include( CatFileName );
-                if( CurrFile->link != NULL ) {
-                    cat_file = CurrFile;
-                    CurrFile = cat_file->link;
-                    CurrFile->link = cat_file;
-                    cat_file->link = NULL;
-                    cat_file->rec = CurrFile->rec;
-                }
-            }
-#endif
             ProgSw |= PS_INC_EOF;
         } else if( SDError( fp, msg ) ) {
             InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
@@ -289,9 +258,11 @@ static  uint    SrcRead() {
     return( len );
 }
 
-
-void    ReadSrc() {
-//=================
+/*
+*  Read a single record/line from source file
+*/
+void    ReadSrc()
+{
 
     uint        len;
 
@@ -300,20 +271,23 @@ void    ReadSrc() {
     // then indicate EOF since the main source file may have
     // the C$DATA option in it in which case "CurrFile" will
     // not be NULL after calling "Conclude()".
-    if( CurrFile->flags & INC_DATA_OPTION ) {
-        ProgSw |= PS_SOURCE_EOF;
-    } else {
-        len = SrcRead();
-        if( ProgSw & PS_INC_EOF ) {
-            CurrFile->flags |= CONC_PENDING;
-            if( CurrFile->link == NULL ) {
-                ProgSw |= PS_SOURCE_EOF;
-            }
-        } else {
-            CurrFile->rec++;
-            SrcBuff[ len ] = NULLCHAR;
+    
+    /* read a record from source file */
+    len = SrcRead();
+    
+    /* Reached EOF */
+    if( ProgSw & PS_INC_EOF ) {
+        CurrFile->flags |= CONC_PENDING;
+        if( CurrFile->link == NULL ) {
+            ProgSw |= PS_SOURCE_EOF;
         }
+    /* not at EOF, yet */
+    } else {
+        CurrFile->rec++;
+        /* make the line a C string */ 
+        SrcBuff[ len ] = NULLCHAR;
     }
+
 }
 
 
@@ -345,41 +319,25 @@ void    Include( char *inc_name ) {
     MakeName( bld_name, SDSrcExtn( bld_name ), bld_name );
     if( AlreadyOpen( inc_name ) ) return;
     if( AlreadyOpen( bld_name ) ) return;
-#if _EDITOR == _ON
-    fp = EdOpenf( inc_name, READ_FILE );
+    // try file called <include_name>.FOR.
+    fp = SDOpen( bld_name, READ_FILE );
     if( fp != NULL ) {
-        SrcInclude( inc_name );
-        CurrFile->fileptr = fp;
-    } else {   // guess editor buffer <include_name>.FOR.
-        fp = EdOpenf( bld_name, READ_FILE );
-        if( fp != NULL ) {
-            SrcInclude( bld_name );
-            CurrFile->fileptr = fp;
-        } else {
-#endif
-            // try file called <include_name>.FOR.
-            fp = SDOpen( bld_name, READ_FILE );
-            if( fp != NULL ) {
-                SrcInclude( bld_name );
-                CurrFile->fileptr = fp;
-            } else {
-                // get error message before next i/o
-                SDError( NULL, err_msg );
-                // try library
-                fp = IncSearch( inc_name );
-                if( fp != NULL ) {
-                    // SrcInclude( inc_name ) now done in LIBSUPP
-                    CurrFile->fileptr = fp;
-                    CurrFile->flags |= INC_LIB_MEMBER;
-                } else {
-                    // could not open include file
-                    InfoError( SM_OPENING_FILE, bld_name, err_msg );
-                }
-            }
-#if _EDITOR == _ON
-        }
+       SrcInclude( bld_name );
+       CurrFile->fileptr = fp;
+    } else {
+       // get error message before next i/o
+       SDError( NULL, err_msg );
+       // try library
+       fp = IncSearch( inc_name );
+       if( fp != NULL ) {
+          // SrcInclude( inc_name ) now done in LIBSUPP
+          CurrFile->fileptr = fp;
+          CurrFile->flags |= INC_LIB_MEMBER;
+       } else {
+          // could not open include file
+          InfoError( SM_OPENING_FILE, bld_name, err_msg );
+       }
     }
-#endif
     // clear RetCode so that we don't get "file not found" returned
     // because we could not open include file
     RetCode = _SUCCESSFUL;
@@ -653,12 +611,6 @@ static  void    OpenListingFile( bool reopen ) {
         GetLstName( name );
         if( Options & OPT_TYPE ) {
             SDSetAttr( TrmAttr );
-#if _TARGET != _VAX
-        // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
-        // and set the spooling bit
-        } else if( Options & OPT_PRINT ) {
-            SDSetAttr( PrtAttr );
-#endif
         } else { // DISK file
             SDSetAttr( DskAttr );
         }
@@ -670,10 +622,6 @@ static  void    OpenListingFile( bool reopen ) {
             if( ListBuff == NULL ) {
                 CloseLst();
                 InfoError( MO_DYNAMIC_OUT );
-#if _TARGET == _VAX
-            } else if( Options & OPT_PRINT ) {
-                SDSetSpool( ListFile );
-#endif
             }
         }
         SDInitAttr();
@@ -789,9 +737,7 @@ void    GetLstName( char *buffer ) {
 
     if( Options & OPT_TYPE ) {
         strcpy( buffer, SDTermOut );
-#if ( _TARGET != _VAX ) && ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
-    // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
-    //             and set the spooling bit
+#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
     // On QNX, there is no /PRINT option
     } else if( Options & OPT_PRINT ) {
         strcpy( buffer, SDPrtName );
@@ -858,6 +804,17 @@ void    LFSkip() {
         ++ListCount;
     }
 }
+
+
+/**************************************************
+*  check if error listing file is opened
+***************************************************/
+bool isErrFileOpen(void){
+   
+   // test error file filehandle 
+   return NULL != ErrFile;
+}
+
 
 
 static  void    PutLst( char *string ) {
@@ -968,3 +925,5 @@ static  void    SendBuff( char *str, char *buff, int buff_size, int *cursor,
         *cursor = 0;
     }
 }
+
+

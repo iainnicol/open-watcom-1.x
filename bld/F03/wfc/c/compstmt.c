@@ -46,26 +46,23 @@
 #include "prdefn.h"
 #include "ctrlflgs.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
+#include "frl.h"
+#include "inout.h"
 
 #include <string.h>
 #include <ctype.h>
 
-extern  void            ChkPntLst(void);
-extern  pointer         FrlAlloc(void **,int);
+
 extern  sym_id          LkSym(void);
 extern  void            MakeITList(void);
 extern  void            FreeITNodes(itnode *);
-extern  bool            RecName(void);
 extern  bool            BitOn(unsigned_16);
 extern  void            AdvanceITPtr(void);
 extern  void            FreeOneNode(itnode *);
 extern  int             RecStmtKW(void);
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            Extension(int,...);
-extern  void            OpndErr(int);
-extern  void            StmtErr(int);
-extern  void            StmtPtrErr(int,void *);
 extern  void            TermDo(void);
 extern  void            TermDoWhile(void);
 extern  void            DefStmtNo(unsigned_32);
@@ -74,8 +71,6 @@ extern  void            STResolve(void);
 extern  void            GSetDbugLine(void);
 extern  void            Prologue(void);
 extern  void            DefProg(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNextOpr(byte);
 extern  bool            SubStrung(void);
 extern  void            GSetSrcLine(void);
 extern  void            TDStmtInit(void);
@@ -84,6 +79,9 @@ extern  void            TDStmtFini(void);
 extern  char                    *StmtKeywords[];
 extern  void                    (* const __FAR ProcTable[])();
 extern  const unsigned_16       __FAR CFTable[];
+
+//GUT
+void DumpLex();
 
 
 static  void    ChkStatementSequence() {
@@ -255,6 +253,7 @@ static  void    InitStatement() {
     StmtSw = SS_SCANNING;
     CpError = FALSE;
     MakeITList();
+//    DumpLex();
     StmtSw &= ~SS_SCANNING;
     StmtProc = 0;
 }
@@ -426,7 +425,9 @@ static  void    ProcStmt() {
 
     if( AError ) return;
     if( CpError && (StmtProc == PR_NULL) ) return;
+    //DumpLex();
     ProcTable[ StmtProc ]();
+    //DumpLex();
 }
 
 

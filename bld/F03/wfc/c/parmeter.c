@@ -41,6 +41,9 @@
 #include "global.h"
 #include "segsw.h"
 #include "cpopt.h"
+#include "fmemmgr.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
@@ -50,22 +53,10 @@ extern  bool            CLogicExpr(void);
 extern  bool            CCharExpr(void);
 extern  void            CArithExpr(void);
 extern  void            ConstExpr(uint);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqName(int);
-extern  bool            RecComma(void);
-extern  bool            ReqEOS(void);
-extern  bool            ReqEquSign(void);
-extern  bool            ReqNOpn(void);
 extern  sym_id          LkSym(void);
 extern  sym_id          STLit(byte *,uint);
 extern  sym_id          STConst(void *,int,int);
 extern  void            CnvTo(itnode *,int,int);
-extern  void            IllName(sym_id);
-extern  void            IllType(sym_id);
-extern  void            NameErr(int,sym_id);
-extern  void            *FMemAlloc(uint);
-extern  void            FMemFree(void *);
 extern  void            CkSymDeclared(sym_id);
 
 

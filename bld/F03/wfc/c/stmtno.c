@@ -41,13 +41,12 @@
 #include "global.h"
 #include "intcnv.h"
 #include "cpopt.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
-extern  void            Error(int,...);
-extern  void            Warning(int,...);
-extern  void            StmtIntErr(int,int);
 extern  label_id        NextLabel(void);
 extern  void            GStmtLabel(sym_id);
-extern  bool            RecNumber(void);
 extern  sym_id          STStmtNo(unsigned_32);
 extern  unsigned_32     GetStmtNum(sym_id);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);

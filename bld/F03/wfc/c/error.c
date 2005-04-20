@@ -43,18 +43,14 @@
 #include "global.h"
 #include "bglobal.h"
 #include "cioconst.h"
+#include "ferror.h"
+#include "recog.h"
+#include "inout.h"
 
 #include <stdarg.h>
 #include <string.h>
 
-extern  void            OpenErr(void);
-extern  void            PrintErr(char *);
-extern  void            JustErr(char *);
-extern  void            PrtLstNL(char *);
-extern  void            PrtErrNL(void);
-extern  bool            SetLst(bool);
-extern  bool            WasStmtListed(void);
-extern  bool            RecEOS(void);
+
 extern  void            BldErrCode(unsigned int,char *);
 extern  int             CarrotType(unsigned int);
 extern  void            MsgPrintErr(uint,...);
@@ -163,9 +159,8 @@ void    InfoError( int code, ... ) {
 void        ChkErrFile() {
 //========================
 
-// Make sure error file is opened.
-
-    if( ErrFile == NULL ) {
+    // error listing file is not open 
+    if( !isErrFileOpen()) {
         OpenErr();
     }
 }

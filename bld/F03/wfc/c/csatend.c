@@ -40,6 +40,7 @@
 #include "stmtsw.h"
 #include "opn.h"
 #include "global.h"
+#include "recog.h"
 
 extern  void            CSExtn(void);
 extern  void            AddCSNode(byte);
@@ -52,8 +53,6 @@ extern  void            GBranch(label_id);
 extern  void            GLabel(label_id);
 extern  label_id        NextLabel(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            ReqComma(void);
-extern  bool            RecKeyWord(char *);
 extern  void            GCheckEOF(label_id);
 extern  void            FreeLabel(label_id);
 

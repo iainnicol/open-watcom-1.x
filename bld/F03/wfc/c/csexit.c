@@ -37,8 +37,8 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "global.h"
+#include "insert.h"
 
-extern  void            StmtErr(int);
 extern  void            BlockLabel(void);
 extern  void            CSExtn(void);
 extern  itnode          *GetBlockLabel(void);

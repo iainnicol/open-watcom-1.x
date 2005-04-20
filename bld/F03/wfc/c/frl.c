@@ -35,9 +35,9 @@
 //
 
 #include "ftnstd.h"
+#include "fmemmgr.h"
+#include "frl.h"
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 
 
 void    *FrlAlloc( void ***head, int size ) {

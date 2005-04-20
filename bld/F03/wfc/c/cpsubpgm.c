@@ -43,8 +43,11 @@
 #include "namecod.h"
 #include "global.h"
 #include "cpopt.h"
+#include "fmemmgr.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
-extern  void            *FMemAlloc(int);
 extern  void            AdvanceITPtr(void);
 extern  void            IntSubExpr(void);
 extern  bool            BitOn(unsigned_16);
@@ -52,24 +55,6 @@ extern  uint            MapTypes(uint,int);
 extern  int             StorageSize(uint);
 extern  byte            ImplType(char);
 extern  bool            EmptyCSList(void);
-extern  bool            ReqName(int);
-extern  bool            RecOpenParen(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecName(void);
-extern  bool            ReqMul(void);
-extern  bool            RecComma(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecEOS(void);
-extern  bool            ReqEOS(void);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  void            NameErr(int,sym_id);
-extern  void            IllName(sym_id);
-extern  void            NameExt(int,sym_id);
-extern  void            StmtErr(uint);
 extern  sym_id          LkSym(void);
 extern  sym_id          LkProgram(void);
 extern  sym_id          LkBlkData(void);

@@ -40,6 +40,9 @@
 #include "global.h"
 #include "cpopt.h"
 #include "parmtype.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 extern  void            DetSubList(void);
 extern  void            DetCallList(void);
@@ -62,24 +65,11 @@ extern  int             TypeSize(uint);
 extern  void            GILCnvTo(uint,uint);
 extern  void            CnvTo(itnode*,uint,uint);
 extern  void            UpdateNode(itnode *,itnode *);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecNOpn(void);
-extern  bool            RecColon(void);
-extern  bool            RecCloseParen(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecOpenParen(void);
-extern  bool            ReqCloseParen(void);
 extern  void            BackTrack(void);
 extern  void            MoveDown(void);
 extern  void            KillOpnOpr(void);
 extern  void            AdvError(int);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  void            ClassErr(int,sym_id);
-extern  void            TypeTypeErr(int,uint,uint);
-extern  void            TypeErr(int,uint);
 extern  void            OpndErr(int);
-extern  void            PrmCodeErr(int,uint);
 extern  void            EndExpr(void);
 extern  sym_id          STConst(void *,int,int);
 extern  sym_id          STLit(byte *,int);

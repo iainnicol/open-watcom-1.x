@@ -42,23 +42,15 @@
 #include "global.h"
 #include "cpopt.h"
 #include "namecod.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
 extern  void            BIOutSymbol( sym_id ste_ptr );
 extern  void            ScanExpr(void);
-extern  void            Error(int,...);
 extern  void            AdvError(int);
-extern  void            Extension(int,...);
-extern  void            IllName(sym_id);
-extern  void            ClassErr(int,sym_id);
-extern  void            KnownClassErr(int,uint);
-extern  void            NameErr(int,sym_id);
-extern  bool            RecTrmOpr(void);
-extern  bool            RecComma(void);
-extern  bool            RecNWL(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecFBr(void);
 extern  void            AdvanceITPtr(void);
 extern  bool            Subscripted(void);
 extern  bool            ClassIs(unsigned_16);

@@ -28,11 +28,13 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+#include "fmeminit.h"
 
 //
 // FMEMINIT     : FORTRAN memory manager initialization
 //
+
+
 
 void    SysMemInit( void )
 //========================

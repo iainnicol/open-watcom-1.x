@@ -41,22 +41,15 @@
 #include "opr.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
-extern  void            Error(int,...);
-extern  void            TypeTypeErr(int,uint,uint);
-extern  void            NameErr(int,sym_id);
-extern  void            ClassNameErr(int,sym_id);
-extern  void            OpndErr(int);
 extern  void            AdvanceITPtr(void);
 extern  bool            ClassIs(unsigned_16);
 extern  bool            BitOn(unsigned_16);
 extern  bool            Subscripted(void);
 extern  void            FreeITNodes(itnode *);
-extern  bool            RecComma(void);
-extern  bool            RecNWL(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecColon(void);
-extern  bool            RecCloseParen(void);
 extern  void            GFiniSS(itnode *,itnode *);
 extern  void            GInitSS(itnode *);
 extern  void            GSubStr(itnode *);

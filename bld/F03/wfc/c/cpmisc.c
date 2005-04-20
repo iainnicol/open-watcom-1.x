@@ -40,15 +40,9 @@
 #include "progsw.h"
 #include "global.h"
 #include "opn.h"
+#include "ferror.h"
+#include "recog.h"
 
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  bool            RecNumber(void);
-extern  bool            RecLiteral(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecNOpr(void);
-extern  bool            RecEOS(void);
-extern  bool            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
 extern  void            GBreak(int);
 extern  void            GReturn(void);

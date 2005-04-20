@@ -41,19 +41,15 @@
 #include "astype.h"
 #include "cpopt.h"
 #include "global.h"
+#include "fmemmgr.h"
+#include "utility.h"
+#include "frl.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
-extern  void            FrlFree(void *,void *);
-extern  void            FrlFini(void **);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  void            TypeErr(int,uint);
-extern  bool            RecNOpn(void);
-extern  bool            RecCloseParen(void);
-extern  bool            RecMin(void);
 extern  void            GetConst(void);
 extern  void            GetIntConst(void);
 extern  void            EatExpr(void);

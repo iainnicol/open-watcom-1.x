@@ -40,9 +40,9 @@
 #include "opn.h"
 #include "global.h"
 #include "errcod.h"
+#include "ferror.h"
 
 extern  int             TypeSize(uint);
-extern  void            Error( int, ... );
 
 static int pt_table[] = {
   PT_LOG_1,             // LOGICAL*1

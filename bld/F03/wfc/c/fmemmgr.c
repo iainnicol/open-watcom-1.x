@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2004 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,7 @@
 
 
 //
-// FMEMMGR      : FORTRAN memory manager
+// FMEMMGR      : FORTRAN compiler memory manager
 //
 
 #include "ftnstd.h"
@@ -40,29 +40,30 @@
 #include "stmtsw.h"
 #include "global.h"
 #include "bglobal.h"
-
-extern  void            Error(int,...);
-extern  void            PurgeAll(void);
-extern  void            FreeITNodes(itnode *);
-extern  void            FrlFini(void **);
-extern  void            CompErr(uint);
-extern  void            *_SysMemAlloc(uint);
-extern  void            _SysMemFree(void *);
-extern  void            _SysMemInit(void);
-extern  void            _SysMemFini(void);
-extern  void            Suicide(void);
+#include "fmemmgr.h"
+#include "fmeminit.h"
+#include "ferror.h"
+#include "inout.h"
+#include "cle.h"
+#include "utility.h"
+#include "frl.h"
+#include "fspawn.h"
 
 
+
+//***************************************************
+// Initialize fortran compiler memory manager
+//***************************************************
 void    FMemInit() {
-//==================
 
     UnFreeMem = 0;
     _SysMemInit();
 }
 
-
+//***************************************************
+// Terminate fortran compiler memory manager
+//***************************************************
 void    FMemFini() {
-//==================
 
     ProgSw &= ~PS_ERROR; // we always want to report memory problems
     if( UnFreeMem > 0 ) {
@@ -74,8 +75,10 @@ void    FMemFini() {
 }
 
 
+//**************************************************
+//  Allocate memory chunk for fortran compiler
+//**************************************************
 void    *FMemAlloc( uint size ) {
-//===============================
 
     void        *p;
 
@@ -106,8 +109,10 @@ void    *FMemAlloc( uint size ) {
 }
 
 
+//******************************************************
+// release memory chunk used by fortran compiler
+//******************************************************
 void    FMemFree( void *p ) {
-//===========================
 
     _SysMemFree( p );
     UnFreeMem--;

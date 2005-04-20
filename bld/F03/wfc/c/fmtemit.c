@@ -41,13 +41,10 @@
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "cpopt.h"
+#include "objutil.h"
 
 extern  void            FmtError(int);
-extern  void            OutByte(byte);
 extern  void            AlignEven(int);
-extern  unsigned_16     ObjOffset(obj_ptr);
-extern  obj_ptr         ObjTell(void);
-extern  void            OutInt(inttarg);
 
 
 void    GFEmEnd() {

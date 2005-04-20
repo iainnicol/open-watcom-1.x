@@ -35,24 +35,15 @@
 #include "prdefn.h"
 #include "namecod.h"
 #include "errcod.h"
+#include "insert.h"
+#include "recog.h"
 
-extern  void            StmtExtension(uint);
-extern  void            ReqNOpn(void);
-extern  void            ReqDiv(void);
-extern  bool            ReqName(int);
-extern  bool            RecOpenParen(void);
-extern  bool            RecDiv(void);
-extern  bool            RecCat(void);
-extern  bool            RecComma(void);
-extern  void            ReqEOS(void);
 extern  void            AdvanceITPtr(void);
 extern  sym_id          VarDecl(uint);
 extern  sym_id          FieldDecl(void);
 extern  void            ArrayDecl(sym_id);
 extern  void            DataInit(itnode *);
 extern  sym_id          STStruct(char *,uint);
-extern  void            StmtPtrErr(int,char *);
-extern  void            StructErr(uint,sym_id);
 extern  void            Function(uint,uint,bool);
 extern  bool            IsFunctionDefn(void);
 extern  void            MustBeTypeDecl(void);

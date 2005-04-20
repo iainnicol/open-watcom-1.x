@@ -45,37 +45,16 @@
 #include "global.h"
 #include "prdefn.h"
 #include "stmtsw.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 
-extern  void            Error(int,...);
-extern  void            NameErr(int,sym_id);
-extern  void            Extension(int,...);
-extern  void            StmtExtension(int);
-extern  void            IllName(sym_id);
-extern  void            NameExt(int,sym_id);
+
 extern  void            AdvanceITPtr(void);
 extern  void            DimExpr(void);
 extern  bool            CIntExpr(void);
-extern  bool            RecComma(void);
-extern  bool            RecColon(void);
-extern  bool            ReqMul(void);
-extern  bool            RecDiv(void);
-extern  bool            RecCat(void);
-extern  bool            ReqName(int);
-extern  bool            RecName(void);
-extern  bool            ReqEOS(void);
-extern  bool            RecOpenParen(void);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            RecCloseParen(void);
-extern  bool            ReqComma(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            RecTrmOpr(void);
-extern  bool            ReqNOpn(void);
-extern  bool            ReqColon(void);
-extern  bool            RecNOpr(void);
-extern  bool            RecNOpn(void);
 extern  void            Function(int,uint,bool);
 extern  act_dim_list    *STSubsList(act_dim_list *);
 extern  sym_id          LkSym(void);
@@ -91,10 +70,8 @@ extern  void            DataInit(itnode *);
 extern  void            RemKeyword(itnode *,int);
 extern  void            CkDefStmtNo(void);
 extern  void            DefProg(void);
-extern  void            NameTypeErr(int,sym_id);
 extern  void            FreeWarpLabel(warp_label);
 extern  sym_id          STField(char *,uint);
-extern  void            FieldErr(uint,sym_id);
 extern  intstar4        ITIntValue(itnode *);
 
 extern  char            *StmtKeywords[];

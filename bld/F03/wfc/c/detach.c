@@ -39,19 +39,12 @@
 #include "errcod.h"
 #include "opr.h"
 #include "global.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
-extern  bool            RecNextOpr(byte);
-extern  bool            RecComma(void);
-extern  bool            RecNOpn(void);
-extern  bool            RecFBr(void);
-extern  bool            RecColon(void);
-extern  bool            RecCloseParen(void);
 extern  void            AdvanceITPtr(void);
 extern  void            ChkType(int);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
-extern  void            ClassErr(int,sym_id);
-extern  void            OpndErr(int);
 extern  bool            OptimalChSize(uint);
 extern  bool            ClassIs(unsigned_16);
 

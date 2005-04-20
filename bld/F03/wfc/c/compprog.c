@@ -42,22 +42,19 @@
 #include "errcod.h"
 #include "sdfile.h"
 #include "global.h"
+#include "ferror.h"
+#include "comio.h"
+#include "inout.h"
 
 extern  void            BIInit();
 extern  void            BIEnd();
 extern  void            BIStartSubProg();
 extern  void            BIResolveUndefTypes();
 extern  void            BIEndSubProg();
-extern  void            FMemFree(void *);
 extern  void            FrlInit(void **);
 extern  void            FrlFini(void **);
 extern  void            TrapInit(void);
 extern  void            TrapFini(void);
-extern  void            Error(int,...);
-extern  void            ComRead(void);
-extern  void            ProcInclude(void);
-extern  bool            SetLst(bool);
-extern  void            Conclude(void);
 extern  void            CompStatement(void);
 extern  void            InitCSList(void);
 extern  bool            CheckCSList(byte);
@@ -170,7 +167,6 @@ static  void    FiniProgram() {
     CSPurge();
     BIEnd(); // Close down the Browse generator and create the .MBR file
 }
-
 
 
 void    CompProg() {

@@ -41,28 +41,16 @@
 #include "prdefn.h"
 #include "segsw.h"
 #include "csetinfo.h"
+#include "ferror.h"
+#include "insert.h"
+#include "recog.h"
 
 #include <string.h>
 #include <limits.h>
 
-extern  void            Error(uint,...);
-extern  void            TypeErr(uint,uint);
-extern  void            Extension(uint,...);
-extern  void            StmtExtension(uint);
 extern  void            AdvanceITPtr(void);
 extern  bool            CIntExpr(void);
 extern  bool            CmpNode2Str(itnode *,char *);
-extern  bool            RecComma(void);
-extern  bool            RecName(void);
-extern  bool            RecNumber(void);
-extern  bool            RecMin(void);
-extern  bool            RecMul(void);
-extern  bool            RecNextOpr(byte);
-extern  bool            ReqOpenParen(void);
-extern  bool            ReqCloseParen(void);
-extern  bool            ReqNOpn(void);
-extern  bool            RecNOpn(void);
-extern  bool            ReqEOS(void);
 extern  bool            SetImplType(char,char,uint,uint);
 extern  int             StorageSize(uint);
 extern  uint            MapTypes(uint,uint);

@@ -40,6 +40,8 @@
 #include "errcod.h"
 #include "global.h"
 #include "ifnames.h"
+#include "insert.h"
+#include "recog.h"
 
 extern  void            BackTrack(void);
 extern  void            PushOpn(itnode *);
@@ -48,15 +50,12 @@ extern  void            ConstCat(int);
 extern  sym_id          GStartCat(int,int);
 extern  void            GStopCat(int,sym_id);
 extern  void            AdvanceITPtr(void);
-extern  bool            ReqNOpn(void);
 extern  void            FreeOneNode(itnode *);
 extern  void            FreeITNodes(itnode *);
 extern  void            GCatArg(itnode *);
 extern  void            MoveDown(void);
 extern  void            KillOpnOpr(void);
-extern  void            OpndErr(int);
-extern  void            TypeTypeErr(int,uint,uint);
-extern  void            TypeErr(int,uint);
+
 
 
 void            CatOpn() {

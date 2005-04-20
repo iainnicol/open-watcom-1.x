@@ -41,9 +41,8 @@
 #include "fmtdat.h"
 #include "global.h"
 #include "prdefn.h"
+#include "ferror.h"
 
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
 
 
 static  unsigned_16     SetCaret() {
