@@ -43,26 +43,28 @@
 #include "intcnv.h"
 #include "extnsw.h"
 #include "csetinfo.h"
+#include "ferror.h"
+#include "inout.h"
+#include "comio.h"
+#include "scan.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-extern  void            ReadSrc(void);
-extern  void            PrtLstNL(char *);
-extern  void            PrtLst(char *);
-extern  void            Include(char *);
 extern  char            *SkipBlanks(char *);
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
 extern  void            SrcOption(void);
 extern  bool            CompileDebugStmts(void);
 
 extern  character_set   CharSetInfo;
 
+/*
+* Process comments in source file
+* detect labels
+* and position cursor to first character in statement field
+*/
 
-void    ComRead() {
-//=================
-
+void    ComRead(void)
+{
     char        *cursor;
     uint        column;
     char        ch;
@@ -85,70 +87,99 @@ void    ComRead() {
     //          c$reference
     //                  end
     save_options = Options;
-    stmt_type = STMT_COMMENT;
-    cont_type = 0;
-    cursor = 0;
-    done_scan = FALSE;
+    stmt_type    = STMT_COMMENT;
+    cont_type    = 0;
+    cursor       = 0;
+    done_scan    = FALSE;
+    
+    // read record by record from source file
     for(;;) {
+        // read record from file
         ReadSrc();
+        // EOF or file conclusion pending
         if( ProgSw & PS_SOURCE_EOF ) break;
         if( CurrFile->flags & CONC_PENDING ) break;
+        
         // column starts off before current column
         column = FIRST_COL - 1;
+        // init cursor position for src
         cursor = SrcBuff;
-        ch = *cursor;
+        ch     = *cursor;
+        
+        // not a comment indicator in first column
         if( ( ch != 'C' ) && ( ch != 'c' ) && ( ch != '*' ) ) {
             if( ProgSw & PS_SKIP_SOURCE ) continue;
+            // a debug line
             if( ( ch == 'D' ) || ( ch == 'd' ) ) {
                 if( !(ExtnSw & XS_D_IN_COLUMN_1) ) {
                     Extension( CC_D_IN_COLUMN_1 );
                     ExtnSw |= XS_D_IN_COLUMN_1;
                 }
+                // Debug not enabled. Skip.
                 if( !CompileDebugStmts() ) continue;
+                // Debug is enabled. replace 'D' by ' ' and thus make statement visible 
                 ch = ' ';
             }
             // not a comment (but it might be a blank line)
             // try for a statement number
-            stmt_no = 0;
+            stmt_no    = 0;
             stno_found = FALSE;
+            // scan through src record/line
             for(;;) {
+                // get character class for cursor target
                 chtype = CharSetInfo.character_set[ ch ];
+                
+                // It is EOL. Exit 
                 if( chtype == C_EL ) break;
+                
+                // It is End of line comment ('!')
                 if( ( chtype == C_CM ) && ( column != CONT_COL - 1 ) ) {
+                    // mark as WATCOM extension
                     if( ( ExtnSw & XS_EOL_COMMENT ) == 0 ) {
                         Extension( CC_EOL_COMMENT );
                         ExtnSw |= XS_EOL_COMMENT;
                     }
+                    // exit loop (skip rest of line)
                     break;
                 }
+                
+                // it is a blank
                 if( chtype == C_SP ) {
                     ++column;
+                // it is a tabulator    
                 } else if( chtype == C_TC ) {
                     column += 8 - column % 8;
+                // it is a double byte blank     
                 } else if( CharSetInfo.is_double_byte_blank( cursor ) ) {
                     cursor++;
                     column += 2;
+                // it is alphanumeric
                 } else {
-                    // a digit in the statement number field
-                    ++column;
+                     ++column;
+                     // a digit not in the control column
                     if( ( chtype == C_DI ) && ( column != CONT_COL ) ) {
                         stmt_type = STMT_START;
+                        // past label field and outside of control column
                         if( column > CONT_COL ) {
                             done_scan = TRUE;
                             break;
                         }
-                        stmt_no = 10 * stmt_no + ch - '0';
+                        // it is a label number
+                        // calculate label value
+                        stmt_no    = 10 * stmt_no + ch - '0';
                         stno_found = TRUE;
+                    // an alphanumeric character    
                     } else {
                         stmt_type = STMT_START;
+                        // outside of continuation column
                         if( column != CONT_COL ) {
                             done_scan = TRUE;
                             break;
                         }
                         // its in the continuation column
+                        // a genuine continuation line
                         if( ch != '0' ) {
-                            // we have a genuine continuation line
-                            // but save the type for later diagnosis
+                            // save the type for later diagnosis
                             cont_type = chtype;
                             stmt_type = STMT_CONT;
                             // position to column 7
@@ -159,32 +190,123 @@ void    ComRead() {
                         }
                     }
                 }
+                // get next character
                 ++cursor;
                 ch = *cursor;
+                // past last valid column
                 if( column >= LastColumn ) {
                     // Consider:                             Column 73
                     //     1                                     |
                     //     0123                                  2001
+                    // terminate line and quit
                     *cursor = NULLCHAR;
                     break;
                 }
             }
+            // found interesting content
             if( done_scan ) break;
+            
+            // continue reading if it was comment line
             if( stmt_type != STMT_COMMENT ) break;
         }
+        
+        // process the comment. It could contain a compile option
         Comment();
-        // quit if the comment simulates EOF (i.e. C$DATA)
+        // quit if the comment simulates EOF 
         if( ProgSw & PS_SOURCE_EOF ) break;
         // quit if c$include encountered
         if( CurrFile->flags & INC_PENDING ) break;
     }
-    Cursor = cursor;
-    Column = column - 1;
-    NextStmtNo = stmt_no;
+    
+    // save result globally
+    // Cursor to first 'interesting' character
+    Cursor      = cursor;
+    Column      = column - 1;
+    // statement label if there was one
+    NextStmtNo  = stmt_no;
     StmtNoFound = stno_found;
-    StmtType = stmt_type;
-    ContType = cont_type;
-    Options = save_options;
+    // class of statement found
+    StmtType    = stmt_type;
+    ContType    = cont_type;
+    // 
+    Options     = save_options;
+}
+
+
+/*
+* Read comments in free soure format
+*
+*/
+void    ComReadFree(void)
+{
+
+char            *cursor;            // reference to current character in source buffer
+char            ch;                 // current character under investigation
+charClassType   chtype;             // the class of the tested character
+uint            column = 0;         // current column in src line
+bool            doneScan = FALSE;   // Indicator scan for non comment finished
+
+
+    // read record by record from source file
+    for( ;; ) {
+        // read record from file
+        ReadSrc(); // incorrect ::TODO: ??
+        // EOF or file conclusion pending
+        if( ProgSw & PS_SOURCE_EOF ) break;
+        if( CurrFile->flags & CONC_PENDING ) break;
+        
+        // init cursor position for src
+        cursor = SrcBuff;
+        ch     = *cursor; 
+        
+        // scan through src record/line
+        for( ;; ) {
+            // get character class under cursor 
+            chtype = CharSetInfo.character_set[ ch ];
+            
+            // not a comment line or comment 
+            if( C_CM != chtype ){
+                if( ProgSw & PS_SKIP_SOURCE ) break;
+                               
+                if( C_SP == chtype ) { // it is a blank
+                    column++;    
+                } else if ( C_EL == chtype ) { // it is EOL
+                    break;
+                } else if ( C_TC == chtype ) { //  it is a TAB : TODO mark as extension
+                    column += 8 - column % 8;  // TODO: rplace 8 by tablength variable
+                } else if ( CharSetInfo.is_double_byte_blank( cursor) ) {
+                    column +=2;
+                    cursor++;
+                } else {
+                    column++;
+                    doneScan = TRUE;
+                    break;
+                }
+                
+                cursor++; // next character              
+                
+            // it is a comment    
+            } else {
+                // process for possible options
+                Comment();
+                // quit if comment simulates EOF (TODO:When does this happen ?)
+                if ( ProgSw & PS_SOURCE_EOF ) {
+                    doneScan = TRUE;
+                    break;
+                }
+                // quit if $include encountered
+                if ( CurrFile->flags & INC_PENDING ) {
+                    doneScan = TRUE;
+                    break;
+                }
+            }        
+        } // for
+        if ( doneScan ) break;
+    } // for
+
+    // save data globaly
+    Cursor = cursor;
+    Column = column;
 }
 
 
@@ -204,66 +326,100 @@ void    ProcInclude() {
 }
 
 
-void    LinePrint() {
-//===================
-
-    char        buffer[8];
-
+/*
+* Print a source line to listing file  with line information
+*/
+void    LinePrint()
+{
+    char        buffer[8]; // Linenumber buffer
+    
+    // increment internal statement number ISN 
     ISNNumber++;
+    
+    // skip if nothing to generate
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    
+    //format line number and print into listing file 
     FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
 }
 
 
+/*
+* print a source comment line with line information
+*/
 void    ComPrint() {
-//==================
 
-    char        buffer[8];
+    char    buffer[8]; // buffer for line number
 
+    // skip if nothing to generate
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    
+    // create number string for line number
     FmtInteger( buffer, CurrFile->rec, 7 );
+    
+    // print comment line with line number prepended
     PrintLineInfo( buffer );
 }
 
 
-static  void    PrintLineInfo( char *buffer ) {
-//=============================================
-
+/*
+*
+*/
+static  void    PrintLineInfo( char *buffer )
+{
+    // print buffer (=line number) contents to listing file 
     PrtLst( buffer );
+    
+    // not nested in file
     if( CurrFile->link == NULL ) {
+        // insert 
         PrtLst( " " );
     } else {
+        // nested in include file
+        // insert
         PrtLst( "+" );
     }
+    // print source line with new line
     PrtLstNL( SrcBuff );
 }
 
 
-void    FmtInteger( char *buff, int num, int width ) {
-//====================================================
+/*
+*  Format integer to field of width right-adjusted in buffer
+*/
+void    FmtInteger( char *buff, int num, int width )
+{
+    char    nbuf[MAX_INT_SIZE]; // buffer for number string
 
-    char        nbuf[MAX_INT_SIZE];
-
+    // translate integer into string
     ltoa( num, nbuf, 10 );
+    // and put right adjusted into buffer
     memset( buff, ' ', width );
     strcpy( &buff[ width - strlen( nbuf ) ], nbuf );
 }
 
 
-static  void    Comment() {
-//=========================
-
-// Process a comment for possible compiler directives.
-
+/*
+* Process a comment for possible compiler directives.
+*/ 
+static  void    Comment(void)
+{
     int old_srcrecnum;
-
+    
+    // check for compiler source option indicator
     if( ( SrcBuff[ 0 ] != NULLCHAR ) && ( SrcBuff[ 1 ] == '$' ) ) {
+        // save record/line number
         old_srcrecnum = SrcRecNum;
         SrcRecNum = CurrFile->rec; // in case we get an error processing comment
+        
+        // process src option
         SrcOption();
+        
+        // restore record/line number
         SrcRecNum = old_srcrecnum;
     } else {
+        // print comment line to listing file 
         ComPrint();
     }
 }
