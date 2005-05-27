@@ -279,7 +279,10 @@ static  char    __RTIStrBlastNeWin[] =  { "aux __RTIStrBlastNe          \
 // cx   - number of characters to move
 static  char    __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq          \
                                         parm    reverse                 \
-                                                [di] [si] [cx] =        \
+                                                [di] [si] [cx]          \
+                                        modify  [es] =                  \
+                                        \"push  ds\"                    \
+                                        \"pop   es\"                    \
                                         \"rep   movsb\"                 \
                                 " };
 
@@ -289,7 +292,10 @@ static  char    __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq          \
 // cx   - number of characters to move
 static  char    __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe          \
                                         parm    reverse                 \
-                                                [di] [ax] [si] [cx] =   \
+                                                [di] [ax] [si] [cx]     \
+                                        modify  [es] =                  \
+                                        \"push  ds\"                    \
+                                        \"pop   es\"                    \
                                         \"rep   movsb\"                 \
                                         \"mov   cx, ax\"                \
                                         \"mov   ax, 0x2020\"            \
@@ -304,7 +310,10 @@ static  char    __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe          \
 // ax   - number of characters left over after initial 2-tuple move (strlen & 1)
 static  char    __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq            \
                                         parm    reverse                 \
-                                                [di] [si] [cx] [ax] =   \
+                                                [di] [si] [cx] [ax]     \
+                                        modify  [es] =                  \
+                                        \"push  ds\"                    \
+                                        \"pop   es\"                    \
                                         \"rep   movsw\"                 \
                                         \"mov   cx, ax\"                \
                                         \"rep   movsb\"                 \
@@ -317,7 +326,9 @@ static  char    __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq            \
 static  char    __RTIStrBlastNeS[] =  { "aux __RTIStrBlastNe            \
                                         parm    reverse                 \
                                                 [di] [dx] [si] [ax]     \
-                                        modify  [cx] =                  \
+                                        modify  [cx es] =               \
+                                        \"push  ds\"                    \
+                                        \"pop   es\"                    \
                                         \"mov   cx, ax\"                \
                                         \"shr   cx, 1\"                 \
                                         \"rep   movsw\"                 \
