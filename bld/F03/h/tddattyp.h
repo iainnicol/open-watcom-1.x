@@ -28,11 +28,12 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
-
 //
 // Target dependent data structures.
 //
+#ifndef tddattype_h_
+#define tddattype_h_
+#pragma once
 
 typedef char            *targ_addr;
 
@@ -42,4 +43,5 @@ typedef void            *sym_handle;
 
 typedef int             file_attr;      // file attributes
 typedef void            *file_handle;   // file handle
-typedef void            *lib_handle;    // library handle
+
+#endif
