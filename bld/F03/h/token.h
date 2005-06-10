@@ -54,8 +54,8 @@ typedef enum {
 } tokenType;
 
 
-// structure of element (token) in the internal text list 
-typedef struct token {
+// structure of raw element (token)  
+typedef struct token_s {
     char        *start; // start of lexem
     char        *stop;  // end of lexem
     int         line;   // continuation line counter
@@ -63,7 +63,7 @@ typedef struct token {
     tokenType   flags;  // token type
     byte        log;    // flag for logical operators
     byte        col;    // column counter
-} token;
+} token_t;
 
 
 
