@@ -47,16 +47,15 @@
 
 // INCLUDE option flags:
 
-#define INC_LIB_MEMBER  0x01    //  including from a library member
 
 #define INC_PENDING     0x04    //  c$include pending
 #define CONC_PENDING    0x08    //  conclude pending
 
-typedef struct source {
-    struct source       *link;
-    file_handle         fileptr;
-    int                 rec;
-    ftnoption           options;
-    char                *name;
-    unsigned_8          flags;
-} source;
+typedef struct source_s {
+    struct source_s     *link;      // next source control structure    
+    file_handle         fileptr;    // associated file handle       
+    int                 rec;        // current record number            
+    ftnoption           options;    // 
+    char                *name;      // pointer to actual file name
+    unsigned_8          flags;      //
+} source_t;
