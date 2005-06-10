@@ -45,38 +45,34 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-extern  void            SDClose(file_handle);
 extern  file_handle     SDOpen(char *,int);
-extern  uint            SDRead(file_handle,char *,uint);
-extern  bool            SDError(file_handle,char *);
-extern  bool            SDEof(file_handle);
 extern  char            *SDSrcExtn(char *);
 extern  int             MakeName(char *,char *,char *);
 extern  int             CopyMaxStr(char *,char *,int);
-extern  void            SrcInclude(char *);
+extern  void            SrcInclude(char *,file_handle );
 
 extern  char            ForExtn[];
 
 static  char            LibEnvStr[] = { "FINCLUDE" };
 
 
-static  lib_handle FindSrcFile( char *fname ) {
+static  file_handle FindSrcFile( char *fname ) {
 //=============================================
 
 // Find a source file.
 
-    lib_handle  lp;
+    file_handle  fp;
 
     MakeName( fname, SDSrcExtn( fname ), fname );
-    lp = SDOpen( fname, READ_FILE );
-    if( lp != NULL ) {
-        SrcInclude( fname );
+    fp = SDOpen( fname, READ_FILE );
+    if( fp != NULL ) {
+        SrcInclude( fname, fp );
     }
-    return( lp );
+    return( fp );
 }
 
 
-static  lib_handle SearchDir( char *path, char *name ) {
+static  file_handle SearchDir( char *path, char *name ) {
 //======================================================
 
 // Search a directory for a source file.
@@ -119,85 +115,51 @@ static  bool    ExtractName( char **lib ) {
 }
 
 
-static lib_handle SearchPath( char *path, char *name ) {
+static file_handle SearchPath( char *path, char *name ) {
 //======================================================
 
     char        *ptr;
-    lib_handle  lp;
+    file_handle fp;
     bool        last;
 
-    lp = NULL;
+    fp = NULL;
     ptr = alloca( strlen( path ) + sizeof( char ) );
     if( ptr != NULL ) {
         strcpy( ptr, path );
         for(;;) {
             path = ptr;
             last = ExtractName( &ptr );
-            lp = SearchDir( path, name );
-            if( lp != NULL ) break;
+            fp = SearchDir( path, name );
+            if( fp != NULL ) break;
             if( last ) break;
             ptr++; // skip the ';'
         }
     }
-    return( lp );
+    return( fp );
 }
 
 
-lib_handle      IncSearch( char *name ) {
+file_handle      IncSearch( char *name ) {
 //=======================================
 
 // Search for a library member.
 
-    lib_handle  lp;
+    file_handle fp;
     char        *path;
 
-    lp = NULL;
+    fp = NULL;
     if( IncludePath != NULL ) {
-        lp = SearchPath( IncludePath, name );
-        if( lp != NULL ) return( lp );
+        fp = SearchPath( IncludePath, name );
+        if( fp != NULL ) return( fp );
     }
     path = getenv( LibEnvStr );
     if( path != NULL ) {
-        lp = SearchPath( path, name );
+        fp = SearchPath( path, name );
     }
-    return( lp );
+    return( fp );
 }
 
 
-int     LibRead( lib_handle lp ) {
-//================================
-
-// Read a record from a library member (source only).
-
-    return( SDRead( lp, SrcBuff, SRCLEN ) );
-}
-
-
-bool    LibEof( lib_handle lp ) {
-//===============================
-
-// Check for EOF on library read (source only).
-
-    return( SDEof( lp ) );
-}
-
-
-bool    LibError( lib_handle lp, char *buff ) {
-//=============================================
-
-// Check for error on library read (source only).
-
-    return( SDError( lp, buff ) );
-}
-
-
-void    IncMemClose( lib_handle lp ) {
-//====================================
-
-// Close a library member that was included (source only).
-
-    SDClose( lp );
-}
 
 
 static  int     Combine( char *path, char *name, char *buff, int buff_len ) {
