@@ -28,6 +28,9 @@
 *
 ****************************************************************************/
 
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 
 #include "ftnstd.h"
 #include "progsw.h"
@@ -48,19 +51,12 @@
 #endif
 #define _BANEXTRA
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
 
 extern  void            BISetSrcFile();
 extern  void            Suicide(void);
 extern  void            InfoError(int,...);
 extern  void            PrtOptions(void);
-extern  lib_handle      IncSearch(char *);
-extern  int             LibRead(lib_handle);
-extern  bool            LibEof(lib_handle);
-extern  bool            LibError(lib_handle,char *);
-extern  void            IncMemClose(lib_handle);
+extern  file_handle     IncSearch(char *);
 extern  void            SDSetAttr(file_attr);
 extern  void            SDInitAttr(void);
 extern  void            SDScratch(char *);
@@ -97,15 +93,17 @@ extern  character_set   CharSetInfo;
 
 #define _Copyright "1984"
 
-#define       VERSION _WFC_VERSION_
+// TODO: Proper versioning setup
+//#define       VERSION _WFC_VERSION_
+#define VERSION "0.1"
 #if _TARGET == _8086
-    #define _Banner "FORTRAN 77/16 Optimizing Compiler"
+    #define _Banner "Fortran 2003/16 Experimental Compiler"
 #elif _TARGET == _80386
-    #define _Banner "FORTRAN 77/32 Optimizing Compiler"
+    #define _Banner "Fortran 2003/32 Experimental Compiler"
 #elif _TARGET == _AXP
-    #define _Banner "FORTRAN 77 Alpha AXP Optimizing Compiler"
+    #define _Banner "Fortran 2003 Alpha AXP Experimental Compiler"
 #elif _TARGET == _PPC
-    #define _Banner "FORTRAN 77 PowerPC Optimizing Compiler"
+    #define _Banner "FORTRAN 2003 PowerPC Experimental Compiler"
 #else
     #error Unknown System
 #endif
@@ -137,26 +135,37 @@ static int            TermCursor;     // offset into "TermBuff"
 //
 //========================================================================
 
+/* 
+*  Initialise globals for 
+*   - terminal output
+*   - error output
+*   - listing output
+*   - src input
+*/
+void    InitComIO()
+{
+    // init src input list        
+    CurrFile    = NULL;
+    
+    // init listing file data
+    ListBuff    = NULL;
+    ListCursor  = 0;
+    ListFile    = NULL;
+    ListFlag    = 0;
+    ListCount   = 0;
 
-void    InitComIO() {
-//===================
-
-    TermCursor = 0;
-    ErrCursor  = 0;
-    ListCursor = 0;
-    // Point "terminal" buffer and ".ERR" file buffer to static area
+    // init error file data
+    // Point ".ERR" file buffer and "terminal" buffer to token buffer in static area
     // so that we can report an error before memory initialization.
-    TermBuff = TokenBuff;
-    ErrBuff = &TokenBuff[ 256 ];
-    ListBuff = NULL;
-    CurrFile = NULL;
-    ErrFile = NULL;
-    ListFile = NULL;
-    ListFlag = 0;
-    ListCursor = 0;
-    ListCount = 0;
-    SDInitIO();
-    TermFile = FStdOut;
+    ErrBuff     = &TokenBuff[ 256 ];
+    ErrCursor   = 0;
+    ErrFile     = NULL;
+    
+    // init terminal data
+    TermBuff    = TokenBuff;
+    TermCursor  = 0;
+    SDInitIO();     // set standard handles and minimum buffer size
+    TermFile    = FStdOut;
 }
 
 
@@ -204,14 +213,18 @@ void    OpenSrc() {
     erase_err = ErrFile == NULL;
     SDInitAttr();
     MakeName( SrcName, SrcExtn, bld_name );
+    
+    // open src file for read
     fp = SDOpen( bld_name, READ_FILE );
     if( fp != NULL ) {
-       SrcInclude( bld_name );
-       CurrFile->fileptr = fp;
+        // create src file control data
+        SrcInclude( bld_name, fp );
     } else {
-       SDError( NULL, err_msg );
-       InfoError( SM_OPENING_FILE, bld_name, err_msg );
+        // opening failed
+        SDError( NULL, err_msg );
+        InfoError( SM_OPENING_FILE, bld_name, err_msg );
     }
+
     if( erase_err ) {
         CloseErr();
         Erase( ErrExtn );
@@ -238,22 +251,12 @@ static  uint    SrcRead() {
     char        msg[81];
 
     fp = CurrFile->fileptr;
-    if( CurrFile->flags & INC_LIB_MEMBER ) {
-        len = LibRead( fp );
-        if( LibEof( fp ) ) {
-            ProgSw |= PS_INC_EOF;
-        } else if( LibError( fp, msg ) ) {
-            InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
-            ProgSw |= PS_INC_EOF;
-        }
-    } else {
-        len = SDRead( fp, SrcBuff, SRCLEN );
-        if( SDEof( fp ) ) {
-            ProgSw |= PS_INC_EOF;
-        } else if( SDError( fp, msg ) ) {
-            InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
-            ProgSw |= PS_INC_EOF;
-        }
+    len = SDRead( fp, SrcBuff, SRCLEN );
+    if( SDEof( fp ) ) {
+        ProgSw |= PS_INC_EOF;
+    } else if( SDError( fp, msg ) ) {
+        InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
+        ProgSw |= PS_INC_EOF;
     }
     return( len );
 }
@@ -294,7 +297,7 @@ void    ReadSrc()
 static  bool    AlreadyOpen( char *name ) {
 //=========================================
 
-    source      *src;
+    source_t      *src;
 
     src = CurrFile;
     for(;;) {
@@ -322,18 +325,14 @@ void    Include( char *inc_name ) {
     // try file called <include_name>.FOR.
     fp = SDOpen( bld_name, READ_FILE );
     if( fp != NULL ) {
-       SrcInclude( bld_name );
-       CurrFile->fileptr = fp;
+       SrcInclude( bld_name, fp );
     } else {
        // get error message before next i/o
        SDError( NULL, err_msg );
-       // try library
+       // try include paths
        fp = IncSearch( inc_name );
-       if( fp != NULL ) {
-          // SrcInclude( inc_name ) now done in LIBSUPP
-          CurrFile->fileptr = fp;
-          CurrFile->flags |= INC_LIB_MEMBER;
-       } else {
+       if( fp == NULL ) {
+          // SrcInclude( inc_name ) done in LIBSUPP
           // could not open include file
           InfoError( SM_OPENING_FILE, bld_name, err_msg );
        }
@@ -342,7 +341,7 @@ void    Include( char *inc_name ) {
     // because we could not open include file
     RetCode = _SUCCESSFUL;
     {
-        extern  void    AddDependencyInfo(source *);
+        extern  void    AddDependencyInfo(source_t *);
 
         AddDependencyInfo( CurrFile );
     }
@@ -363,27 +362,41 @@ bool    SetLst( bool new ) {
     return( old );
 }
 
+/***************************************************************
+*   allocate new src file control element and add to linked list
+*   of currently opened src files
+****************************************************************/
+void    SrcInclude( char *name, const file_handle fp )
+{
+    source_t        *src;
 
-void    SrcInclude( char *name ) {
-//================================
+    //allocate src file control element
+    src = FMemAlloc( sizeof( source_t ) );
 
-    source      *src;
-
-    src = FMemAlloc( sizeof( source ) );
+    //allocate memory for src file name
     src->name = FMemAlloc( strlen( name ) + 1 );
     strcpy( src->name, name );
-    src->rec = 0;
-    src->link = CurrFile;
+
+    // init control element
+    src->fileptr = fp;
+    src->rec     = 0;
     src->options = NewOptions;
-    src->flags = 0;
+    src->flags   = 0;
+
+    // check and set include listing option
     if( CurrFile != NULL ) {
         NewOptions = Options;
         if( ( Options & OPT_INCLIST ) == 0 ) {
+            // no listing for included files
             SetLst( FALSE );
         }
     }
-    CurrFile = src;
-    if( CurrFile->link ) {
+
+    // link control element into list at anchor
+    src->link = CurrFile;
+    CurrFile  = src;
+
+    if( CurrFile->link != NULL ) {
         // tell the browser which file we are going into (not for the main
         // source file since we have not yet initialized the dwarf library)
         BISetSrcFile();
@@ -394,7 +407,7 @@ void    SrcInclude( char *name ) {
 void    Conclude() {
 //==================
 
-    source      *old;
+    source_t    *old;
 
     old = CurrFile;
     CurrFile = CurrFile->link;
@@ -408,11 +421,8 @@ void    Conclude() {
             SetLst( FALSE );
         }
     }
-    if( old->flags & INC_LIB_MEMBER ) {
-        IncMemClose( old->fileptr );
-    } else {
-        SDClose( old->fileptr );
-    }
+
+    SDClose( old->fileptr );
     FMemFree( old->name );
     FMemFree( old );
     ProgSw &= ~PS_INC_EOF;
