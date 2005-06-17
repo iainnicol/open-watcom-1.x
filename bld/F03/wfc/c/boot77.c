@@ -96,11 +96,11 @@ static  bool    ProcCmd( char *buffer ) {
     char        *opt_array[MAX_OPTIONS+1];
 
     RetCode = _BADCMDLINE;
-    if( ParseCmdLine( &SrcName, &CmdPtr, opt_array, buffer ) != FALSE ) {
-        RetCode = ProcName();
-        if( RetCode == _SUCCESSFUL ) {
-            ProcOpts( opt_array );
-        }
+    
+    opt_array[0] = NULL;
+    RetCode      = ProcName();
+    if( RetCode == _SUCCESSFUL ) {
+        ProcOpts( opt_array );
     }
     return( RetCode == _SUCCESSFUL );
 }
