@@ -44,7 +44,6 @@ extern  void            CLE(void);
 extern  void            InitOptions(void);
 extern  void            CmdOption(char *);
 extern  bool            ParseCmdLine(char **,char **,char **, char *);
-extern  char            *Batch(char *,uint);
 extern  void            InitMacroProcessor(void);
 extern  void            FiniMacroProcessor(void);
 //extern  void            FMemInit(void);
@@ -83,14 +82,9 @@ void    FiniCompMain() {
 int     CompMain( char *parm ) {
 //==============================
 
-    int         num;
-
-    num = 0;
-    for(;;) {
-        parm = Batch( parm, num );
-        if( parm == NULL ) break;
+    if( parm != NULL ){
         Compile( parm );
-        ++num;
+        parm = NULL;
     }
     return( RetCode );
 }
@@ -123,11 +117,13 @@ void    Compile( char *buffer ) {
         // initialize permanent i/o buffers after memory has been
         // initialized
         InitMemIO();
+        // Compile Link and Execute (historic name!)
         CLE();
         if( ( NumErrors != 0 ) && ( RetCode == _SUCCESSFUL ) ) {
             RetCode = _SYSRETCOD( NumErrors );
         }
     } else {
+        // error in command line
         ShowUsage();
         if( RetCode == _REQSYNTAX ) {
             // A specific request for syntax (WATFOR77 ?) should return 0.
