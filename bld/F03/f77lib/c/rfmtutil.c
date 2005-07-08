@@ -70,7 +70,7 @@ extern  void            CheckCCtrl(void);
 extern  void            R_FmtLog(uint);
 extern  bool            __AllowCommaSep(void);
 
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 
 extern  const double __FAR      P1d100;
 extern  const double __FAR      P1d_99;
@@ -207,6 +207,11 @@ void    FOString( uint width ) {
     fcb = IOCB->fileinfo;
     if( IOCB->typ != PT_CHAR ) {
         length = GetLen();
+#if _TARGET == _370
+        if( length < 4 ) {
+            IORslt.intstar4 <<= 8 * ( 4 - length );
+        }
+#endif
     } else {
         length = IORslt.string.len;
     }
@@ -480,7 +485,7 @@ void    R_FOE( int exp, char ch ) {
     fmt3 PGM    *fmt;
     char        *buf;
     uint        wid;
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
     extended      absvalue;
 #endif
     extended      value;
@@ -495,7 +500,7 @@ void    R_FOE( int exp, char ch ) {
         // if Ew.d or Dw.d format, exp == 0
         // (i.e. exponent width not specified)
         if( exp == 0 ) {
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
             absvalue = value;
             if( value < 0.0 ) {
                 absvalue = -value;
@@ -517,7 +522,7 @@ void    R_FOE( int exp, char ch ) {
             } else {
 #endif
                 exp = 2;
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
             }
 #endif
         }
@@ -536,7 +541,8 @@ bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
     bool        valid;
     char        *stop;
 
-#if ( _TARGET != _8086 ) && ( _TARGET != _80386 ) && ( _TARGET != _AXP ) && ( _TARGET != _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
+#else
     typ = typ;
 #endif
     pgm_memset( dst, 0, len );
@@ -544,6 +550,9 @@ bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
         len *= 2;
         src += width - len;
     } else {
+#if _TARGET == _370
+        dst += len - ( width + 1 ) / len;
+#endif
         len = width;
     }
     stop = src + len;
@@ -554,7 +563,7 @@ bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
     }
     ch2 = *src;
     src++;
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
     if( typ != PT_CHAR ) {
         ++len;
         len &= ~1;
@@ -574,7 +583,7 @@ bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
         }
         valid = TRUE;
         *dst = ( Hex( ch1 ) << 4 ) + Hex( ch2 );
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
         if( typ == PT_CHAR ) {
             ++dst;
         } else {
@@ -690,8 +699,13 @@ void    FOHex( uint width ) {
     }
 
     if( typ != PT_CHAR ) {
+#if _TARGET == _370
+        if( len < 4 ) {
+            IORslt.intstar4 <<= 8 * ( 4 - len );
+        }
+#endif
         len *= 2;
-#if  ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if ( _TARGET == _VAX ) || defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
         HexFlip( (char *)&IORslt, len );
 #endif
         BToHS( (char *)&IORslt , len, IOCB->buffer );
@@ -713,7 +727,7 @@ void    FOHex( uint width ) {
 }
 
 
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if ( _TARGET == _VAX ) || defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 static  void    HexFlip( char *src, int len ) {
 //=============================================
 
@@ -944,7 +958,7 @@ void    R_FOG() {
             if( ( absvalue < 0.1 ) || ( logval >= dec ) ) {
                 ch = 'E';
                 if( exp == 0 ) { // if Gw.d
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
                     if( ( ( absvalue <= P1d_99 ) || ( absvalue >= P1d100 ) ) &&
                         ( absvalue != 0.0 ) ) {
                         ch = NULLCHAR;   // no exponent letter
@@ -952,7 +966,7 @@ void    R_FOG() {
                     } else {
 #endif
                         exp = 2;
-#if ( _TARGET == _8086 ) || ( _TARGET == _80386 ) || ( _TARGET == _AXP ) || ( _TARGET == _PPC )
+#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
                     }
 #endif
                 }
