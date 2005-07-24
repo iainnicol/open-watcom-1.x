@@ -28,7 +28,8 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+#ifndef fapptype_h_
+#define fapptype_h_
 
 #if (defined( __OS2__ ) && defined( __386__ )) || \
     defined( __WINDOWS__ ) || \
@@ -36,6 +37,10 @@
     #define     __IS_WINDOWED__
 #endif
 
-#define FAPP_CHARACTER_MODE     1
-#define FAPP_GUI                2
-#define FAPP_DEFAULT_GUI        3
+enum {
+        FAPP_CHARACTER_MODE = 1,
+        FAPP_GUI            = 2,
+        FAPP_DEFAULT_GUI    = 3
+} FappType ;
+
+#endif
