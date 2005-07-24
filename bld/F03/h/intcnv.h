@@ -28,11 +28,16 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+#ifndef intcnv_h_
+#define intcnv_h_
 
 // INTEGER conversion return values:
 // ==================================
 
-#define INT_OK          0       //  integer conversion successful
-#define INT_OVERFLOW    1       //  integer overflowed during conversion
-#define INT_INVALID     2       //  not a valid integer
+enum {
+    INT_OK          = 0,       //  integer conversion successful
+    INT_OVERFLOW    = 1,       //  integer overflowed during conversion
+    INT_INVALID     = 2        //  not a valid integer
+} IntConvType;
+
+#endif
