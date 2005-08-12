@@ -33,6 +33,8 @@
 //
 // COMIO     : compile time source input, listing output
 //
+#include <string.h>
+#include <stdlib.h>
 
 #include "ftnstd.h"
 #include "progsw.h"
@@ -48,8 +50,7 @@
 #include "comio.h"
 #include "scan.h"
 
-#include <string.h>
-#include <stdlib.h>
+
 
 extern  char            *SkipBlanks(char *);
 extern  void            SrcOption(void);
@@ -65,16 +66,16 @@ extern  character_set   CharSetInfo;
 
 void    ComRead(void)
 {
-    char        *cursor;
-    uint        column;
-    char        ch;
-    byte        chtype;
-    uint        stmt_type;
-    unsigned_32 stmt_no;
-    bool        stno_found;
-    byte        cont_type;
-    bool        done_scan;
-    ftnoption   save_options;
+    char            *cursor;
+    uint            column;
+    char            ch;
+    charClassType   chtype;
+    uint            stmt_type;
+    unsigned_32     stmt_no;
+    bool            stno_found;
+    byte            cont_type;
+    bool            done_scan;
+    ftnoption       save_options;
 
     // Comment processor sets "Options" so that
     //          c$warn
@@ -148,6 +149,11 @@ void    ComRead(void)
                     ++column;
                 // it is a tabulator    
                 } else if( chtype == C_TC ) {
+                    // mark as WATCOM extension
+                    /*if( ( ExtnSw & XS_TAB_USED ) == 0 ) {
+                        Extension( CC_TAB_USED );
+                        ExtnSw |= XS_TAB_USED;
+                    }*/ 
                     column += 8 - column % 8;
                 // it is a double byte blank     
                 } else if( CharSetInfo.is_double_byte_blank( cursor ) ) {
@@ -234,7 +240,7 @@ void    ComRead(void)
 
 
 /*
-* Read comments in free soure format
+* Read comments in free source format
 *
 */
 void    ComReadFree(void)
