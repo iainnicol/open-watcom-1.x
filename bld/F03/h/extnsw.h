@@ -32,7 +32,7 @@
 #define extnsw_h_ 
 #pragma once
 
-enum {
+typedef enum {
     XS_LONG_NAME        = 0x0001,
     XS_CHAR_EXTN        = 0x0002,
     XS_EOL_COMMENT      = 0x0004,
@@ -40,7 +40,7 @@ enum {
     XS_CONT_20          = 0x0010,
     XS_DATA_STMT_ORDER  = 0x0020,
     XS_TAB_USED         = 0x0040
-} XSwitchType;
+} XSwitchType_t;
 
 #endif
 

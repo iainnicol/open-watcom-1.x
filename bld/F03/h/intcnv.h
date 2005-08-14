@@ -34,10 +34,10 @@
 // INTEGER conversion return values:
 // ==================================
 
-enum {
+typedef enum {
     INT_OK          = 0,       //  integer conversion successful
     INT_OVERFLOW    = 1,       //  integer overflowed during conversion
     INT_INVALID     = 2        //  not a valid integer
-} IntConvType;
+} IntConvType_t;
 
 #endif
