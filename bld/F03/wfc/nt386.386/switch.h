@@ -35,7 +35,7 @@
 #define _8087           _OFF    // 8087 present?
 #define _OBJECT         _OFF    // generate object files?
 #define _CSET           _ASCII  // character set?
-#define _TARGET         _80386  // target machine?
+#define _CPU            386     // target machine?
 #define _OPSYS          _NT     // operating system?
 #define BY_FORTRAN_FRONT_END    // identify yourself
 
