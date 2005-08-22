@@ -77,7 +77,7 @@ extern  char            FFCtrlSeq[];
 extern  char            SkipCtrlSeq[];
 extern  char            NormalCtrlSeq[];
 extern  char            SDTermOut[];
-#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
+#if ! defined( __UNIX__ )
 extern  char            SDPrtName[];
 #endif
 extern  char            ForExtn[];
@@ -96,13 +96,13 @@ extern  character_set   CharSetInfo;
 // TODO: Proper versioning setup
 //#define       VERSION _WFC_VERSION_
 #define VERSION "0.1"
-#if _TARGET == _8086
+#if _CPU == 8086
     #define _Banner "Fortran 2003/16 Experimental Compiler"
-#elif _TARGET == _80386
+#elif _CPU == 386
     #define _Banner "Fortran 2003/32 Experimental Compiler"
-#elif _TARGET == _AXP
+#elif _CPU == _AXP
     #define _Banner "Fortran 2003 Alpha AXP Experimental Compiler"
-#elif _TARGET == _PPC
+#elif _CPU == _PPC
     #define _Banner "FORTRAN 2003 PowerPC Experimental Compiler"
 #else
     #error Unknown System
@@ -747,7 +747,9 @@ void    GetLstName( char *buffer ) {
 
     if( Options & OPT_TYPE ) {
         strcpy( buffer, SDTermOut );
-#if ( _OPSYS != _QNX ) && ( _OPSYS != _LINUX )
+#if ( _CPU != _VAX ) && ! defined( __UNIX__ )
+    // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
+    //             and set the spooling bit
     // On QNX, there is no /PRINT option
     } else if( Options & OPT_PRINT ) {
         strcpy( buffer, SDPrtName );
