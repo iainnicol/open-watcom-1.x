@@ -488,7 +488,7 @@ void    ArrayDecl( sym_id sym ) {
                             } else if( const_lo == SSB_CONSTANT ) {
                                 if( lo_bound <= hi_bound ) {
                                     dim_elts = hi_bound - lo_bound + 1;
-#if _TARGET == _8086
+#if _CPU == 8086
                                     if( dim_elts > 65535 ) {
                                         Error( SV_DIMENSION_LIMIT );
                                     }
@@ -520,7 +520,7 @@ void    ArrayDecl( sym_id sym ) {
                     hi_bound = lo_bound;
                     lo_bound = 1;
                     if( hi_bound > 0 ) {
-#if _TARGET == _8086
+#if _CPU == 8086
                         if( hi_bound > 65535 ) {
                             Error( SV_DIMENSION_LIMIT );
                         }
