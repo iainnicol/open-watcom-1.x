@@ -692,7 +692,7 @@ void    FOHex( uint width ) {
 
     if( typ != PT_CHAR ) {
         len *= 2;
-#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
+#if ( _CPU == _VAX ) || defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
         HexFlip( (char *)&IORslt, len );
 #endif
         BToHS( (char *)&IORslt , len, IOCB->buffer );
@@ -714,7 +714,7 @@ void    FOHex( uint width ) {
 }
 
 
-#if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
+#if ( _CPU == _VAX ) || defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 static  void    HexFlip( char *src, int len ) {
 //=============================================
 
