@@ -27,7 +27,10 @@
 * Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
 *               DESCRIBE IT HERE!
 *
-****************************************************************************/
+*****************************************************************************/
+/*
+* File : extnsw.h
+*/
 
 
 // The following include files are required by GLOBAL.INC to define global
@@ -48,3 +51,4 @@
 #include "segsw.h"
 #include "stmtsw.h"
 #include "prdefn.h"
+#include "extnsw.h"

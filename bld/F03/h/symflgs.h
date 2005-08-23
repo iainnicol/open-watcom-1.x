@@ -188,7 +188,7 @@
 #define _IsTypeLogical( typ )   (typ <= TY_LOGICAL)
 #define _IsTypeInteger( typ )   ((typ >= TY_INTEGER_1) && (typ <= TY_INTEGER))
 
-#if _TARGET == _8086
+#if _CPU == 8086
   #define TY_INTEGER_TARG      TY_INTEGER_2
 #else
   #define TY_INTEGER_TARG      TY_INTEGER

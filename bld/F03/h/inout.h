@@ -33,6 +33,7 @@
 //
 #ifndef inout_h_
 #define inout_h_
+#pragma once
 
 /* needs #include "standard.h" */
 
@@ -47,7 +48,7 @@ extern void    IOPurge(void);
 extern void    ReadSrc(void);
 extern void    Include(char *);
 extern bool    SetLst(bool);
-extern void    SrcInclude( char *);
+extern void    SrcInclude( char *, const file_handle);
 extern void    Conclude(void);
 extern void    PrintErr(char *);
 extern void    PrtErrNL(void);

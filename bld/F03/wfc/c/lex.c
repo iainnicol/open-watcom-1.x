@@ -225,7 +225,6 @@ static  byte    LkUpOpr() {
     case '%':   return( OPR_FLD );
     case '.':   return( OPR_DPT );
     }
-
     Error( SX_INV_OPR );
     return( OPR_PHI );
 }

@@ -138,7 +138,8 @@ void    CompStatement() {
 //=======================
 
     bool        scan_error;
-
+    
+    // Create internal text list
     InitStatement();
     scan_error = CpError;
     if( ITHead != NULL ) {
@@ -248,14 +249,19 @@ void    Recurse() {
 static  void    InitStatement() {
 //===============================
 
-    TDStmtInit();
+    // TDStmtInit(); empty
+    // Set statement listing
     ChkPntLst();
-    StmtSw = SS_SCANNING;
+    // Start statement scanning
+    StmtSw  = SS_SCANNING;
     CpError = FALSE;
+    // Create internal text list of statement
     MakeITList();
 //    DumpLex();
+    // Finished statement scanning
     StmtSw &= ~SS_SCANNING;
-    StmtProc = 0;
+    // Statement type not determined, yet
+    StmtProc = PR_NULL;
 }
 
 
@@ -485,7 +491,7 @@ static  void    CheckDoEnd() {
 static  void    FiniDo() {
 //========================
 
-    if( ( StmtProc != 0 ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
+    if( ( StmtProc != PR_NULL ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
         StmtErr( DO_ENDING_BAD );
     }
     if( CSHead->typ == CS_DO ) {

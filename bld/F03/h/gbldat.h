@@ -28,7 +28,9 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+/*
+* File : gbldat.h
+*/
 
 gbl_defn ftnoption      Options;        // compile options
 gbl_defn ftnoption      NewOptions;     // compile options for next statement
@@ -59,14 +61,14 @@ gbl_defn sym_id         SubProgId;      // SymId of subprogram being compiled
 gbl_defn impl_entry     ImplicitTab[IMPL_SIZE+1];
 gbl_defn byte           IFUsed[24];     // indicates intrinsic functions used
 gbl_defn SgmtSwType     SgmtSw;         // program segment switches
-gbl_defn ProgSwType     ProgSw;         // program switches
-gbl_defn unsigned_16    ExtnSw;         // extension switches
+gbl_defn ProgSwType_t   ProgSw;         // program switches
+gbl_defn XSwitchType_t  ExtnSw;         // extension switches
 gbl_defn byte           ResultType;     // result type of operation in upscan
 gbl_defn StmtSwType     StmtSw;         // statement switches
 gbl_defn rememb         Remember;       // info about the last executable stmt
 gbl_defn char           *SrcName;       // name of source file
 gbl_defn char           *ObjName;       // name of object output file
-gbl_defn source         *CurrFile;      // linked list of open FOR77 files
+gbl_defn source_t       *CurrFile;      // linked list of open fortran files
 gbl_defn char           *IncludePath;   // path for INCLUDE files
 
 gbl_defn char           TokenBuff[TOKLEN+1];
@@ -77,7 +79,7 @@ gbl_defn char           SrcBuff[SRCLEN+1]; // input buffer for source lines
 gbl_defn char           *Cursor;        // pointer to current char in SrcBuff
 gbl_defn char           *TkCrsr;        // pointer to current char in TokenBuff
 gbl_defn lex            Lex;            // information kept by lexical analyser
-gbl_defn token          LexToken;       // information about token collected
+gbl_defn token_t        LexToken;       // information about token collected
 gbl_defn stnumbers      StNumbers;      // struct for statement number info
 gbl_defn token_state    State;          // state of token being collected
 gbl_defn byte           Line;           // continuation line number

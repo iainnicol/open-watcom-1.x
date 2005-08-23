@@ -46,7 +46,7 @@
 #define ARG_SIZE_4              0x4000
 #define ARG_SIZE_8              0x8000
 #define ARG_SIZE_16             0x0800
-#if _TARGET == _80386
+#if _CPU == 386
 #define ARG_NEAR                ARG_SIZE_4
 #define ARG_FAR                 ARG_SIZE_8
 #else
@@ -65,23 +65,31 @@ typedef struct pass_by {
 
 typedef struct aux_info {
     struct aux_info     *link;
-    call_class          call_info;
-    hw_reg_set          save_info;
-    hw_reg_set          return_info;
-    hw_reg_set          *parm_info;
-#if _TARGET == _80386 || _TARGET == _8086
-    byte_seq            *call_bytes;
-#elif _TARGET == _AXP || _TARGET == _PPC
-    risc_byte_seq       *call_bytes;
+    call_class          cclass;
+    hw_reg_set          save;
+    hw_reg_set          returns;
+    hw_reg_set          *parms;
+#if _CPU == 386 || _CPU == 8086
+    byte_seq            *code;
+#elif _CPU == _AXP || _CPU == _PPC
+    risc_byte_seq       *code;
 #else
   #error Unknown Target
 #endif
-    hw_reg_set          struct_info;
-    char                *object_name;
+    hw_reg_set          streturn;
+    char                *objname;
     pass_by             *arg_info;
     byte                sym_len;
     char                sym_name[1];
 } aux_info;
+
+typedef struct aux_entry {
+    struct aux_info     *info;
+    struct aux_entry    *next;
+    pass_by             *arg_info;
+    byte                sym_len;
+    char                sym_name[1];
+};
 
 typedef struct default_lib {
     struct default_lib  *link;

@@ -28,7 +28,9 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
+/*
+* File : global.c
+*/
 
 #include "ftnstd.h"
 #include "sdfile.h"
@@ -51,6 +53,7 @@
 #include "segsw.h"
 #include "stmtsw.h"
 #include "prdefn.h"
+#include "extnsw.h"
 
 // The following files have been ordered so that variables are aligned on
 // an even address.  Be careful when you change them!

@@ -47,6 +47,7 @@
 #define    CC_EOL_COMMENT 518
 #define    CC_D_IN_COLUMN_1 519
 #define    CC_CONT_OVERFLOW 520
+#define    CC_TAB_USED 521       
 #define    CM_ALREADY_IN_COM 768
 #define    CM_COMMON 769
 #define    CM_MIXED_COMMON 770

@@ -44,7 +44,7 @@
 // the character classes known to the scanner
 typedef enum {
     C_AL,       // alphabetic characters and '$'
-    C_EX,       // exponent ( 'E' or 'D' )
+    C_EX,       // exponent ( 'E', 'D' or 'Q' )
     C_SG,       // sign ( '+' or '-' )
     C_DP,       // decimal point
     C_DI,       // digit ( 0..9 )
@@ -60,8 +60,11 @@ typedef enum {
     C_HX,       // hexadecimal constant indicator
     C_CS,       // C string constant indicator
     C_DB,       // 1st byte of a double-byte character
+    C_QO,       // quote ( " )
+    C_SS,       // statement separator ';'
+    C_CC,       // continuation character '&'
     C_MAX = UCHAR_MAX   // force enum to be unsigned
-} char_class;
+} charClassType;
 
 // bit 8: Language extension character
 // bit 7: Lower case character. This is an extension to standard F77
@@ -134,6 +137,7 @@ typedef enum {
     SCM,        // end-of-line comment
     SDB         // scanned 1st byte of a double-byte character
 } token_state;
+
 
 /*************************************************************
 *   prototypes for scan.c

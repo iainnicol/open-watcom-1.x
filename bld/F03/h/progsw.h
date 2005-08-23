@@ -50,7 +50,7 @@ typedef enum {
     PS_LIB_OBJECT      =  0x2000,  // loading object
     PS_STMT_TOO_BIG    =  0x4000,  // out of memory building i.t list
     PS_SYMTAB_PROCESS  =  0x8000
-} ProgSwType;
+} ProgSwType_t;
 
 
 #endif
