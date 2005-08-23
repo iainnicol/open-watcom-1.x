@@ -40,7 +40,7 @@
     #define     _PartialReleaseFIO()
 #endif
 
-#if _TARGET == _8086
+#if _CPU == 8086
     #define _BadUnit( x )       ( ( x <  0 ) || ( x > 32727 ) )
     #define _BadRecl( x )       ( ( x <= 0 ) || ( x > 65535 ) )
     #define _BadBlockSize( x )  ( ( x <= 0 ) || ( x > 65535 ) )

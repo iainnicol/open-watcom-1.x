@@ -34,11 +34,12 @@
 #ifndef comio_h_
 #define comio_h_
 
-extern void    ComRead(void); 
-extern void    ProcInclude(void);
-extern void    LinePrint(void);
-extern void    ComPrint(void);
-extern void    FmtInteger( char *, int, int );
+extern void     ComRead(void); 
+extern void     ComReadFree(void);
+extern void     ProcInclude(void);
+extern void     LinePrint(void);
+extern void     ComPrint(void);
+extern void     FmtInteger( char *, int, int );
 
 
 #endif
