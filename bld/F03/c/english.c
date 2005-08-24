@@ -356,6 +356,7 @@ static const byte __FAR CharSet03[] = {
 //   F8     F9     FA     FB     FC     FD     FE     FF
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC   // 0xF8 to $FF
 };
+*/
 #endif
 
 extern  character_set           CharSetInfo;
