@@ -29,7 +29,26 @@
 *
 ****************************************************************************/
 
-#include "targdef.h"
+//#include "targdef.h"
+// Define character sets:
+// ======================
+
+#define _ASCII  0
+
+// Define CPU targets ( _CPU macro ):
+// ==================================
+
+#define _AXP    1
+#define _PPC    2
+#define _SPARC  3
+#define _MIPS   4
+#define _80286  286     // >= 286 running 16-bit protected-mode ( OS/2 or DOS/16M )
+#define _80386  386     // >= 386 running 32-bit
+#define _8086   8086    // >= 8086 machine 16-bit real-mode
+
+#define _INTEL_CPU      ( _CPU == 8086 || _CPU == 386 )
+#define _RISC_CPU       ( _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS )
+
 
 // Define feature switch settings:
 // ===============================
