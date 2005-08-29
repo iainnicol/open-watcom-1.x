@@ -171,11 +171,14 @@ typedef enum BASED_KIND{
     BASED_SEGNAME,       //__based( __segname( "name" )   use seg of segname
 } BASED_KIND;
 
-/* matches CTypeSizes[] table in ctype.c */
+/* matches CTypenames[] table in cdump.c */
 /* matches CGDataType[] table in cgen2.c */
-/* matches CTypenames[] table in cgdump.c */
+/* matches AddResult[],SubResult[],IntResult[],ShiftResult[],BinResult[],
+           CnvTable[] tables in cmath2.c */
 /* matches AsmDataType[] table in cpragx86.c */
+/* matches CTypeSizes[] table in ctype.c */
 typedef enum DATA_TYPE {
+    TYPE_UNDEFINED = -1,
     TYPE_CHAR  =    0,      /* signed char */
     TYPE_UCHAR,
     TYPE_SHORT,
@@ -210,9 +213,7 @@ typedef enum DATA_TYPE {
     TYPE_LDIMAGINARY,
     TYPE_BOOL,
 
-    TYPE_UNUSED,            /* an unused type (a unref'd function) */
-
-    TYPE_LAST_ENTRY         /* make sure this is always last */
+    TYPE_LAST_ENTRY,        /* make sure this is always last */
 } DATA_TYPE;
 
 // values for type->type_flags
@@ -693,6 +694,8 @@ struct comp_flags {
     unsigned generate_auto_depend   : 1;    /* Generate make auto depend file */
     unsigned c99_extensions         : 1;    /* C99 extensions enabled */
     unsigned use_long_double        : 1;    /* Make CC send long double types to code gen */
+
+    unsigned track_includes         : 1;    /* report opens of include files */
 };
 
 struct global_comp_flags {  // things that live across compiles

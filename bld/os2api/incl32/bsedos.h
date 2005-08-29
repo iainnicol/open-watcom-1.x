@@ -324,16 +324,28 @@ APIRET APIENTRY DosWaitThread(PTID,ULONG);
 #define DosBufReset    DosResetBuffer
 #define DosChDir       DosSetCurrentDir
 #define DosChgFilePtr  DosSetFilePtr
+#define DosFindFirst2  DosFindFirst
 #define DosMkDir       DosCreateDir
+#define DosMkDir2      DosCreateDir
 #define DosNewSize     DosSetFileSize
+#define DosOpen2       DosOpen
+#define DosProtectChgFilePtr DosProtectSetFilePtr
+#define DosProtectQFileInfo DosProtectQueryFileInfo
+#define DosProtectQFHandState DosProtectQueryFHState
+#define DosProtectNewSize DosProtectSetFileSize
+#define DosProtectSetFHandState DosProtectSetFHState
 #define DosQCurDir     DosQueryCurrentDir
 #define DosQCurDisk    DosQueryCurrentDisk
 #define DosQFileInfo   DosQueryFileInfo
 #define DosQFHandState DosQueryFHState
+#define DosQFSAttach   DosQueryFSAttach
 #define DosQFSInfo     DosQueryFSInfo
 #define DosQHandType   DosQueryHType
 #define DosQPathInfo   DosQueryPathInfo
+#define DosQVerify     DosQueryVerify
+#define DosRmDir       DosDeleteDir
 #define DosSelectDisk  DosSetDefaultDisk
+#define DosSetFHandState DosSetFHState
 
 #define FILE_BEGIN    0
 #define FILE_CURRENT  1
@@ -913,6 +925,15 @@ APIRET APIENTRY DosWrite(HFILE,PVOID,ULONG,PULONG);
 #endif
 
 #if defined(INCL_DOSMEMMGR) || !defined(INCL_NOCOMMON)
+
+#define DosSubAlloc     DosSubAllocMem
+#define DOSSUBALLOC     DosSubAllocMem
+#define DosSubFree      DosSubFreeMem
+#define DOSSUBFREE      DosSubFreeMem
+#define DosSubSet       DosSubSetMem
+#define DOSSUBSET       DosSubSetMem
+#define DosSubUnset     DosSubUnsetMem
+#define DOSSUBUNSET     DosSubUnsetMem
 
 #define PAG_READ      0x00000001
 #define PAG_WRITE     0x00000002

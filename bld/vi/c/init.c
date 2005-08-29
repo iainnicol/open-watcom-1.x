@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Editor initialization.
 *
 ****************************************************************************/
 
@@ -33,11 +32,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <env.h>
-#ifdef _M_IX86
-#ifdef __WATCOMC__
-#include <i86.h>
-#endif
+#ifndef __UNIX__
+    // To be removed when OW 1.4 is in universal use
+    #include <env.h>
 #endif
 #include "vi.h"
 #include "rxsupp.h"
@@ -60,7 +57,7 @@
 #include "autoenv.h"
 
 static char     nullFN[] = "no_name";
-static char     defaultEDPath[] = "\\EDDAT";
+static char     defaultEDPath[] = DIR_SEP_STR "eddat";
 static char     *cFN;
 static char     *cfgFN=NULL;
 static char     *cTag;
@@ -241,7 +238,7 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         watcom = getenv( "WATCOM" );
         if( watcom != NULL ) {
-            char edpath[PATH_MAX];
+            char edpath[FILENAME_MAX];
 
             strcpy( edpath, watcom );
             strcat( edpath, defaultEDPath );

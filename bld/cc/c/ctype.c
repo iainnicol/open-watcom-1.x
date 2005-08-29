@@ -50,7 +50,7 @@ local void CheckBitfieldType( TYPEPTR typ );
 #endif
 
 /* matches enum DataType in ctypes.h */
-static  char    CTypeSizes[] = {
+static  char    CTypeSizes[TYPE_LAST_ENTRY] = {
         TARGET_CHAR,    /* CHAR         */
         TARGET_CHAR,    /* UCHAR        */
         TARGET_SHORT,   /* SHORT        */
@@ -84,7 +84,6 @@ static  char    CTypeSizes[] = {
         TARGET_DIMAGINARY,  /* DOUBLE IMAGINARY      */
         TARGET_LDIMAGINARY, /* LONG DOUBLE IMAGINARY */
         TARGET_BOOL,    /* BOOL        */
-        0,              /* UNUSED      */
     };
 
 TYPEPTR CTypeHash[TYPE_LAST_ENTRY];
@@ -353,13 +352,12 @@ int TypeQualifier( void )
     return( flags );
 }
 
-
 local TYPEPTR GetScalarType( char *plain_int, int bmask )
 {
     DATA_TYPE   data_type;
     TYPEPTR     typ;
 
-    data_type = -1;
+    data_type = TYPE_UNDEFINED;
     if( bmask & M_LONG_LONG ) {
         bmask &= ~M_INT;
     }
@@ -403,7 +401,7 @@ local TYPEPTR GetScalarType( char *plain_int, int bmask )
                 data_type = TYPE_DIMAGINARY;
 
         } else {
-            data_type = -1;
+            data_type = TYPE_UNDEFINED;
         }
     } else if( bmask == M_BOOL ) {
         data_type = TYPE_BOOL;
@@ -417,7 +415,7 @@ local TYPEPTR GetScalarType( char *plain_int, int bmask )
             *plain_int = 1;
         }
     }
-    if( data_type == -1 ) {
+    if( data_type == TYPE_UNDEFINED ) {
         CErr1( ERR_INV_TYPE );
         data_type = TYPE_INT;
     }

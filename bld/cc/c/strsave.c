@@ -33,8 +33,8 @@
 #ifdef  __STDC__
 #include <string.h>
 #endif
-extern  char    *CMemAlloc();
-
+#include "strsave.h"
+#include "cmemmgr.h"
 
 char * CStrSave( buf )
         register char * buf;

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Master GUI library include file.
 *
 ****************************************************************************/
 
@@ -117,6 +116,7 @@ typedef struct gui_point {
 typedef struct gui_window gui_window;
 
 typedef enum {
+    GUI_BAD_CLASS = -1,
     GUI_PUSH_BUTTON,
     GUI_DEFPUSH_BUTTON,
     GUI_RADIO_BUTTON,
@@ -207,6 +207,7 @@ typedef struct gui_menu_struct {
 } gui_menu_struct;
 
 typedef enum {
+        GUI_BAD_COLOUR = -1,
         GUI_BLACK,
         GUI_BLUE,
         GUI_GREEN,
@@ -223,9 +224,9 @@ typedef enum {
         GUI_BRIGHT_MAGENTA,
         GUI_BRIGHT_YELLOW,
         GUI_BRIGHT_WHITE,
+        GUI_NUM_COLOURS,
         GUI_FIRST_COLOUR = GUI_BLACK,
-        GUI_LAST_COLOUR = GUI_BRIGHT_WHITE,
-        GUI_NUM_COLOURS = GUI_LAST_COLOUR + 1
+        GUI_LAST_COLOUR = GUI_BRIGHT_WHITE
 } gui_colour;
 
 #define GUI_NORMAL GUI_BLACK            // for NEC PC
@@ -309,7 +310,8 @@ typedef enum gui_control_styles {
     GUI_CONTROL_WANTRETURN              = 0x1000,
     GUI_EDIT_INVISIBLE                  = 0x2000,
     GUI_CONTROL_3STATE                  = 0x4000,
-    GUI_CONTROL_WANTKEYINPUT            = 0x8000
+    GUI_CONTROL_WANTKEYINPUT            = 0x8000,
+    GUI_CONTROL_READONLY                = 0x10000
 } gui_control_styles;
 
 typedef enum gui_line_styles {
@@ -334,7 +336,7 @@ typedef struct gui_resource {
 } gui_resource;
 
 typedef struct gui_control_info {
-   gui_control_class    control_class;
+    gui_control_class   control_class;
     char                *text;
     gui_rect            rect;
     gui_window          *parent;

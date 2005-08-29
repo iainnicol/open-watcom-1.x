@@ -18,6 +18,7 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 #==================
     echo rm -f -r <PROJDIR>/<PREOBJDIR>
     rm -f -r <PROJDIR>/<PREOBJDIR>
+    rm -f <OWBINDIR>/whc
     rm -f <OWBINDIR>/whc.exe
     set BUILD_PLATFORM=
 
@@ -41,6 +42,13 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
     cdsay <PROJDIR>/<PREOBJDIR>
     wmake -h -f ../nt386/makefile prebuild=1
     <CPCMD> whc.exe <OWBINDIR>/whc.exe
+
+[ BLOCK <BUILD_PLATFORM> linux386 ]
+#===============================
+    mkdir <PROJDIR>/<PREOBJDIR>
+    cdsay <PROJDIR>/<PREOBJDIR>
+    wmake -h -f ../linux386/makefile prebuild=1
+    <CPCMD> whc.exe <OWBINDIR>/whc
 
 [ BLOCK . . ]
 #============

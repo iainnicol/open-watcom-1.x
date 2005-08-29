@@ -33,7 +33,6 @@
 *   COMMENTS: This generic dialog box module replaces the old dialog box
 *             functions for - Welcome Dialog
 *                           - Modify Dialog
-*                           - Insert Diskett Dialg
 *             and is general enough for other dialogs that may be needed
 *             in the future.
 */
@@ -57,9 +56,29 @@
 #include <clibext.h>
 #endif
 
+
+/* A few new defines, rather than hard numbers in source */
+/* Controls per line */
+#define MAX_CTRL_PER_LINE      4
+#define NORMAL_BUTTONS         (MAX_CTRL_PER_LINE - 1)
+#define NORMAL_CHECKMARKS      2
+
+/* Extra chars for CONTROL width calculations */
+/* Necessary to handle different character widths when */
+/* using proportional fonts (most graphical UI's).     */
+#define BUTTON_EXTRA           2
+
+/* Ends up close to horizontal default size for button in dialogs */
+#define WIN_BW                15
+
+#define WIN_BUTTON_POS( num, of, cols, bwidth ) \
+    ( of == 1 ? \
+        (cols - bwidth) / 2 : \
+        ( 1 + ( num - 1 ) * ( bwidth + BUTTON_GAP( cols, of, bwidth, 1 ) ) ) )
+
+
 extern vhandle          FullInstall;
 extern vhandle          SelectiveInstall;
-
 
 typedef struct dlg_window_set {
     dlg_state           state;
@@ -301,14 +320,14 @@ static void DoBeep( void )
 /************************/
 
 {
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
-        MessageBeep( 0 );
-    #elif defined( __OS2__ )
-        DosBeep( 750, 250 );
-    #else
-        putchar( 7 );
-        fflush( stdout );
-    #endif
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+    MessageBeep( 0 );
+#elif defined( __OS2__ )
+    DosBeep( 750, 250 );
+#else
+    putchar( 7 );
+    fflush( stdout );
+#endif
 }
 
 dlg_state IdToDlgState( int id )
@@ -533,7 +552,6 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *curr_dial
     if( rect.height != last_height ) {
         GUIResizeWindow( gui, &rect );
     }
-
 }
 
 static GUICALLBACK GenericEventProc;
@@ -684,43 +702,79 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
     int                 width;
     int                 but_pos;
 
-    if( curr_dialog->def_dlg ) return;
-    if( curr_dialog->adjusted ) return;
+    if( curr_dialog->def_dlg )
+        return;
+
+    if( curr_dialog->adjusted )
+        return;
+
     curr_dialog->adjusted = TRUE;
     width = curr_dialog->cols;
+
     for( i = 0; i < curr_dialog->num_controls; i++ ) {
         control = &curr_dialog->controls[ i ];
         a_control_class = control->control_class;
+
         switch( a_control_class ) {
+
         case GUI_RADIO_BUTTON:
+#if !defined( _UI )
+            /* Align left edge of control with left of leftmost Button */
+            but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
+            control->rect.x = DLG_COL( but_pos );
+#endif
             control->rect.width = DLG_COL( width-C0-1 );
             break;
+
         case GUI_CHECK_BOX:
+#if !defined( _UI )
+            /* Align left edge of control with left of leftmost Button */
+            but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
+            control->rect.x = DLG_COL( but_pos );
+#endif
             // look for another control on this row
             control->rect.width = DLG_COL( width-C0-1 );
-            if( i + 1 >= curr_dialog->num_controls ) break;
+            if( i + 1 >= curr_dialog->num_controls )
+                break;
+
             next = &curr_dialog->controls[ i + 1 ];
-            if( next->rect.y != control->rect.y ) break;
-            control->rect.width = DLG_COL( width/2-C0-1 );
-            if( next->control_class != GUI_CHECK_BOX ) break;
+            if( next->rect.y != control->rect.y )
+                break;
+
+            control->rect.width = DLG_COL( ( width / 2 ) - C0 - 1 );
+            if( next->control_class != GUI_CHECK_BOX )
+                break;
+
             j = i;
             num_push_buttons = 1;
             while( ++j < curr_dialog->num_controls ) {
                 next = &curr_dialog->controls[ j ];
                 if( next->control_class != GUI_CHECK_BOX ||
-                    next->rect.y != control->rect.y ) break;
+                    next->rect.y != control->rect.y )
+                    break;
                 ++num_push_buttons;
             }
             curr_button = 0;
             while( i < j ) {
-                control->rect.width = DLG_COL( width/num_push_buttons-C0-1 );
-                control->rect.x = DLG_COL( C0 + ( width/num_push_buttons ) * curr_button );
+                control->rect.width =
+                    DLG_COL( ( width / num_push_buttons ) - C0 - 1 );
+#if defined( __NT__ ) && !defined( _UI )
+                but_pos = WIN_BUTTON_POS( curr_button + 1,
+                                          NORMAL_CHECKMARKS,
+                                          width,
+                                          WIN_BW );
+                control->rect.x = DLG_COL( but_pos );
+#else
+                control->rect.x = DLG_COL(
+                    C0 + ( width / num_push_buttons ) * curr_button );
+#endif
                 ++curr_button;
                 ++i;
                 ++control;
             }
             --i;
             break;
+
         case GUI_PUSH_BUTTON:
         case GUI_DEFPUSH_BUTTON:
             j = i;
@@ -737,45 +791,83 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 }
             }
             if( j == curr_dialog->num_controls ) {
-                for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
+                for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button )
+                {
+#if !defined( _UI )
+                    but_pos = WIN_BUTTON_POS( curr_button, num_push_buttons,
+                                              width, WIN_BW );
+                    control->rect.x     = DLG_COL( but_pos );
+                    control->rect.width =
+                        DLG_COL( max( strlen( control->text ) + BUTTON_EXTRA,
+                                      WIN_BW ) );
+#else
                     but_pos = BUTTON_POS( curr_button, num_push_buttons, width, BW );
                     control->rect.x     = DLG_COL( but_pos );
-                    control->rect.width = DLG_COL( max( strlen( control->text ) + 2, BW ) );
+                    control->rect.width = DLG_COL(
+                        max( strlen( control->text ) + BUTTON_EXTRA,
+                             BW ) );
+#endif
                     ++control;
                 }
             } else {
-                but_pos = BUTTON_POS( 3, 4, width, BW );
+#if !defined( _UI )
+                but_pos = WIN_BUTTON_POS( NORMAL_BUTTONS,
+                                          NORMAL_BUTTONS,
+                                          width,
+                                          WIN_BW );
                 control->rect.x     = DLG_COL( but_pos );
-                control->rect.width = DLG_COL( max( strlen( control->text ) + 2, BW ) );
+                /* The dynamic system does not handle buttons too wide for dialog. */
+                control->rect.width =
+                    DLG_COL( max( strlen( control->text ) + BUTTON_EXTRA,
+                                  WIN_BW ) );
+                /* control->rect.width = DLG_COL( WIN_BW ); */
+#else
+                but_pos = BUTTON_POS( NORMAL_BUTTONS, MAX_CTRL_PER_LINE, width, BW );
+                control->rect.x     = DLG_COL( but_pos );
+                control->rect.width =
+                    DLG_COL( max( strlen( control->text ) + BUTTON_EXTRA,
+                                  BW ) );
+#endif
             }
             break;
+
         case GUI_EDIT:
             if( i > 0 ) {
                 prev = &curr_dialog->controls[ i - 1 ];
                 if( prev->control_class == GUI_PUSH_BUTTON
                     && prev->rect.y == control->rect.y ) {
                     // dialog_edit_button  (edit control and push button together)
-                    control->rect.width = DLG_COL( prev->rect.x - control->rect.x - 2 );
+                    control->rect.width =
+                        DLG_COL( prev->rect.x - control->rect.x - BUTTON_EXTRA );
                     break;
                 }
             }
             if( control->text != NULL ) {
-                control->rect.width = DLG_COL( width - strlen(control->text) - 2 );
+                control->rect.width =
+                    DLG_COL( width - strlen(control->text) - BUTTON_EXTRA );
             } else {
                 control->rect.width = DLG_COL( width-C0-5 );
             }
             break;
+
         case GUI_STATIC:
             if( control->id != -1
                 && curr_dialog->pVisibilityConds[ i ] == NULL
                 && ( i <= 0 || ( curr_dialog->controls[ i - 1 ].control_class != GUI_EDIT
                                  && curr_dialog->controls[ i - 1 ].control_class != GUI_PUSH_BUTTON )
-                     || curr_dialog->controls[ i - 1 ].rect.y != curr_dialog->controls[ i ].rect.y ) ) {
+                     || curr_dialog->controls[ i - 1 ].rect.y != curr_dialog->controls[ i ].rect.y ) )
+            {
+#if !defined( _UI )
+                /* Align left edge of control with left of leftmost Button */
+                but_pos = WIN_BUTTON_POS( 1, MAX_CTRL_PER_LINE, width, WIN_BW );
+                control->rect.x = DLG_COL( but_pos );
+#endif
                 control->rect.width = DLG_COL( width - 1 );
             } else {
-                control->rect.width = min( control->rect.width, DLG_COL(width) );
+                control->rect.width  = min( control->rect.width, DLG_COL(width) );
             }
             break;
+
         default:
             break;
         }
@@ -807,9 +899,9 @@ extern dlg_state GenericDialog( gui_window *parent, a_dialog_header *curr_dialog
     }
     width = curr_dialog->cols;
     height = curr_dialog->rows;
-    #if defined(__OS2__) && !defined(_UI)
-        height -= 1;
-    #endif
+#if defined(__OS2__) && !defined(_UI)
+    height -= 1;
+#endif
     if( width < strlen(title) + WIDTH_BORDER + 2 ) {
         width = strlen(title) + WIDTH_BORDER + 2;
     }

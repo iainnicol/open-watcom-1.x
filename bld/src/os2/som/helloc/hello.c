@@ -4,13 +4,14 @@
  *      SOM Emitter emitctm: 2.23.1.9
  */
 
+#include <stdio.h>
+
 #ifndef SOM_Module_hello_Source
 #define SOM_Module_hello_Source
 #endif
 #define Hello_Class_Source
 
 #include "hello.ih"
-
 
 /*
  * This method outputs the string "Hello, World!".
@@ -21,6 +22,5 @@ SOM_Scope void  SOMLINK sayHello(Hello somSelf,  Environment *ev)
     /* HelloData *somThis = HelloGetData(somSelf); */
     HelloMethodDebug("Hello","sayHello");
 
-    printf( "Hello, World from SOM (C version)\n" );
+    puts( "Hello, World from SOM (C version)" );
 }
-

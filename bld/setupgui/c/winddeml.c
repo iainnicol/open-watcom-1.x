@@ -24,17 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Functions for adding groups/icons to the Windows shell.
+*               Supports both Windows 3.x/NT 3.x and Win9x/NT 4 shells.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <io.h>
-#include <dos.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <windows.h>
 #include <ddeml.h>
 
@@ -45,9 +44,7 @@
 
 #define DDE_WAITTIME    3000
 
-// ********** Functions for adding files to the Program Manager **************
-
-static bool SendCommand( DWORD ddeinst, HCONV hconv, char * buff )
+static bool SendCommand( DWORD ddeinst, HCONV hconv, char *buff )
 /***************************************************************/
 {
     HDDEDATA    hData, hrc;
@@ -137,11 +134,11 @@ static bool UseDDE( bool uninstall )
         // re-Create the PM Group box.
         SimGetPMGroupFileName( t2 );
         if( t2[ 0 ] == '\0' ) {
-            #if defined( __NT__ )
-                sprintf( buff, "[CreateGroup(%s,0)]", t1 );  // create a personal group
-            #else
-                sprintf( buff, "[CreateGroup(%s)]", t1 );
-            #endif
+#if defined( __NT__ )
+            sprintf( buff, "[CreateGroup(%s,0)]", t1 );  // create a personal group
+#else
+            sprintf( buff, "[CreateGroup(%s)]", t1 );
+#endif
         } else {
             sprintf( buff, "[CreateGroup(%s,%s)]", t1, t2 );
         }
@@ -245,14 +242,28 @@ cleanup:
 }
 
 
-#if defined( __NT__ ) && !defined( __AXP__ )
+#if defined( __NT__ )
 
 #include <direct.h>
-//typedef void *                LPFNADDPROPSHEETPAGE;   // needed by shlobj.h
-#include "shlobj.h"
+#include <shlobj.h>
 
 // DDE method does not work reliably under Windows 95. Preferred
 // method is to use IShellLink interface
+
+// Directory names cannot have forward slashes in them, and probably other
+// characters. This is a problem for "C/C++". Not all platforms are restricted
+// like this, so just munge the file name here.
+void munge_fname( char *buff )
+{
+    char    *s;
+
+    s = buff;
+    while( *s ) {
+        if( *s == '/' )
+            *s = '_';   // replace slash by underscore
+        ++s;
+    }
+}
 
 static void get_group_name( char *buff, char *group )
 {
@@ -266,14 +277,21 @@ static void get_group_name( char *buff, char *group )
     }
     strcat( buff, "\\" );
     strcat( buff, group );
+    munge_fname( buff );
 }
 
-static void create_group( char *group )
+static BOOL create_group( char *group )
 {
     char                buff[ _MAX_PATH ];
+    int                 rc;
 
     get_group_name( buff, group );
-    mkdir( buff );
+    rc = mkdir( buff );
+
+    if( rc == -1 && errno != EEXIST )
+        return( FALSE );
+    else
+        return( TRUE );
 }
 
 static void delete_dir( char * dir )
@@ -282,7 +300,7 @@ static void delete_dir( char * dir )
     struct dirent       *direntp;
     char                file[ _MAX_PATH ];
 
-    // delete contents of directory
+    // Delete contents of directory
     strcpy( file, dir );
     strcat( file, "\\*.*" );
     dirp = opendir( file );
@@ -314,7 +332,7 @@ static void remove_group( char *group )
 }
 
 static BOOL create_icon( char *group, char *pgm, char *desc,
-                        char *arg, char *work, char *icon, int icon_num )
+                         char *arg, char *work, char *icon, int icon_num )
 {
     HRESULT             hres;
     IShellLink          *m_link;
@@ -322,18 +340,19 @@ static BOOL create_icon( char *group, char *pgm, char *desc,
     WORD                w_link[ _MAX_PATH ];
     char                link[ _MAX_PATH ];
 
-    // determine names of link files
+    // Determine names of link files
     get_group_name( link, group );
     strcat( link, "\\" );
     strcat( link, desc );
-    strcat( link, ".LNK" );
+    strcat( link, ".lnk" );
+    munge_fname( link );
 
     MultiByteToWideChar( CP_ACP, 0, link, -1, w_link, _MAX_PATH );
 
     // Create an IShellLink object and get a pointer to the IShellLink interface
     m_link = NULL;
     hres = CoCreateInstance( &CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-                             &IID_IShellLink, (void **) &m_link );
+                             &IID_IShellLink, (void **)&m_link );
     if( SUCCEEDED( hres ) ) {
         // Query IShellLink for the IPersistFile interface for
         // saving the shortcut in persistent storage.
@@ -359,6 +378,7 @@ static BOOL create_icon( char *group, char *pgm, char *desc,
 }
 
 static bool UseIShellLink( bool uninstall )
+/*****************************************/
 {
     WORD                dir_index, icon_number;
     int                 i, num_icons, num_groups;
@@ -367,6 +387,7 @@ static bool UseIShellLink( bool uninstall )
     char                prog_name[ _MAX_PATH ], prog_desc[ _MAX_PATH ];
     char                icon_name[ _MAX_PATH ], working_dir[ _MAX_PATH ];
     char                group[ _MAX_PATH ], prog_arg[ _MAX_PATH ], tmp[ _MAX_PATH ];
+    BOOL                rc;
 
     if( uninstall ) {
         num_groups = SimGetNumPMGroups();
@@ -386,8 +407,12 @@ static bool UseIShellLink( bool uninstall )
     }
 
     CoInitialize( NULL );
+
     // Create the PM Group box.
-    create_group( group );
+    if( !create_group( group ) ) {
+        CoUninitialize();
+        return( FALSE );
+    }
 
     // Add the individual PM files to the Group box.
     num_icons = SimGetNumPMProgs();
@@ -409,9 +434,12 @@ static bool UseIShellLink( bool uninstall )
         if( strcmp( prog_name, "GROUP" ) == 0 ) {
             /* creating a new group */
             strcpy( group, prog_desc );
-            create_group( group );
+            if( !create_group( group ) ) {
+                CoUninitialize();
+                return( FALSE );
+            }
         } else {
-            /* adding item to group */
+            // Adding item to group
             if( dir_index == SIM_INIT_ERROR ) {
                 working_dir[ 0 ] = '\0';
                 ReplaceVars( tmp, prog_name );
@@ -420,7 +448,7 @@ static bool UseIShellLink( bool uninstall )
                 SimDirNoSlash( dir_index, working_dir );
             }
 
-            // get parameters
+            // Get parameters
             SimGetPMParms( i, tmp );
             ReplaceVars( prog_arg, tmp );
 
@@ -435,11 +463,16 @@ static bool UseIShellLink( bool uninstall )
                 strcpy( icon_name, tmp );
             }
             // Add the new file to the already created PM Group.
-            create_icon( group, prog_name, prog_desc, prog_arg, working_dir, icon_name, icon_number );
+            rc = create_icon( group, prog_name, prog_desc, prog_arg, working_dir, icon_name, icon_number );
+            if( rc == FALSE ) {
+                CoUninitialize();
+                return( FALSE );
+            }
         }
         ++num_installed;
         StatusAmount( num_installed, num_total_install );
-        if( StatusCancelled() ) break;
+        if( StatusCancelled() )
+            break;
     }
     StatusAmount( num_total_install, num_total_install );
 
@@ -453,13 +486,13 @@ static bool UseIShellLink( bool uninstall )
 bool CreatePMInfo( bool uninstall )
 /*********************************/
 {
-    #if defined( __NT__ ) && !defined( __AXP__ )
-        if( GetVariableIntVal( "IsWin95" ) || GetVariableIntVal( "IsWinNT40" ) ) {
-            return( UseIShellLink( uninstall ) );
-        } else {
-            return( UseDDE( uninstall ) );
-        }
-    #else
+#if defined( __NT__ )
+    if( GetVariableIntVal( "IsWin95" ) || GetVariableIntVal( "IsWinNT40" ) ) {
+        return( UseIShellLink( uninstall ) );
+    } else {
         return( UseDDE( uninstall ) );
-    #endif
+    }
+#else
+    return( UseDDE( uninstall ) );
+#endif
 }

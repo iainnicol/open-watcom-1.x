@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Prototypes for command parser functions
 *
 ****************************************************************************/
 
@@ -42,6 +41,7 @@ extern bool             ProcXDbg( void );
 extern bool             ProcIntDbg( void );
 
 extern void             InitCmdFile( void );
+extern void             SetSegMask(void);
 extern char *           GetNextLink( void );
 extern void             DoCmdFile( char * );
 extern void             Syntax( void );

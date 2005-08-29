@@ -963,7 +963,6 @@ static void SetErrorLimit()    { ErrLimit = OptValue; }
 
 #if _CPU == 8086 || _CPU == 386
 static void SetDftCallConv( void ){
-#if 0
     switch( OptValue ) {
     case 1:
         DftCallConv = &CdeclInfo;
@@ -991,7 +990,6 @@ static void SetDftCallConv( void ){
         DftCallConv = &WatcallInfo;
         break;
     }
-#endif
 }
 static void Set_EC()           { CompFlags.ec_switch_used = 1; }
 #endif
@@ -1098,6 +1096,11 @@ static void Set_FI()
 static void Set_FLD()
 {
     CompFlags.use_long_double = 1;
+}
+
+static void SetTrackInc( void )
+{
+    CompFlags.track_includes = 1;
 }
 
 static void Set_FO()
@@ -1421,7 +1424,7 @@ static void Set_OF()
 {
     TargetSwitches |= NEED_STACK_FRAME;
     if( OptValue != 0 ) {
-        WatcallInfo.class |= GENERATE_STACK_FRAME;
+        WatcallInfo.cclass |= GENERATE_STACK_FRAME;
     }
 }
 static void Set_OM()           { TargetSwitches |= I_MATH_INLINE; }
@@ -1648,6 +1651,7 @@ static struct option const CFE_Options[] = {
     { "fld",    0,              Set_FLD },
     { "fo=@",   0,              Set_FO },
     { "fr=@",   0,              Set_FR },
+    { "fti",    0,              SetTrackInc },
 #if _CPU == 8086 || _CPU == 386
     { "fp2",    SW_FPU0,        SetFPU },
     { "fp3",    SW_FPU3,        SetFPU },
@@ -2045,7 +2049,7 @@ local void Define_Memory_Model()
         break;
     case BIG_CODE:                      /* -mm */
         model = 'm';
-        WatcallInfo.class |= FAR;
+        WatcallInfo.cclass |= FAR;
         CodePtrSize = TARGET_FAR_POINTER;
         Define_Macro( "M_I86MM" );
         Define_Macro( "__MEDIUM__" );
@@ -2059,7 +2063,7 @@ local void Define_Memory_Model()
         DataPtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         break;
     case BIG_CODE | BIG_DATA:
-        WatcallInfo.class |= FAR;
+        WatcallInfo.cclass |= FAR;
         CodePtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         if( TargetSwitches & CHEAP_POINTER ) {
             model = 'l';
@@ -2158,15 +2162,15 @@ static hw_reg_set MetaWareParms[] = {
 
 local void SetStackConventions( void )
 {
-    WatcallInfo.class &= (GENERATE_STACK_FRAME | FAR); /* 19-nov-93 */
-    WatcallInfo.class |= CALLER_POPS | NO_8087_RETURNS;
+    WatcallInfo.cclass &= (GENERATE_STACK_FRAME | FAR);
+    WatcallInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
     WatcallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof(MetaWareParms) );
     memcpy( WatcallInfo.parms, MetaWareParms, sizeof( MetaWareParms ) );
+    WatcallInfo.objname = CStrSave( "*" );
     HW_CTurnOff( WatcallInfo.save, HW_EAX );
     HW_CTurnOff( WatcallInfo.save, HW_EDX );
     HW_CTurnOff( WatcallInfo.save, HW_ECX );
     HW_CTurnOff( WatcallInfo.save, HW_FLTS );
-    WatcallInfo.objname = CStrSave( "*" );   /* DefaultObjName; */
 }
 #endif
 

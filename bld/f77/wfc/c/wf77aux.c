@@ -43,9 +43,9 @@
 #include "progsw.h"
 #include "fio.h"
 #include "sdfile.h"
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
   #include "asminlin.h"
-#elif ( _TARGET == _AXP || _TARGET == _PPC )
+#elif ( _CPU == _AXP || _CPU == _PPC )
   #include "asinline.h"
 #else
   #error Unknow Target
@@ -76,16 +76,16 @@ static  aux_info        *AliasInfo;
 static  char            SymName[MAX_SYMLEN];
 static  int             SymLen;
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 static  arr_info        *ArrayInfo;
 #endif
 
 extern  char            *RegNames[];
 extern  hw_reg_set      RegValue[];
 extern  byte            MaxReg;
-#if _TARGET == _8086
+#if _CPU == 8086
 extern  hw_reg_set      WinParms[];
-#elif _TARGET == _80386
+#elif _CPU == 386
 extern  hw_reg_set      StackParms[];
 #endif
 extern  aux_info        IFInfo;
@@ -102,7 +102,7 @@ extern  char            MsHexConst[];
 extern  char            MsPragCallBytes[];
 extern  char            MsArray[];
 
-#if _TARGET == _8086
+#if _CPU == 8086
 
 #define _FLIBM          5
 #define _FLIB7M         6
@@ -134,7 +134,7 @@ static  char            _noemu87[] = { "noemu87" };
 static  char            _wresl[] = { "wresl" };
 static  char            _wresm[] = { "wresm" };
 
-#elif _TARGET == _80386
+#elif _CPU == 386
 
 #define _FLIB           4
 #define _FLIB7          5
@@ -166,7 +166,7 @@ static  char            _noemu387[] = { "noemu387" };
 static  char            _wresf[] = { "wresf" };
 static  char            _wresfs[] = { "wresfs" };
 
-#elif _TARGET == _AXP
+#elif _CPU == _AXP
 
 #define _FLIB           4
 #define _CLIB           4
@@ -178,7 +178,7 @@ static  char            _clib[] = { "clib" };
 static  char            _math[] = { "math" };
 static  char            _wresaxp[] = { "wresaxp" };
 
-#elif _TARGET == _PPC
+#elif _CPU == _PPC
 
 #define _FLIB           4
 #define _CLIB           4
@@ -197,9 +197,9 @@ static  char            _wresppc[] = { "wresppc" };
 #define MAX_REG_SETS    16
 #define MAXIMUM_BYTESEQ 127
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
   #define ASM_CODE_BUFF_TYPE    char*
-#elif _TARGET == _AXP || _TARGET == _PPC
+#elif _CPU == _AXP || _CPU == _PPC
   #define AsmSymFini    AsmFini
   #define CodeBuffer    AsmCodeBuffer
   #define Address       AsmCodeAddress
@@ -209,7 +209,7 @@ static  char            _wresppc[] = { "wresppc" };
 #endif
 
 
-#if _TARGET == _80386
+#if _CPU == 386
     static      char    __Syscall[] = { "aux __syscall \"*\""
                                     "parm caller []"
                                     "value struct struct caller []"
@@ -226,7 +226,7 @@ static  char            _wresppc[] = { "wresppc" };
                                     "parm routine []"
                                     "value struct []"
                                     "modify [eax ecx edx]" };
-#elif _TARGET == _8086
+#elif _CPU == 8086
     static      char    __Pascal[] =  { "aux __pascal \"^\""
                                     "parm routine reverse []"
                                     "value struct float struct caller []"
@@ -249,19 +249,19 @@ dep_info                *DependencyInfo;
 void            InitAuxInfo() {
 //=============================
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     int         cpu;
     int         fpu;
     int         use32;
 
-#if _TARGET == _8086
+#if _CPU == 8086
     use32 = 0;
-#elif _TARGET == _80386
+#elif _CPU == 386
     use32 = 1;
 #endif
     cpu = 0;
     fpu = 0;
-#if _TARGET == _8086
+#if _CPU == 8086
     if( CPUOpts & CPUOPT_80186 ) cpu = 1;
     if( CPUOpts & CPUOPT_80286 ) cpu = 2;
 #endif
@@ -271,7 +271,7 @@ void            InitAuxInfo() {
     if( CPUOpts & CPUOPT_80686 ) cpu = 6;
     if( CPUOpts & ( CPUOPT_FPI87 | CPUOPT_FPI ) ) fpu = 1;
     AsmInit( cpu, fpu, use32, 1 );
-#elif _TARGET == _AXP || _TARGET == _PPC
+#elif _CPU == _AXP || _CPU == _PPC
     AsmInit();
 #else
     #error Unknown Target
@@ -280,96 +280,95 @@ void            InitAuxInfo() {
     DefaultLibs = NULL;
     AuxInfo = NULL;
     DependencyInfo = NULL;
-#if _TARGET == _8086 || _TARGET == _80386
+#if _CPU == 8086 || _CPU == 386
 
-#if _TARGET == _8086
+#if _CPU == 8086
     // Change auxiliary information for calls to run-time routines to match
     // the options used to compile the run-time routines
     if( CGOpts & CGOPT_M_LARGE ) {
         if( !(CGOpts & CGOPT_WINDOWS) ) {
-            HW_CTurnOff( IFXInfo.save_info, HW_DS );
-            HW_CTurnOff( RtRtnInfo.save_info, HW_DS );
-            HW_CTurnOff( RtStopInfo.save_info, HW_DS );
-            HW_CTurnOff( RtVarInfo.save_info, HW_DS );
-            HW_CTurnOff( CoRtnInfo.save_info, HW_DS );
-            HW_CTurnOff( IFInfo.save_info, HW_DS );
-            HW_CTurnOff( IFCharInfo.save_info, HW_DS );
-            HW_CTurnOff( IFChar2Info.save_info, HW_DS );
-            HW_CTurnOff( IFVarInfo.save_info, HW_DS );
+            HW_CTurnOff( IFXInfo.save, HW_DS );
+            HW_CTurnOff( RtRtnInfo.save, HW_DS );
+            HW_CTurnOff( RtStopInfo.save, HW_DS );
+            HW_CTurnOff( RtVarInfo.save, HW_DS );
+            HW_CTurnOff( CoRtnInfo.save, HW_DS );
+            HW_CTurnOff( IFInfo.save, HW_DS );
+            HW_CTurnOff( IFCharInfo.save, HW_DS );
+            HW_CTurnOff( IFChar2Info.save, HW_DS );
+            HW_CTurnOff( IFVarInfo.save, HW_DS );
         }
-        HW_CTurnOff( IFXInfo.save_info, HW_ES );
-        HW_CTurnOff( RtRtnInfo.save_info, HW_ES );
-        HW_CTurnOff( RtStopInfo.save_info, HW_ES );
-        HW_CTurnOff( RtVarInfo.save_info, HW_ES );
-        HW_CTurnOff( CoRtnInfo.save_info, HW_ES );
-        HW_CTurnOff( IFInfo.save_info, HW_ES );
-        HW_CTurnOff( IFCharInfo.save_info, HW_ES );
-        HW_CTurnOff( IFChar2Info.save_info, HW_ES );
-        HW_CTurnOff( IFVarInfo.save_info, HW_ES );
     }
+        HW_CTurnOff( IFXInfo.save, HW_ES );
+        HW_CTurnOff( RtRtnInfo.save, HW_ES );
+        HW_CTurnOff( RtStopInfo.save, HW_ES );
+        HW_CTurnOff( RtVarInfo.save, HW_ES );
+        HW_CTurnOff( CoRtnInfo.save, HW_ES );
+        HW_CTurnOff( IFInfo.save, HW_ES );
+        HW_CTurnOff( IFCharInfo.save, HW_ES );
+        HW_CTurnOff( IFChar2Info.save, HW_ES );
+        HW_CTurnOff( IFVarInfo.save, HW_ES );
 #endif
 
     if( !(CGOpts & CGOPT_SEG_REGS) ) {
         if( _FloatingDS( CGOpts ) ) {
-            HW_CTurnOff( DefaultInfo.save_info, HW_DS );
+            HW_CTurnOff( DefaultInfo.save, HW_DS );
         }
         if( _FloatingES( CGOpts ) ) {
-            HW_CTurnOff( DefaultInfo.save_info, HW_ES );
+            HW_CTurnOff( DefaultInfo.save, HW_ES );
         }
-#if _TARGET == _8086
-        if( CPUOpts & (CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586 | CPUOPT_80686) ) {
+#if _CPU == 8086
+        if( CPUOpts & (CPUOPT_80386 | CPUOPT_80486 | CPUOPT_80586 | CPUOPT_80686) )
 #endif
+        {
             if( _FloatingFS( CGOpts ) ) {
-                HW_CTurnOff( DefaultInfo.save_info, HW_FS );
+                HW_CTurnOff( DefaultInfo.save, HW_FS );
             }
             if( _FloatingGS( CGOpts ) ) {
-                HW_CTurnOff( DefaultInfo.save_info, HW_GS );
+                HW_CTurnOff( DefaultInfo.save, HW_GS );
             }
-#if _TARGET == _8086
         }
-#endif
     }
     if( OZOpts & OZOPT_O_FRAME ) {
-        DefaultInfo.call_info |= GENERATE_STACK_FRAME;
+        DefaultInfo.cclass |= GENERATE_STACK_FRAME;
     }
 #endif
-#if _TARGET == _80386
+#if _CPU == 386
     if( CGOpts & CGOPT_STK_ARGS ) {
-        DefaultInfo.call_info |= CALLER_POPS | NO_8087_RETURNS;
-        DefaultInfo.parm_info = StackParms;
-        HW_CTurnOff( DefaultInfo.save_info, HW_EAX );
-        HW_CTurnOff( DefaultInfo.save_info, HW_EDX );
-        HW_CTurnOff( DefaultInfo.save_info, HW_ECX );
-        HW_CTurnOff( DefaultInfo.save_info, HW_FLTS );
+        DefaultInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
+        DefaultInfo.parms = StackParms;
+        HW_CTurnOff( DefaultInfo.save, HW_EAX );
+        HW_CTurnOff( DefaultInfo.save, HW_EDX );
+        HW_CTurnOff( DefaultInfo.save, HW_ECX );
+        HW_CTurnOff( DefaultInfo.save, HW_FLTS );
 
-        IFXInfo.call_info |= CALLER_POPS | NO_8087_RETURNS;
-        IFXInfo.parm_info = StackParms;
+        IFXInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
+        IFXInfo.parms = StackParms;
 
-        HW_CTurnOff( IFXInfo.save_info, HW_FLTS );
-        HW_CTurnOff( RtRtnInfo.save_info, HW_FLTS );
-        HW_CTurnOff( RtStopInfo.save_info, HW_FLTS );
-        HW_CTurnOff( RtVarInfo.save_info, HW_FLTS );
-        HW_CTurnOff( CoRtnInfo.save_info, HW_FLTS );
-        HW_CTurnOff( IFInfo.save_info, HW_FLTS );
-        HW_CTurnOff( IFCharInfo.save_info, HW_FLTS );
-        HW_CTurnOff( IFChar2Info.save_info, HW_FLTS );
-        HW_CTurnOff( IFVarInfo.save_info, HW_FLTS );
+        HW_CTurnOff( IFXInfo.save, HW_FLTS );
+        HW_CTurnOff( RtRtnInfo.save, HW_FLTS );
+        HW_CTurnOff( RtStopInfo.save, HW_FLTS );
+        HW_CTurnOff( RtVarInfo.save, HW_FLTS );
+        HW_CTurnOff( CoRtnInfo.save, HW_FLTS );
+        HW_CTurnOff( IFInfo.save, HW_FLTS );
+        HW_CTurnOff( IFCharInfo.save, HW_FLTS );
+        HW_CTurnOff( IFChar2Info.save, HW_FLTS );
+        HW_CTurnOff( IFVarInfo.save, HW_FLTS );
     }
 #endif
-#if _TARGET == _8086
+#if _CPU == 8086
     if( CGOpts & CGOPT_WINDOWS ) {
-        DefaultInfo.parm_info = WinParms;
-        IFXInfo.parm_info = WinParms;
+        DefaultInfo.parms = WinParms;
+        IFXInfo.parms = WinParms;
     }
 #endif
 
     FortranInfo = DefaultInfo;
     ProgramInfo = DefaultInfo;
-#if _TARGET == _80386
+#if _CPU == 386
     DoPragma( __Syscall );
     DoPragma( __Stdcall );
 #endif
-#if _TARGET == _8086 || _TARGET == _80386
+#if _CPU == 8086 || _CPU == 386
     DoPragma( __Pascal );
     DoPragma( __Cdecl );
 #endif
@@ -390,7 +389,7 @@ void            FiniAuxInfo() {
     FreeChain( &DefaultLibs );
     // in case of fatal error, FiniAuxInfo() is called
     // from TDPurge()
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     FreeChain( &ArrayInfo );
 #endif
     FreeChain( &DependencyInfo );
@@ -401,7 +400,7 @@ void            FiniAuxInfo() {
 void    SubAuxInit() {
 //====================
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 // Initialize aux information for a subprogram.
 
     ArrayInfo = NULL;
@@ -412,7 +411,7 @@ void    SubAuxInit() {
 void    SubAuxFini() {
 //====================
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 // Finalize aux information for a subprogram.
 
     arr_info    *next;
@@ -432,7 +431,7 @@ void    SubAuxFini() {
 #endif
 }
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
 //============================================================
 
@@ -511,7 +510,7 @@ static  void    AddDefaultLib( char *lib_ptr, int lib_len, char priority ) {
 void    DefaultLibInfo() {
 //========================
 
-#if _TARGET == _80386
+#if _CPU == 386
     if( CGOpts & CGOPT_STK_ARGS ) {
         if( CPUOpts & CPUOPT_FPC ) {
             AddDefaultLib( _flibs, _FLIBS, '1' );
@@ -542,7 +541,7 @@ void    DefaultLibInfo() {
     } else if( CPUOpts & CPUOPT_FPI87 ) {
         AddDefaultLib( _noemu387, _NOEMU387, '1' );
     }
-#elif _TARGET == _8086
+#elif _CPU == 8086
     if( CGOpts & CGOPT_M_MEDIUM ) {
         if( CPUOpts & CPUOPT_FPC ) {
             AddDefaultLib( _flibm, _FLIBM, '1' );
@@ -573,14 +572,14 @@ void    DefaultLibInfo() {
     } else if( CPUOpts & CPUOPT_FPI87 ) {
         AddDefaultLib( _noemu87, _NOEMU87, '1' );
     }
-#elif _TARGET == _AXP
+#elif _CPU == _AXP
     AddDefaultLib( _flib, _FLIB, '1' );
     AddDefaultLib( _math, _MATH, '1' );
     AddDefaultLib( _clib, _CLIB, '1' );
     if( Options & OPT_RESOURCES ) {
         AddDefaultLib( _wresaxp, _WRESAXP, '1' );
     }
-#elif _TARGET == _PPC
+#elif _CPU == _PPC
     AddDefaultLib( _flib, _FLIB, '1' );
     AddDefaultLib( _math, _MATH, '1' );
     AddDefaultLib( _clib, _CLIB, '1' );
@@ -605,17 +604,17 @@ static  void    FreeAuxElements( aux_info *aux ) {
 //================================================
 
     FreeArgList( aux );
-    if( aux->parm_info != DefaultInfo.parm_info ) {
-        FMemFree( aux->parm_info );
-        aux->parm_info = DefaultInfo.parm_info;
+    if( aux->parms != DefaultInfo.parms ) {
+        FMemFree( aux->parms );
+        aux->parms = DefaultInfo.parms;
     }
-    if( aux->call_bytes != DefaultInfo.call_bytes ) {
-        FMemFree( aux->call_bytes );
-        aux->call_bytes = DefaultInfo.call_bytes;
+    if( aux->code != DefaultInfo.code ) {
+        FMemFree( aux->code );
+        aux->code = DefaultInfo.code;
     }
-    if( aux->object_name != DefaultInfo.object_name ) {
-        FMemFree( aux->object_name );
-        aux->object_name = DefaultInfo.object_name;
+    if( aux->objname != DefaultInfo.objname ) {
+        FMemFree( aux->objname );
+        aux->objname = DefaultInfo.objname;
     }
 }
 
@@ -637,9 +636,9 @@ aux_info        *NewAuxEntry( char *name, int name_len ) {
     memcpy( aux->sym_name, name, name_len );
     aux->sym_name[ name_len ] = NULLCHAR;
     aux->link = AuxInfo;
-    aux->parm_info = DefaultInfo.parm_info;
-    aux->call_bytes = DefaultInfo.call_bytes;
-    aux->object_name = DefaultInfo.object_name;
+    aux->parms = DefaultInfo.parms;
+    aux->code = DefaultInfo.code;
+    aux->objname = DefaultInfo.objname;
     aux->arg_info = NULL;
     AuxInfo = aux;
     return( aux );
@@ -690,7 +689,7 @@ void            Pragma() {
 
 // Process a pragma.
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     char        *arr;
     uint        arr_len;
 #endif
@@ -714,20 +713,20 @@ void            Pragma() {
                 ScanFnToken();
             }
         }
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     } else if( RecToken( "ARRAY" ) ) {
         SymbolId();
         TokUpper();
         arr = TokStart;
         arr_len = TokEnd - TokStart;
         ScanToken();
-#if _TARGET == _80386
+#if _CPU == 386
         if( RecToken( "FAR" ) ) {
             if( _SmallDataModel( CGOpts ) ) {
                 AddArrayInfo( arr, arr_len );
             }
         }
-#elif _TARGET == _8086
+#elif _CPU == 8086
         if( RecToken( "FAR" ) ) {
             if( _SmallDataModel( CGOpts ) ) {
                 AddArrayInfo( arr, arr_len );
@@ -770,35 +769,35 @@ void            Pragma() {
                     have.f_parm = 1;
                 } else if( !have.f_far && RecToken( "=" ) ) {
                     GetByteSeq();
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
                     have.f_far = 1;
                 } else if( !have.f_far && RecToken( "FAR" ) ) {
-                    CurrAux->call_info |= FAR;
+                    CurrAux->cclass |= FAR;
                     have.f_far = 1;
-#if _TARGET == _80386
+#if _CPU == 386
                 } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
-                    CurrAux->call_info |= FAR16_CALL;
+                    CurrAux->cclass |= FAR16_CALL;
                     have.f_far16 = 1;
 #endif
                 } else if( !have.f_far && RecToken( "NEAR" ) ) {
-                    CurrAux->call_info &= ~FAR;
+                    CurrAux->cclass &= ~FAR;
                     have.f_far = 1;
                 } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-                    CurrAux->call_info |= LOAD_DS_ON_ENTRY;
+                    CurrAux->cclass |= LOAD_DS_ON_ENTRY;
                     have.f_loadds = 1;
 #endif
                 } else if( !have.f_export && RecToken( "EXPORT" ) ) {
-                    CurrAux->call_info |= DLL_EXPORT;
+                    CurrAux->cclass |= DLL_EXPORT;
                     have.f_export = 1;
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
                 } else if( !have.f_value && RecToken( "VALUE" ) ) {
                     GetRetInfo();
                     have.f_value = 1;
 #endif
                 } else if( !have.f_value && RecToken( "ABORTS" ) ) {
-                    CurrAux->call_info |= SUICIDAL;
+                    CurrAux->cclass |= SUICIDAL;
                     have.f_value = 1;
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
                 } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
                     GetSaveInfo();
                     have.f_modify = 1;
@@ -952,7 +951,7 @@ static  void    ScanFnToken() {
     TokEnd = ptr;
 }
 
-#if (( _TARGET == _8086 || _TARGET == _80386))
+#if (( _CPU == 8086 || _CPU == 386))
 static  void    TokUpper() {
 //==========================
 
@@ -1033,17 +1032,17 @@ void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
 //===========================================================
 
     if( dst != src ) {
-        dst->call_info = src->call_info;
-        dst->save_info = src->save_info;
-        dst->return_info = src->return_info;
-        dst->struct_info = src->struct_info;
-        if( src->parm_info != DefaultInfo.parm_info ) {
+        dst->cclass = src->cclass;
+        dst->save = src->save;
+        dst->returns = src->returns;
+        dst->streturn = src->streturn;
+        if( src->parms != DefaultInfo.parms ) {
             DupParmInfo( dst, src );
         }
-        if( src->call_bytes != DefaultInfo.call_bytes ) {
+        if( src->code != DefaultInfo.code ) {
             DupCallBytes( dst, src );
         }
-        if( src->object_name != DefaultInfo.object_name ) {
+        if( src->objname != DefaultInfo.objname ) {
             DupObjectName( dst, src );
         }
         DupArgInfo( dst, src );
@@ -1053,17 +1052,17 @@ void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
 
 static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
 //============================================================
-#if _TARGET == _8086 || _TARGET == _80386
+#if _CPU == 8086 || _CPU == 386
 
     byte_seq    *new_seq;
     uint        seq_len;
-    seq_len = src->call_bytes->length & ~DO_FLOATING_FIXUPS;
+    seq_len = src->code->length & ~DO_FLOATING_FIXUPS;
     new_seq = FMemAlloc( sizeof( byte_seq ) + seq_len );
-    memcpy( new_seq->data, src->call_bytes->data, seq_len );
-    dst->call_bytes = new_seq;
-    dst->call_bytes->length = src->call_bytes->length;
+    memcpy( new_seq->data, src->code->data, seq_len );
+    dst->code = new_seq;
+    dst->code->length = src->code->length;
 
-#elif _TARGET == _AXP || _TARGET == _PPC
+#elif _CPU == _AXP || _CPU == _PPC
 
     risc_byte_seq       *new_seq;
     uint                seq_len;
@@ -1072,15 +1071,15 @@ static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
     byte_seq_reloc      *head;
     byte_seq_reloc      *reloc;
 
-    seq_len = src->call_bytes->length;
+    seq_len = src->code->length;
     new_seq = FMemAlloc( sizeof( byte_seq ) + seq_len );
-    memcpy( new_seq->data, src->call_bytes->data, seq_len );
-    dst->call_bytes = new_seq;
-    dst->call_bytes->length = src->call_bytes->length;
+    memcpy( new_seq->data, src->code->data, seq_len );
+    dst->code = new_seq;
+    dst->code->length = src->code->length;
 
     head = NULL;
     lnk = &head;
-    for( reloc = src->call_bytes->relocs; reloc; reloc = reloc->next ) {
+    for( reloc = src->code->relocs; reloc; reloc = reloc->next ) {
         new = FMemAlloc( sizeof( byte_seq_reloc ) );
         new->off = reloc->off;
         new->type = reloc->type;
@@ -1089,7 +1088,7 @@ static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
         *lnk = new;
         lnk = &new->next;
     }
-    dst->call_bytes->relocs = head;
+    dst->code->relocs = head;
 
 #else
   #error Unknown Target
@@ -1104,7 +1103,7 @@ static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
     hw_reg_set  *reg_set;
     int         size;
 
-    reg_set = src->parm_info;
+    reg_set = src->parms;
     size = 0;
     while( !HW_CEqual( reg_set[ size ], HW_EMPTY ) ) {
         ++size;
@@ -1112,7 +1111,7 @@ static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
     ++size;
     new_reg_set = FMemAlloc( size * sizeof( hw_reg_set ) );
     memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
-    dst->parm_info = new_reg_set;
+    dst->parms = new_reg_set;
 }
 
 
@@ -1121,9 +1120,9 @@ static  void    DupObjectName( aux_info *dst, aux_info *src ) {
 
     char        *new_name;
 
-    new_name = FMemAlloc( strlen( src->object_name ) + sizeof( char ) );
-    strcpy( new_name, src->object_name );
-    dst->object_name = new_name;
+    new_name = FMemAlloc( strlen( src->objname ) + sizeof( char ) );
+    strcpy( new_name, src->objname );
+    dst->objname = new_name;
 }
 
 
@@ -1179,12 +1178,12 @@ static  void            ObjectName() {
     if( *(TokEnd - sizeof( char )) != '"' ) Suicide();
     obj_len = TokEnd - TokStart - 2*sizeof( char );
     name = FMemAlloc( obj_len + sizeof( char ) );
-    if( CurrAux->object_name != DefaultInfo.object_name ) {
-        FMemFree( CurrAux->object_name );
+    if( CurrAux->objname != DefaultInfo.objname ) {
+        FMemFree( CurrAux->objname );
     }
     memcpy( name, TokStart + sizeof( char ), obj_len );
     name[ obj_len ] = NULLCHAR;
-    CurrAux->object_name = name;
+    CurrAux->objname = name;
     ScanToken();
 }
 
@@ -1197,7 +1196,7 @@ enum    sym_state       AsmQueryExternal( char *name ) {
 }
 
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 enum    sym_type        AsmQueryType( char *name ) {
 //==================================================
 
@@ -1293,13 +1292,13 @@ static  void    InsertFixups( unsigned char *buff, unsigned i ) {
     seq = FMemAlloc( sizeof( byte_seq ) + i );
     seq->length = i | perform_fixups;
     memcpy( &seq->data, buff, i );
-    if( CurrAux->call_bytes != DefaultInfo.call_bytes ) {
-        FMemFree( CurrAux->call_bytes );
+    if( CurrAux->code != DefaultInfo.code ) {
+        FMemFree( CurrAux->code );
     }
-    CurrAux->call_bytes = seq;
+    CurrAux->code = seq;
 }
 
-#elif _TARGET == _AXP || _TARGET == _PPC
+#elif _CPU == _AXP || _CPU == _PPC
 
 uint_32 AsmQuerySPOffsetOf( char *name ) {
 //========================================
@@ -1333,14 +1332,14 @@ static  void    InsertFixups( unsigned char *buff, unsigned i ) {
     seq->relocs = head;
     seq->length = i;
     memcpy( &seq->data, buff, i );
-    if( CurrAux->call_bytes != DefaultInfo.call_bytes ) {
-        FMemFree( CurrAux->call_bytes );
+    if( CurrAux->code != DefaultInfo.code ) {
+        FMemFree( CurrAux->code );
     }
-    CurrAux->call_bytes = seq;
+    CurrAux->code = seq;
 }
 #endif
 
-#if _TARGET == _8086
+#if _CPU == 8086
 
 static  void    AddAFix( unsigned i, char *name, unsigned type,
                          unsigned long off ) {
@@ -1368,16 +1367,16 @@ static  void    GetByteSeq( void ) {
     int             len;
     char            *ptr;
     char            buff[MAXIMUM_BYTESEQ+32]; // extra for assembler
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     unsigned long   asm_CPU;
 #endif
-#if _TARGET == _8086
+#if _CPU == 8086
     bool            float_specified;
 
     float_specified = FALSE;
 #endif
     seq_len = 0;
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     asm_CPU = GetAsmCPUInfo();
 #endif
     for(;;) {
@@ -1398,7 +1397,7 @@ static  void    GetByteSeq( void ) {
             }
             ScanToken();
         } else if( RecToken( "FLOAT" ) ) {
-#if _TARGET == _8086
+#if _CPU == 8086
             AddAFix( seq_len, NULL, FIX_SEG, 0 );
 #endif
         } else {
@@ -1423,13 +1422,13 @@ static  void    GetByteSeq( void ) {
     }
     InsertFixups( buff, seq_len );
     AsmSymFini();
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     SetAsmCPUInfo( asm_CPU );
 #endif
 }
 
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 static  hw_reg_set      RegSet() {
 //================================
 
@@ -1478,7 +1477,7 @@ static  void            GetParmInfo() {
 // Collect argument information.
 
     struct {
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
         unsigned f_pop           : 1;
         unsigned f_reverse       : 1;
         unsigned f_loadds        : 1;
@@ -1488,7 +1487,7 @@ static  void            GetParmInfo() {
         unsigned f_args          : 1;
     } have;
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
     have.f_pop           = 0;
     have.f_reverse       = 0;
     have.f_loadds        = 0;
@@ -1500,28 +1499,28 @@ static  void            GetParmInfo() {
         if( !have.f_args && RecToken( "(" ) ) {
             GetArgList();
             have.f_args = 1;
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
         } else if( !have.f_pop && RecToken( "CALLER" ) ) {
-            CurrAux->call_info |= CALLER_POPS;
+            CurrAux->cclass |= CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_pop && RecToken( "ROUTINE" ) ) {
-            CurrAux->call_info &= ~CALLER_POPS;
+            CurrAux->cclass &= ~CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_reverse && RecToken( "REVERSE" ) ) {
             // arguments are processed in reverse order by default
-            CurrAux->call_info &= ~REVERSE_PARMS;
+            CurrAux->cclass |= REVERSE_PARMS;
             have.f_reverse = 1;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
-            CurrAux->call_info |= NO_MEMORY_READ;
+            CurrAux->cclass |= NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-            CurrAux->call_info |= LOAD_DS_ON_CALL;
+            CurrAux->cclass |= LOAD_DS_ON_CALL;
             have.f_loadds = 1;
         } else if( !have.f_list && CurrToken( "[" ) ) {
-            if( CurrAux->parm_info != DefaultInfo.parm_info ) {
-                FMemFree( CurrAux->parm_info );
+            if( CurrAux->parms != DefaultInfo.parms ) {
+                FMemFree( CurrAux->parms );
             }
-            CurrAux->parm_info = RegSets();
+            CurrAux->parms = RegSets();
             have.f_list = 1;
 #endif
         } else {
@@ -1558,36 +1557,36 @@ static  void    GetArgList() {
                     Error( PR_BAD_PARM_SIZE );
                     Suicide();
                 }
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
             } else if( RecToken( "FAR" ) ) {
                 pass_info |= ARG_FAR;
 
-                #if ( _TARGET == _8086 )
+                #if ( _CPU == 8086 )
                     pass_info |= ARG_SIZE_2;
-                #elif ( _TARGET == _80386 )
+                #elif ( _CPU == 386 )
                     pass_info |= ARG_SIZE_4;
                 #endif
 
             } else if( RecToken( "NEAR" ) ) {
                 pass_info |= ARG_NEAR;
 
-                #if ( _TARGET == _8086 )
+                #if ( _CPU == 8086 )
                     pass_info |= ARG_SIZE_2;
-                #elif ( _TARGET == _80386 )
+                #elif ( _CPU == 386 )
                     pass_info |= ARG_SIZE_4;
                 #endif
 
             } else {
-                #if ( _TARGET == _8086 )
+                #if ( _CPU == 8086 )
                     pass_info |= ARG_SIZE_2;
-                #elif ( _TARGET == _80386 )
+                #elif ( _CPU == 386 )
                     pass_info |= ARG_SIZE_4;
                 #endif
 #endif
             }
         } else if( RecToken( "REFERENCE" ) ) {
             pass_info |= PASS_BY_REFERENCE;
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
             if( RecToken( "FAR" ) ) {
                 pass_info |= ARG_FAR;
             } else if( RecToken( "NEAR" ) ) {
@@ -1601,7 +1600,7 @@ static  void    GetArgList() {
             }
         } else if( RecToken( "DATA_REFERENCE" ) ) {
             pass_info |= PASS_BY_DATA | PASS_BY_REFERENCE;
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
             if( RecToken( "FAR" ) ) {
                 pass_info |= ARG_FAR;
             } else if( RecToken( "NEAR" ) ) {
@@ -1623,7 +1622,7 @@ static  void    GetArgList() {
 }
 
 
-#if ( _TARGET == _8086 || _TARGET == _80386 )
+#if ( _CPU == 8086 || _CPU == 386 )
 static  void            GetRetInfo() {
 //====================================
 
@@ -1638,15 +1637,15 @@ static  void            GetRetInfo() {
     have.f_struct  = 0;
     // "3s" default is NO_8087_RETURNS - turn off NO_8087_RETURNS
     // flag so that "3s" model programs can use 387 pragmas
-    CurrAux->call_info &= ~NO_8087_RETURNS;
+    CurrAux->cclass &= ~NO_8087_RETURNS;
     for(;;) {
         if( !have.f_no8087 && RecToken( "NO8087" ) ) {
-            CurrAux->call_info |= NO_8087_RETURNS;
-            HW_CTurnOff( CurrAux->return_info, HW_FLTS );
+            CurrAux->cclass |= NO_8087_RETURNS;
+            HW_CTurnOff( CurrAux->returns, HW_FLTS );
             have.f_no8087 = 1;
         } else if( !have.f_list && RecToken( "[" ) ) {
-            CurrAux->call_info |= SPECIAL_RETURN;
-            CurrAux->return_info = RegSet();
+            CurrAux->cclass |= SPECIAL_RETURN;
+            CurrAux->returns = RegSet();
             have.f_list = 1;
         } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
             GetSTRetInfo();
@@ -1674,20 +1673,20 @@ static  void    GetSTRetInfo() {
     have.f_list   = 0;
     for(;;) {
         if( !have.f_float && RecToken( "FLOAT" ) ) {
-            CurrAux->call_info |= NO_FLOAT_REG_RETURNS;
+            CurrAux->cclass |= NO_FLOAT_REG_RETURNS;
             have.f_float = 1;
         } else if( !have.f_struct && RecToken( "STRUCT" ) ) {
-            CurrAux->call_info |= NO_STRUCT_REG_RETURNS;
+            CurrAux->cclass |= NO_STRUCT_REG_RETURNS;
             have.f_struct = 1;
         } else if( !have.f_allocs && RecToken( "ROUTINE" ) ) {
-            CurrAux->call_info |= ROUTINE_RETURN;
+            CurrAux->cclass |= ROUTINE_RETURN;
             have.f_allocs = 1;
         } else if( !have.f_allocs && RecToken( "CALLER" ) ) {
-            CurrAux->call_info &= ~ROUTINE_RETURN;
+            CurrAux->cclass &= ~ROUTINE_RETURN;
             have.f_allocs = 1;
         } else if( !have.f_list && RecToken( "[" ) ) {
-            CurrAux->call_info |= SPECIAL_STRUCT_RETURN;
-            CurrAux->struct_info = RegSet();
+            CurrAux->cclass |= SPECIAL_STRUCT_RETURN;
+            CurrAux->streturn = RegSet();
             have.f_list = 1;
         } else {
             break;
@@ -1714,10 +1713,10 @@ static  void            GetSaveInfo() {
     have.f_list     = 0;
     for(;;) {
         if( !have.f_exact && RecToken( "EXACT" ) ) {
-            CurrAux->call_info |= MODIFY_EXACT;
+            CurrAux->cclass |= MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && RecToken( "NOMEMORY" ) ) {
-            CurrAux->call_info |= NO_MEMORY_CHANGED;
+            CurrAux->cclass |= NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
         } else if( !have.f_list && RecToken( "[" ) ) {
             modlist = RegSet();
@@ -1727,16 +1726,16 @@ static  void            GetSaveInfo() {
         }
     }
     if( have.f_list ) {
-        HW_Asgn( default_flt_n_seg, DefaultInfo.save_info );
-        HW_CTurnOn( CurrAux->save_info, HW_FULL );
+        HW_Asgn( default_flt_n_seg, DefaultInfo.save );
+        HW_CTurnOn( CurrAux->save, HW_FULL );
         if( !have.f_exact && !(CGOpts & CGOPT_SEG_REGS) ) {
             HW_CAsgn( flt_n_seg, HW_FLTS );
             HW_CTurnOn( flt_n_seg, HW_SEGS );
-            HW_TurnOff( CurrAux->save_info, flt_n_seg );
+            HW_TurnOff( CurrAux->save, flt_n_seg );
             HW_OnlyOn( default_flt_n_seg, flt_n_seg );
-            HW_TurnOn( CurrAux->save_info, default_flt_n_seg );
+            HW_TurnOn( CurrAux->save, default_flt_n_seg );
         }
-        HW_TurnOff( CurrAux->save_info, modlist );
+        HW_TurnOff( CurrAux->save, modlist );
     }
 }
 #endif

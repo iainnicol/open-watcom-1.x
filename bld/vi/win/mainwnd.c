@@ -241,11 +241,11 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
     case WM_DROPFILES:
         hfileinfo = (HANDLE) wparam;
         cnt = DragQueryFile( hfileinfo, (UINT)-1, NULL, 0 );
-        buff = alloca( _MAX_PATH+2 );   /* we add a " at the beginning and at the end so we can handle path- and filenames with spaces */
+        buff = alloca( FILENAME_MAX+2 );   /* we add a " at the beginning and at the end so we can handle path- and filenames with spaces */
         if( buff != NULL ) {
             buff[0] = '"';      /* one " at the beginning of the filename */
             for( i=0;i<cnt;i++ ) {
-                if( DragQueryFile( hfileinfo, i, buff+1, _MAX_PATH ) == (UINT)-1 ) {
+                if( DragQueryFile( hfileinfo, i, buff+1, FILENAME_MAX ) == (UINT)-1 ) {
                     break;
                 }
                 strcat( buff, "\"" );
@@ -264,9 +264,9 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         if( WindowsKeyPush( wparam, HIWORD( lparam ) ) ) {
             return( FALSE );
         }
-        return( DefWindowProc( hwnd, msg, wparam, lparam ) );
+        return( DefFrameProc( hwnd, EditContainer, msg, wparam, lparam ) );
     case WM_SIZE:
-        DefWindowProc( hwnd, msg, wparam, lparam );
+        DefFrameProc( hwnd, EditContainer, msg, wparam, lparam );
         RootState = wparam;
         if( wparam != SIZE_MINIMIZED ) {
             ResizeRoot();
@@ -277,7 +277,7 @@ LONG WINEXP MainWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         }
         return( 0 );
     case WM_MOVE:
-        DefWindowProc( hwnd, msg, wparam, lparam );
+        DefFrameProc( hwnd, EditContainer, msg, wparam, lparam );
         if( RootState != SIZE_MINIMIZED ) {
             GetWindowRect( hwnd, &RootRect );
         }

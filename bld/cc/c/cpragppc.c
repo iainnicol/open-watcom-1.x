@@ -58,7 +58,6 @@ void PragmaInit( void )
 /*********************/
 {
     AsmFuncNum = 0;
-    PragInit();
 }
 
 static int GetAliasInfo( void )
@@ -127,7 +126,7 @@ void PragAux( void )
         if( CurToken == T_EQUAL ) {
             have.uses_auto = GetByteSeq();
         } else if( !have.f_export && PragRecog( "export" ) ) {
-            CurrInfo->class |= DLL_EXPORT;
+            CurrInfo->cclass |= DLL_EXPORT;
             have.f_export = 1;
         } else if( !have.f_parm && PragRecog( "parm" ) ) {
 //          GetParmInfo();
@@ -136,13 +135,13 @@ void PragAux( void )
 //          GetRetInfo();
             have.f_value = 1;
         } else if( !have.f_value && PragRecog( "aborts" ) ) {
-            CurrInfo->class |= SUICIDAL;
+            CurrInfo->cclass |= SUICIDAL;
             have.f_value = 1;
         } else if( !have.f_modify && PragRecog( "modify" ) ) {
 //          GetSaveInfo();
             have.f_modify = 1;
         } else if( !have.f_frame && PragRecog( "frame" ) ) {
-//          CurrInfo->class |= GENERATE_STACK_FRAME;
+//          CurrInfo->cclass |= GENERATE_STACK_FRAME;
             have.f_frame = 1;
         } else {
             break;

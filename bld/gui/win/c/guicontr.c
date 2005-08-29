@@ -172,7 +172,7 @@ control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
  *                    gui_window for the given class
  */
 
-control_item *GUIControlInsert( gui_window *parent, gui_control_class class,
+control_item *GUIControlInsert( gui_window *parent, gui_control_class control_class,
                                 HWND hwnd, gui_control_info *info,
                                 WPI_PROC call_back )
 {
@@ -182,7 +182,7 @@ control_item *GUIControlInsert( gui_window *parent, gui_control_class class,
     if( item == NULL ) {
         return( NULL );
     }
-    item->class = class;
+    item->control_class = control_class;
     item->text = info->text;
     item->style = info->style;
     item->checked = info->style & GUI_CHECKED;
@@ -209,13 +209,13 @@ control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent )
         return( NULL );
     }
     memset( item, 0, sizeof( control_item ) );
-    item->class = GUIGetControlClassFromHWND( hwnd );
-    if( item->class == BAD_CLASS ) {
+    item->control_class = GUIGetControlClassFromHWND( hwnd );
+    if( item->control_class == GUI_BAD_CLASS ) {
         GUIMemFree( item );
         return( NULL );
     }
 
-    item->style = GUIGetControlStylesFromHWND( hwnd, item->class );
+    item->style = GUIGetControlStylesFromHWND( hwnd, item->control_class );
 
     item->id = _wpi_getdlgctrlid( hwnd );
     item->next = NULL;
@@ -428,21 +428,21 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)call_back, hwnd, message, wparam, lparam ) );
 }
 
-WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class class )
+WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
 {
     WPI_PROC old;
     WPI_PROC new;
 
     //GUICtl3dSubclassCtl( hwnd );
 
-    switch( class ) {
+    switch( control_class ) {
     case GUI_EDIT_COMBOBOX :
         return( GUISubClassEditCombobox( hwnd ) );
     default :
-        if( GUIControls[class].call_back == NULL ) {
+        if( GUIControls[control_class].call_back == NULL ) {
             return( NULL );
         }
-        new = _wpi_makeprocinstance( (WPI_PROC) GUIControls[class].call_back,
+        new = _wpi_makeprocinstance( (WPI_PROC) GUIControls[control_class].call_back,
                                 GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
         return( old );
@@ -534,6 +534,25 @@ LONG GUISetControlStyle( gui_control_info *info )
             ret_style |= CBS_SORT;
         }
         break;
+#ifdef __OS2_PM__
+    case GUI_EDIT:
+        if( info->style & GUI_CONTROL_READONLY ) {
+            ret_style |= ES_READONLY;
+        }
+        break;
+    case GUI_EDIT_MLE:
+        if( info->style & GUI_CONTROL_READONLY ) {
+            ret_style |= MLS_READONLY;
+        }
+        break;
+#else
+    case GUI_EDIT:
+    case GUI_EDIT_MLE:
+        if( info->style & GUI_CONTROL_READONLY ) {
+            ret_style |= ES_READONLY;
+        }
+        break;
+#endif
     }
 
     return( ret_style );
@@ -594,7 +613,7 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
 
     if( LOBYTE(LOWORD(GetVersion())) >= 4) {
         /* In W95 and later we don't want this crud any more... RR 2003.12.8 */
-        
+
         classname = GUIControls[info->control_class].classname;
         if( lstrcmpi( classname, "Edit" ) == 0 ||
             lstrcmpi( classname, "Listbox" ) == 0 ||
@@ -765,10 +784,10 @@ bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
     control = GUIGetControlByID( wnd, id );
     if( control != NULL ) {
         hwnd = _wpi_getdlgitem( wnd->hwnd, id );
-        if( control->class == GUI_EDIT ) {
+        if( control->control_class == GUI_EDIT ) {
             _wpi_sendmessage( hwnd, EM_LIMITTEXT, len, 0 );
 #ifdef __OS2_PM__
-        } else if( len > 0  &&  control->class == GUI_EDIT_MLE ) {
+        } else if( len > 0  &&  control->control_class == GUI_EDIT_MLE ) {
             _wpi_sendmessage( hwnd, MLM_SETTEXTLIMIT, len, 0 );
 #endif
         }

@@ -1029,33 +1029,20 @@ void CPragma()                  // PROCESS A PRAGMA
 }
 
 
-void PragInitDefaultInfo(
-    void )
-{
-    DefaultInfo._class = 0;
-    DefaultInfo.code = NULL;
-    DefaultInfo.parms = DefaultParms;
-    HW_CAsgn( DefaultInfo.returns, HW_EMPTY );
-    HW_CAsgn( DefaultInfo.streturn, HW_EMPTY );
-    HW_CAsgn( DefaultInfo.save, HW_FULL );
-    DefaultInfo.use = 0;
-    DefaultInfo.objname = NULL;
-}
-
-
 void PragInit(
     void )
 {
-    DefaultInfo.use = 2;
+    WatcallInfo.use = 2;
 
-    CdeclInfo = DefaultInfo;
-    PascalInfo = DefaultInfo;
-    FortranInfo = DefaultInfo;
-    SyscallInfo = DefaultInfo;
-    OptlinkInfo = DefaultInfo;
-    StdcallInfo = DefaultInfo;
+    CdeclInfo    = WatcallInfo;
+    PascalInfo   = WatcallInfo;
+    FortranInfo  = WatcallInfo;
+    SyscallInfo  = WatcallInfo;
+    OptlinkInfo  = WatcallInfo;
+    StdcallInfo  = WatcallInfo;
+    FastcallInfo = WatcallInfo;
 
-    FastcallInfo.use = 2;
+    DefaultInfo = *DftCallConv;
 
     CompInfo.init_priority = INIT_PRIORITY_PROGRAM;
 }
@@ -1091,6 +1078,7 @@ static MAGIC_WORD magicWords[] = {
     { "fastcall",   M_FASTCALL},
     { "syscall",    M_SYSCALL },
     { "system",     M_SYSCALL },
+    { "watcall",    M_WATCALL },
     { NULL,         M_UNKNOWN },
 };
 
@@ -1179,6 +1167,9 @@ static boolean setAuxInfo(          // SET CURRENT INFO. STRUCTURE
     case M_FASTCALL:
         CurrInfo = &FastcallInfo;
         break;
+    case M_WATCALL:
+        CurrInfo = &WatcallInfo;
+        break;
     default:
         if( create_new ) {
             CreateAux( Buffer );
@@ -1211,6 +1202,8 @@ boolean PragmaName( void *pragma, char **id )
         *id = retrieveName( M_STDCALL );
     } else if( pragma == &FastcallInfo ) {
         *id = retrieveName( M_FASTCALL );
+    } else if( pragma == &WatcallInfo ) {
+        *id = retrieveName( M_WATCALL );
     }
     if( *id != NULL ) {
         return( TRUE );
@@ -1261,6 +1254,9 @@ void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
         break;
     case M_FASTCALL:
         CurrAlias = &FastcallInfo;
+        break;
+    case M_WATCALL:
+        CurrAlias = &WatcallInfo;
         break;
     default:
         search = AuxLookup( Buffer );
@@ -1520,7 +1516,7 @@ boolean ReverseParms( void *pragma )
 {
     AUX_INFO *aux = pragma;
 
-    if( aux->_class & REVERSE_PARMS ) {
+    if( aux->cclass & REVERSE_PARMS ) {
         return( TRUE );
     }
     return( FALSE );

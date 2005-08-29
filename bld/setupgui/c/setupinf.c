@@ -274,6 +274,7 @@ static struct force_DLL_install {
 
 static struct all_pm_groups {
     char        *group;
+    char        *group_file_name;
 } *AllPMGroups = NULL;
 
 typedef enum {
@@ -1020,7 +1021,7 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg )
     char                *file_name;
     unsigned int        rows;
     bool                rc = TRUE;
-    FILE                *fp;
+    void                *io;
     struct stat         buf;
     char                dummy_var[ DUMMY_VAR_SIZE ];
     vhandle             var_handle;
@@ -1038,14 +1039,14 @@ static bool dialog_textwindow( char *next, DIALOG_INFO *dlg )
     } else {
         if( *line == '@' ) {
             GUIStrDup( line + 1, &file_name );
-            fp = fopen( file_name, "rb" );
-            if( fp != NULL ) {
-                stat( file_name, &buf );
+            io = FileOpen( file_name, O_RDONLY + O_BINARY );
+            if( io != NULL ) {
+                FileStat( file_name, &buf );
                 text = GUIMemAlloc( buf.st_size + 1 );  // 1 for terminating null
                 if( text != NULL ) {
-                    fread( text, sizeof( *text ), buf.st_size, fp );
+                    FileRead( io, text, buf.st_size );
                     text[ buf.st_size ] = '\0';
-                    fclose( fp );
+                    FileClose( io );
                 }
             }
             GUIMemFree( file_name );
@@ -1792,6 +1793,7 @@ static bool ProcLine( char *line, pass_type pass )
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( FALSE );
             GUIStrDup( line, &AllPMGroups[ num ].group );
+            GUIStrDup( SetupInfo.pm_group_file_name, &AllPMGroups[ num ].group_file_name );
             if( next == NULL ) {
                 SetupInfo.pm_group_icon = NULL;
             } else {
@@ -2013,6 +2015,8 @@ static bool ProcLine( char *line, pass_type pass )
         GUIStrDup( line, &PMInfo[num].desc );
         if( tmp ) {
             GUIStrDup( line, &AllPMGroups[ SetupInfo.all_pm_groups.num ].group );
+            GUIStrDup( PMInfo[num].parameters,
+                       &AllPMGroups[ SetupInfo.all_pm_groups.num ].group_file_name );
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( FALSE );
         }
@@ -3019,6 +3023,12 @@ extern void SimGetPMGroupName( int parm, char *buff )
 /***************************************************/
 {
     strcpy( buff, AllPMGroups[ parm ].group );
+}
+
+extern void SimGetPMGroupFName( int parm, char *buff )
+/****************************************************/
+{
+    strcpy( buff, AllPMGroups[ parm ].group_file_name );
 }
 
 /*
@@ -4235,6 +4245,7 @@ static void FreeAllPMGroups( void )
     if( AllPMGroups != NULL ) {
         for( i = 0; i < SetupInfo.all_pm_groups.num; i++ ) {
             GUIMemFree( AllPMGroups[i].group );
+            GUIMemFree( AllPMGroups[i].group_file_name );
         }
         GUIMemFree( AllPMGroups );
         AllPMGroups = NULL;

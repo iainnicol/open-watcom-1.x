@@ -48,16 +48,7 @@ extern  TREEPTR     CurFuncNode;
 
 static  int             AsmFuncNum;
 static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  hw_reg_set      StackParms[] = { HW_D( HW_EMPTY ) };
 #if _CPU == 386
-static  hw_reg_set      OptlinkParms[] = {
-    HW_D_4( HW_EAX, HW_ECX, HW_EDX, HW_FLTS ),
-    HW_D( HW_EMPTY )
-};
-static  hw_reg_set      FastcallParms[] = {
-    HW_D( HW_ECX ), HW_D( HW_EDX ),
-    HW_D( HW_EMPTY )
-};
 static  hw_reg_set      STOSBParms[] = {
     HW_D( HW_EAX ), HW_D( HW_EDX ), HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
@@ -69,7 +60,6 @@ static unsigned long    asm_CPU;
 void PragmaInit( void )
 /*********************/
 {
-    call_class  call_type;
     int         cpu;
     int         fpu;
     int         use32;
@@ -98,141 +88,11 @@ void PragmaInit( void )
 
     AsmInit( cpu, fpu, use32, 1 );
 
-    PragInit();
-
     HeadLibs = NULL;
 
-    /* predefine "cdecl" and "pascal" pragmas  18-aug-90 */
-
-    call_type = ( WatcallInfo.class & FAR );
-    CdeclInfo.class =    call_type |
-#if _CPU == 8086
-                         LOAD_DS_ON_CALL |
-#endif
-                         //REVERSE_PARMS |
-                         CALLER_POPS |
-                         NO_FLOAT_REG_RETURNS |
-                         NO_STRUCT_REG_RETURNS |
-                         ROUTINE_RETURN |
-                         //NO_8087_RETURNS |
-                         //SPECIAL_RETURN |
-                         SPECIAL_STRUCT_RETURN;
-    CdeclInfo.objname = CStrSave( "_*" );
-    CdeclInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
-    memcpy( CdeclInfo.parms, StackParms, sizeof( StackParms ) );
-    HW_CAsgn( CdeclInfo.returns, HW_EMPTY );
-
-    PascalInfo.class =   call_type |
-                         REVERSE_PARMS |
-                         //CALLER_POPS |
-                         NO_FLOAT_REG_RETURNS |
-                         NO_STRUCT_REG_RETURNS |
-                         //ROUTINE_RETURN |
-                         //NO_8087_RETURNS |
-                         //SPECIAL_RETURN |
-                         SPECIAL_STRUCT_RETURN;
-    PascalInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
-    memcpy( PascalInfo.parms, StackParms, sizeof( StackParms ) );
-    PascalInfo.objname = CStrSave( "^" );
-    HW_CAsgn( PascalInfo.returns, HW_EMPTY );
-
-    FortranInfo.objname = CStrSave( "^" );
-
-    StdcallInfo.class =  call_type |
-                         //REVERSE_PARMS |
-                         //CALLER_POPS |
-                         //NO_FLOAT_REG_RETURNS |
-                         //NO_STRUCT_REG_RETURNS |
-                         //ROUTINE_RETURN |
-                         //NO_8087_RETURNS |
-                         //SPECIAL_RETURN |
-                         SPECIAL_STRUCT_RETURN;
-    if( CompFlags.use_stdcall_at_number ) {
-        StdcallInfo.objname = CStrSave( "_*#" );
-    } else {
-        StdcallInfo.objname = CStrSave( "_*" );
-    }
-    StdcallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
-    memcpy( StdcallInfo.parms, StackParms, sizeof( StackParms ) );
-    HW_CAsgn( StdcallInfo.returns, HW_EMPTY );
-
+    PragmaAuxCallInfoInit( WatcallInfo.cclass & FAR, CompFlags.use_stdcall_at_number );
+    
 #if _CPU == 386
-    FastcallInfo.class = call_type |
-                         //REVERSE_PARMS |
-                         //CALLER_POPS |
-                         //NO_FLOAT_REG_RETURNS |
-                         //NO_STRUCT_REG_RETURNS |
-                         //ROUTINE_RETURN |
-                         //NO_8087_RETURNS |
-                         //SPECIAL_RETURN |
-                         SPECIAL_STRUCT_RETURN;
-    FastcallInfo.objname = CStrSave( "@*#" );
-    FastcallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( FastcallParms ) );
-    memcpy( FastcallInfo.parms, FastcallParms, sizeof( FastcallParms ) );
-#endif
-
-    OptlinkInfo.class =  call_type |
-#ifdef PARMS_STACK_RESERVE
-                         PARMS_STACK_RESERVE |
-#endif
-                         //REVERSE_PARMS |
-                         CALLER_POPS  |
-                         //NO_FLOAT_REG_RETURNS |
-                         NO_STRUCT_REG_RETURNS |
-                         //ROUTINE_RETURN |
-                         //NO_8087_RETURNS |
-                         //SPECIAL_RETURN |
-                         SPECIAL_STRUCT_RETURN;
-    OptlinkInfo.objname = CStrSave( "*" );
-#if _CPU == 386
-    OptlinkInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( OptlinkParms ) );
-    memcpy( OptlinkInfo.parms, OptlinkParms, sizeof( OptlinkParms ) );
-#else
-    OptlinkInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
-    memcpy( OptlinkInfo.parms, StackParms, sizeof( StackParms ) );
-#endif
-    HW_CAsgn( OptlinkInfo.returns, HW_FLTS );
-
-    SyscallInfo.class =  //REVERSE_PARMS |
-                         CALLER_POPS |
-                         //NO_FLOAT_REG_RETURNS |
-                         NO_STRUCT_REG_RETURNS |
-                         //ROUTINE_RETURN |
-                         //NO_8087_RETURNS |
-                         //SPECIAL_RETURN |
-                         SPECIAL_STRUCT_RETURN;
-    SyscallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
-    memcpy( SyscallInfo.parms, StackParms, sizeof( StackParms ) );
-    SyscallInfo.objname = CStrSave( "*" );
-
-#if _CPU == 386
-    HW_CAsgn( CdeclInfo.streturn, HW_EAX );
-    HW_CTurnOff( CdeclInfo.save, HW_EAX );
-    HW_CTurnOff( CdeclInfo.save, HW_ECX );
-    HW_CTurnOff( CdeclInfo.save, HW_EDX );
-
-    HW_CTurnOff( PascalInfo.save, HW_EAX );
-    HW_CTurnOff( PascalInfo.save, HW_EBX );
-    HW_CTurnOff( PascalInfo.save, HW_ECX );
-    HW_CTurnOff( PascalInfo.save, HW_EDX );
-
-    HW_CTurnOff( StdcallInfo.save, HW_EAX );
-    HW_CTurnOff( StdcallInfo.save, HW_ECX );
-    HW_CTurnOff( StdcallInfo.save, HW_EDX );
-
-    HW_CTurnOff( FastcallInfo.save, HW_EAX );
-    HW_CTurnOff( FastcallInfo.save, HW_ECX );
-    HW_CTurnOff( FastcallInfo.save, HW_EDX );
-
-    HW_CTurnOff( SyscallInfo.save, HW_EAX );
-    HW_CTurnOn ( SyscallInfo.save, HW_EBX );
-    HW_CTurnOff( SyscallInfo.save, HW_ECX );
-    HW_CTurnOff( SyscallInfo.save, HW_EDX );
-
-    HW_CTurnOff( OptlinkInfo.save, HW_EAX );
-    HW_CTurnOff( OptlinkInfo.save, HW_ECX );
-    HW_CTurnOff( OptlinkInfo.save, HW_EDX );
-
     HW_CTurnOff( AsmRegsSaved, HW_EAX );
     HW_CTurnOff( AsmRegsSaved, HW_EBX );
     HW_CTurnOff( AsmRegsSaved, HW_ECX );
@@ -240,25 +100,6 @@ void PragmaInit( void )
     HW_CTurnOff( AsmRegsSaved, HW_ESI );
     HW_CTurnOff( AsmRegsSaved, HW_EDI );
 #else
-    HW_CAsgn( CdeclInfo.streturn, HW_AX );
-    HW_CTurnOff( CdeclInfo.save, HW_ABCD );
-    HW_CTurnOff( CdeclInfo.save, HW_ES );
-
-    HW_CTurnOff( PascalInfo.save, HW_ABCD );
-    HW_CTurnOff( PascalInfo.save, HW_ES );
-
-    HW_CAsgn( StdcallInfo.streturn, HW_AX );
-    HW_CTurnOff( StdcallInfo.save, HW_ABCD );
-    HW_CTurnOff( StdcallInfo.save, HW_ES );
-
-    /* roughly like pascal */
-    HW_CTurnOff( SyscallInfo.save, HW_ABCD );
-    HW_CTurnOff( SyscallInfo.save, HW_ES );
-
-    /* roughly like pascal */
-    HW_CTurnOff( OptlinkInfo.save, HW_ABCD );
-    HW_CTurnOff( OptlinkInfo.save, HW_ES );
-
     HW_CTurnOff( AsmRegsSaved, HW_ABCD );
     HW_CTurnOff( AsmRegsSaved, HW_SI );
     HW_CTurnOff( AsmRegsSaved, HW_DI );
@@ -270,29 +111,12 @@ void PragmaInit( void )
        an aux_entry, so we don't have to worry about them
        or their fields being freed */
 
-    call_type = NO_FLOAT_REG_RETURNS |
-                NO_STRUCT_REG_RETURNS |
-                SPECIAL_STRUCT_RETURN;
-
     STOSBInfo = WatcallInfo;
-    STOSBInfo.class = call_type;
+    STOSBInfo.cclass = NO_FLOAT_REG_RETURNS |
+                       NO_STRUCT_REG_RETURNS |
+                       SPECIAL_STRUCT_RETURN;
     STOSBInfo.parms = STOSBParms;
     STOSBInfo.objname = "*";
-
-
-    /*
-     * These are not freed when we shut down so we can't just point at the
-     * CdeclInfo parms etc. Do not call FreeInfo on these. BBB
-     */
-
-    Far16CdeclInfo = CdeclInfo;
-    Far16CdeclInfo.class |= FAR16_CALL;
-    // __far16 __cdecl depends on EBX being trashed in __cdecl
-    // but NT 386 __cdecl preserves EBX
-    HW_CTurnOff( Far16CdeclInfo.save, HW_EBX );
-
-    Far16PascalInfo = PascalInfo;
-    Far16PascalInfo.class |= FAR16_CALL;
 #endif
 
     DefaultInfo = *DftCallConv;
@@ -371,16 +195,16 @@ void PragAux( void )
             have.uses_auto = GetByteSeq();
             have.f_call = 1;
         } else if( !have.f_call && PragRecog( "far" ) ) {
-            CurrInfo->class |= FAR;
+            CurrInfo->cclass |= FAR;
             have.f_call = 1;
         } else if( !have.f_call && PragRecog( "near" ) ) {
-            CurrInfo->class &= ~FAR;
+            CurrInfo->cclass &= ~FAR;
             have.f_call = 1;
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
-            CurrInfo->class |= LOAD_DS_ON_ENTRY;
+            CurrInfo->cclass |= LOAD_DS_ON_ENTRY;
             have.f_loadds = 1;
         } else if( !have.f_export && PragRecog( "export" ) ) {
-            CurrInfo->class |= DLL_EXPORT;
+            CurrInfo->cclass |= DLL_EXPORT;
             have.f_export = 1;
         } else if( !have.f_parm && PragRecog( "parm" ) ) {
             GetParmInfo();
@@ -389,13 +213,13 @@ void PragAux( void )
             GetRetInfo();
             have.f_value = 1;
         } else if( !have.f_value && PragRecog( "aborts" ) ) {
-            CurrInfo->class |= SUICIDAL;
+            CurrInfo->cclass |= SUICIDAL;
             have.f_value = 1;
         } else if( !have.f_modify && PragRecog( "modify" ) ) {
             GetSaveInfo();
             have.f_modify = 1;
         } else if( !have.f_frame && PragRecog( "frame" ) ) {
-            CurrInfo->class |= GENERATE_STACK_FRAME;
+            CurrInfo->cclass |= GENERATE_STACK_FRAME;
             have.f_frame = 1;
         } else {
             break;
@@ -498,7 +322,7 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
 }
 
 /* matches enum DataType in ctypes.h */
-static enum sym_type AsmDataType[] = {
+static enum sym_type AsmDataType[TYPE_LAST_ENTRY] = {
         SYM_INT1,       /* TYPE_CHAR,*/
         SYM_INT1,       /* TYPE_UCHAR,*/
         SYM_INT2,       /* TYPE_SHORT,*/
@@ -532,7 +356,6 @@ static enum sym_type AsmDataType[] = {
         SYM_FLOAT8,     /* TYPE_DIMAGINARY, */
         SYM_FLOAT10,    /* TYPE_LDIMAGINARY, */
         SYM_INT1,       /* TYPE_BOOL, */
-        0,              /* TYPE_UNUSED,  */
 };
 
 local int AsmType( TYPEPTR typ, type_modifiers flags )
@@ -945,19 +768,19 @@ local void GetParmInfo( void )
     have.f_list          = 0;
     for( ;; ) {
         if( !have.f_pop && PragRecog( "caller" ) ) {
-            CurrInfo->class |= CALLER_POPS;
+            CurrInfo->cclass |= CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_pop && PragRecog( "routine" ) ) {
-            CurrInfo->class &= ~ CALLER_POPS;
+            CurrInfo->cclass &= ~ CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_reverse && PragRecog( "reverse" ) ) {
-            CurrInfo->class |= REVERSE_PARMS;
+            CurrInfo->cclass |= REVERSE_PARMS;
             have.f_reverse = 1;
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
-            CurrInfo->class |= NO_MEMORY_READ;
+            CurrInfo->cclass |= NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
-            CurrInfo->class |= LOAD_DS_ON_CALL;
+            CurrInfo->cclass |= LOAD_DS_ON_CALL;
             have.f_loadds = 1;
         } else if( !have.f_list && PragSet() != T_NULL ) {
             PragManyRegSets();
@@ -981,15 +804,15 @@ local void GetRetInfo( void )
     have.f_no8087  = 0;
     have.f_list    = 0;
     have.f_struct  = 0;
-    CurrInfo->class &= ~ NO_8087_RETURNS;               /* 29-mar-90 */
+    CurrInfo->cclass &= ~ NO_8087_RETURNS;               /* 29-mar-90 */
     for( ;; ) {
         if( !have.f_no8087 && PragRecog( "no8087" ) ) {
             have.f_no8087 = 1;
             HW_CTurnOff( CurrInfo->returns, HW_FLTS );
-            CurrInfo->class |= NO_8087_RETURNS;
+            CurrInfo->cclass |= NO_8087_RETURNS;
         } else if( !have.f_list && PragSet() != T_NULL ) {
             have.f_list = 1;
-            CurrInfo->class |= SPECIAL_RETURN;
+            CurrInfo->cclass |= SPECIAL_RETURN;
             CurrInfo->returns = PragRegList();
         } else if( !have.f_struct && PragRecog( "struct" ) ) {
             have.f_struct = 1;
@@ -1018,19 +841,19 @@ local void GetSTRetInfo( void )
     for( ;; ) {
         if( !have.f_float && PragRecog( "float" ) ) {
             have.f_float = 1;
-            CurrInfo->class |= NO_FLOAT_REG_RETURNS;
+            CurrInfo->cclass |= NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecog( "struct" ) ) {
             have.f_struct = 1;
-            CurrInfo->class |= NO_STRUCT_REG_RETURNS;
+            CurrInfo->cclass |= NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecog( "routine" ) ) {
             have.f_allocs = 1;
-            CurrInfo->class |= ROUTINE_RETURN;
+            CurrInfo->cclass |= ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecog( "caller" ) ) {
             have.f_allocs = 1;
-            CurrInfo->class &= ~ROUTINE_RETURN;
+            CurrInfo->cclass &= ~ROUTINE_RETURN;
         } else if( !have.f_list && PragSet() != T_NULL ) {
             have.f_list = 1;
-            CurrInfo->class |= SPECIAL_STRUCT_RETURN;
+            CurrInfo->cclass |= SPECIAL_STRUCT_RETURN;
             CurrInfo->streturn = PragRegList();
         } else {
             break;
@@ -1057,10 +880,10 @@ local void GetSaveInfo( void )
     have.f_list     = 0;
     for( ;; ) {
         if( !have.f_exact && PragRecog( "exact" ) ) {
-            CurrInfo->class |= MODIFY_EXACT;
+            CurrInfo->cclass |= MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
-            CurrInfo->class |= NO_MEMORY_CHANGED;
+            CurrInfo->cclass |= NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
         } else if( !have.f_list && PragSet() != T_NULL ) {
             modlist = PragRegList();
