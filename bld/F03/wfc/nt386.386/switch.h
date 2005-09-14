@@ -32,7 +32,6 @@
 
 //#define _DEVELOPMENT    _OFF  // are we developing? not used ?
 #define _MEMTRACK       _ON     // memory tracking during development?
-#define _8087           _OFF    // 8087 present?
 #define _OBJECT         _OFF    // generate object files?
 #define _CSET           _ASCII  // character set?
 #define _CPU            386     // target machine?
