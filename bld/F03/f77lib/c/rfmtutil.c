@@ -24,20 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Run-time formatted I/O utility routines
 *
 ****************************************************************************/
 
 
-//
-// RFMTUTIL     : Run-time formatted I/O utility routines
-//
-
 #include "ftnstd.h"
 #include "rundat.h"
 #include "errcod.h"
-#include "parmtype.h"
 #include "fmtdef.h"
 #include "intcnv.h"
 #include "target.h"
@@ -45,6 +39,7 @@
 #include "undefrtn.h"
 #include "fltcnv.h"
 #include "fmath.h"
+#include "rmemmgr.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -62,7 +57,6 @@ extern  void            R_F2E(extended,char *,int,int,bool,int,int,char);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 extern  int             FmtS2F(char *,int,int,bool,int,int,extended *,bool,int *,bool);
 extern  void            *RChkAlloc(uint);
-extern  void            RMemFree(void *);
 extern  void            SetMaxPrec(int);
 extern  void            BToHS(char *,int,char *);
 extern  byte            Hex(byte);
@@ -114,6 +108,15 @@ static  const byte __FAR        DataSize[] = {
             sizeof( extended ) };
 
 
+void    R_ChkType( PTYPE lower, PTYPE upper ) {
+//===========================================
+
+    if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
+        IOErr( IO_FMT_MISMATCH );
+    }
+}
+
+
 void    R_NewRec() {
 //==================
 
@@ -153,15 +156,6 @@ void    R_ChkFType() {
         IOCB->typ = PT_REAL_4;
     }
     R_ChkType( PT_REAL_4, PT_CPLX_32 );
-}
-
-
-void    R_ChkType( byte lower, byte upper ) {
-//===========================================
-
-    if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
-        IOErr( IO_FMT_MISMATCH );
-    }
 }
 
 
@@ -336,7 +330,7 @@ void    R_FIFloat() {
     extended     value;
     fmt2 PGM    *fmtptr;
     ftnfile     *fcb;
-    byte        typ;
+    PTYPE       typ;
     int         prec;
     int         status;
     bool        comma;
@@ -411,7 +405,7 @@ void    R_FIFloat() {
 bool    GetReal( extended *value ) {
 //================================
 
-    int         typ;
+    PTYPE       typ;
     single      *short_flt;
     bool        defined;
 
@@ -528,8 +522,8 @@ void    R_FOE( int exp, char ch ) {
 }
 
 
-bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
-//========================================================================
+bool    FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
+//==========================================================================
 
     char        ch1;
     byte        ch2;
@@ -600,7 +594,7 @@ void    R_FIHex() {
     uint        width;
     int         len;
     ftnfile     *fcb;
-    byte        typ;
+    PTYPE       typ;
     void        PGM *ptr;
 
     fcb = IOCB->fileinfo;
@@ -646,7 +640,7 @@ void    FOHex( uint width ) {
     uint        len;
     int         trunc;
     ftnfile     *fcb;
-    byte        typ;
+    PTYPE       typ;
     char        *buff;
 
     fcb = IOCB->fileinfo;

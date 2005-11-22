@@ -24,57 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Run and compile-time constants indicating parameter type
+*               and attributes
 *
 ****************************************************************************/
 
+/**************** IMPORTANT NOTE *******************************
+
+  data in files:  ptypes.inc, ptypes.h and ptypdefn.h 
+  
+  must corespond each to other
+
+****************************************************************/
 
 //
-// RINSERT   : runtime error message stuff
+// Run and compile-time consts indicating parameter type and attributes
+// NOTE: These constants should stay in the following order.
+//       ( routines rely on them being sequential )
 //
 
-#include "ftnstd.h"
-#include "errcod.h"
+#ifdef pick
+#undef pick
+#endif
 
-extern  void            RTErr(int errcode,...);
+#define pick(id,typ) id,
 
-extern  char            *TypeKW[];
-extern  char            *PrmCodTab[];
+enum PARAM_TYPES {
+#include "ptypdefn.h"
 
+  VAR_LEN_CHAR = 0x80
+};
 
-char    *MapType( int rttype ) {
-//==============================
-
-    return( TypeKW[ rttype - 1 ] );
-}
-
-
-void    PrmCod( int errcode, int argno, int act ) {
-//=================================================
-
-    RTErr( errcode, argno, PrmCodTab[ act ] );
-}
-
-
-void    PrmCodCo( int errcode, int argno, char *argname, char *sp, int act,
-                  int dum ) {
-//===========================
-
-    RTErr( errcode, argno, argname, sp, PrmCodTab[ act ], PrmCodTab[ dum ] );
-}
-
-
-void    PrmTypTy( int errcode, int argno, char *argname, char *sp, int act,
-                  int dum ) {
-//===========================
-
-    RTErr( errcode, argno, argname, sp, MapType( act ), MapType( dum ) );
-}
-
-
-void    DatTypMis( int errcode, int ty1, int ty2 ) {
-//==================================================
-
-    RTErr( errcode, MapType( ty1 ), MapType( ty2 ) );
-}
+typedef enum PARAM_TYPES PTYPE;

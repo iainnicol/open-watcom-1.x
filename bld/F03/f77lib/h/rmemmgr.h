@@ -24,34 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  FORTRAN run-time memory manager routine prototypes
 *
 ****************************************************************************/
 
+#include <stdlib.h>
 
-#ifndef _IOTYPE_H_INCLUDED
-#define _IOTYPE_H_INCLUDED
-
-typedef PTYPE (io_type_rtn)(void);
-
-#if !defined( __AXP__ ) && !defined(__PPC__)
-#ifdef __386__
-  #pragma aux io_type_decl modify [eax ebx ecx edx esi edi];
-#else
-  #if defined( __SMALL__ ) || defined( __MEDIUM__ ) || defined( __WINDOWS__ )
-    #pragma aux io_type_decl modify [ax bx cx dx si di es];
-  #else
-    #pragma aux io_type_decl modify [ax bx cx dx si di ds es];
-  #endif
-#endif
-
-#pragma aux ( io_type_rtn, io_type_decl )
-#endif
-
-extern  io_type_rtn             IOType;         // for optimizing compiler
-extern  io_type_rtn             FC_IOType;      // for load'n go compiler
-
-gbl_defn io_type_rtn            *IOTypeRtn;
-
-#endif
+extern void     *RMemAlloc( size_t size );
+extern void     RMemFree( void *ptr );
