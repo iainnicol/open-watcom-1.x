@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  simple control structure F-Code processor
 *
 ****************************************************************************/
 
-
-//
-// FCFLOW       : simple control structure F-Code processor
-//
 
 #include "ftnstd.h"
 #include "global.h"
@@ -45,7 +40,7 @@
 #include "fcodes.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -89,7 +84,7 @@ extern  unsigned_32     GetStmtNum(sym_id);
 extern  void            XPopCmplx(cg_cmplx *,cg_type);
 extern  cg_type         CmplxBaseType(cg_type);
 extern  cg_type         GetType(unsigned_16);
-extern  bool            IntType(int);
+extern  bool            IntType(PTYPE);
 extern  void            FCodeSequence(void);
 extern  void            SplitCmplx(cg_name,cg_type);
 extern  tmp_handle      MkTmp(cg_name,cg_type);

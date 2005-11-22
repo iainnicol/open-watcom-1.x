@@ -38,18 +38,13 @@
 #include "fcodes.h"
 #include "global.h"
 #include "opn.h"
-#include "objutil.h"
+#include "optr.h"
+#include "emitobj.h"
 
 extern  void            AsgnChar(void);
-extern  void            SetOpn(itnode *,int);
-extern  void            EmitOp(unsigned_16);
-extern  sym_id          SymRef(itnode *);
-extern  void            GenTypes(itnode *,itnode *);
-extern  void            PushOpn(itnode *);
 
-
-void    AsgnOp( int typ1, int typ2, int opr ) {
-//=============================================
+void    AsgnOp( TYPE typ1, TYPE typ2, OPTR opr ) {
+//================================================
 
 // Generate code to perform an assign operation.
 
@@ -61,11 +56,11 @@ void    AsgnOp( int typ1, int typ2, int opr ) {
         SymRef( CITNode );
         GenTypes( CITNode, CITNode->link );
         if( CITNode->sym_ptr->ns.typ == TY_STRUCTURE ) {
-            if( CITNode->opn & OPN_SAFE ) {
+            if( CITNode->opn.us & USOPN_SAFE ) {
                 // destination is a sub-field or an array element
                 OutU16( 1 );
                 if( CITNode->typ == TY_STRUCTURE ) {
-                    if( CITNode->opn & OPN_FLD ) {
+                    if( CITNode->opn.us & USOPN_FLD ) {
                         // sub-field is a structure
                         OutPtr( CITNode->value.st.field_id );
                     } else {
@@ -79,5 +74,5 @@ void    AsgnOp( int typ1, int typ2, int opr ) {
             }
         }
     }
-    SetOpn( CITNode, OPN_SAFE ); // CGAssign() leaves "cg_name" on stack
+    SetOpn( CITNode, USOPN_SAFE ); // CGAssign() leaves "cg_name" on stack
 }

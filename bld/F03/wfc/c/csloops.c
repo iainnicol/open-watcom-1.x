@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  processing for all looping structures
 *
 ****************************************************************************/
 
-
-//
-// CSLOOPS   : processing for all looping structures
-//
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -63,7 +58,7 @@ extern  unsigned_32     LkUpDoTerm(void);
 extern  sym_id          STShadow(sym_id);
 extern  void            STUnShadow(sym_id);
 extern  void            Recurse(void);
-extern  void            GDoInit(int);
+extern  void            GDoInit(TYPE);
 extern  void            GDoEnd(void);
 extern  void            FreeLabel(label_id);
 extern  void            RemKeyword(itnode *,int);
@@ -134,7 +129,7 @@ void    CpWhile() {
         BlockLabel();
     } else if( RecKeyWord( "DO" ) &&
                ( RecNextOpr( OPR_TRM ) || RecNextOpr( OPR_COL ) ) ) {
-        CITNode->opn = OPN_PHI;
+        CITNode->opn.ds = DSOPN_PHI;
         BlockLabel();
     } else {
         Recurse();

@@ -37,16 +37,9 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcodes.h"
-#include "objutil.h"
+#include "emitobj.h"
 
-
-extern  void            EmitOp(unsigned_16);
-extern  void            PushOpn(itnode *);
 extern  void            AddConst(itnode *);
-extern  void            GenType(itnode *);
-extern  void            DumpType(uint,uint);
-extern  uint            TypeSize(uint);
-extern  void            PushConst(intstar4);
 
 static  obj_ptr         WarpLabel;
 

@@ -43,7 +43,7 @@
 #include "wf77segs.h"
 #include "wf77labe.h"
 #include "compcfg.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 #include <stdarg.h>
 

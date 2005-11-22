@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WATFOR-77 main line
 *
 ****************************************************************************/
 
@@ -42,18 +41,13 @@
 #include "global.h"
 #include "cpopt.h"
 #include "fcgbls.h"
+#include "boot77.h"
+#include "errrtns.h"
 
-extern  void            InitCompMain(void);
-extern  void            FiniCompMain(void);
-extern  int             CompMain(char *);
-extern  void            ShowUsage(void);
-extern  void            ProcOpts(char **);
 extern  bool            MainCmdLine(char **,char **,char **,char *);
 extern  char            *SDSrcExtn(char *);
 extern  void            InitPredefinedMacros(void);
 
-extern  void            (* __ErrorInit)(char *);
-extern  void            (* __ErrorFini)(void);
 
 static  char            CmdBuff[2*128];
 

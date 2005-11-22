@@ -36,7 +36,7 @@
 
 #include "ftnstd.h"
 #include "fcodes.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 
 void    EmitOp( unsigned_16 value ) {

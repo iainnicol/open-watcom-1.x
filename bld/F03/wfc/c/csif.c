@@ -71,7 +71,7 @@ void    CpLogIf() {
         AddCSNode( CS_IF );
         CSHead->branch = if_skip;
         CSHead->bottom = NextLabel();
-        CITNode->opn = OPN_PHI;       // not part of the block label
+        CITNode->opn.ds = DSOPN_PHI;       // not part of the block label
         BlockLabel();
         CtrlFlgs |= CF_BAD_DO_ENDING;
     } else {

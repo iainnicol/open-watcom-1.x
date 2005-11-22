@@ -36,15 +36,12 @@
 
 #include "ftnstd.h"
 #include "fcodes.h"
-#include "parmtype.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "objutil.h"
+#include "emitobj.h"
+#include "types.h"
 
-extern  sym_id          STConst(void *,int,int);
-extern  byte            ParmType(int,int);
-extern  void            EmitOp(unsigned_16);
-extern  int             TypeSize(int);
+extern  sym_id          STConst(void *,TYPE,uint);
 
 
 label_id        GDataProlog() {
@@ -89,7 +86,6 @@ void    GDataItem( itnode *rpt ) {
 // Generate a data item.
 
     sym_id      data;
-    int         typ;
     intstar4    one;
 
     if( rpt == NULL ) {
@@ -98,14 +94,12 @@ void    GDataItem( itnode *rpt ) {
     } else {
         data = rpt->sym_ptr;
     }
-    typ = CITNode->typ;
-    if( typ == TY_HEX ) {
-        typ = PT_NOTYPE;
-    } else {
-        typ = ParmType( typ, CITNode->size );
-    }
     OutPtr( data );
-    OutU16( typ );
+    if( CITNode->typ == TY_HEX ) {
+        OutU16( PT_NOTYPE );
+    } else {
+        GenType( CITNode );
+    }
     OutPtr( CITNode->sym_ptr );
 }
 

@@ -41,8 +41,7 @@
 #include "tmpdefs.h"
 #include "cpopt.h"
 #include "global.h"
-#include "objutil.h"
-
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

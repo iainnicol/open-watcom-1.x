@@ -24,55 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  constants indicating function's index in tables
 *
 ****************************************************************************/
 
 
-//
-// IFPARMCT  : intrinsic function argument count table
-//
+#ifndef _IFDEFS_H_INCLUDED
+#define _IFDEFS_H_INCLUDED
 
-#include "ftnstd.h"
-#include "errcod.h"
-#include "ifargs.h"
+#ifdef pick
+#undef pick
+#endif
 
-extern  void            Error(int,...);
-extern  void            Extension(int,...);
+#define pick(id,text,next,res,arg,flags) id,
 
-extern  char            *IFNames[];
-extern  const byte __FAR    IFArgCt[];
+enum INTRINSIC_FUNCTIONS {
 
+#include "ifdefn.h"
 
-void    IFChkExtension( uint func ) {
-//===================================
+    IF_MAX_NAME,
 
-    if( IFArgCt[ func ] & IF_EXTENSION ) {
-        Extension( LI_IF_NOT_STANDARD, IFNames[ func ] );
-    }
-}
+    IF_NO_MORE = 0xfe,
+    MAGIC      = 0xff
+};
 
+typedef enum INTRINSIC_FUNCTIONS IFF;
 
-void    IFCntPrms( uint func, byte actual_cnt ) {
-//===============================================
-
-    int         need;
-
-    need = IFArgCt[ func ] & IF_COUNT_MASK;
-    if( need == TWO_OR_MORE ) {
-        if( actual_cnt >= 2 ) return;
-    } else if( need == ONE_OR_TWO ) {
-        if( actual_cnt <= 2 ) return;
-    } else {
-        if( need == actual_cnt ) return;
-    }
-    Error( AR_BAD_COUNT, IFNames[ func ] );
-}
-
-
-bool    IFGenInLine( uint func ) {
-//================================
-
-    return( ( IFArgCt[ func ] & IF_IN_LINE ) != 0 );
-}
+#endif

@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  run-time library global macro definition
 *
 ****************************************************************************/
 
-
-#define _DEVELOPMENT    _OFF    // are we developing?
-#define _MEMTRACK       _OFF    // memory tracking during development?
-#define _CSET           _ASCII  // character set?
 
 #if defined( __386__ )
 #define _CPU 386
@@ -47,11 +42,3 @@
 #endif
 
 #define __INCL_ERRMSGS__        // include error messages
-
-#define _SysMemAlloc    malloc  // define system memory manager
-#define _SysMemFree     free
-
-#if defined( _M_IX86 ) || defined( __PPC__ )
-#pragma aux _SysMemInit =
-#pragma aux _SysMemFini =
-#endif

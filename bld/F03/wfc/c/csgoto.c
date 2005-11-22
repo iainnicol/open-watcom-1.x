@@ -251,7 +251,7 @@ void    CpAssign() {
         CITNode->opnd_size -= 2;
         CITNode->opnpos += 2;
         if( ( CITNode->opnd_size == 0 ) && isupper( *(CITNode->opnd) ) ) {
-            CITNode->opn = OPN_PHI;
+            CITNode->opn.ds = DSOPN_PHI;
         }
     } else {
         Error( GO_NO_TO );

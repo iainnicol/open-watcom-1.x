@@ -39,7 +39,7 @@
 #include "cgdefs.h"
 #include "cg.h"
 #include "fcodes.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

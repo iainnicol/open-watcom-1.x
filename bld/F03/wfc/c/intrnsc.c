@@ -41,12 +41,11 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "types.h"
+#include "iflookup.h"
 
 extern  sym_id          LkSym(void);
 extern  void            AdvanceITPtr(void);
-extern  int             IFLookUp(void);
-extern  byte            IFType(int);
-extern  int             TypeSize(uint);
 
 #define ERR_MASK        (SY_IN_EC | SY_SUB_PARM)
 
@@ -59,15 +58,15 @@ void    CpIntrinsic() {
 //     INTRINSIC FUNC {,FUNC1} . . .
 
     unsigned_16 flags;
-    int         ifaddr;
+    IFF         func;
     sym_id      sym_ptr;
-    int         iftype;
+    TYPE        func_typ;
 
     for(;;) {
         if( ReqName( NAME_INTRINSIC ) ) {
-            ifaddr = IFLookUp();
-            if( ifaddr >= 0 ) {
-                iftype = IFType( ifaddr );
+            func = IFLookUp();
+            if( func > 0 ) {
+                func_typ = IFType( func );
                 sym_ptr = LkSym();
                 flags = sym_ptr->ns.flags;
                 if( ( flags & SY_USAGE ) != 0 ) {
@@ -83,24 +82,26 @@ void    CpIntrinsic() {
                 } else if( flags & ERR_MASK ) {
                     IllName( sym_ptr );
                 } else if( ( flags & SY_TYPE ) &&
-                           ( sym_ptr->ns.typ != iftype ) ) {
+                           ( sym_ptr->ns.typ != func_typ ) ) {
                     NameTypeErr( TY_TYP_PREV_DEF, sym_ptr );
                 } else {
                     // we must OR the flags since SY_TYPE and/or SY_REFERENCED
                     // bit might already be set in the symbol table
                     sym_ptr->ns.flags |= SY_USAGE | SY_SUBPROGRAM |
                                          SY_FUNCTION | SY_INTRINSIC;
-                    iftype = IFType( ifaddr );
-                    sym_ptr->ns.typ = iftype;
-                    sym_ptr->ns.xt.size = TypeSize( iftype );
-                    sym_ptr->ns.si.fi.index = ifaddr;
+                    func_typ = IFType( func );
+                    sym_ptr->ns.typ = func_typ;
+                    sym_ptr->ns.xt.size = TypeSize( func_typ );
+                    sym_ptr->ns.si.fi.index = func;
                 }
             } else {
                 Error( SR_NOT_INTRNSC );
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqEOS();
 }

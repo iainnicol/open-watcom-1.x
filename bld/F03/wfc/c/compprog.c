@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  compile a program
 *
 ****************************************************************************/
 
-
-//
-// COMPPROG  : compile a program
-//
 
 #include "ftnstd.h"
 #include "progsw.h"

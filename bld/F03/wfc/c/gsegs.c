@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Global segment processing
 *
 ****************************************************************************/
 
-
-//
-// GSEGS        : Global segment processing
-//
 
 #include "ftnstd.h"
 #include "global.h"
@@ -42,7 +37,6 @@
 #include "wf77segs.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
-
 
 global_seg              *GlobalSeg;
 

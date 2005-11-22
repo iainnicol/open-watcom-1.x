@@ -37,8 +37,7 @@
 #include "ftnstd.h"
 #include "wf77defs.h"
 #include "wf77cg.h"
-#include "objutil.h"
-
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

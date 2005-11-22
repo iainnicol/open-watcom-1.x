@@ -43,6 +43,7 @@
 #include "falloc.h"
 #include "nmlinfo.h"
 #include "fmemmgr.h"
+#include "types.h"
 
 
 //=================== Back End Code Generation Routines ====================
@@ -105,7 +106,6 @@ extern  label_handle    GetStmtLabel(sym_id);
 extern  void            FiniLabels(uint);
 extern  void            DumpFormats(void);
 extern  void            FreeSFHeader(sym_id);
-extern  uint            ParmType(uint,uint);
 extern  void            MakeName(char *,char *,char *);
 extern  char            *SDFName(char *);
 extern  cg_type         F772CGType(sym_id);
@@ -387,7 +387,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
     unsigned_16 flags;
     uint        size;
     segment_id  old_seg;
-    byte        typ;
+    TYPE        typ;
     sym_id      leader;
     signed_32   offset;
     com_eq      *ce_ext;

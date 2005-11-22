@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  command and source line option processing
 *
 ****************************************************************************/
 
-
-//
-// OPTION    : command and source line option processing
-//
 
 #include "ftnstd.h"
 #include "progsw.h"
@@ -48,7 +43,6 @@
 #include "comio.h"
 #include "inout.h"
 
-#include "compcfg.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -56,7 +50,6 @@
 
 
 extern  char            *SkipBlanks(char *);
-extern  uint            TypeSize(uint);
 extern  void            MacroDEFINE(char *,uint);
 extern  void            MacroUNDEFINE(char *,uint);
 extern  void            MacroIFDEF(char *,uint);

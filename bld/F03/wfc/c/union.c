@@ -38,7 +38,7 @@
 #include "global.h"
 #include "errcod.h"
 #include "segsw.h"
-#include "prdefn.h"
+#include "recog.h"
 #include "insert.h"
 #include "recog.h"
 
@@ -72,7 +72,7 @@ void    CpEndUnion() {
 
     CSExtn();
     if( !( SgmtSw & SG_DEFINING_STRUCTURE ) ) {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_UNION - 1 ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_UNION ] );
     }
     SgmtSw &= ~SG_DEFINING_UNION;
     EndOfStatement();
@@ -100,7 +100,7 @@ void    CpEndMap() {
 
     CSExtn();
     if( !( SgmtSw & SG_DEFINING_MAP ) ) {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_MAP - 1 ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_MAP ] );
     }
     SgmtSw &= ~SG_DEFINING_MAP;
     EndOfStatement();

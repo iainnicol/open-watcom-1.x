@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Process PARAMETER statement
 *
 ****************************************************************************/
 
-
-//
-// PARMETER  : Process PARAMETER statement.
-//
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -52,11 +47,11 @@ extern  bool            ClassIs(unsigned_16);
 extern  bool            CLogicExpr(void);
 extern  bool            CCharExpr(void);
 extern  void            CArithExpr(void);
-extern  void            ConstExpr(uint);
+extern  void            ConstExpr(TYPE);
 extern  sym_id          LkSym(void);
 extern  sym_id          STLit(byte *,uint);
-extern  sym_id          STConst(void *,int,int);
-extern  void            CnvTo(itnode *,int,int);
+extern  sym_id          STConst(void *,TYPE,uint);
+extern  void            CnvTo(itnode *,TYPE,uint);
 extern  void            CkSymDeclared(sym_id);
 
 
@@ -67,13 +62,13 @@ void    CpParameter() {
 //
 //     PARAMETER (P1=E1,...,Pn=En), n > 0
 
-    int         parm_size;
+    uint        parm_size;
     byte        *lit;
     byte        *string;
     int         lit_len;
     sym_id      sym;
     sym_id      value_id;
-    byte        typ;
+    TYPE        typ;
     byte        assign_val;
 
     ReqNOpn();

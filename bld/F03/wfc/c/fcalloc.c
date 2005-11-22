@@ -40,7 +40,7 @@
 #include "wf77cg.h"
 #include "wf77defs.h"
 #include "falloc.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

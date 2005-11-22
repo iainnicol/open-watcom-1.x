@@ -40,7 +40,7 @@
 #include "tmpdefs.h"
 #include "symbol.h"
 #include "fcodes.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

@@ -1,4 +1,8 @@
-proj_name = F03
+proj_name = wfl
+
+!ifndef wfl_autodepends
+wfl_autodepends = .AUTODEPEND
+!endif
 
 !include cproj.mif
 !include deftarg.mif
@@ -8,7 +12,7 @@ proj_name = F03
 
 inc_dirs=-I"../h" -I"../../wfc/h" -I"../../h" -I"$(comp_cfg_dir)/h"
 
-extra_c_flags = -d__WFL__ -d__RT__
+extra_c_flags = -d__WFL__
 
 .c: ../c;../../wfc/c;../../c
 

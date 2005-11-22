@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2005 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,34 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  FORTRAN symbol hash tables related declaration
 *
 ****************************************************************************/
-//
-// objutil.h : emit object code
-//             prototypes for objutil.c
 
-extern void        InitObj(void);
-extern void        FiniObj(void); 
-extern obj_ptr     ObjTell(void); 
-extern obj_ptr     ObjSeek( obj_ptr); 
-extern unsigned_16 ObjOffset( obj_ptr ); 
 
-extern void        OutPtr( pointer ); 
-extern void        OutU16( unsigned_16 ); 
-extern void        OutInt( inttarg ); 
-extern void        OutConst32( signed_32 ); 
-extern void        OutObjPtr( obj_ptr ); 
-extern void        OutByte( byte ); 
+#define HASH_PRIME 211
 
-extern void        InitFCode(void);
-extern void       *GetPtr(void); 
-extern unsigned_16 GetU16(void) ;
-extern signed_32   GetConst32(void) ;
-extern obj_ptr     GetObjPtr(void) ;
-extern byte        GetByte(void) ;
-extern obj_ptr     FCodeTell( int ); 
-extern obj_ptr     FCodeSeek( obj_ptr ); 
-extern void        FCSeek(void);
-extern unsigned_16 GetFCode(void); 
+typedef struct hash_entry {
+    sym_id      h_head;
+    sym_id      h_tail;
+} hash_entry;
+
+extern unsigned     CalcHash( char *, unsigned );
+extern void         HashInsert( hash_entry *, unsigned, sym_id *, sym_id );
+  
+extern unsigned     HashValue;
+extern hash_entry   HashTable[];
+extern hash_entry   GHashTable[];
+extern hash_entry   ConstHashTable[];
+
+

@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-//
-// RSTGLIST  : global symbol table routines
-//
-
 #include "ftnstd.h"
 #include "ecflags.h"
 #include "errcod.h"
@@ -41,7 +37,9 @@
 #include "global.h"
 #include "progsw.h"
 #include "cpopt.h"
-
+#include "fmemmgr.h"
+#include "fhash.h"
+#include "iflookup.h"
 
 #include <string.h>
 
@@ -51,19 +49,15 @@ extern  void            PrevDef(sym_id);
 extern  void            NameErr(int,sym_id);
 extern  void            NameWarn(int,sym_id);
 extern  void            Warning(int,...);
-extern  bool            IsIntrinsic(unsigned_16);
 extern  char            *STGetName(sym_id,char *);
 extern  int             AllocName(int);
 extern  intstar4        GetComBlkSize(sym_id);
 extern  void            SetComBlkSize(sym_id,intstar4);
-extern  pointer         FMemAlloc(int);
-extern  void            HashInsert(hash_entry *,unsigned,sym_id *,sym_id);
-extern  int             CalcHash(char *,int);
 
-extern  int             HashValue;
 // Local variables are only added to the GList for relocation purposes.
 // They are never searched for; so we will store them in the bucket
 // at HASH_PRIME.  (that's the reason for the +1)
+
 hash_entry              GHashTable[HASH_PRIME + 1];
 
 

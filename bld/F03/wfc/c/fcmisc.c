@@ -41,7 +41,7 @@
 #include "tmpdefs.h"
 #include "global.h"
 #include "fcgbls.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

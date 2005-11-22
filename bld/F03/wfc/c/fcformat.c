@@ -38,7 +38,7 @@
 #include "fcgbls.h"
 #include "fmthdr.h"
 #include "cg.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

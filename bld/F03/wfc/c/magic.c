@@ -24,20 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  temporary, static temporary manager
 *
 ****************************************************************************/
 
 
-//
-// MAGIC     : temporary, static temporary manager
-//
-
 #include "ftnstd.h"
 #include "global.h"
 #include "fmemmgr.h"
-
 
 #define TEMP_FLAGS      (SY_TYPE | SY_USAGE | SY_VARIABLE);
 
@@ -72,7 +66,7 @@ sym_id  NewMagSym( int class ) {
 }
 
 
-sym_id  FindTempIndex( uint tmp_index, byte typ ) {
+sym_id  FindTempIndex( uint tmp_index, TYPE typ ) {
 //=================================================
 
 // Find a temporary with an offset the same as the given index.
@@ -94,7 +88,7 @@ sym_id  FindTempIndex( uint tmp_index, byte typ ) {
 }
 
 
-sym_id  TmpVar( int typ, int size ) {
+sym_id  TmpVar( TYPE typ, uint size ) {
 //===================================
 
 // Allocate a temporary and set the type.
@@ -112,7 +106,7 @@ sym_id  TmpVar( int typ, int size ) {
 }
 
 
-sym_id  TmpAlloc( int size ) {
+sym_id  TmpAlloc( uint size ) {
 //============================
 
 // Allocate a temporary and set the type to TY_NO_TYPE.
@@ -131,7 +125,7 @@ void    GSaveTemps() {
 }
 
 
-sym_id  StaticAlloc( int size, byte typ ) {
+sym_id  StaticAlloc( uint size, TYPE typ ) {
 //=========================================
 
 // Allocate a static compiler variable.

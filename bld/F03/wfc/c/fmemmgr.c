@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2004 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,46 +24,44 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  FORTRAN compiler memory manager
 *
 ****************************************************************************/
 
 
-//
-// FMEMMGR      : FORTRAN compiler memory manager
-//
-
 #include "ftnstd.h"
 #include "errcod.h"
-#include "progsw.h"
 #include "stmtsw.h"
 #include "global.h"
 #include "bglobal.h"
 #include "fmemmgr.h"
-#include "fmeminit.h"
-#include "ferror.h"
-#include "inout.h"
-#include "cle.h"
-#include "utility.h"
-#include "frl.h"
-#include "fspawn.h"
+#if defined( TRMEM )
+#include "trmemcvr.h"
+#endif
 
+extern  void            Error(int,...);
+extern  void            PurgeAll(void);
+extern  void            FreeITNodes(itnode *);
+extern  void            FrlFini(void **);
+extern  void            CompErr(uint);
+extern  void            SysMemInit(void);
+extern  void            SysMemFini(void);
+extern  void            Suicide(void);
 
-
-//***************************************************
-// Initialize fortran compiler memory manager
-//***************************************************
-void    FMemInit() {
+void    FMemInit( void ) {
+//========================
 
     UnFreeMem = 0;
-    _SysMemInit();
+#if defined( TRMEM )
+    TRMemOpen();
+#else
+    SysMemInit();
+#endif
 }
 
-//***************************************************
-// Terminate fortran compiler memory manager
-//***************************************************
-void    FMemFini() {
+
+void    FMemFini( void ) {
+//========================
 
     ProgSw &= ~PS_ERROR; // we always want to report memory problems
     if( UnFreeMem > 0 ) {
@@ -71,21 +69,31 @@ void    FMemFini() {
     } else if( UnFreeMem < 0 ) {
         CompErr( CP_FREEING_UNOWNED_MEMORY );
     }
-    _SysMemFini();
+#if defined( TRMEM )
+    TRMemClose();
+#else
+    SysMemFini();
+#endif
 }
 
 
-//**************************************************
-//  Allocate memory chunk for fortran compiler
-//**************************************************
-void    *FMemAlloc( uint size ) {
+void    *FMemAlloc( size_t size ) {
+//=================================
 
     void        *p;
 
-    p = _SysMemAlloc( size );
+#if defined( TRMEM )
+    p = TRMemAlloc( size );
+#else
+    p = malloc( size );
+#endif
     if( p == NULL ) {
         FrlFini( &ITPool );
-        p = _SysMemAlloc( size );
+#if defined( TRMEM )
+        p = TRMemAlloc( size );
+#else
+        p = malloc( size );
+#endif
         if( p == NULL ) {
             if( !(ProgSw & PS_STMT_TOO_BIG) &&
                  (StmtSw & SS_SCANNING) && (ITHead != NULL) ) {
@@ -109,11 +117,12 @@ void    *FMemAlloc( uint size ) {
 }
 
 
-//******************************************************
-// release memory chunk used by fortran compiler
-//******************************************************
 void    FMemFree( void *p ) {
 
-    _SysMemFree( p );
+#if defined( TRMEM )
+    TRMemFree( p );
+#else
+    free( p );
+#endif
     UnFreeMem--;
 }

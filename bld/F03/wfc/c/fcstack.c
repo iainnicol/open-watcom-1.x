@@ -38,7 +38,7 @@
 #include "ecflags.h"
 #include "cpopt.h"
 #include "fltcnv.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

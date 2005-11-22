@@ -33,18 +33,17 @@
 #include "opr.h"
 #include "opn.h"
 #include "astype.h"
-#include "prdefn.h"
 #include "errcod.h"
 #include "segsw.h"
 #include "stmtsw.h"
-#include "ifflags.h"
-#include "ifnames.h"
+#include "iflookup.h"
 #include "global.h"
 #include "cpopt.h"
 #include "namecod.h"
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "types.h"
 
 #include <string.h>
 
@@ -54,14 +53,8 @@ extern  void            AdvError(int);
 extern  void            AdvanceITPtr(void);
 extern  bool            Subscripted(void);
 extern  bool            ClassIs(unsigned_16);
-extern  int             IFLookUp(void);
-extern  byte            IFType(byte);
-extern  bool            IFIsGeneric(byte);
 extern  sym_id          LkSym(void);
 extern  sym_id          LkField(sym_id);
-extern  uint            TypeSize(uint);
-extern  uint            TypeSize(uint);
-extern  void            IFChkExtension(int);
 extern  sym_id          FindShadow(sym_id);
 extern  sym_id          FindStruct(char *,int);
 
@@ -72,7 +65,7 @@ bool    SubStrung() {
 // Determine whether name is substrung or not.
 
     itnode      *save_citnode;
-    byte        opr;
+    OPR         opr;
 
     save_citnode = CITNode;
     CITNode = CITNode->link;
@@ -90,27 +83,27 @@ void    DSName() {
 
     sym_id      sym_ptr;
 
-    CITNode->opn = OPN_NNL;
+    CITNode->opn.us = USOPN_NNL;
     if( RecNextOpr( OPR_LBR ) ) {
         CITNode->link->opr = OPR_FBR;
-        CITNode->opn = OPN_NWL;
+        CITNode->opn.us = USOPN_NWL;
     }
     if( ( FieldNode != NULL ) &&
         ( ( CITNode->opr == OPR_FLD ) || ( CITNode->opr == OPR_DPT ) ) ) {
-        if( FieldNode->opn & OPN_FLD ) {
+        if( FieldNode->opn.us & USOPN_FLD ) {
             LkField( FieldNode->sym_ptr->fd.xt.sym_record );
         } else {
             LkField( FieldNode->sym_ptr->ns.xt.sym_record );
         }
-        CITNode->opn |= OPN_FLD;
+        CITNode->opn.us |= USOPN_FLD;
         if( CITNode->sym_ptr != NULL ) { // make sure field name exists
             if( CITNode->sym_ptr->fd.dim_ext != NULL ) { // field is an array
-                if( ( CITNode->opn & OPN_WHAT ) != OPN_NWL ) {
-                    CITNode->opn &= ~OPN_WHAT;
-                    CITNode->opn |= OPN_ARR;
+                if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_NWL ) {
+                    CITNode->opn.us &= ~USOPN_WHAT;
+                    CITNode->opn.us |= USOPN_ARR;
                     CkFieldNoList();
                 }
-            } else if( ( CITNode->opn & OPN_WHAT ) == OPN_NWL ) {
+            } else if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_NWL ) {
                 // field better be character and substrung
                 if( ( CITNode->sym_ptr->fd.typ != TY_CHAR ) || !SubStrung() ) {
                     AdvError( PC_SURP_PAREN );
@@ -165,7 +158,7 @@ void    DSName() {
         ASType &= ~AST_ISIZEOF;
         sd = FindStruct( CITNode->opnd, CITNode->opnd_size );
         if( sd != NULL ) {
-            CITNode->opn = OPN_CON;
+            CITNode->opn.us = USOPN_CON;
             CITNode->typ = TY_STRUCTURE;
             CITNode->value.intstar4 = sd->sd.size;
             return;
@@ -184,7 +177,7 @@ void    DSName() {
             if( ASType & AST_DIM ) {
                 ClassErr( DM_SYM_PARM, sym_ptr );
             } else if( !RecNWL() ) {
-                CITNode->opn = OPN_ARR; // array without subscript list
+                CITNode->opn.us = USOPN_ARR; // array without subscript list
                 CkNameNoList();
             }
             SetTypeUsage( SY_TYPE | SY_USAGE );
@@ -215,7 +208,7 @@ void    DSName() {
         if( RecNWL() ) {
             IllName( sym_ptr );
         } else {
-            CITNode->opn = OPN_CON;
+            CITNode->opn.us = USOPN_CON;
             CITNode->sym_ptr = sym_ptr->ns.si.pc.value;
             if( CITNode->typ == TY_CHAR ) {
                 if( StmtSw & SY_DATA_INIT ) {
@@ -385,23 +378,23 @@ static  void    CkIntrinsic() {
 //
 
     sym_id      sym_ptr;
-    byte        typ;
-    int         if_num;
+    TYPE        typ;
+    IFF         func;
 
     sym_ptr = CITNode->sym_ptr;
     if( ( CITNode->flags & SY_SUB_PARM ) == 0 ) {
         typ = CITNode->typ;
-        if_num = IFLookUp();
-        if( if_num >= 0 ) {
-            sym_ptr->ns.si.fi.index = if_num;
-            if( if_num == IF_ISIZEOF ) {
+        func = IFLookUp();
+        if( func > 0 ) {
+            sym_ptr->ns.si.fi.index = func;
+            if( func == IF_ISIZEOF ) {
                 ASType |= AST_ISIZEOF;
             }
             sym_ptr->ns.si.fi.num_args = 0;
             CITNode->flags |= SY_INTRINSIC;
-            IFChkExtension( if_num );
-            if( !IFIsGeneric( if_num ) ) {
-                CITNode->typ = IFType( if_num );
+            IFChkExtension( func );
+            if( !IFIsGeneric( func ) ) {
+                CITNode->typ = IFType( func );
                 CITNode->size = TypeSize( CITNode->typ );
                 sym_ptr->ns.typ = CITNode->typ;
                 sym_ptr->ns.xt.size = CITNode->size;
@@ -420,7 +413,7 @@ static  void    CkNameNoList() {
 // Check that array/subprogram with no list is alright.
 
     if( ( ASType & AST_IO ) && RecTrmOpr() && RecNextOpr( OPR_TRM ) ) {
-        if( ( CITNode->opn & OPN_WHAT ) != OPN_ARR ) {
+        if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_ARR ) {
             ClassErr( SV_NO_LIST, CITNode->sym_ptr );
         }
         return;
@@ -446,7 +439,7 @@ static  void    CkFieldNoList() {
     }
     if( ( ASType & AST_IO ) && ( opr_node->opr == OPR_TRM ) &&
         RecNextOpr( OPR_TRM ) ) {
-        if( ( CITNode->opn & OPN_WHAT ) != OPN_ARR ) {
+        if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_ARR ) {
             KnownClassErr( SV_NO_LIST, NAME_ARRAY );
         }
         return;

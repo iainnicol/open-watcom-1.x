@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2005 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,59 +24,47 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  declaration for recognizing specific tokens routines
 *
 ****************************************************************************/
-//
-// recog.h     : recognize specific tokens
-//               prototyprd for file recog.c
-//
 
-// Routines with names 'Rec...' attempt to recognize '...',
-//   returning true if found, else false
-//
-// Routines with names 'Req...' require that '...' be found,
-//   generating an error message if not found
-#ifndef recog_h_
-#define recog_h_
 
-extern bool    RecEquSign(void);
-extern bool    ReqOperator( byte, int );
-extern bool    ReqEquSign(void);
-extern bool    RecColon(void);
-extern bool    RecComma(void);
-extern bool    ReqComma(void);
-extern bool    ReqColon(void);
-extern bool    RecCloseParen(void);
-extern bool    ReqCloseParen(void);
-extern bool    RecOpenParen(void);
-extern bool    ReqOpenParen(void);
-extern bool    RecMul(void);
-extern bool    ReqMul(void);
-extern bool    RecDiv(void);
-extern bool    ReqDiv(void);
-extern bool    RecPlus(void);
-extern bool    RecMin(void);
-extern bool    RecCat(void);
-extern bool    RecNOpr(void);
-extern bool    RecFBr(void);
-extern bool    RecTrmOpr(void);
-extern bool    RecEOS(void);
-extern bool    ReqEOS(void);
-extern bool    RecNOpn(void);
-extern bool    ReqNOpn(void);
-extern bool    RecKeyWord( char *);
-extern bool    RecName(void);
-extern bool    ReqName( int );
-extern bool    RecNWL(void);
-extern bool    RecNumber(void);
-extern bool    RecLiteral(void);
-extern bool    RecNextOpr( byte );
-extern bool    ReqNextOpr( byte , int );
-extern bool    RecIntVar(void);
-extern bool    ReqIntVar(void);
-extern bool    ReqDoVar(void);
-extern bool    RecArrName(void);
+#include "opr.h"
 
-#endif
+extern bool    RecEquSign( void );
+extern bool    ReqOperator( OPR operator, int error );
+extern bool    ReqEquSign( void );
+extern bool    RecColon( void );
+extern bool    RecComma( void );
+extern bool    ReqComma( void );
+extern bool    ReqColon( void );
+extern bool    RecCloseParen( void );
+extern bool    ReqCloseParen( void );
+extern bool    RecOpenParen( void );
+extern bool    ReqOpenParen( void );
+extern bool    RecMul( void );
+extern bool    ReqMul( void );
+extern bool    RecDiv( void );
+extern bool    ReqDiv( void );
+extern bool    RecPlus( void );
+extern bool    RecMin( void );
+extern bool    RecCat( void );
+extern bool    RecNOpr( void );
+extern bool    RecFBr( void );
+extern bool    RecTrmOpr( void );
+extern bool    RecEOS( void );
+extern bool    ReqEOS( void );
+extern bool    RecNOpn( void );
+extern bool    ReqNOpn( void );
+extern bool    RecKeyWord( char *key );
+extern bool    RecName( void );
+extern bool    ReqName( int index );
+extern bool    RecNWL( void );
+extern bool    RecNumber( void );
+extern bool    RecLiteral( void );
+extern bool    RecNextOpr( OPR operator );
+extern bool    ReqNextOpr( OPR operator, int error );
+extern bool    RecIntVar( void );
+extern bool    ReqIntVar( void );
+extern bool    ReqDoVar( void );
+extern bool    RecArrName( void );

@@ -28,14 +28,13 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-#ifndef standard_h_
-#define standard_h_
+
 
 #include <stddef.h>
-#include <watcom.h>
-#include <bool.h>
-#ifndef __RT__
-  #include <cgstd.h>
+#include "watcom.h"
+#include "bool.h"
+#if !defined( __RT__ ) && !defined( __WFL__ )
+  #include "cgstd.h"
 #endif
 
 #define NULLCHAR        '\0'
@@ -53,7 +52,4 @@ typedef double          reallong;
 #define __FAR far
 #else
 #define __FAR
-#endif
-
-
 #endif

@@ -24,20 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  chain processing
 *
 ****************************************************************************/
 
 
-//
-// CHAIN        : chain processing
-//
-
 #include "ftnstd.h"
 #include "fmemmgr.h"
-
-//extern  void                    FMemFree(void *);
 
 
 void    FreeChain( void **head ) {

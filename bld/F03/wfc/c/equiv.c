@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  compile EQUIVALENCE statement
 *
 ****************************************************************************/
 
-
-//
-// EQUIV     : compile EQUIVALENCE statement
-//
 
 #include "ftnstd.h"
 #include "global.h"
@@ -44,6 +39,7 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "types.h"
 
 #include <string.h>
 
@@ -51,7 +47,6 @@ extern  void            AdvanceITPtr(void);
 extern  bool            CIntExpr(void);
 extern  sym_id          LkSym(void);
 extern  com_eq          *STComEq(void);
-extern  intstar4        ITIntValue(itnode *);
 
 
 static  bool    SubStr2( intstar4 *subscripts ) {

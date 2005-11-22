@@ -30,11 +30,14 @@
 
 
 #include "ftnstd.h"
-#include "progsw.h"
 #include "global.h"
-#include "bglobal.h"
-#include "errcod.h"
 #include "cpopt.h"
+#include "progsw.h"
+#include "errcod.h"
+#include "fmemmgr.h"
+#include "bglobal.h"
+
+#include "boot77.h"
 #include "fmemmgr.h"
 #include "inout.h"
 
@@ -46,8 +49,6 @@ extern  void            CmdOption(char *);
 extern  bool            ParseCmdLine(char **,char **,char **, char *);
 extern  void            InitMacroProcessor(void);
 extern  void            FiniMacroProcessor(void);
-//extern  void            FMemInit(void);
-//extern  void            FMemFini(void);
 extern  void            SetDefaultOpts(void);
 extern  void            MsgBuffer(uint,char *,...);
 extern  void            ShowOptions(char *);

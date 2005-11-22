@@ -38,13 +38,10 @@
 #include "global.h"
 #include "fcodes.h"
 #include "falloc.h"
-#include "objutil.h"
+#include "emitobj.h"
 
-extern  void            EmitOp(uint);
-extern  void            PushOpn(itnode *);
 extern  void            DimArray(sym_id);
 extern  void            LoadSCB(sym_id);
-extern  void            GenType(itnode *);
 
 static  unsigned_16     allocFlags;
 static  obj_ptr         flagsLabel;

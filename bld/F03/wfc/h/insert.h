@@ -32,12 +32,12 @@
 * protoypes for file insert.c
 */
 
-#ifndef insert_h_
-#define insert_h_
+#ifndef _INSERT_H_INCLUDED
+#define _INSERT_H_INCLUDED
 
 /* needs #include "standard.h" */
 
-extern void    TypeErr( int, uint); 
+extern void    TypeErr( int, TYPE); 
 extern void    StmtExtension( int ); 
 extern void    StmtErr( int );
 extern void    StmtIntErr( int, int );
@@ -51,8 +51,8 @@ extern void    NamNamErr( int , sym_id , sym_id );
 extern void    ClassNameErr( int , sym_id );
 extern void    PrevDef( sym_id ); 
 extern void    NameTypeErr( int , sym_id );
-extern void    TypeTypeErr( int , uint , uint );
-extern void    TypeNameTypeErr( int , uint, sym_id, uint );
+extern void    TypeTypeErr( int , TYPE , TYPE );
+extern void    TypeNameTypeErr( int , TYPE, sym_id, TYPE );
 extern void    KnownClassErr( int , uint );
 extern void    ClassErr( int , sym_id );
 extern void    OpndErr( int );

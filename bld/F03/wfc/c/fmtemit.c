@@ -41,10 +41,9 @@
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "cpopt.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 extern  void            FmtError(int);
-extern  void            AlignEven(int);
 
 
 void    GFEmEnd() {
@@ -52,7 +51,7 @@ void    GFEmEnd() {
 
     OutByte( END_FORMAT );
     OutInt( ObjOffset( Fmt_revert.cp ) );
-    AlignEven( 0 );
+    AlignEven();
 }
 
 

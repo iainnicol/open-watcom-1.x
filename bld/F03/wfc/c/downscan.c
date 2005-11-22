@@ -34,11 +34,10 @@
 #include "opn.h"
 #include "errcod.h"
 #include "astype.h"
-#include "prdefn.h"
 #include "global.h"
 #include "intcnv.h"
 #include "fltcnv.h"
-#include "parmtype.h"
+#include "types.h"
 #include "cpopt.h"
 #include "ferror.h"
 #include "insert.h"
@@ -50,7 +49,6 @@
 
 extern  void            MoveDown(void);
 extern  void            DSName(void);
-extern  uint            TypeSize(uint);
 extern  void            FreeITNodes(itnode *);
 extern  void            FreeOneNode(itnode *);
 extern  void            AdvanceITPtr(void);
@@ -66,7 +64,7 @@ static  void    LitC() {
     CITNode->value.cstring.len = CITNode->opnd_size;
     CITNode->typ = TY_CHAR;
     CITNode->size = CITNode->opnd_size;
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -76,7 +74,7 @@ static  void    LogC() {
     CITNode->value.logstar1 = *CITNode->opnd == 'T';
     CITNode->typ = TY_LOGICAL;
     CITNode->size = TypeSize( TY_LOGICAL );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -87,7 +85,7 @@ static  void    IntC() {
         // don't issue an overflow for -2147483648
         // but we need to be careful since we do want an
         // overflow for I - 2147483648
-        if( !(((BkLink == NULL) || (BkLink->opn == OPN_PHI)) &&
+        if( !(((BkLink == NULL) || (BkLink->opn.ds == DSOPN_PHI)) &&
               (CITNode->opr == OPR_MIN) &&
               (CITNode->value.intstar4 == LONG_MIN)) ) {
             Warning( KO_IOVERFLOW );
@@ -95,7 +93,7 @@ static  void    IntC() {
     }
     CITNode->typ = TY_INTEGER;
     CITNode->size = TypeSize( TY_INTEGER );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -122,7 +120,7 @@ static  void    RealC() {
     }
     CITNode->typ = TY_REAL;
     CITNode->size = TypeSize( TY_REAL );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -134,7 +132,7 @@ static  void    DoubleC() {
     }
     CITNode->typ = TY_DOUBLE;
     CITNode->size = TypeSize( TY_DOUBLE );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -144,7 +142,7 @@ static  void    ExtendedC() {
     CnvFloat( CITNode, PRECISION_EXTENDED );
     CITNode->typ = TY_EXTENDED;
     CITNode->size = TypeSize( TY_EXTENDED );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -152,7 +150,7 @@ static  void    OctalC() {
 //========================
 
     ConstBase( 8 );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -160,7 +158,7 @@ static  void    HexC() {
 //======================
 
     ConstBase( 16 );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
 }
 
 
@@ -195,11 +193,11 @@ static  void    ConstBase( uint base ) {
 static  bool    Number() {
 //========================
 
-    if( CITNode->opn == OPN_PHI ) {
+    if( CITNode->opn.ds == DSOPN_PHI ) {
         AdvanceITPtr();
         if( !RecPlus() && !RecMin() ) return( FALSE );
     }
-    if( CITNode->opn < OPN_INT ) return( FALSE );
+    if( CITNode->opn.ds < DSOPN_INT ) return( FALSE );
     AdvanceITPtr();
     return( TRUE );
 }
@@ -223,7 +221,7 @@ static  itnode  *CollectNumber( itnode *itptr, int *sign ) {
 
     save_node = itptr;
     *sign = 1;
-    if( itptr->opn == OPN_PHI ) {
+    if( itptr->opn.ds == DSOPN_PHI ) {
         itptr = itptr->link;
         if( itptr->opr == OPR_MIN ) {
             *sign = -1;
@@ -232,8 +230,8 @@ static  itnode  *CollectNumber( itnode *itptr, int *sign ) {
             return( itptr );
         }
     }
-    if( itptr->opn >= OPN_INT ) {
-        if( save_node->opn == OPN_PHI ) {
+    if( itptr->opn.ds >= DSOPN_INT ) {
+        if( save_node->opn.ds == DSOPN_PHI ) {
             CITNode->link = itptr;
             itptr->opr = save_node->opr;
             itptr->oprpos = save_node->oprpos;
@@ -258,8 +256,8 @@ static  void    Phi() {
 //         3. may just be two operators in a row
 //
 
-    byte        opr1;
-    byte        opr2;
+    OPR         opr1;
+    OPR         opr2;
     itnode      *itptr;
     itnode      *save_cit;
     int         real_sign;
@@ -283,7 +281,7 @@ static  void    Phi() {
         opr1 = CITNode->opr;
         if( ( opr1 == OPR_FBR ) || ( opr1 == OPR_COM ) ) {
             if( opr2 == OPR_MUL ) {
-                if( CITNode->link->opn == OPN_INT ) {
+                if( CITNode->link->opn.ds == DSOPN_INT ) {
                     if( ( CITNode->link->link->opr == OPR_COM ) ||
                         ( CITNode->link->link->opr == OPR_RBR ) ) {
                         AltReturn();
@@ -304,7 +302,7 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
 
     val = &CITNode->value;
     itptr = CITNode->link;
-    if( ( itptr->opn == OPN_EXT ) || ( itptr->link->opn == OPN_EXT ) ) {
+    if( ( itptr->opn.ds == DSOPN_EXT ) || ( itptr->link->opn.ds == DSOPN_EXT ) ) {
         CITNode->typ = TY_XCOMPLEX;
         if( CnvFloat( itptr, PRECISION_EXTENDED ) ) {
             val->xcomplex.realpart = real_sign * itptr->value.extended;
@@ -314,7 +312,7 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
             val->xcomplex.imagpart = imag_sign * itptr->value.extended;
         }
         Extension( CN_DOUBLE_COMPLEX );
-    } else if( ( itptr->opn == OPN_DBL ) || ( itptr->link->opn == OPN_DBL ) ) {
+    } else if( ( itptr->opn.ds == DSOPN_DBL ) || ( itptr->link->opn.ds == DSOPN_DBL ) ) {
         CITNode->typ = TY_DCOMPLEX;
         if( CnvFloat( itptr, PRECISION_DOUBLE ) ) {
             val->dcomplex.realpart = real_sign * itptr->value.extended;
@@ -336,7 +334,7 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
     }
     stop = itptr;
     itptr = itptr->link;
-    if( itptr->opn == OPN_PHI ) {
+    if( itptr->opn.ds == DSOPN_PHI ) {
         stop = stop->link;
     } else {
         itptr->opr = OPR_PHI;
@@ -346,7 +344,7 @@ static  void    BuildCplx( int real_sign, int imag_sign ) {
     CITNode->link = stop->link;
     stop->link = NULL;
     FreeITNodes( itptr );
-    CITNode->opn = OPN_CON;
+    CITNode->opn.us = USOPN_CON;
     CITNode->size = TypeSize( CITNode->typ );
 }
 
@@ -359,13 +357,12 @@ static  void    AltReturn() {
     itptr = CITNode;
     CITNode = CITNode->link;
     itptr->sym_ptr = LkUpStmtNo();
-    itptr->opn = OPN_STN;
+    itptr->opn.us = USOPN_STN;
     itptr->link = CITNode->link;
     CITNode->link = NULL;
     FreeITNodes( CITNode );
     CITNode = itptr;
 }
-
 
 
 static  void    OprEqu() {
@@ -389,18 +386,13 @@ static  void    OprEqu() {
     }
 }
 
+#ifdef pick
+#undef pick
+#endif
+#define pick(tok_id,dsopn_id,opn_proc) opn_proc,
 
-static  void            (* const __FAR DSTable[])() = {
-    &Phi,       // OPN_PHI
-    &DSName,    // OPN_NAM
-    &LitC,      // OPN_LIT
-    &LogC,      // OPN_LGL
-    &IntC,      // OPN_INT
-    &RealC,     // OPN_REA
-    &DoubleC,   // OPN_DBL
-    &ExtendedC, // OPN_EXT
-    &OctalC,    // OPN_OCT
-    &HexC       // OPN_HEX
+static void (* const __FAR DSTable[])() = {
+#include "tokdsopn.h"
 };
 
 
@@ -409,8 +401,8 @@ void    GetConst() {
 
 // Constant converting without downscan-upscan process.
 
-    DSTable[ CITNode->opn ]();
-    if( CITNode->opn != OPN_CON ) {
+    DSTable[ CITNode->opn.ds ]();
+    if( CITNode->opn.us != USOPN_CON ) {
         Error( SX_CONST );
     }
 }
@@ -436,7 +428,7 @@ void    DownScan() {
         if( CITNode->opr == OPR_EQU ) {
             OprEqu();
         }
-        DSTable[ CITNode->opn ]();
+        DSTable[ CITNode->opn.ds ]();
         MoveDown();
         if( RecTrmOpr() ) break;
     }

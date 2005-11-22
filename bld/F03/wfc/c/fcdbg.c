@@ -39,7 +39,7 @@
 #include "fcodes.h"
 #include "wf77cg.h"
 #include "wf77defs.h"
-#include "objutil.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 

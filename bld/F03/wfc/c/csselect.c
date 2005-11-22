@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  processing for SELECT, CASE, OTHERWISE, and ENDSELECT
 *
 ****************************************************************************/
 
-
-//
-// CSSELECT     : processing for SELECT, CASE, OTHERWISE, and ENDSELECT
-//
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -41,6 +36,7 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "recog.h"
+#include "types.h"
 
 #include <limits.h>
 
@@ -52,7 +48,7 @@ extern  void            Match(void);
 extern  void            CSExtn(void);
 extern  void            ColonLabel(void);
 extern  void            AdvanceITPtr(void);
-extern  bool            ConstExpr(int);
+extern  bool            ConstExpr(TYPE);
 extern  bool            SelectExpr(void);
 extern  label_id        NextLabel(void);
 extern  void            GLabel(label_id);
@@ -60,7 +56,6 @@ extern  void            FiniSelect(void);
 extern  void            InitSelect(void);
 extern  void            GBranch(label_id);
 extern  void            FreeLabel(label_id);
-extern  intstar4        ITIntValue(itnode *);
 
 
 case_entry      *NewCase() {
@@ -136,7 +131,7 @@ void    CpCase() {
 }
 
 
-static  intstar4        MinCaseValue( uint typ ) {
+static  intstar4        MinCaseValue( TYPE typ ) {
 //================================================
 
 // Get a value for case expression.
@@ -149,7 +144,7 @@ static  intstar4        MinCaseValue( uint typ ) {
 }
 
 
-static  intstar4        MaxCaseValue( uint typ ) {
+static  intstar4        MaxCaseValue( TYPE typ ) {
 //================================================
 
 // Get a value for case expression.

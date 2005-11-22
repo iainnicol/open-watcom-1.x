@@ -37,7 +37,6 @@
 #include "ftnstd.h"
 #include "opr.h"
 #include "opn.h"
-#include "prdefn.h"
 #include "astype.h"
 #include "errcod.h"
 #include "namecod.h"
@@ -75,7 +74,7 @@ void    EatExpr() {
 
 // Scan ahead, get an expression, and send it to expression handler.
 
-    byte        opr;
+    OPR         opr;
     itnode      *cit;
 
     cit = CITNode;
@@ -126,9 +125,9 @@ void    CpCall() {
     if( next->opr == OPR_TRM ) {
         ASType = AST_CNA;       // call with no parameter list
     } else if( ( next->opr == OPR_LBR ) &&
-               ( next->opn == OPN_PHI ) &&
+               ( next->opn.ds == DSOPN_PHI ) &&
                ( next->link->opr == OPR_RBR ) &&
-               ( next->link->opn == OPN_PHI ) &&
+               ( next->link->opn.ds == DSOPN_PHI ) &&
                ( next->link->link->opr == OPR_TRM ) ) {
         next->opr = OPR_TRM;    // make CALL SAM() same as CALL SAM
         ASType = AST_CNA;       // call with no parameter list

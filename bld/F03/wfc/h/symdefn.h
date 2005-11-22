@@ -24,39 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  compile-time symbols type constant tables data
 *
 ****************************************************************************/
 
 
-// Relocation definitions:
-// =======================
-
-#if _CPU != 8086 && _CPU != 386
-typedef struct sym_reloc {
-    struct sym_reloc    *link;          // pointer to next relocation chain
-    pointer             head;           // head of relocation chain
-} sym_reloc;
-#endif
-
-typedef struct com_reloc {
-    struct com_reloc    *link;          // pointer to common relocation entry
-    targ_addr           reloc_chain;    // relocation chain
-    unsigned_32         offset;         // offset into common block
-} com_reloc;
-
-typedef union reloc_head {
-    targ_addr           gr;             // head of global relocation chain
-#if _CPU == 8086 || _CPU == 386
-    obj_ptr             lr;             // head of local relocation chain
-#else
-    struct sym_reloc    *lr;            // head of local relocation chain
-#endif
-    com_reloc           *cr;            // head of common block relocation chain
-} reloc_head;
-
-typedef union obj_addr {
-    obj_ptr             la;             // local address
-    targ_addr           ga;             // global address
-} obj_addr;
+//       id              keyword         size    ptype
+pick( TY_NO_TYPE,       "",                  0,  PT_NOTYPE  )  // no type specified == PT_NO_TYPE
+pick( TY_LOGICAL_1,     "LOGICAL*1",         1,  PT_LOG_1   )  // 0 LOGICAL*1
+pick( TY_LOGICAL,       "LOGICAL",           4,  PT_LOG_4   )  // 1 LOGICAL*4
+pick( TY_INTEGER_1,     "INTEGER*1",         1,  PT_INT_1   )  // 2 INTEGER*1
+pick( TY_INTEGER_2,     "INTEGER*2",         2,  PT_INT_2   )  // 3 INTEGER*2
+pick( TY_INTEGER,       "INTEGER",           4,  PT_INT_4   )  // 4 INTEGER*4
+pick( TY_REAL,          "REAL",              4,  PT_REAL_4  )  // 5 REAL
+pick( TY_DOUBLE,        "DOUBLEPRECISION",   8,  PT_REAL_8  )  // 6 DOUBLE PRECISION
+pick( TY_TRUE_EXTENDED, "EXTENDEDPRECISION", 16, PT_REAL_16 )  // 7 EXTENDED PRECISION
+pick( TY_COMPLEX,       "COMPLEX",           8,  PT_CPLX_8  )  // 8 COMPLEX
+pick( TY_DCOMPLEX,      "DOUBLECOMPLEX",     16, PT_CPLX_16 )  // 9 DOUBLE COMPLEX
+pick( TY_TRUE_XCOMPLEX, "EXTENDEDCOMPLEX",   32, PT_CPLX_32 )  // 10 EXTENDED COMPLEX
+pick( TY_CHAR,          "CHARACTER",         1,  PT_CHAR    )  // 11 CHARACTER
+pick( TY_STRUCTURE,     "STRUCTURE",         0,  PT_STRUCT  )  // 12 structure
+pick( TY_UNION,         "",                  0,  PT_NOTYPE  )  // 13 union
+pick( TY_HEX,           "",                  0,  PT_NOTYPE  )  // 14 z constants in DATA statements

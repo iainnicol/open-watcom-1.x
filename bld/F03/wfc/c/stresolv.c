@@ -24,22 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Common/Equivalence resolution
 *
 ****************************************************************************/
 
-
-//
-// STRESOLV  : Common/Equivalence resolution
-//
 
 #include "ftnstd.h"
 #include "global.h"
 #include "ecflags.h"
 #include "errcod.h"
 #include "progsw.h"
-#include "prdefn.h"
+#include "fmemmgr.h"
 #include "fmemmgr.h"
 #include "insert.h" 
 
@@ -179,7 +174,7 @@ void    EquivResolve() {
 }
 
 
-static  byte    ClassifyType( byte sym_type ) {
+static  byte    ClassifyType( TYPE sym_type ) {
 //=============================================
 
 // Classify the type of the specified symbol.

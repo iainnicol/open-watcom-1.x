@@ -24,15 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  CG routines for assigning a cg_name to a temporary
 *
 ****************************************************************************/
 
-
-//
-// FCTEMP       : CG routines for assigning a cg_name to a temporary.
-//
 
 #include "ftnstd.h"
 #include "cg.h"

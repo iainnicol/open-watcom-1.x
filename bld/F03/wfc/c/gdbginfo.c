@@ -37,9 +37,7 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcodes.h"
-#include "objutil.h"
-
-extern  void            EmitOp(unsigned_16);
+#include "emitobj.h"
 
 
 void    GSetDbugLine() {

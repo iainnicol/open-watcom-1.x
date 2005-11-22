@@ -34,7 +34,6 @@
 #include "opr.h"
 #include "opn.h"
 #include "iodefn.h"
-#include "prdefn.h"
 #include "global.h"
 #include "stmtsw.h"
 #include "ferror.h"
@@ -204,7 +203,7 @@ void    ListItem() {
         }
     } else if( CITNode->typ == TY_STRUCTURE ) {
         CITNode->sym_ptr->ns.xflags |= SY_DEFINED;
-        if( CITNode->opn & OPN_FLD ) {
+        if( CITNode->opn.us & USOPN_FLD ) {
             sd = CITNode->value.st.field_id->fd.xt.sym_record;
         } else {
             sd = CITNode->sym_ptr->ns.xt.sym_record;

@@ -45,6 +45,10 @@ static  char    *Opn[] = {
     "OPN_INT",
     "OPN_REA",
     "OPN_DBL"
+    "OPN_EXT"
+    "OPN_OCT"
+    "OPN_HEX"
+    "OPN_FMT"
 };
 
 
@@ -159,7 +163,7 @@ itnode *dumpNode = CITNode;
 static  void    Node(itnode * dumpNode ) {
 //======================
 
-    printf( "|  %s  |  %s  |  %s  |\n", Opr( dumpNode->opr ), Opn[ dumpNode->opn ],
+    printf( "|  %s  |  %s  |  %s  |\n", Opr( dumpNode->opr ), Opn[ dumpNode->opn.ds ],
        Typ(dumpNode->typ));
 }
 

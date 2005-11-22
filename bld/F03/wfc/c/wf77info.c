@@ -42,7 +42,7 @@
 #include "cpopt.h"
 #include "cgflags.h"
 #include "wf77segs.h"
-#include "parmtype.h"
+#include "types.h"
 #include "errcod.h"
 #include "csetinfo.h"
 
@@ -104,8 +104,6 @@ extern  int             MakeName(char *,char *,char *);
 extern  char            *SDExtn(char *,char *);
 extern  cg_type         F772CGType(sym_id);
 extern  char            *SDFName(char *);
-extern  void            *FMemAlloc(int);
-extern  void            FMemFree(void *);
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STExtractName(sym_id,char *);
 extern  void            Suicide(void);
@@ -114,7 +112,6 @@ extern  aux_info        *AuxLookup(sym_id);
 extern  void            Error(uint,...);
 extern  void            Warning(uint,...);
 extern  cg_type         MkCGType(uint);
-extern  int             ParmType(int,int);
 extern  void            SendBlip(void);
 extern  void            SendStd(char *);
 extern  char            *STFieldName(sym_id,char *);
@@ -1461,7 +1458,7 @@ void    FEMessage( msg_class tipe, void *x ) {
 }
 
 
-static  dbg_type        BaseDbgType( uint typ, uint size ) {
+static  dbg_type        BaseDbgType( TYPE typ, uint size ) {
 //==========================================================
 
     if( typ == TY_CHAR ) {

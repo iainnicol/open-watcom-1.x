@@ -73,7 +73,7 @@ void    CpAtEnd() {
     if( RecKeyWord( "DO" ) ) {
         AddCSNode( CS_ATEND );
         CSHead->bottom = skip;
-        CITNode->opn = OPN_PHI;       // not part of the block label
+        CITNode->opn.ds = DSOPN_PHI;       // not part of the block label
         BlockLabel();
         CtrlFlgs |= CF_BAD_DO_ENDING;
         GLabel( code );

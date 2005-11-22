@@ -40,11 +40,8 @@
 #include "wf77defs.h"
 #include "fcgbls.h"
 #include "cg.h"
-#include "prdefn.h"
 #include "fmthdr.h"
-#include "objutil.h"
-
-extern  void            EmitOp(unsigned_16 value);
+#include "emitobj.h"
 
 
 void    StartFmt( cs_label fmt_label ) {

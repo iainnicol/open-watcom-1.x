@@ -31,7 +31,9 @@
 
 #include "symdefs.h"
 #include "symflgs.h"
+#include "symtypes.h"
 #include "symacc.h"
+#include "ifdefs.h"
 
 #define WF77_NULLSEGID  0       // NULL segment id
 #if _CPU == 8086 || _CPU == 386
@@ -56,12 +58,6 @@
 #define ALIGN_QWORD     8       // align segment on quad word boundary
 #define ALIGN_SEGMENT   16      // align segment on segment boundary
 
-#define HASH_PRIME 211
-
-typedef struct hash_entry {
-    sym_id      h_head;
-    sym_id      h_tail;
-} hash_entry;
 
 typedef void            *obj_addr;              // back handle
 
@@ -118,7 +114,7 @@ typedef struct subprog {
 // =================================================
 
 typedef struct i_function {
-    int                 index;          // intrinsic function index
+    IFF                 index;          // intrinsic function index
     union {
         int             num_args;       // number of arguments
         signed          imp_segid;      // segment id for intrinsic function
@@ -209,7 +205,7 @@ typedef struct m_sym {
 typedef struct constant {
     sym_id              link;           // pointer to next constant in chain
     void                *address;       // back handle
-    byte                typ;            // type of constant
+    TYPE                typ;            // type of constant
     byte                size;           // size of constant
     ftn_type            value;          // value of constant
 } constant;
@@ -261,10 +257,10 @@ typedef struct named_symbol {
     unsigned_16         flags;          // symbol flags
     union {
       struct {
-        byte            typ : 4;        // symbol type
-        byte            xflags : 4;     // extra symbol flags
+        TYPE            typ;            // symbol type
+        byte            xflags;         // extra symbol flags
       };
-      byte              xsize;          // extra size information for common
+      unsigned_16       xsize;          // extra size information for common
     };                                  // blocks
     union {
         signed char     name_len;       // length of symbol name

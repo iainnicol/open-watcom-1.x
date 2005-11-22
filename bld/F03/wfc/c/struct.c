@@ -32,7 +32,6 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "segsw.h"
-#include "prdefn.h"
 #include "namecod.h"
 #include "errcod.h"
 #include "insert.h"
@@ -127,7 +126,7 @@ void    CpEndStructure() {
         }
         SgmtSw &= ~SG_DEFINING_STRUCTURE;
     } else {
-        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_STRUCTURE - 1 ] );
+        StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_STRUCTURE ] );
     }
     EndOfStatement();
 }

@@ -38,12 +38,12 @@
 #include "opr.h"
 #include "errcod.h"
 #include "global.h"
-#include "prdefn.h"
 #include "segsw.h"
 #include "csetinfo.h"
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "types.h"
 
 #include <string.h>
 #include <limits.h>
@@ -51,13 +51,10 @@
 extern  void            AdvanceITPtr(void);
 extern  bool            CIntExpr(void);
 extern  bool            CmpNode2Str(itnode *,char *);
-extern  bool            SetImplType(char,char,uint,uint);
-extern  int             StorageSize(uint);
-extern  uint            MapTypes(uint,uint);
+extern  bool            SetImplType(char,char,TYPE,uint);
+extern  TYPE            MapTypes(TYPE,uint);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
-extern  intstar4        ITIntValue(itnode *);
 
-extern  char            *TypeKW[];
 extern  character_set   CharSetInfo;
 
 
@@ -73,7 +70,7 @@ static  bool    ReqChar() {
 }
 
 
-static  bool            StarStar( byte typ ) {
+static  bool            StarStar( TYPE typ ) {
 //============================================
 
     if( typ != TY_CHAR ) return( FALSE );
@@ -89,7 +86,7 @@ static  bool            StarStar( byte typ ) {
 }
 
 
-static  bool    CheckSize( byte typ, intstar4 size, itnode *start ) {
+static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
 //===================================================================
 
 // Ensure that the length specification (SIZE) is valid for the
@@ -129,13 +126,13 @@ static  bool    CheckSize( byte typ, intstar4 size, itnode *start ) {
     }
     temp = CITNode;
     CITNode = start; // get the caret in proper place
-    Error( TY_ILL_TYP_SIZE, size, TypeKW[ typ ] );
+    Error( TY_ILL_TYP_SIZE, size, TypeKW( typ ) );
     CITNode = temp;
     return( FALSE );
 }
 
 
-bool    LenSpec( uint typ, int *size_ptr ) {
+bool    LenSpec( TYPE typ, uint *size_ptr ) {
 //==========================================
 
 // Process a length specification.
@@ -201,6 +198,26 @@ bool    LenSpec( uint typ, int *size_ptr ) {
 }
 
 
+static  TYPE    RecTypeKW( void ) {
+//=================================
+
+// Recognize a type keyword (INTEGER, REAL, etc.).
+// Assumptions: Types are consecutive starting at 0
+
+    TYPE    typ;
+
+    if( RecName() ) {
+        for( typ = TY_LOGICAL_1; typ <= TY_CHAR; typ++ ) {
+            if( CmpNode2Str( CITNode, TypeKW( typ ) ) ) {
+                return( typ );
+            }
+        }
+    }
+    Error( IM_UNRECOG_TYPE );
+    return( TY_NO_TYPE );
+}
+
+
 void    CpImplicit() {
 //====================
 
@@ -208,9 +225,9 @@ void    CpImplicit() {
 
     byte        chr1;
     byte        chr2;
-    int         typ;
+    TYPE        typ;
     bool        valid_range;
-    int         size;
+    uint        size;
 
     if( (CITNode->opnd_size == 4) && (memcmp( CITNode->opnd, "NONE", 4 ) == 0) ) {
         AdvanceITPtr();
@@ -223,7 +240,7 @@ void    CpImplicit() {
         for(;;) {
             typ = RecTypeKW();
             AdvanceITPtr();
-            if( ( typ != -1 ) && !LenSpec( typ, &size ) ) {
+            if( ( typ != TY_NO_TYPE ) && !LenSpec( typ, &size ) ) {
                 size = StorageSize( typ );
             }
             ReqOpenParen();
@@ -262,25 +279,4 @@ void    CpImplicit() {
         SgmtSw |= SG_IMPLICIT_STMT;
     }
     ReqEOS();
-}
-
-
-static  int     RecTypeKW() {
-//===========================
-
-// Recognize a type keyword (INTEGER, REAL, etc.).
-// Assumptions: Types are consecutive starting at 0
-
-    int         typ;
-
-    if( RecName() ) {
-        typ = 0;
-        for(;;) {
-            if( CmpNode2Str( CITNode, TypeKW[ typ ] ) ) return( typ );
-            typ++;
-            if( typ > TY_CHAR ) break;
-        }
-    }
-    Error( IM_UNRECOG_TYPE );
-    return( -1 );
 }

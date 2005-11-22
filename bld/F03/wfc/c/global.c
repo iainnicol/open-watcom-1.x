@@ -28,9 +28,6 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-/*
-* File : global.c
-*/
 
 #include "ftnstd.h"
 #include "sdfile.h"

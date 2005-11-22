@@ -37,7 +37,6 @@
 #include "ftnstd.h"
 #include "opn.h"
 #include "errcod.h"
-#include "prdefn.h"
 #include "opr.h"
 #include "global.h"
 #include "stmtsw.h"
@@ -124,8 +123,8 @@ static  void    PrSFList() {
     sf_parm     *parm;
     sym_id      sf_sym;
     sym_id      sym_ptr;
-    int         what;
-    int         where;
+    USOPN       what;
+    USOPN       where;
 
     StmtSw |= SS_SF_REFERENCED;
     sf_sym = CITNode->sym_ptr;
@@ -149,16 +148,16 @@ static  void    PrSFList() {
                 TypeTypeErr( SF_PARM_TYPE_MISMATCH, CITNode->typ,
                              sym_ptr->ns.typ );
             } else {
-                what = CITNode->opn & OPN_WHAT;
-                where = CITNode->opn & OPN_WHERE;
-                if( ( what == OPN_NWL ) || ( where == OPN_SAFE ) ||
-                    ( where == OPN_TMP ) ) {
+                what = CITNode->opn.us & USOPN_WHAT;
+                where = CITNode->opn.us & USOPN_WHERE;
+                if( ( what == USOPN_NWL ) || ( where == USOPN_SAFE ) ||
+                    ( where == USOPN_TMP ) ) {
                     GSFArg( sym_ptr );
                 } else {
                     flags = CITNode->flags;
                     if( ( ( flags & SY_CLASS ) == SY_VARIABLE ) ||
                         ( ( flags & SY_CLASS ) == SY_PARAMETER ) ) {
-                        if( ( what == OPN_ASS ) ||
+                        if( ( what == USOPN_ASS ) ||
                             ( ( flags & SY_SUBSCRIPTED ) == 0 ) ) {
                             GSFArg( sym_ptr );
                         } else {
@@ -205,7 +204,7 @@ static  void    PrSubList( itnode *array_node ) {
         GBegSSStr( array_node );
         SubStrArgs( array_node );
     } else {
-        if( array_node->opn & OPN_FLD ) {
+        if( array_node->opn.us & USOPN_FLD ) {
             if( array_node->sym_ptr->fd.typ == TY_CHAR ) {
                 if( !(StmtSw & SS_DATA_INIT) )
                     GFieldSCB( array_node->sym_ptr->fd.xt.size );

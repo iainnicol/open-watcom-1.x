@@ -36,7 +36,8 @@
 #include "wf77cg.h"
 #include "tmpdefs.h"
 #include "fcodes.h"
-#include "objutil.h"
+#include "types.h"
+#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -72,7 +73,6 @@ extern  back_handle     GetFmtLabel(label_id);
 extern  cg_name         ArrayEltSize(sym_id);
 extern  cg_name         ArrayNumElts(sym_id);
 extern  cg_name         FieldArrayNumElts(sym_id);
-extern  uint            ParmType(uint,uint);
 extern  label_handle    GetLabel(int);
 extern  cg_name         SCBLenAddr(cg_name);
 extern  cg_name         SCBPtrAddr(cg_name);

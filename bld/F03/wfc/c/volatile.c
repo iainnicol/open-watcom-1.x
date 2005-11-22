@@ -44,9 +44,6 @@
 
 extern  sym_id          LkSym(void);
 extern  void            AdvanceITPtr(void);
-extern  int             IFLookUp(void);
-extern  byte            IFType(int);
-extern  int             TypeSize(uint);
 
 #define ERR_MASK    (SY_USAGE | SY_TYPE | SY_IN_DIMEXPR | SY_SUBSCRIPTED | \
                      SY_DATA_INIT | SY_SAVED | SY_IN_EC | SY_REFERENCED)

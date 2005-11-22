@@ -24,31 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Constant list
 *
 ****************************************************************************/
 
 
-//
-// RSTCONST  : Constant list
-//
-
 #include "ftnstd.h"
 #include "global.h"
+#include "fmemmgr.h"
+#include "fhash.h"
 
 #include <string.h>
-
-extern  void            *FMemAlloc(int);
-extern  uint            TypeSize(uint);
-extern  unsigned        CalcHash(void *,int);
-extern  void            HashInsert(hash_entry *,unsigned,sym_id *,sym_id);
 
 hash_entry              ConstHashTable[HASH_PRIME];
 
 
-sym_id  STConst( ftn_type *c_ptr, int typ, int size ) {
-//=====================================================
+sym_id  STConst( void *ptr, TYPE typ, uint size ) {
+//=================================================
 
 // Search the symbol table for a constant. If the constant is not in the
 // symbol table, add it to the symbol table.
@@ -56,11 +48,12 @@ sym_id  STConst( ftn_type *c_ptr, int typ, int size ) {
     unsigned    hash_value;
     sym_id      head;
     sym_id      tail;
+    ftn_type    *c_ptr = ptr;
 
     if( _IsTypeLogical( typ ) ) {
         c_ptr->logstar4 = c_ptr->logstar1;
     }
-    hash_value = CalcHash( c_ptr, size );
+    hash_value = CalcHash( ptr, size );
     head = ConstHashTable[ hash_value ].h_head;
     if( head != NULL ) {
         tail = ConstHashTable[ hash_value ].h_tail;

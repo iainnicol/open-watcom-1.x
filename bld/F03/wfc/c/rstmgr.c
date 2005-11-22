@@ -24,35 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  resident symbol table manager
 *
 ****************************************************************************/
 
-
-//
-// RSTMGR    : resident symbol table manager
-//
 
 #include "ftnstd.h"
 #include "progsw.h"
 #include "errcod.h"
 #include "global.h"
 #include "stmtsw.h"
+#include "fhash.h"
+#include "types.h"
 
 #include <string.h>
 
 extern  sym_id          STSearch(char *,int,sym_id);
 extern  sym_id          STNameSearch(char *,int);
-extern  sym_id          TmpVar(byte,int);
-extern  sym_id          StaticAlloc(int,byte);
-extern  int             TypeSize(uint);
+extern  sym_id          TmpVar(TYPE,uint);
+extern  sym_id          StaticAlloc(uint,TYPE);
 extern  sym_id          STAdd(char *,int);
-
-extern  hash_entry      HashTable[];
-extern  hash_entry      GHashTable[];
-extern  hash_entry      ConstHashTable[];
-extern  unsigned        HashValue;
 
 
 static  void    InitHashTable( hash_entry *hash_table, int size ) {

@@ -30,45 +30,7 @@
 ****************************************************************************/
 
 
-// The following defines all debugger commands. The tables BugCmds,
-// BugRtns and CmdEnd depend on this ordering:
+#include <cioconst.h>
 
-enum {
-    DB_JUNK,            // bad command
-    DB_NULL,            // null command
-    DB_BREAKPOINT,      // breakpoint
-    DB_GO,              // go
-    DB_HELP,            // help
-    DB_QUIT,            // quit
-    DB_TRACE,           // trace
-    DB_WHERE,           // where
-    DB_DISPLAY,         // display
-    DB_UNIT,            // unit
-    DB_LOGIO,           // logio
-    DB_SYSTEM,          // system
-    DB_MODIFY,          // modify
-    DB_PRINT,           // print
-};
-
-#define DB_FIRST_CMD    DB_BREAKPOINT
-
-// Formatting the PRINT command
-
-#define NAME_COL        (10 + 8 + 1)    // room CHARACTER*n where n is 3 MByte
-#define VALUE_COL       (NAME_COL + 12) // leaves room for complex*16
-
-#define MAX_ISN         65535   // largest ISN
-#define DISPLAY_WINDOW  5       // # of lines before and after current
-                                // line displayed
-
-// Trace bits
-
-#define TRACE           0x01    // tracing in effect
-#define TRACE_INTO      0x02    // trace into calls
-#define TRACE_DEPTH     0x04    // keep track of subroutine depth
-
-// Format codes for displaying data
-
-#define DEFAULT_FMT     0       // use default format
-#define Z_FMT           1       // use Z-format
-#define A_FMT           2       // use A-format
+#define gbl_defn extern
+#include <ciovars.h>
