@@ -305,6 +305,8 @@ bool            doneScan = FALSE;   // Indicator scan for non comment finished
                     doneScan = TRUE;
                     break;
                 }
+                // continue reading next line
+                break;
             }        
         } // for
         if ( doneScan ) break;
