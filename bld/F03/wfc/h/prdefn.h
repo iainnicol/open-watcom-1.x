@@ -45,7 +45,7 @@ typedef enum {
 
 #include "stmtdefn.h"
 
-} stmtproc;
+} StmtProcType;
 
 #define PR_KW_MAX       (PR_WRITE - 1)
 
