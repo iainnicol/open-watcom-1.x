@@ -41,6 +41,7 @@
 #include "global.h"
 #include "types.h"
 #include "emitobj.h"
+#include "types.h"
 
 extern  bool            TypeCmplx(int);
 

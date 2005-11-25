@@ -38,7 +38,7 @@
 #include "bglobal.h"
 
 #include "boot77.h"
-#include "fmemmgr.h"
+
 #include "inout.h"
 
 extern  void            SDInitIO(void);
