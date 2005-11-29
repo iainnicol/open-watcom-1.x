@@ -47,7 +47,7 @@ typedef struct token {
     unsigned_8  flags;
     byte        log;
     byte        col;
-} token_t;
+} token;
 
 #define TK_EOL          0x01
 #define TK_LAST         0x02
