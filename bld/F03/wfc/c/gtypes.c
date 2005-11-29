@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "symflgs.h"
 #include "itdefn.h"
+#include "objutil.h"
 #include "symtypes.h"
 #include "types.h"
 #include "emitobj.h"

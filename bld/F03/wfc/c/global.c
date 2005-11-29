@@ -61,4 +61,6 @@ gbl_defn        byte    Align_ciovars;
 //#include "ciovars.h" %GUT
 #include "gblboth.h"
 #include "fcdata.h"
+#include "prdefn.h"
+#include "progsw.h"
 #include "gbldat.h"

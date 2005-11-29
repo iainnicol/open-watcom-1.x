@@ -44,6 +44,7 @@
 #include "nmlinfo.h"
 #include "fmemmgr.h"
 #include "types.h"
+#include "fmemmgr.h"
 
 
 //=================== Back End Code Generation Routines ====================

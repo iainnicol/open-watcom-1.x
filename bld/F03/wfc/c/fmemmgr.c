@@ -38,15 +38,15 @@
 #if defined( TRMEM )
 #include "trmemcvr.h"
 #endif
+#include "fmemmgr.h"
+#include "fmeminit.h"
+#include "ferror.h"
+#include "inout.h"
+#include "cle.h"
+#include "utility.h"
+#include "frl.h"
+#include "fspawn.h"
 
-extern  void            Error(int,...);
-extern  void            PurgeAll(void);
-extern  void            FreeITNodes(itnode *);
-extern  void            FrlFini(void **);
-extern  void            CompErr(uint);
-extern  void            SysMemInit(void);
-extern  void            SysMemFini(void);
-extern  void            Suicide(void);
 
 void    FMemInit( void ) {
 //========================
@@ -77,6 +77,9 @@ void    FMemFini( void ) {
 }
 
 
+//**************************************************
+//  Allocate memory chunk for fortran compiler
+//**************************************************
 void    *FMemAlloc( size_t size ) {
 //=================================
 
