@@ -47,7 +47,6 @@
 #include "recog.h"
 #include "types.h"
 
-
 extern  int             RecIOKW(void);
 extern  void            BoolExpr(void);
 extern  void            CharSubExpr(void);
