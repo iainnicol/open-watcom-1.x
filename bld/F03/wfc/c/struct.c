@@ -37,6 +37,7 @@
 #include "insert.h"
 #include "recog.h"
 
+extern  void            StmtExtension(uint);
 extern  void            AdvanceITPtr(void);
 extern  sym_id          VarDecl(uint);
 extern  sym_id          FieldDecl(void);

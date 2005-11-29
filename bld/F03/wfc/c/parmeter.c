@@ -52,6 +52,9 @@ extern  sym_id          LkSym(void);
 extern  sym_id          STLit(byte *,uint);
 extern  sym_id          STConst(void *,TYPE,uint);
 extern  void            CnvTo(itnode *,TYPE,uint);
+extern  void            IllName(sym_id);
+extern  void            IllType(sym_id);
+extern  void            NameErr(int,sym_id);
 extern  void            CkSymDeclared(sym_id);
 
 
