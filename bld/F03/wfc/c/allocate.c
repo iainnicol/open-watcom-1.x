@@ -43,9 +43,10 @@
 #include "insert.h"
 #include "recog.h"
 
-
+extern  void            StmtExtension(uint);
 extern  void            AdvanceITPtr(void);
 extern  sym_id          LkSym(void);
+extern  void            IllName(sym_id);
 extern  void            IntegerExpr(void);
 extern  void            GSLoBound(int,sym_id);
 extern  void            GSHiBound(int,sym_id);

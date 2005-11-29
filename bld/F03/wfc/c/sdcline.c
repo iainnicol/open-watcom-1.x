@@ -102,11 +102,11 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
 }
 
 
-char    *Batch( char *buffer, uint num ) {
-//========================================
-
-    if( num > 0 ) {
-        buffer = NULL;
-    }
-    return( buffer );
-}
+//char    *Batch( char *buffer, uint num ) {
+////========================================
+//
+//    if( num > 0 ) {
+//        buffer = NULL;
+//    }
+//    return( buffer );
+//}
