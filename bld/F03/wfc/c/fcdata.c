@@ -67,6 +67,7 @@ extern  segment_id      GetDataSegId(sym_id);
 extern  seg_offset      GetDataOffset(sym_id);
 extern  void            DXPush(intstar4);
 extern  intstar4        DXPop(void);
+extern  void            NameStmtErr(int,sym_id,int);
 extern  bool            DoSubscript(act_dim_list *,intstar4 *,intstar4 *);
 extern  bool            DoSubstring(intstar4,intstar4,int);
 extern  void            FCodeSequence(void);

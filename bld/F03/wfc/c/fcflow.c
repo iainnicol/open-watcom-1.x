@@ -41,6 +41,7 @@
 #include "cpopt.h"
 #include "fmemmgr.h"
 #include "emitobj.h"
+#include "fmemmgr.h"
 
 //=================== Back End Code Generation Routines ====================
 
