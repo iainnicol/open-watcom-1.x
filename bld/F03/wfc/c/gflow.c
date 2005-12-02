@@ -43,7 +43,6 @@
 #include "recog.h"
 #include "emitobj.h"
 #include "recog.h"
-#include "objutil.h"
 
 
 extern  void            GSPProlog(void);

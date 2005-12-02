@@ -39,13 +39,10 @@
 #include "fcgbls.h"
 #include "iflookup.h"
 #include "fcodes.h"
-#include "parmtype.h"
-#include "prmcodes.h"
 #include "prmcodes.h"
 #include "fmemmgr.h"
 #include "emitobj.h"
-#include "fmemmgr.h"
-#include "emitobj.h"
+
 
 //=================== Back End Code Generation Routines ====================
 

@@ -41,8 +41,6 @@
 #include "insert.h"
 #include "recog.h"
 
-extern  void            StmtExtension(uint);
-extern  void            NameErr(uint,sym_id);
 extern  sym_id          LkSym(void);
 extern  sym_id          LkNameList(void);
 extern  grp_entry       *STGroupEntry(void);

@@ -45,7 +45,6 @@
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
-#include "objutil.h"
 
 extern  void            EatDoParm(void);
 extern  void            AdvanceITPtr(void);

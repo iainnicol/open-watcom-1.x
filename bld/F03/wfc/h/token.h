@@ -39,17 +39,24 @@ typedef enum {
 #include "tokdsopn.h"
 } token_class;
 
-typedef struct token {
-    char        *start;
-    char        *stop;
-    int         line;
-    token_class class;
-    unsigned_8  flags;
-    byte        log;
-    byte        col;
-} token;
+// token type specification
+typedef enum {
+    TK_EOL      =   0x01,   // end of line
+    TK_LAST     =   0x02,   // last token in statement  
+    TK_LENSPEC  =   0x04,   // length specifier
+    TK_INCLUDE  =   0x08    // include directive
+} tokenType;
 
-#define TK_EOL          0x01
-#define TK_LAST         0x02
-#define TK_LENSPEC      0x04
-#define TK_INCLUDE      0x08
+// structure of raw element (token)  
+typedef struct token_s {
+    char        *start; // start of lexem
+    char        *stop;  // end of lexem
+    int         line;   // continuation line counter
+    token_class class;  // class of token
+    tokenType   flags;  // token type
+    byte        log;    // flag for logical operators
+    byte        col;    // column counter
+} token_t;
+
+
+

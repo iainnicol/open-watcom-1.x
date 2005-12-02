@@ -46,7 +46,7 @@
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
-#include "objutil.h"
+
 
 extern  label_id        NextLabel(void);
 extern  void            AdvanceITPtr(void);
