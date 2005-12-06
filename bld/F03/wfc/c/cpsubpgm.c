@@ -47,10 +47,8 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-extern  void            AdvanceITPtr(void);
-extern  void            IntSubExpr(void);
-extern  bool            BitOn(unsigned_16);
 extern  TYPE            MapTypes(TYPE,int);
 extern  TYPE            ImplType(char);
 extern  bool            EmptyCSList(void);

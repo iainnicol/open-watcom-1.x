@@ -46,14 +46,9 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
 extern  int             RecIOKW(void);
-extern  void            BoolExpr(void);
-extern  void            CharSubExpr(void);
-extern  void            IntSubExpr(void);
-extern  void            BoolSubExpr(void);
-extern  void            ProcIOExpr(void);
-extern  void            AdvanceITPtr(void);
 extern  bool            Permission(int);
 extern  void            CheckList(void);
 extern  void            KWRememb(int);

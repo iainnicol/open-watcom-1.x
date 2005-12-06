@@ -43,9 +43,9 @@
 #include "recog.h"
 #include "types.h"
 #include "iflookup.h"
+#include "utility.h"
 
 extern  sym_id          LkSym(void);
-extern  void            AdvanceITPtr(void);
 
 #define ERR_MASK        (SY_IN_EC | SY_SUB_PARM)
 

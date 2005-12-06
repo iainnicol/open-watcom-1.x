@@ -34,10 +34,9 @@
 // CSDEP        : system dependent control structure processing
 //
 
-#include "ftnstd.h"
-#include "errcod.h"
-
-extern  void            BoolExpr(void);
+//#include "ftnstd.h"
+//#include "errcod.h"
+#include "utility.h"
 
 
 void    GBoolExpr() {

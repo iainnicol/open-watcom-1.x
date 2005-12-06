@@ -42,6 +42,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
@@ -52,7 +53,6 @@ extern  void            CSCond(label_id);
 extern  void            Recurse(void);
 extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);
-extern  void            AdvanceITPtr(void);
 extern  label_id        NextLabel(void);
 extern  void            FreeLabel(label_id);
 

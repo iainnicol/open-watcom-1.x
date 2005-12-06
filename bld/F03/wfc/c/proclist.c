@@ -43,11 +43,8 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
-extern  void            AdvanceITPtr(void);
-extern  bool            ClassIs(unsigned_16);
-extern  bool            BitOn(unsigned_16);
-extern  bool            Subscripted(void);
 extern  void            FreeITNodes(itnode *);
 extern  void            GFiniSS(itnode *,itnode *);
 extern  void            GInitSS(itnode *);

@@ -44,16 +44,13 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  void            DownScan(void);
 extern  void            UpScan(void);
 extern  sym_id          LkSym(void);
 extern  void            ScanExpr(void);
 extern  void            AdvError(int);
-extern  void            AdvanceITPtr(void);
-extern  bool            ClassIs(unsigned_16);
-extern  bool            Subscripted(void);
-extern  bool            BitOn(unsigned_16);
 extern  void            SFPrologue(void);
 
 #define SF_MASK (SY_SUB_PARM|SY_IN_EC|SY_DATA_INIT|SY_SAVED)

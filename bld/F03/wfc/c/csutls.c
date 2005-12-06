@@ -27,7 +27,7 @@
 * Description:  utilities for processing control structures
 *
 ****************************************************************************/
-
+#include <string.h>
 
 #include "ftnstd.h"
 #include "global.h"
@@ -37,11 +37,8 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
-#include <string.h>
-
-
-extern  void            AdvanceITPtr(void);
 extern  void            FreeITNodes(itnode *);
 extern  void            GBoolExpr(void);
 extern  void            GBrFalse(label_id);

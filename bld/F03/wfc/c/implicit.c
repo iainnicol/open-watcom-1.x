@@ -33,6 +33,8 @@
 //
 // IMPLICIT  : IMPLICIT statement processor
 //
+#include <string.h>
+#include <limits.h>
 
 #include "ftnstd.h"
 #include "opr.h"
@@ -44,13 +46,9 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-#include <string.h>
-#include <limits.h>
 
-extern  void            AdvanceITPtr(void);
-extern  bool            CIntExpr(void);
-extern  bool            CmpNode2Str(itnode *,char *);
 extern  bool            SetImplType(char,char,TYPE,uint);
 extern  TYPE            MapTypes(TYPE,uint);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);

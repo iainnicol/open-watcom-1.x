@@ -42,11 +42,9 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
-extern  void            AdvanceITPtr(void);
-extern  void            ChkType(TYPE);
 extern  bool            OptimalChSize(uint);
-extern  bool            ClassIs(unsigned_16);
 
 
 static  bool    CheckColon() {

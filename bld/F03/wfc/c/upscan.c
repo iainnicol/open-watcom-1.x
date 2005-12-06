@@ -44,7 +44,7 @@
 #include "types.h"
 #include "ferror.h"
 #include "insert.h"
-
+#include "utility.h"
 
 extern  void            DetSubList(void);
 extern  void            DetCallList(void);
@@ -54,11 +54,6 @@ extern  void            GMakeCplx(void);
 extern  void            GMakeDCplx(void);
 extern  void            GMakeXCplx(void);
 extern  void            FreeITNodes(itnode *);
-extern  void            FreeOneNode(itnode *);
-extern  bool            Subscripted(void);
-extern  void            AdvanceITPtr(void);
-extern  bool            BitOn(unsigned_16);
-extern  bool            ClassIs(unsigned_16);
 extern  void            GArg(void);
 extern  void            GILCnvTo(TYPE,uint);
 extern  void            CnvTo(itnode*,TYPE,uint);
@@ -121,7 +116,6 @@ extern  void            GLoc(void);
 extern  void            GAllocated(void);
 extern  sym_id          FindStruct(char *,int);
 extern  void            SetDefinedStatus(void);
-extern  bool            TypeIs(TYPE);
 
 extern  void            (* const __FAR GenOprTable[])();
 extern  void            (* const __FAR ConstTable[])();

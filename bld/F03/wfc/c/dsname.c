@@ -27,7 +27,7 @@
 * Description:  Downscan a name.
 *
 ****************************************************************************/
-
+#include <string.h>
 
 #include "ftnstd.h"
 #include "opr.h"
@@ -44,15 +44,13 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-#include <string.h>
+
 
 extern  void            BIOutSymbol( sym_id ste_ptr );
 extern  void            ScanExpr(void);
 extern  void            AdvError(int);
-extern  void            AdvanceITPtr(void);
-extern  bool            Subscripted(void);
-extern  bool            ClassIs(unsigned_16);
 extern  sym_id          LkSym(void);
 extern  sym_id          LkField(sym_id);
 extern  sym_id          FindShadow(sym_id);

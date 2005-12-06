@@ -42,9 +42,10 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  sym_id          LkSym(void);
-extern  void            AdvanceITPtr(void);
+
 
 
 

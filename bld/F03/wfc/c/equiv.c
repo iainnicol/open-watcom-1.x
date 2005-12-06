@@ -27,7 +27,7 @@
 * Description:  compile EQUIVALENCE statement
 *
 ****************************************************************************/
-
+#include <string.h>
 
 #include "ftnstd.h"
 #include "global.h"
@@ -43,11 +43,9 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-#include <string.h>
 
-extern  void            AdvanceITPtr(void);
-extern  bool            CIntExpr(void);
 extern  sym_id          LkSym(void);
 extern  com_eq          *STComEq(void);
 

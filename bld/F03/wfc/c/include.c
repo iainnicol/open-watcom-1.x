@@ -43,10 +43,7 @@
 #include "recog.h"
 #include "comio.h"
 #include "inout.h"
-
-extern  void            AdvanceITPtr(void);
-extern  char            *MkNodeStr(itnode *);
-extern  void            FrNodeStr(char *);
+#include "utility.h"
 
 
 void    CpInclude() {

@@ -40,11 +40,11 @@
 #include "namecod.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  sym_id          LkSym(void);
 extern  sym_id          LkNameList(void);
 extern  grp_entry       *STGroupEntry(void);
-extern  void            AdvanceITPtr(void);
 
 
 void    CpNameList() {

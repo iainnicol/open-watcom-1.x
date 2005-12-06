@@ -42,6 +42,9 @@
 // NOTE: These constants should stay in the following order.
 //       ( routines rely on them being sequential )
 //
+#ifndef prmtypes_h_
+#define prmtypes_h_
+
 
 #ifdef pick
 #undef pick
@@ -56,3 +59,6 @@ enum PARAM_TYPES {
 };
 
 typedef enum PARAM_TYPES PTYPE;
+
+#endif
+

@@ -41,10 +41,7 @@
 #include "astype.h"
 #include "ferror.h"
 #include "recog.h"
-
-extern  void            AdvanceITPtr(void);
-extern  void            FreeOneNode(itnode *);
-
+#include "utility.h"
 
 
 void    ScanExpr() {

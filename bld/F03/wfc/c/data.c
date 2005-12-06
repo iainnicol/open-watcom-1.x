@@ -27,7 +27,8 @@
 * Description:  Processing for DATA statements.
 *
 ****************************************************************************/
-
+#include <ctype.h>
+#include <string.h>
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -42,9 +43,9 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-#include <ctype.h>
-#include <string.h>
+
 
 extern  label_id        GDataProlog(void);
 extern  void            GBegDList(void);
@@ -54,9 +55,6 @@ extern  void            GEndDSet(void);
 extern  void            GDataEpilog(label_id);
 extern  void            GEndVarSet(void);
 extern  void            GStopIO(void);
-extern  void            AdvanceITPtr(void);
-extern  void            ProcDataExpr(void);
-extern  void            FreeOneNode(itnode *);
 extern  void            ListItem(void);
 extern  bool            StartImpDo(void);
 extern  void            FinishImpDo(void);
@@ -66,8 +64,6 @@ extern  sym_id          LkSym(void);
 extern  sym_id          SymFind(char *,int);
 extern  void            TermDo(void);
 extern  int             HSToB(char *,uint,char *);
-extern  void            ProcDataIExpr(void);
-extern  void            ProcDataRepExpr(void);
 extern  bool            CalcStructSize(sym_id);
 
 

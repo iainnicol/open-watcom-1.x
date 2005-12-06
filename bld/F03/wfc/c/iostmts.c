@@ -43,6 +43,7 @@
 #include "global.h"
 #include "ferror.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  sym_id          LkSym(void);
 extern  void            InitIO(void);
@@ -52,7 +53,6 @@ extern  void            Unit(void);
 extern  void            FormatIdd(void);
 extern  void            IOList(void);
 extern  bool            Permission(int);
-extern  void            AdvanceITPtr(void);
 extern  void            GStartIO(void);
 extern  void            GNullEofStmt(void);
 

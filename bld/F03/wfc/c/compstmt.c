@@ -33,6 +33,8 @@
 //
 // COMPSTMT  : compile a FORTRAN statement
 //
+#include <string.h>
+#include <ctype.h>
 
 #include "ftnstd.h"
 #include "progsw.h"
@@ -50,17 +52,12 @@
 #include "recog.h"
 #include "frl.h"
 #include "inout.h"
-
-#include <string.h>
-#include <ctype.h>
+#include "utility.h"
 
 
 extern  sym_id          LkSym(void);
 extern  void            MakeITList(void);
 extern  void            FreeITNodes(itnode *);
-extern  bool            BitOn(unsigned_16);
-extern  void            AdvanceITPtr(void);
-extern  void            FreeOneNode(itnode *);
 extern  stmtproc        RecStmtKW(void);
 extern  void            TermDo(void);
 extern  void            TermDoWhile(void);

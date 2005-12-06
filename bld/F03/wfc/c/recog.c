@@ -37,9 +37,9 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  void            AdvError(uint);
-extern  bool            CmpNode2Str(itnode *,char *);
 extern  sym_id          LkSym(void);
 extern  void            GetFunctionShadow(void);
 

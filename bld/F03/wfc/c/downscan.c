@@ -27,7 +27,9 @@
 * Description:  Arithmetic downscan.
 *
 ****************************************************************************/
-
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
 #include "ftnstd.h"
 #include "opr.h"
@@ -42,16 +44,12 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
 
 extern  void            MoveDown(void);
 extern  void            DSName(void);
 extern  void            FreeITNodes(itnode *);
-extern  void            FreeOneNode(itnode *);
-extern  void            AdvanceITPtr(void);
 extern  sym_id          LkUpStmtNo(void);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 extern  int             FmtS2F(char *,int,int,bool,int,int,reallong *,bool,int *,bool);

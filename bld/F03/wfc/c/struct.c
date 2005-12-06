@@ -36,8 +36,8 @@
 #include "errcod.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
-extern  void            AdvanceITPtr(void);
 extern  sym_id          VarDecl(uint);
 extern  sym_id          FieldDecl(void);
 extern  void            ArrayDecl(sym_id);

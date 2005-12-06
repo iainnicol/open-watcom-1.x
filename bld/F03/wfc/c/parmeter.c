@@ -27,7 +27,7 @@
 * Description:  Process PARAMETER statement
 *
 ****************************************************************************/
-
+#include <string.h>
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -39,15 +39,9 @@
 #include "fmemmgr.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
-#include <string.h>
 
-extern  void            AdvanceITPtr(void);
-extern  bool            ClassIs(unsigned_16);
-extern  bool            CLogicExpr(void);
-extern  bool            CCharExpr(void);
-extern  void            CArithExpr(void);
-extern  void            ConstExpr(TYPE);
 extern  sym_id          LkSym(void);
 extern  sym_id          STLit(byte *,uint);
 extern  sym_id          STConst(void *,TYPE,uint);

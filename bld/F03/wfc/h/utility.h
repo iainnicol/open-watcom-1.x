@@ -35,7 +35,40 @@
 #define utility_h_
 
 /* needs #include ?? */
+#include "itdefn.h"
 
-extern void    FreeITNodes(itnode *);
+extern	void	FreeITNodes(itnode *);
+extern	void    AdvanceITPtr( void );
+extern	void    ITPurge( void );
+extern	void    FreeOneNode( itnode *itptr );
+extern	char    *MkNodeStr(  itnode *itptr );
+extern	void    FrNodeStr( char *str );
+extern	bool    CmpNode2Str( itnode *itptr, char *str );
+//extern	void    ProcExpr( void );
+extern	bool	TypeIs( TYPE typ );
+extern	bool    ConstExpr( TYPE typ );
+extern	void    ChkType( TYPE typ ) ;
+extern	void    DimExpr( void );
+//extern	void    ProcSubExpr( void );
+extern	void    ProcDataExpr( void );
+extern	void    ProcDataRepExpr( void );
+extern	void	ProcDataIExpr( void );
+extern	void    ProcIOExpr( void );
+extern	bool    CLogicExpr( void );
+extern	bool    CCharExpr( void );
+extern	bool    CIntExpr( void );
+extern	void    CArithExpr( void );
+extern	void    BoolExpr( void );
+extern	void    BoolSubExpr( void );
+extern	void    SelectExpr( void );
+extern	void    IntegerExpr( void );
+extern	void    IntSubExpr( void );
+extern	void    EatDoParm( void );
+extern	void    IfExpr( void );
+extern	void    CharSubExpr( void );
+extern	bool    BitOn( unsigned_16 );
+//extern	int		Map2BaseType( TYPE );
+extern	bool    ClassIs( unsigned_16 );
+extern	bool    Subscripted( void );
 
 #endif

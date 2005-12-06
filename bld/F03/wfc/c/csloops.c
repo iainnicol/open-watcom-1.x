@@ -39,6 +39,7 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  void            CkTypeDeclared(void);
 extern  void            AddCSNode(byte);
@@ -49,8 +50,6 @@ extern  void            CSNoMore(void);
 extern  void            CSExtn(void);
 extern  void            Match(void);
 extern  void            CSCond(label_id);
-extern  void            EatDoParm(void);
-extern  void            AdvanceITPtr(void);
 extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);
 extern  label_id        NextLabel(void);

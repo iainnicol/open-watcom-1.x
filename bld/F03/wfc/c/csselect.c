@@ -27,7 +27,7 @@
 * Description:  processing for SELECT, CASE, OTHERWISE, and ENDSELECT
 *
 ****************************************************************************/
-
+#include <limits.h>
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -40,8 +40,8 @@
 #include "ferror.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-#include <limits.h>
 
 
 extern  void            AddCSNode(byte);
@@ -50,9 +50,6 @@ extern  void            CSNoMore(void);
 extern  void            Match(void);
 extern  void            CSExtn(void);
 extern  void            ColonLabel(void);
-extern  void            AdvanceITPtr(void);
-extern  bool            ConstExpr(TYPE);
-extern  bool            SelectExpr(void);
 extern  label_id        NextLabel(void);
 extern  void            GLabel(label_id);
 extern  void            FiniSelect(void);

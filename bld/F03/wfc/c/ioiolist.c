@@ -39,14 +39,13 @@
 #include "ferror.h"
 #include "insert.h"
 #include "recog.h"
+#include "utility.h"
 
 extern  void            ChkAssumed(void);
 extern  void            TermDo(void);
 extern  void            ImpDo(void);
 extern  void            DelCSNode(void);
-extern  void            ProcIOExpr(void);
 extern  void            FreeITNodes(itnode *);
-extern  void            AdvanceITPtr(void);
 extern  void            GStartIO(void);
 extern  void            GIOItem(void);
 extern  void            GIOArray(void);

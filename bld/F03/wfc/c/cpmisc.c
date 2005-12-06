@@ -37,8 +37,8 @@
 #include "opn.h"
 #include "ferror.h"
 #include "recog.h"
+#include "utility.h"
 
-extern  void            AdvanceITPtr(void);
 extern  void            GBreak(unsigned_16);
 extern  void            GReturn(void);
 extern  void            CSNoMore(void);

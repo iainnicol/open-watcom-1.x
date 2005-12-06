@@ -34,6 +34,8 @@
 // DECLARE   : symbol declaration processor
 //
 
+#include <string.h>
+
 #include "ftnstd.h"
 #include "opn.h"
 #include "opr.h"
@@ -48,13 +50,10 @@
 #include "insert.h"
 #include "recog.h"
 #include "types.h"
+#include "utility.h"
 
-#include <string.h>
 
 
-extern  void            AdvanceITPtr(void);
-extern  void            DimExpr(void);
-extern  bool            CIntExpr(void);
 extern  void            Function(int,uint,bool);
 extern  act_dim_list    *STSubsList(act_dim_list *);
 extern  sym_id          LkSym(void);

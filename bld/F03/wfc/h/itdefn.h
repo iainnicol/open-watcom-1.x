@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#ifndef _ITDEFN_H_INCLUDED
-#define _ITDEFN_H_INCLUDED
+#ifndef itdefn_h_
+#define itdefn_h_
 
+#include "ftnstd.h"
 #include "symtypes.h"
 #include "opr.h"
 #include "opn.h"

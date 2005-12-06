@@ -33,6 +33,7 @@
 //
 // INSERT    : insert information into error messages
 //
+#include <stdarg.h>
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -42,14 +43,13 @@
 #include "types.h"
 #include "ferror.h"
 #include "insert.h"
+#include "utility.h"
 
-#include <stdarg.h>
+
 
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STStructName(sym_id,char *);
 extern  char            *STFieldName(sym_id,char *);
-extern  char            *MkNodeStr(itnode *);
-extern  void            FrNodeStr(char *);
 extern  void            MsgBuffer(uint,char *,...);
 
 extern  char            *StmtKeywords[];

@@ -44,14 +44,13 @@
 #include "emitobj.h"
 #include "insert.h"
 #include "ferror.h"
+#include "utility.h"
 
 extern  void            BackTrack(void);
 extern  void            AddConst(itnode *);
 extern  void            ConstCat(int);
 extern  sym_id          GStartCat(int,int);
 extern  void            GStopCat(int,sym_id);
-extern  void            AdvanceITPtr(void);
-extern  void            FreeOneNode(itnode *);
 extern  void            FreeITNodes(itnode *);
 extern  void            GCatArg(itnode *);
 extern  void            MoveDown(void);

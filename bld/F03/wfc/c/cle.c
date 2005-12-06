@@ -33,6 +33,7 @@
 //
 // CLE       : compile, link, and execute a FORTRAN program
 //
+#include <time.h>
 
 #include "ftnstd.h"
 #include "global.h"
@@ -41,14 +42,13 @@
 #include "comio.h"
 #include "inout.h"
 #include "cle.h"
+#include "utility.h"
 
-#include <time.h>
 
 extern  void            DoCompile(void);
 extern  void            StatProg(void);
 extern  void            VSTInit(void);
 extern  void            STPurge(void);
-extern  void            ITPurge(void);
 extern  void            CSPurge(void);
 extern  void            EnPurge(void);
 extern  void            EqPurge(void);
