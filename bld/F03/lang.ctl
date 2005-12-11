@@ -1,5 +1,17 @@
 # WFC Builder Control file
 # ========================
+ECHO 
+ECHO 
+ECHO WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! 
+ECHO !!
+ECHO !! This is work in progress.
+ECHO !! The Fortran compiler generated is not functional for the time beeing. 
+ECHO !! The compile and build process might even fail.
+ECHO !! If you want a functional Fortran compiler use the F77 project.
+ECHO !!
+ECHO WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! 
+ECHO 
+ECHO 
 
 set PROJDIR=<CWD>
 
