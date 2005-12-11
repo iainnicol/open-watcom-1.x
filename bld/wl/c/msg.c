@@ -38,7 +38,9 @@
 #include "fileio.h"
 #include "mapio.h"
 #include "loadfile.h"
+#if _LINKER != _WATFOR77
 #include "demangle.h"
+#endif
 #include "msg.h"
 
 #undef pick
@@ -130,7 +132,7 @@ extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     str = va_arg( *args, symbol * )->name;
                 }
-#if defined(__WATCOMC__)
+#if _LINKER != _WATFOR77 && defined(__WATCOMC__)
                 if( !(LinkFlags & DONT_UNMANGLE) ) {
                     size = __demangle_l( str, 0, dest, len );
                     if( size > (len-1) ) size = len - 1;
@@ -406,7 +408,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len,
         }
     }
     if( (num & OUT_MAP) && (MapFile != NIL_HANDLE) ) {
-#if defined( _DLLHOST )
+#if _LINKER == _DLLHOST
         BufWrite( prefix, prefixlen );
 #endif
         BufWrite( buff, len );
@@ -464,7 +466,7 @@ extern void LnkMsg(
         } else {
             Msg_Get( MSG_ERROR, rc_buff );
         }
-#if !defined( _DLLHOST )
+#if _LINKER != _DLLHOST
         len = FmtStr( buff, MAX_MSG_SIZE - len, rc_buff, CalcMsgNum( num ));
 #else
         prefixlen = FmtStr( prefix, MAX_MSG_SIZE, rc_buff, CalcMsgNum( num ));
@@ -527,7 +529,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
     LinkState |= LINK_ERROR;
     CurrSymName = NULL;
     Msg_Get( MSG_ERROR, rc_buff );
-#if !defined( _DLLHOST )
+#if _LINKER != _DLLHOST
     len = FmtStr( buff, MAX_MSG_SIZE - len, rc_buff, CalcMsgNum( num ));
 #else
     prefixlen = FmtStr( prefix, MAX_MSG_SIZE, rc_buff, CalcMsgNum( num ));
@@ -607,7 +609,7 @@ extern bool SkipSymbol( symbol * sym )
 /************************************/
 {
     if( sym->info & SYM_STATIC && !(MapFlags & MAP_STATICS) ) return TRUE;
-#if defined(__WATCOMC__)
+#if _LINKER != _WATFOR77 && defined(__WATCOMC__)
     { int art;
 
     art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
@@ -631,7 +633,7 @@ extern int SymAlphaCompare( const void *a, const void *b )
 
     left = *((symbol **) a);
     right = *((symbol **) b);
-#if defined(__WATCOMC__)
+#if _LINKER != _WATFOR77 && defined(__WATCOMC__)
     if( !(LinkFlags & DONT_UNMANGLE) ) {
         __unmangled_name( left->name, 0, &leftname, &leftsize );
         __unmangled_name( right->name, 0, &rightname, &rightsize );

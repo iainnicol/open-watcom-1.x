@@ -24,152 +24,155 @@
 *
 *  ========================================================================
 *
-* Description:  Generate F-Code for binary operations
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+//
+// BINOPS :     Generate F-Code for binary operations
+//
 
 #include "ftnstd.h"
 #include "optr.h"
 #include "opn.h"
 #include "fcodes.h"
 #include "global.h"
-#include "types.h"
-#include "emitobj.h"
-#include "types.h"
+#include "parmtype.h"
 
-extern  bool            TypeCmplx(TYPE);
+extern  void            EmitOp(unsigned_16);
+extern  void            OutU16(unsigned_16);
+extern  void            SetOpn(itnode *,int);
+extern  void            GenType(itnode *);
+extern  void            GenTypes(itnode *,itnode *);
+extern  void            PushOpn(itnode *);
+extern  bool            TypeCmplx(int);
+extern  intstar4        ITIntValue(itnode *);
 
 
-static bool UnaryMul( TYPE typ1, TYPE typ2 ) {
-//============================================
+static  bool    UnaryMul( int typ1, int typ2 ) {
+//==============================================
 
-    if( typ1 > TY_EXTENDED )
-        return( FALSE );
-    if( !_IsTypeInteger( typ2 ) )
-        return( FALSE );
-    if( CITNode->link->opn.us != USOPN_CON )
-        return( FALSE );
-    if( ITIntValue( CITNode->link ) < 0 )
-        return( FALSE );
-    if( ITIntValue( CITNode->link ) > 8 )
-        return( FALSE );
+    if( typ1 > TY_EXTENDED ) return( FALSE );
+    if( !_IsTypeInteger( typ2 ) ) return( FALSE );
+    if( CITNode->link->opn != OPN_CON ) return( FALSE );
+    if( ITIntValue( CITNode->link ) < 0 ) return( FALSE );
+    if( ITIntValue( CITNode->link ) > 8 ) return( FALSE );
     return( TRUE );
 }
 
 
-void    ExpOp( TYPE typ1, TYPE typ2, OPTR opr ) {
-//===============================================
+void            ExpOp( int typ1, int typ2, int opr ) {
+//====================================================
 
 // Generate code to perform exponentiation.
 
     if( UnaryMul( typ1, typ2 ) ) {
         PushOpn( CITNode );
-        EmitOp( FC_UNARY_MUL );
+        EmitOp( UNARY_MUL );
         GenType( CITNode );
         OutU16( ITIntValue( CITNode->link ) );
-        SetOpn( CITNode, USOPN_SAFE );
+        SetOpn( CITNode, OPN_SAFE );
     } else {
         BinOp( typ1, typ2, opr );
     }
 }
 
 
-static void Unary( TYPE typ, OPTR opr ) {
-//=======================================
+void            BinOp( int typ1, int typ2, int opr ) {
+//====================================================
+
+// Generate code to perform a binary operation.
+
+    if( typ1 != -1 ) {                        // binary operator
+        Binary( typ1, typ2, opr );
+    } else {                                  // unary operator.
+        Unary( typ2, opr );
+    }
+}
+
+
+static  void    Unary( int typ, uint opr ) {
+//==========================================
 
 // Generate code for unary plus or unary minus.
 
     PushOpn( CITNode->link );
     if( opr == OPTR_SUB ) {             // unary minus
         if( TypeCmplx( typ ) ) {
-            EmitOp( FC_CUMINUS );
+            EmitOp( CUMINUS );
         } else {
-            EmitOp( FC_UMINUS );
+            EmitOp( UMINUS );
         }
         GenType( CITNode->link );
     } else if( ( _IsTypeInteger( CITNode->link->typ ) ) &&
                ( CITNode->link->size < sizeof( intstar4 ) ) ) {
         // convert INTEGER*1 or INTEGER*2 to INTEGER*4
-        EmitOp( FC_CONVERT );
-        DumpTypes( CITNode->link->typ, CITNode->link->size,
-                             TY_INTEGER, sizeof( intstar4 ) );
+        EmitOp( CONVERT );
+        OutU16( ( ParmType( CITNode->link->typ, CITNode->link->size ) << 8 ) |
+                  ParmType( TY_INTEGER, sizeof( intstar4 ) ) );
     }
-    SetOpn( CITNode, USOPN_SAFE );
+    SetOpn( CITNode, OPN_SAFE );
 }
 
 
-static void Binary( TYPE typ1, TYPE typ2, OPTR opr ) {
-//====================================================
+static  void    Binary( int typ1, int typ2, uint opr ) {
+//======================================================
 
 // Generate code for binary operations.
 
-    bool    flip;
-    bool    associative;
-    FCODE   op_code;
+    bool        flip;
+    bool        associative;
 
     associative = FALSE;
     if( ( opr == OPTR_ADD ) || ( opr == OPTR_MUL ) ) {
         associative = TRUE;
     }
     flip = FALSE;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( ( CITNode->opn & OPN_WHERE ) == OPN_SAFE ) &&
+        ( ( CITNode->link->opn & OPN_WHERE ) != OPN_SAFE ) ) {
         flip = TRUE;
     }
-    op_code = opr - OPTR_FIRST_ARITHOP;
+    opr = BINOPS + ( opr - OPTR_ADD );
     PushOpn( CITNode->link );
     PushOpn( CITNode );
     if( TypeCmplx( typ1 ) && TypeCmplx( typ2 ) ) {
-        op_code += FC_CC_BINOPS;
+        opr += CMPLX_OPS;
         if( flip && !associative ) {
-            EmitOp( FC_CMPLX_FLIP );
+            EmitOp( CMPLX_FLIP );
         }
     } else if( TypeCmplx( typ1 ) ) {
         if( flip ) {
             if( associative ) {
-                op_code += FC_XC_BINOPS;
+                opr += XC_MIXED;
             } else {
-                EmitOp( FC_XC_FLIP );
-                op_code += FC_CX_BINOPS;
+                EmitOp( XC_FLIP );
+                opr += CX_MIXED;
             }
         } else {
-            op_code += FC_CX_BINOPS;
+            opr += CX_MIXED;
         }
     } else if( TypeCmplx( typ2 ) ) {
         if( flip ) {
             if( associative ) {
-                op_code += FC_CX_BINOPS;
+                opr += CX_MIXED;
             } else {
-                EmitOp( FC_CX_FLIP );
-                op_code += FC_XC_BINOPS;
+                EmitOp( CX_FLIP );
+                opr += XC_MIXED;
             }
         } else {
-            op_code += FC_XC_BINOPS;
+            opr += XC_MIXED;
         }
     } else {
-        op_code += FC_BINOPS;
         if( flip && !associative ) {
-            EmitOp( FC_FLIP );
+            EmitOp( FLIP );
         }
     }
-    EmitOp( op_code );
+    EmitOp( opr );
     if( flip && associative ) {
         GenTypes( CITNode->link, CITNode );
     } else {
         GenTypes( CITNode, CITNode->link );
-    }
-}
-
-
-void    BinOp( TYPE typ1, TYPE typ2, OPTR opr ) {
-//===============================================
-
-// Generate code to perform a binary operation.
-
-    if( typ1 != TY_NO_TYPE ) {                // binary operator
-        Binary( typ1, typ2, opr );
-    } else {                                  // unary operator.
-        Unary( typ2, opr );
     }
 }

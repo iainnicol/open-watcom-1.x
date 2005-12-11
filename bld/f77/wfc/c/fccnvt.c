@@ -37,8 +37,6 @@
 #include "ftnstd.h"
 #include "wf77defs.h"
 #include "wf77cg.h"
-#include "emitobj.h"
-#include "fctypes.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -51,6 +49,10 @@ extern  void            CGTrash(cg_name);
 extern  void            XPush(cg_name);
 extern  cg_name         XPopValue(cg_type);
 extern  void            XPopCmplx(cg_cmplx *,cg_type);
+extern  cg_type         GetType1(unsigned_16);
+extern  cg_type         GetType2(unsigned_16);
+extern  cg_type         GetType(unsigned_16);
+extern  unsigned_16     GetU16(void);
 extern  cg_name         SCBPointer(cg_name);
 extern  cg_name         XPop(void);
 

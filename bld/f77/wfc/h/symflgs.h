@@ -24,11 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Definition of "flags" field of symbol table entry
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+//
+// Definition of "flags" field of symbol table entry.
 //
 //+===================================================================+
 //|15              |14              |13              |12              |
@@ -88,6 +91,9 @@
 #define SY_REFERENCED    0x0002U        // symbol referenced
 #define SY_SAVED         0x0001U        // appeared in SAVE statement
                                         // - for variables and common blocks
+#if _CPU == 370
+#define SY_WEAK_EXTRN    0x0040U        // weak extern reference
+#endif
 
 // VARIABLE
 // ========
@@ -126,6 +132,9 @@
 #define SY_RB_DEFINED    0x0004U        // remote block defined
 #define SY_RELAX_EXTERN  0x0004U        // don't force an external reference
 #define SY_IF_ARGUMENT   0x0004U        // intrinsic function used as argument
+#if _CPU == 370
+#define SY_INTERNAL      0x0004U        // internal subprogram (i.f)
+#endif
 #define SY_ADDR_ASSIGNED 0x0002U        // address assigned (for global symbols)
 #define SY_UNNAMED       0x0001U        // unnamed program/block data
 
@@ -155,3 +164,37 @@
                                         // specifiers
 #define SY_ALLOCATABLE          0x08    // symbol is allocatable
 
+// TYPES
+// =====
+
+#define TY_LOGICAL_1            0       // LOGICAL*1
+#define TY_LOGICAL              1       // LOGICAL*4
+#define TY_INTEGER_1            2       // INTEGER*1
+#define TY_INTEGER_2            3       // INTEGER*2
+#define TY_INTEGER              4       // INTEGER*4
+#define TY_REAL                 5       // REAL
+#define TY_DOUBLE               6       // DOUBLE PRECISION
+// Until long double is implemented in the code generator, we will map
+// TY_EXTENDED and TY_XCOMPLEX to TY_DOUBLE and TY_DCOMPLEX.
+// TY_TRUE_EXTENDED and TY_TRUE_XCOMPLEX are temporarily defined since switch
+// statements must have unique values. //UNCOMMENT_TOKEN
+#define TY_TRUE_EXTENDED        7       // EXTENDED PRECISION
+#define TY_EXTENDED             TY_DOUBLE
+#define TY_COMPLEX              8       // COMPLEX
+#define TY_DCOMPLEX             9       // DOUBLE COMPLEX
+#define TY_TRUE_XCOMPLEX        10      // EXTENDED COMPLEX
+#define TY_XCOMPLEX             TY_DCOMPLEX
+#define TY_CHAR                 11      // CHARACTER
+#define TY_STRUCTURE            12      // structure
+#define TY_UNION                13      // union
+#define TY_HEX                  14      // z constants in DATA statements
+#define TY_NO_TYPE              15      // no type specified
+
+#define _IsTypeLogical( typ )   (typ <= TY_LOGICAL)
+#define _IsTypeInteger( typ )   ((typ >= TY_INTEGER_1) && (typ <= TY_INTEGER))
+
+#if _CPU == 8086
+  #define TY_INTEGER_TARG      TY_INTEGER_2
+#else
+  #define TY_INTEGER_TARG      TY_INTEGER
+#endif

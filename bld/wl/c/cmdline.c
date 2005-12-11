@@ -178,7 +178,7 @@ extern void DoCmdFile( char *fname )
     if( *fname == '?' ) {
         Token.next = fname + 1;       // skip question mark.
         Help();
-#if defined( __UNIX__ )
+#if _OS == _QNX || _OS == _LINUX
     } else if( *fname == '-' ) {
 #else
     } else if( *fname == '-' || *fname == '/' ) {
@@ -213,11 +213,11 @@ extern void DoCmdFile( char *fname )
     GetExtraCommands();
     if( !(LinkState & FMT_DECIDED) ) {
         /* restrict set to automatically decided ones */
-#if defined( __QNX__ )
+#if _OS == _QNX
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
-#elif defined( __LINUX__ )
+#elif _OS == _LINUX
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_ELF )
-#elif defined( __NT__ )
+#elif _OS == _NT
 #define LAST_CHANCE ( MK_OS2_LX             | MK_OS2_NE | MK_WINDOWS | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
 #else
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_DOS_EXE | MK_PHAR_SIMPLE )
@@ -408,7 +408,7 @@ static void DisplayOptions( void )
         isout = TRUE;
     }
     WriteGenHelp();
-#if defined( _QNXLOAD ) && defined( __QNX__ )
+#if defined( _QNXLOAD ) && _OS == _QNX
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
 #endif
 #ifdef _EXE
@@ -426,7 +426,7 @@ static void DisplayOptions( void )
 #ifdef _NOVELL
     WriteHelp( MSG_NOVELL_HELP_0, MSG_NOVELL_HELP_31, isout );
 #endif
-#if defined( _QNXLOAD ) && !defined( __QNX__ )
+#if defined( _QNXLOAD ) && _OS != _QNX
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, isout );
 #endif
 #ifdef _ELF
@@ -987,7 +987,7 @@ extern bool ProcAlignment( void )
 extern bool ProcHeapSize( void )
 /******************************/
 {
-#if defined( __QNX__ )
+#if _OS == _QNX
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXHeapSize() );
     }
@@ -997,7 +997,7 @@ extern bool ProcHeapSize( void )
         return( ProcOS2HeapSize() );
     }
 #endif
-#if defined( _QNXLOAD ) && !defined( __QNX__ )
+#if defined( _QNXLOAD ) && (_OS != _QNX)
     if( HintFormat( MK_QNX ) ) {
         return( ProcQNXHeapSize() );
     }

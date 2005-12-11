@@ -37,13 +37,18 @@
 #include "progsw.h"
 #include "segsw.h"
 #include "cpopt.h"
-#include "iflookup.h"
-#include "ferror.h"
-#include "insert.h"
 
 
+extern  void            Error(int,...);
+extern  void            NameErr(int,sym_id);
+extern  void            NamNamErr(int,sym_id,sym_id);
+extern  void            NameWarn(int,sym_id);
+extern  void            NameExt(int,sym_id);
+extern  void            Warning(int,...);
+extern  void            Extension(int,...);
 extern  sym_id          STFreeName(sym_id);
-extern  bool            IsIFUsed(IFF);
+extern  bool            IsIFUsed(int);
+extern  bool            IsIntrinsic(unsigned_16);
 extern  sym_id          AddSP2GList(sym_id);
 extern  sym_id          AddCB2GList(sym_id);
 extern  unsigned_32     GetStmtNum(sym_id);

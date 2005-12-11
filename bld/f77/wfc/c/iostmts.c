@@ -38,12 +38,9 @@
 #include "errcod.h"
 #include "opr.h"
 #include "opn.h"
-#include "iodefs.h"
+#include "iodefn.h"
 #include "units.h"
 #include "global.h"
-#include "recog.h"
-#include "ferror.h"
-#include "utility.h"
 
 extern  sym_id          LkSym(void);
 extern  void            InitIO(void);
@@ -52,7 +49,18 @@ extern  void            KeywordList(void);
 extern  void            Unit(void);
 extern  void            FormatIdd(void);
 extern  void            IOList(void);
-extern  bool            Permission(IOKW);
+extern  bool            Permission(int);
+extern  bool            RecOpenParen(void);
+extern  bool            ReqOpenParen(void);
+extern  bool            ReqCloseParen(void);
+extern  bool            ReqComma(void);
+extern  bool            RecNOpn(void);
+extern  bool            RecTrmOpr(void);
+extern  bool            RecNextOpr(byte);
+extern  bool            RecEOS(void);
+extern  bool            ReqEOS(void);
+extern  void            AdvanceITPtr(void);
+extern  void            Error(int,...);
 extern  void            GStartIO(void);
 extern  void            GNullEofStmt(void);
 
@@ -158,27 +166,18 @@ static  bool    Scan4ListOprs() {
 static  bool            ReadKWList() {
 //====================================
 
-    OPR         opr;
+    int         opr;
 
-    if( Scan4ListOprs() )
-        return( TRUE );
-    if( SPtr1->opn.ds != DSOPN_PHI )
-        return( TRUE ); // have ( ciolist ) name
+    if( Scan4ListOprs() ) return( TRUE );
+    if( SPtr1->opn != OPN_PHI ) return( TRUE ); // have ( ciolist ) name
     opr = SPtr1->link->opr;
-    if( opr == OPR_COM )
-        return( FALSE ); // have ( fmt ),
-    if( opr == OPR_LBR )
-        return( TRUE ); // we have ( ciolist ) (a(i) i==1,10)
-    if( opr != OPR_TRM )
-        return( FALSE );
-    if( RecNOpn() )
-        return( FALSE );
-    if( CITNode->opn.ds == DSOPN_LIT )
-        return( FALSE );
-    if( CITNode->opn.ds > DSOPN_LIT )
-        return( TRUE );
-    if( LkSym()->ns.typ == TY_CHAR )
-        return( FALSE );
+    if( opr == OPR_COM ) return( FALSE ); // have ( fmt ),
+    if( opr == OPR_LBR ) return( TRUE ); // we have ( ciolist ) (a(i) i==1,10)
+    if( opr != OPR_TRM ) return( FALSE );
+    if( RecNOpn() ) return( FALSE );
+    if( CITNode->opn == OPN_LIT ) return( FALSE );
+    if( CITNode->opn > OPN_LIT ) return( TRUE );
+    if( LkSym()->ns.typ == TY_CHAR ) return( FALSE );
     return( TRUE );
 }
 

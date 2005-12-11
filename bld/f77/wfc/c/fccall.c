@@ -37,12 +37,10 @@
 #include "tmpdefs.h"
 #include "cpopt.h"
 #include "fcgbls.h"
-#include "iflookup.h"
-#include "rtconst.h"
-#include "prmcodes.h"
+#include "ifargs.h"
+#include "fcodes.h"
+#include "parmtype.h"
 #include "fmemmgr.h"
-#include "emitobj.h"
-#include "fctypes.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -81,6 +79,9 @@ extern  cg_name         CGTempName(temp_handle,cg_type);
 
 //=========================================================================
 
+extern  pointer         GetPtr(void);
+extern  unsigned_16     GetU16(void);
+extern  cg_type         F772CGType(sym_id);
 extern  void            GenLocalSyms(void);
 extern  void            GenLocalDbgInfo(void);
 extern  void            FreeLocalBacks(bool);
@@ -104,21 +105,29 @@ extern  cg_name         TmpPtr(tmp_handle,cg_type);
 extern  void            RefStmtLabel(sym_id);
 extern  void            DoneLabel(label_id);
 extern  cg_name         CmplxAddr(cg_name,cg_name);
+extern  obj_ptr         FCodeTell(int);
+extern  obj_ptr         FCodeSeek(obj_ptr);
 extern  aux_info        *AuxLookup(sym_id);
+extern  cg_type         GetType(unsigned_16);
+extern  bool            TypePointer(cg_type);
+extern  bool            DataPointer(cg_type);
 extern  cg_name         SCBPointer(cg_name);
 extern  cg_name         SCBPtrAddr(cg_name);
 extern  cg_name         SCBLength(cg_name);
 extern  cg_name         SCBLenAddr(cg_name);
 extern  cg_name         ArrayEltSize(sym_id);
 extern  cg_name         FieldArrayEltSize(sym_id);
-extern  call_handle     InitCall(RTCODE);
-extern  bool            IntType(PTYPE);
+extern  call_handle     InitCall(int);
+extern  bool            IntType(int);
 extern  void            FiniTmps(void);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 extern  sym_id          FindArgShadow(sym_id);
 extern  bool            ForceStatic(unsigned_16);
 extern  bool            SCBRequired(sym_id);
+extern  cg_type         PromoteToBaseType(cg_type);
+extern  byte            IFArgType(byte);
 
+extern  byte            IFArgCt[];
 extern  aux_info        FortranInfo;
 extern  back_handle     TraceEntry;
 extern  segment_id      CurrCodeSegId;
@@ -464,7 +473,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
 }
 
 
-static  cg_name     ArgAddr( PTYPE arg_type ) {
+static  cg_name     ArgAddr( int arg_type ) {
 //===========================================
 
 // Get address of actual argument.
@@ -475,9 +484,8 @@ static  cg_name     ArgAddr( PTYPE arg_type ) {
     arg = XPop();
     cg_typ = GetType( arg_type );
     if( !TypePointer( CGType( arg ) ) ) {
-        if( ( arg_type == PT_CPLX_8 )
-          || ( arg_type == PT_CPLX_16 )
-          || ( arg_type == PT_CPLX_32 ) ) {
+        if( ( arg_type == PT_CPLX_8 ) || ( arg_type == PT_CPLX_16 ) ||
+                                                ( arg_type == PT_CPLX_32 ) ) {
             arg = CmplxAddr( arg, XPop() );
         } else {
             arg = TmpPtr( MkTmp( arg, cg_typ ), cg_typ );
@@ -487,7 +495,7 @@ static  cg_name     ArgAddr( PTYPE arg_type ) {
 }
 
 
-static  cg_name     ArgValue( PTYPE arg_type, cg_type *new_typ ) {
+static  cg_name     ArgValue( int arg_type, cg_type *new_typ ) {
 //==============================================================
 
 // Get value of actual argument.
@@ -560,8 +568,8 @@ void    FCCall() {
     aux_info    *aux;
     cg_name     rtn;
     unsigned_16 arg_info;
-    PTYPE       arg_type;
-    PCODE       arg_code;
+    int         arg_type;
+    int         arg_code;
     pass_by     *arg_aux;
     cg_name     arg;
     cg_type     cg_typ;
@@ -590,7 +598,7 @@ void    FCCall() {
     }
     call = CGInitCall( rtn, sp_type, aux );
     if( sp->ns.flags & SY_INTRINSIC ) {
-        if( IFVarArgs( sp->ns.si.fi.index ) ) {
+        if( (IFArgCt[sp->ns.si.fi.index] & IF_COUNT_MASK) == TWO_OR_MORE ) {
             CGAddParm( call, CGInteger( num_args, T_INTEGER ), T_INTEGER );
         }
     } else if( (sp->ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {

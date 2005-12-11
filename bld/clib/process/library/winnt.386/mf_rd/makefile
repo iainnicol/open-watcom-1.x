@@ -6,7 +6,7 @@ model      = mf
 system     = winnt
 linkage    = dynamic
 
-clib_release = 0
+release_clib = 0
 
 !include ../../../objects.mif
 !include $(clib_dir)/master.mif

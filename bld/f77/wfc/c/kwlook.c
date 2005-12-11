@@ -35,7 +35,8 @@
 //
 
 #include "ftnstd.h"
-#include "iodefs.h"
+#include "prdefn.h"
+#include "iodefn.h"
 #include "global.h"
 
 extern  int             KwLookUp(void **,int,char *,int,bool);
@@ -44,15 +45,15 @@ extern  char            *StmtKeywords[];
 extern  char            *IOKeywords[];
 
 
-STMT    RecStmtKW( void ) {
-//=============================
+int     RecStmtKW() {
+//===================
 
     return( KwLookUp( StmtKeywords, PR_KW_MAX, CITNode->opnd,
                       CITNode->opnd_size, FALSE ) );
 }
 
-IOKW    RecIOKW( void ) {
-//=======================
+int     RecIOKW() {
+//=================
 
     return( KwLookUp( IOKeywords, IO_KW_MAX - 1, CITNode->opnd,
                       CITNode->opnd_size, TRUE ) );

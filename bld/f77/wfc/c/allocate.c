@@ -40,11 +40,22 @@
 #include "namecod.h"
 #include "opr.h"
 #include "falloc.h"
-#include "recog.h"
-#include "insert.h"
-#include "utility.h"
 
+extern  void            StmtExtension(uint);
+extern  bool            RecTrmOpr(void);
+extern  bool            RecNOpn(void);
+extern  void            ReqNOpn(void);
+extern  void            ReqMul(void);
+extern  void            AdvanceITPtr(void);
+extern  void            ReqOpenParen();
+extern  bool            ReqName(int);
 extern  sym_id          LkSym(void);
+extern  void            IllName(sym_id);
+extern  bool            RecComma(void);
+extern  void            ReqCloseParen(void);
+extern  void            ReqEOS(void);
+extern  void            IntegerExpr(void);
+extern  bool            RecNextOpr(int);
 extern  void            GSLoBound(int,sym_id);
 extern  void            GSHiBound(int,sym_id);
 extern  void            GSHiBoundLo1(int,sym_id);
@@ -60,8 +71,10 @@ extern  void            GEndDeAllocate(void);
 extern  void            GAllocStat(void);
 extern  void            GAllocLoc(void);
 extern  void            GAllocEOL(void);
+extern  void            IntSubExpr(void);
 extern  void            CkSize4(void);
 extern  sym_id          CkAssignOk(void);
+extern  bool            RecKeyWord(char *);
 
 static  char            *StatKW = { "STAT" };
 static  char            *LocKW = { "LOCATION" };

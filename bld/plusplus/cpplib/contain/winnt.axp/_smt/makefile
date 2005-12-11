@@ -8,6 +8,6 @@ model        =
 convention   =
 linkage      = static
 mthreaded    = 1
-
-define_library_include = $(cpplib_dir)/contain/contain.mif
-!include $(cpplib_dir)/mklib.mif
+uncompressed = 1
+define_library_include = $(plusplus_contain_dir)/contain.mif
+!include $(plusplus_dir)/mklib.mif

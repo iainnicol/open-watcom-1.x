@@ -8,5 +8,6 @@ model      = mf
 convention = register
 linkage    = static
 fs_registration = yes
-define_library_include = $(cpplib_dir)/string/string.mif
-!include $(cpplib_dir)/mklib.mif
+define_library_include = $(plusplus_string_dir)/string.mif
+define_deps_include = $(plusplus_string_dir)/deps.mif
+!include $(plusplus_dir)/mklib.mif

@@ -144,26 +144,6 @@ static void cleanupLastBuffer( struct buf *pbuf )
 }
 
 
-static  void    ObjError( int    errcode ) {
-/***************************************/
-
-    FatalError( strerror(  errcode ) );
-}
-
-
-static  handle  CreateStream( char *name ) {
-/******************************************/
-
-    int         retc;
-
-    retc = open( name, O_CREAT+O_TRUNC+O_RDWR+O_BINARY, PMODE );
-    if( retc == -1 ) {
-        ObjError( errno );
-    }
-    return( retc );
-}
-
-
 extern  bool    CGOpenf() {
 /*************************/
 
@@ -334,6 +314,12 @@ static  void    SeekStream( handle h, unsigned_32 offset ) {
 }
 
 
+static  void    ObjError( int    errcode ) {
+/***************************************/
+
+    FatalError( strerror(  errcode ) );
+}
+
 extern  objhandle       AskObjHandle() {
 /**************************************/
 
@@ -475,6 +461,19 @@ extern  void    ScratchObj() {
     CloseObj();
 }
 
+static  handle  CreateStream( char *name ) {
+/******************************************/
+
+    int         retc;
+
+    retc = open( name, O_CREAT+O_TRUNC+O_RDWR+O_BINARY, PMODE );
+    if( retc == -1 ) {
+        ObjError( errno );
+    }
+    return( retc );
+}
+
+
 extern  void    PutError( char *str ) {
 /*************************************/
 
@@ -497,3 +496,4 @@ extern  void    CopyRite() {
     PutError( banner3a );
     PutError( "\r\n" );
 }
+

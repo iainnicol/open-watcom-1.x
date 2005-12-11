@@ -41,7 +41,7 @@
 #include "wlnkmsg.h"
 #include "fileio.h"
 #include "cmdline.h"
-#if !defined( __UNIX__ )
+#if _OS != _QNX && _OS != _LINUX
 #include <direct.h>
 #endif
 
@@ -53,7 +53,7 @@ static  char            *DefExt[] = {           /* see LINK.H */
     ".lnk",
     ".map",
     ".lib",
-#if defined( __UNIX__ )
+#if _OS == _QNX || _OS == _LINUX
     ".o",
 #else
     ".obj",
@@ -71,14 +71,14 @@ static  char            *DefExt[] = {           /* see LINK.H */
     ".cdm", /* custom device module     */
     ".com",
     ".rex",
-#if defined( __UNIX__ )
+#if _OS == _QNX || _OS == _LINUX
     "",
 #else
     ".qnx",
 #endif
     ".sym",
     ".lbc",
-#if defined( __UNIX__ )
+#if _OS == _QNX || _OS == _LINUX
     "",
 #else
     ".elf",
@@ -97,8 +97,7 @@ static void     StartNewFile( void );
 static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 /**********************************************************/
 {
-#if defined( __UNIX__ )
-    //opendir - readdir wildcarding not supported here.
+#if _OS == _QNX || _OS == _LINUX    //opendir - readdir wildcarding not supported here.
     ctrl = ctrl;
     return rtn();
 #else

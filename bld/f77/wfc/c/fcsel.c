@@ -39,7 +39,6 @@
 #include "cgdefs.h"
 #include "cg.h"
 #include "fcodes.h"
-#include "emitobj.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -53,14 +52,28 @@ extern  cg_name         CGUnary(cg_op,cg_name,cg_type);
 
 extern  label_handle    GetLabel(int);
 extern  label_handle    GetStmtLabel(sym_id);
+extern  pointer         GetPtr(void);
+extern  unsigned_16     GetU16(void);
+extern  signed_32       GetConst32(void);
 extern  void            RefStmtLabel(sym_id);
+extern  obj_ptr         FCodeTell(int);
+extern  obj_ptr         FCodeSeek(obj_ptr);
 extern  cg_name         SymValue(sym_id);
 extern  cg_name         SymAddr(sym_id);
 extern  cg_name         SCBPointer(cg_name);
 
 
-void    DoSelect( FCODE kind ) {
-//==============================
+void    FCSelect() {
+//==================
+
+// Perform SELECT statement.
+
+    DoSelect( SELECT );
+}
+
+
+void    DoSelect( int kind ) {
+//============================
 
 // Select processing for SELECT and computed GOTO.
 
@@ -81,7 +94,7 @@ void    DoSelect( FCODE kind ) {
     CGSelOther( s, GetLabel( GetU16() ) );
     curr_obj = FCodeTell( 0 );
     while( cases != 0 ) {
-        if( kind == FC_COMPUTED_GOTO ) {
+        if( kind == COMPUTED_GOTO ) {
             sn = GetPtr();
             label = GetStmtLabel( sn );
         } else {
@@ -109,7 +122,7 @@ void    DoSelect( FCODE kind ) {
         sel_expr = SymValue( sel_sym );
     }
     CGSelect( s, sel_expr );
-    if( kind == FC_COMPUTED_GOTO ) {
+    if( kind == COMPUTED_GOTO ) {
         FCodeSeek( curr_obj );
         while( stmts != 0 ) {
             RefStmtLabel( GetPtr() );
@@ -119,13 +132,4 @@ void    DoSelect( FCODE kind ) {
         }
         GetPtr(); // skip select variable
     }
-}
-
-
-void    FCSelect( void ) {
-//========================
-
-// Perform SELECT statement.
-
-    DoSelect( FC_SELECT );
 }

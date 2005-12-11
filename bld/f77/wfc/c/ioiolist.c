@@ -33,18 +33,31 @@
 #include "errcod.h"
 #include "opr.h"
 #include "opn.h"
-#include "iodefs.h"
+#include "iodefn.h"
+#include "prdefn.h"
 #include "global.h"
 #include "stmtsw.h"
-#include "recog.h"
-#include "ferror.h"
-#include "insert.h"
-#include "utility.h"
 
+extern  bool            RecComma(void);
+extern  bool            ReqComma(void);
+extern  bool            RecOpenParen(void);
+extern  bool            RecCloseParen(void);
+extern  bool            ReqCloseParen(void);
+extern  bool            RecEquSign(void);
+extern  bool            RecTrmOpr(void);
+extern  bool            RecNOpn(void);
+extern  bool            ReqNOpn(void);
+extern  bool            RecNextOpr(byte);
+extern  bool            RecArrName(void);
+extern  bool            RecEOS(void);
+extern  void            Error(int,...);
 extern  void            ChkAssumed(void);
 extern  void            TermDo(void);
 extern  void            ImpDo(void);
 extern  void            DelCSNode(void);
+extern  void            ProcIOExpr(void);
+extern  void            FreeITNodes(itnode *);
+extern  void            AdvanceITPtr(void);
 extern  void            GStartIO(void);
 extern  void            GIOItem(void);
 extern  void            GIOArray(void);
@@ -53,6 +66,7 @@ extern  void            GStopIO(void);
 extern  sym_id          CkAssignOk(void);
 extern  void            GIOStruct(sym_id);
 extern  bool            Already(uint);
+extern  void            StructErr(uint,sym_id);
 extern  bool            NotFormatted(void);
 
 
@@ -201,7 +215,7 @@ void    ListItem() {
         }
     } else if( CITNode->typ == TY_STRUCTURE ) {
         CITNode->sym_ptr->ns.xflags |= SY_DEFINED;
-        if( CITNode->opn.us & USOPN_FLD ) {
+        if( CITNode->opn & OPN_FLD ) {
             sd = CITNode->value.st.field_id->fd.xt.sym_record;
         } else {
             sd = CITNode->sym_ptr->ns.xt.sym_record;

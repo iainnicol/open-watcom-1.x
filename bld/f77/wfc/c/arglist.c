@@ -31,17 +31,17 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "prmcodes.h"
-#include "types.h"
+#include "parmtype.h"
+#include "progsw.h"
 #include "errcod.h"
 #include "fmemmgr.h"
-#include "insert.h"
 
-extern  TYPE            ImplType(char);
-extern  uint            ImplSize(char);
-extern  void            GArgList(entry_pt *,uint,PTYPE);
-extern  void            GArgInfo(sym_id,PTYPE,PTYPE);
+extern  byte            ImplType(char);
+extern  unsigned_16     ImplSize(char);
+extern  void            GArgList(entry_pt *,uint,uint);
+extern  void            GArgInfo(sym_id,uint,uint);
 extern  sym_id          FindShadow(sym_id);
+extern  void            NamNamErr(int,sym_id,sym_id);
 
 
 static  void    GetImplType( sym_id sym ) {
@@ -101,19 +101,18 @@ void    DumpEntries() {
     parameter   *curr_parm;
     entry_pt    *dum_lst;
 
-    uint        args_cnt;
-    PTYPE       code;
-    PTYPE       typ;
+    int         code;
+    int         typ;
     unsigned_16 flags;
     sym_id      sym;
     sym_id      fn_shadow;
 
     dum_lst = Entries;
     while( dum_lst != NULL ) {
-        args_cnt = 0;
+        code = 0;
         curr_parm = dum_lst->parms;
         while( curr_parm != NULL ) {
-            ++args_cnt;
+            ++code;
             curr_parm = curr_parm->link;
         }
         sym = dum_lst->id;
@@ -130,7 +129,7 @@ void    DumpEntries() {
             }
         }
         if( ( ProgSw & PS_ERROR ) == 0 ) {
-            GArgList( dum_lst, args_cnt, typ );
+            GArgList( dum_lst, code, typ ); // code is number of arguments
         }
         curr_parm = dum_lst->parms;
         while( curr_parm != NULL ) {

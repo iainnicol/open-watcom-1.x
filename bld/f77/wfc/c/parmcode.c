@@ -37,30 +37,31 @@
 #include "ftnstd.h"
 #include "opn.h"
 #include "global.h"
-#include "prmcodes.h"
-#include "utility.h"
+#include "parmtype.h"
+
+extern  bool            Subscripted(void);
 
 
 int     ParmCode( itnode *arg ) {
 //===============================
 
 // Return the argument code.
-// We cannot assume that USOPN_SAFE is PC_CONST otherwise we will not be able
+// We cannot assume that OPN_SAFE is PC_CONST otherwise we will not be able
 // to diagnose an error in the following case (optimizing compiler only).
 //      external f
 //      print *, sin( f )
-// "f" will be USOPN_SAFE by the time ParmCode() is called but we want to return
+// "f" will be OPN_SAFE by the time ParmCode() is called but we want to return
 // PC_FN_OR_SUB.
 
-    USOPN   opn;
+    int         opn;
 
-    opn = arg->opn.us & USOPN_WHERE;
-    if( ( arg->opn.us & USOPN_WHAT ) == USOPN_ARR ) {
+    opn = arg->opn & OPN_WHERE;
+    if( ( arg->opn & OPN_WHAT ) == OPN_ARR ) {
         // an array name can't be part of an expression so check it first
         // so that we can detect whether an array has been passed to an
         // intrinsic function
         return( PC_ARRAY_NAME );
-    } else if( opn == USOPN_VAL ) {
+    } else if( opn == OPN_VAL ) {
         return( PC_CONST );
     } else {
         return( ParmClass( arg ) );
@@ -73,14 +74,14 @@ int     ParmClass( itnode *arg ) {
 
 // Return the argument class.
 
-    USOPN       opn;
+    int         opn;
     unsigned_16 sp_typ;
     unsigned_16 flags;
 
     flags = arg->flags;
-    opn = arg->opn.us & USOPN_WHAT;
+    opn = arg->opn & OPN_WHAT;
     switch( opn ) {
-        case USOPN_NNL:
+        case OPN_NNL:
             if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                 sp_typ = flags & SY_SUBPROG_TYPE;
                 if( sp_typ == SY_FN_OR_SUB ) {
@@ -96,23 +97,23 @@ int     ParmClass( itnode *arg ) {
                 return( PC_VARIABLE );
             }
             break;
-        case USOPN_NWL:
+        case OPN_NWL:
             if( Subscripted() ) {
                 return( PC_ARRAY_ELT );
             } else {
                 return( PC_CONST );
             }
             break;
-        case USOPN_ARR:
+        case OPN_ARR:
             return( PC_ARRAY_NAME );
             break;
-        case USOPN_STN:
+        case OPN_STN:
             return( PC_STATEMENT );
             break;
-        case USOPN_CON:
+        case OPN_CON:
             return( PC_CONST );
             break;
-        case USOPN_ASS:
+        case OPN_ASS:
             return( PC_SS_ARRAY );
             break;
         default:

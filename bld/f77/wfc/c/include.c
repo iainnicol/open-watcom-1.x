@@ -38,12 +38,16 @@
 #include "global.h"
 #include "opn.h"
 #include "errcod.h"
-#include "recog.h"
-#include "ferror.h"
-#include "insert.h"
-#include "comio.h"
-#include "inout.h"
-#include "utility.h"
+
+extern  void            Include(char *);
+extern  void            ComRead(void);
+extern  void            Error(int,...);
+extern  void            StmtExtension(uint);
+extern  bool            RecLiteral(void);
+extern  bool            ReqEOS(void);
+extern  void            AdvanceITPtr(void);
+extern  char            *MkNodeStr(itnode *);
+extern  void            FrNodeStr(char *);
 
 
 void    CpInclude() {

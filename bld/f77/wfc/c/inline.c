@@ -42,10 +42,9 @@
 #include "wf77defs.h"
 #include "fcgbls.h"
 #include "cgflags.h"
+#include "rtentry.h"
 #include "cpopt.h"
 #include "inline.h"
-#include "types.h"
-#include "fctypes.h"
 
 #include <string.h>
 
@@ -57,8 +56,10 @@ extern  void            BEFreeBack(back_handle);
 
 //=========================================================================
 
+extern  cg_type         F772CGType(sym_id sym);
 extern  sym_id          STAdd(char *name,int length);
 extern  sym_id          STFree(sym_id sym_ptr);
+extern  int             TypeSize(uint typ);
 extern  segment_id      AllocImpSegId(void);
 extern  void            DoPragma(char *);
 extern  aux_info        *AuxLookupName(char *,uint);

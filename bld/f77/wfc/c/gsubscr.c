@@ -39,9 +39,13 @@
 #include "fcodes.h"
 #include "stmtsw.h"
 #include "opn.h"
-#include "emitobj.h"
 
-extern  sym_id          GTempString(uint);
+extern  void            EmitOp(unsigned_16);
+extern  void            OutPtr(pointer);
+extern  sym_id          GTempString(int);
+extern  void            SetOpn(itnode *,int);
+extern  void            GenType(itnode *);
+extern  void            PushOpn(itnode *);
 
 
 void    GBegSubScr( itnode *array_node ) {
@@ -69,13 +73,13 @@ void    GEndSubScr( itnode *arr ) {
     itnode      *arg;
     int         dims;
 
-    if( arr->opn.us & USOPN_FLD ) {
+    if( arr->opn & OPN_FLD ) {
         PushOpn( arr );
-        EmitOp( FC_FIELD_SUBSCRIPT );
+        EmitOp( FIELD_SUBSCRIPT );
         OutPtr( arr->sym_ptr );
         dims = _DimCount( arr->sym_ptr->fd.dim_ext->dim_flags );
     } else {
-        EmitOp( FC_SUBSCRIPT );
+        EmitOp( RT_SUBSCRIPT );
         OutPtr( arr->sym_ptr );
         dims = _DimCount( arr->sym_ptr->ns.si.va.dim_ext->dim_flags );
     }
@@ -85,12 +89,12 @@ void    GEndSubScr( itnode *arr ) {
         arg = arg->link;
         --dims;
     }
-    if( ( arr->opn.us & USOPN_FLD ) == 0 ) {
+    if( ( arr->opn & OPN_FLD ) == 0 ) {
         if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
             if( arr->sym_ptr->ns.typ == TY_CHAR ) {
                 OutPtr( GTempString( 0 ) );
             }
         }
     }
-    SetOpn( arr, USOPN_SAFE );
+    SetOpn( arr, OPN_SAFE );
 }

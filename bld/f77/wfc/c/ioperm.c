@@ -36,14 +36,17 @@
 
 #include "ftnstd.h"
 #include "errcod.h"
-#include "iodefs.h"
+#include "iodefn.h"
+#include "prdefn.h"
 #include "global.h"
-#include "ferror.h"
-#include "insert.h"
 
 #define NO      0
 #define YES     1
 
+extern  void            Error(int code,...);
+extern  void            Extension(int code,...);
+extern  void            OpndErr(int errcod);
+extern  void            StmtPtrErr(int errcod,void *);
 extern  uint            IOIndex();
 
 extern  char            *IOKeywords[];
@@ -87,15 +90,15 @@ static  const byte __FAR        PermTable[] = {
 };
 
 
-bool    Already( IOKW kw ) {
-//==========================
+bool    Already( int kw ) {
+//=========================
 
     return( ( ( IOData >> ( kw - 1 ) ) & 1 ) != 0 );
 }
 
 
-static  byte    ExtnTest( IOKW kw ) {
-//===================================
+static  byte    ExtnTest( int kw ) {
+//==================================
 
     return( PermTable[ TABLE_ENTRY * ( kw - 1 ) + 8 ] );
 }
@@ -108,19 +111,8 @@ byte    PermTest( int kw ) {
 }
 
 
-void    KWRememb( IOKW kw ) {
-//===========================
-
-    unsigned_32 i;
-
-    i = 1;
-    i = i << ( kw - 1 );
-    IOData |= i;
-}
-
-
-bool    Permission( IOKW kw ) {
-//=============================
+bool    Permission( int kw ) {
+//============================
 
     bool        perm;
 
@@ -134,18 +126,29 @@ bool    Permission( IOKW kw ) {
         if( perm ) {
             KWRememb( kw );
             if( ExtnTest( kw ) == YES ) {
-                Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[ kw ] );
+                Extension( IL_SPECIFIER_NOT_STANDARD, IOKeywords[ kw - 1 ] );
             }
         } else {
-            StmtPtrErr( IL_BAD_LIST, IOKeywords[ kw ] );
+            StmtPtrErr( IL_BAD_LIST, IOKeywords[ kw - 1 ] );
         }
     }
     return( perm );
 }
 
 
-void    CheckList( void ) {
-//=========================
+void    KWRememb( int kw ) {
+//==========================
+
+    unsigned_32 i;
+
+    i = 1;
+    i = i << ( kw - 1 );
+    IOData |= i;
+}
+
+
+void    CheckList() {
+//===================
 
     bool        have_unit;
 

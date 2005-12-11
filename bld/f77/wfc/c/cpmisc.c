@@ -24,10 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  compile miscellaneous statements
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+//
+// CPMISC    : compile miscellaneous statements
+//
 
 #include "ftnstd.h"
 #include "errcod.h"
@@ -35,59 +40,27 @@
 #include "progsw.h"
 #include "global.h"
 #include "opn.h"
-#include "recog.h"
-#include "ferror.h"
-#include "inout.h"
-#include "utility.h"
-#include "fcodes.h"
 
-extern  void            GBreak(FCODE);
+extern  void            Error(int,...);
+extern  void            Extension(int,...);
+extern  bool            RecNumber(void);
+extern  bool            RecLiteral(void);
+extern  bool            RecNOpn(void);
+extern  bool            RecNOpr(void);
+extern  bool            RecEOS(void);
+extern  bool            ReqEOS(void);
+extern  void            AdvanceITPtr(void);
+extern  void            GBreak(int);
 extern  void            GReturn(void);
 extern  void            CSNoMore(void);
 extern  void            AddConst(itnode *);
 extern  void            GetConst(void);
 extern  void            FScan(int,char *,cs_label);
 extern  sym_id          FmtPointer(void);
+extern  void            LFSkip(void);
 extern  void            BadStmt(void);
 
 extern  char            *StmtKeywords[];
-
-
-static  void    BreakOpn( FCODE routine ) {
-//=========================================
-
-    CITNode->opn.ds = DSOPN_LIT;
-    GetConst();
-    AddConst( CITNode );
-    GBreak( routine );
-    AdvanceITPtr();
-    if( !RecEOS() ) {
-        Error( SX_NUM_OR_LIT );
-    }
-}
-
-
-static  void    NumOrLit( FCODE routine ) {
-//===============================================
-
-    if( RecNOpn() ) {
-        AdvanceITPtr();
-    }
-    if( RecNOpn() ) {
-        GBreak( routine );
-    } else if( !RecLiteral() ) {
-        if( CITNode->opn.ds == DSOPN_INT ) {
-            if( CITNode->opnd_size > 5 ) {
-                Extension( ST_LONG_NUM, StmtKeywords[ StmtProc ] );
-            }
-            BreakOpn( routine );
-        } else {
-            Error( SX_NUM_OR_LIT );
-        }
-    } else {
-        BreakOpn( routine );
-    }
-}
 
 
 void    CpStop() {
@@ -103,6 +76,43 @@ void    CpPause() {
 //=================
 
     NumOrLit( RT_PAUSE );
+}
+
+
+static  void    NumOrLit( int routine ) {
+//=======================================
+
+    if( RecNOpn() ) {
+        AdvanceITPtr();
+    }
+    if( RecNOpn() ) {
+        GBreak( routine );
+    } else if( !RecLiteral() ) {
+        if( CITNode->opn == OPN_INT ) {
+            if( CITNode->opnd_size > 5 ) {
+                Extension( ST_LONG_NUM, StmtKeywords[ StmtProc - 1 ] );
+            }
+            BreakOpn( routine );
+        } else {
+            Error( SX_NUM_OR_LIT );
+        }
+    } else {
+        BreakOpn( routine );
+    }
+}
+
+
+static  void    BreakOpn( int routine ) {
+//=======================================
+
+    CITNode->opn = OPN_LIT;
+    GetConst();
+    AddConst( CITNode );
+    GBreak( routine );
+    AdvanceITPtr();
+    if( !RecEOS() ) {
+        Error( SX_NUM_OR_LIT );
+    }
 }
 
 

@@ -38,6 +38,7 @@
 #include "astype.h"
 #include "opn.h"
 #include "global.h"
+#include "prdefn.h"
 
 extern  void            SFEpilogue(void);
 extern  void            GCallNoArgs(void);
@@ -59,7 +60,7 @@ void    EndExpr() {
         }
     }
     if( ( ( ASType & ( AST_DIM | AST_CEX ) ) == 0 ) &&
-        ( CITNode->opn.us == USOPN_CON ) ) {
+        ( CITNode->opn == OPN_CON ) ) {
         AddConst( CITNode );
     }
     // We don't want to finish off the expression if an error

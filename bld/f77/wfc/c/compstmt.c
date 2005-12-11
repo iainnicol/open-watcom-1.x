@@ -43,21 +43,29 @@
 #include "cpopt.h"
 #include "segsw.h"
 #include "extnsw.h"
+#include "prdefn.h"
 #include "ctrlflgs.h"
 #include "global.h"
-#include "recog.h"
-#include "ferror.h"
-#include "insert.h"
-#include "frl.h"
-#include "inout.h"
-#include "utility.h"
 
 #include <string.h>
 #include <ctype.h>
 
+extern  void            ChkPntLst(void);
+extern  pointer         FrlAlloc(void **,int);
 extern  sym_id          LkSym(void);
 extern  void            MakeITList(void);
-extern  STMT            RecStmtKW(void);
+extern  void            FreeITNodes(itnode *);
+extern  bool            RecName(void);
+extern  bool            BitOn(unsigned_16);
+extern  void            AdvanceITPtr(void);
+extern  void            FreeOneNode(itnode *);
+extern  int             RecStmtKW(void);
+extern  void            Error(int,...);
+extern  void            Warning(int,...);
+extern  void            Extension(int,...);
+extern  void            OpndErr(int);
+extern  void            StmtErr(int);
+extern  void            StmtPtrErr(int,void *);
 extern  void            TermDo(void);
 extern  void            TermDoWhile(void);
 extern  void            DefStmtNo(unsigned_32);
@@ -66,6 +74,8 @@ extern  void            STResolve(void);
 extern  void            GSetDbugLine(void);
 extern  void            Prologue(void);
 extern  void            DefProg(void);
+extern  bool            RecNOpn(void);
+extern  bool            RecNextOpr(byte);
 extern  bool            SubStrung(void);
 extern  void            GSetSrcLine(void);
 extern  void            TDStmtInit(void);
@@ -85,21 +95,21 @@ static  void    ChkStatementSequence() {
     }
     if( SgmtSw & SG_DEFINING_MAP ) {
         if( CtrlFlgOn( CF_NOT_IN_MAP ) ) {
-            StmtPtrErr( SP_NOT_IN_STRUCTURE, StmtKeywords[PR_MAP] );
+            StmtPtrErr( SP_NOT_IN_STRUCTURE, StmtKeywords[PR_MAP-1] );
         }
     } else if( SgmtSw & SG_DEFINING_UNION ) {
         if( CtrlFlgOn( CF_NOT_IN_UNION ) ) {
-            StmtPtrErr( SP_NOT_IN_STRUCTURE, StmtKeywords[PR_UNION] );
+            StmtPtrErr( SP_NOT_IN_STRUCTURE, StmtKeywords[PR_UNION-1] );
         }
     } else if( SgmtSw & SG_DEFINING_STRUCTURE ) {
         if( CtrlFlgOn( CF_NOT_IN_STRUCTURE ) ) {
-            StmtPtrErr( SP_NOT_IN_STRUCTURE, StmtKeywords[PR_STRUCTURE] );
+            StmtPtrErr( SP_NOT_IN_STRUCTURE, StmtKeywords[PR_STRUCTURE-1] );
         }
     } else {
         if( StmtProc == PR_MAP ) {
-            StmtPtrErr( SP_STATEMENT_REQUIRED, StmtKeywords[PR_UNION] );
+            StmtPtrErr( SP_STATEMENT_REQUIRED, StmtKeywords[PR_UNION-1] );
         } else if( StmtProc == PR_UNION ) {
-            StmtPtrErr( SP_STATEMENT_REQUIRED, StmtKeywords[PR_STRUCTURE] );
+            StmtPtrErr( SP_STATEMENT_REQUIRED, StmtKeywords[PR_STRUCTURE-1] );
         }
     }
     if( ( ( SgmtSw & SG_PROLOG_DONE ) == 0 ) &&
@@ -126,19 +136,8 @@ static  void    ChkStatementSequence() {
 }
 
 
-static  void    ProcStmt( void ) {
-//================================
-
-    if( AError )
-        return;
-    if( CpError && (StmtProc == PR_NULL) )
-        return;
-    ProcTable[ StmtProc ]();
-}
-
-
-void    CompStatement( void ) {
-//=============================
+void    CompStatement() {
+//=======================
 
     bool        scan_error;
 
@@ -225,7 +224,7 @@ void    Recurse() {
 // another IF or AT END cannot follow the first one.
 
     unsigned_16 ctrlflgs;
-    STMT        proc;
+    int         proc;
 
     CITNode->opr = OPR_TRM;
     ctrlflgs = CtrlFlgs;
@@ -234,13 +233,13 @@ void    Recurse() {
     GetStmtType();
     SetCtrlFlgs();
     if( CtrlFlgOn( CF_NOT_SIMPLE_STMT ) ) { // controls recursion
-        StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc ] );
+        StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc - 1 ] );
     } else {
         ProcStmt();
         ClearRem();
         TDStmtFini();
         if( CtrlFlgOn( CF_NOT_SIMPLE_STMT | CF_NOT_EXECUTABLE ) ) {
-            StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc ] );
+            StmtPtrErr( ST_NOT_ALLOWED, StmtKeywords[ proc - 1 ] );
         }
     }
     StmtProc = proc;
@@ -279,10 +278,10 @@ static  void    GetStmtType() {
 //=============================
 
     char        *curr_opnd;
-    OPR         opr;
+    byte        opr;
 
     curr_opnd = CITNode->opnd;
-    if( CITNode->opn.ds != DSOPN_NAM ) {
+    if( CITNode->opn != OPN_NAM ) {
         Error( ST_WANT_NAME );
         StmtProc = PR_NULL;
     } else if( ( *curr_opnd == 'D' ) && ( *(curr_opnd+1) == 'O' ) &&
@@ -291,8 +290,8 @@ static  void    GetStmtType() {
         RemKeyword( CITNode, 2 );
     } else if( ( *curr_opnd == 'I' ) && ( *(curr_opnd+1) == 'F' ) &&
                ( CITNode->link->opr == OPR_LBR ) && ( SPtr1 != NULL ) &&
-               ( ( SPtr1->opn.ds == DSOPN_NAM ) || ( SPtr1->opn.ds == DSOPN_INT ) ) ) {
-        if( SPtr1->opn.ds == DSOPN_INT ) {
+               ( ( SPtr1->opn == OPN_NAM ) || ( SPtr1->opn == OPN_INT ) ) ) {
+        if( SPtr1->opn == OPN_INT ) {
             StmtProc = PR_ARIF;
         } else {
             StmtProc = PR_IF;
@@ -302,7 +301,7 @@ static  void    GetStmtType() {
                ( ( StmtSw & SS_EQUALS_FOUND ) != 0 ) ) {
         StmtProc = PR_ASNMNT;
         if( RecName() && RecNextOpr( OPR_LBR ) ) {
-            if( SPtr1->opn.ds != DSOPN_PHI ) {
+            if( SPtr1->opn != OPN_PHI ) {
                 DefStmtType();
             } else {
                 opr = SPtr1->link->opr;
@@ -337,7 +336,7 @@ static  void    DefStmtType() {
 
     StmtProc = RecStmtKW();      // look up keyword, strip off if found
     if( StmtProc != 0 ) {
-        RemKeyword( CITNode, strlen( StmtKeywords[ StmtProc ] ) );
+        RemKeyword( CITNode, strlen( StmtKeywords[ StmtProc - 1 ] ) );
     }
 }
 
@@ -410,7 +409,7 @@ static  void    CheckOrder() {
         if( !CtrlFlgOn( CF_SPECIFICATION ) ) {
             SgmtSw |= SG_NO_MORE_SPECS;
             if( SgmtSw & SG_DEFINING_STRUCTURE ) {
-                Error( SP_UNFINISHED, StmtKeywords[ PR_STRUCTURE ] );
+                Error( SP_UNFINISHED, StmtKeywords[ PR_STRUCTURE - 1 ] );
                 SgmtSw &= ~SG_DEFINING_STRUCTURE;
                 AError = FALSE; // so we still process the statement
             }
@@ -419,6 +418,15 @@ static  void    CheckOrder() {
             }
         }
     }
+}
+
+
+static  void    ProcStmt() {
+//==========================
+
+    if( AError ) return;
+    if( CpError && (StmtProc == PR_NULL) ) return;
+    ProcTable[ StmtProc ]();
 }
 
 
@@ -507,7 +515,7 @@ void    RemKeyword( itnode *itptr, int remove_len ) {
             FreeOneNode( new_it_node );
         } else {
             itptr->opnd_size = 0;
-            itptr->opn.ds = DSOPN_PHI;
+            itptr->opn = OPN_PHI;
         }
     } else {
         itptr->opnd += remove_len;
@@ -520,21 +528,20 @@ void    RemKeyword( itnode *itptr, int remove_len ) {
             curr_char++;
         }
         if( curr_char != itptr->opnd ) {
-            itptr->opn.ds = DSOPN_INT;
+            itptr->opn = OPN_INT;
             if( curr_char - itptr->opnd != curr_size ) {
                 remove_len = curr_size - ( curr_char - itptr->opnd );
                 itptr->opnd_size = ( curr_char - itptr->opnd );
                 new_it_node = FrlAlloc( &ITPool, sizeof( itnode ) );
                 new_it_node->opnd_size = remove_len;
                 new_it_node->opnd = itptr->opnd + itptr->opnd_size;
-                new_it_node->opn.ds = DSOPN_NAM;
+                new_it_node->opn = OPN_NAM;
                 new_it_node->opr = OPR_PHI;
                 new_it_node->oprpos = itptr->opnpos + itptr->opnd_size;
                 new_it_node->opnpos = new_it_node->oprpos;
                 new_it_node->flags = 0;
                 new_it_node->list = itptr->list;
                 new_it_node->link = itptr->link;
-                new_it_node->typ = TY_NO_TYPE;
                 itptr->link = new_it_node;
             }
         }

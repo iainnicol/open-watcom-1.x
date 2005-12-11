@@ -37,16 +37,29 @@
 #include "segsw.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
-#include "recog.h"
-#include "insert.h"
-#include "utility.h"
 
 #include <string.h>
 
+extern  void            AdvanceITPtr(void);
+extern  bool            ClassIs(unsigned_16);
+extern  bool            CLogicExpr(void);
+extern  bool            CCharExpr(void);
+extern  void            CArithExpr(void);
+extern  void            ConstExpr(uint);
+extern  bool            ReqOpenParen(void);
+extern  bool            ReqCloseParen(void);
+extern  bool            ReqName(int);
+extern  bool            RecComma(void);
+extern  bool            ReqEOS(void);
+extern  bool            ReqEquSign(void);
+extern  bool            ReqNOpn(void);
 extern  sym_id          LkSym(void);
 extern  sym_id          STLit(byte *,uint);
-extern  sym_id          STConst(void *,TYPE,uint);
-extern  void            CnvTo(itnode *,TYPE,uint);
+extern  sym_id          STConst(void *,int,int);
+extern  void            CnvTo(itnode *,int,int);
+extern  void            IllName(sym_id);
+extern  void            IllType(sym_id);
+extern  void            NameErr(int,sym_id);
 extern  void            CkSymDeclared(sym_id);
 
 
@@ -57,13 +70,13 @@ void    CpParameter() {
 //
 //     PARAMETER (P1=E1,...,Pn=En), n > 0
 
-    uint        parm_size;
+    int         parm_size;
     byte        *lit;
     byte        *string;
     int         lit_len;
     sym_id      sym;
     sym_id      value_id;
-    TYPE        typ;
+    byte        typ;
     byte        assign_val;
 
     ReqNOpn();

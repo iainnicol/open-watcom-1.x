@@ -39,6 +39,7 @@
 #include "conflict.h"
 #include "cfloat.h"
 
+extern  bool            CanUseOp1(instruction*,name*);
 extern  conflict_node   *GiveRegister(conflict_node*,bool);
 extern  conflict_node   *InMemory(conflict_node*);
 extern  conflict_node   *NameConflict(instruction*,name*);

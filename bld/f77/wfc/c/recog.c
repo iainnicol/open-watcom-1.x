@@ -24,21 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  recognize specific tokens
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+//
+// RECOG     : recognize specific tokens
+//
 
 #include "ftnstd.h"
 #include "opr.h"
 #include "opn.h"
 #include "errcod.h"
 #include "global.h"
-#include "ferror.h"
-#include "insert.h"
-#include "utility.h"
 
+extern  void            Error(int,...);
 extern  void            AdvError(uint);
+extern  void            OpndErr(uint);
+extern  void            KnownClassErr(uint,uint);
+extern  bool            CmpNode2Str(itnode *,char *);
 extern  sym_id          LkSym(void);
 extern  void            GetFunctionShadow(void);
 
@@ -56,11 +62,10 @@ bool    RecEquSign() {
 }
 
 
-bool    ReqOperator( OPR operator, int error ) {
+bool    ReqOperator( byte operator, int error ) {
 //===============================================
 
-    if( operator == CITNode->opr )
-        return( TRUE );
+    if( operator == CITNode->opr ) return( TRUE );
     Error( error );
     return( FALSE );
 }
@@ -208,8 +213,7 @@ bool    RecEOS() {
 bool    ReqEOS() {
 //================
 
-    if( RecEOS() )
-        return( TRUE );
+    if( RecEOS() ) return( TRUE );
     Error( SX_EOS_EXPECTED );
     return( FALSE );
 }
@@ -218,15 +222,14 @@ bool    ReqEOS() {
 bool    RecNOpn() {
 //=================
 
-    return( CITNode->opn.ds == DSOPN_PHI );
+    return( CITNode->opn == OPN_PHI );
 }
 
 
 bool    ReqNOpn() {
 //=================
 
-    if( RecNOpn() )
-        return( TRUE );
+    if( RecNOpn() ) return( TRUE );
     OpndErr( SX_UNEXPECTED_OPN );
     return( FALSE );
 }
@@ -235,8 +238,7 @@ bool    ReqNOpn() {
 bool    RecKeyWord( char *key ) {
 //===============================
 
-    if( CITNode->opn.ds != DSOPN_NAM )
-        return( FALSE );
+    if( CITNode->opn != OPN_NAM ) return( FALSE );
     return( CmpNode2Str( CITNode, key ) );
 }
 
@@ -244,15 +246,14 @@ bool    RecKeyWord( char *key ) {
 bool    RecName() {
 //=================
 
-    return( CITNode->opn.ds == DSOPN_NAM );
+    return( CITNode->opn == OPN_NAM );
 }
 
 
 bool    ReqName( int index ) {
 //============================
 
-    if( RecName() )
-        return( TRUE );
+    if( RecName() ) return( TRUE );
     KnownClassErr( SX_NO_NAME, index );
     return( FALSE );
 }
@@ -261,36 +262,35 @@ bool    ReqName( int index ) {
 bool    RecNWL() {
 //================
 
-    return( CITNode->opn.us == USOPN_NWL );
+    return( CITNode->opn == OPN_NWL );
 }
 
 
 bool    RecNumber() {
 //===================
 
-    return( CITNode->opn.ds == DSOPN_INT );
+    return( CITNode->opn == OPN_INT );
 }
 
 
 bool    RecLiteral() {
 //====================
 
-    return( CITNode->opn.ds == DSOPN_LIT );
+    return( CITNode->opn == OPN_LIT );
 }
 
 
-bool    RecNextOpr( OPR operator ) {
+bool    RecNextOpr( byte operator ) {
 //===================================
 
     return( operator == CITNode->link->opr );
 }
 
 
-bool    ReqNextOpr( OPR operator, int error ) {
+bool    ReqNextOpr( byte operator, int error ) {
 //==============================================
 
-    if( RecNextOpr( operator ) )
-        return( TRUE );
+    if( RecNextOpr( operator ) ) return( TRUE );
     AdvError( error );
     return( FALSE );
 }
@@ -301,20 +301,16 @@ static  bool    IsVariable() {
 
     unsigned_16 flags;
 
-    if( !RecName() )
-        return( FALSE );
+    if( !RecName() ) return( FALSE );
     LkSym();
     flags = CITNode->flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
-        if( flags & SY_SUBSCRIPTED )
-            return( FALSE );
+        if( flags & SY_SUBSCRIPTED ) return( FALSE );
         return( TRUE );
     }
     if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( ( flags & SY_SUBPROG_TYPE ) != SY_FUNCTION )
-            return( FALSE );
-        if( !(flags & SY_PS_ENTRY) )
-            return( FALSE );
+        if( ( flags & SY_SUBPROG_TYPE ) != SY_FUNCTION ) return( FALSE );
+        if( !(flags & SY_PS_ENTRY) ) return( FALSE );
         GetFunctionShadow();
         return( TRUE );
     }
@@ -325,8 +321,7 @@ static  bool    IsVariable() {
 bool    RecIntVar() {
 //===================
 
-    if( !IsVariable() )
-        return( FALSE );
+    if( !IsVariable() ) return( FALSE );
     return( _IsTypeInteger( CITNode->typ ) );
 }
 
@@ -334,8 +329,7 @@ bool    RecIntVar() {
 bool    ReqIntVar() {
 //===================
 
-    if( RecIntVar() )
-        return( TRUE );
+    if( RecIntVar() ) return( TRUE );
     Error( SX_NO_INTEGER_VAR );
     return( FALSE );
 }
@@ -346,9 +340,7 @@ bool    ReqDoVar() {
 
     if( IsVariable() ) {
         if( ( CITNode->typ >= TY_INTEGER_1 ) &&
-            ( CITNode->typ <= TY_EXTENDED ) ) {
-            return( TRUE );
-        }
+            ( CITNode->typ <= TY_EXTENDED ) ) return( TRUE );
     }
     Error( SX_NO_NUMBER_VAR );
     return( FALSE );
@@ -358,5 +350,5 @@ bool    ReqDoVar() {
 bool    RecArrName() {
 //====================
 
-    return( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_ARR );
+    return( ( CITNode->opn & OPN_WHAT ) == OPN_ARR );
 }

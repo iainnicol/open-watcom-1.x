@@ -1,7 +1,8 @@
-#pmake: nobuild os_nt cpu_axp dll
-host_os = nt
-host_cpu = axp
+#pmake: os_nt cpu_axp dll
 
-wlink_dll = 1
+host_OS = nt
+host_CPU = axp
+
+sys_dll = 1
 
 !include ../wlink.mif

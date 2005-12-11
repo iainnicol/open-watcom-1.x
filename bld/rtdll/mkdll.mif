@@ -1,6 +1,9 @@
+.extensions:
+.extensions: .lib .imp .lbc .dll .obj .c .cpp .asm
+
+.IGNORE
+
 !ifdef profile
-option_symfile =
-!else ifeq release 0
 option_symfile =
 !else
 option_symfile = option symfile
@@ -10,7 +13,7 @@ option_symfile = option symfile
 patch_level=0
 !endif
 
-$(libdllname).lib : $(dllname).imp $(static_objs)
+$(libname).lib : $(dllname).imp $(static_objs)
     $(librarian) $(lib_flags) $(lib_flags_new) -p=16 -irn $^@ @$(dllname).imp $(static_objs)
 
 $(dllname).imp : $(dllname).lbc $(rtdll_dir)/trimlbc.vi $(rtdll_dir)/add_br.vi
@@ -34,8 +37,8 @@ lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 !endif
 !endif
 
-$(dllname).dll $(dllname).lbc : $(res_objs) $(dll_objs) $(dll_libs) $(dllname).lnk $(__MAKEFILE__)
-    $(linker) name $(dllname).dll @$(dllname).lnk
+$(dllname).dll $(dllname).lbc : $(res_objs) $(dll_objs) $(dll_libs) tmp.def
+    $(linker) debug dwarf $(option_symfile) $(l_flags) $(dllbase) op map name $(dllname).dll file { $(dll_objs) } export { @$]@ } lib { $(dll_libs) $(extra_libs) } $(lnk_alias)
 !ifeq system winnt
     $(rc) $(rc_flags) -i"$(%watcom)/h/nt" $(dllname).rc $(dllname).dll
 !endif
@@ -43,15 +46,9 @@ $(dllname).dll $(dllname).lbc : $(res_objs) $(dll_objs) $(dll_libs) $(dllname).l
     uniq $(dllname).tmp > $(dllname).lbc
     @rm -f $(dllname).tmp
 
-$(dllname).lnk : $(dll_def) $(__MAKEFILES__)
-    %create $@
-    @%append $@ debug dwarf $(option_symfile)
-    @%append $@ $(l_flags)
-    @%append $@ op map $(dllbase) 
-    @for %i in ($(dll_objs)) do @%append $@ file %i
-    @for %i in ($(dll_def)) do @%append $@ export { @%i }
-    @for %i in ($(dll_libs) $(extra_libs)) do @%append $@ lib %i
-    @%append $@ $(lnk_alias)
+tmp.def : $(dll_def) $(__MAKEFILES__)
+    %create $^@
+    @for %i in ($(dll_def)) do @%append $^@ @%i
 
 !include $(clib_dir)/clean.mif
 !include $(rtdll_dir)/upddll.mif

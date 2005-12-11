@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
+#include "parmtype.h"
 #include "iotype.h"
 #include "undefrtn.h"
 
@@ -47,7 +48,7 @@ extern  void            CheckCCtrl(void);
 extern  void            Drop(char);
 extern  void            OutLogCG(void);
 extern  void            OutIntCG(void);
-extern  void            IOItemResult(char PGM *,PTYPE);
+extern  void            IOItemResult(char PGM *,int);
 
 extern  const byte      __FAR SizeVars[];
 
@@ -163,7 +164,7 @@ void    (* __FAR OutRtn[])() = {        // this is not const anymore
 void    FreeOut() {
 //=================
 
-    PTYPE       typ;
+    byte        typ;
 
     CheckCCtrl();
     for(;;) {

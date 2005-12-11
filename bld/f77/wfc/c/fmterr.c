@@ -40,7 +40,10 @@
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "global.h"
-#include "ferror.h"
+#include "prdefn.h"
+
+extern  void            Error(int,...);
+extern  void            Extension(int,...);
 
 
 static  unsigned_16     SetCaret() {

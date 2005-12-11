@@ -3,7 +3,7 @@
 host_os    = os2
 host_cpu   = 386
 target_cpu = axp
-cc_release = 0
+release_cc = 0
 debug_cg   = 1
 debug      = 1
 

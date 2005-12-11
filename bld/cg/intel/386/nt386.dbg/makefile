@@ -3,6 +3,6 @@
 host_os  = nt
 host_cpu = 386
 
-cg_release = 0
+release_cg = 0
 
 !include ../mif/master.mif
