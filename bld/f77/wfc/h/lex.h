@@ -30,15 +30,9 @@
 ****************************************************************************/
 
 
-#include "opr.h"
-#include "opn.h"
-
 typedef struct lex {
-    OPR         opr;
-    union {
-        DSOPN           ds;
-        USOPN           us;
-    }                   opn;
+    byte        opr;
+    byte        opn;
     unsigned_16 oprpos;
     unsigned_16 opnpos;
     char        *ptr;

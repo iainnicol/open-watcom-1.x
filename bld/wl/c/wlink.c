@@ -75,6 +75,7 @@ extern void     ResetComdef( void );
 extern void     ResetDistrib( void );
 extern void     ResetLoadNov( void );
 extern void     ResetLoadPE( void );
+extern void     ResetMisc( void );
 extern void     ResetObj2Supp( void );
 extern void     ResetObjIO( void );
 extern void     ResetObjOMF( void );
@@ -97,12 +98,32 @@ static void     PreAddrCalcFormatSpec( void );
 static void     PostAddrCalcFormatSpec( void );
 static void     DoDefaultSystem( void );
 static void     FindLibPaths( void );
-static void     ResetMisc( void );
 
 extern int              __nheapblk;
 extern commandflag      CmdFlags;
 
-#if !defined( _DLLHOST )           // it's the standalone linker
+#if _LINKER == _WATFOR77
+
+extern void InitLinker( void )
+/****************************/
+{
+    InitSubSystems();
+}
+
+extern void FiniLinker( void )
+/****************************/
+{
+    FiniSubSystems();
+}
+
+extern int RunLinker( char *cmd )
+/*******************************/
+{
+    LinkMainLine( cmd );
+    return( (LinkState & LINK_ERROR) ? 1 : 0 );
+}
+
+#elif _LINKER == _WLINK                 // it's the standalone linker
 
 #ifndef __WATCOMC__
 char **_argv;
@@ -148,7 +169,7 @@ extern void LinkMainLine( char *cmds )
         cmds = GetNextLink();
         if( cmds == NULL ) break;
     }
-#if defined( _DLLHOST )
+#if _LINKER == _DLLHOST
     _heapshrink();
 #endif
 }

@@ -7,7 +7,7 @@ system     = os2
 linkage    = dynamic
 subdir     = mf_rd
 
-clib_release = 0
+release_clib = 0
 
 !include $(clib_dir)/master.mif
 !include ../libs.mif

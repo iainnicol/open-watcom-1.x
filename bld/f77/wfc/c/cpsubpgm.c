@@ -40,15 +40,32 @@
 #include "global.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
-#include "recog.h"
-#include "types.h"
-#include "ferror.h"
-#include "insert.h"
-#include "utility.h"
 
-extern  TYPE            MapTypes(TYPE,int);
-extern  TYPE            ImplType(char);
+extern  void            AdvanceITPtr(void);
+extern  void            IntSubExpr(void);
+extern  bool            BitOn(unsigned_16);
+extern  uint            MapTypes(uint,int);
+extern  int             StorageSize(uint);
+extern  byte            ImplType(char);
 extern  bool            EmptyCSList(void);
+extern  bool            ReqName(int);
+extern  bool            RecOpenParen(void);
+extern  bool            RecNOpn(void);
+extern  bool            RecNextOpr(byte);
+extern  bool            RecName(void);
+extern  bool            ReqMul(void);
+extern  bool            RecComma(void);
+extern  bool            ReqCloseParen(void);
+extern  bool            ReqOpenParen(void);
+extern  bool            ReqNOpn(void);
+extern  bool            RecEOS(void);
+extern  bool            ReqEOS(void);
+extern  void            Error(int,...);
+extern  void            Extension(int,...);
+extern  void            NameErr(int,sym_id);
+extern  void            IllName(sym_id);
+extern  void            NameExt(int,sym_id);
+extern  void            StmtErr(uint);
 extern  sym_id          LkSym(void);
 extern  sym_id          LkProgram(void);
 extern  sym_id          LkBlkData(void);
@@ -67,7 +84,7 @@ extern  void            GEPProlog(void);
 extern  void            GRetIdx(void);
 extern  void            GNullRetIdx(void);
 extern  void            GBlockLabel(void);
-extern  bool            LenSpec(TYPE,uint *);
+extern  bool            LenSpec(byte,uint *);
 extern  label_id        NextLabel(void);
 extern  void            CkDefStmtNo(void);
 extern  bool            InArgList(entry_pt *,sym_id);
@@ -144,7 +161,7 @@ static  entry_pt        *AddEntryPt( sym_id sym_ptr ) {
 }
 
 
-static  entry_pt        *SubProgName( TYPE typ, unsigned_16 flags,
+static  entry_pt        *SubProgName( byte typ, unsigned_16 flags,
                                       uint def_size, bool len_spec ) {
 //====================================================================
 
@@ -193,7 +210,7 @@ void    CpSubroutine() {
     CkSubEnd();
     ProgSw |= PS_IN_SUBPROGRAM;
     if( ReqName( NAME_SUBROUTINE ) ) {
-        entry = SubProgName( TY_NO_TYPE, SY_USAGE | SY_SUBPROGRAM | SY_PENTRY |
+        entry = SubProgName( 0, SY_USAGE | SY_SUBPROGRAM | SY_PENTRY |
                               SY_SUBROUTINE | SY_REFERENCED, 0, TRUE );
         if( RecOpenParen() ) {
             ParmList( TRUE, entry );
@@ -211,7 +228,14 @@ void    CpSubroutine() {
 }
 
 
-void    Function( TYPE typ, uint size, bool len_spec ) {
+void    CpFunction() {
+//====================
+
+    Function( -1, -1, FALSE );
+}
+
+
+void    Function( int typ, uint size, bool len_spec ) {
 //=====================================================
 
 // Compile [type] [*len] FUNCTION NAME[*len] ([d,d,...])
@@ -223,10 +247,10 @@ void    Function( TYPE typ, uint size, bool len_spec ) {
     entry_pt    *entry;
 
     flags = SY_USAGE | SY_SUBPROGRAM | SY_PENTRY | SY_FUNCTION;
-    if( typ == TY_NO_TYPE ) {
-        typ = ImplType( *(CITNode->opnd) );
-    } else {
+    if( typ != -1 ) {
         flags |= SY_TYPE;
+    } else {
+        typ = ImplType( *(CITNode->opnd) );
     }
     CkSubEnd();
     ProgSw |= PS_IN_SUBPROGRAM;
@@ -246,13 +270,6 @@ void    Function( TYPE typ, uint size, bool len_spec ) {
         GSegLabel();
     }
     BIStartSubroutine();
-}
-
-
-void    CpFunction() {
-//====================
-
-    Function( TY_NO_TYPE, -1, FALSE );
 }
 
 

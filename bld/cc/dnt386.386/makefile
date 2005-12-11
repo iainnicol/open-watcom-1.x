@@ -3,7 +3,7 @@
 host_os    = nt
 host_cpu   = 386
 target_cpu = 386
-cc_release = 0
+release_cc = 0
 debug_cg   = 1
 debug      = 1
 

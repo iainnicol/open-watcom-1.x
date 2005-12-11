@@ -33,15 +33,12 @@
 #include "progsw.h"
 #include "cpopt.h"
 #include "errcod.h"
+#include "bglobal.h"
 #include "global.h"
 #include "omodes.h"
 #include "cioconst.h"
 #include "csetinfo.h"
 #include "fmemmgr.h"
-#include "ferror.h"
-#include "comio.h"
-#include "inout.h"
-#include "sdfile.h"
 
 #include "banner.h"
 #ifdef _BANEXTRA
@@ -55,6 +52,9 @@
 
 extern  void            BISetSrcFile();
 extern  void            Suicide(void);
+extern  void            InfoError(int,...);
+extern  void            Warning(int,...);
+extern  void            ComRead(void);
 extern  void            PrtOptions(void);
 extern  lib_handle      IncSearch(char *);
 extern  int             LibRead(lib_handle);
@@ -80,6 +80,10 @@ extern  int             MakeName(char *,char *,char *);
 extern  bool            SDIsInternal(file_handle);
 extern  file_handle     EdOpenf(char *,int);
 #endif
+#if _CPU == _VAX
+extern  void            SDSetSpool(file_handle);
+extern  bool            GetCatFile(void);
+#endif
 
 extern  char            FFCtrlSeq[];
 extern  char            SkipCtrlSeq[];
@@ -96,6 +100,9 @@ extern  file_attr       PrtAttr;
 extern  file_attr       TrmAttr;
 extern  file_attr       ErrAttr;
 extern  file_handle     FStdOut;
+#if _CPU == _VAX
+extern  char            CatFileName[];
+#endif
 extern  character_set   CharSetInfo;
 
 #define _Copyright "1984"
@@ -113,21 +120,6 @@ extern  character_set   CharSetInfo;
     #error Unknown System
 #endif
 
-
-static char           *ListBuff;      // listing file buffer
-static file_handle    ListFile;       // file pointer for the listing file
-static int            ListCursor;     // offset into "ListBuff"
-
-static byte           ListCount;      // # of lines printed to listing file
-static byte           ListFlag;       // flag for listing file
-
-static char           *ErrBuff;       // error file buffer
-static file_handle    ErrFile;        // file pointer for the error file
-static int            ErrCursor;      // offset into "ErrBuff"
-
-static char           *TermBuff;      // terminal file buffer
-static file_handle    TermFile;       // file pointer for terminal
-static int            TermCursor;     // offset into "TermBuff"
 
 //========================================================================
 //
@@ -258,6 +250,9 @@ static  uint    SrcRead() {
 
     uint        len;
     file_handle fp;
+#if _CPU == _VAX
+    source      *cat_file;
+#endif
     char        msg[81];
 
     fp = CurrFile->fileptr;
@@ -272,6 +267,18 @@ static  uint    SrcRead() {
     } else {
         len = SDRead( fp, SrcBuff, SRCLEN );
         if( SDEof( fp ) ) {
+#if _CPU == _VAX
+            if( ( CurrFile->link == NULL ) && GetCatFile() ) {
+                Include( CatFileName );
+                if( CurrFile->link != NULL ) {
+                    cat_file = CurrFile;
+                    CurrFile = cat_file->link;
+                    CurrFile->link = cat_file;
+                    cat_file->link = NULL;
+                    cat_file->rec = CurrFile->rec;
+                }
+            }
+#endif
             ProgSw |= PS_INC_EOF;
         } else if( SDError( fp, msg ) ) {
             InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
@@ -312,7 +319,7 @@ void    ReadSrc() {
 static  bool    AlreadyOpen( char *name ) {
 //=========================================
 
-    source_t    *src;
+    source      *src;
 
     src = CurrFile;
     for(;;) {
@@ -376,7 +383,7 @@ void    Include( char *inc_name ) {
     // because we could not open include file
     RetCode = _SUCCESSFUL;
     {
-        extern  void    AddDependencyInfo(source_t *);
+        extern  void    AddDependencyInfo(source *);
 
         AddDependencyInfo( CurrFile );
     }
@@ -401,9 +408,9 @@ bool    SetLst( bool new ) {
 void    SrcInclude( char *name ) {
 //================================
 
-    source_t    *src;
+    source      *src;
 
-    src = FMemAlloc( sizeof( source_t ) );
+    src = FMemAlloc( sizeof( source ) );
     src->name = FMemAlloc( strlen( name ) + 1 );
     strcpy( src->name, name );
     src->rec = 0;
@@ -428,7 +435,7 @@ void    SrcInclude( char *name ) {
 void    Conclude() {
 //==================
 
-    source_t    *old;
+    source      *old;
 
     old = CurrFile;
     CurrFile = CurrFile->link;
@@ -571,16 +578,6 @@ static  void    ChkErrErr() {
     }
 }
 
-void    ChkErrFile( void ) {
-//==========================
-
-// Make sure error file is opened.
-
-    if( ErrFile == NULL ) {
-        OpenErr();
-    }
-}
-
 
 static  void    ErrOut( char *string ) {
 //======================================
@@ -655,10 +652,12 @@ static  void    OpenListingFile( bool reopen ) {
         GetLstName( name );
         if( Options & OPT_TYPE ) {
             SDSetAttr( TrmAttr );
+#if _CPU != _VAX
         // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
         // and set the spooling bit
         } else if( Options & OPT_PRINT ) {
             SDSetAttr( PrtAttr );
+#endif
         } else { // DISK file
             SDSetAttr( DskAttr );
         }
@@ -670,6 +669,10 @@ static  void    OpenListingFile( bool reopen ) {
             if( ListBuff == NULL ) {
                 CloseLst();
                 InfoError( MO_DYNAMIC_OUT );
+#if _CPU == _VAX
+            } else if( Options & OPT_PRINT ) {
+                SDSetSpool( ListFile );
+#endif
             }
         }
         SDInitAttr();
@@ -785,7 +788,7 @@ void    GetLstName( char *buffer ) {
 
     if( Options & OPT_TYPE ) {
         strcpy( buffer, SDTermOut );
-#if ! defined( __UNIX__ )
+#if ( _CPU != _VAX ) && ! defined( __UNIX__ )
     // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
     //             and set the spooling bit
     // On QNX, there is no /PRINT option
@@ -964,4 +967,3 @@ static  void    SendBuff( char *str, char *buff, int buff_size, int *cursor,
         *cursor = 0;
     }
 }
-

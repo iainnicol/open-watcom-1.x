@@ -44,7 +44,7 @@
 #include "reloc.h"
 #include "objcache.h"
 #include "alloc.h"
-#if defined( __QNX__ )
+#if _OS == _QNX
     #include <sys/seginfo.h>
 
     unsigned LastChanceSeg;
@@ -75,7 +75,12 @@ void PrintLine( int * bogus, const char *buff, unsigned len )
 extern void LnkMemInit( void )
 /****************************/
 {
-#if defined( __QNX__ )
+#if  _OS == _OS2HOST
+
+    if( _osmode == OS2_MODE ) {
+        LinkState |= RUNNING_OS2_FLAG;
+    }
+#elif _OS == _QNX
     /* allocate some memory we can give back to the system if it runs low */
     LastChanceSeg = qnx_segment_alloc( 65000 );
 #endif
@@ -261,7 +266,7 @@ extern bool FreeUpMemory( void )
 /******************************/
 // make sure LnkReAlloc is kept up to date with what is put in here.
 {
-#if defined( __QNX__ )
+#if _OS == _QNX
     if( LastChanceSeg != (unsigned)-1 ) {
         /*
             If we're low on memory, the system is low on memory. Give

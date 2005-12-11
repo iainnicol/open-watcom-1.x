@@ -6,7 +6,7 @@ system=nw_libcl
 linkage=static
 convention=stack
 
-clib_release = 0
+release_clib = 0
 
 !include $(clib_dir)/master.mif
 !include ../libs.mif

@@ -24,28 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  routines that call the expression handler
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+//
+// AENTRY    : routines that call the expression handler
+//
+
 #include "ftnstd.h"
 #include "opr.h"
 #include "opn.h"
+#include "prdefn.h"
 #include "astype.h"
 #include "errcod.h"
 #include "namecod.h"
 #include "global.h"
-#include "recog.h"
-#include "ferror.h"
-#include "insert.h"
-#include "utility.h"
 
 extern  void            DownScan(void);
 extern  void            UpScan(void);
 extern  sym_id          LkSym(void);
 extern  void            ScanExpr(void);
 extern  void            AdvError(int);
+extern  void            Error(int,...);
+extern  void            Extension(int,...);
+extern  void            IllName(sym_id);
+extern  void            AdvanceITPtr(void);
+extern  bool            ClassIs(unsigned_16);
+extern  bool            Subscripted(void);
+extern  bool            BitOn(unsigned_16);
+extern  bool            ReqNextOpr(byte,int);
+extern  bool            RecName(void);
+extern  bool            ReqName(int);
 extern  void            SFPrologue(void);
 
 #define SF_MASK (SY_SUB_PARM|SY_IN_EC|SY_DATA_INIT|SY_SAVED)
@@ -66,7 +78,7 @@ void    EatExpr() {
 
 // Scan ahead, get an expression, and send it to expression handler.
 
-    OPR         opr;
+    byte        opr;
     itnode      *cit;
 
     cit = CITNode;
@@ -117,9 +129,9 @@ void    CpCall() {
     if( next->opr == OPR_TRM ) {
         ASType = AST_CNA;       // call with no parameter list
     } else if( ( next->opr == OPR_LBR ) &&
-               ( next->opn.ds == DSOPN_PHI ) &&
+               ( next->opn == OPN_PHI ) &&
                ( next->link->opr == OPR_RBR ) &&
-               ( next->link->opn.ds == DSOPN_PHI ) &&
+               ( next->link->opn == OPN_PHI ) &&
                ( next->link->link->opr == OPR_TRM ) ) {
         next->opr = OPR_TRM;    // make CALL SAM() same as CALL SAM
         ASType = AST_CNA;       // call with no parameter list

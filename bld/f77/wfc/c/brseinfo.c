@@ -45,8 +45,6 @@
 #include "astype.h"
 #include "browscli.h"
 #include "fmemmgr.h"
-#include "types.h"
-#include "ferror.h"
 
 // linked list storage facility
 typedef struct sym_list {
@@ -58,12 +56,15 @@ typedef struct sym_list {
 
 typedef dw_handle (*func)( sym_id ste_ptr, dw_handle handle );
 
+extern  int             TypeSize(uint);
+extern  void            Error(int,...);
 extern  int             AllocName(int);
 extern  int             MakeName(char *,char *,char *);
 extern  char            *SDFName(char *fn);
 static void             BIAdd2List(sym_list **,sym_id,dw_handle);
 static void             BIWalkList(sym_list **,func,int);
 static dw_handle        BIGetAnyType(sym_id);
+static int              BIMapType(int);
 static dw_handle        BIGetType(sym_id);
 static dw_handle        BIGetSPType(sym_id);
 static dw_handle        BIGetArrayType(sym_id);
@@ -84,8 +85,10 @@ static dw_handle        BIGetHandle(sym_id);
 static void             BISetHandle(sym_id,dw_handle);
 static char *           BIMKFullPath(const char *);
 static void             BIInitBaseTypes(void);
+static dw_handle        BIMakeFundemental(int);
 
-extern char             BrowseExtn[];
+extern  char            BrowseExtn[];
+extern  char            *TypeKW[];
 
 static dw_client        cBIId;
 static dw_loc_handle    justJunk;
@@ -95,6 +98,8 @@ static unsigned_32      currState = 0;
 static sym_list         *fixStructs = NULL;
 static sym_list         *fixSubParms = NULL;
 
+#define FIRST_BASE_TYPE TY_LOGICAL_1
+#define LAST_BASE_TYPE  TY_TRUE_XCOMPLEX
 static dw_handle        baseTypes[LAST_BASE_TYPE + 1];
 
 #define BI_STATE_IN_COMMON_BLOCK        0x00000001
@@ -115,7 +120,7 @@ static  bool            BrInitialized;
                                  (BrInitialized) && \
                                  (ProgSw & PS_DONT_GENERATE))
 
-#define _isFundamentalType( typ ) \
+#define _isFundementalType( typ ) \
                         (((int)typ >= FIRST_BASE_TYPE) && ((int)typ <= LAST_BASE_TYPE))
 
 void    BIInit() {
@@ -559,35 +564,12 @@ static void BIOutSP( sym_id ste_ptr ) {
 }
 
 
-static int BIMapType( TYPE typ ) {
-//===============================
-
-// Map our type to a DWARF fundamental type
-
-    switch( typ ) {
-    case( TY_LOGICAL_1 ):
-    case( TY_LOGICAL ):         return( DW_FT_BOOLEAN );
-    case( TY_INTEGER_1 ):
-    case( TY_INTEGER_2 ):
-    case( TY_INTEGER ):         return( DW_FT_SIGNED );
-    case( TY_REAL ):
-    case( TY_DOUBLE ):
-    case( TY_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
-    case( TY_COMPLEX ):
-    case( TY_DCOMPLEX ):
-    case( TY_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
-    case( TY_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
-    }
-    return( 0 );
-}
-
-
-static dw_handle BIMakeFundamental( TYPE typ ) {
+static dw_handle BIMakeFundemental( int typ ) {
 //=============================================
 
-// create a new fundamental handle seperate from the one created at birth
+// create a new fundemental handle seperate from the one created at birth
 
-    return( DWFundamental(cBIId, TypeKW(typ), BIMapType(typ), TypeSize(typ)) );
+    return( DWFundamental(cBIId, TypeKW[typ], BIMapType(typ), TypeSize(typ)) );
 }
 
 
@@ -599,12 +581,12 @@ static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
     if ( ste_ptr->ns.typ != TY_STRUCTURE ) {
         DWHandleSet( cBIId, handle );
     }
-    if( _isFundamentalType( ste_ptr->ns.typ ) ) {
-        // since we now emit our fundamentals at init time, we must explicitly
+    if( _isFundementalType( ste_ptr->ns.typ ) ) {
+        // since we now emit our fundementals at init time, we must explicitly
         // create another fundemntal handle rather than using the ones created
         // at birth.  This is necessary because we must set next handle emitted
         // to that type
-        BIMakeFundamental( ste_ptr->ns.typ );
+        BIMakeFundemental( ste_ptr->ns.typ );
     } else {
         BIGetSPType( ste_ptr );
     }
@@ -722,6 +704,29 @@ static dw_handle        BIGetAnyType( sym_id ste_ptr ) {
 }
 
 
+static int BIMapType( int typ ) {
+//===============================
+
+// Map our type to a DWARF fundemental type
+
+    switch( typ ) {
+    case( TY_LOGICAL_1 ):
+    case( TY_LOGICAL ):         return( DW_FT_BOOLEAN );
+    case( TY_INTEGER_1 ):
+    case( TY_INTEGER_2 ):
+    case( TY_INTEGER ):         return( DW_FT_SIGNED );
+    case( TY_REAL ):
+    case( TY_DOUBLE ):
+    case( TY_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
+    case( TY_COMPLEX ):
+    case( TY_DCOMPLEX ):
+    case( TY_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
+    case( TY_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
+    }
+    return( 0 );
+}
+
+
 static dw_handle BIGetSPType( sym_id ste_ptr ) {
 //==============================================
 
@@ -748,9 +753,8 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
 
 // Get the Symbol's NON COMPOUND DWARF TYPE,
 
-    TYPE        typ = ste_ptr->ns.typ;
+    int         typ = ste_ptr->ns.typ;
     dw_handle   ret = 0;
-
     switch( typ ) {
     case( TY_LOGICAL_1 ):
     case( TY_LOGICAL ):
@@ -763,25 +767,21 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
     case( TY_TRUE_EXTENDED ):
     case( TY_COMPLEX ):
     case( TY_DCOMPLEX ):
-    case( TY_TRUE_XCOMPLEX ):
-        ret = baseTypes[ typ ];
-        break;
-    case( TY_CHAR ):
-        ret = DWString(cBIId, 0, ste_ptr->ns.xt.size, "", 0, 0);
-        break;
-    case( TY_UNION ):
-        ret = BIGetUnionType( ste_ptr );
-        break;
-    case( TY_STRUCTURE ):
-        ret = BIGetStructType( ste_ptr, 0 );
-        break;
+    case( TY_TRUE_XCOMPLEX ):   ret = baseTypes[ typ ];
+                           break;
+    case( TY_CHAR ):       ret = DWString(cBIId, 0, ste_ptr->ns.xt.size, "", 0, 0);
+                           break;
+    case( TY_UNION ):      ret = BIGetUnionType( ste_ptr );
+                           break;
+    case( TY_STRUCTURE ):  ret = BIGetStructType( ste_ptr, 0 );
+                           break;
     }
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     return( ret );
 }
 
 
-static dw_handle BIGetBaseType( TYPE typ ) {
+static dw_handle BIGetBaseType( int typ ) {
 //=========================================
 
 // Get initialized base type
@@ -986,12 +986,12 @@ static char *BIMKFullPath( const char *path ) {
 static void BIInitBaseTypes( void ) {
 //===================================
 
-    TYPE    x;
+    int x;
 
-    // assume that LAST_BASE_TYPE is the last fundamental type
-    // and types from FIRST_BASE_TYPE to LAST_BASE_TYPE are all fundamental
+    // assume that LAST_BASE_TYPE is the last fundemental type
+    // and types from FIRST_BASE_TYPE to LAST_BASE_TYPE are all fundemental
     // base types
     for( x = FIRST_BASE_TYPE; x <= LAST_BASE_TYPE; x++ ) {
-        baseTypes[ x ] = BIMakeFundamental( x );
+        baseTypes[ x ] = BIMakeFundemental( x );
     }
 }

@@ -40,7 +40,6 @@ tests = &
         alg02.$(exe)    &
         clib01.$(exe)   &
         cmplx01.$(exe)  &
-	deque01.$(exe)  &
         fun01.$(exe)    &
         iter01.$(exe)   &
         lim01.$(exe)    &
@@ -50,7 +49,6 @@ tests = &
         map02.$(exe)    &
         mem01.$(exe)    &
         numer01.$(exe)  &
-        stack01.$(exe)  &
         set01.$(exe)    &
         set02.$(exe)    &
         string01.$(exe) &
@@ -77,8 +75,6 @@ test : .symbolic test.lnk $(tests)
     $(run) clib01 >> test.out
     @echo ----------cmplx01---------->> test.out
     $(run) cmplx01 >> test.out
-    @echo ----------deque01---------->> test.out
-    $(run) deque01 >> test.out
     @echo ----------fun01---------->> test.out
     $(run) fun01 >> test.out
     @echo ----------iter01---------->> test.out
@@ -97,8 +93,6 @@ test : .symbolic test.lnk $(tests)
     $(run) mem01 >> test.out
     @echo ----------numer01---------->> test.out
     $(run) numer01 >> test.out
-    @echo ----------stack01---------->> test.out
-    $(run) stack01 >> test.out
     @echo ----------set01---------->> test.out
     $(run) set01 >> test.out
     @echo ----------set02---------->> test.out

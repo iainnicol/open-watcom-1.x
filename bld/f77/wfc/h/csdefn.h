@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "symtypes.h"
-
 typedef union cs_info {
     struct do_entry     *do_parms;      // iterative DO-loop
     struct case_entry   *cases;         // SELECT statement and computed GOTO
@@ -61,7 +59,7 @@ typedef struct case_entry {
     intstar4            low;
     intstar4            high;
     sym_id              sel_expr;
-    TYPE                sel_type;
+    byte                sel_type;
     bool                multi_case;
 } case_entry;
 

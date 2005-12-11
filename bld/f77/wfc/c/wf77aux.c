@@ -39,9 +39,6 @@
 #include "fio.h"
 #include "sdfile.h"
 #include "fmemmgr.h"
-#include "ferror.h"
-#include "inout.h"
-
 #if _INTEL_CPU
   #include "asminlin.h"
 #elif ( _CPU == _AXP || _CPU == _PPC )
@@ -57,9 +54,11 @@
 
 extern  int             KwLookUp(char **,int,char *,int,int);
 extern  int             MkHexConst(char *,char *,int);
+extern  void            Error(int,...);
 extern  void            Suicide(void);
 extern  char            *SkipBlanks(char *);
 extern  int             Spawn(void (*)());
+extern  void            ReadSrc(void);
 extern  aux_info        *AuxLookupName(char *,int);
 extern  sym_id          SymFind(char *,uint);
 extern  void            FreeChain(void **);
@@ -432,11 +431,8 @@ static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
     arr_info    *new_arr;
 
     for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
-        if( strlen( &(*arr)->arr ) != arr_len )
-            continue;
-        if( memcmp( &(*arr)->arr, arr_name, arr_len ) == 0 ) {
-            return;
-        }
+        if( strlen( &(*arr)->arr ) != arr_len ) continue;
+        if( memcmp( &(*arr)->arr, arr_name, arr_len ) == 0 ) return;
     }
     new_arr = FMemAlloc( sizeof( arr_info ) + arr_len );
     new_arr->link = NULL;
@@ -446,7 +442,7 @@ static  void    AddArrayInfo( char *arr_name, uint arr_len ) {
 }
 #endif
 
-void    AddDependencyInfo( source_t *fi ) {
+void    AddDependencyInfo( source *fi ) {
 //=======================================
 
 // Add dependency information for an included file.
@@ -460,9 +456,7 @@ void    AddDependencyInfo( source_t *fi ) {
     p = _fullpath( buff, fi->name, MAX_FILE );
     if( p != NULL ) {
         for( dep = &DependencyInfo; *dep != NULL; dep = &(*dep)->link ) {
-            if( strcmp( &(*dep)->fn, p ) == 0 ) {
-                return;
-            }
+            if( strcmp( &(*dep)->fn, p ) == 0 ) return;
         }
         if( fstat( ((a_file *)(fi->fileptr))->handle, &stat_info ) != -1 ) {
             new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
@@ -648,15 +642,12 @@ static  bool    CurrToken( char *tok ) {
 
     ptr = TokStart;
     for(;;) {
-        if( ptr == TokEnd )
-            break;
-        if( toupper( *ptr ) != *tok )
-            break;
+        if( ptr == TokEnd ) break;
+        if( toupper( *ptr ) != *tok ) break;
         ptr++;
         tok++;
     }
-    if( ( ptr == TokEnd ) && ( *tok == '\0' ) )
-        return( TRUE );
+    if( ( ptr == TokEnd ) && ( *tok == '\0' ) ) return( TRUE );
     return( FALSE );
 }
 
@@ -827,9 +818,7 @@ void    DoPragma( char *ptr ) {
             AsmSymFini();
             break;
         }
-        if( RecToken( "\0" ) ) {
-            break;
-        }
+        if( RecToken( "\0" ) ) break;
     }
 }
 
@@ -838,8 +827,7 @@ void    ProcPragma( char *ptr ) {
 //===============================
 
     // don't process auxiliary pragma's until pass 2
-    if( ProgSw & PS_DONT_GENERATE )
-        return;
+    if( ProgSw & PS_DONT_GENERATE ) return;
     DoPragma( ptr );
 }
 
@@ -867,8 +855,7 @@ static  void    ScanToken() {
             if( first ) {
                 for(;;) {
                     ++ptr;
-                    if( *ptr == '\0' )
-                        break;
+                    if( *ptr == '\0' ) break;
                     if( *ptr == '"' ) {
                         ++ptr;
                         break;
@@ -909,9 +896,7 @@ static  void    ScanToken() {
             first = FALSE;
             ptr++;
         }
-        if( found_token ) {
-            break;
-        }
+        if( found_token ) break;
     }
     TokEnd = ptr;
 }
@@ -1163,8 +1148,7 @@ static  void            SymbolId() {
     }
     for(;;) {
         ptr++;
-        if( ptr == TokEnd )
-            break;
+        if( ptr == TokEnd ) break;
         if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
             Error( PR_SYMBOL_NAME );
             Suicide();
@@ -1179,12 +1163,9 @@ static  void            ObjectName() {
     int         obj_len;
     char        *name;
 
-    if( *TokStart != '"' )
-        return;
-    if( TokStart == TokEnd - sizeof( char ) )
-        Suicide();
-    if( *(TokEnd - sizeof( char )) != '"' )
-        Suicide();
+    if( *TokStart != '"' ) return;
+    if( TokStart == TokEnd - sizeof( char ) ) Suicide();
+    if( *(TokEnd - sizeof( char )) != '"' ) Suicide();
     obj_len = TokEnd - TokStart - 2*sizeof( char );
     name = FMemAlloc( obj_len + sizeof( char ) );
     if( CurrAux->objname != DefaultInfo.objname ) {
@@ -1239,10 +1220,8 @@ static  void    InsertFixups( unsigned char *buff, unsigned i ) {
             owner = &FixupHead;
             for( ;; ) {
                 chk = *owner;
-                if( chk == NULL )
-                    break;
-                if( chk->fixup_loc > fix->fixup_loc )
-                    break;
+                if( chk == NULL ) break;
+                if( chk->fixup_loc > fix->fixup_loc ) break;
                 owner = &chk->next;
             }
             next = fix->next;
@@ -1450,9 +1429,8 @@ static  hw_reg_set      RegSet() {
     for(;;) {
         TokUpper();
         reg = KwLookUp( RegNames, MaxReg, TokStart, TokEnd-TokStart, TRUE );
-        if( reg == 0 )
-            break;
-        HW_TurnOn( reg_set, RegValue[ reg ] );
+        if( reg == 0 ) break;
+        HW_TurnOn( reg_set, RegValue[ reg - 1 ] );
         ScanToken();
     }
     ReqToken( "]" );
@@ -1550,8 +1528,7 @@ static  void    GetArgList() {
     unsigned_16 pass_info;
 
     FreeArgList( CurrAux );
-    if( RecToken( ")" ) )
-        return;
+    if( RecToken( ")" ) ) return;
     curr_arg = &CurrAux->arg_info;
     for(;;) {
         pass_info = 0;
@@ -1573,24 +1550,28 @@ static  void    GetArgList() {
 #if ( _CPU == 8086 || _CPU == 386 )
             } else if( RecToken( "FAR" ) ) {
                 pass_info |= ARG_FAR;
-    #if ( _CPU == 8086 )
-                pass_info |= ARG_SIZE_2;
-    #elif ( _CPU == 386 )
-                pass_info |= ARG_SIZE_4;
-    #endif
+
+                #if ( _CPU == 8086 )
+                    pass_info |= ARG_SIZE_2;
+                #elif ( _CPU == 386 )
+                    pass_info |= ARG_SIZE_4;
+                #endif
+
             } else if( RecToken( "NEAR" ) ) {
                 pass_info |= ARG_NEAR;
-    #if ( _CPU == 8086 )
-                pass_info |= ARG_SIZE_2;
-    #elif ( _CPU == 386 )
-                pass_info |= ARG_SIZE_4;
-    #endif
+
+                #if ( _CPU == 8086 )
+                    pass_info |= ARG_SIZE_2;
+                #elif ( _CPU == 386 )
+                    pass_info |= ARG_SIZE_4;
+                #endif
+
             } else {
-    #if ( _CPU == 8086 )
-                pass_info |= ARG_SIZE_2;
-    #elif ( _CPU == 386 )
-                pass_info |= ARG_SIZE_4;
-    #endif
+                #if ( _CPU == 8086 )
+                    pass_info |= ARG_SIZE_2;
+                #elif ( _CPU == 386 )
+                    pass_info |= ARG_SIZE_4;
+                #endif
 #endif
             }
         } else if( RecToken( "REFERENCE" ) ) {
@@ -1625,9 +1606,7 @@ static  void    GetArgList() {
         arg->info = pass_info;
         *curr_arg = arg;
         curr_arg = &arg->link;
-        if( !RecToken( "," ) ) {
-            break;
-        }
+        if( !RecToken( "," ) ) break;
     }
     ReqToken( ")" );
 }

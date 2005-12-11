@@ -30,29 +30,31 @@
 ****************************************************************************/
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(tok_id,dsopn_id,opn_proc) tok_id,
-
 typedef enum {
-#include "tokdsopn.h"
-} TOKCLASS;
-
-typedef enum {
-    TK_EOL     = 1,
-    TK_LAST    = 2,
-    TK_LENSPEC = 4,
-    TK_INCLUDE = 8
-} TOKTYPE;
+    TO_OPR,
+    TO_NAM,
+    TO_LIT,
+    TO_LGL,
+    TO_INT,
+    TO_REA,
+    TO_DBL,
+    TO_EXT,
+    TO_OCT,
+    TO_HEX,
+    TO_FMT
+} token_class;
 
 typedef struct token {
     char        *start;
     char        *stop;
     int         line;
-    TOKCLASS    class;
-    TOKTYPE     flags;
+    token_class class;
+    unsigned_8  flags;
     byte        log;
     byte        col;
-} token_t;
+} token;
 
+#define TK_EOL          0x01
+#define TK_LAST         0x02
+#define TK_LENSPEC      0x04
+#define TK_INCLUDE      0x08

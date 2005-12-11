@@ -38,8 +38,6 @@
 #include "symbol.h"
 #include "wf77defs.h"
 #include "cg.h"
-#include "emitobj.h"
-#include "fctypes.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -52,7 +50,12 @@ extern  cg_name         CGVolatile(cg_name);
 extern  void            XPush(cg_name);
 extern  cg_name         XPopValue(cg_type);
 extern  cg_name         XPop(void);
+extern  void            *GetPtr(void);
 extern  cg_name         ConstArrayOffset(act_dim_list *);
+extern  unsigned_16     GetU16(void);
+extern  inttarg         GetInt(void);
+extern  cg_type         GetType1(unsigned_16);
+extern  cg_type         GetType2(unsigned_16);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 extern  cg_type         SymPtrType(sym_id);
 

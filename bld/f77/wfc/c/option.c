@@ -35,18 +35,24 @@
 #include "cpopt.h"
 #include "optflags.h"
 #include "global.h"
+#include "bglobal.h"
 #include "intcnv.h"
 #include "csetinfo.h"
 #include "fmemmgr.h"
-#include "ferror.h"
-#include "comio.h"
-#include "inout.h"
 
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
+extern  bool            SetLst(bool);
+extern  void            LFNewPage(void);
+extern  void            ComPrint(void);
 extern  char            *SkipBlanks(char *);
+extern  void            Warning(int,...);
+extern  void            LFSkip(void);
+extern  void            PrtLstNL(char *);
+extern  void            PrtLst(char *);
+extern  uint            TypeSize(uint);
 extern  void            MacroDEFINE(char *,uint);
 extern  void            MacroUNDEFINE(char *,uint);
 extern  void            MacroIFDEF(char *,uint);

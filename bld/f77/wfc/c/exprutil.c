@@ -37,7 +37,9 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "astype.h"
-#include "emitobj.h"
+#include "fcodes.h"
+
+extern  void            PushOpn(itnode *);
 
 
 void    EmExprDone() {

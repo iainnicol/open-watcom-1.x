@@ -36,7 +36,7 @@
 
 #include "ftnstd.h"
 #include "wf77defs.h"
-#include "rtconst.h"
+#include "fcodes.h"
 #include "cg.h"
 #include "tmpdefs.h"
 #include "global.h"
@@ -55,14 +55,14 @@ extern  void            CGTrash(cg_name);
 //=========================================================================
 
 extern  cg_name         XPop(void);
-extern  call_handle     InitCall(RTCODE);
+extern  call_handle     InitCall(int);
 extern  void            *GetPtr(void);
 extern  void            *ConstBack(sym_id);
 extern  void            FreeTmps(void);
 
 
-void    FCDone( void ) {
-//======================
+void    FCDone() {
+//================
 
 // Process end of an expression.
 
@@ -70,8 +70,8 @@ void    FCDone( void ) {
 }
 
 
-void    FCCmplxDone( void ) {
-//===========================
+void    FCCmplxDone() {
+//=====================
 
 // Process end of a complex expression.
 
@@ -79,8 +79,8 @@ void    FCCmplxDone( void ) {
 }
 
 
-void    FCStmtDone( void ) {
-//==========================
+void    FCStmtDone() {
+//====================
 
 // Finished compiling a statement.
 
@@ -88,8 +88,8 @@ void    FCStmtDone( void ) {
 }
 
 
-void    FCTrash( void ) {
-//=======================
+void    FCTrash() {
+//=================
 
 // Trash a cg_name.
 
@@ -97,8 +97,8 @@ void    FCTrash( void ) {
 }
 
 
-static  void    Break( RTCODE routine ) {
-//=======================================
+static  void    Break( int routine ) {
+//====================================
 
 // Process PAUSE/STOP statement.
 
@@ -118,8 +118,8 @@ static  void    Break( RTCODE routine ) {
 }
 
 
-void    FCStop( void ) {
-//======================
+void    FCStop() {
+//================
 
 // Process STOP statement.
 
@@ -127,8 +127,8 @@ void    FCStop( void ) {
 }
 
 
-void    FCPause( void ) {
-//=======================
+void    FCPause() {
+//=================
 
 // Process PAUSE statement.
 
@@ -136,8 +136,8 @@ void    FCPause( void ) {
 }
 
 
-void    FCNull( void ) {
-//======================
+void    FCNull() {
+//================
 
 // Do nothing.
 

@@ -35,8 +35,9 @@
 //
 
 #include "ftnstd.h"
-#include "iodefs.h"
+#include "iodefn.h"
 #include "iortncon.h"
+#include "prdefn.h"
 #include "global.h"
 
 extern  void            GSetIOCB(void);

@@ -24,83 +24,56 @@
 *
 *  ========================================================================
 *
-* Description:  relational operators
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+//
+// RELOPS       : relational operators
+//
 
 #include "ftnstd.h"
 #include "opr.h"
 #include "opn.h"
 #include "fcodes.h"
 #include "global.h"
-#include "optr.h"
-#include "emitobj.h"
 
-extern  bool            TypeCmplx(TYPE);
+extern  void            EmitOp(unsigned_16);
+extern  void            OutPtr(void *);
+extern  void            PushOpn(itnode *);
+extern  bool            TypeCmplx(int);
+extern  void            GenTypes(itnode *,itnode *);
+extern  void            DumpType(uint,uint);
+extern  void            SetOpn(itnode *,byte);
 extern  bool            OptimalChSize(uint);
-extern  TYPE            MapTypes(TYPE,uint);
+extern  uint            MapTypes(uint,uint);
 
 
-static  int     CharLength( itnode *op ) {
-//========================================
-
-    USOPN       opn;
-
-    if( op->typ != TY_CHAR )
-        return( 0 );
-    opn = op->opn.us;
-    if( opn & USOPN_SS1 )
-        return( op->value.st.ss_size );
-    if( ( opn & USOPN_WHERE ) == USOPN_SAFE )
-        return( 0 );
-    if( ( opn & USOPN_WHAT ) == USOPN_NNL )
-        return( op->sym_ptr->ns.xt.size );
-    if( ( opn & USOPN_WHAT ) == USOPN_CON )
-        return( op->sym_ptr->lt.length );
-    return( 0 );
-}
-
-
-void    GenChar1Op( itnode *op ) {
-//================================
-
-    if( ( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) ) {
-        OutPtr( op->sym_ptr );
-        SetOpn( op, USOPN_SAFE );
-    } else {
-        OutPtr( NULL );
-    }
-    op->opn.us &= ~USOPN_SS1;
-}
-
-
-void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
-//================================================
+void    RelOp( int typ1, int typ2, int opr ) {
+//============================================
 
 // Generate code for a relational operator.
 
     bool        flip;
     bool        associative;
     bool        char_1_cmp;
-    uint        i;
-    uint        j;
-    OPR         opr_code;
-    FCODE       op_code;
+    int         i;
+    int         j;
 
-    optr = optr;
     // must check for "flip" before we call "CharLength" since they may
     // call "PushOpn"
     flip = FALSE;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( ( CITNode->opn & OPN_WHERE ) == OPN_SAFE ) &&
+        ( ( CITNode->link->opn & OPN_WHERE ) != OPN_SAFE ) ) {
         flip = TRUE;
     }
     // must do "CITNode->link" first to get operands in the right order
     i = CharLength( CITNode->link );
     j = CharLength( CITNode );
-    opr_code = CITNode->link->opr;
-    if( ( opr_code == OPR_EQ ) || ( opr_code == OPR_NE ) ) {
+    opr = CITNode->link->opr;
+    if( ( opr == OPR_EQ ) || ( opr == OPR_NE ) ) {
         char_1_cmp = OptimalChSize( i ) && OptimalChSize( j ) && ( i == j );
         associative = TRUE;
     } else {
@@ -109,36 +82,36 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     }
     PushOpn( CITNode->link );
     PushOpn( CITNode );
-    op_code = opr_code - OPR_FIRST_RELOP;
+    opr -= FIRST_RELOP;
     if( TypeCmplx( typ1 ) && TypeCmplx( typ2 ) ) {
-        op_code += FC_CC_RELOPS;
+        opr += CC_CMP_EQ;
     } else if( TypeCmplx( typ1 ) ) {
         if( flip ) {
-            op_code += FC_XC_RELOPS;
+            opr += XC_CMP_EQ;
         } else {
-            op_code += FC_CX_RELOPS;
+            opr += CX_CMP_EQ;
         }
     } else if( TypeCmplx( typ2 ) ) {
         if( flip ) {
-            op_code += FC_CX_RELOPS;
+            opr += CX_CMP_EQ;
         } else {
-            op_code += FC_XC_RELOPS;
+            opr += XC_CMP_EQ;
         }
     } else {
         if( flip && !associative ) {
-            EmitOp( FC_FLIP );
+            EmitOp( FLIP );
         }
         if( typ1 == TY_CHAR ) {
             if( char_1_cmp ) {
-                op_code += FC_CHAR_1_RELOPS;
+                opr += CHAR_1_RELOPS;
             } else {
-                op_code += FC_CHAR_RELOPS;
+                opr += CHAR_RELOPS;
             }
         } else {
-            op_code += FC_RELOPS;
+            opr += RELOPS;
         }
     }
-    EmitOp( op_code );
+    EmitOp( opr );
     if( char_1_cmp ) {
         if( associative ) {
             DumpType( MapTypes( TY_INTEGER, i ), i );
@@ -163,4 +136,36 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
             GenTypes( CITNode, CITNode->link );
         }
     }
+}
+
+
+static  int     CharLength( itnode *op ) {
+//========================================
+
+    byte        opn;
+
+    if( op->typ != TY_CHAR ) return( 0 );
+    opn = op->opn;
+    if( opn & OPN_SS1 ) return( op->value.st.ss_size );
+    if( ( opn & OPN_WHERE ) == OPN_SAFE ) return( 0 );
+    if( ( opn & OPN_WHAT ) == OPN_NNL ) {
+        return( op->sym_ptr->ns.xt.size );
+    }
+    if( ( opn & OPN_WHAT ) == OPN_CON ) {
+        return( op->sym_ptr->lt.length );
+    }
+    return( 0 );
+}
+
+
+void    GenChar1Op( itnode *op ) {
+//================================
+
+    if( ( ( op->opn & OPN_WHAT ) == OPN_CON ) ) {
+        OutPtr( op->sym_ptr );
+        SetOpn( op, OPN_SAFE );
+    } else {
+        OutPtr( NULL );
+    }
+    op->opn &= ~OPN_SS1;
 }

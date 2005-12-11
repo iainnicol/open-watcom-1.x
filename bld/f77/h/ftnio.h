@@ -113,7 +113,7 @@ typedef struct iocb {                   // global iocb structure
     int                 status;         // status indicator
     unsigned_32         elmts;          // number of records in internal file
     byte                iostmt;         // indicates the current io operation
-    PTYPE               typ;            // type to be formatted
+    byte                typ;            // type to be formatted
     unsigned_32         flags;          // i/o flags
     char                buffer[IO_FIELD_BUFF+1]; // buffer for formatting
     arr_desc            arr_desc;       // descriptor for array i/o
@@ -275,7 +275,11 @@ typedef struct ftnfile {
 #define SHARE_DENYRD    4       // deny read access
 #define SHARE_DENYNO    5       // allow read and write access
 
-#define PREC_MAX_UNIT 999     // largest allowed unit number
+#if _CPU == 370
+  #define PREC_MAX_UNIT 99      // largest allowed unit number
+#else
+  #define PREC_MAX_UNIT 999     // largest allowed unit number
+#endif
 
 // constants for various specifiers
 

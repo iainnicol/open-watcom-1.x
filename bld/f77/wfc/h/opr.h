@@ -24,30 +24,72 @@
 *
 *  ========================================================================
 *
-* Description:  upscan operator index into constant tables
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef _OPR_H_INCLUDED
-#define _OPR_H_INCLUDED
+#define OPR_PHI 0x00    // null operator
+#define OPR_TRM 0x01    // start/terminate symbol
+#define OPR_FBR 0x02    // function/array bracket
+#define OPR_LBR 0x03    // (
+#define OPR_COM 0x04    // ,
+#define OPR_COL 0x05    // :
+#define OPR_EQU 0x06    // =
+#define OPR_RBR 0x07    // )
+#define OPR_DPT 0x08    // .
+#define OPR_AST 0x09    // * for alternate return specifier
 
-#ifdef pick
-#undef pick
+// relational operators
+
+#define OPR_EQ  0x0A    // .EQ.
+#define OPR_NE  0x0B    // .NE.
+#define OPR_LT  0x0C    // .LT.
+#define OPR_GE  0x0D    // .GE.
+#define OPR_LE  0x0E    // .LE.
+#define OPR_GT  0x0F    // .GT.
+
+// logical operators
+
+#define OPR_EQV         0x10    // .EQV.
+#define OPR_NEQV        0x11    // .NEQV.
+#define OPR_OR          0x12    // .OR.
+#define OPR_AND         0x13    // .AND.
+#define OPR_NOT         0x14    // .NOT.
+
+// field selection operator
+
+#define OPR_FLD         0x15    // %
+
+#if _CPU == _VAX
+//  special operators
+#define OPR_AMP 0x16    //  pass by address
 #endif
-#define pick(id,opr_index,proc_index) id,
 
-typedef enum {
-#include "oprdefn.h"
-} OPR;
+//  arithmetic operators
+
+#define OPR_PLS 0x1A    //   +
+#define OPR_MIN 0x1B    //   -
+#define OPR_MUL 0x1C    //   *
+#define OPR_DIV 0x1D    //   /
+#define OPR_EXP 0x1E    //   **
+#define OPR_CAT 0x1F    //   //   character operator
 
 //  operator group ranges
 
-#define OPR_FIRST_LOGOP     OPR_EQV
-#define OPR_LAST_LOGOP      OPR_NOT
-#define OPR_FIRST_RELOP     OPR_EQ
-#define OPR_LAST_RELOP      OPR_GT
-#define OPR_FIRST_ARITHOP   OPR_PLS
-#define OPR_LAST_ARITHOP    OPR_CAT
+#define FIRST_LOGOP     OPR_EQV
+#define LAST_LOGOP      OPR_NOT
+#define FIRST_RELOP     OPR_EQ
+#define LAST_RELOP      OPR_GT
+#define FIRST_ARITHOP   OPR_PLS
+#define LAST_ARITHOP    OPR_CAT
 
-#endif
+// Constants below used in UPSCAN for operator sequence table and are
+// modified (along with UPSCAN) if operators are added/deleted/modified
+
+//  dimensions of operator sequence table
+
+#define OPR_CLASSES             18
+#define OPR_SEQ_MAT_SIZE        (OPR_CLASSES*OPR_CLASSES-1)     //  base 0
+#define OPR_SEQ_MAT_COLS        OPR_CLASSES

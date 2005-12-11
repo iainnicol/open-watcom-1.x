@@ -35,11 +35,9 @@
 //
 
 #include "ftnstd.h"
-#include "symtypes.h"
-#include "types.h"
+#include "parmtype.h"
 #include "wf77defs.h"
 #include "symbol.h"
-#include "fctypes.h"
 
 #define NUM_TYPES       12
 #define L1              T_UINT_1
@@ -74,7 +72,7 @@ static  byte            MapCGTypes[] = {
 };
 
 
-cg_type MkCGType( PTYPE typ ) {
+cg_type MkCGType( int typ ) {
 //===========================
 
 // Map FORTRAN type to CG-type.

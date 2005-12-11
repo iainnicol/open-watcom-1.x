@@ -30,7 +30,7 @@
 
 
 #define NIL_HANDLE      ((f_handle)-1)
-#if defined( __NT__ )
+#if _OS == _NT
 #include <stdio.h>
     #define STDIN_HANDLE        (stdin->_handle)
     #define STDOUT_HANDLE       (stdout->_handle)

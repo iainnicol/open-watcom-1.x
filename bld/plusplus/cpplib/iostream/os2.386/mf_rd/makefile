@@ -7,8 +7,8 @@ system     = os2
 model      = mf
 convention = register
 linkage    = static
-cpplib_release  = 0
+release_cpplib  = 0
 fs_registration = yes
 define_library_include = $(plusplus_iostream_dir)/iostream.mif
 define_deps_include = $(plusplus_iostream_dir)/deps.mif
-!include $(cpplib_dir)/mklib.mif
+!include $(plusplus_dir)/mklib.mif

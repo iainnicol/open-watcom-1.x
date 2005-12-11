@@ -37,48 +37,15 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcodes.h"
-#include "emitobj.h"
-#include "types.h"
-#include "utility.h"
+#include "parmtype.h"
 
-
-static  void    MakeComplex( TYPE if_type ) {
-//==========================================
-
-// Common routines for above 2 routines.
-
-    GenType( CITNode );
-    CITNode->typ = if_type;
-    CITNode->size = TypeSize( if_type );
-    AdvanceITPtr();
-}
-
-
-static  void    G2Math( FCODE ifn ) {
-//===================================
-
-    EmitOp( ifn );
-    GenTypes( CITNode, CITNode->link );
-    AdvanceITPtr();
-}
-
-
-static  void    GMath( FCODE ifn ) {
-//==================================
-
-    EmitOp( ifn );
-    GenType( CITNode );
-    AdvanceITPtr();
-}
-
-
-static  void    GBitFunction( FCODE fn ) {
-//========================================
-
-    EmitOp( fn );
-    GenTypes( CITNode, CITNode->link );
-    AdvanceITPtr();
-}
+extern  void            AdvanceITPtr(void);
+extern  int             TypeSize(uint);
+extern  void            EmitOp(int);
+extern  void            OutU16(unsigned_16);
+extern  void            GenTypes(itnode *,itnode *);
+extern  void            GenType(itnode *);
+extern  void            PushOpn(itnode *);
 
 
 void    GMakeCplx() {
@@ -87,7 +54,7 @@ void    GMakeCplx() {
 // Convert 2 arguments (       a1  ,       a2   )
 // into complex number ( real( a1 ), real( a2 ) )
 
-    EmitOp( FC_MAKE_COMPLEX );
+    EmitOp( MAKE_COMPLEX );
     MakeComplex( TY_COMPLEX );
 }
 
@@ -98,7 +65,7 @@ void    GMakeDCplx() {
 // Convert 2 arguments (       a1  ,       a2   )
 // into double complex number ( double( a1 ), double( a2 ) )
 
-    EmitOp( FC_MAKE_DCOMPLEX );
+    EmitOp( MAKE_DCOMPLEX );
     MakeComplex( TY_DCOMPLEX );
 }
 
@@ -109,29 +76,50 @@ void    GMakeXCplx() {
 // Convert 2 arguments (       a1  ,       a2   )
 // into double complex number ( double( a1 ), double( a2 ) )
 
-    EmitOp( FC_MAKE_XCOMPLEX );
+    EmitOp( MAKE_XCOMPLEX );
     MakeComplex( TY_XCOMPLEX );
+}
+
+
+static  void    MakeComplex( int if_type ) {
+//==========================================
+
+// Common routines for above 2 routines.
+
+    OutU16( ParmType( CITNode->typ, CITNode->size ) );
+    CITNode->typ = if_type;
+    CITNode->size = TypeSize( if_type );
+    AdvanceITPtr();
+}
+
+
+static  void    G2Math( uint ifn ) {
+//==================================
+
+    EmitOp( ifn );
+    GenTypes( CITNode, CITNode->link );
+    AdvanceITPtr();
 }
 
 
 void    GModulus() {
 //==================
 
-    G2Math( FC_MODULUS );
+    G2Math( MODULUS );
 }
 
 
 void    GSign() {
 //===============
 
-    G2Math( FC_SIGN );
+    G2Math( SIGN );
 }
 
 
 void    GCharLen() {
 //==================
 
-    EmitOp( FC_CHAR_LEN );
+    EmitOp( CHAR_LEN );
     AdvanceITPtr();
 }
 
@@ -139,21 +127,21 @@ void    GCharLen() {
 void    GImag() {
 //===============
 
-    GMath( FC_IMAG );
+    GMath( IMAG );
 }
 
 
 void    GConjg() {
 //================
 
-    GMath( FC_CONJG );
+    GMath( CONJG );
 }
 
 
 void    GDProd() {
 //================
 
-    EmitOp( FC_DPROD );
+    EmitOp( DPROD );
     AdvanceITPtr();
 }
 
@@ -161,27 +149,36 @@ void    GDProd() {
 void    GXProd() {
 //================
 
-    EmitOp( FC_XPROD );
+    EmitOp( XPROD );
     AdvanceITPtr();
 }
 
 
-void    GMin( TYPE func_type ) {
+void    GMin( int func_type ) {
 //=============================
 
-    EmitOp( FC_MIN );
+    EmitOp( MIN );
     GenTypes( CITNode, CITNode->link );
-    DumpType( func_type, TypeSize( func_type ) );
+    OutU16( ParmType( func_type, TypeSize( func_type ) ) );
     AdvanceITPtr();
 }
 
 
-void    GMax( TYPE func_type ) {
+void    GMax( int func_type ) {
 //=============================
 
-    EmitOp( FC_MAX );
+    EmitOp( MAX );
     GenTypes( CITNode, CITNode->link );
-    DumpType( func_type, TypeSize( func_type ) );
+    OutU16( ParmType( func_type, TypeSize( func_type ) ) );
+    AdvanceITPtr();
+}
+
+
+static  void    GBitFunction( unsigned_16 fn ) {
+//==============================================
+
+    EmitOp( fn );
+    GenTypes( CITNode, CITNode->link );
     AdvanceITPtr();
 }
 
@@ -189,42 +186,42 @@ void    GMax( TYPE func_type ) {
 void    GBitTest() {
 //==================
 
-    GBitFunction( FC_BIT_TEST );
+    GBitFunction( BIT_TEST );
 }
 
 
 void    GBitSet() {
 //=================
 
-    GBitFunction( FC_BIT_SET );
+    GBitFunction( BIT_SET );
 }
 
 
 void    GBitClear() {
 //===================
 
-    GBitFunction( FC_BIT_CLEAR );
+    GBitFunction( BIT_CLEAR );
 }
 
 
 void    GBitOr() {
 //================
 
-    GBitFunction( FC_BIT_OR );
+    GBitFunction( BIT_OR );
 }
 
 
 void    GBitAnd() {
 //=================
 
-    GBitFunction( FC_BIT_AND );
+    GBitFunction( BIT_AND );
 }
 
 
 void    GBitNot() {
 //=================
 
-    EmitOp( FC_BIT_NOT );
+    EmitOp( BIT_NOT );
     GenType( CITNode );
     AdvanceITPtr();
 }
@@ -233,140 +230,149 @@ void    GBitNot() {
 void    GBitExclOr() {
 //====================
 
-    GBitFunction( FC_BIT_EXCL_OR );
+    GBitFunction( BIT_EXCL_OR );
 }
 
 
 void    GBitChange() {
 //====================
 
-    GBitFunction( FC_BIT_CHANGE );
+    GBitFunction( BIT_CHANGE );
 }
 
 
 void    GBitLShift() {
 //====================
 
-    GBitFunction( FC_LEFT_SHIFT );
+    GBitFunction( LEFT_SHIFT );
 }
 
 
 void    GBitRShift() {
 //====================
 
-    GBitFunction( FC_RIGHT_SHIFT );
+    GBitFunction( RIGHT_SHIFT );
 }
 
 
 void            GMod() {
 //======================
 
-    GMath( FC_MATH_MOD );
+    GMath( MATH_MOD );
 }
 
 
 void            GAbs() {
 //======================
 
-    GMath( FC_MATH_ABS );
+    GMath( MATH_ABS );
 }
 
 
 void            GASin() {
 //=======================
 
-    GMath( FC_MATH_ASIN );
+    GMath( MATH_ASIN );
 }
 
 
 void            GACos() {
 //=======================
 
-    GMath( FC_MATH_ACOS );
+    GMath( MATH_ACOS );
 }
 
 
 void            GATan() {
 //=======================
 
-    GMath( FC_MATH_ATAN );
+    GMath( MATH_ATAN );
 }
 
 
 void            GATan2() {
 //========================
 
-    GMath( FC_MATH_ATAN2 );
+    GMath( MATH_ATAN2 );
 }
 
 
 void            GLog() {
 //======================
 
-    GMath( FC_MATH_LOG );
+    GMath( MATH_LOG );
 }
 
 
 void            GLog10() {
 //========================
 
-    GMath( FC_MATH_LOG10 );
+    GMath( MATH_LOG10 );
 }
 
 
 void            GCos() {
 //======================
 
-    GMath( FC_MATH_COS );
+    GMath( MATH_COS );
 }
 
 
 void            GSin() {
 //======================
 
-    GMath( FC_MATH_SIN );
+    GMath( MATH_SIN );
 }
 
 
 void            GTan() {
 //======================
 
-    GMath( FC_MATH_TAN );
+    GMath( MATH_TAN );
 }
 
 
 void            GSinh() {
 //=======================
 
-    GMath( FC_MATH_SINH );
+    GMath( MATH_SINH );
 }
 
 
 void            GCosh() {
 //=======================
 
-    GMath( FC_MATH_COSH );
+    GMath( MATH_COSH );
 }
 
 
 void            GTanh() {
 //=======================
 
-    GMath( FC_MATH_TANH );
+    GMath( MATH_TANH );
 }
 
 
 void            GSqrt() {
 //=======================
 
-    GMath( FC_MATH_SQRT );
+    GMath( MATH_SQRT );
 }
 
 
 void            GExp() {
 //======================
 
-    GMath( FC_MATH_EXP );
+    GMath( MATH_EXP );
+}
+
+
+static  void    GMath( uint ifn ) {
+//=================================
+
+    EmitOp( ifn );
+    GenType( CITNode );
+    AdvanceITPtr();
 }
 
 
@@ -374,7 +380,7 @@ void    GLoc() {
 //==============
 
     PushOpn( CITNode );
-    EmitOp( FC_LOC );
+    EmitOp( LOC );
     GenType( CITNode );
     AdvanceITPtr();
 }
@@ -384,6 +390,6 @@ void    GVolatile() {
 //===================
 
     PushOpn( CITNode );
-    EmitOp( FC_VOLATILE );
+    EmitOp( VOLATILE );
     AdvanceITPtr();
 }

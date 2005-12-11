@@ -36,9 +36,12 @@
 
 #include "ftnstd.h"
 #include "cioconst.h"
-#include "inout.h"
 
 #include <stdarg.h>
+
+extern  void            PrtLstNL(char *);
+extern  void            PrintErr(char *);
+extern  void            JustErr(char *);
 
 extern  void            (*__BldErrMsg)(uint,char *,va_list);
 

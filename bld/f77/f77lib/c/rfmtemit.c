@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "format.h"
+#include "parmtype.h"
 #include "errcod.h"
 #include "rundat.h"
 #include "fmtdef.h"

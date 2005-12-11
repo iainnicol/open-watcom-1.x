@@ -36,7 +36,8 @@
 
 #include "ftnstd.h"
 #include "errcod.h"
-#include "utility.h"
+
+extern  void            BoolExpr(void);
 
 
 void    GBoolExpr() {

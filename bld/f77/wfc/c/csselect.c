@@ -34,25 +34,37 @@
 #include "global.h"
 #include "opr.h"
 #include "fmemmgr.h"
-#include "recog.h"
-#include "types.h"
-#include "ferror.h"
-#include "utility.h"
 
 #include <limits.h>
 
+extern  void            Error(int,...);
+extern  void            Warning(int,...);
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
 extern  void            CSNoMore(void);
 extern  void            Match(void);
 extern  void            CSExtn(void);
 extern  void            ColonLabel(void);
+extern  void            AdvanceITPtr(void);
+extern  bool            ConstExpr(int);
+extern  bool            SelectExpr(void);
 extern  label_id        NextLabel(void);
+extern  bool            RecNOpn(void);
+extern  bool            RecNextOpr(byte);
+extern  bool            RecComma(void);
+extern  bool            RecColon(void);
+extern  bool            ReqNOpn(void);
+extern  bool            ReqOpenParen(void);
+extern  bool            ReqCloseParen(void);
+extern  bool            ReqEOS(void);
+extern  bool            RecKeyWord(char *);
+extern  bool            RecEOS(void);
 extern  void            GLabel(label_id);
 extern  void            FiniSelect(void);
 extern  void            InitSelect(void);
 extern  void            GBranch(label_id);
 extern  void            FreeLabel(label_id);
+extern  intstar4        ITIntValue(itnode *);
 
 
 case_entry      *NewCase() {
@@ -128,7 +140,7 @@ void    CpCase() {
 }
 
 
-static  intstar4        MinCaseValue( TYPE typ ) {
+static  intstar4        MinCaseValue( uint typ ) {
 //================================================
 
 // Get a value for case expression.
@@ -141,7 +153,7 @@ static  intstar4        MinCaseValue( TYPE typ ) {
 }
 
 
-static  intstar4        MaxCaseValue( TYPE typ ) {
+static  intstar4        MaxCaseValue( uint typ ) {
 //================================================
 
 // Get a value for case expression.

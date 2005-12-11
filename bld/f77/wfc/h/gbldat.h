@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  FORTRAN compiler global data
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -38,7 +39,7 @@ gbl_defn itnode         *ITHead;        // head of stmt internal text
 gbl_defn itnode         *CITNode;       // current internal text node
 gbl_defn itnode         *SPtr1;         // 1st LZ right bracket
 gbl_defn itnode         *SPtr2;         // 2nd LZ right bracket
-gbl_defn STMT           StmtProc;       // statement processor code
+gbl_defn int            StmtProc;       // statement processor code
 gbl_defn unsigned_16    CtrlFlgs;       // statement control flags
 gbl_defn int            SrcRecNum;      // record # of initial line of statement
 gbl_defn unsigned_16    BlockNum;       // for controlling unstructured branches
@@ -57,15 +58,15 @@ gbl_defn act_eq_entry   *EquivSets;     // pointer to equivalent sets
 gbl_defn sym_id         SubProgId;      // SymId of subprogram being compiled
 gbl_defn impl_entry     ImplicitTab[IMPL_SIZE+1];
 gbl_defn byte           IFUsed[24];     // indicates intrinsic functions used
-gbl_defn SGMTSW         SgmtSw;         // program segment switches
-gbl_defn PSWT           ProgSw;         // program switches
-gbl_defn EXTNSW         ExtnSw;         // extension switches
-gbl_defn TYPE           ResultType;     // result type of operation in upscan
-gbl_defn STMTSW         StmtSw;         // statement switches
+gbl_defn unsigned_16    SgmtSw;         // program segment switches
+gbl_defn unsigned_16    ProgSw;         // program switches
+gbl_defn unsigned_16    ExtnSw;         // extension switches
+gbl_defn byte           ResultType;     // result type of operation in upscan
+gbl_defn unsigned_16    StmtSw;         // statement switches
 gbl_defn rememb         Remember;       // info about the last executable stmt
 gbl_defn char           *SrcName;       // name of source file
 gbl_defn char           *ObjName;       // name of object output file
-gbl_defn source_t       *CurrFile;      // linked list of open FOR77 files
+gbl_defn source         *CurrFile;      // linked list of open FOR77 files
 gbl_defn char           *IncludePath;   // path for INCLUDE files
 
 gbl_defn char           TokenBuff[TOKLEN+1];
@@ -76,7 +77,7 @@ gbl_defn char           SrcBuff[SRCLEN+1]; // input buffer for source lines
 gbl_defn char           *Cursor;        // pointer to current char in SrcBuff
 gbl_defn char           *TkCrsr;        // pointer to current char in TokenBuff
 gbl_defn lex            Lex;            // information kept by lexical analyser
-gbl_defn token_t        LexToken;       // information about token collected
+gbl_defn token          LexToken;       // information about token collected
 gbl_defn stnumbers      StNumbers;      // struct for statement number info
 gbl_defn token_state    State;          // state of token being collected
 gbl_defn byte           Line;           // continuation line number
@@ -113,8 +114,3 @@ gbl_defn unsigned_32    CPUOpts;        // code generator options (CPU target)
 gbl_defn unsigned_32    OZOpts;         // code generator options (optimizations)
 gbl_defn char           SymBuff[MAX_SYMLEN+1]; // buffer for symbol names
 gbl_defn bool           StmtNoFound;    // statement number found?
-
-gbl_defn int            UnFreeMem;      //  & of unfreed bits of memory
-gbl_defn uint           NumErrors;      //  number of errors during compilation
-                                        //  and execution
-gbl_defn uint           LinesPerPage;   //  number of lines per page in listing

@@ -31,20 +31,22 @@
 
 #include "ftnstd.h"
 #include "errcod.h"
+#include "progsw.h"
 #include "stmtsw.h"
 #include "global.h"
+#include "bglobal.h"
 #include "fmemmgr.h"
-#include "ferror.h"
-#include "frl.h"
-#include "inout.h"
-#include "cle.h"
-#include "fmeminit.h"
-#include "utility.h"
-
 #if defined( TRMEM )
 #include "trmemcvr.h"
 #endif
 
+extern  void            Error(int,...);
+extern  void            PurgeAll(void);
+extern  void            FreeITNodes(itnode *);
+extern  void            FrlFini(void **);
+extern  void            CompErr(uint);
+extern  void            SysMemInit(void);
+extern  void            SysMemFini(void);
 extern  void            Suicide(void);
 
 void    FMemInit( void ) {

@@ -24,21 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  operator index for expression generate routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,const,gener) id,
+// If constants in "OPR INC" change, these must change.
+// These are just OprNum( corresponding constants in OPR INC ).
 
-typedef enum {
-#include "optrdefn.h"
-} OPTR;
-
-#define OPTR_FIRST          OPTR_EQV
-#define OPTR_FIRST_LOGOP    OPTR_EQV
-#define OPTR_FIRST_ARITHOP  OPTR_ADD
-
+enum {
+   OPTR_EQV,            //  .eqv. operation
+   OPTR_NEQV,           //  .neqv. operation
+   OPTR_OR,             //  .or. operation
+   OPTR_AND,            //  .and. operation
+   OPTR_NOT,            //  .not. operation
+   OPTR_FILLER,         //  filler
+   OPTR_ASGN,           //  ,
+   OPTR_CH_ASGN,        //  character assignment
+   OPTR_CH_REL,         //  character compare
+   OPTR_REL,            //  relational operation (,
+   OPTR_ADD,            //  + operation
+   OPTR_SUB,            //  - operation
+   OPTR_MUL,            //  * operation
+   OPTR_DIV,            //  / operation
+   OPTR_EXP,            //  exponentiation
+   OPTR_CAT             //  concatenation
+};

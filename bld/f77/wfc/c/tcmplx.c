@@ -24,17 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Complex typing information
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+//
+// TCMPXL :     Complex typing information
+//
+
 #include "ftnstd.h"
-#include "symtypes.h"
+#include "symflgs.h"
 
 
-bool    TypeCmplx( TYPE typ ) {
-//=============================
+bool            TypeCmplx( int typ ) {
+//====================================
 
 // Return true if type is COMPLEX or COMPLEX*16 or COMPLEX*20.
 

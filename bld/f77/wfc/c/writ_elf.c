@@ -39,14 +39,14 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "fio.h"
-#include "cioconst.h"
+#include "bglobal.h"
 #include "global.h"
 #include "brow2elf.h"
-#include "ferror.h"
 
 #include <unistd.h>
 
 extern  void            Suicide();
+extern  void            Error(int,...);
 extern  void            SDWrite(file_handle,byte *,int);
 extern  bool            SDError(file_handle,char *);
 
