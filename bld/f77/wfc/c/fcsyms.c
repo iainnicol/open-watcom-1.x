@@ -42,8 +42,7 @@
 #include "falloc.h"
 #include "nmlinfo.h"
 #include "fmemmgr.h"
-#include "types.h"
-#include "fctypes.h"
+#include "parmtype.h"
 
 #include <string.h>
 
@@ -101,6 +100,7 @@ extern  segment_id      GetComSeg(sym_id,unsigned_32);
 extern  seg_offset      GetComOffset(unsigned_32);
 extern  segment_id      GetGlobalSeg(unsigned_32);
 extern  seg_offset      GetGlobalOffset(unsigned_32);
+extern  cg_type         F772CGType(sym_id);
 extern  label_handle    GetLabel(label_id);
 extern  label_handle    GetStmtLabel(sym_id);
 extern  void            FiniLabels(uint);
@@ -125,7 +125,7 @@ extern  cg_name         SubAltSCB(sym_id);
 extern  sym_id          FindEqSetShadow(sym_id);
 extern  sym_id          FindAdvShadow(sym_id);
 extern  cg_type         CmplxBaseType(cg_type);
-extern  bool            TypeCmplx(TYPE);
+extern  bool            TypeCmplx(int);
 extern  cg_name         StructRef(cg_name,int);
 
 extern  segment_id      CurrCodeSegId;
@@ -387,7 +387,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
     unsigned_16 flags;
     uint        size;
     segment_id  old_seg;
-    TYPE        typ;
+    byte        typ;
     sym_id      leader;
     signed_32   offset;
     com_eq      *ce_ext;

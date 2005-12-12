@@ -54,25 +54,58 @@ hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };
 static  pass_by         IFArgValue = { NULL, PASS_BY_VALUE };
 static  pass_by         IFArgDescriptor = { NULL, PASS_BY_DESCRIPTOR };
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(text,regset) text,
+#if _CPU == 8086
 
 char    *RegNames[] = {
-#include "regsdefn.h"
+           "8087",
+           "AH",
+           "AL",
+           "AX",
+           "BH",
+           "BL",
+           "BP",
+           "BX",
+           "CH",
+           "CL",
+           "CS",
+           "CX",
+           "DH",
+           "DI",
+           "DL",
+           "DS",
+           "DX",
+           "ES",
+           "SI",
+           "SP",
+           "SS",
+           NULL
 };
 
-#undef pick
-#define pick(text,regset) regset,
+byte            MaxReg = { 20 };
 
 hw_reg_set  RegValue[] = {
-#include "regsdefn.h"
+           HW_D( HW_FLTS ),
+           HW_D( HW_AH ),
+           HW_D( HW_AL ),
+           HW_D( HW_AX ),
+           HW_D( HW_BH ),
+           HW_D( HW_BL ),
+           HW_D( HW_BP ),
+           HW_D( HW_BX ),
+           HW_D( HW_CH ),
+           HW_D( HW_CL ),
+           HW_D( HW_CS ),
+           HW_D( HW_CX ),
+           HW_D( HW_DH ),
+           HW_D( HW_DI ),
+           HW_D( HW_DL ),
+           HW_D( HW_DS ),
+           HW_D( HW_DX ),
+           HW_D( HW_ES ),
+           HW_D( HW_SI ),
+           HW_D( HW_SP ),
+           HW_D( HW_SS )
 };
-
-byte            MaxReg = { sizeof( RegNames ) / sizeof( RegNames[0] ) - 2 };
-
-#if _CPU == 8086
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
@@ -207,6 +240,77 @@ aux_info                DefaultInfo = {
         0 };
 
 #elif   _CPU == 386
+
+char    *RegNames[] = {
+            "8087",
+            "AH",
+            "AL",
+            "AX",
+            "BH",
+            "BL",
+            "BP",
+            "BX",
+            "CH",
+            "CL",
+            "CS",
+            "CX",
+            "DH",
+            "DI",
+            "DL",
+            "DS",
+            "DX",
+            "EAX",
+            "EBP",
+            "EBX",
+            "ECX",
+            "EDI",
+            "EDX",
+            "ES",
+            "ESI",
+            "ESP",
+            "FS",
+            "GS",
+            "SI",
+            "SP",
+            "SS",
+            NULL
+};
+
+byte            MaxReg = { 30 };
+
+hw_reg_set  RegValue[] = {
+            HW_D( HW_FLTS ),
+            HW_D( HW_AH ),
+            HW_D( HW_AL ),
+            HW_D( HW_AX ),
+            HW_D( HW_BH ),
+            HW_D( HW_BL ),
+            HW_D( HW_BP ),
+            HW_D( HW_BX ),
+            HW_D( HW_CH ),
+            HW_D( HW_CL ),
+            HW_D( HW_CS ),
+            HW_D( HW_CX ),
+            HW_D( HW_DH ),
+            HW_D( HW_DI ),
+            HW_D( HW_DL ),
+            HW_D( HW_DS ),
+            HW_D( HW_DX ),
+            HW_D( HW_EAX ),
+            HW_D( HW_BP ),
+            HW_D( HW_EBX ),
+            HW_D( HW_ECX ),
+            HW_D( HW_EDI ),
+            HW_D( HW_EDX ),
+            HW_D( HW_ES ),
+            HW_D( HW_ESI ),
+            HW_D( HW_SP ),
+            HW_D( HW_FS ),
+            HW_D( HW_GS ),
+            HW_D( HW_SI ),
+            HW_D( HW_SP ),
+            HW_D( HW_SS )
+};
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };

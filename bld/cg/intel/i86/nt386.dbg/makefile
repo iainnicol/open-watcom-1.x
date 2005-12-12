@@ -2,8 +2,7 @@
 
 host_OS = nt
 host_CPU = 386
-
-cg_release = 0
+release_cg = 0
 debug = 1
 
 !include ../mif/master.mif

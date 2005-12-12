@@ -3,10 +3,8 @@
 host_os    = nt
 host_cpu   = 386
 target_cpu = 386
-cc_release = 0
-#debug_cg   = 1
-cc_dll     = 1
-cc_rtdll   = 1
-#debug      = 1
+release_cc = 0
+debug_cg   = 1
+debug      = 1
 
 !include ../master.mif

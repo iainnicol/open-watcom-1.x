@@ -45,10 +45,6 @@ static  char    *Opn[] = {
     "OPN_INT",
     "OPN_REA",
     "OPN_DBL"
-    "OPN_EXT"
-    "OPN_OCT"
-    "OPN_HEX"
-    "OPN_FMT"
 };
 
 
@@ -133,7 +129,7 @@ void    DumpLex() {
 static  void    Node() {
 //======================
 
-    printf( "|  %s  |  %s  |\n", Opr( CITNode->opr ), Opn[ CITNode->opn.ds ] );
+    printf( "|  %s  |  %s  |\n", Opr( CITNode->opr ), Opn[ CITNode->opn ] );
 }
 
 

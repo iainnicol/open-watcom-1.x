@@ -1,4 +1,15 @@
 
+!ifeq target_CPU 386
+!include $(wasm_dir)/mif/inline.mif
+!else ifeq target_CPU i86
+!include $(wasm_dir)/mif/inline.mif
+!else ifeq target_CPU axp
+inline_objs=
+!else ifeq target_CPU ppc
+inline_objs=
+!endif
+
+
 # system independent compile-time files
 
 tdovl1 = &
@@ -30,7 +41,7 @@ tdovl1 += &
     wf77aux.obj &
     asmalloc.obj &
     asmmsg.obj &
-    $(asminline_objs)
+    $(inline_objs)
 
 tdovl2 = &
     fccall.obj &

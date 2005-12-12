@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "rundat.h"
+#include "parmtype.h"
 #include "errcod.h"
 
 #include <string.h>
@@ -181,7 +182,10 @@ void    DoOpen() {
     OpenAction( fcb );
     fcb->flags &= ~FTN_FSEXIST;
     if( fcb->fileptr != NULL ) {
-        fcb->flags |= FTN_FSEXIST;
+#if _CPU == 370
+        if( IOCB->iostmt != IO_WRITE )
+#endif
+            fcb->flags |= FTN_FSEXIST;
     }
     ChkIOErr( fcb );
 }

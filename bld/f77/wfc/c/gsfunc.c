@@ -38,9 +38,11 @@
 #include "global.h"
 #include "fcodes.h"
 #include "opn.h"
-#include "emitobj.h"
 
-extern  sym_id          GTempString(uint);
+extern  void            EmitOp(unsigned_16);
+extern  void            OutPtr(void *);
+extern  void            SetOpn(itnode *,int);
+extern  sym_id          GTempString(int);
 
 
 void    GSFArg( sym_id sym ) {
@@ -59,7 +61,7 @@ void    GSFCall( itnode *sfunc ) {
 
     sf_parm     *arg;
 
-    EmitOp( FC_SF_CALL );
+    EmitOp( SF_CALL );
     OutPtr( sfunc->sym_ptr );
     arg = sfunc->sym_ptr->ns.si.sf.header->parm_list;
     while( arg != NULL ) {
@@ -70,7 +72,7 @@ void    GSFCall( itnode *sfunc ) {
     if( sfunc->typ == TY_CHAR ) {
         OutPtr( GTempString( sfunc->size ) );
     }
-    SetOpn( sfunc, USOPN_SAFE );
+    SetOpn( sfunc, OPN_SAFE );
 }
 
 

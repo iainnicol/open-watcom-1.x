@@ -1,8 +1,7 @@
 #pmake: build buildwpp flat cpu_386 target_axp os_os2
 
-host_os      = os2
-host_cpu     = 386
-target_cpu   = axp
-plusplus_dll = 1
+host_os    = os2
+host_cpu   = 386
+target_cpu = axp
 
 !include ../master.mif

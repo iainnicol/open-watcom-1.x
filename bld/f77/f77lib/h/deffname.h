@@ -33,6 +33,12 @@
 // Constants using for processing default file name (corresponding to
 // unit number when no file name is specified).
 
-#define     UNIT_OFFSET     3       // offset to unit digit in file name
-#define     DFLT_FNAME_LEN  7       // includes NULLCHAR
-#define     MAX_UNIT_DIGITS 3       // number of digits in unit number
+#if _CPU == 370
+  #define       UNIT_OFFSET     2       // offset to unit digit in file name
+  #define       DFLT_FNAME_LEN  9       // includes NULLCHAR
+  #define       MAX_UNIT_DIGITS 2       // number of digits in unit number
+#else
+  #define       UNIT_OFFSET     3       // offset to unit digit in file name
+  #define       DFLT_FNAME_LEN  7       // includes NULLCHAR
+  #define       MAX_UNIT_DIGITS 3       // number of digits in unit number
+#endif

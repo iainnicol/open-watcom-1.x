@@ -30,16 +30,9 @@
 ****************************************************************************/
 
 
-#ifndef _EXTNSW_H_INCLUDED
-#define _EXTNSW_H_INCLUDED
-
-typedef enum {
-    XS_LONG_NAME       = 0x0001,
-    XS_CHAR_EXTN       = 0x0002,
-    XS_EOL_COMMENT     = 0x0004,
-    XS_D_IN_COLUMN_1   = 0x0008,
-    XS_CONT_20         = 0x0010,
-    XS_DATA_STMT_ORDER = 0x0020
-} EXTNSW;
-
-#endif
+#define XS_LONG_NAME            0x0001
+#define XS_CHAR_EXTN            0x0002
+#define XS_EOL_COMMENT          0x0004
+#define XS_D_IN_COLUMN_1        0x0008
+#define XS_CONT_20              0x0010
+#define XS_DATA_STMT_ORDER      0x0020

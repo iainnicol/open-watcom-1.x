@@ -36,13 +36,11 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "rtconst.h"
+#include "fcodes.h"
 #include "wf77defs.h"
 #include "cg.h"
 #include "cpopt.h"
 #include "inline.h"
-#include "emitobj.h"
-#include "fctypes.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -64,8 +62,14 @@ extern  cg_name         XPop(void);
 extern  cg_name         XPopValue(cg_type);
 extern  void            XPush(cg_name);
 extern  cg_name         SymAddr(sym_id);
-extern  call_handle     InitCall(RTCODE);
+extern  call_handle     InitCall(int);
 extern  call_handle     InitInlineCall(int);
+extern  unsigned_16     GetU16(void);
+extern  inttarg         GetInt(void);
+extern  void            *GetPtr(void);
+extern  int             GetType(unsigned_16);
+extern  int             GetType1(unsigned_16);
+extern  int             GetType2(unsigned_16);
 extern  cg_name         StructRef(cg_name,int);
 extern  cg_name         StkElement(int);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);

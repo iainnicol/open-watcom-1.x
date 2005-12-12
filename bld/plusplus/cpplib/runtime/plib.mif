@@ -1,8 +1,11 @@
+uncompressed=yes        # mklib wont work because objs_c required in both libs
+
 # dependencies:
 
 # allocexc.obj : ..\cpp\allocexc.cpp ..\h\rtexcept.h
 
 # .ASM files (in RUNTIME\A)
+
 
 !ifeq host_cpu axp
 objs_asm =
@@ -57,8 +60,9 @@ objs_reg = ljmpdtor.obj &
 objs_reg =
 !endif
 
+# files that must not be compressed
 targdir=
-!include $(cpplib_dir)/runtime/static.mif
+!include $(plusplus_cpplib_dir)/runtime/static.mif
 !ifeq linkage dynamic
 objs_dyn = $(dynamic_objs)
 !else
@@ -73,6 +77,7 @@ objs_reg += fsregist.$(obj_ext) &
 objs_reg += pdctxaxp.obj &
             pdregist.obj
 !endif
+
 
 objs_cpp =  allocexc.$(obj_ext) &
             arrassgn.obj &
@@ -171,9 +176,9 @@ extra_cpp_flags_x_fsregist = -fh=pch10.pch
 extra_cpp_flags_prwdata = -fh=pch11.pch
 extra_cpp_flags_rtdbgst = -fh=pch12.pch
 
-!include $(cpplib_dir)/plibname.mif
+!include $(plusplus_cpplib_dir)/plibname.mif
 
 prefix = $(plib_n)
 prefix_x = $(plib_x)
 
-!include $(cpplib_dir)/mklibtgt.mif
+!include $(plusplus_dir)/mklibtgt.mif

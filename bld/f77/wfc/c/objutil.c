@@ -40,8 +40,6 @@
 #include "fcodes.h"
 #include "fio.h"
 #include "fmemmgr.h"
-#include "emitobj.h"
-#include "ferror.h"
 
 #include <string.h>
 #include <process.h>
@@ -78,12 +76,13 @@ extern  bool            SDError(file_handle,char *);
 extern  bool            SDEof(file_handle);
 extern  void            SDScratch(char *);
 extern  void            SDSetAttr(file_attr);
+extern  void            Error(int,...);
 
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
 
 
-void    InitObj( void ) {
+void    InitObj() {
 //=================
 
 // Allocate memory for object code.
@@ -97,7 +96,7 @@ void    InitObj( void ) {
     ObjCode = FMemAlloc( PAGE_SIZE );
     ObjEnd = ObjCode + PAGE_SIZE;
     ObjPtr = ObjCode;
-    *(unsigned_16 *)ObjPtr = FC_END_OF_SEQUENCE; // in case no source code in file
+    *(unsigned_16 *)ObjPtr = END_OF_SEQUENCE; // in case no source code in file
     PageFile = NULL;
     if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
         fn = PageFileBuff;
@@ -147,8 +146,8 @@ static  void    ChkIOErr( file_handle fp, int error ) {
 }
 
 
-void    FiniObj( void ) {
-//=======================
+void    FiniObj() {
+//=================
 
 // Release memory allocated for object code.
 
@@ -186,8 +185,8 @@ static  void    LoadPage( unsigned_16 page ) {
 }
 
 
-static  void    NewPage( void ) {
-//===============================
+static  void    NewPage() {
+//=========================
 
 // Page for F-Codes is full. Dump it to disk and start a new one.
 
@@ -202,8 +201,8 @@ static  void    NewPage( void ) {
 }
 
 
-static  void    DumpCurrPage( void ) {
-//====================================
+static  void    DumpCurrPage() {
+//==============================
 
 // Dump current page to disk.
 
@@ -220,8 +219,8 @@ static  void    DumpCurrPage( void ) {
 }
 
 
-obj_ptr ObjTell( void ) {
-//=======================
+obj_ptr ObjTell() {
+//=================
 
 // Return pointer to next F-Code.
 
@@ -259,8 +258,8 @@ unsigned_16     ObjOffset( obj_ptr prev_obj ) {
 }
 
 
-void    AlignEven( void ) {
-//=========================
+void    AlignEven() {
+//===================
 
 // Align ObjPtr on an even boundary.
 
@@ -393,8 +392,8 @@ void    OutByte( byte val ) {
 }
 
 
-void    InitFCode( void ) {
-//=========================
+void    InitFCode() {
+//===================
 
 // Setup for accessing F-Codes from object memory.
 
@@ -416,8 +415,8 @@ static  void    JoinValue( void *ptr, int size, int part_1 ) {
 }
 
 
-void    *GetPtr( void ) {
-//=======================
+void    *GetPtr() {
+//=================
 
 // Get a pointer from object memory.
 
@@ -437,8 +436,8 @@ void    *GetPtr( void ) {
 }
 
 
-unsigned_16     GetU16( void ) {
-//==============================
+unsigned_16     GetU16() {
+//========================
 
 // Get an unsigned 16-bit value from object memory.
 
@@ -458,8 +457,8 @@ unsigned_16     GetU16( void ) {
 }
 
 
-signed_32       GetConst32( void ) {
-//==================================
+signed_32       GetConst32() {
+//============================
 
 // Get 32-bit constant from object memory.
 
@@ -479,8 +478,8 @@ signed_32       GetConst32( void ) {
 }
 
 
-inttarg GetInt( void ) {
-//======================
+inttarg GetInt() {
+//================
 
 // Get integer from object memory.
 
@@ -492,8 +491,8 @@ inttarg GetInt( void ) {
 }
 
 
-obj_ptr GetObjPtr( void ) {
-//=========================
+obj_ptr GetObjPtr() {
+//===================
 
 // Get object code pointer from object memory.
 
@@ -513,8 +512,8 @@ obj_ptr GetObjPtr( void ) {
 }
 
 
-byte    GetByte( void ) {
-//=======================
+byte    GetByte() {
+//=================
 
 // Get a byte from object memory.
 
@@ -563,8 +562,8 @@ obj_ptr FCodeTell( int offset ) {
 }
 
 
-void    FCSeek( void ) {
-//======================
+void    FCSeek() {
+//================
 
 // Seek to ObjPtr + offset.
 
@@ -572,8 +571,8 @@ void    FCSeek( void ) {
 }
 
 
-FCODE   GetFCode( void ) {
-//========================
+unsigned_16     GetFCode() {
+//==========================
 
 // Get an F-Code from object memory.
 

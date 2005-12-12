@@ -31,9 +31,7 @@
 
 #include "symdefs.h"
 #include "symflgs.h"
-#include "symtypes.h"
 #include "symacc.h"
-#include "ifdefs.h"
 
 #define WF77_NULLSEGID  0       // NULL segment id
 #if _CPU == 8086 || _CPU == 386
@@ -114,7 +112,7 @@ typedef struct subprog {
 // =================================================
 
 typedef struct i_function {
-    IFF                 index;          // intrinsic function index
+    int                 index;          // intrinsic function index
     union {
         int             num_args;       // number of arguments
         signed          imp_segid;      // segment id for intrinsic function
@@ -205,7 +203,7 @@ typedef struct m_sym {
 typedef struct constant {
     sym_id              link;           // pointer to next constant in chain
     void                *address;       // back handle
-    TYPE                typ;            // type of constant
+    byte                typ;            // type of constant
     byte                size;           // size of constant
     ftn_type            value;          // value of constant
 } constant;
@@ -257,10 +255,10 @@ typedef struct named_symbol {
     unsigned_16         flags;          // symbol flags
     union {
       struct {
-        TYPE            typ;            // symbol type
-        byte            xflags;         // extra symbol flags
+        byte            typ : 4;        // symbol type
+        byte            xflags : 4;     // extra symbol flags
       };
-      unsigned_16       xsize;          // extra size information for common
+      byte              xsize;          // extra size information for common
     };                                  // blocks
     union {
         signed char     name_len;       // length of symbol name

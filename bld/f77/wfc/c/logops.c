@@ -24,47 +24,56 @@
 *
 *  ========================================================================
 *
-* Description:  logical operator code generation routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+//
+// LOGOPS    : logical operator code generation routines
+//
 
 #include "ftnstd.h"
 #include "global.h"
 #include "opn.h"
 #include "fcodes.h"
-#include "optr.h"
-#include "emitobj.h"
+
+extern  void            EmitOp(unsigned_16);
+extern  void            PushOpn(itnode *);
+extern  void            SetOpn(itnode *,int);
+extern  void            GenTypes(itnode *,itnode *);
+extern  void            GenType(itnode *);
 
 
-void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
-//==============================================
+void    LogOp( int typ1, int typ2, int op ) {
+//===========================================
 
 // Generate code for a relational operator.
 
     bool        flip;
 
-    op -= OPTR_FIRST_LOGOP;
+    op = op;
     flip = FALSE;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( ( CITNode->opn & OPN_WHERE ) == OPN_SAFE ) &&
+        ( ( CITNode->link->opn & OPN_WHERE ) != OPN_SAFE ) ) {
         flip = TRUE;
     }
     PushOpn( CITNode->link );
-    if( typ1 == TY_NO_TYPE ) {  // unary
+    if( typ1 == -1 ) {  // unary
         if( _IsTypeInteger( typ2 ) ) {
-            EmitOp( FC_BIT_NOT );
+            EmitOp( BIT_NOT );
         } else {
-            EmitOp( FC_NOT );
+            EmitOp( NOT );
         }
         GenType( CITNode->link );
-        SetOpn( CITNode, USOPN_SAFE );
+        SetOpn( CITNode, OPN_SAFE );
     } else {
         PushOpn( CITNode );
         if( _IsTypeInteger( typ2 ) ) {
-            EmitOp( FC_BITOPS + op );
+            EmitOp( BITOPS + op );
         } else {
-            EmitOp( FC_LOGOPS + op );
+            EmitOp( LOGOPS + op );
         }
         if( flip ) {
             GenTypes( CITNode->link, CITNode );

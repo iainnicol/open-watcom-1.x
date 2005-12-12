@@ -37,16 +37,20 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "wf77aux.h"
-#include "iflookup.h"
+#include "ifnames.h"
+#include "ifargs.h"
+#include "rtentry.h"
 #include "cpopt.h"
 
 #include <string.h>
 
 extern  void            CopyAuxInfo(aux_info *,aux_info *);
 extern  aux_info        *NewAuxEntry(char *,int);
-extern  aux_info        *RTAuxInfo(sym_id);
+extern  byte            IFArgType(int);
 
+extern  byte            __FAR IFArgCt[];
 extern  aux_info        DefaultInfo;
+extern  rt_rtn          __FAR RtnTab[];
 extern  aux_info        IFVarInfo;
 extern  aux_info        IFCharInfo;
 extern  aux_info        IFChar2Info;
@@ -88,6 +92,21 @@ aux_info    *AuxLookupAdd( char *name, int name_len ) {
 }
 
 
+aux_info        *RTAuxInfo( sym_id rtn ) {
+//========================================
+
+// Return aux information for run-time routine.
+
+    rt_rtn      __FAR *rt_entry;
+
+    rt_entry = RtnTab;
+    while( rt_entry->sym_ptr != rtn ) {
+        rt_entry++;
+    }
+    return( rt_entry->aux );
+}
+
+
 aux_info    *AuxLookup( sym_id sym ) {
 //====================================
 
@@ -96,7 +115,8 @@ aux_info    *AuxLookup( sym_id sym ) {
     if( sym == NULL ) return( &FortranInfo );
     if( ( sym->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
         if( sym->ns.flags & SY_INTRINSIC ) {
-            if( IFVarArgs( sym->ns.si.fi.index ) ) {
+            if( ( IFArgCt[ sym->ns.si.fi.index ] & IF_COUNT_MASK ) ==
+                TWO_OR_MORE ) {
                 return( &IFVarInfo );
             // check for character arguments must come first so that
             // IF@xxx gets generated for intrinsic functions with character

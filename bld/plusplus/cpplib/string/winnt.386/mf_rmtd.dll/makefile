@@ -9,6 +9,7 @@ convention = register
 linkage    = dynamic
 mthreaded  = 1
 fs_registration = yes
-cpplib_release = 0
-define_library_include = $(cpplib_dir)/string/string.mif
-!include $(cpplib_dir)/mklib.mif
+release_cpplib = 0
+define_library_include = $(plusplus_string_dir)/string.mif
+define_deps_include = $(plusplus_string_dir)/deps.mif
+!include $(plusplus_dir)/mklib.mif

@@ -54,7 +54,7 @@ static IDECBHdl         IdeHdl;
 
 static IDEInitInfo      InitInfo;
 
-#if defined( __OS2__ )
+#if _OS == _OS2V2
 extern int InitMsg( void );
 extern int FiniMsg( void );
 
@@ -179,7 +179,7 @@ extern IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb,
     IdeHdl = hdl;
     IdeCB = cb;
     InitSubSystems();
-#if defined( __OS2__ )
+#if _OS == _OS2V2
     RunOnce = FALSE;
 #endif
     return FALSE;
@@ -200,7 +200,7 @@ extern IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char * opts,
     int stdout_mode;
 
     hdl = hdl;
-#if defined( __OS2__ )
+#if _OS == _OS2V2
     if( RunOnce ) {
         InitMsg();
     }
@@ -211,7 +211,7 @@ extern IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char * opts,
         stdout_mode = setmode( STDOUT_FILENO, O_BINARY );
     }
     LinkMainLine( (char *) opts );
-#if defined( __OS2__ )
+#if _OS == _OS2V2
     FiniMsg();
 #endif
     if( opts == NULL ) {

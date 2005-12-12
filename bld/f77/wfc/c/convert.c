@@ -37,9 +37,11 @@
 #include "ftnstd.h"
 #include "global.h"
 
+extern  int             TypeSize(uint);
 
-static  void    CnI2I( itnode *it, uint size ) {
-//==============================================
+
+static  void    CnI2I( itnode *it, int size ) {
+//=============================================
 
     if( it->size == size ) return;
     if( it->size == sizeof( intstar1 ) ) {
@@ -302,8 +304,8 @@ static  void    CnQ2X( itnode *it ) {
 }
 
 
-static  void    NullRtn( void ) {
-//===============================
+static  void    NullRtn() {
+//=========================
 
 }
 
@@ -345,7 +347,7 @@ static  void    (* const __FAR CnvToTab[])() = {                                
 };
 
 
-void    CnvTo( itnode *itptr, TYPE typ, uint size ) {
+void    CnvTo( itnode *itptr, int typ, int size ) {
 //=================================================
 
 // Convert itnode to desired numeric type.

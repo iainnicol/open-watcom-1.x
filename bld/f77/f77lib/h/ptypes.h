@@ -24,18 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Run and compile-time constants indicating parameter type
-*               and attributes
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-/**************** IMPORTANT NOTE *******************************
+/**************** IMPORTANT NOTE ************************
 
-  data in files:  ptypes.inc, ptypes.h and ptypdefn.h 
+  data in files:  ptypes.inc, ptypes.h and  parmtype.h
   
   must corespond each to other
 
-****************************************************************/
+********************************************************/
 
 #ifndef WF77_PTYPES_INCLUDED
 #define WF77_PTYPES_INCLUDED

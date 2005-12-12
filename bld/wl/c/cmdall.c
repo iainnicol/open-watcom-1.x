@@ -746,7 +746,7 @@ extern bool ProcCVPack( void )
 extern bool ProcIncremental( void )
 /*********************************/
 {
-#if !defined( __DOS__ )
+#if _OS != _PHAROS
     if( CmdFlags & CF_AFTER_INC ) {
         LnkMsg( LOC+LINE+ERR+MSG_INC_NEAR_START, NULL );
     }
@@ -798,12 +798,14 @@ extern bool ProcStatics( void )
     return( TRUE );
 }
 
+#if _LINKER != _WATFOR77
 extern bool ProcArtificial( void )
 /********************************/
 {
     MapFlags |= MAP_ARTIFICIAL;
     return( TRUE );
 }
+#endif
 
 extern bool ProcAlphabetical( void )
 /**********************************/

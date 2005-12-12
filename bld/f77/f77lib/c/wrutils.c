@@ -41,6 +41,7 @@
 #include "rundat.h"
 #include "errcod.h"
 #include "rtflags.h"
+#include "parmtype.h"
 #include "csetinfo.h"
 
 extern  void            IOErr(int,...);
@@ -217,7 +218,7 @@ void    SendEOR() {
 }
 
 
-void    IOItemResult( char PGM *src, PTYPE typ ) {
+void    IOItemResult( char PGM *src, int typ ) {
 //==============================================
 
     switch( typ ) {

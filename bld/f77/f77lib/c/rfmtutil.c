@@ -32,6 +32,7 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "parmtype.h"
 #include "fmtdef.h"
 #include "intcnv.h"
 #include "target.h"
@@ -108,15 +109,6 @@ static  const byte __FAR        DataSize[] = {
             sizeof( extended ) };
 
 
-void    R_ChkType( PTYPE lower, PTYPE upper ) {
-//===========================================
-
-    if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
-        IOErr( IO_FMT_MISMATCH );
-    }
-}
-
-
 void    R_NewRec() {
 //==================
 
@@ -156,6 +148,15 @@ void    R_ChkFType() {
         IOCB->typ = PT_REAL_4;
     }
     R_ChkType( PT_REAL_4, PT_CPLX_32 );
+}
+
+
+void    R_ChkType( byte lower, byte upper ) {
+//===========================================
+
+    if( ( IOCB->typ < lower ) || ( IOCB->typ > upper ) ) {
+        IOErr( IO_FMT_MISMATCH );
+    }
 }
 
 
@@ -201,6 +202,11 @@ void    FOString( uint width ) {
     fcb = IOCB->fileinfo;
     if( IOCB->typ != PT_CHAR ) {
         length = GetLen();
+#if _CPU == 370
+        if( length < 4 ) {
+            IORslt.intstar4 <<= 8 * ( 4 - length );
+        }
+#endif
     } else {
         length = IORslt.string.len;
     }
@@ -330,7 +336,7 @@ void    R_FIFloat() {
     extended     value;
     fmt2 PGM    *fmtptr;
     ftnfile     *fcb;
-    PTYPE       typ;
+    byte        typ;
     int         prec;
     int         status;
     bool        comma;
@@ -405,7 +411,7 @@ void    R_FIFloat() {
 bool    GetReal( extended *value ) {
 //================================
 
-    PTYPE       typ;
+    int         typ;
     single      *short_flt;
     bool        defined;
 
@@ -522,8 +528,8 @@ void    R_FOE( int exp, char ch ) {
 }
 
 
-bool    FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
-//==========================================================================
+bool    FmtH2B( char *src, uint width, char PGM *dst, int len, int typ ) {
+//========================================================================
 
     char        ch1;
     byte        ch2;
@@ -539,6 +545,9 @@ bool    FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
         len *= 2;
         src += width - len;
     } else {
+#if _CPU == 370
+        dst += len - ( width + 1 ) / len;
+#endif
         len = width;
     }
     stop = src + len;
@@ -594,7 +603,7 @@ void    R_FIHex() {
     uint        width;
     int         len;
     ftnfile     *fcb;
-    PTYPE       typ;
+    byte        typ;
     void        PGM *ptr;
 
     fcb = IOCB->fileinfo;
@@ -640,7 +649,7 @@ void    FOHex( uint width ) {
     uint        len;
     int         trunc;
     ftnfile     *fcb;
-    PTYPE       typ;
+    byte        typ;
     char        *buff;
 
     fcb = IOCB->fileinfo;
@@ -685,8 +694,15 @@ void    FOHex( uint width ) {
     }
 
     if( typ != PT_CHAR ) {
+#if _CPU == 370
+        if( len < 4 ) {
+            IORslt.intstar4 <<= 8 * ( 4 - len );
+        }
+#endif
         len *= 2;
+#if ( _CPU == _VAX ) || defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
         HexFlip( (char *)&IORslt, len );
+#endif
         BToHS( (char *)&IORslt , len, IOCB->buffer );
         strupr( IOCB->buffer );
         SendStr( IOCB->buffer + trunc, len - trunc );
@@ -706,6 +722,7 @@ void    FOHex( uint width ) {
 }
 
 
+#if ( _CPU == _VAX ) || defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
 static  void    HexFlip( char *src, int len ) {
 //=============================================
 
@@ -728,6 +745,7 @@ static  void    HexFlip( char *src, int len ) {
         num_len -= 2;
     }
 }
+#endif
 
 
 void    R_FIInt() {

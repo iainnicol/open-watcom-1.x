@@ -24,8 +24,6 @@
     wmake -h -k reference
     cdsay ..\nt386.386
     wmake -h -k reference
-    cdsay ..\nt386.axp
-    wmake -h -k reference
 
 [ BLOCK <BUILD_PLATFORM> ntaxp ]
 #===============================

@@ -37,7 +37,9 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcodes.h"
-#include "emitobj.h"
+
+extern  void            EmitOp(unsigned_16);
+extern  void            OutU16(unsigned_16);
 
 
 void    GSetDbugLine() {
@@ -55,9 +57,9 @@ void    GSetSrcLine() {
 
 // Generate line # information (for executable statements).
 
-    source_t    *src;
+    source      *src;
 
-    EmitOp( FC_SET_LINE );
+    EmitOp( RT_SET_LINE );
     if( CurrFile->link != NULL ) {
         // for executable statments in an include file, the line number will
         // be the line number of the INCLUDE statement in the original file

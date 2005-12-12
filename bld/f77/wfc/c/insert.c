@@ -24,29 +24,38 @@
 *
 *  ========================================================================
 *
-* Description:  insert information into error messages
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+
+//
+// INSERT    : insert information into error messages
+//
 
 #include "ftnstd.h"
 #include "errcod.h"
 #include "namecod.h"
 #include "stmtsw.h"
 #include "global.h"
-#include "types.h"
-#include "ferror.h"
-#include "insert.h"
-#include "utility.h"
+#include "prdefn.h"
 
 #include <stdarg.h>
 
+extern  void            Error(int,...);
+extern  void            Warning(int,...);
+extern  void            Extension(int,...);
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STStructName(sym_id,char *);
 extern  char            *STFieldName(sym_id,char *);
+extern  char            *MkNodeStr(itnode *);
+extern  void            FrNodeStr(char *);
 extern  void            MsgBuffer(uint,char *,...);
 
 extern  char            *StmtKeywords[];
+extern  char            *PrmCodTab[];
+extern  char            *TypeKW[];
 
 typedef struct class_entry {
     char        *class;
@@ -78,17 +87,6 @@ static  class_entry     ClassMsg[] = {
 
 #define MAX_MSGLEN      64      // maximum length of MS_xxx in error.msg
 
-
-char    *PrmCodTab[] = {
-    "expression",
-    "simple variable",
-    "array element",
-    "substrung array element",
-    "array name",
-    "subprogram name",
-    "subprogram name",
-    "alternate return specifier"
-};
 
 static  uint    SymClass( sym_id sym ) {
 //======================================
@@ -131,17 +129,17 @@ static  char    *GetClass( uint idx, char *buff ) {
 static  char    *StmtName( char *buff ) {
 //=======================================
 
-    STMT    stmt;
+    int         stmt;
 
     stmt = StmtProc;
     if( StmtSw & SS_DATA_INIT ) {
         stmt = PR_DATA;
     }
     if( (stmt == PR_ASNMNT) || (stmt == PR_ARIF) || (stmt == PR_STMTFUNC) ) {
-        MsgBuffer( (uint)StmtKeywords[ stmt ], buff );
+        MsgBuffer( (uint)StmtKeywords[ stmt - 1], buff );
         return( &buff[1] );     // skip leading blank
     }
-    return( StmtKeywords[ stmt ] );
+    return( StmtKeywords[ stmt - 1 ] );
 }
 
 
@@ -201,13 +199,13 @@ void    NameErr( int errcod, sym_id sym ) {
 }
 
 
-void    NameStmtErr( int errcod, sym_id sym, STMT stmt ) {
-//============================================================
+void    NameStmtErr( int errcod, sym_id sym, int stmt ) {
+//=======================================================
 
     char        buff[MAX_SYMLEN+1];
 
     STGetName( sym, buff );
-    Error( errcod, buff, StmtKeywords[ stmt ] );
+    Error( errcod, buff, StmtKeywords[ stmt - 1 ] );
 }
 
 
@@ -268,31 +266,31 @@ void    NameTypeErr( int errcod, sym_id sym ) {
     char        buff[MAX_SYMLEN+1];
 
     STGetName( sym, buff );
-    Error( errcod, buff, TypeKW( sym->ns.typ ) );
+    Error( errcod, buff, TypeKW[ sym->ns.typ ] );
 }
 
 
-void    TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 ) {
+void    TypeTypeErr( int errcod, uint typ1, uint typ2 ) {
 //=======================================================
 
-    Error( errcod, TypeKW( typ1 ), TypeKW( typ2 ) );
+    Error( errcod, TypeKW[ typ1 ], TypeKW[ typ2 ] );
 }
 
 
-void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 ) {
+void    TypeNameTypeErr( int errcod, uint typ1, sym_id sym, uint typ2 ) {
 //=======================================================================
 
     char        buff[MAX_SYMLEN+1];
 
     STGetName( sym, buff );
-    Error( errcod, TypeKW( typ1 ), buff, TypeKW( typ2 ) );
+    Error( errcod, TypeKW[ typ1 ], buff, TypeKW[ typ2 ] );
 }
 
 
-void    TypeErr( int errcod, TYPE typ ) {
+void    TypeErr( int errcod, uint typ ) {
 //=======================================
 
-    Error( errcod, TypeKW( typ ) );
+    Error( errcod, TypeKW[ typ ] );
 }
 
 
@@ -345,7 +343,7 @@ void    IllType( sym_id sym ) {
     char        stmt[MAX_MSGLEN+1];
 
     STGetName( sym, buff );
-    Error( TY_ILL_USE, buff, TypeKW( sym->ns.typ ), StmtName( stmt ) );
+    Error( TY_ILL_USE, buff, TypeKW[ sym->ns.typ ], StmtName( stmt ) );
 }
 
 

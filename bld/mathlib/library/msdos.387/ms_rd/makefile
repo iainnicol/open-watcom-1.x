@@ -7,7 +7,7 @@ system     = msdos
 linkage    = static
 convention = register
 
-mathlib_release = 0
+release_mathlib = 0
 
 !include $(mathlib_dir)/objects.mif
 !include $(mathlib_dir)/master.mif

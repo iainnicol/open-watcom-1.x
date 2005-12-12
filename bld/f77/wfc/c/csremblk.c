@@ -38,15 +38,16 @@
 #include "errcod.h"
 #include "namecod.h"
 #include "global.h"
-#include "recog.h"
-#include "ferror.h"
-#include "insert.h"
-#include "utility.h"
 
 extern void             BIOutSymbol( sym_id ste_ptr );
 extern void             BIStartRBorEP( sym_id ste_ptr );
 extern void             BIEndRBorEP( void );
+extern  bool            CmpNode2Str(itnode *,char *);
+extern  void            AdvanceITPtr(void);
 extern  label_id        NextLabel(void);
+extern  void            Error(int,...);
+extern  void            StmtErr(int);
+extern  void            IllName(sym_id);
 extern  void            AddCSNode(byte);
 extern  void            DelCSNode(void);
 extern  bool            CheckCSList(byte);
@@ -54,6 +55,8 @@ extern  void            Match(void);
 extern  bool            EmptyCSList(void);
 extern  void            CSExtn(void);
 extern  void            CSNoMore(void);
+extern  bool            ReqEOS(void);
+extern  bool            ReqName(int);
 extern  sym_id          LkSym(void);
 extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);

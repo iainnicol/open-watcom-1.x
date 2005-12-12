@@ -37,23 +37,13 @@
 #include "ftnstd.h"
 #include "global.h"
 #include "fcodes.h"
-#include "types.h"
-#include "emitobj.h"
+#include "parmtype.h"
+
+extern  void            EmitOp(unsigned_16);
+extern  void            OutU16(unsigned_16);
 
 
-static  void    GCnvTo( TYPE typ, uint size ) {
-//=============================================
-
-// Convert operand.
-
-    EmitOp( FC_CONVERT );
-    DumpTypes( CITNode->typ, CITNode->size, typ, size );
-    CITNode->typ = typ;
-    CITNode->size = size;
-}
-
-
-void    GILCnvTo( TYPE typ, uint size ) {
+void    GILCnvTo( uint typ, uint size ) {
 //=======================================
 
 // Convert operand to given type.
@@ -62,8 +52,21 @@ void    GILCnvTo( TYPE typ, uint size ) {
 }
 
 
+static  void    GCnvTo( uint typ, uint size ) {
+//=============================================
+
+// Convert operand.
+
+    EmitOp( CONVERT );
+    OutU16( ( ParmType( CITNode->typ, CITNode->size ) << 8 ) |
+              ParmType( typ, size ) );
+    CITNode->typ = typ;
+    CITNode->size = size;
+}
+
+
 void    GIChar() {
 //================
 
-    EmitOp( FC_ICHAR );
+    EmitOp( ICHAR );
 }

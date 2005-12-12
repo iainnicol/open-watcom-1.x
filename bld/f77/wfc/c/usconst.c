@@ -36,11 +36,10 @@
 #include "opn.h"
 #include "global.h"
 #include "fmemmgr.h"
-#include "types.h"
-#include "utility.h"
 
 #include <string.h>
 
+extern  void            FreeITNodes(itnode *);
 extern  void            BadEqual(void);
 extern  void            AddConst(itnode *);
 extern  void            AddI(ftn_type *,ftn_type *);
@@ -71,7 +70,7 @@ extern  void            AddX(xcomplex *,xcomplex *);
 extern  void            SubX(xcomplex *,xcomplex *);
 extern  void            DivX(xcomplex *,xcomplex *);
 extern  void            MulX(xcomplex *,xcomplex *);
-extern  void            GenExp(TYPE);
+extern  void            GenExp(byte);
 extern  void            ExpI(byte,ftn_type *,intstar4);
 extern  void            XINeg(ftn_type *,ftn_type *);
 extern  void            XRNeg(ftn_type *,ftn_type *);
@@ -105,7 +104,7 @@ extern  void            XCCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
 extern  void            XQCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
 extern  void            XXCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
 extern  void            XChCmp(ftn_type *,ftn_type *,const logstar1 __FAR *);
-extern  void            CnvTo(itnode *,TYPE,uint);
+extern  void            CnvTo(itnode *,int,int);
 extern  void            CnI2R(void *);
 extern  void            CnI2D(void *);
 extern  void            CnI2C(void *);
@@ -116,6 +115,8 @@ extern  void            CnR2Q(void *);
 extern  void            CnD2C(void *);
 extern  void            CnD2Q(void *);
 extern  void            CnC2Q(void *);
+extern  int             TypeSize(int);
+extern  intstar4        ITIntValue(itnode *);
 
 #define UAR_TAB_ROWS    9
 #define UAR_TAB_COLS    2
@@ -196,52 +197,52 @@ static  const bool __FAR        CmpValue[] = {
            };
 
 
-static  void    Convert( void ) {
-//===============================
+static  void    Convert() {
+//=========================
 
     CnvTo( CITNode, ResultType, TypeSize( ResultType ) );
     CnvTo( CITNode->link , ResultType, TypeSize( ResultType ) );
 }
 
 
-static  void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
+static  void    LogOp( byte typ1, byte typ2, byte op ) {
 //======================================================
 
     typ1 = typ1;
-    op -= OPTR_FIRST_LOGOP;
     if( _IsTypeInteger( typ2 ) ) {
         Convert();
         XBitWiseTab[ op ]( &CITNode->value, &CITNode->link->value );
     } else {
         XLogicalTab[ op ]( &CITNode->value, &CITNode->link->value );
     }
-    CITNode->opn.us = USOPN_CON; // this is required for .not. operator
+    CITNode->opn = OPN_CON; // this is required for .not. operator
 }
 
 
-static  void    RelOp( TYPE typ1, TYPE typ2, OPTR op ) {
+static  void    RelOp( byte typ1, byte typ2, byte op ) {
 //======================================================
 
-    typ1 = typ1; typ2 = typ2; op = op;
+    typ1 = typ1; typ2 = typ2;
+    op = CITNode->link->opr;
     if( ResultType != TY_CHAR ) {
         Convert();
     }
     XCmpTab[ ResultType - TY_INTEGER_1 ]( &CITNode->value,
                                         &CITNode->link->value,
-          &CmpValue[ ( CITNode->link->opr - OPR_FIRST_RELOP ) * 3 ] );
+                               &CmpValue[ ( op - FIRST_RELOP ) * 3 ] );
     ResultType = TY_LOGICAL;
 }
 
 
-static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
+static  void    BinOp( int typ1, int typ2, int op ) {
 //===================================================
 
     byte        index;
 
     typ2 = typ2;
-    op -= OPTR_FIRST_ARITHOP;
+    op -= OPTR_ADD;
     index = ResultType - TY_INTEGER_1;
-    if( typ1 != TY_NO_TYPE ) {
+    if( typ1 != -1 ) {
         Convert();
         XArithTab[ index * AR_TAB_COLS + op ]
                  ( &CITNode->value, &CITNode->link->value );
@@ -249,12 +250,12 @@ static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
         CnvTo( CITNode->link , ResultType, TypeSize( ResultType ) );
         XUArithTab[ index * UAR_TAB_COLS + op ]
                   ( &CITNode->value, &CITNode->link->value );
-        CITNode->opn.us = USOPN_CON;
+        CITNode->opn = OPN_CON;
     }
 }
 
 
-static  void    ExpOp( TYPE typ1, TYPE typ2, OPTR op ) {
+static  void    ExpOp( byte typ1, byte typ2, byte op ) {
 //======================================================
 
     op = op;
@@ -302,11 +303,22 @@ void    ConstCat( int size ) {
     FMemFree( string );
 }
 
-#ifdef pick
-#undef pick
-#endif
-#define pick(id,const,gener) const,
 
 void    (* const __FAR ConstTable[])() = {
-#include "optrdefn.h"
-};
+         &LogOp,            // 0    .EQV.
+         &LogOp,            // 1    .NEQV.
+         &LogOp,            // 2    .OR.
+         &LogOp,            // 3    .AND.
+         &LogOp,            // 4    .NOT.
+          0,                // 5    filler
+         &BadEqual,         // 6      =
+          0,                // 7    filler
+          0,                // 8    filler
+         &RelOp,            // 9    relop
+         &BinOp,            // A      +
+         &BinOp,            // B      -
+         &BinOp,            // C      *
+         &BinOp,            // D      /
+         &ExpOp,            // E      **
+          0                 // F      // handled by FiniCat in UPSCAN who
+};                          //        will call ConstCat().

@@ -36,13 +36,15 @@
 
 #include "ftnstd.h"
 #include "errcod.h"
+#include "prdefn.h"
 #include "ctrlflgs.h"
 #include "global.h"
 #include "intcnv.h"
 #include "cpopt.h"
-#include "ferror.h"
-#include "insert.h"
 
+extern  void            Error(int,...);
+extern  void            Warning(int,...);
+extern  void            StmtIntErr(int,int);
 extern  label_id        NextLabel(void);
 extern  void            GStmtLabel(sym_id);
 extern  bool            RecNumber(void);

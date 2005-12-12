@@ -425,6 +425,7 @@ extern time_t QFModTime( int handle )
     return buf.st_mtime;
 }
 
+#if _LINKER != _WATFOR77
 int ResOpen( const char *name, int access, ... )
 /******************************************/
 /* this just ignores the access parameter, and assumes it knows what the
@@ -433,6 +434,8 @@ int ResOpen( const char *name, int access, ... )
     access = access;  /* to avoid a warning */
     return( NSOpen( (char *) name, TIO_READ ) );
 }
+
+#endif
 
 extern char WaitForKey( void )
 /****************************/

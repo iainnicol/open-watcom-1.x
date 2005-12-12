@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "rundat.h"
 #include "errcod.h"
+#include "parmtype.h"
 #include "pgmacc.h"
 
 #include <string.h>
@@ -49,7 +50,7 @@ extern  bool            IsFixed(void);
 extern  const byte __FAR        SizeVars[];
 
 
-static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
+static  void    IOItemCopy( char PGM *dst, char PGM *src, int typ ) {
 //===================================================================
 
     switch( typ ) {
@@ -127,7 +128,7 @@ void    UnFmtOut() {
 
     uint        len;
     byte        *ptr;
-    PTYPE       typ;
+    byte        typ;
     ftnfile     *fcb;
     byte        *d;
 
@@ -157,7 +158,7 @@ void    UnFmtOut() {
 }
 
 
-static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
+static  void    OUnBytes( char HPGM *src, unsigned long len, uint item_typ ) {
 //============================================================================
 
     char        *dst;
