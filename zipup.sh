@@ -18,7 +18,7 @@ rm -f $PREFIX-src.tar.bz2
 #############################################################################
 # Archive all Open Watcom source files
 rm -rf $ACHIVES/ow_src
-p4 $P4PORT -uanonymous -Panonymous -cOPENWATCOM_SRC sync $P4OPT @$LABEL
+p4 $P4PORT -cOPENWATCOM_SRC sync $P4OPT @$LABEL
 cd $ARCHIVES/ow_src
 tar -cv * | bzip2 -9 > ../$PREFIX-src.tar.bz2
 
