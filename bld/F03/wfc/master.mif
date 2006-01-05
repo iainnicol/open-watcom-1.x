@@ -27,10 +27,10 @@ extra_c_flags_i86 = -zp1
 extra_c_flags_386 = -zp1
 
 .h: ../h;../../h
-.c: ../c;../../c;$(asminline_dir)/c;$(trmem_dir);
+.c: ../c;../../c;$(asminline_c);$(trmem_dir);
 
 !ifeq host_cpu axp
-extra_aflags  = -oc 
+extra_a_flags  = -oc 
 .asm: ../../asmaxp
 !endif
 
@@ -64,7 +64,7 @@ extra_l_flags_nt = op stack=1024k commit stack=32k
 
 flibs = $(wres_lib) $(dwarf_dw_lib) $(asminline_lib)
 
-$(target_exe).exe : $(pre_deps_wasm) $(fobjs) errmsg.res $(cg_deps) $(flibs)
+$(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(cg_deps) $(flibs)
     %create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(flibs)) do @%append $^&.lnk lib %i
@@ -83,7 +83,7 @@ $(target_exe).exe : $(pre_deps_wasm) $(fobjs) errmsg.res $(cg_deps) $(flibs)
 option.obj : option.c optinfo.h
 
 errmsg.res : ../c/errmsg.rc ../h/errmsgi.rc ../h/errmsg3.rc ../h/errcod.h ../h/errcodi.h ../h/errcod3.h
-    $(rc_aui) -I"../../h" -I"$(asminline_inc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
+    $(rc_aui) -I"../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c
     $(bld_cl) $[@ $(wcl_util_opts)

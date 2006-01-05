@@ -29,7 +29,7 @@ tdovl1 += &
     wf77aux.obj &
     asmalloc.obj &
     asmmsg.obj &
-    $(inline_objs)
+    $(asminline_objs)
 
 tdovl2 = &
     fccall.obj &
