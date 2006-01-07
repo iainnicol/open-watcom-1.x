@@ -40,7 +40,7 @@ char                    *CurrString; // Current Input Line
 
 extern int              get_instruction_position( char *string );
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 extern global_options   Options;
 
@@ -132,6 +132,86 @@ static void array_mul_add(char *buf, unsigned base, unsigned num, unsigned size)
         *(buf++) = num;
         num >>= 8;
     }
+}
+
+static int get_string( struct asm_tok *buf, char **input, char **output )
+/***********************************************************************/
+{
+    char    symbol_o;
+    char    symbol_c;
+    int     count;
+    int     level;
+
+    buf->string_ptr = *output;
+
+    symbol_o = **input;
+
+    buf->token = T_STRING;
+    switch( symbol_o ) {
+    case '"':
+    case '\'':
+        symbol_c = 0;
+        break;  // end of string marker is the same
+    case '<':
+        symbol_c = '>';
+        break;
+    case '{':
+        symbol_c = '}';
+        break;
+    default:
+        /* this is an undelimited string,
+         * so just copy it until we hit something that looks like the end
+         */
+
+        for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
+            *(*output)++ = *(*input)++; /* keep the 2nd one */
+        }
+        *(*output)++ = '\0';
+        buf->value = count;
+        return( NOT_ERROR );
+    }
+    (*input)++;
+
+    count = 0;
+    level = 0;
+    while( count < MAX_TOK_LEN ) {
+        if( **input == symbol_o ) {
+            if( symbol_c ) {
+                level++;
+                *(*output)++ = *(*input)++;
+                count++;
+            } else if( *( *input + 1 ) == symbol_o ) {
+                /* if we see "" in a " delimited string,
+                 * treat it as a literal " */
+                (*input)++; /* skip the 1st one */
+                *(*output)++ = *(*input)++; /* keep the 2nd one */
+                count++;
+            } else {
+                *(*output)++ = '\0';
+                (*input)++; /* skip the closing delimiter */
+                buf->value = count;
+                break;
+            }
+        } else if( symbol_c && **input == symbol_c ) {
+            if( level ) {
+                level--;
+                *(*output)++ = *(*input)++;
+                count++;
+            } else {
+                *(*output)++ = '\0';
+                (*input)++; /* skip the closing delimiter */
+                buf->value = count;
+                break;
+            }
+        } else if( **input == '\0' || **input == '\n' ) {
+            AsmError( SYNTAX_ERROR );
+            return( ERROR );
+        } else {
+            *(*output)++ = *(*input)++;
+            count++;
+        }
+    }
+    return( NOT_ERROR );
 }
 
 static int get_number( struct asm_tok *buf, char **input, char **output )
@@ -246,7 +326,7 @@ done_scan:
         first_char_0 = FALSE;
         dig_start = *input;
     }
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     if( !Options.allow_c_octals ) {
         first_char_0 = FALSE;
     }
@@ -385,7 +465,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
                 buf->token = T_UNARY_OPERATOR;
             } else if( AsmOpTable[count].rm_byte & OP_DIRECTIVE ) {
                 buf->token = T_DIRECTIVE;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                 switch( AsmOpTable[count].token ) {
                 case T_COMMENT:
                     /* save the whole line .. we need to check
@@ -413,86 +493,6 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             }
         } else {
             buf->token = T_INSTR;
-        }
-    }
-    return( NOT_ERROR );
-}
-
-static int get_string( struct asm_tok *buf, char **input, char **output )
-/***********************************************************************/
-{
-    char    symbol_o;
-    char    symbol_c;
-    int     count;
-    int     level;
-
-    buf->string_ptr = *output;
-
-    symbol_o = **input;
-
-    buf->token = T_STRING;
-    switch( symbol_o ) {
-    case '"':
-    case '\'':
-        symbol_c = 0;
-        break;  // end of string marker is the same
-    case '<':
-        symbol_c = '>';
-        break;
-    case '{':
-        symbol_c = '}';
-        break;
-    default:
-        /* this is an undelimited string,
-         * so just copy it until we hit something that looks like the end
-         */
-
-        for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
-            *(*output)++ = *(*input)++; /* keep the 2nd one */
-        }
-        *(*output)++ = '\0';
-        buf->value = count;
-        return( NOT_ERROR );
-    }
-    (*input)++;
-
-    count = 0;
-    level = 0;
-    while( count < MAX_TOK_LEN ) {
-        if( **input == symbol_o ) {
-            if( symbol_c ) {
-                level++;
-                *(*output)++ = *(*input)++;
-                count++;
-            } else if( *( *input + 1 ) == symbol_o ) {
-                /* if we see "" in a " delimited string,
-                 * treat it as a literal " */
-                (*input)++; /* skip the 1st one */
-                *(*output)++ = *(*input)++; /* keep the 2nd one */
-                count++;
-            } else {
-                *(*output)++ = '\0';
-                (*input)++; /* skip the closing delimiter */
-                buf->value = count;
-                break;
-            }
-        } else if( symbol_c && **input == symbol_c ) {
-            if( level ) {
-                level--;
-                *(*output)++ = *(*input)++;
-                count++;
-            } else {
-                *(*output)++ = '\0';
-                (*input)++; /* skip the closing delimiter */
-                buf->value = count;
-                break;
-            }
-        } else if( **input == '\0' || **input == '\n' ) {
-            AsmError( SYNTAX_ERROR );
-            return( ERROR );
-        } else {
-            *(*output)++ = *(*input)++;
-            count++;
         }
     }
     return( NOT_ERROR );
@@ -533,7 +533,7 @@ static int get_special_symbol( struct asm_tok *buf,
         *(*output)++ = *(*input)++;
         *(*output)++ = '\0';
         break;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     case '=' :
         buf->token = T_DIRECTIVE;
         buf->value = T_EQU2;
@@ -556,7 +556,7 @@ static int get_special_symbol( struct asm_tok *buf,
     return( NOT_ERROR );
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 static int get_inc_path( unsigned int *buf_index, char **input, char **output )
 /*****************************************************************************/
 {
@@ -625,7 +625,7 @@ int AsmScan( char *string )
             if( get_id( &buf_index,&ptr,&output_ptr ) == ERROR ) {
                 return( ERROR );
             }
-            #ifdef _WASM_
+#if defined( _STANDALONE_ )
             // this mess allows include directives with undelimited file names
             if( AsmBuffer[buf_index]->token == T_DIRECTIVE &&
                 ( AsmBuffer[buf_index]->value == T_INCLUDE ||
@@ -634,18 +634,18 @@ int AsmScan( char *string )
                 get_inc_path( &buf_index, &ptr, &output_ptr );
             }
 
-            #endif
+#endif
         } else if( isdigit( *ptr ) ) {
             if( get_number( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
                 return( ERROR );
             }
             /* handle negatives here - for inline assembler */
-            #ifndef _WASM_
-                if( buf_index > 0 && AsmBuffer[buf_index-1]->token == T_MINUS ) {
-                    AsmBuffer[buf_index-1]->token = T_PLUS;
-                    AsmBuffer[buf_index]->value = -AsmBuffer[buf_index]->value;
-                }
-            #endif
+#if !defined( _STANDALONE_ )
+            if( buf_index > 0 && AsmBuffer[buf_index-1]->token == T_MINUS ) {
+                AsmBuffer[buf_index-1]->token = T_PLUS;
+                AsmBuffer[buf_index]->value = -AsmBuffer[buf_index]->value;
+            }
+#endif
         } else if( *ptr == '`' ) {
             if( get_id_in_backquotes( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
                 return( ERROR );

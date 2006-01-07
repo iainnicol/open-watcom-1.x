@@ -57,7 +57,7 @@ enum prefix_reg {
     PREFIX_GS = 0x65
 };
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     struct asm_ins {
         unsigned short      token;                  /* T_ADD, etc */
         unsigned            allowed_prefix  : 4;    /* allowed prefix */
@@ -66,7 +66,7 @@ enum prefix_reg {
         unsigned            opnd_type_3rd   : 4;    /* info on 3rd operand */
         unsigned            opnd_dir        : 1;    /* operand direction */
         enum asm_cpu        cpu;                    /* CPU type */
-        enum operand_type   opnd_type[2];           /* asm_opnds */
+        OPNDTYPE            opnd_type[2];           /* asm_opnds */
         unsigned char       opcode;                 /* opcode byte */
         unsigned char       rm_byte;                /* mod_rm_byte */
     };
@@ -79,7 +79,7 @@ enum prefix_reg {
         unsigned            opnd_type_3rd   : 4;    /* info on 3rd operand */
         unsigned            opnd_dir        : 1;    /* operand direction */
         enum asm_cpu        cpu;                    /* CPU type */
-        enum operand_type   opnd_type[2];           /* asm_opnds */
+        OPNDTYPE            opnd_type[2];           /* asm_opnds */
         unsigned char       opcode;                 /* opcode byte */
         unsigned char       rm_byte;                /* mod_rm_byte */
     };
@@ -95,16 +95,16 @@ struct asm_code {
     memtype         mem_type;       // byte / word / etc. NOT near/far
     long            data[3];
     struct {
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         unsigned short      token;
         enum asm_cpu        cpu;
-        enum operand_type   opnd_type[3];
+        OPNDTYPE            opnd_type[3];
         unsigned char       opcode;
         unsigned char       rm_byte;
 #else
         unsigned            token           : 10;
         enum asm_cpu        cpu;
-        enum operand_type   opnd_type[3];
+        OPNDTYPE            opnd_type[3];
         unsigned char       opcode;
         unsigned char       rm_byte;
 #endif
@@ -168,7 +168,7 @@ extern struct AsmCodeName AsmOpcode[];
 extern char AsmChars[];
 
 int check_override( int *i );
-int OperandSize( enum operand_type opnd );
+int OperandSize( OPNDTYPE opnd );
 int InRange( unsigned long val, unsigned bytes );
 int cpu_directive( int i );
 int AsmParse( void );

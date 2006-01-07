@@ -37,7 +37,7 @@
 #include "asmalloc.h"
 #include "asmfixup.h"
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 #include "directiv.h"
 #include "queues.h"
@@ -48,10 +48,10 @@ extern int  AddFloatingPointEmulationFixup( const struct asm_ins ASMFAR *, bool 
 
 #endif
 
-static int match_phase_3( int *i, enum operand_type determinant );
+static int match_phase_3( int *i, OPNDTYPE determinant );
 
 static int output_3DNow( int i )
-/************************/
+/******************************/
 {
     const struct asm_ins ASMFAR *ins = &AsmOpTable[i];
 
@@ -60,6 +60,7 @@ static int output_3DNow( int i )
     }
     return( NOT_ERROR );
 }
+
 static int output( int i )
 /************************/
 /*
@@ -72,7 +73,7 @@ static int output( int i )
     struct asm_code             *rCode = Code;
     unsigned_8                  tmp;
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     /*
      * Output debug info - line numbers
      */
@@ -132,7 +133,7 @@ static int output( int i )
         case T_REPNZ:
         case T_REPNE:
             if( ins->allowed_prefix != REPxx ) {
-                AsmError( REP_PREFIX_IS_NOT_ALLOWED_ON_THIS_INSTRUCTION );
+                AsmError( REPX_PREFIX_IS_NOT_ALLOWED_ON_THIS_INSTRUCTION );
                 return( ERROR );
             }
             break;
@@ -166,7 +167,7 @@ static int output( int i )
      */
     if( ins->token == T_FWAIT ) {
         if(( rCode->info.cpu&P_CPU_MASK ) < P_386 ) {
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if(( Options.floating_point == DO_FP_EMULATION ) && ( !rCode->use32 )) {
                 AsmCodeByte( OP_NOP );
             }
@@ -176,7 +177,7 @@ static int output( int i )
         }
     } else if( ins->allowed_prefix == FWAIT ) {
         AsmCodeByte( OP_WAIT );
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     } else if(( Options.floating_point == DO_FP_EMULATION )
         && ( !rCode->use32 )
         && ( ins->allowed_prefix != NO_FWAIT )
@@ -191,7 +192,7 @@ static int output( int i )
         }
     }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     /*
      * Output FP fixup if required
      */
@@ -323,8 +324,8 @@ static int output( int i )
     return( NOT_ERROR );
 }
 
-static int output_data( enum operand_type determinant, int index )
-/************************************************************/
+static int output_data( OPNDTYPE determinant, int index )
+/*******************************************************/
 /*
   output address displacement and immediate data;
 */
@@ -345,7 +346,7 @@ static int output_data( enum operand_type determinant, int index )
         return( NOT_ERROR );
     }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     store_fixup( index );
 #endif
 
@@ -396,19 +397,45 @@ static int output_data( enum operand_type determinant, int index )
     return( NOT_ERROR );
 }
 
+static int match_phase_2( int *i )
+/*********************************
+- a routine used by match_phase_1() to determine whether both operands match
+  with that in the assembly instructions table;
+- call by match_phase_1() only;
+*/
+{
+    if( Code->info.opnd_type[OPND2] != OP_NONE ) {
+        // 2 opnds instruction
+        return( match_phase_3( i, AsmOpTable[*i].opnd_type[OPND1] ) );
+    } else {
+        // 1 opnd instruction
+        // make sure the second opnd also match, i.e. has to be OP_NONE
+        if( AsmOpTable[*i].opnd_type[OPND2] == OP_NONE ) {
+            if( output( *i ) == ERROR ) {
+                return( ERROR );
+            }
+            // output idata or disp ( if first opnd is OP_M / OP_I )
+            return( output_data( Code->info.opnd_type[OPND1], OPND1 ) );
+        } else {
+            // still cannot find match
+            return( EMPTY );
+        }
+    }
+}
+
 int match_phase_1( void )
-/*
+/************************
 - this routine will look up the assembler opcode table and try to match
   the first operand in table with what we get;
 - if first operand match then it will call match_phase_2() to determine if the
   second operand also match; if not, it must be error;
 */
 {
-    int                 i;
-    int                 retcode;
-    signed char         temp_opsiz = 0;
-    enum operand_type   cur_opnd;
-    enum operand_type   asm_op1;
+    int             i;
+    int             retcode;
+    signed char     temp_opsiz = 0;
+    OPNDTYPE        cur_opnd;
+    OPNDTYPE        asm_op1;
 
     // if nothing inside, no need to output anything
     if( Code->info.token == T_NULL ) {
@@ -461,17 +488,17 @@ int match_phase_1( void )
                     cur_opnd = OP_M_W;
                 } else if( MEM_TYPE( Code->mem_type, DWORD ) ) {
                     cur_opnd = OP_M_DW;
-                } else if( Code->mem_type == T_FWORD ) {
+                } else if( Code->mem_type == MT_FWORD ) {
                     cur_opnd = OP_M_FW;
-                } else if( Code->mem_type == T_QWORD ) {
+                } else if( Code->mem_type == MT_QWORD ) {
                     cur_opnd = OP_M_QW;
-                } else if( Code->mem_type == T_TBYTE ) {
+                } else if( Code->mem_type == MT_TBYTE ) {
                     cur_opnd = OP_M_TB;
-                } else if( Code->mem_type == T_OWORD ) {
+                } else if( Code->mem_type == MT_OWORD ) {
                     cur_opnd = OP_M_OW;
-                } else if( Code->mem_type == T_FAR ) {
+                } else if( Code->mem_type == MT_FAR ) {
                     cur_opnd = ( Code->use32 ) ? OP_M_FW : OP_M_DW ;
-                } else if( Code->mem_type == T_NEAR ) {
+                } else if( Code->mem_type == MT_NEAR ) {
                     cur_opnd = ( Code->use32 ) ? OP_M_DW : OP_M_W ;
                 }
             }
@@ -589,35 +616,10 @@ int match_phase_1( void )
     return( ERROR );
 }
 
-static int match_phase_2( int *i )
-/*
-- a routine used by match_phase_1() to determine whether both operands match
-  with that in the assembly instructions table;
-- call by match_phase_1() only;
-*/
-{
-    if( Code->info.opnd_type[OPND2] != OP_NONE ) {
-        // 2 opnds instruction
-        return( match_phase_3( i, AsmOpTable[*i].opnd_type[OPND1] ) );
-    } else {
-        // 1 opnd instruction
-        // make sure the second opnd also match, i.e. has to be OP_NONE
-        if( AsmOpTable[*i].opnd_type[OPND2] == OP_NONE ) {
-            if( output( *i ) == ERROR ) {
-                return( ERROR );
-            }
-            // output idata or disp ( if first opnd is OP_M / OP_I )
-            return( output_data( Code->info.opnd_type[OPND1], OPND1 ) );
-        } else {
-            // still cannot find match
-            return( EMPTY );
-        }
-    }
-}
-
 static int check_3rd_operand( int i )
+/***********************************/
 {
-    enum operand_type   cur_opnd;
+    OPNDTYPE    cur_opnd;
 
     cur_opnd = Code->info.opnd_type[OPND3];
     if( ( AsmOpTable[i].opnd_type_3rd == OP3_NONE )
@@ -635,6 +637,7 @@ static int check_3rd_operand( int i )
 }
 
 static int output_3rd_operand( int i )
+/************************************/
 {
     if( AsmOpTable[i].opnd_type_3rd == OP3_NONE ) {
         return( NOT_ERROR );
@@ -652,8 +655,8 @@ static int output_3rd_operand( int i )
     }
 }
 
-static int match_phase_3( int *i, enum operand_type determinant )
-/*
+static int match_phase_3( int *i, OPNDTYPE determinant )
+/*******************************************************
 - this routine will look up the assembler opcode table and try to match
   the second operand with what we get;
 - if second operand match then it will output code; if not, pass back to
@@ -661,10 +664,10 @@ static int match_phase_3( int *i, enum operand_type determinant )
 - call by match_phase_2() only;
 */
 {
-    enum operand_type   cur_opnd;
-    enum operand_type   last_opnd;
-    enum operand_type   asm_op2;
-    unsigned            instruction;
+    OPNDTYPE    cur_opnd;
+    OPNDTYPE    last_opnd;
+    OPNDTYPE    asm_op2;
+    unsigned    instruction;
 
     instruction = AsmOpTable[*i].token;
 
@@ -720,21 +723,24 @@ static int match_phase_3( int *i, enum operand_type determinant )
             break;
         case OP_I:
             if( cur_opnd & asm_op2 ) {
-#if defined(_WASM_)
+#if defined(_STANDALONE_)
                 long operand = Code->data[OPND2];
 #endif
                 if( last_opnd & OP_R8 ) {
                     // 8-bit register, so output 8-bit data
-#if defined(_WASM_)
+#if defined(_STANDALONE_)
                     if( Parse_Pass == PASS_1 && !InRange( operand, 1 ) ) {
                         AsmWarn( 1, IMMEDIATE_CONSTANT_TOO_LARGE );
                     }
 #endif
                     Code->prefix.opsiz = FALSE;
                     cur_opnd = OP_I8;
+                    if( InsFixups[OPND2] != NULL ) {
+                        InsFixups[OPND2]->fixup_type = FIX_LOBYTE;
+                    }
                 } else if( last_opnd & OP_R16 ) {
                     // 16-bit register, so output 16-bit data
-#if defined(_WASM_)
+#if defined(_STANDALONE_)
                     if( Parse_Pass == PASS_1 && !InRange( operand, 2 ) ) {
                         AsmWarn( 1, IMMEDIATE_CONSTANT_TOO_LARGE );
                     }
@@ -832,7 +838,7 @@ static int match_phase_3( int *i, enum operand_type determinant )
         case OP_M16:
             if( cur_opnd & OP_M
                 && ( MEM_TYPE( Code->mem_type, WORD )
-                || Code->mem_type == EMPTY ) ) {
+                || Code->mem_type == MT_EMPTY ) ) {
                 if( output( *i ) == ERROR )
                     return( ERROR );
                 if( output_data( last_opnd, OPND1 ) == ERROR )
@@ -881,10 +887,10 @@ static int match_phase_3( int *i, enum operand_type determinant )
     return( EMPTY );
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 static void AddLinnumDataRef( void )
-/*******************************/
+/**********************************/
 /* store a reference for the current line at the current address */
 {
     struct linnum_data  *curr;
@@ -892,7 +898,7 @@ static void AddLinnumDataRef( void )
     if( LineNumber < 0x8000 )  {
         curr = AsmAlloc( sizeof( struct linnum_data ) );
         curr->number = LineNumber;
-        curr->offset = Address;
+        curr->offset = AsmCodeAddress;
 
         AddLinnumData( curr );
     }

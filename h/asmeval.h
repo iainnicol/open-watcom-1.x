@@ -57,7 +57,7 @@ typedef struct expr_list {
     unsigned        indirect : 1;   // Whether inside [] or not
     unsigned        explicit : 1;   // Whether expression type explicitly given
     unsigned        empty : 1;
-    int             expr_type;      // Whether expr is BYTE, WORD, DWORD, etc.
+    memtype         mem_type;       // Whether expr is BYTE, WORD, DWORD, etc.
     uint_8          scale;          // scaling factor 1, 2, 4, or 8 - 386 code only
     struct asm_sym  *sym;
     struct asm_sym  *mbr;
@@ -65,7 +65,7 @@ typedef struct expr_list {
 
 extern int          EvalExpr( int, int, int, bool );
 extern int          EvalOperand( int *, int, expr_list *, bool );
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 extern int          EvalConstant( int, int, int, bool );
 #endif
 

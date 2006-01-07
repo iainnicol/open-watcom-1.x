@@ -101,6 +101,9 @@ static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
     char        *name;
     dir_node    *dir = (dir_node *)sym;
 
+    if( !Options.mangle_stdcall )
+        return( AsmMangler( sym, buffer ) );
+
     if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) ) {
         if( buffer == NULL ) {
             int         count;
@@ -131,9 +134,9 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
         changes |= USCORE_BACK;
     } else {
         switch( sym->mem_type ) {
-        case T_NEAR:
-        case T_FAR:
-        case EMPTY:
+        case MT_NEAR:
+        case MT_FAR:
+        case MT_EMPTY:
             changes |= USCORE_BACK;
             break;
         default:

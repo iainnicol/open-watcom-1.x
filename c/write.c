@@ -334,7 +334,7 @@ static void write_grp( void )
             segminfo = (dir_node *)(seg->seg);
             if( ( segminfo->sym.state != SYM_SEG ) || ( segminfo->sym.segment == NULL ) ) {
                 LineNumber = curr->line;
-                AsmError( SEG_NOT_DEFINED );
+                AsmErr( SEG_NOT_DEFINED, segminfo->sym.name );
                 write_to_file = FALSE;
                 LineNumber = line;
             } else {
@@ -345,6 +345,8 @@ static void write_grp( void )
         if( write_to_file ) {
             ObjTruncRec( grp );
             write_record( grp, TRUE );
+        } else {
+            ObjKillRec( grp );
         }
     }
 }
@@ -357,22 +359,24 @@ static void write_seg( void )
     uint        seg_index;
     uint        total_segs = 0;
 
-    for( curr = Tables[TAB_SEG].head; curr; curr = curr->next )
+    for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
+        if( ( curr->sym.segment == NULL ) 
+          && ( curr->e.seginfo->group == NULL ) )
+            AsmErr( SEG_NOT_DEFINED, curr->sym.name );
         total_segs++;
+    }
 
-    curr = Tables[TAB_SEG].head;
     for( seg_index = 1; seg_index <= total_segs; seg_index++ ) {
-        if( GetSegIdx( curr->sym.segment ) != seg_index ) {
-            /* segment is not in order ... so find it */
-            for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
-                if( GetSegIdx( curr->sym.segment ) == seg_index ) {
-                    break;
-                }
+        /* find segment by index */
+        for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
+            if( GetSegIdx( curr->sym.segment ) == seg_index ) {
+                break;
             }
         }
-        if( curr == NULL || curr->sym.state != SYM_SEG ) {
-            AsmError( SEG_NOT_DEFINED );
-            curr = Tables[TAB_SEG].head;
+        if( curr == NULL )
+            continue;
+        if( curr->sym.state != SYM_SEG ) {
+            AsmErr( SEG_NOT_DEFINED, curr->sym.name );
             continue;
         }
         objr = curr->e.seginfo->segrec;
@@ -380,6 +384,17 @@ static void write_seg( void )
         objr->d.segdef.ovl_name_idx = 1;
         objr->d.segdef.seg_name_idx = GetLnameIdx( curr->sym.name );
         write_record( objr, FALSE );
+        if( curr->e.seginfo->iscode == SEGTYPE_ISCODE ) {
+            obj_rec     *rec;
+
+            rec = ObjNewRec( CMD_COMENT );
+            rec->d.coment.attr = CMT_TNP;
+            rec->d.coment.class = CMT_LINKER_DIRECTIVE;
+            ObjAllocData( rec, 3  );
+            ObjPut8( rec, LDIR_OPT_FAR_CALLS );
+            ObjPutIndex( rec, seg_index );
+            write_record( rec, TRUE );
+        }
     }
 }
 
@@ -448,6 +463,8 @@ static dir_node *write_extdef( dir_node *start )
     if( num != 0 ) {
         objr->d.extdef.num_names = num;
         write_record( objr, TRUE );
+    } else {
+        ObjKillRec( objr );
     }
     return( curr );
 }
@@ -456,17 +473,17 @@ static int opsize( memtype mem_type )
 /************************************/
 {
     switch( mem_type ) {
-    case EMPTY:     return( 0 );
-    case T_SBYTE:
-    case T_BYTE:    return( 1 );
-    case T_SWORD:
-    case T_WORD:    return( 2 );
-    case T_SDWORD:
-    case T_DWORD:   return( 4 );
-    case T_FWORD:   return( 6 );
-    case T_QWORD:   return( 8 );
-    case T_TBYTE:   return( 10 );
-    case T_OWORD:   return( 16 );
+    case MT_EMPTY:  return( 0 );
+    case MT_SBYTE:
+    case MT_BYTE:   return( 1 );
+    case MT_SWORD:
+    case MT_WORD:   return( 2 );
+    case MT_SDWORD:
+    case MT_DWORD:  return( 4 );
+    case MT_FWORD:  return( 6 );
+    case MT_QWORD:  return( 8 );
+    case MT_TBYTE:  return( 10 );
+    case MT_OWORD:  return( 16 );
     default:        return( 0 );
     }
 }
@@ -589,6 +606,8 @@ static dir_node *write_comdef( dir_node *start )
     if( num != 0 ) {
         objr->d.comdef.num_names = num;
         write_record( objr, TRUE );
+    } else {
+        ObjKillRec( objr );
     }
     return( curr );
 }
@@ -794,7 +813,7 @@ static void write_ledata( void )
 
     if( BufSize > 0 ) {
         objr = ObjNewRec( CMD_LEDATA );
-        ObjAttachData( objr, CodeBuffer, BufSize );
+        ObjAttachData( objr, AsmCodeBuffer, BufSize );
         objr->d.ledata.idx = CurrSeg->seg->e.seginfo->segrec->d.segdef.idx;
         objr->d.ledata.offset = CurrSeg->seg->e.seginfo->start_loc;
         if( objr->d.ledata.offset > 0xffffUL )
@@ -986,10 +1005,8 @@ static void reset_seg_len( void )
     dir_node    *curr;
 
     for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
-        if( ( curr->sym.state != SYM_SEG ) || ( curr->sym.segment == NULL ) ) {
-            AsmError( SEG_NOT_DEFINED );
+        if( ( curr->sym.state != SYM_SEG ) || ( curr->sym.segment == NULL ) )
             continue;
-        }
         if( curr->e.seginfo->segrec->d.segdef.combine != COMB_STACK ) {
             curr->e.seginfo->segrec->d.segdef.seg_length = 0;
         }
@@ -1058,7 +1075,7 @@ void WriteObjModule( void )
     unsigned long       prev_total;
     unsigned long       curr_total;
 
-    CodeBuffer = codebuf;
+    AsmCodeBuffer = codebuf;
 
     write_init();
 

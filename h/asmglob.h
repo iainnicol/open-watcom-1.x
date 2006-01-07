@@ -93,7 +93,7 @@ enum naming_conventions {
                              */
 };
 
-#if defined( _WASM_ )
+#if defined( _STANDALONE_ )
 
 #define DELIM                   " ,\t\0"
 #define T_UNDEFINED             -1
@@ -137,7 +137,6 @@ enum if_state {
     DONE                    /* done TRUE section of current if, just nuke
                                everything until we see an endif */
 };
-extern enum if_state CurState;
 
 enum fpe {
     DO_FP_EMULATION,
@@ -178,6 +177,7 @@ typedef struct global_options {
     bool        emit_dependencies;
     bool        watcom_c_mangler;
     bool        use_stdcall_at_number;
+    bool        mangle_stdcall;
 } global_options;
 
 extern global_options Options;

@@ -36,14 +36,14 @@
 #include "asmdefs.h"
 #include "asmalloc.h"
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "myassert.h"
 #endif
 
 struct asmfixup         *InsFixups[3];
 
-#ifndef _WASM_
+#if !defined( _STANDALONE_ )
 
 struct asmfixup         *FixupHead;
 
@@ -93,7 +93,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
     fixup = AsmAlloc( sizeof( struct asmfixup ) );
     if( fixup != NULL ) {
         fixup->external = 0;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         fixup->sym = sym;
         fixup->offset = sym->offset;
         fixup->def_seg = (CurrSeg != NULL) ? CurrSeg->seg : NULL;
@@ -114,7 +114,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
     return( fixup );
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 #define SkipFixup() \
     fixup->next = sym->fixup; \
@@ -132,8 +132,8 @@ static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
     long    disp;
     char    *dst;
 
-    dst = fixup->fixup_loc + CodeBuffer;
-    disp = fixup->offset + Address - fixup->fixup_loc - size;
+    dst = fixup->fixup_loc + AsmCodeBuffer;
+    disp = fixup->offset + AsmCodeAddress - fixup->fixup_loc - size;
     for( ; size > 0; size-- ) {
         *(dst++) = disp;
         disp >>= 8;
@@ -148,7 +148,7 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
     long                disp;
     long                max_disp;
     unsigned            size;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     dir_node            *seg;
 
     // all relative fixups should occure only at first pass and they signal forward references
@@ -159,14 +159,14 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         SkipFixup();
         return( NOT_ERROR );
     } else if( Parse_Pass != PASS_1 ) {
-    } else if( sym->mem_type == T_FAR && fixup->fixup_option == OPTJ_CALL ) {
+    } else if( sym->mem_type == MT_FAR && fixup->fixup_option == OPTJ_CALL ) {
         // convert far call to near, only at first pass
         PhaseError = TRUE;
         sym->offset++;
         AsmByte( 0 );
         AsmFree( fixup );
         return( NOT_ERROR );
-    } else if( sym->mem_type == T_NEAR ) {
+    } else if( sym->mem_type == MT_NEAR ) {
         // near forward reference, only at first pass
         switch( fixup->fixup_type ) {
         case FIX_RELOFF32:
@@ -192,10 +192,10 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
     case FIX_RELOFF8:
         size++;
         // calculate the displacement
-        disp = fixup->offset + Address - fixup->fixup_loc - size;
+        disp = fixup->offset + AsmCodeAddress - fixup->fixup_loc - size;
         max_disp = (1UL << ((size * 8)-1)) - 1;
         if( disp > max_disp || disp < (-max_disp-1) ) {
-#ifndef _WASM_
+#if !defined( _STANDALONE_ )
             AsmError( JUMP_OUT_OF_RANGE );
             FixupHead = NULL;
             return( ERROR );
@@ -255,7 +255,7 @@ int BackPatch( struct asm_sym *sym )
     struct asmfixup     *fixup;
     struct asmfixup     *next;
     
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     fixup = sym->fixup;
     sym->fixup = NULL;
 #else
@@ -271,8 +271,8 @@ int BackPatch( struct asm_sym *sym )
     return( NOT_ERROR );
 }
 
-void mark_fixupp( enum operand_type determinant, int index )
-/**********************************************************/
+void mark_fixupp( OPNDTYPE determinant, int index )
+/*************************************************/
 /*
   this routine marks the correct target offset and data record address for
   FIXUPP record;
@@ -282,8 +282,8 @@ void mark_fixupp( enum operand_type determinant, int index )
     
     fixup = InsFixups[index];
     if( fixup != NULL ) {
-        fixup->fixup_loc = Address;
-#ifdef _WASM_
+        fixup->fixup_loc = AsmCodeAddress;
+#if defined( _STANDALONE_ )
         // fixup->offset = Code->data[index];
         // Code->data[index] = 0; // fixme
         if( fixup->fixup_type != FIX_SEG ) {
@@ -325,7 +325,7 @@ void mark_fixupp( enum operand_type determinant, int index )
     }
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 struct fixup *CreateFixupRec( int index )
 /***************************************/
@@ -356,6 +356,9 @@ struct fixup *CreateFixupRec( int index )
     
     if( !Modend ) {
         switch( fixup->fixup_type ) {
+        case FIX_LOBYTE:
+            fixnode->loc_method = FIX_LO_BYTE;
+            break;
         case FIX_RELOFF8:
             fixnode->self_relative = TRUE;
             fixnode->loc_method = FIX_LO_BYTE;
@@ -388,14 +391,14 @@ struct fixup *CreateFixupRec( int index )
     
     fixnode->loader_resolved = FALSE;
     
-    fixnode->loc_offset = Address - GetCurrSegStart();
+    fixnode->loc_offset = AsmCodeAddress - GetCurrSegStart();
     
     /*------------------------------------*/
     /* Determine the Target and the Frame */
     /*------------------------------------*/
     
     if( sym->state == SYM_UNDEFINED ) {
-        AsmErr( SYMBOL_S_NOT_DEFINED, sym->name );
+        AsmErr( SYMBOL_NOT_DEFINED, sym->name );
         return( NULL );
     } else if( sym->state == SYM_GRP ) {
         
@@ -437,17 +440,17 @@ struct fixup *CreateFixupRec( int index )
         
         if( sym->state == SYM_EXTERNAL ) {
             if( Modend ) {
-                if( sym->mem_type == T_BYTE ||
-                    sym->mem_type == T_SBYTE ||
-                    sym->mem_type == T_WORD ||
-                    sym->mem_type == T_SWORD ||
-                    sym->mem_type == T_DWORD ||
-                    sym->mem_type == T_SDWORD ||
-                    sym->mem_type == T_FWORD ||
-                    sym->mem_type == T_QWORD ||
-                    sym->mem_type == T_TBYTE ||
-                    sym->mem_type == T_OWORD ||
-                    sym->mem_type == T_ABS ) {
+                if( sym->mem_type == MT_BYTE ||
+                    sym->mem_type == MT_SBYTE ||
+                    sym->mem_type == MT_WORD ||
+                    sym->mem_type == MT_SWORD ||
+                    sym->mem_type == MT_DWORD ||
+                    sym->mem_type == MT_SDWORD ||
+                    sym->mem_type == MT_FWORD ||
+                    sym->mem_type == MT_QWORD ||
+                    sym->mem_type == MT_TBYTE ||
+                    sym->mem_type == MT_OWORD ||
+                    sym->mem_type == MT_ABS ) {
                     
                     AsmError( MUST_BE_ASSOCIATED_WITH_CODE );
                     return( NULL );

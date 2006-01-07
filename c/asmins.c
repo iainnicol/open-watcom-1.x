@@ -49,7 +49,7 @@
 #include "asmeval.h"
 #include "asmlabel.h"
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "myassert.h"
 #endif
@@ -70,14 +70,16 @@ extern int              dup_array( struct asm_sym *, char, char );
 extern int              data_init( int, int );
 
 static void             SizeString( unsigned op_size );
+static int              check_size( void );
+static int              segm_override_jumps( expr_list *opndx );
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 extern void             InputQueueLine( char * );
 extern int              directive( int , long );
 extern int              SymIs32( struct asm_sym *sym );
 
-void                    check_assume( struct asm_sym *, enum prefix_reg );
+static void             check_assume( struct asm_sym *, enum prefix_reg );
 
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
@@ -108,7 +110,7 @@ static struct asm_tok   tokens[MAX_TOKEN];
 
 struct asm_tok          *AsmBuffer[MAX_TOKEN];  // buffer to store token
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 void find_frame( struct asm_sym *sym )
 /*******************************************/
 {
@@ -142,6 +144,8 @@ void find_frame( struct asm_sym *sym )
         case SYM_SEG:
             Frame = FRAME_SEG;
             Frame_Datum = GetSegIdx( sym->segment );
+            break;
+        default:
             break;
         }
     }
@@ -180,18 +184,18 @@ static void seg_override( int seg_reg, asm_sym *sym )
 */
 {
     enum prefix_reg     default_seg;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     enum assume_reg     assume_seg;
 
     switch( seg_reg ) {
-        case T_SS:
-        case T_BP:
-        case T_EBP:
-        case T_ESP:
-            default_seg = PREFIX_SS;
-            break;
-        default:
-            default_seg = PREFIX_DS;
+    case T_SS:
+    case T_BP:
+    case T_EBP:
+    case T_ESP:
+        default_seg = PREFIX_SS;
+        break;
+    default:
+        default_seg = PREFIX_DS;
     }
     if( sym != NULL ) {
         if( Code->prefix.seg == EMPTY ) {
@@ -219,6 +223,8 @@ static void seg_override( int seg_reg, asm_sym *sym )
                 break;
             case PREFIX_GS:
                 assume_seg = ASSUME_GS;
+                break;
+            default:
                 break;
             }
             if( GetPrefixAssume( sym, assume_seg ) == ASSUME_NOTHING ) {
@@ -249,7 +255,7 @@ static void seg_override( int seg_reg, asm_sym *sym )
 #endif
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
 /**************************************************************************/
@@ -263,15 +269,17 @@ static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
         return;
 
     switch( default_reg ) {
-        case PREFIX_SS:
-            def_reg = ASSUME_SS;
-            break;
-        case PREFIX_DS:
-            def_reg = ASSUME_DS;
-            break;
-        case EMPTY:
-            def_reg = ASSUME_NOTHING;
-            break;
+    case PREFIX_SS:
+        def_reg = ASSUME_SS;
+        break;
+    case PREFIX_DS:
+        def_reg = ASSUME_DS;
+        break;
+    case EMPTY:
+        def_reg = ASSUME_NOTHING;
+        break;
+    default:
+        break;
     }
 
     reg = GetAssume( sym, def_reg );
@@ -286,24 +294,26 @@ static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
         }
     } else if( default_reg != EMPTY ) {
         switch( reg ) {
-            case ASSUME_ES:
-                Code->prefix.seg = PREFIX_ES;
-                break;
-            case ASSUME_CS:
-                Code->prefix.seg = PREFIX_CS;
-                break;
-            case ASSUME_DS:
-                Code->prefix.seg = PREFIX_DS;
-                break;
-            case ASSUME_GS:
-                Code->prefix.seg = PREFIX_GS;
-                break;
-            case ASSUME_FS:
-                Code->prefix.seg = PREFIX_FS;
-                break;
-            case ASSUME_SS:
-                Code->prefix.seg = PREFIX_SS;
-                break;
+        case ASSUME_ES:
+            Code->prefix.seg = PREFIX_ES;
+            break;
+        case ASSUME_CS:
+            Code->prefix.seg = PREFIX_CS;
+            break;
+        case ASSUME_DS:
+            Code->prefix.seg = PREFIX_DS;
+            break;
+        case ASSUME_GS:
+            Code->prefix.seg = PREFIX_GS;
+            break;
+        case ASSUME_FS:
+            Code->prefix.seg = PREFIX_FS;
+            break;
+        case ASSUME_SS:
+            Code->prefix.seg = PREFIX_SS;
+            break;
+        default:
+            break;
         }
     }
 }
@@ -364,31 +374,32 @@ static int Reg386( int reg_token )
     return( 0 );
 }
 
-int OperandSize( enum operand_type opnd )
-/***************************************/
+int OperandSize( OPNDTYPE opnd )
+/******************************/
 {
     if( ( opnd == OP_NONE ) || ( opnd & OP_SPECIAL ) ) {
         return( 0 );
     } else if( opnd == OP_M ) {
         /* fixme */
         switch( Code->mem_type ) {
-        case EMPTY:     return( 0 );
-#ifdef _WASM_
-        case T_SBYTE:
+        case MT_EMPTY:  return( 0 );
+#if defined( _STANDALONE_ )
+        case MT_SBYTE:
 #endif
-        case T_BYTE:    return( 1 );
-#ifdef _WASM_
-        case T_SWORD:
+        case MT_BYTE:    return( 1 );
+#if defined( _STANDALONE_ )
+        case MT_SWORD:
 #endif
-        case T_WORD:    return( 2 );
-#ifdef _WASM_
-        case T_SDWORD:
+        case MT_WORD:    return( 2 );
+#if defined( _STANDALONE_ )
+        case MT_SDWORD:
 #endif
-        case T_DWORD:   return( 4 );
-        case T_FWORD:   return( 6 );
-        case T_QWORD:   return( 8 );
-        case T_TBYTE:   return( 10 );
-        case T_OWORD:   return( 16 );
+        case MT_DWORD:   return( 4 );
+        case MT_FWORD:   return( 6 );
+        case MT_QWORD:   return( 8 );
+        case MT_TBYTE:   return( 10 );
+        case MT_OWORD:   return( 16 );
+        default:         break;
         }
     } else if( opnd & ( OP_M8_R8 | OP_M_B | OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U ) ) {
         return( 1 );
@@ -641,7 +652,7 @@ static int def_fpu( uint direct )
     }
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 static void MakeCPUConstant( int i )
 /**********************************/
 {
@@ -694,7 +705,7 @@ int cpu_directive( int i )
         return( ERROR );
     }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     MakeCPUConstant( i );
     switch( i ) {
     case T_DOT_686P:
@@ -729,35 +740,37 @@ static int idata_float( long value )
 */
 {
     switch( Code->mem_type ) {
-    case EMPTY:
+    case MT_EMPTY:
         if( Code->info.token == T_PUSHW ) { // sigh. another special case
             // expect 32-bit code but get 16-bit
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( ERROR );
         }
         break;
-    case T_FAR:
-    case T_NEAR:
-    case T_SHORT:
-#ifdef _WASM_
-    case T_PROC:
+    case MT_FAR:
+    case MT_NEAR:
+    case MT_SHORT:
+#if defined( _STANDALONE_ )
+    case MT_PROC:
 #endif
         AsmError( SYNTAX_ERROR );
         return( ERROR );
-#ifdef _WASM_
-    case T_SBYTE:
-    case T_SWORD:
+#if defined( _STANDALONE_ )
+    case MT_SBYTE:
+    case MT_SWORD:
 #endif
-    case T_BYTE:
-    case T_WORD:
+    case MT_BYTE:
+    case MT_WORD:
         AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
         return( ERROR );
-#ifdef _WASM_
-    case T_SDWORD:
+#if defined( _STANDALONE_ )
+    case MT_SDWORD:
 #endif
-    case T_DWORD:
+    case MT_DWORD:
         // set w-bit
         Code->info.opcode |= W_BIT;
+        break;
+    default:
         break;
     }
     SET_OPSIZ_32( Code );
@@ -782,14 +795,16 @@ static unsigned char get_sr_rm_byte( enum prefix_reg seg_prefix )
         return( 4 );
     case PREFIX_GS:
         return( 5 );
+    default:
+        break;
     }
-    #ifdef _WASM_
-        /**/myassert( 0 );
-    #endif
+#if defined( _STANDALONE_ )
+    /**/myassert( 0 );
+#endif
     return( 0 );
 }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 
 static int proc_check( void )
 /***************************/
@@ -832,16 +847,16 @@ static int process_jumps( expr_list *opndx )
     segm_override_jumps( opndx );
 
     flag = ( opndx->explicit ) ? TRUE : FALSE ;
-    if( ptr_operator( opndx->expr_type, flag ) == ERROR )
+    if( ptr_operator( opndx->mem_type, flag ) == ERROR )
         return( ERROR );
-    if( ptr_operator( T_PTR, flag ) == ERROR ) {
+    if( ptr_operator( MT_PTR, flag ) == ERROR ) {
         return( ERROR );
     }
     if( opndx->mbr != NULL ) {
         flag = FALSE;
         if( ptr_operator( opndx->mbr->mem_type, flag ) == ERROR )
             return( ERROR );
-        if( ptr_operator( T_PTR, flag ) == ERROR ) {
+        if( ptr_operator( MT_PTR, flag ) == ERROR ) {
             return( ERROR );
         }
     }
@@ -865,7 +880,7 @@ static int segm_override_jumps( expr_list *opndx )
         if( AsmBuffer[opndx->override]->token == T_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->value].position].opcode;
         } else {
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if( FixOverride( opndx->override ) != NOT_ERROR ) {
                 return( ERROR );
             }
@@ -883,7 +898,7 @@ static int segm_override_idata( expr_list *opndx )
         if( AsmBuffer[opndx->override]->token == T_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->value].position].opcode;
         } else {
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if( FixOverride( opndx->override ) != NOT_ERROR ) {
                 return( ERROR );
             }
@@ -901,7 +916,7 @@ static int segm_override_memory( expr_list *opndx )
         if( AsmBuffer[opndx->override]->token == T_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->value].position].opcode;
         } else {
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if( FixOverride( opndx->override ) != NOT_ERROR ) {
                 return( ERROR );
             }
@@ -915,8 +930,8 @@ static int segm_override_memory( expr_list *opndx )
 static int idata_nofixup( expr_list *opndx )
 /******************************************/
 {
-    enum operand_type   op_type;
-    long                value;
+    OPNDTYPE    op_type;
+    long        value;
 
     if( IS_ANY_BRANCH( Code->info.token ) ) {  // jumps/call processing
         return( process_jumps( opndx ) );
@@ -925,15 +940,15 @@ static int idata_nofixup( expr_list *opndx )
     Code->data[Opnd_Count] = value;
 
     switch( Code->mem_type ) {
-    case EMPTY:
+    case MT_EMPTY:
         if( Code->info.token == T_PUSH ) {
             if( opndx->explicit ) {
-                if( opndx->expr_type == MT_BYTE ) {
+                if( opndx->mem_type == MT_BYTE ) {
                     op_type = OP_I8;
-                } else if( opndx->expr_type == MT_WORD ) {
+                } else if( opndx->mem_type == MT_WORD ) {
                     op_type = OP_I16;
                     SET_OPSIZ_16( Code );
-                } else if( opndx->expr_type == MT_DWORD ) {
+                } else if( opndx->mem_type == MT_DWORD ) {
                     op_type = OP_I32;
                     SET_OPSIZ_32( Code );
                 } else {
@@ -986,7 +1001,7 @@ static int idata_nofixup( expr_list *opndx )
             op_type = OP_I8;
         }
         break;
-    case T_FAR:
+    case MT_FAR:
         if( ( value > SHRT_MAX ) || ( value < SHRT_MIN ) ) {
             op_type = OP_I32;
         } else if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
@@ -995,14 +1010,14 @@ static int idata_nofixup( expr_list *opndx )
             op_type = OP_I8;
         }
         break;
-    case T_NEAR:
+    case MT_NEAR:
         if( !Code->use32 ) {
             op_type = OP_I16;
         } else {
             op_type = OP_I32;
         }
         break;
-    case T_SHORT:
+    case MT_SHORT:
         if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
             // expect 8-bit but got 16 bit
             AsmError( JUMP_OUT_OF_RANGE );
@@ -1011,7 +1026,7 @@ static int idata_nofixup( expr_list *opndx )
             op_type = OP_I8;
         }
         break;
-    case T_BYTE:
+    case MT_BYTE:
         if( !InRange( value, 1 ) ) {
             // expect 8-bit but got 16 bit
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
@@ -1020,8 +1035,8 @@ static int idata_nofixup( expr_list *opndx )
             op_type = OP_I8;
         }
         break;
-#ifdef _WASM_
-    case T_SBYTE:
+#if defined( _STANDALONE_ )
+    case MT_SBYTE:
         if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( ERROR );
@@ -1029,7 +1044,7 @@ static int idata_nofixup( expr_list *opndx )
             op_type = OP_I8;
         }
         break;
-    case T_SWORD:
+    case MT_SWORD:
         if( ( value > SHRT_MAX ) || ( value < SHRT_MIN ) ) {
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
             return( ERROR );
@@ -1042,8 +1057,8 @@ static int idata_nofixup( expr_list *opndx )
         Code->info.opcode |= W_BIT;
         break;
 #endif
-    case T_WORD:
-#ifdef _WASM_
+    case MT_WORD:
+#if defined( _STANDALONE_ )
         if( Options.sign_value ) {
             if( !InRange( value, 2 ) ) {
                 AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
@@ -1067,12 +1082,12 @@ static int idata_nofixup( expr_list *opndx )
             }
             // set w-bit
             Code->info.opcode |= W_BIT;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         }
 #endif
         break;
-#ifdef _WASM_
-   case T_SDWORD:
+#if defined( _STANDALONE_ )
+   case MT_SDWORD:
         if( ( value > SCHAR_MAX ) || ( value < SCHAR_MIN ) ) {
             op_type = OP_I32;
         } else {
@@ -1082,8 +1097,8 @@ static int idata_nofixup( expr_list *opndx )
         Code->info.opcode |= W_BIT;
         break;
 #endif
-    case T_DWORD:
-#ifdef _WASM_
+    case MT_DWORD:
+#if defined( _STANDALONE_ )
         if( Options.sign_value ) {
             if( value > UCHAR_MAX ) {
                 op_type = OP_I32;
@@ -1101,12 +1116,12 @@ static int idata_nofixup( expr_list *opndx )
             }
             // set w-bit
             Code->info.opcode |= W_BIT;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         }
 #endif
         break;
-    case T_QWORD:
-#ifdef _WASM_
+    case MT_QWORD:
+#if defined( _STANDALONE_ )
         if( Options.sign_value ) {
             if( value > UCHAR_MAX ) {
                 op_type = OP_I32;
@@ -1124,9 +1139,11 @@ static int idata_nofixup( expr_list *opndx )
             }
             // set w-bit
             Code->info.opcode |= W_BIT;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         }
 #endif
+        break;
+    default:
         break;
     }
     Code->info.opnd_type[Opnd_Count] = op_type;
@@ -1147,7 +1164,7 @@ static int idata_fixup( expr_list *opndx )
     Code->data[Opnd_Count] = opndx->value;
     segm_override_idata( opndx );
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     if( ( opndx->sym->state == SYM_SEG )
         || ( opndx->sym->state == SYM_GRP )
         || ( opndx->instr == T_SEG ) )
@@ -1177,7 +1194,7 @@ static int idata_fixup( expr_list *opndx )
         if( opndx->sym->state == SYM_STACK ) {
             AsmError( CANNOT_OFFSET_AUTO );
             return( ERROR );
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         } else if( opndx->sym->state == SYM_GRP ) {
             AsmError( CANNOT_OFFSET_GRP );
             return( ERROR );
@@ -1185,42 +1202,44 @@ static int idata_fixup( expr_list *opndx )
         }
     }
     switch( Code->mem_type ) {
-    case EMPTY:
+    case MT_EMPTY:
         if( Opnd_Count > OPND1 ) {
             type = OperandSize( Code->info.opnd_type[OPND1] );
             if( type == 4 ) {
-                Code->mem_type = T_DWORD;
+                Code->mem_type = MT_DWORD;
                 Code->info.opnd_type[Opnd_Count] = OP_I32;
                 SET_OPSIZ_32( Code );
                 break;
             } else if( type == 2 ) {
-                Code->mem_type = T_WORD;
+                Code->mem_type = MT_WORD;
                 Code->info.opnd_type[Opnd_Count] = OP_I16;
                 SET_OPSIZ_16( Code );
                 break;
             }
         }
         if( ( Code->info.token == T_PUSHD ) || sym32 ) {
-            Code->mem_type = T_DWORD;
+            Code->mem_type = MT_DWORD;
             Code->info.opnd_type[Opnd_Count] = OP_I32;
             SET_OPSIZ_32( Code );
             break;
         }
-        Code->mem_type = T_WORD;
+        Code->mem_type = MT_WORD;
         // no break
-#ifdef _WASM_
-    case T_SWORD:
+#if defined( _STANDALONE_ )
+    case MT_SWORD:
 #endif
-    case T_WORD:
+    case MT_WORD:
         Code->info.opnd_type[Opnd_Count] = OP_I16;
         SET_OPSIZ_16( Code );
         break;
-#ifdef _WASM_
-    case T_SDWORD:
+#if defined( _STANDALONE_ )
+    case MT_SDWORD:
 #endif
-    case T_DWORD:
+    case MT_DWORD:
         Code->info.opnd_type[Opnd_Count] = OP_I32;
         SET_OPSIZ_32( Code );
+        break;
+    default:
         break;
     }
     if( opndx->instr == T_SEG ) {
@@ -1240,7 +1259,7 @@ static int idata_fixup( expr_list *opndx )
     ConstantOnly = TRUE;
     Code->info.opcode |= W_BIT;
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     find_frame( opndx->sym );
 #endif
 
@@ -1263,7 +1282,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     char                base_lock = FALSE;
     enum fixup_types    fixup_type;
     int                 flag;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     int                 sym32;
 #endif
 
@@ -1274,16 +1293,16 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     segm_override_memory( opndx );
 
     flag = ( opndx->explicit ) ? TRUE : FALSE ;
-    if( ptr_operator( opndx->expr_type, flag ) == ERROR )
+    if( ptr_operator( opndx->mem_type, flag ) == ERROR )
         return( ERROR );
-    if( ptr_operator( T_PTR, flag ) == ERROR ) {
+    if( ptr_operator( MT_PTR, flag ) == ERROR ) {
         return( ERROR );
     }
     if( opndx->mbr != NULL ) {
         flag = FALSE;
         if( ptr_operator( opndx->mbr->mem_type, flag ) == ERROR )
             return( ERROR );
-        if( ptr_operator( T_PTR, flag ) == ERROR ) {
+        if( ptr_operator( MT_PTR, flag ) == ERROR ) {
             return( ERROR );
         }
     }
@@ -1402,7 +1421,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         case SYM_UNDEFINED:
             // forward reference
             break;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         case SYM_SEG:
         case SYM_GRP:
             // error !!!!!
@@ -1426,17 +1445,17 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             base_lock = TRUE;   // add lock
             /* fall through */
         default:
-            if( Code->mem_type == EMPTY ) {
+            if( Code->mem_type == MT_EMPTY ) {
                 if( ptr_operator( sym->mem_type, FALSE ) == ERROR )
                     return( ERROR );
-                if( ptr_operator( T_PTR, FALSE ) == ERROR ) {
+                if( ptr_operator( MT_PTR, FALSE ) == ERROR ) {
                     return( ERROR );
                 }
             }
             break;
         }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         sym32 = SymIs32( sym );
         if( ( opndx->base_reg == EMPTY ) && ( opndx->idx_reg == EMPTY ) ) {
             SET_ADRSIZ( Code, sym32 );
@@ -1479,7 +1498,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         }
     }
     if( IS_JMPCALLN( Code->info.token ) ) {
-        if( Code->mem_type == T_DWORD ) {
+        if( Code->mem_type == MT_DWORD ) {
             if( !Code->use32 ) {
                 Code->info.token++;
             }
@@ -1494,7 +1513,7 @@ static int process_address( expr_list *opndx )
   parse the memory reference operand
 */
 {
-    int                 type;
+    memtype     mem_type;
 
     if( opndx->indirect ) {           // indirect operand
         if( opndx->sym == NULL ) {
@@ -1518,8 +1537,12 @@ static int process_address( expr_list *opndx )
                     return( idata_nofixup( opndx ) );  // error ????
                 }
             } else {                  // with symbol
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                 if( ( opndx->sym->state == SYM_UNDEFINED ) && !opndx->explicit ) {
+                    if( Parse_Pass != PASS_1 ) {
+                        AsmErr( SYMBOL_NOT_DEFINED, opndx->sym->name );
+                        return( ERROR );
+                    }
                     // undefined symbol, it is not possible to determine
                     // operand type and size
                     switch( Code->info.token ) {
@@ -1555,7 +1578,7 @@ static int process_address( expr_list *opndx )
                         break;
                     }
 #endif
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                 } else if( ( opndx->sym->state == SYM_SEG )
                     || ( opndx->sym->state == SYM_GRP ) ) {
                     // SEGMENT and GROUP symbol is converted to SEG symbol
@@ -1565,17 +1588,22 @@ static int process_address( expr_list *opndx )
 #endif
                 } else {
                     // CODE location is converted to OFFSET symbol
-                    type = ( opndx->explicit ) ? opndx->expr_type : opndx->sym->mem_type;
-                    switch( type ) {
-                    case T_FAR:
-                    case T_NEAR:
-                    case T_SHORT:
-#ifdef _WASM_
-                    case T_PROC:
+                    mem_type = ( opndx->explicit ) ? opndx->mem_type : opndx->sym->mem_type;
+                    switch( mem_type ) {
+#if defined( _STANDALONE_ )
+                    case MT_ABS:
+                        return( idata_fixup( opndx ) );
+                        break;
+#endif
+                    case MT_FAR:
+                    case MT_NEAR:
+                    case MT_SHORT:
+#if defined( _STANDALONE_ )
+                    case MT_PROC:
 #endif
                         if( Code->info.token == T_LEA ) {
                             return( memory_operand( opndx, TRUE ) );
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                         } else if( IS_SYM_COUNTER( opndx->sym->name ) ) {
                             return( idata_fixup( opndx ) );
 #endif
@@ -1746,13 +1774,13 @@ int AsmParse( void )
 */
 {
     int                 i;
-    enum operand_type   cur_opnd = OP_NONE;
-    enum operand_type   last_opnd = OP_NONE;
+    OPNDTYPE            cur_opnd = OP_NONE;
+    OPNDTYPE            last_opnd = OP_NONE;
     struct asm_code     *rCode = Code;
     expr_list           opndx;
     int                 temp;
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     Code->use32 = Use32;
     i = proc_check();
     if( i == ERROR )
@@ -1769,7 +1797,7 @@ int AsmParse( void )
     rCode->prefix.seg   = EMPTY;
     rCode->prefix.adrsiz = FALSE;
     rCode->prefix.opsiz = FALSE;
-    rCode->mem_type     = EMPTY;
+    rCode->mem_type     = MT_EMPTY;
     rCode->mem_type_fixed = FALSE;
     rCode->extended_ins = EMPTY;
     rCode->sib          = 0;            // assume ss is *1
@@ -1790,7 +1818,7 @@ int AsmParse( void )
         return( dup_array( NULL, 0, Last_Element_Size ) );
     }
 
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
     CheckSeg = TRUE;
     Frame = EMPTY;
     SegOverride = NULL;
@@ -1800,7 +1828,7 @@ int AsmParse( void )
         switch( AsmBuffer[i]->token ) {
         case T_INSTR:
 //            ExpandTheWorld( i, FALSE, TRUE );
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if( ExpandAllConsts( i, FALSE ) == ERROR )
                 return( ERROR );
 #endif
@@ -1810,7 +1838,7 @@ int AsmParse( void )
                 return( ERROR );
             }
             cur_opnd = OP_NONE;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if( ( AsmBuffer[i+1]->token == T_DIRECTIVE )
                 || ( AsmBuffer[i+1]->token == T_COLON ) ) {
                 // instruction name is label
@@ -1834,7 +1862,7 @@ int AsmParse( void )
                     return( ERROR );
                 }
                 continue;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             case T_RET:
                 if( ( CurrProc != NULL ) && ( in_epilogue == 0 ) ) {
                     in_epilogue = 1;
@@ -1863,7 +1891,6 @@ int AsmParse( void )
             }
             i++;
             if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR ) {
-                AsmError( OPERAND_EXPECTED );
                 return( ERROR );
             }
             if( opndx.empty )
@@ -1884,6 +1911,8 @@ int AsmParse( void )
                 break;
             case EXPR_UNDEF:
                 return( ERROR );
+            default:
+                break;
             }
             i--;
             break;
@@ -1897,14 +1926,13 @@ int AsmParse( void )
         case T_DIRECTIVE:
             return( directive( i, AsmBuffer[i]->value ) );
             break;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
         case T_DIRECT_EXPR:
             if( Parse_Pass != PASS_1 ) {
                 Modend = TRUE;
                 temp = i;
                 temp++;
                 if( EvalOperand( &temp, Token_Count, &opndx, TRUE ) == ERROR ) {
-                    AsmError( OPERAND_EXPECTED );
                     return( ERROR );
                 }
                 if( !opndx.empty && ( opndx.type == EXPR_ADDR ) ) {
@@ -1915,7 +1943,7 @@ int AsmParse( void )
             break;
 #endif
         case T_ID:
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             if( !( ( AsmBuffer[i+1]->token == T_DIRECTIVE )
                 && ( ( AsmBuffer[i+1]->value == T_EQU )
                 || ( AsmBuffer[i+1]->value == T_EQU2 )
@@ -1940,7 +1968,7 @@ int AsmParse( void )
 #endif
             if( i == 0 ) {   // a new label
 #if ALLOW_STRUCT_INIT
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                 if( IsLabelStruct( AsmBuffer[i]->string_ptr )
                     && ( AsmBuffer[i+1]->token != T_DIRECTIVE ) ) {
                     AsmBuffer[i]->token = T_DIRECTIVE;
@@ -1955,7 +1983,7 @@ int AsmParse( void )
                     cur_opnd = OP_LABEL;
                     break;
 #if ALLOW_STRUCT_INIT
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                 case T_ID:
                     /* structure declaration */
                     if( IsLabelStruct( AsmBuffer[i+1]->string_ptr ) ) {
@@ -1971,7 +1999,7 @@ int AsmParse( void )
                 case T_RES_ID:
                     return( data_init( i, i+1 ) );
                     break;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                 case T_DIRECTIVE:
                     return( directive( i+1, AsmBuffer[i+1]->value ) );
                     break;
@@ -2015,12 +2043,11 @@ int AsmParse( void )
             i++;
             cur_opnd = OP_NONE;
             curr_ptr_type = EMPTY;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             Frame = EMPTY;
             SegOverride = NULL;
 #endif
             if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR ) {
-                AsmError( OPERAND_EXPECTED );
                 return( ERROR );
             }
             if( opndx.empty )
@@ -2041,13 +2068,15 @@ int AsmParse( void )
                 break;
             case EXPR_UNDEF:
                 return( ERROR );
+            default:
+                break;
             }
             i--;
             break;
         case T_COLON:
             if ( last_opnd == OP_LABEL ) {
                 if( AsmBuffer[i+1]->token != T_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, T_NEAR )==ERROR ) {
+                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR )==ERROR ) {
                          return( ERROR );
                     }
                 }
@@ -2064,12 +2093,12 @@ int AsmParse( void )
             if( AsmBuffer[i-1]->token == T_MINUS ) {
                 rCode->data[Opnd_Count] ^= 0x80000000;
             }
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
             AsmWarn( 4, FLOAT_OPERAND );
 #endif
             break;
         default:
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
 /* */myassert( 0 );
 #endif
             break;
@@ -2097,18 +2126,18 @@ static void SizeString( unsigned op_size )
     /* size an string instruction based on it's operand's size */
     switch( op_size ) {
     case 1:
-        Code->mem_type = T_BYTE;
+        Code->mem_type = MT_BYTE;
         Code->info.opcode &= NOT_W_BIT;
         if( Code->use32 )
             Code->prefix.opsiz = FALSE;
         break;
     case 2:
-        Code->mem_type = T_WORD;
+        Code->mem_type = MT_WORD;
         Code->info.opcode |= W_BIT;
         Code->prefix.opsiz = Code->use32 ? TRUE : FALSE;
         break;
     case 4:
-        Code->mem_type = T_DWORD;
+        Code->mem_type = MT_DWORD;
         Code->info.opcode |= W_BIT;
         Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
         break;
@@ -2122,13 +2151,13 @@ static int check_size( void )
 - optimize MOV instruction;
 */
 {
-    enum operand_type   op1 = Code->info.opnd_type[OPND1];
-    enum operand_type   op2 = Code->info.opnd_type[OPND2];
-    int                 state = NOT_ERROR;
-    int                 temp;
-    int                 op1_size;
-    int                 op2_size;
-    int                 op_size = 0;
+    OPNDTYPE    op1 = Code->info.opnd_type[OPND1];
+    OPNDTYPE    op2 = Code->info.opnd_type[OPND2];
+    int         state = NOT_ERROR;
+    int         temp;
+    int         op1_size;
+    int         op2_size;
+    int         op_size = 0;
 
     switch( Code->info.token ) {
 #if 0
@@ -2407,27 +2436,27 @@ static int check_size( void )
             if( op1_size == 0 ) {
                 if( ( op1 & OP_M_ANY ) && ( op2 & OP_I ) ) {
                     if( (unsigned long)Code->data[OPND2] > USHRT_MAX ) {
-                         Code->mem_type = T_DWORD;
+                         Code->mem_type = MT_DWORD;
                          Code->info.opcode |= W_BIT;
                          Code->info.opnd_type[OPND2] = OP_I32;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
                              AsmWarn( 1, ASSUMING_DWORD );
                          }
 #endif
                     } else if( (unsigned long)Code->data[OPND2] > UCHAR_MAX ) {
-                         Code->mem_type = T_WORD;
+                         Code->mem_type = MT_WORD;
                          Code->info.opcode |= W_BIT;
                          Code->info.opnd_type[OPND2] = OP_I16;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
                              AsmWarn( 1, ASSUMING_WORD );
                          }
 #endif
                     } else {
-                         Code->mem_type = T_BYTE;
+                         Code->mem_type = MT_BYTE;
                          Code->info.opnd_type[OPND2] = OP_I8;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
                              AsmWarn( 1, ASSUMING_BYTE );
                          }
@@ -2444,22 +2473,22 @@ static int check_size( void )
                     }
                 } else if( ( op1 | op2 ) & ( OP_MMX | OP_XMM ) ) {
                 } else {
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                     AsmIntErr( 1 );
 #endif
                     switch( op2_size ) {
                     case 1:
-                        Code->mem_type = T_BYTE;
-#ifdef _WASM_
+                        Code->mem_type = MT_BYTE;
+#if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_BYTE );
                         }
 #endif
                         break;
                     case 2:
-                        Code->mem_type = T_WORD;
+                        Code->mem_type = MT_WORD;
                         Code->info.opcode |= W_BIT;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_WORD );
                         }
@@ -2468,9 +2497,9 @@ static int check_size( void )
                             Code->prefix.opsiz = TRUE;
                         break;
                     case 4:
-                        Code->mem_type = T_DWORD;
+                        Code->mem_type = MT_DWORD;
                         Code->info.opcode |= W_BIT;
-#ifdef _WASM_
+#if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
                             AsmWarn( 1, ASSUMING_DWORD );
                         }
@@ -2514,39 +2543,39 @@ void AsmInit( int cpu, int fpu, int use32, int extn )
     }
     switch( cpu ) {
     case 0:
-        Code->info.cpu |= P_86;
+        Code->info.cpu = P_86;
         if( fpu )
             Code->info.cpu |= P_87;
         break;
     case 1:
-        Code->info.cpu |= P_186;
+        Code->info.cpu = P_186;
         if( fpu )
             Code->info.cpu |= P_87;
         break;
     case 2:
-        Code->info.cpu |= P_286p;
+        Code->info.cpu = P_286p;
         if( fpu )
             Code->info.cpu |= P_287;
         break;
     case 3:
-        Code->info.cpu |= P_386p;
+        Code->info.cpu = P_386p;
         if( fpu )
             Code->info.cpu |= P_387;
         break;
     case 4:
-        Code->info.cpu |= P_486p;
+        Code->info.cpu = P_486p;
         if( fpu )
             Code->info.cpu |= P_387;
         break;
     case 5:
-        Code->info.cpu |= P_586p;
+        Code->info.cpu = P_586p;
         if( fpu )
             Code->info.cpu |= P_387;
         if( extn )
             Code->info.cpu |= P_K3D | P_MMX;
         break;
     case 6:
-        Code->info.cpu |= P_686p;
+        Code->info.cpu = P_686p;
         if( fpu )
             Code->info.cpu |= P_387;
         if( extn )
@@ -2572,3 +2601,19 @@ void AsmInit( int cpu, int fpu, int use32, int extn )
         make_inst_hash_table();
     }
 }
+
+#if !defined( _STANDALONE_ )
+
+static enum asm_cpu CPUinfo;
+
+void AsmSaveCPUInfo( void )
+{
+    CPUinfo = Code->info.cpu;
+}
+
+void AsmRestoreCPUInfo( void )
+{
+    Code->info.cpu = CPUinfo;
+}
+
+#endif
