@@ -47,13 +47,13 @@ extern  char            *SkipBlanks(char *);
 #endif
 
 
-bool    ParseCmdLine( char **fname, char **rest, char **opt_array, char *p ) {
-//============================================================================
-
-    fname = fname; rest = rest; p = p;
-    *opt_array = NULL;
-    return( TRUE );
-}
+//bool    ParseCmdLine( char **fname, char **rest, char **opt_array, char *p ) {
+////============================================================================
+//
+//    fname = fname; rest = rest; p = p;
+//    *opt_array = NULL;
+//    return( TRUE );
+//}
 
 
 bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {

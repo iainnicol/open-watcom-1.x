@@ -46,7 +46,6 @@ extern  void            FiniProcCmd(void);
 extern  void            CLE(void);
 extern  void            InitOptions(void);
 extern  void            CmdOption(char *);
-extern  bool            ParseCmdLine(char **,char **,char **, char *);
 extern  void            InitMacroProcessor(void);
 extern  void            FiniMacroProcessor(void);
 extern  void            SetDefaultOpts(void);
