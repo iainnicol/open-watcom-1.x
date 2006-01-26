@@ -55,6 +55,9 @@ extern  void            ShowOptions(char *);
 extern  char            *UsageLines[];
 
 
+// local prototypes
+int     ProcName(char *srcName); 
+
 void    InitCompMain() {
 //======================
 
@@ -89,12 +92,12 @@ int     CompMain( char *parm ) {
 static  bool    ProcCmd( char *buffer ) {
 //=======================================
 
-    char        *opt_array[MAX_OPTIONS+1];
+	char	*opt_array[MAX_OPTIONS+1] = {NULL};
 
     RetCode = _BADCMDLINE;
     
-    opt_array[0] = NULL;
-    RetCode      = ProcName();
+    //opt_array[0] = NULL;
+    RetCode      = ProcName(SrcName);
     if( RetCode == _SUCCESSFUL ) {
         ProcOpts( opt_array );
     }
@@ -198,31 +201,43 @@ void    FiniCompile() {
     ProgSw &= ~PS_FIRST_COMPILE;
 }
 
+////////////////////////////////////
+//
+//  Check existence of src file name
+//
+////////////////////////////////////
+static int  ProcName(char *srcName)
+{
+	if( NULL == srcName )
+		return _NOFILENAME;
 
-static  int     ProcName() {
-//==========================
+   if( NULLCHAR == *srcName )
+	   return _NOFILENAME;
 
-    int code;
-
-    code = _SUCCESSFUL;
-    if( *SrcName == NULLCHAR ) {
-        code = _NOFILENAME;
-    } else if( *SrcName == '?' ) {
-        code = _REQSYNTAX;
-    }
-    return( code );
+   if( '?' == *srcName  ) 
+      return _REQSYNTAX;
+    
+   return _SUCCESSFUL ;
 }
 
 
-void    ProcOpts( char **opt_array ) {
-//====================================
+/////////////////////////////////////
+//
+// Process compilation options
+//
+/////////////////////////////////////
+void  ProcOpts( char **opt_array )
+{
+   char *tempOption;  
 
-    InitOptions();
-    NewOptions = Options;
-    for(;;) {
-        if( *opt_array == NULL ) break;
-        CmdOption( *opt_array );
-        ++opt_array;
-    }
-    Options = NewOptions;
+   InitOptions();
+   NewOptions = Options;
+
+   // scan through command line options
+   for(tempOption = *opt_array; tempOption != NULL; ++opt_array)
+   {
+      CmdOption( *opt_array );
+   }
+
+   Options = NewOptions;
 }
