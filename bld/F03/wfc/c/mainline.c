@@ -57,10 +57,6 @@ static  char            CmdBuff[2*128];
     #define _WFC "wfc"
 #endif
 
-#if defined( _M_IX86 )
-    unsigned char   _8087   = 0;
-    unsigned char   _real87 = 0;
-#endif
 
 
 int     main( int argc, char *argv[] ) {
@@ -68,14 +64,13 @@ int     main( int argc, char *argv[] ) {
 
 // Watcom Fortran 2003 main line.
 
-    int         ret_code;
+    int         ret_code = 0;
     char        *opts[MAX_OPTIONS+1];
     char        *p;
 
-    argc = argc; argv = argv;
-
+ 
     // init error messaging
-#if defined( __INCL_ERRMSGS__ )
+#ifdef __INCL_ERRMSGS__ 
     {
         extern  void    __InitError(void);
 
@@ -91,25 +86,22 @@ int     main( int argc, char *argv[] ) {
     }
 #endif
 
-#if defined( _M_IX86 )
-    _real87 = _8087 = 0;
-#endif
     
     // check for env variable _WFC
     p = getenv( _WFC );
-    // env variable _WFC set
-    if( p != NULL ) {
+    if( p != NULL ){
         // preset CmdBuffer with params from environment
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];
         *p = ' ';
         ++p;
-    } else {
+    } else{
         p = CmdBuff;
     }
+
     // get command line
     getcmd( p );
-    ret_code = 0;
+    
     // initialize compiler
     InitCompMain();
 
@@ -118,15 +110,20 @@ int     main( int argc, char *argv[] ) {
         SrcExtn = SDSrcExtn( SrcName ); // parse the file name in case we get
         ProcOpts( opts );               // an error in ProcOpts() so error
         InitPredefinedMacros();         // file can be created
-    
+        ///////////////////   
         // Compile
+        ////////////////// 
         ret_code = CompMain( CmdBuff );
-    } else {
+
+    } else{
         // error in command line
+        // show how to use it   
         ShowUsage();
     }
+
     // finish up compilation    
     FiniCompMain();
     __ErrorFini();
+
     return( ret_code );
 }
