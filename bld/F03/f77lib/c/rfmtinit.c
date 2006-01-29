@@ -41,7 +41,7 @@
 #include "fmtdat.h"
 #include "rtenv.h"
 
-extern  void            SetFmt(char PGM *);
+extern  void            SetFmt(char  *);
 extern  void            R_FEmInit(void);
 extern  void            R_FEmEnd(void);
 extern  void            R_FDoSpec(void);
@@ -49,7 +49,7 @@ extern  void            R_FDoSpec(void);
 extern  void            (* const __FAR RFmtTab[])();
 
 
-void    FmtAScan( char PGM *array, long int num_elts, int elt_size,
+void    FmtAScan( char *array, long int num_elts, int elt_size,
                   uint extend_format ) {
 //=================================================================
 

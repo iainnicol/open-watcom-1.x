@@ -41,7 +41,7 @@
 #include <string.h>
 
 extern  void            IOErr(int,...);
-extern  uint            StrItem(string PGM *,char *,uint);
+extern  uint            StrItem(string *,char *,uint);
 
 #define MAX_KW_LEN      15      // longest keyword in following tables
 
@@ -59,7 +59,7 @@ char    *SpecId[] = {
 };
 
 
-int     FindKWord( char **table, int id, int def_id, string PGM *kw ) {
+int     FindKWord( char **table, int id, int def_id, string *kw ) {
 //=====================================================================
 
     int         index;

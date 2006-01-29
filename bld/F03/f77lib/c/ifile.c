@@ -37,11 +37,11 @@
 #include "ftnstd.h"
 #include "pgmacc.h"
 
-#define _Normalize( ptr, offset ) ((char PGM *)((char HPGM *)ptr + offset))
+#define _Normalize( ptr, offset ) ((char *)((char HPGM *)ptr + offset))
 
 
 void    SendIFBuff( char *buffer, int len, unsigned_32 recnum,
-                    string PGM *ifile ) {
+                    string *ifile ) {
 //============================================================
 
     pgm_memput( _Normalize( ifile->strptr, (recnum-1)*len ), buffer, len );
@@ -49,7 +49,7 @@ void    SendIFBuff( char *buffer, int len, unsigned_32 recnum,
 
 
 void    NextIFBuff( char *buffer, int len, unsigned_32 recnum,
-                    string PGM *ifile ) {
+                    string *ifile ) {
 //============================================================
 
     pgm_memget( buffer, _Normalize( ifile->strptr, (recnum-1)*len ), len );

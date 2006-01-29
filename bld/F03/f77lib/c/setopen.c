@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetOpen( logstar4 PGM *openptr ) {
+void            SetOpen( logstar4 *openptr ) {
 //================================================
 
     _SetIOCB();

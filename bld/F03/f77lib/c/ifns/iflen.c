@@ -38,7 +38,7 @@
 #include "ifenv.h"
 
 
-intstar4        LEN( string PGM *arg ) {
+intstar4        LEN( string  *arg ) {
 //======================================
 
 // Return the length of the arg.
@@ -47,7 +47,7 @@ intstar4        LEN( string PGM *arg ) {
 }
 
 
-intstar4        XLEN( char PGM *arg, int len ) {
+intstar4        XLEN( char *arg, int len ) {
 //==============================================
 
 // Return the length of the arg.

@@ -38,7 +38,7 @@
 #include "rundat.h"
 #include "iotype.h"
 
-extern  void            IOItemResult(char PGM *,PTYPE);
+extern  void            IOItemResult(char *,PTYPE);
 
 extern  const byte      __FAR SizeVars[];
 

@@ -279,13 +279,13 @@ static  void    InNumber() {
             GetFloat( &value, ( IOCB->typ - PT_REAL_4 ) );
             switch( IOCB->typ ) {
             case PT_REAL_4:
-                *(single PGM *)(IORslt.pgm_ptr) = value;
+                *(single *)(IORslt.pgm_ptr) = value;
                 break;
             case PT_REAL_8:
-                *(double PGM *)(IORslt.pgm_ptr) = value;
+                *(double *)(IORslt.pgm_ptr) = value;
                 break;
             case PT_REAL_16:
-                *(extended PGM *)(IORslt.pgm_ptr) = value;
+                *(extended *)(IORslt.pgm_ptr) = value;
                 break;
             default:
                 IOErr( IO_FREE_MISMATCH );
@@ -295,13 +295,13 @@ static  void    InNumber() {
             GetInt( &intval );
             switch( IOCB->typ ) {
             case PT_INT_1:
-                *(intstar1 PGM *)(IORslt.pgm_ptr) = intval;
+                *(intstar1 *)(IORslt.pgm_ptr) = intval;
                 break;
             case PT_INT_2:
-                *(intstar2 PGM *)(IORslt.pgm_ptr) = intval;
+                *(intstar2 *)(IORslt.pgm_ptr) = intval;
                 break;
             case PT_INT_4:
-                *(intstar4 PGM *)(IORslt.pgm_ptr) = intval;
+                *(intstar4 *)(IORslt.pgm_ptr) = intval;
                 break;
             default:
                 IOErr( IO_FREE_MISMATCH );
@@ -344,10 +344,10 @@ big_break:
     for(;;) {
         switch( IOCB->typ ) {
         case PT_LOG_1:
-            *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
+            *(logstar1 *)(IORslt.pgm_ptr) = value;
             break;
         case PT_LOG_4:
-            *(logstar4 PGM *)(IORslt.pgm_ptr) = value;
+            *(logstar4 *)(IORslt.pgm_ptr) = value;
             break;
         default:
             IOErr( IO_FREE_MISMATCH );
@@ -388,16 +388,16 @@ static  void    InCplx() {
     for(;;) {
         switch( IOCB->typ ) {
         case PT_CPLX_8:
-            ((complex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
-            ((complex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
+            ((complex *)(IORslt.pgm_ptr))->realpart = value.realpart;
+            ((complex *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
         case PT_CPLX_16:
-            ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
-            ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
+            ((dcomplex *)(IORslt.pgm_ptr))->realpart = value.realpart;
+            ((dcomplex *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
         case PT_CPLX_32:
-            ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart = value.realpart;
-            ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
+            ((xcomplex *)(IORslt.pgm_ptr))->realpart = value.realpart;
+            ((xcomplex *)(IORslt.pgm_ptr))->imagpart = value.imagpart;
             break;
         default:
             IOErr( IO_FREE_MISMATCH );
@@ -441,7 +441,7 @@ static  void    GetString() {
     ftnfile     *fcb;
     uint        len;
     uint        count;
-    char        PGM *ptr;
+    char        *ptr;
 
     len = IORslt.string.len;
     ptr = IORslt.string.strptr;

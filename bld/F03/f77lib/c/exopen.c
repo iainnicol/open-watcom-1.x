@@ -50,7 +50,7 @@ extern  bool            SameFile(char *,char *);
 extern  bool            Scrtched(ftnfile *);
 extern  void            CloseFile(ftnfile *);
 extern  void            SysCreateFile(ftnfile *);
-extern  int             FindKWord(char **,int,int,string PGM *);
+extern  int             FindKWord(char **,int,int,string *);
 extern  int             IOMain(void (*)());
 extern  bool            IsDevice(ftnfile *);
 extern  bool            __DevicesCC(void);

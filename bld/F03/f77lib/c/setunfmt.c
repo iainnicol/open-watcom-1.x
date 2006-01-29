@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetUnFmtd( string PGM *ufmtdptr ) {
+void            SetUnFmtd( string *ufmtdptr ) {
 //=================================================
 
     _SetIOCB();

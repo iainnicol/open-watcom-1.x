@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetLen( intstar4 PGM *lenptr ) {
+void            SetLen( intstar4 *lenptr ) {
 //==============================================
 
     _SetIOCB();

@@ -42,7 +42,7 @@
 #include <pgmacc.h>
 
 
-intstar4        fortran FSYSTEM( string PGM *command ) {
+intstar4        fortran FSYSTEM( string *command ) {
 //======================================================
 
     char        *buff;

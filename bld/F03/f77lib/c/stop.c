@@ -56,7 +56,7 @@ static void noHook() {}
 void (*STOP_HOOK)(void) = noHook;
 
 
-void    Stop( string PGM *ptr ) {
+void    Stop( string *ptr ) {
 //===============================
 
 // Process a STOP statement.

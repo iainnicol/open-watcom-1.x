@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetStat( string PGM *statptr ) {
+void            SetStat( string *statptr ) {
 //==============================================
 
     _SetIOCB();

@@ -41,7 +41,7 @@
 extern  void            RTErr(int,...);
 
 
-void    CHAR( intstar4 arg, string PGM *dest ) {
+void    CHAR( intstar4 arg, string *dest ) {
 //==============================================
 
 // Convert character to integer.

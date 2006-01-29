@@ -79,30 +79,30 @@ typedef struct iocb {                   // global iocb structure
     struct ftnfile      *fileinfo;      // pointer to current ftnfile
     // the following fields are set by FIELD= directives
     unsigned_32         set_flags;      // what ptr's have been set
-    string              PGM *filename;  // pointer to filename scb
-    string              PGM *internal;  // pointer to internal file variable
-    union fmt_desc      PGM *fmtptr;    // pointer for fmt=
-    intstar4            PGM *iosptr;    // pointer to iostat=
-    string              PGM *accptr;    // pointer to access=
-    string              PGM *blnkptr;   // pointer to blank=
-    string              PGM *formptr;   // pointer to form=
-    intstar4            PGM *lenptr;    // pointer to recl=
-    string              PGM *statptr;   // pointer to status=
-    string              PGM *fmtdptr;   // pointer to formatted=
-    string              PGM *nameptr;   // pointer to name=
-    string              PGM *dirptr;    // pointer to direct=
-    string              PGM *seqptr;    // pointer to sequential=
-    string              PGM *cctrlptr;  // pointer to carriagecontrol=
-    string              PGM *ufmtdptr;  // pointer to unformatted=
-    string              PGM *recfmptr;  // pointer to recordtype=
-    string              PGM *actptr;    // pointer to action=
-    logstar4            PGM *nmdptr;    // pointer to named=
-    intstar4            PGM *nrecptr;   // pointer to nextrec=
-    intstar4            PGM *numbptr;   // pointer to unit=
-    logstar4            PGM *exstptr;   // pointer to exist=
-    logstar4            PGM *openptr;   // pointer to opened=
-    intstar4            PGM *bsizeptr;  // pointer to blocksize=
-    string              PGM *shareptr;  // pointer to share=
+    string              *filename;  // pointer to filename scb
+    string              *internal;  // pointer to internal file variable
+    union fmt_desc      *fmtptr;    // pointer for fmt=
+    intstar4            *iosptr;    // pointer to iostat=
+    string              *accptr;    // pointer to access=
+    string              *blnkptr;   // pointer to blank=
+    string              *formptr;   // pointer to form=
+    intstar4            *lenptr;    // pointer to recl=
+    string              *statptr;   // pointer to status=
+    string              *fmtdptr;   // pointer to formatted=
+    string              *nameptr;   // pointer to name=
+    string              *dirptr;    // pointer to direct=
+    string              *seqptr;    // pointer to sequential=
+    string              *cctrlptr;  // pointer to carriagecontrol=
+    string              *ufmtdptr;  // pointer to unformatted=
+    string              *recfmptr;  // pointer to recordtype=
+    string              *actptr;    // pointer to action=
+    logstar4            *nmdptr;    // pointer to named=
+    intstar4            *nrecptr;   // pointer to nextrec=
+    intstar4            *numbptr;   // pointer to unit=
+    logstar4            *exstptr;   // pointer to exist=
+    logstar4            *openptr;   // pointer to opened=
+    intstar4            *bsizeptr;  // pointer to blocksize=
+    string              *shareptr;  // pointer to share=
     int                 unitid;         // the unit number
     uint                blocksize;      // block size
     uint                recl;           // record length
@@ -204,7 +204,7 @@ enum {
 typedef struct ftnfile {
     struct ftnfile      *link;          // pointer to next ftnfile
     file_handle         fileptr;        // pointer to file
-    string              PGM *internal;  // pointer to internal file
+    string              *internal;      // pointer to internal file
     char                *filename;      // pointer to filename string
     char                *buffer;        // buffer location
     unsigned_32         recnum;         // record number

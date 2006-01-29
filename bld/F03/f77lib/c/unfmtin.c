@@ -79,45 +79,45 @@ static  void    UnFmtItem( void *s ) {
 
     switch( IOCB->typ ) {
     case PT_LOG_1:
-        *(logstar1 PGM *)(IORslt.pgm_ptr) = *(logstar1 *)s;
+        *(logstar1 *)(IORslt.pgm_ptr) = *(logstar1 *)s;
         break;
     case PT_LOG_4:
-        *(logstar4 PGM *)(IORslt.pgm_ptr) = *(logstar4 *)s;
+        *(logstar4 *)(IORslt.pgm_ptr) = *(logstar4 *)s;
         break;
     case PT_INT_1:
-        *(intstar1 PGM *)(IORslt.pgm_ptr) = *(intstar1 *)s;
+        *(intstar1 *)(IORslt.pgm_ptr) = *(intstar1 *)s;
         break;
     case PT_INT_2:
-        *(intstar2 PGM *)(IORslt.pgm_ptr) = *(intstar2 *)s;
+        *(intstar2 *)(IORslt.pgm_ptr) = *(intstar2 *)s;
         break;
     case PT_INT_4:
-        *(intstar4 PGM *)(IORslt.pgm_ptr) = *(intstar4 *)s;
+        *(intstar4 *)(IORslt.pgm_ptr) = *(intstar4 *)s;
         break;
     case PT_REAL_4:
-        *(single PGM *)(IORslt.pgm_ptr) = *(single *)s;
+        *(single *)(IORslt.pgm_ptr) = *(single *)s;
         break;
     case PT_REAL_8:
-        *(double PGM *)(IORslt.pgm_ptr) = *(double *)s;
+        *(double *)(IORslt.pgm_ptr) = *(double *)s;
         break;
     case PT_REAL_16:
-        *(extended PGM *)(IORslt.pgm_ptr) = *(extended *)s;
+        *(extended *)(IORslt.pgm_ptr) = *(extended *)s;
         break;
     case PT_CPLX_8:
-        ((complex PGM *)(IORslt.pgm_ptr))->imagpart =
+        ((complex *)(IORslt.pgm_ptr))->imagpart =
                         ((complex *)s)->imagpart;
-        ((complex PGM *)(IORslt.pgm_ptr))->realpart =
+        ((complex *)(IORslt.pgm_ptr))->realpart =
                         ((complex *)s)->realpart;
         break;
     case PT_CPLX_16:
-        ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart =
+        ((dcomplex *)(IORslt.pgm_ptr))->imagpart =
                         ((dcomplex *)s)->imagpart;
-        ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart =
+        ((dcomplex *)(IORslt.pgm_ptr))->realpart =
                         ((dcomplex *)s)->realpart;
         break;
     case PT_CPLX_32:
-        ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart =
+        ((xcomplex *)(IORslt.pgm_ptr))->imagpart =
                         ((xcomplex *)s)->imagpart;
-        ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart =
+        ((xcomplex *)(IORslt.pgm_ptr))->realpart =
                         ((xcomplex *)s)->realpart;
         break;
     }

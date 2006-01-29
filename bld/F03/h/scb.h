@@ -31,7 +31,7 @@
 
 
 typedef struct string {         //  run-time string control block
-    char        PGM *strptr;
+    char        *strptr;
     uint        len;
 } string;
 

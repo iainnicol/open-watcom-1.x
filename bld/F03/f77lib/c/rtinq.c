@@ -319,7 +319,7 @@ void    InqOdList() {
 }
 
 
-static  void    RTCopy( char *ptr, string PGM *str ) {
+static  void    RTCopy( char *ptr, string  *str ) {
 //====================================================
 
     uint        len;
@@ -336,14 +336,14 @@ static  void    RTCopy( char *ptr, string PGM *str ) {
 }
 
 
-static  void    RTFill( void PGM *dest, int size ) {
+static  void    RTFill( void  *dest, int size ) {
 //==================================================
 
     pgm_memset( dest, UNDEF_CHAR, size );
 }
 
 
-static  void    StrFill( string PGM *scb ) {
+static  void    StrFill( string  *scb ) {
 //==========================================
 
     pgm_memset( scb->strptr, UNDEF_CHAR, scb->len );

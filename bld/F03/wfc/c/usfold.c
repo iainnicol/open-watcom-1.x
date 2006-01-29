@@ -39,7 +39,7 @@
 extern  void            (* const __FAR GenOprTable[])();
 
 extern  void            AddConst(itnode *);
-extern  int             LexStrCmp(char PGM *,int,char PGM *,int);
+extern  int             LexStrCmp(char *,int,char *,int);
 extern  bool            AddIOFlo(intstar4 *,intstar4 *);
 extern  bool            SubIOFlo(intstar4 *,intstar4 *);
 extern  bool            MulIOFlo(intstar4 *,intstar4 *);

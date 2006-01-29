@@ -54,7 +54,7 @@ void    R_FEmEnd() {
 //==================
 
     R_FEmCode( END_FORMAT );
-    R_FEmNum( (char PGM *)(IOCB->fmtptr) - Fmt_revert.rt );
+    R_FEmNum( (char  *)(IOCB->fmtptr) - Fmt_revert.rt );
 }
 
 
@@ -64,22 +64,22 @@ void    R_FEmCode( int code ) {
     CheckHole( sizeof( byte ) );
     if( ( code & REV_CODE ) == REV_CODE ) {
         code &= ~REV_CODE;
-        Fmt_revert.rt = (char PGM *)(IOCB->fmtptr);
+        Fmt_revert.rt = (char *)(IOCB->fmtptr);
     }
     if( IOCB->flags & IOF_EXTEND_FORMAT ) {
         code |= EXTEND_FORMAT;
     }
-    *(byte PGM *)IOCB->fmtptr = code;
-    IOCB->fmtptr = (fmt_desc PGM *)((byte PGM *)IOCB->fmtptr + 1);
+    *(byte *)IOCB->fmtptr = code;
+    IOCB->fmtptr = (fmt_desc *)((byte  *)IOCB->fmtptr + 1);
 }
 
 
-void    R_FEmChar( char PGM *cur_char_ptr ) {
+void    R_FEmChar( char *cur_char_ptr ) {
 //===========================================
 
     CheckHole( sizeof( char ) );
-    *(char PGM *)IOCB->fmtptr = *cur_char_ptr;
-    IOCB->fmtptr = (fmt_desc PGM *)((char PGM *)IOCB->fmtptr + 1);
+    *(char *)IOCB->fmtptr = *cur_char_ptr;
+    IOCB->fmtptr = (fmt_desc *)((char  *)IOCB->fmtptr + 1);
 }
 
 
@@ -87,8 +87,8 @@ void    R_FEmNum( int num ) {
 //===========================
 
     CheckHole( sizeof( int ) );
-    *(int PGM *)IOCB->fmtptr = num;
-    IOCB->fmtptr = (fmt_desc PGM *)((int PGM *)IOCB->fmtptr + 1);
+    *(int *)IOCB->fmtptr = num;
+    IOCB->fmtptr = (fmt_desc *)((int  *)IOCB->fmtptr + 1);
 }
 
 
@@ -99,8 +99,8 @@ void    R_FEmByte( uint num ) {
     if( num > 256 ) {
         RTErr( FM_SPEC_256 );
     } else {
-        *(byte PGM *)IOCB->fmtptr = num;
-        IOCB->fmtptr = (fmt_desc PGM *)((byte PGM *)IOCB->fmtptr + 1);
+        *(byte  *)IOCB->fmtptr = num;
+        IOCB->fmtptr = (fmt_desc *)((byte  *)IOCB->fmtptr + 1);
     }
 }
 

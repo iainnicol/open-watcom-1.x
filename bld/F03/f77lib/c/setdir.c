@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetDir( string PGM *dirptr ) {
+void            SetDir( string *dirptr ) {
 //============================================
 
     _SetIOCB();

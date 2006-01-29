@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetName( string PGM *nameptr ) {
+void            SetName( string *nameptr ) {
 //==============================================
 
     _SetIOCB();

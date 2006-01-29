@@ -38,7 +38,7 @@
 #include "ifenv.h"
 
 
-intstar4        XLENTRIM( char PGM *str, int len ) {
+intstar4        XLENTRIM( char  *str, int len ) {
 //==================================================
 
     for(;;) {
@@ -50,7 +50,7 @@ intstar4        XLENTRIM( char PGM *str, int len ) {
 }
 
 
-intstar4        LENTRIM( string PGM *str ) {
+intstar4        LENTRIM( string *str ) {
 //==========================================
 
     return( XLENTRIM( str->strptr, str->len ) );

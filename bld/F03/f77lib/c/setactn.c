@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetAction( string PGM *action ) {
+void            SetAction( string *action ) {
 //===============================================
 
     _SetIOCB();

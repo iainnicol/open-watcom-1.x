@@ -174,7 +174,7 @@ static  bool    IsDoubleByteChar( char ch ) {
 }
 
 
-static  int     CharacterWidth( char PGM *ptr ) {
+static  int     CharacterWidth( char *ptr ) {
 //===============================================
 
 // Determine character width.

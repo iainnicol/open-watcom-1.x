@@ -37,7 +37,7 @@
 #include "ftnstd.h"
 
 extern  void            GFEmCode(byte);
-extern  void            GFEmChar(char PGM *);
+extern  void            GFEmChar(char *);
 extern  void            GFEmNum(int);
 extern  void            GFEmByte(int);
 extern  void            FmtError(int);

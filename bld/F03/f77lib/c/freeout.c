@@ -47,7 +47,7 @@ extern  void            CheckCCtrl(void);
 extern  void            Drop(char);
 extern  void            OutLogCG(void);
 extern  void            OutIntCG(void);
-extern  void            IOItemResult(char PGM *,PTYPE);
+extern  void            IOItemResult(char *,PTYPE);
 
 extern  const byte      __FAR SizeVars[];
 

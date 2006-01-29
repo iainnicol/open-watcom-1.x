@@ -38,7 +38,7 @@
 #include "pgmacc.h"
 
 
-void    TrimStr( string PGM *src, string *res ) {
+void    TrimStr( string *src, string *res ) {
 //===============================================
 
 // Set the 'res' SCB to be the RIGHT and LEFT trimmed value of the

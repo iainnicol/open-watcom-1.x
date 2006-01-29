@@ -45,7 +45,7 @@
 extern  void            FEmCode(int);
 extern  void            R_FError(int);
 extern  void            R_FExtension(int);
-extern  void            FEmChar(char PGM *);
+extern  void            FEmChar(char *);
 extern  void            FEmByte(int);
 extern  void            FEmNum(int);
 
@@ -139,7 +139,7 @@ static  int     R_FConst() {
 //     - blanks are ignored
 //     - returns -1 if no constant was found
 
-    char        PGM *start_char;
+    char        *start_char;
     int         result;
     char        cur_char;
 
@@ -246,7 +246,7 @@ static  void    R_FLiteral() {
 // Process a literal format code.
 
     int         lit_length;
-    char        PGM *cur_char_ptr;
+    char        *cur_char_ptr;
 
     FChkDelimiter();
     if( FNoRep() ) {

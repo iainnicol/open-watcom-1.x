@@ -57,7 +57,7 @@ void    FEmCode( int code ) {
 }
 
 
-void    FEmChar( char PGM *ch ) {
+void    FEmChar( char *ch ) {
 //===============================
 
 // Emit a character.

@@ -49,7 +49,7 @@ extern  void            FPutBuff(ftnfile *);
 extern  void            ChkIOErr(ftnfile *);
 extern  bool            IsCarriage(void);
 extern  bool            IsFixed(void);
-extern  void            SendIFBuff(char *,int,unsigned_32,string PGM *);
+extern  void            SendIFBuff(char *,int,unsigned_32,string  *);
 extern  void            UpdateRecNum(ftnfile *);
 
 extern  char            NormalCtrlSeq[];
@@ -93,7 +93,7 @@ void    SendInt( intstar4 num ) {
 }
 
 
-void    SendStr( char PGM *str, uint len ) {
+void    SendStr( char  *str, uint len ) {
 //==========================================
 
     while( len > 0 ) {
@@ -217,7 +217,7 @@ void    SendEOR() {
 }
 
 
-void    IOItemResult( char PGM *src, PTYPE typ ) {
+void    IOItemResult( char  *src, PTYPE typ ) {
 //==============================================
 
     switch( typ ) {

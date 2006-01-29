@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetFile( string PGM *filename ) {
+void            SetFile( string *filename ) {
 //===============================================
 
     _SetIOCB();

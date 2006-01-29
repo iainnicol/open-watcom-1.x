@@ -37,7 +37,7 @@
 #include "ftnstd.h"
 
 extern  void            R_FEmCode(int);
-extern  void            R_FEmChar(char PGM *);
+extern  void            R_FEmChar(char *);
 extern  void            R_FEmNum(int);
 extern  void            R_FEmByte(uint);
 extern  void            _R_FError(int);

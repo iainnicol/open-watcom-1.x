@@ -49,7 +49,7 @@ extern  void            R_F2E(extended,char *,int,int,bool,int,int,char);
 extern  bool            ToFFormat(extended);
 extern  char            *JmpBlanks(char *);
 extern  bool            GetReal(extended *);
-extern  void            SendStr(char PGM *,int);
+extern  void            SendStr(char *,int);
 
 
 static  void    FmtFloat( char *buff, extended value, int digits, char ch ) {
@@ -156,7 +156,7 @@ bool GetRealCG( extended *value, uint width ) {
 void    (*FmtRealRtn)(char *,single *)          = FmtRealCG;
 void    (*FmtDoubleRtn)(char *,double *)        = FmtDoubleCG;
 void    (*FmtExtendedRtn)(char *,extended *)    = FmtExtendedCG;
-void    (*SendStrRtn)(char PGM *,int)           = SendStr;
+void    (*SendStrRtn)(char *,int)               = SendStr;
 bool    (*UndefRealRtn)(single *)               = UndefRealCG;
 bool    (*UndefDoubleRtn)(double *)             = UndefDoubleCG;
 bool    (*UndefExtendedRtn)(extended *)         = UndefExtendedCG;

@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetSeq( string PGM *seqptr ) {
+void            SetSeq( string *seqptr ) {
 //============================================
 
     _SetIOCB();

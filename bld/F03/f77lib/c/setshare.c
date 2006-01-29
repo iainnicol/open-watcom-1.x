@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetShare( string PGM *share ) {
+void            SetShare( string *share ) {
 //=============================================
 
     _SetIOCB();

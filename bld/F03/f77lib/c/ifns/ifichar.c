@@ -41,7 +41,7 @@
 extern  void            RTErr(int,...);
 
 
-intstar4        ICHAR( string PGM *arg ) {
+intstar4        ICHAR( string *arg ) {
 //========================================
 
 //  Convert character to integer.

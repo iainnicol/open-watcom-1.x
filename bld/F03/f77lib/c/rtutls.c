@@ -52,7 +52,7 @@ extern  void            ReportNExist(ftnfile *);
 extern  pointer         LocUnit(int);
 extern  pointer         LocFile(char *);
 extern  void            ExtractInfo(char *,ftnfile *);
-extern  void            TrimStr(string PGM *src,string *res);
+extern  void            TrimStr(string  *src,string *res);
 extern  void            GetStr(string *str,char *res);
 extern  ftnfile         *_InitStandardOutput();
 extern  ftnfile         *_InitStandardInput();
@@ -381,7 +381,7 @@ void    ChkExist() {
 }
 
 
-uint    StrItem( string PGM *strptr, byte *buff, uint buff_len ) {
+uint    StrItem( string  *strptr, byte *buff, uint buff_len ) {
 //================================================================
 
 // Remove leading and trailing blanks from the string, copy the result

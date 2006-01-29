@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetNmd( logstar4 PGM *nmdptr ) {
+void            SetNmd( logstar4 *nmdptr ) {
 //==============================================
 
     _SetIOCB();

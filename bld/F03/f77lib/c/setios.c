@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetIOS( intstar4 PGM *iosptr ) {
+void            SetIOS( intstar4 *iosptr ) {
 //==============================================
 
     _SetIOCB();

@@ -31,9 +31,9 @@
 
 
 
-gbl_defn char           PGM *Fmt_start;   // pointer to start of format string
-gbl_defn char           PGM *Fmt_charptr; // pointer to current format character
-gbl_defn char           PGM *Fmt_end;     // pointer to end of format string
+gbl_defn char           *Fmt_start;   // pointer to start of format string
+gbl_defn char           *Fmt_charptr; // pointer to current format character
+gbl_defn char           *Fmt_end;     // pointer to end of format string
 gbl_defn int            Fmt_paren_level;  // parenthesis count
 gbl_defn fmt_ptr        Fmt_revert;       // position to revert to if required
 gbl_defn int            Fmt_rep_spec;     // repeat specification count

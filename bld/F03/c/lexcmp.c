@@ -38,7 +38,7 @@
 #include "rtenv.h"
 
 
-static  int     ChkBlanks( char PGM *ptr, uint len ) {
+static  int     ChkBlanks( char *ptr, uint len ) {
 //====================================================
 
     for(;;) {
@@ -51,7 +51,7 @@ static  int     ChkBlanks( char PGM *ptr, uint len ) {
 }
 
 
-int     LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 ) {
+int     LexStrCmp( char *ptr1, uint len1, char *ptr2, uint len2 ) {
 //=========================================================================
 
 // Compare two strings (compile-time entry point).
@@ -85,7 +85,7 @@ int     LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 ) {
 }
 
 
-int     LexCmp( string PGM *str1, string PGM *str2 ) {
+int     LexCmp( string *str1, string *str2 ) {
 //====================================================
 
 // Compare two strings (run-time entry point).

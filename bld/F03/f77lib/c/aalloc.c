@@ -113,13 +113,13 @@ static  bool    Allocated( void **arr, unsigned_16 flags ) {
 void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
 //======================================================
 
-    void PGM * PGM *    item;
-    struct string PGM * scb;
-    adv_entry PGM *     adv_ent;
+    void  * *        item;
+    struct string * scb;
+    adv_entry *     adv_ent;
     uint                dims;
     unsigned_32         size;
     va_list             args;
-    intstar4 PGM *      stat;
+    intstar4 *      stat;
     intstar4            location;
     unsigned_32         elt_size;
     unsigned_16         alloc_flags;
@@ -134,7 +134,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
 
     va_start( args, num );
     if( alloc_type & ( ALLOC_STAT | ALLOC_NONE ) ) {
-        stat = va_arg( args, intstar4 PGM * );
+        stat = va_arg( args, intstar4 * );
     } else {
         stat = NULL;
     }
@@ -148,7 +148,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
     }
     while( num != 0 ) {
         alloc_flags = va_arg( args, unsigned_16 );
-        item = va_arg( args, void PGM * PGM * );
+        item = va_arg( args, void * * );
         if( alloc_flags & ALLOC_STRING ) {
             scb = (string *)item;
             dims = 1;
@@ -215,7 +215,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
                 }
             }
   #else
-            *item = (void PGM *)halloc( size, elt_size );
+            *item = (void *)halloc( size, elt_size );
   #endif
 #else
             if( alloc_flags & ALLOC_EXTENDED ) {
@@ -240,10 +240,10 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
 }
 
 
-void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
+void    DeAlloc( intstar4 *stat, uint num, ... ) {
 //====================================================
 
-    void PGM * PGM      *item;
+    void  *      *item;
     va_list             args;
     uint                istat;
     unsigned_16         alloc_flags;
@@ -252,7 +252,7 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
     va_start( args, num );
     while( num != 0 ) {
         alloc_flags = va_arg( args, unsigned_16 );
-        item = va_arg( args, void PGM * PGM * );
+        item = va_arg( args, void * * );
         if( !Allocated( item, alloc_flags ) ) {
             istat = STAT_NOT_ALLOCATED;
         } else {

@@ -35,7 +35,7 @@
 typedef struct character_set {
     int         (* extract_text)(char *,int);
     bool        (* is_double_byte_blank)(char *);
-    int         (* character_width)(char PGM *);
+    int         (* character_width)(char *);
     bool        (* is_foreign)(char);
     bool        (* is_double_byte_char)(char);
 #if !defined( __RT__ )

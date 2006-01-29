@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            InqBlkSize( intstar4 PGM *bsizeptr ) {
+void            InqBlkSize( intstar4 *bsizeptr ) {
 //====================================================
 
     _SetIOCB();

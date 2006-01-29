@@ -52,7 +52,7 @@
 intstar2        fortran SYSHANDLE( intstar4 *unit );
 
 
-intstar4        fortran DWFSETAPPTITLE( string PGM *title ) {
+intstar4        fortran DWFSETAPPTITLE( string *title ) {
 //===========================================================
 
     char        *ttl;
@@ -67,7 +67,7 @@ intstar4        fortran DWFSETAPPTITLE( string PGM *title ) {
 }
 
 
-intstar4        fortran DWFSETABOUTDLG( string PGM *title, string PGM *text) {
+intstar4        fortran DWFSETABOUTDLG( string *title, string *text) {
 //============================================================================
 
     char        *ttl;
@@ -90,7 +90,7 @@ intstar4        fortran DWFSETABOUTDLG( string PGM *title, string PGM *text) {
 }
 
 
-intstar4        fortran DWFSETCONTITLE( intstar4 *unit, string PGM *title ) {
+intstar4        fortran DWFSETCONTITLE( intstar4 *unit, string *title ) {
 //===========================================================================
 
     char        *ttl;

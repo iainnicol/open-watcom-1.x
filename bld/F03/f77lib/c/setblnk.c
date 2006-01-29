@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetBlnk( string PGM *blnkptr ) {
+void            SetBlnk( string *blnkptr ) {
 //==============================================
 
     _SetIOCB();

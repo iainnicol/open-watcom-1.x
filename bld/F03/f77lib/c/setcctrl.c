@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetCCtrl( string PGM *cc ) {
+void            SetCCtrl( string *cc ) {
 //==========================================
 
     _SetIOCB();

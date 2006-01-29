@@ -43,7 +43,7 @@ extern  void            IOErr(int,...);
 extern  bool            FindFtnFile(void);
 extern  void            CloseFile(ftnfile *);
 extern  void            CloseDeleteFile(ftnfile *);
-extern  int             FindKWord(char **,int,int,string PGM *);
+extern  int             FindKWord(char **,int,int,string *);
 extern  void            DiscoFile(ftnfile *);
 extern  int             IOMain(void (*)());
 

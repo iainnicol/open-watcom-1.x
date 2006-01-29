@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetExst( logstar4 PGM *exstptr ) {
+void            SetExst( logstar4 *exstptr ) {
 //================================================
 
     _SetIOCB();

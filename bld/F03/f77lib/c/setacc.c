@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetAcc( string PGM *accptr ) {
+void            SetAcc( string *accptr ) {
 //============================================
 
     _SetIOCB();

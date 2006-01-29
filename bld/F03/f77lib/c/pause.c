@@ -53,7 +53,7 @@ static void noHook() {}
 void (*PAUSE_HOOK)(void) = noHook;
 
 
-void    Pause( string PGM *ptr ) {
+void    Pause( string *ptr ) {
 //================================
 
 // Process a PAUSE statement.

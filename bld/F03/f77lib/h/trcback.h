@@ -38,9 +38,9 @@
 // traceback is a load 'n go traceback
 
 typedef struct traceback {
-    void PGM            *link;          // pointer to previous traceback
+    void               *link;          // pointer to previous traceback
     uint                line;           // current line
-    char                *name;          // current module
+    char               *name;          // current module
 } traceback;
 
 #define TB_LG           (~(uint)0)

@@ -43,7 +43,7 @@ extern  void            R_FExec(void);
 extern  void            (*FmtRoutine)();
 
 
-void            SetFmt( void PGM *ptr ) {
+void            SetFmt( void *ptr ) {
 //=======================================
 
     _SetIOCB();

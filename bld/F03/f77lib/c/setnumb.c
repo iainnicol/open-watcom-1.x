@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetNumb( intstar4 PGM *numbptr ) {
+void            SetNumb( intstar4 *numbptr ) {
 //================================================
 
     _SetIOCB();

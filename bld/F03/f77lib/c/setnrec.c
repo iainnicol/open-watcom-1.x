@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetNRec( intstar4 PGM *nrecptr ) {
+void            SetNRec( intstar4 *nrecptr ) {
 //================================================
 
     _SetIOCB();

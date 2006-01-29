@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetForm( string PGM *formptr ) {
+void            SetForm( string *formptr ) {
 //==============================================
 
     _SetIOCB();

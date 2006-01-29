@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetRecType( string PGM *recfmptr ) {
+void            SetRecType( string *recfmptr ) {
 //==================================================
 
     _SetIOCB();

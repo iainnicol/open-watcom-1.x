@@ -69,7 +69,7 @@ void    GFEmCode( byte code ) {
 }
 
 
-void    GFEmChar( char PGM *ch ) {
+void    GFEmChar( char *ch ) {
 //================================
 
     OutByte( *ch );

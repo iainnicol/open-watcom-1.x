@@ -34,8 +34,8 @@
 #define LGADV_H_INCLUDED
 
 typedef struct lg_adv {
-    void        PGM *origin;    // pointer to array storage
-    struct adv  PGM *adv_link;  // ADV link (chains all ADV's)
+    void        *origin;         // pointer to array storage
+    struct adv  *adv_link;       // ADV link (chains all ADV's)
     int         elt_size;       // element size
     unsigned_32 num_elts;       // number of elements
     unsigned_16 num_ss;         // number of subscripts

@@ -39,7 +39,7 @@
 #include "rtenv.h"
 
 
-void            SetIntl( string PGM *internal, unsigned_32 elmts ) {
+void            SetIntl( string *internal, unsigned_32 elmts ) {
 //==================================================================
 
     _SetIOCB();

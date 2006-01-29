@@ -49,7 +49,7 @@ extern  bool            IsFixed(void);
 extern  const byte __FAR        SizeVars[];
 
 
-static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
+static  void    IOItemCopy( char *dst, char *src, PTYPE typ ) {
 //===================================================================
 
     switch( typ ) {

@@ -47,7 +47,7 @@
 #include <string.h>
 
 extern  void            SendEOR(void);
-extern  void            SendStr(char PGM *,uint);
+extern  void            SendStr(char *,uint);
 extern  void            SendChar(char,int);
 extern  void            Drop(char);
 extern  void            NextRec(void);
@@ -230,7 +230,7 @@ void    R_FIStr() {
     uint        length;
     ftnfile     *fcb;
     char        *src;
-    char        PGM *ptr;
+    char        *ptr;
 
     fcb   = IOCB->fileinfo;
     width = IOCB->fmtptr->fmt4.fld1;
@@ -269,9 +269,9 @@ static  void    SetLogValue( logstar4 value ) {
 //=============================================
 
     if( IOCB->typ == PT_LOG_1 ) {
-        *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
+        *(logstar1 *)(IORslt.pgm_ptr) = value;
     } else {
-        *(logstar4 PGM *)(IORslt.pgm_ptr) = value;
+        *(logstar4 *)(IORslt.pgm_ptr) = value;
     }
 }
 
@@ -328,7 +328,7 @@ void    R_FIFloat() {
 // Input an real or complex variable in D, E, F, G format.
 
     extended     value;
-    fmt2 PGM    *fmtptr;
+    fmt2     *fmtptr;
     ftnfile     *fcb;
     PTYPE       typ;
     int         prec;
@@ -368,28 +368,28 @@ void    R_FIFloat() {
             fcb->col += fmtptr->fld1;
         }
         if( typ  == PT_REAL_4 ) {
-            *(single PGM *)(IORslt.pgm_ptr) = value;
+            *(single *)(IORslt.pgm_ptr) = value;
         } else if( typ  == PT_REAL_8 ) {
-            *(double PGM *)(IORslt.pgm_ptr) = value;
+            *(double *)(IORslt.pgm_ptr) = value;
         } else if( typ  == PT_REAL_16 ) {
-            *(extended PGM *)(IORslt.pgm_ptr) = value;
+            *(extended *)(IORslt.pgm_ptr) = value;
         } else if( typ  == PT_CPLX_8 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
-                ((complex PGM *)(IORslt.pgm_ptr))->realpart = value;
+                ((complex *)(IORslt.pgm_ptr))->realpart = value;
             } else {
-                ((complex PGM *)(IORslt.pgm_ptr))->imagpart = value;
+                ((complex *)(IORslt.pgm_ptr))->imagpart = value;
             }
         } else if( typ  == PT_CPLX_16 ) {
             if( IOCB->flags & IOF_FMTREALPART ) {
-                ((dcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
+                ((dcomplex *)(IORslt.pgm_ptr))->realpart = value;
             } else {
-                ((dcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
+                ((dcomplex *)(IORslt.pgm_ptr))->imagpart = value;
             }
         } else {
             if( IOCB->flags & IOF_FMTREALPART ) {
-                ((xcomplex PGM *)(IORslt.pgm_ptr))->realpart = value;
+                ((xcomplex *)(IORslt.pgm_ptr))->realpart = value;
             } else {
-                ((xcomplex PGM *)(IORslt.pgm_ptr))->imagpart = value;
+                ((xcomplex *)(IORslt.pgm_ptr))->imagpart = value;
             }
         }
     } else {
@@ -450,7 +450,7 @@ void    R_FOF() {
 //===============
 
     ftnfile     *fcb;
-    fmt2 PGM    *fmt;
+    fmt2     *fmt;
     char        *buf;
     uint        wid;
     extended    val;
@@ -471,7 +471,7 @@ void    R_FOE( int exp, char ch ) {
 //=================================
 
     ftnfile     *fcb;
-    fmt3 PGM    *fmt;
+    fmt3    *fmt;
     char        *buf;
     uint        wid;
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
@@ -522,7 +522,7 @@ void    R_FOE( int exp, char ch ) {
 }
 
 
-bool    FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
+bool    FmtH2B( char *src, uint width, char *dst, int len, PTYPE typ ) {
 //==========================================================================
 
     char        ch1;
@@ -595,7 +595,7 @@ void    R_FIHex() {
     int         len;
     ftnfile     *fcb;
     PTYPE       typ;
-    void        PGM *ptr;
+    void        *ptr;
 
     fcb = IOCB->fileinfo;
     width = IOCB->fmtptr->fmt1.fld1;
@@ -766,11 +766,11 @@ void    R_FIInt() {
             fcb->col += width;
         }
         if( IOCB->typ == PT_INT_1 ) {
-            *(intstar1 PGM *)(IORslt.pgm_ptr) = value;
+            *(intstar1 *)(IORslt.pgm_ptr) = value;
         } else if( IOCB->typ == PT_INT_2 ) {
-            *(intstar2 PGM *)(IORslt.pgm_ptr) = value;
+            *(intstar2 *)(IORslt.pgm_ptr) = value;
         } else {
-            *(intstar4 PGM *)(IORslt.pgm_ptr) = value;
+            *(intstar4 *)(IORslt.pgm_ptr) = value;
         }
     }
 }

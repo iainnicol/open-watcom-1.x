@@ -38,5 +38,5 @@ gbl_defn char           *FmtBuff;
 gbl_defn void           (*FmtRoutine)();        // formatting routine
 
 #if !defined( __MT__ )
-    gbl_defn struct traceback PGM *ExCurr;      // head of traceback list
+    gbl_defn struct traceback *ExCurr;      // head of traceback list
 #endif

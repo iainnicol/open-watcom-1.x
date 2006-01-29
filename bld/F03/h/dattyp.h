@@ -98,7 +98,7 @@ typedef union ftn_type {
     struct cstring      cstring;
     struct string       string;
     struct arr_desc     arr_desc;
-    void                PGM *pgm_ptr;
+    void                *pgm_ptr;
     struct {                            // we don't want the structure chain
         intstar4        field_offset;   // to destroy the field offset during
         void            *struct_chain;  // down-scan.

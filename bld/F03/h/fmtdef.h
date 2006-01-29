@@ -87,5 +87,5 @@ typedef union fmt_desc {
 
 typedef union fmt_ptr {
     obj_ptr             cp;     // compile-time pointer
-    char PGM            *rt;    // run-time pointer
+    char                *rt;    // run-time pointer
 } fmt_ptr;

@@ -38,10 +38,10 @@
 #include "ifenv.h"
 #include "rtenv.h"
 
-extern int              LexCmp(string PGM *,string PGM *);
+extern int              LexCmp(string *,string  *);
 
 
-logstar4        LLT( string PGM *arg1, string PGM *arg2 ) {
+logstar4        LLT( string  *arg1, string *arg2 ) {
 //=========================================================
 
 // Return true if arg1 < arg2 else return false.

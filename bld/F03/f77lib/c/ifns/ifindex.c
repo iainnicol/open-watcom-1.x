@@ -38,7 +38,7 @@
 #include "ifenv.h"
 
 
-intstar4        XINDEX( char PGM *s, char PGM *t, uint slen, uint tlen ) {
+intstar4        XINDEX( char *s, char *t, uint slen, uint tlen ) {
 //========================================================================
 
     unsigned int        i;
@@ -59,7 +59,7 @@ intstar4        XINDEX( char PGM *s, char PGM *t, uint slen, uint tlen ) {
 }
 
 
-intstar4        INDEX( string PGM *arg1, string PGM *arg2 ) {
+intstar4        INDEX( string *arg1, string *arg2 ) {
 //===========================================================
 
 // Return the index of the location of string arg2 in string arg1.

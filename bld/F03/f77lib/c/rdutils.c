@@ -47,7 +47,7 @@ extern  void            FGetBuff(ftnfile *);
 extern  void            SetEOF(void);
 extern  void            SysEOF(void);
 extern  void            ChkIOErr(ftnfile *);
-extern  void            NextIFBuff(char *,int,unsigned_32,string PGM *);
+extern  void            NextIFBuff(char *,int,unsigned_32,string  *);
 extern  void            UpdateRecNum(ftnfile *);
 
 

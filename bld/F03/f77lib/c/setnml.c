@@ -46,7 +46,7 @@ extern  void                    NmlAddrs(va_list);
 extern  void                    (*FmtRoutine)();
 
 
-void            SetNml( void PGM *nml, ... ) {
+void            SetNml( void *nml, ... ) {
 //============================================
 
     va_list     args;
