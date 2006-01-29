@@ -33,18 +33,20 @@
 // Define system dependent macros:
 // ================================
 
-#define PGM     // defines a pointer to program data
+//#define PGM     // nowhere anything else but ' ', removed // defines a pointer to program data
 
-#if defined( __386__ ) || defined( __MEDIUM__ ) || defined( __AXP__ ) || defined( __PPC__ )
-#define HPGM            // defines a huge pointer to program data
-#else
-#define HPGM    huge    // defines a huge pointer to program data
-#endif
 
-#define _LogValue( X ) X
+// we don't support anything else as host anylonger, removed
+//#if defined( __386__ ) || defined( __MEDIUM__ ) || defined( __AXP__ ) || defined( __PPC__ )
+//#define HPGM            // defines a huge pointer to program data
+//#else
+//#define HPGM    huge    // defines a huge pointer to program data
+//#endif
 
-#define _SYSRETCOD( numerrs ) numerrs
-#define _SUCCESSFUL  0
-#define _BADCMDLINE -1
-#define _NOFILENAME -2
-#define _REQSYNTAX  -3
+//#define _LogValue( X ) X
+
+//#define _SYSRETCOD( numerrs ) numerrs
+//#define _SUCCESSFUL  0
+//#define _BADCMDLINE -1
+//#define _NOFILENAME -2
+//#define _REQSYNTAX  -3

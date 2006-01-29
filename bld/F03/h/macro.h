@@ -58,7 +58,7 @@
 #define _ON    1
 
 
-#include "sdmacro.h"
+//#include "sdmacro.h"
 #include "switch.h"
 
 // Define multi-language constants:
