@@ -94,14 +94,14 @@ static  bool    ProcCmd( char *buffer ) {
 
 	char	*opt_array[MAX_OPTIONS+1] = {NULL};
 
-    RetCode = _BADCMDLINE;
+    RetCode = RET_BADCMDLINE;
     
     //opt_array[0] = NULL;
     RetCode      = ProcName(SrcName);
-    if( RetCode == _SUCCESSFUL ) {
+    if( RetCode == RET_SUCCESSFUL ) {
         ProcOpts( opt_array );
     }
-    return( RetCode == _SUCCESSFUL );
+    return( RetCode == RET_SUCCESSFUL );
 }
 
 
@@ -109,21 +109,24 @@ void    Compile( char *buffer ) {
 //===============================
 
     InitCompile();
-    if( ProcCmd( buffer ) != FALSE ) {
+    if( ProcCmd( buffer ) != FALSE )
+    {
         // initialize permanent i/o buffers after memory has been
         // initialized
         InitMemIO();
         // Compile Link and Execute (historic name!)
         CLE();
-        if( ( NumErrors != 0 ) && ( RetCode == _SUCCESSFUL ) ) {
-            RetCode = _SYSRETCOD( NumErrors );
+        if( ( NumErrors != 0 ) && ( RetCode == RET_SUCCESSFUL ) )
+        {
+            RetCode = NumErrors ;
         }
-    } else {
+    } else
+    {
         // error in command line
         ShowUsage();
-        if( RetCode == _REQSYNTAX ) {
+        if( RetCode == RET_REQSYNTAX ) {
             // A specific request for syntax (WATFOR77 ?) should return 0.
-            RetCode = _SUCCESSFUL;
+            RetCode = RET_SUCCESSFUL;
         }
     }
     FiniComIO();
@@ -209,15 +212,15 @@ void    FiniCompile() {
 static int  ProcName(char *srcName)
 {
 	if( NULL == srcName )
-		return _NOFILENAME;
+		return RET_NOFILENAME;
 
    if( NULLCHAR == *srcName )
-	   return _NOFILENAME;
+	   return RET_NOFILENAME;
 
    if( '?' == *srcName  ) 
-      return _REQSYNTAX;
+      return RET_REQSYNTAX;
     
-   return _SUCCESSFUL ;
+   return RET_SUCCESSFUL ;
 }
 
 

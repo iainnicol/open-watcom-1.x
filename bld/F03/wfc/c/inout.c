@@ -339,7 +339,7 @@ void    Include( char *inc_name ) {
     }
     // clear RetCode so that we don't get "file not found" returned
     // because we could not open include file
-    RetCode = _SUCCESSFUL;
+    RetCode = 0;// dirty should be done by a small procedure _SUCCESSFUL;
     {
         extern  void    AddDependencyInfo(source_t *);
 

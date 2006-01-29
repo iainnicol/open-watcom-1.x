@@ -37,3 +37,9 @@ extern  char    *SkipBlanks( char *ptr );
 extern  void    InitCompile();
 extern  void    FiniCompile();
 extern  void    ProcOpts( char **opt_array );
+
+enum RetCode { RET_SUCCESSFUL    =  0,
+               RET_BADCMDLINE    = -1,
+               RET_NOFILENAME    = -2,
+               RET_REQSYNTAX     = -3
+};
