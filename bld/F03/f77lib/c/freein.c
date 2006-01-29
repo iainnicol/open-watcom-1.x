@@ -324,9 +324,9 @@ static  void    InLog() {
     fcb = IOCB->fileinfo;
     chptr = &fcb->buffer[ fcb->col ];
     if( toupper( *chptr ) == 'T' ) {
-        value = _LogValue( TRUE );
+        value = TRUE ;
     } else {
-        value = _LogValue( FALSE );
+        value = FALSE;
     }
     for(;;) {
         chptr++;

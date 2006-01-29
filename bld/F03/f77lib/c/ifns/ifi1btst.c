@@ -45,8 +45,8 @@ logstar4        I1BTEST( intstar1 arg1, intstar1 arg2 ) {
 
     bit = 1;
     bit <<= arg2;
-    if( arg1 & bit ) return( _LogValue( TRUE ) );
-    return( _LogValue( FALSE ) );
+    if( arg1 & bit ) return( TRUE );
+    return( FALSE );
 }
 
 logstar4        XI1BTEST( intstar1 *arg1, intstar1 *arg2 ) {

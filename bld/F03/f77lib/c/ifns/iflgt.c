@@ -46,6 +46,6 @@ logstar4        LGT( string *arg1, string  *arg2 ) {
 
 // Return true if arg1 > arg2 else return false.
 
-    if( LexCmp( arg1, arg2 ) > 0 ) return( _LogValue( TRUE ) );
-    return( _LogValue( FALSE ) );
+    if( LexCmp( arg1, arg2 ) > 0 ) return( TRUE );
+    return( FALSE );
 }

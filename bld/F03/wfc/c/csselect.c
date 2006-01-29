@@ -165,7 +165,7 @@ static  intstar4        CaseValue() {
     if( _IsTypeInteger( CITNode->typ ) ) {
         return( ITIntValue( CITNode ) );
     } else if( _IsTypeLogical( CITNode->typ  ) ) {
-        return( _LogValue( CITNode->value.logstar1 ) );
+        return( CITNode->value.logstar1 );
     } else { // if( CITNode->typ = TY_CHAR ) {
         return( *CITNode->value.cstring.strptr );
     }

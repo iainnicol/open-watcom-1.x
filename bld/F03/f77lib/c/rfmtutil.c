@@ -300,9 +300,9 @@ void    R_FILog() {
     } else {
         ch = toupper( fcb->buffer[ fcb->col ] );
         if( ch == 'F' ) {
-            SetLogValue( _LogValue( FALSE ) );
+            SetLogValue( FALSE );
         } else if( ch == 'T' ) {
-            SetLogValue( _LogValue( TRUE ) );
+            SetLogValue( TRUE );
         }
     }
     if( __AllowCommaSep() ) { // don't flush but search for comma separator

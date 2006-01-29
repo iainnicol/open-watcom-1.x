@@ -1028,7 +1028,7 @@ int     FETrue() {
 
 // Return the value for "true".
 
-    return( _LogValue( TRUE ) );
+    return( TRUE );
 }
 
 

@@ -45,8 +45,8 @@ logstar4        BTEST( intstar4 arg1, intstar4 arg2 ) {
 
     bit = 1;
     bit <<= arg2;
-    if( arg1 & bit ) return( _LogValue( TRUE ) );
-    return( _LogValue( FALSE ) );
+    if( arg1 & bit ) return( TRUE );
+    return( FALSE );
 }
 
 logstar4        XBTEST( intstar4 *arg1, intstar4 *arg2 ) {
