@@ -154,7 +154,7 @@ static  void    RecordUnFmtIn() {
 }
 
 
-static  void    IUnStream( char HPGM *dst, unsigned long len ) {
+static  void    IUnStream( char  *dst, unsigned long len ) {
 //==============================================================
 
     uint        amt;
@@ -210,7 +210,7 @@ static  void    StreamUnFmtIn() {
 }
 
 
-static  void    IUnBytes( char HPGM *dst, unsigned long len ) {
+static  void    IUnBytes( char  *dst, unsigned long len ) {
 //=============================================================
 
     uint        amt;

@@ -157,7 +157,7 @@ void    UnFmtOut() {
 }
 
 
-static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
+static  void    OUnBytes( char  *src, unsigned long len, PTYPE item_typ ) {
 //============================================================================
 
     char        *dst;

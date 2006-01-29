@@ -37,7 +37,7 @@
 #include "ftnstd.h"
 #include "pgmacc.h"
 
-#define _Normalize( ptr, offset ) ((char *)((char HPGM *)ptr + offset))
+#define _Normalize( ptr, offset ) ((char *)((char  *)ptr + offset))
 
 
 void    SendIFBuff( char *buffer, int len, unsigned_32 recnum,

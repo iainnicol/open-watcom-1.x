@@ -188,7 +188,7 @@ static  intstar4        SubScr( int info, char *adv_ss_ptr, int size ) {
     }
     if( !ScanChar( ')' ) ) return( FALSE );
     if( !DoSubscript( &dim_list, ss, &offset ) ) return( FALSE );
-    NmlInAddr = (char HPGM *)NmlInAddr + offset * size;
+    NmlInAddr = (char  *)NmlInAddr + offset * size;
     return( TRUE );
 }
 
@@ -438,11 +438,11 @@ static PTYPE    NmlIOType() {
         IORslt.string.len = ((string *)NmlInAddr)->len;
         IORslt.string.strptr = ((string *)NmlInAddr)->strptr;
         ((string *)NmlInAddr)->strptr =
-            ((char HPGM *)((string *)NmlInAddr)->strptr) +
+            ((char  *)((string *)NmlInAddr)->strptr) +
                                             ((string *)NmlInAddr)->len;
     } else { // numeric or logical
         IORslt.pgm_ptr = NmlInAddr;
-        NmlInAddr = (char HPGM *)NmlInAddr + SizeVars[ NmlInType ];
+        NmlInAddr = (char *)NmlInAddr + SizeVars[ NmlInType ];
     }
     return( NmlInType );
 }
