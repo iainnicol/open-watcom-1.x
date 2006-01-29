@@ -42,7 +42,6 @@
 typedef unsigned        char    byte;
 typedef void            *pointer;
 typedef float           real;
-typedef double          reallong;
 
 #if !defined( __AXP__ ) && !defined( __PPC__ )
 #pragma aux Suicide aborts;

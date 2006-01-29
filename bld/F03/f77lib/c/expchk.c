@@ -42,7 +42,7 @@
 // We have chosen d1=3, d2=7, w=24, d=15 (double precision) or d=7 (real).
 
 
-bool    ToFFormat( reallong val ) {
+bool    ToFFormat( double  val ) {
 //=================================
 
 // Check if floating point value can be displayed using F format.

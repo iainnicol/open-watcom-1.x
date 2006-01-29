@@ -52,7 +52,7 @@ extern  void            DSName(void);
 extern  void            FreeITNodes(itnode *);
 extern  sym_id          LkUpStmtNo(void);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
-extern  int             FmtS2F(char *,int,int,bool,int,int,reallong *,bool,int *,bool);
+extern  int             FmtS2F(char *,int,int,bool,int,int,double *,bool,int *,bool);
 
 
 static  void    LitC() {
