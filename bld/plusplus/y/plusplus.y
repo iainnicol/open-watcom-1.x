@@ -2949,11 +2949,15 @@ template-directive
 template-class-directive-extern
     : template-directive-class
     { TemplateClassDirective( $1, TCD_EXTERN ); }
+    | Y_CLASS template-directive-class
+    { TemplateClassDirective( $2, TCD_EXTERN ); }
     ;
     
 template-class-directive-instantiate
     : template-directive-class
     { TemplateClassDirective( $1, TCD_INSTANTIATE ); }
+    | Y_CLASS template-directive-class
+    { TemplateClassDirective( $2, TCD_INSTANTIATE ); }
     ;
     
 template-directive-class
