@@ -34,6 +34,7 @@
 #include "global.h"
 #include "opr.h"
 
+#include <string.h>
 #include <stdio.h>
 
 static  char    *Opn[] = {
@@ -51,6 +52,14 @@ static  char    *Opn[] = {
     "OPN_FMT"
 };
 
+// protoypes
+void    Node(itnode * ,int); 
+void    SLine(void);
+void    DLine(void);
+
+static const char   sline[] = "+------------+-----------+-------------+\n"; 
+static const char   dline[] = "+============+===========+=============+\n"; 
+//static const size_t slength = sizeof(sline) -1;
 
 static char *Typ(byte typ) {
 //===========================
@@ -145,31 +154,85 @@ static  char    *Opr( byte opr ) {
 }
 
 
-void    DumpLex() {
-//=================
-// Dump the Current Internal Text list to stdout
+///////////////////////////////////////////////////
 //
+// dump a list of internal text nodes onto the screen
+//
+///////////////////////////////////////////////////
+void    DumpLex(itnode * node)
+{   int count = 0;
 
-itnode *dumpNode = CITNode;
-    LLine();
+    itnode *dumpNode = node;
+    Record();
     while( dumpNode != NULL ) {
-        Node(dumpNode);
-        LLine();
+        Node(dumpNode, ++count);
         dumpNode = dumpNode->link;
     }
 }
 
 
-static  void    Node(itnode * dumpNode ) {
-//======================
+static  void    Node(itnode * dumpNode, int count )
+{
+    char operand[50] = {0};
+    int i;
+    int endlength ;
 
-    printf( "|  %s  |  %s  |  %s  |\n", Opr( dumpNode->opr ), Opn[ dumpNode->opn.ds ],
-       Typ(dumpNode->typ));
-}
+    if (dumpNode == NULL) return;
+
+    DLine();
+    printf("+ Address: 0x%p  (%5d)         +\n", dumpNode, count);
+    DLine();
+    printf("+ Link:    0x%p                  +\n", dumpNode->link);
+    printf("+ Arglist: 0x%p                  +\n", dumpNode->list);
+    SLine();
+   
+    printf( "|  %s  |  %s  |%s|\n", 
+            Opr( dumpNode->opr ),
+            Opn[ dumpNode->opn.ds ],
+            Typ(dumpNode->typ));
+    printf("|  %4d      |  %4d     |   %4d      |\n",
+            dumpNode->opr, dumpNode->opn.ds, dumpNode->typ);
+    SLine();
+    printf("| Flags: %#06x                        |\n", dumpNode->flags); 
+    
+    
+    if (dumpNode->opnd == NULL){
+        operand[0] ='\0';
+    } else {
+     //   int i;
+        for (i = 0; i < dumpNode->opnd_size; ++i){
+             operand[i] = *(dumpNode->opnd +i);
+        }
+        operand[dumpNode->opnd_size] = '\0';
+    }
+    printf("| Operand: %-s", operand);
+   
+   
+    endlength = strlen(sline) - 13 - dumpNode->opnd_size;
+    for (i = 0; i < endlength ;++i){
+        printf(" ");
+    }
+    printf("|\n");
+
+    SLine();
+ }
 
 
-static  void    LLine() {
+static  void    SLine(void) {
 //=======================
 
-    printf( "+-----------+------------+\n" );
+    printf( sline );
+}
+
+static  void    DLine(void) {
+//=======================
+
+    printf( dline);
+}
+
+static void Record(void) {
+//========================== 
+    DLine();
+    printf("|| Line : %-8d                    ||\n", SrcRecNum);
+  //  DLine();
 }
