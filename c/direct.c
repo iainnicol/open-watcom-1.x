@@ -127,10 +127,14 @@ extern  int_8           DefineProc;     // TRUE if the definition of procedure
 extern char             *CurrString;    // Current Input Line
 extern char             EndDirectiveFound;
 extern struct asm_sym   *SegOverride;
+extern void             PushLineQueue( void );
+extern void             PopLineQueue( void );
 
 seg_list                *CurrSeg;       // points to stack of opened segments
 uint                    LnamesIdx;      // Number of LNAMES definition
 obj_rec                 *ModendRec;     // Record for Modend
+
+int                     in_prologue;
 
 static assume_info      AssumeTable[ASSUME_LAST];
 
@@ -1414,10 +1418,8 @@ static seg_type ClassNameType( char *name )
     if( name == NULL )
         return( SEGTYPE_UNDEF );
     if( ModuleInfo.init ) {
-        if( strcmp( name, Options.code_class ) == 0 ) {
+        if( stricmp( name, Options.code_class ) == 0 ) {
             return( SEGTYPE_ISCODE );
-        } else {
-            return( SEGTYPE_ISDATA );
         }
     }
     slen = strlen( name );
@@ -3165,6 +3167,9 @@ int WritePrologue( void )
     /**/myassert( CurrProc != NULL );
     info = CurrProc->e.procinfo;
 
+    /* save 1st instruction following a procedure definition */
+    InputQueueLine( CurrString );
+
     if( Parse_Pass == PASS_1 ) {
 
         /* Figure out the replacing string for local variables */
@@ -3221,6 +3226,8 @@ int WritePrologue( void )
         }
     }
 
+    in_prologue = TRUE;
+    PushLineQueue();
     if( ( info->localsize != 0 ) || ( info->parasize != 0 ) || info->is_vararg ) {
         // prolog code timmings
         //
@@ -3270,13 +3277,14 @@ int WritePrologue( void )
         }
         InputQueueLine( buffer );
     }
-
     /* Push the registers */
-    strcpy( buffer, "push " );
-    len = strlen( buffer );
-    for( regist = info->regslist; regist; regist = regist->next ) {
-        strcpy( buffer + len, regist->reg );
-        InputQueueLine( buffer );
+    if( info->regslist ) {
+        strcpy( buffer, "push " );
+        len = strlen( buffer );
+        for( regist = info->regslist; regist; regist = regist->next ) {
+            strcpy( buffer + len, regist->reg );
+            InputQueueLine( buffer );
+        }
     }
     return( NOT_ERROR );
 }
