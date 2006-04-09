@@ -61,7 +61,7 @@
 // it is for better compatibility with MASM
 #define SEPARATE_FIXUPP_16_32 1
 
-extern void             CheckForOpenConditionals();
+extern void             CheckForOpenConditionals( void );
 extern void             set_cpu_parameters( void );
 extern void             set_fpu_parameters( void );
 extern void             CheckProcOpen( void );
@@ -112,7 +112,7 @@ void AddFlist( char const *filename )
     int         index;
     char        *fname;
     char        buff[2*_MAX_PATH];
-        
+
     if( !Options.emit_dependencies )
         return;
 
@@ -189,7 +189,7 @@ void OutSelect( bool starts )
     unsigned long       curr;
 
     if( starts ) {
-        if( !Options.output_comment_data_in_code_records || Globals.data_in_code 
+        if( !Options.output_comment_data_in_code_records || Globals.data_in_code
             || !Globals.code_seg )
             return;
         Globals.sel_start = GetCurrAddr();
@@ -360,7 +360,7 @@ static void write_seg( void )
     uint        total_segs = 0;
 
     for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
-        if( ( curr->sym.segment == NULL ) 
+        if( ( curr->sym.segment == NULL )
           && ( curr->e.seginfo->group == NULL ) )
             AsmErr( SEG_NOT_DEFINED, curr->sym.name );
         total_segs++;
@@ -892,8 +892,8 @@ static void put_public_procs_in_public_table( void )
     }
 }
 
-static void write_alias()
-/***********************/
+static void write_alias( void )
+/*****************************/
 {
     obj_rec             *objr;
     char                *alias;
@@ -928,8 +928,8 @@ static void write_alias()
     }
 }
 
-static int write_pub()
-/*********************/
+static int write_pub( void )
+/**************************/
 /* note that procedures with public or export visibility are written out here */
 {
     obj_rec             *objr;
@@ -1174,4 +1174,3 @@ void WriteObjModule( void )
     FreeIncludePath();
     write_fini();
 }
-

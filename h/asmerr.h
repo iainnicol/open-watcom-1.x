@@ -87,10 +87,10 @@ extern void             AsmNote( int msgnum, ... );
     #define MAX_RESOURCE_SIZE   128
 
 
-    extern int MsgInit();
+    extern int MsgInit( void );
     extern int MsgGet( int, char * );
-    extern void MsgPutUsage();
-    extern void MsgFini();
+    extern void MsgPutUsage( void );
+    extern void MsgFini( void );
     extern void MsgSubStr( char *, char *, char );
     extern void MsgChgeSpec( char *strptr, char specifier );
 

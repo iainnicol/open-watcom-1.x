@@ -231,7 +231,7 @@ static void seg_override( int seg_reg, asm_sym *sym )
             }
         }
     }
-    
+
     if( Code->prefix.seg == default_seg ) {
         Code->prefix.seg = EMPTY;
     }
@@ -1747,7 +1747,7 @@ static int process_reg( expr_list *opndx )
         Code->info.rm_byte |= reg;
     } else {
         // the second operand
-        if( ( Code->info.token == T_XCHG ) 
+        if( ( Code->info.token == T_XCHG )
             && ( ( Code->info.opnd_type[OPND1] == OP_AX )
             || ( Code->info.opnd_type[OPND1] == OP_EAX ) ) ) {
             // XCHG can use short form if op1 is AX or EAX
@@ -2353,7 +2353,7 @@ static int check_size( void )
     case T_MOVNTI:
         break;
     case T_MOVD:
-#if 0    
+#if 0
         op1_size = OperandSize( op1 );
         op2_size = OperandSize( op2 );
         if( ( op1_size != 0 ) && ( op1_size != 4 )
@@ -2361,7 +2361,7 @@ static int check_size( void )
             AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
             state = ERROR;
         }
-#endif        
+#endif
         break;
     case T_MOV:
         if( op1 & OP_SR ) {
@@ -2580,7 +2580,7 @@ void AsmInit( int cpu, int fpu, int use32, int extn )
 
     // initialize AsmOpcode table to point to entry in AsmOpTable
     // token has its own value, e.g. T_AAA is 0, T_ADD is 1, etc.
-    
+
     if( AsmOpcode[1].position == 0 ) {  // if not initialized
         while( AsmOpcode[token_value].len != 0 ) {
             do {

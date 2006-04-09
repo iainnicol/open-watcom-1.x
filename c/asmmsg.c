@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  diagnostics related functions (error/warning/note messages)
 *
 ****************************************************************************/
 
@@ -152,7 +151,7 @@ void AsmWarn( int level, int msgnum, ... )
 
 static void PrtMsg1( register char *prefix, register int msgnum,
                    va_list args1, va_list args2 )
-/**************************/
+/**************************************************************/
 // print messages from WOMP !!!
 {
     if( !Options.banner_printed ) {
@@ -185,13 +184,15 @@ void PrtMsg( int msgnum, ... )
     fflush( errout );
 }
 
-void DelErrFile() {
+void DelErrFile( void )
+/*********************/
+{
     // fixme if( CompFlags.errout_redirected ) return;
     remove( AsmFiles.fname[ERR] );
 }
 
-void OpenErrFile()
-/****************/
+void OpenErrFile( void )
+/**********************/
 {
 //    if( !isatty( fileno( errout ) ) ) return;
     if( AsmFiles.fname[ERR] != NULL ) {
@@ -220,13 +221,14 @@ static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args )
     }
 }
 
-static void AsmSuicide()
+static void AsmSuicide( void )
+/****************************/
 {
     exit(1);
 }
 
-void PrintStats()
-/***************/
+void PrintStats( void )
+/*********************/
 {
     __printf( "%s: ", AsmFiles.fname[ASM] );
     __printf( "%lu lines, ", LineNumber );

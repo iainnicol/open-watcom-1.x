@@ -1512,7 +1512,7 @@ int SegDef( int i )
     switch( AsmBuffer[i+1]->value ) {
     case T_SEGMENT:
         seg = ObjNewRec( CMD_SEGDEF );
-        
+
         /* Check to see if the segment is already defined */
         sym = AsmGetSymbol( name );
         if( sym != NULL ) {
@@ -1542,7 +1542,7 @@ int SegDef( int i )
             defined = FALSE;
             ignore = FALSE;
         }
-        
+
         /* Setting up default values */
         if( !defined ) {
             seg->d.segdef.align = ALIGN_PARA;
@@ -1568,20 +1568,20 @@ int SegDef( int i )
         dirnode->e.seginfo->ignore = FALSE; // always false unless set explicitly
         seg->d.segdef.access_valid = FALSE;
         seg->d.segdef.seg_length = 0;
-        
+
         if( lastseg.stack_size > 0 ) {
             seg->d.segdef.seg_length = lastseg.stack_size;
             lastseg.stack_size = 0;
         }
-        
+
         i+=2; /* go past segment name and "SEGMENT " */
-        
+
         for( ; i < Token_Count; i ++ ) {
             if( AsmBuffer[i]->token == T_STRING ) {
 
                 /* the class name - the only token which is of type STRING */
                 token = AsmBuffer[i]->string_ptr;
-                
+
                 classidx = FindLnameIdx( token );
                 if( classidx == LNAME_NULL ) {
                     classidx = InsertClassLname( token );
@@ -1592,20 +1592,20 @@ int SegDef( int i )
                 seg->d.segdef.class_name_idx = classidx;
                 continue;
             }
-            
+
             /* go through all tokens EXCEPT the class name */
             token = AsmBuffer[i]->string_ptr;
-            
+
             // look up the type of token
             type = token_cmp( &token, TOK_READONLY, TOK_AT );
             if( type == ERROR ) {
                 AsmError( UNDEFINED_SEGMENT_OPTION );
                 return( ERROR );
             }
-            
+
             /* initstate is used to check if any field is already
             initialized */
-            
+
             if( initstate & TypeInfo[type].init ) {
                 AsmError( SEGMENT_PARA_DEFINED ); // initialized already
                 return( ERROR );
@@ -1669,7 +1669,7 @@ int SegDef( int i )
 
         if( defined && !ignore && !dirnode->e.seginfo->ignore ) {
             /* Check if new definition is different from previous one */
-            
+
             oldobj = dirnode->e.seginfo->segrec;
             if( ( oldreadonly != dirnode->e.seginfo->readonly )
                 || ( oldobj->d.segdef.align != seg->d.segdef.align )
@@ -1693,7 +1693,7 @@ int SegDef( int i )
             oldobj->d.segdef.combine = seg->d.segdef.combine;
             oldobj->d.segdef.use_32 = seg->d.segdef.use_32;
             oldobj->d.segdef.class_name_idx = seg->d.segdef.class_name_idx;
-            
+
             ObjKillRec( seg );
             if( push_seg( dirnode ) == ERROR ) {
                 return( ERROR );
@@ -1735,7 +1735,7 @@ int SegDef( int i )
             AsmError( SEGMENT_NOT_OPENED );
             return( ERROR );
         }
-        
+
         sym = AsmGetSymbol( name );
         if( sym == NULL ) {
             AsmErr( SEG_NOT_DEFINED, name );
@@ -2094,7 +2094,7 @@ static void get_module_name( void )
     /**/myassert( AsmFiles.fname[ASM] != NULL );
     _splitpath( AsmFiles.fname[ASM], NULL, NULL, ModuleInfo.name, dummy );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
-        if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' ) 
+        if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
             || ( *p == '@' ) || ( *p == '?') ) ) {
             /* it's not a legal character for a symbol name */
             *p = '_';
@@ -2452,7 +2452,7 @@ int FixOverride( int index )
     return( ERROR );
 }
 
-static enum assume_reg search_assume( struct asm_sym *sym, 
+static enum assume_reg search_assume( struct asm_sym *sym,
                          enum assume_reg def, int override )
 /**********************************************************/
 {
