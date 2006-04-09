@@ -40,8 +40,6 @@
 #include "directiv.h"
 #include "asminput.h"
 
-extern char             *curr_src_line;
-
 extern void             MsgPrintf( int resourceid ); // don't use this
 extern int              MsgGet( int resourceid, char *buffer );
 extern int              trademark( void );
@@ -113,7 +111,7 @@ void AsmErr( int msgnum, ... )
     va_list args1, args2;
 
 #ifdef DEBUG_OUT
-    printf( "%s\n", curr_src_line );
+    DebugCurrLine();
 #endif
     va_start( args1, msgnum );
     va_start( args2, msgnum );
@@ -136,7 +134,7 @@ void AsmWarn( int level, int msgnum, ... )
 
     if( level <= WngLevel ) {
 #ifdef DEBUG_OUT
-        printf( "%s\n", curr_src_line );
+        DebugCurrLine();
 #endif
         va_start( args1, msgnum );
         va_start( args2, msgnum );
