@@ -41,13 +41,12 @@
 #include "asmsym.h"
 #include "directiv.h"
 #include "asmlabel.h"
+#include "asminput.h"
 
 #include "myassert.h"
 
 #define    MAX_EQU_NESTING      20
 
-extern void             InputQueueLine( char * );
-extern void             PushLineQueue(void);
 extern int              AsmScan( char * );
 extern void             GetInsString( enum asm_token , char *, int );
 

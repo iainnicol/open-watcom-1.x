@@ -46,6 +46,7 @@
 #include "genmsomf.h"
 #include "directiv.h"
 #include "womputil.h"
+#include "asminput.h"
 
 #ifdef __OSI__
   #include "ostype.h"
@@ -57,10 +58,6 @@ extern void             DelErrFile();
 extern void             PrintStats();
 extern void             PrintfUsage( int first_ln );
 extern void             MsgPrintf1( int resourceid, char *token );
-extern void             InputQueueLine( char * );
-extern int              InputQueueFile( char * );
-extern void             PushLineQueue(void);
-extern void             AddStringToIncludePath( char * );
 
 extern const char       *FingerMsg[];
 

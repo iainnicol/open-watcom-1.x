@@ -42,6 +42,7 @@
 #include "asmfixup.h"
 #include "mangle.h"
 #include "asmlabel.h"
+#include "asminput.h"
 
 #include "myassert.h"
 
@@ -112,10 +113,6 @@ static typeinfo TypeInfo[] = {
 #define LOCAL_STRING            " [bp- "
 #define LOCAL_STRING_32         " [ebp- "
 
-extern char             *ScanLine( char * );
-extern int              InputQueueFile( char * );
-extern void             InputQueueLine( char * );
-
 static char             *Check4Mangler( int *i );
 static int              token_cmp( char **token, int start, int end );
 static void             ModelAssumeInit( void );
@@ -124,11 +121,8 @@ extern  char            write_to_file;  // write if there is no error
 extern  uint_32         BufSize;
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern char             *CurrString;    // Current Input Line
 extern char             EndDirectiveFound;
 extern struct asm_sym   *SegOverride;
-extern void             PushLineQueue( void );
-extern void             PopLineQueue( void );
 
 seg_list                *CurrSeg;       // points to stack of opened segments
 uint                    LnamesIdx;      // Number of LNAMES definition

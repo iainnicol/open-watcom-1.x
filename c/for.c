@@ -37,11 +37,9 @@
 #include "asmins.h"
 #include "directiv.h"
 #include "asmexpnd.h"
+#include "asminput.h"
 
-extern void             PushLineQueue(void);
 extern void             AddTokens( struct asm_tok **, int, int );
-extern void             InputQueueLine( char * );
-extern void             PushMacro( char *, bool );
 
 static const char macroname[] = "__STATIC_IRP_MACRO_";
 

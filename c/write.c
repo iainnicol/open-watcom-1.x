@@ -51,6 +51,7 @@
 #include "queues.h"
 #include "womputil.h"
 #include "asmlabel.h"
+#include "asminput.h"
 
 #include "myassert.h"
 
@@ -60,10 +61,7 @@
 // it is for better compatibility with MASM
 #define SEPARATE_FIXUPP_16_32 1
 
-extern char             *ScanLine( char *, int );
-extern void             FreeIncludePath( void );
 extern void             CheckForOpenConditionals();
-extern bool             PopLineQueue();
 extern void             set_cpu_parameters( void );
 extern void             set_fpu_parameters( void );
 extern void             CheckProcOpen( void );

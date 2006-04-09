@@ -40,21 +40,15 @@
 #include "asmeval.h"
 #include "asmexpnd.h"
 #include "directiv.h"
+#include "asminput.h"
 
 #include "myassert.h"
 
-extern char             *ReadTextLine( char * );
-extern int              InputQueueFile( char * );
 extern int              AsmScan( char * );
-extern void             InputQueueLine( char * );
-extern void             PushLineQueue(void);
-extern char             *get_curr_filename( void );
-extern void             PushMacro( char *, bool );
 extern bool             GetQueueMacroHidden( void );
 
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern char             *CurrString;    // Current Input Line
 extern int              MacroLocalVarCounter;
 
 int                     MacroExitState = 0;

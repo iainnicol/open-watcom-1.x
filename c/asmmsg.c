@@ -38,13 +38,13 @@
 #include "asmdefs.h"
 #include "asmsym.h"
 #include "directiv.h"
+#include "asminput.h"
 
 extern char             *curr_src_line;
 
 extern void             MsgPrintf( int resourceid ); // don't use this
 extern int              MsgGet( int resourceid, char *buffer );
 extern int              trademark( void );
-extern char             *get_curr_filename( void );
 
 void                    OpenErrFile( void );
 void                    print_include_file_nesting_structure( void );

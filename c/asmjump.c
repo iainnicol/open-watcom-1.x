@@ -39,6 +39,7 @@
 
 #if defined( _STANDALONE_ )
   #include "directiv.h"
+  #include "asminput.h"
 #endif
 
 /* prototypes */
@@ -47,7 +48,6 @@ int jmp( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
 
-extern void             InputQueueLine( char * );
 extern void             GetInsString( enum asm_token, char *, int );
 extern int              SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, enum prefix_reg default_reg );

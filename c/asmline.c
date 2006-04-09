@@ -43,6 +43,7 @@
 #include "condasm.h"
 #include "asmexpnd.h"
 #include "macro.h"
+#include "asminput.h"
 
 extern int              in_prologue;
 
@@ -181,7 +182,7 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
     }
 }
 
-input_queue *PushLineQueue( void )
+void PushLineQueue( void )
 /********************************/
 {
     input_queue *new;
@@ -192,7 +193,6 @@ input_queue *PushLineQueue( void )
     new->next = line_queue;
     new->head = new->tail = NULL;
     line_queue = new;
-    return( new );
 }
 
 bool PopLineQueue()

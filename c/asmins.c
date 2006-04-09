@@ -52,6 +52,7 @@
 #if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "myassert.h"
+  #include "asminput.h"
 #endif
 
 extern int              match_phase_1( void );
@@ -75,7 +76,6 @@ static int              segm_override_jumps( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
 
-extern void             InputQueueLine( char * );
 extern int              directive( int , long );
 extern int              SymIs32( struct asm_sym *sym );
 
@@ -87,7 +87,6 @@ extern int_8            DefineProc;     // TRUE if the definition of procedure
 uint_8                  CheckSeg;       // if checking of opened segment is needed
 int_8                   Frame;          // Frame of current fixup
 uint_8                  Frame_Datum;    // Frame datum of current fixup
-extern char             *CurrString;    // Current Input Line
 struct asm_sym          *SegOverride;
 
 static int              in_epilogue = 0;
