@@ -47,7 +47,6 @@
 
 #define    MAX_EQU_NESTING      20
 
-extern int              AsmScan( char * );
 extern void             GetInsString( enum asm_token , char *, int );
 
 static int              createconstant( char *, bool, int, bool, bool );

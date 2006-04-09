@@ -50,8 +50,6 @@ extern int              in_prologue;
 #endif
 
 
-extern int              AsmScan( char *);
-
 char *curr_src_line = NULL;
 
 char *ScanLine( char *, int );

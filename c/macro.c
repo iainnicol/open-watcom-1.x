@@ -44,7 +44,6 @@
 
 #include "myassert.h"
 
-extern int              AsmScan( char * );
 extern bool             GetQueueMacroHidden( void );
 
 extern  int_8           DefineProc;     // TRUE if the definition of procedure
