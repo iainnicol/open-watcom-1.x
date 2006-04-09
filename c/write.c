@@ -78,7 +78,7 @@ extern int              in_prologue;
 int                     MacroLocalVarCounter = 0; // counter for temp. var names
 char                    Parse_Pass;     // phase of parsing
 char                    write_to_file;  // write if there is no error
-uint                    LineNumber;
+unsigned long           LineNumber;
 char                    Modend;         // end of module is reached
 int_8                   DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
@@ -101,8 +101,8 @@ typedef struct  fname_list {
 
 global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
-static FNAMEPTR FNames = NULL;
-static uint     lastLineNumber;
+static FNAMEPTR         FNames = NULL;
+static unsigned long    lastLineNumber;
 
 void AddFlist( char const *filename )
 /***********************************/
@@ -307,15 +307,15 @@ static void write_export( void )
 static void write_grp( void )
 /***************************/
 {
-    dir_node    *curr;
-    dir_node    *segminfo;
-    seg_list    *seg;
-    obj_rec     *grp;
-    uint        line;
-    char        writeseg;
-    unsigned    i = 1;
+    dir_node        *curr;
+    dir_node        *segminfo;
+    seg_list        *seg;
+    obj_rec         *grp;
+    unsigned long   line_num;
+    char            writeseg;
+    unsigned        i = 1;
 
-    line = LineNumber;
+    line_num = LineNumber;
 
     for( curr = Tables[TAB_GRP].head; curr; curr = curr->next, i++ ) {
 
@@ -333,10 +333,10 @@ static void write_grp( void )
             writeseg = TRUE;
             segminfo = (dir_node *)(seg->seg);
             if( ( segminfo->sym.state != SYM_SEG ) || ( segminfo->sym.segment == NULL ) ) {
-                LineNumber = curr->line;
+                LineNumber = curr->line_num;
                 AsmErr( SEG_NOT_DEFINED, segminfo->sym.name );
                 write_to_file = FALSE;
-                LineNumber = line;
+                LineNumber = line_num;
             } else {
                 ObjPut8( grp, GRP_SEGIDX );
                 ObjPutIndex( grp, segminfo->e.seginfo->segrec->d.segdef.idx);
@@ -710,21 +710,21 @@ void AddLinnumDataRef( void )
 /* store a reference for the current line at the current address */
 {
     struct linnum_data  *curr;
-    uint                line_number;
+    unsigned long       line_num;
 
     if( in_prologue ) {
-        line_number = CurrProc->line;
+        line_num = CurrProc->line_num;
     } else {
-        line_number = LineNumber;
+        line_num = LineNumber;
     }
-    if( line_number < 0x8000 )  {
-        if( lastLineNumber != line_number ) {
+    if( line_num < 0x8000 )  {
+        if( lastLineNumber != line_num ) {
             curr = AsmAlloc( sizeof( struct linnum_data ) );
-            curr->number = line_number;
+            curr->number = line_num;
             curr->offset = AsmCodeAddress;
 
             AddLinnumData( curr );
-            lastLineNumber = line_number;
+            lastLineNumber = line_num;
         }
     }
 }

@@ -466,7 +466,7 @@ static void dir_init( dir_node *dir, int tab )
 
     sym = &dir->sym;
 
-    dir->line = LineNumber;
+    dir->line_num = LineNumber;
     dir->next = dir->prev = NULL;
 
     switch( tab ) {
@@ -521,7 +521,6 @@ static void dir_init( dir_node *dir, int tab )
         dir->e.macroinfo->parmlist = NULL;
         dir->e.macroinfo->data = NULL;
         dir->e.macroinfo->filename = NULL;
-        dir->e.macroinfo->start_line = LineNumber;
         break;
     case TAB_CLASS_LNAME:
     case TAB_LNAME:

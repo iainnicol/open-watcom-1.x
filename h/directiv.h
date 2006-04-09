@@ -223,7 +223,6 @@ typedef struct {
     parm_list           *parmlist;  // list of parameters
     asmlines            *data;      // the guts of the macro - LL of strings
     char                *filename;
-    unsigned int        start_line;
     char                hidden;     // if TRUE don't print error messages
 } macro_info;
 
@@ -259,7 +258,7 @@ union entry {
 typedef struct dir_node {
     struct asm_sym      sym;
     union entry         e;
-    uint_16             line;   // line number of the directive in source file
+    unsigned long       line_num;     // line number of the directive in source file
     struct dir_node     *next, *prev; // linked list of this type of symbol
 } dir_node;         // List of grpdef, segdef, pubdef, externdef, included lib
                     // and symbolic integer constants.
@@ -413,7 +412,7 @@ extern int              SetUse32Def( bool );
  *---------------------------------------------------------------------------*/
 
 extern dir_node         *CurrProc;      // current procedure
-extern uint             LineNumber;
+extern unsigned long    LineNumber;
 extern int_8            PhaseError;
 
 extern void             FlushCurrSeg( void );

@@ -71,8 +71,8 @@ typedef struct file_list {
         FILE            *file;
         struct input_queue  *lines;
     };
-    char                *name;  /* name of include file */
-    unsigned long       line;   /* current line in parent file */
+    char                *name;      /* name of include file */
+    unsigned long       line_num;   /* current line in parent file */
     char                is_a_file;
     bool                hidden;
 } file_list;
@@ -253,14 +253,14 @@ static file_list *push_flist( char *name, bool is_a_file )
     new = AsmAlloc( sizeof( file_list ) );
     new->next = file_stack;
     file_stack = new;
-    new->line = LineNumber;
+    new->line_num = LineNumber;
     new->is_a_file = is_a_file;
     new->hidden = 0;
     if( !is_a_file ) {
         dir_node *dir;
 
         dir = (dir_node *)AsmGetSymbol( name );
-        LineNumber = dir->e.macroinfo->start_line;
+        LineNumber = dir->line_num;
         new->name = AsmAlloc( strlen( dir->e.macroinfo->filename ) + 1 );
         strcpy( new->name, dir->e.macroinfo->filename );
     } else {
@@ -291,9 +291,9 @@ void print_include_file_nesting_structure( void )
         if( tmp->next == NULL ) break;
         if( !tmp->hidden ) {
             if( tmp->is_a_file ) {
-                AsmNote( NOTE_INCLUDED_BY, tmp->next->name, tmp->line );
+                AsmNote( NOTE_INCLUDED_BY, tmp->next->name, tmp->line_num );
             } else {
-                AsmNote( NOTE_MACRO_CALLED_FROM, tmp->next->name, tmp->line );
+                AsmNote( NOTE_MACRO_CALLED_FROM, tmp->next->name, tmp->line_num );
             }
         }
         tmp = tmp->next;
@@ -302,9 +302,9 @@ void print_include_file_nesting_structure( void )
 
     if( !tmp->hidden ) {
         if( tmp->is_a_file ) {
-            AsmNote( NOTE_INCLUDED_BY, AsmFiles.fname[ASM], tmp->line );
+            AsmNote( NOTE_INCLUDED_BY, AsmFiles.fname[ASM], tmp->line_num );
         } else {
-            AsmNote( NOTE_MACRO_CALLED_FROM, AsmFiles.fname[ASM], tmp->line );
+            AsmNote( NOTE_MACRO_CALLED_FROM, AsmFiles.fname[ASM], tmp->line_num );
         }
     }
 
@@ -316,7 +316,7 @@ void InputQueueLine( char *line )
 {
     line_list   *new;
 
-    DebugMsg(( "QUEUELINE: %s  ( line %d ) \n", line, LineNumber ));
+    DebugMsg(( "QUEUELINE: %s  ( line %lu ) \n", line, LineNumber ));
     new = enqueue();
     new->line = AsmAlloc( strlen( line ) + 1 );
     strcpy( new->line, line );
@@ -414,7 +414,7 @@ static char *input_get( char *string )
             file_stack = inputfile->next;
             fclose( inputfile->file );
             AsmFree( inputfile->name );
-            LineNumber = inputfile->line;
+            LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         } else {
             /* this "file" is just a line queue for a macro */
@@ -432,7 +432,7 @@ static char *input_get( char *string )
             file_stack = inputfile->next;
             AsmFree( inputfile->name );
             AsmFree( inputfile->lines );
-            LineNumber = inputfile->line;
+            LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         }
     }
@@ -577,7 +577,7 @@ static void dbg_output( void )
     if( Options.debug ) {
         int             i;
 
-        DebugMsg(("Line: %d ", LineNumber ));
+        DebugMsg(("Line: %lu ", LineNumber ));
         DebugMsg(("Output :"));
         for( i = 0; i < Token_Count; i++ ) {
             switch( AsmBuffer[i]->token ) {

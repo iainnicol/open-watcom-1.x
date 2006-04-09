@@ -272,11 +272,11 @@ pick( FORCED_IDN,
                                 "forced error: strings equal : <%s> : <%s> " ,
                                 "強制エラー: 文字列が等しい: <%s> : <%s>" )
 pick( NOTE_INCLUDED_BY,
-                                "included by file %s(%d)" ,
-                                "ファイル %s(%d) に含まれます" )
+                                "included by file %s(%lu)" ,
+                                "ファイル %s(%lu) に含まれます" )
 pick( NOTE_MACRO_CALLED_FROM,
-                                "macro called from file %s(%d)" ,
-                                "ファイル %s(%d) から呼ばれるマクロです" )
+                                "macro called from file %s(%lu)" ,
+                                "ファイル %s(%lu) から呼ばれるマクロです" )
 pick( SYMBOL_S_NOT_DEFINED,
                                 "Symbol %s is not defined" ,
                                 "シンボルが定義されていません ( %s )" ) /* fixme */

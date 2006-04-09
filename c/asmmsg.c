@@ -63,7 +63,6 @@ void                    print_include_file_nesting_structure( void );
 #define ErrCount Options.error_count
 #define WngCount Options.warning_count
 #define WngLevel Options.warning_level
-#define ErrLine LineNumber
 #define __fprintf fprintf
 #define __vfprintf vfprintf
 #define __printf printf
@@ -205,16 +204,14 @@ void OpenErrFile()
 static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args )
 /********************************************************************/
 {
-    char *fname;
-    unsigned line_num;
-    char msgbuf[MAX_LINE_LEN];
+    char    *fname;
+    char    msgbuf[MAX_LINE_LEN];
 
     if( fp != NULL ) {
         fname = get_curr_filename();
-        line_num = LineNumber;
-        if( line_num != 0 ) {
+        if( LineNumber != 0 ) {
             if( fname != NULL ) {
-                __fprintf( fp, "%s(%u): ", fname, line_num );
+                __fprintf( fp, "%s(%lu): ", fname, LineNumber );
             }
         }
         __fprintf( fp, "%s %c%03d: ", prefix, *prefix, msgnum );
@@ -234,7 +231,7 @@ void PrintStats()
 /***************/
 {
     __printf( "%s: ", AsmFiles.fname[ASM] );
-    __printf( "%u lines, ", LineNumber );
+    __printf( "%lu lines, ", LineNumber );
     __printf( "%u warnings, ", WngCount );
     __printf( "%u errors\n", ErrCount );
 #ifdef DEBUG_OUT

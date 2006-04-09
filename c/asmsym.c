@@ -120,7 +120,7 @@ static struct asm_sym *AllocASym( char *name )
 #if defined( _STANDALONE_ )
         ((dir_node *)sym)->next = NULL;
         ((dir_node *)sym)->prev = NULL;
-        ((dir_node *)sym)->line = 0;
+        ((dir_node *)sym)->line_num = 0;
         ((dir_node *)sym)->e.seginfo = NULL;
 #endif
     }
@@ -411,7 +411,6 @@ static void DumpSymbol( struct asm_sym *sym )
 //        dir->e.macroinfo->parmlist = NULL;
 //        dir->e.macroinfo->data = NULL;
 //        dir->e.macroinfo->filename = NULL;
-//        dir->e.macroinfo->start_line = LineNumber;
         break;
     case SYM_CLASS_LNAME:
         type = "CLASS";
