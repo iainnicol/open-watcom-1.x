@@ -140,6 +140,10 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
     int                 tmp;
 
     the_struct = (asm_sym*)Definition.curr_struct;
+
+    if( sym != NULL ) {
+        sym->count++;
+    }
 #endif
 
     for( cur_pos = start_pos;
