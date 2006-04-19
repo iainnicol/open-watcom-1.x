@@ -59,16 +59,10 @@ extern int              match_phase_1( void );
 extern int              ptr_operator( memtype, uint_8 );
 extern int              jmp( expr_list * );
 
-unsigned char           More_Array_Element = FALSE;
-unsigned char           Last_Element_Size;
-
 static struct asm_code  Code_Info;
 struct asm_code         *Code = &Code_Info;
 
 unsigned char           Opnd_Count;
-
-extern int              dup_array( struct asm_sym *, struct asm_sym *, char, char );
-extern int              data_init( int, int );
 
 static void             SizeString( unsigned op_size );
 static int              check_size( void );
@@ -1785,18 +1779,18 @@ int AsmParse( void )
 #endif
 
     //init
-    rCode->info.token   = T_NULL;
-    rCode->info.opcode  = 0;
-    rCode->info.rm_byte = 0;
-    rCode->prefix.ins   = EMPTY;
-    rCode->prefix.seg   = EMPTY;
-    rCode->prefix.adrsiz = FALSE;
-    rCode->prefix.opsiz = FALSE;
-    rCode->mem_type     = MT_EMPTY;
+    rCode->info.token     = T_NULL;
+    rCode->info.opcode    = 0;
+    rCode->info.rm_byte   = 0;
+    rCode->prefix.ins     = EMPTY;
+    rCode->prefix.seg     = EMPTY;
+    rCode->prefix.adrsiz  = FALSE;
+    rCode->prefix.opsiz   = FALSE;
+    rCode->mem_type       = MT_EMPTY;
     rCode->mem_type_fixed = FALSE;
-    rCode->extended_ins = EMPTY;
-    rCode->sib          = 0;            // assume ss is *1
-    rCode->indirect     = FALSE;
+    rCode->extended_ins   = EMPTY;
+    rCode->sib            = 0;            // assume ss is *1
+    rCode->indirect       = FALSE;
     for( i = 0; i < 3; i++ ) {
         rCode->info.opnd_type[i] = OP_NONE;
         rCode->data[i] = 0;
@@ -1806,12 +1800,9 @@ int AsmParse( void )
     curr_ptr_type = EMPTY;
 
     // check if continue initializing array
-    if( More_Array_Element == TRUE ) {
-        // drop flag
-        More_Array_Element = FALSE;
-        // action
-        return( dup_array( NULL, NULL, 0, Last_Element_Size ) );
-    }
+    temp = NextArrayElement();
+    if( temp != EMPTY )
+        return( temp );
 
 #if defined( _STANDALONE_ )
     CheckSeg = TRUE;

@@ -46,21 +46,15 @@
 #define min(x,y) (((x) < (y)) ? (x) : (y))
 #endif
 
-extern unsigned char    More_Array_Element;
-extern unsigned char    Last_Element_Size;
-
 /* structure stuff from asmstruct */
 extern int              InitializeStructure( asm_sym *, asm_sym *, int );
 extern int              AddFieldToStruct( int );
 extern int              GetStructSize( asm_sym * );
 
-extern int              dup_array( asm_sym *, asm_sym *, char, char );
-
 #if defined( _STANDALONE_ )
 
 extern int              ChangeCurrentLocation( bool, int_32, bool );
 extern int              SymIs32( struct asm_sym *sym );
-extern void             find_frame( struct asm_sym *sym );
 
 /* static globals */
 /* is this data element a field in a structure definition? */
@@ -70,10 +64,15 @@ static bool             first;
 
 #endif
 
+static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned no_of_bytes );
+
+static bool             More_Array_Element = FALSE;
+static unsigned         Last_Element_Size;
+
 /* data initialization stuff */
 
-static void little_endian( char *string, char no_of_bytes )
-/********************************************************/
+static void little_endian( char *string, unsigned no_of_bytes )
+/*************************************************************/
 /* convert a string into little endian format - ( LSB 1st, LSW 1st ... etc ) */
 {
     if( no_of_bytes >= 2 ) {
@@ -82,8 +81,8 @@ static void little_endian( char *string, char no_of_bytes )
     return;
 }
 
-static void output_float( char index, char no_of_bytes, char negative )
-/*********************************************************************/
+static void output_float( char index, unsigned no_of_bytes, char negative )
+/*************************************************************************/
 {
     double              double_value;
     float               float_value;
@@ -124,8 +123,8 @@ static void output_float( char index, char no_of_bytes, char negative )
     return;
 }
 
-static int array_element( asm_sym *sym, asm_sym *struct_sym, char start_pos, char no_of_bytes )
-/*********************************************************************************************/
+static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned no_of_bytes )
+/************************************************************************************************/
 /*
 - parse an array and initialize the number;
 - call by dup_array() only;
@@ -685,8 +684,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, char start_pos, cha
     return( cur_pos );
 }
 
-int dup_array( asm_sym *sym, asm_sym *struct_sym, char start_pos, char no_of_bytes )
-/**********************************************************************************/
+static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned no_of_bytes )
+/********************************************************************************************/
 /*
   parse array with DUP operator;
 */
@@ -757,7 +756,7 @@ int data_init( int sym_loc, int initializer_loc )
   parse data initialization assembly line;
 */
 {
-    char                no_of_bytes;
+    unsigned            no_of_bytes;
     memtype             mem_type;
     struct asm_sym      *sym = NULL;
     struct asm_sym      *struct_sym = NULL;
@@ -909,4 +908,14 @@ int data_init( int sym_loc, int initializer_loc )
         return( ERROR );
     }
     return( NOT_ERROR );
+}
+
+int NextArrayElement( void )
+{
+    if( More_Array_Element ) {
+        More_Array_Element = FALSE;
+        return( dup_array( NULL, NULL, 0, Last_Element_Size ) );
+    } else {
+        return( EMPTY );
+    }
 }
