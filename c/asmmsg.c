@@ -203,14 +203,14 @@ void OpenErrFile( void )
 static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args )
 /********************************************************************/
 {
-    char    *fname;
-    char    msgbuf[MAX_LINE_LEN];
-
+    const FNAME     *fname;
+    char            msgbuf[MAX_LINE_LEN];
+   
     if( fp != NULL ) {
-        fname = get_curr_filename();
+        fname = get_curr_srcfile();
         if( LineNumber != 0 ) {
             if( fname != NULL ) {
-                __fprintf( fp, "%s(%lu): ", fname, LineNumber );
+                __fprintf( fp, "%s(%lu): ", fname->name, LineNumber );
             }
         }
         __fprintf( fp, "%s %c%03d: ", prefix, *prefix, msgnum );
@@ -230,7 +230,7 @@ static void AsmSuicide( void )
 void PrintStats( void )
 /*********************/
 {
-    __printf( "%s: ", AsmFiles.fname[ASM] );
+    __printf( "%s: ", ModuleInfo.srcfile->name );
     __printf( "%lu lines, ", LineNumber );
     __printf( "%u warnings, ", WngCount );
     __printf( "%u errors\n", ErrCount );

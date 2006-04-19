@@ -382,8 +382,8 @@ void GetGlobalData( void )
     GlobalQueue = NULL;
 }
 
-void AddLinnumData( struct linnum_data *data )
-/********************************************/
+void AddLinnumData( struct line_num_info *data )
+/**********************************************/
 {
     QAddItem( &LinnumQueue, data );
 }
@@ -391,9 +391,9 @@ void AddLinnumData( struct linnum_data *data )
 int GetLinnumData( struct linnum_data **ldata, bool *need32 )
 /***********************************************************/
 {
-    queuenode           *node;
-    struct linnum_data  *next;
-    int                 count, i;
+    queuenode               *node;
+    struct line_num_info    *next;
+    int                     count, i;
 
     count = QCount( LinnumQueue );
     if( count == 0 )
@@ -402,7 +402,7 @@ int GetLinnumData( struct linnum_data **ldata, bool *need32 )
     *ldata = AsmAlloc( count * sizeof( struct linnum_data ) );
     for( i = 0; i < count; i++ ) {
         node = QDequeue( LinnumQueue );
-        next = (struct linnum_data *)(node->data);
+        next = (struct line_num_info *)(node->data);
         if( *ldata != NULL ) {
             (*ldata)[i].number = next->number;
             (*ldata)[i].offset = next->offset;

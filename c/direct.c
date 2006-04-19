@@ -520,7 +520,7 @@ static void dir_init( dir_node *dir, int tab )
         dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
         dir->e.macroinfo->parmlist = NULL;
         dir->e.macroinfo->data = NULL;
-        dir->e.macroinfo->filename = NULL;
+        dir->e.macroinfo->srcfile = NULL;
         break;
     case TAB_CLASS_LNAME:
     case TAB_LNAME:
@@ -598,8 +598,8 @@ void dir_change( dir_node *dir, int tab )
     dir_init( dir, tab );
 }
 
-dir_node *dir_insert( char *name, int tab )
-/*****************************************/
+dir_node *dir_insert( const char *name, int tab )
+/***********************************************/
 /* Insert a node into the table specified by tab */
 {
     dir_node            *new;
@@ -756,9 +756,6 @@ void FreeInfo( dir_node *dir )
                         break;
                     datacurr = datanext;
                 }
-            }
-            if( dir->e.macroinfo->filename != NULL ) {
-                AsmFree( dir->e.macroinfo->filename );
             }
             AsmFree( dir->e.macroinfo );
         }
@@ -2083,6 +2080,8 @@ void ModuleInit( void )
     ModuleInfo.mseg = FALSE;
     ModuleInfo.flat_idx = 0;
     *ModuleInfo.name = 0;
+    // add source file to autodependency list
+    ModuleInfo.srcfile = AddFlist( AsmFiles.fname[ASM] );
 }
 
 static void get_module_name( void )

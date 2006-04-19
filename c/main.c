@@ -56,7 +56,6 @@
 extern void             Fatal( unsigned msg, ... );
 extern void             ObjRecInit( void );
 extern void             DelErrFile( void );
-extern void             PrintStats( void );
 extern void             PrintfUsage( int first_ln );
 extern void             MsgPrintf1( int resourceid, char *token );
 
@@ -91,6 +90,7 @@ static unsigned char    SwitchChar;
 static unsigned         OptValue;
 static char             *OptScanPtr;
 static char             *OptParm;
+static char             *ForceInclude = NULL;
 
 global_options Options = {
     /* sign_value       */          FALSE,
@@ -549,7 +549,7 @@ static void SetStopEnd( void ) { Options.stop_at_end = TRUE; }
 
 static void Set_FR( void ) { get_fname( GetAFileName(), ERR ); }
 
-static void Set_FI( void ) { InputQueueFile( GetAFileName() ); }
+static void Set_FI( void ) { ForceInclude = GetAFileName(); }
 
 static void Set_FO( void ) { get_fname( GetAFileName(), OBJ ); }
 
@@ -1141,6 +1141,7 @@ static void do_init_stuff( char **cmdline )
         }
     }
     add_constant( buff );
+    ForceInclude = getenv( "FORCE" );
     do_envvar_cmdline( "WASM" );
     parse_cmdline( cmdline );
     set_build_target();
@@ -1199,9 +1200,6 @@ int main( void )
 #endif
     SetMemoryModel();
     WriteObjModule();           // main body: parse the source file
-    if( !Options.quiet ) {
-        PrintStats();
-    }
     MsgFini();
     main_fini();
 #ifndef __UNIX__
@@ -1302,4 +1300,14 @@ void set_fpu_parameters( void )
         }
         break;
     }
+}
+
+void CmdlParamsInit( void )
+/*************************/
+{
+    if( ForceInclude != NULL )
+        InputQueueFile( ForceInclude );
+
+    set_cpu_parameters();
+    set_fpu_parameters();
 }

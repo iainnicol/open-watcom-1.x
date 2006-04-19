@@ -653,9 +653,7 @@ int MacroDef( int i, bool hidden )
     currproc = (dir_node *)AsmGetSymbol( name );
     if( currproc == NULL ) {
         currproc = dir_insert( name, TAB_MACRO );
-        name = get_curr_filename();
-        currproc->e.macroinfo->filename = AsmAlloc( strlen( name ) + 1 );
-        strcpy( currproc->e.macroinfo->filename, name );
+        currproc->e.macroinfo->srcfile = get_curr_srcfile();
         currproc->e.macroinfo->hidden = hidden;
     } else if( Parse_Pass == PASS_1 ) {
         AsmError( PROC_ALREADY_DEFINED );

@@ -67,7 +67,7 @@ typedef struct file_list {
         FILE            *file;
         struct input_queue  *lines;
     };
-    char                *name;      /* name of include file */
+    const FNAME         *srcfile;   /* name of include file */
     unsigned long       line_num;   /* current line in parent file */
     char                is_a_file;
     bool                hidden;
@@ -83,9 +83,8 @@ extern unsigned long    PassTotal;
 
 uint_32                 BufSize;                // size of CodeBuffer
 
-static input_queue      *line_queue;            // line queue
-static file_list        *file_stack=NULL;       // top of included file stack
-
+static input_queue      *line_queue  = NULL;    // line queue
+static file_list        *file_stack  = NULL;    // top of included file stack
 static char             *IncludePath = NULL;
 
 #if defined(__UNIX__)
@@ -235,8 +234,8 @@ static line_list *enqueue( void )
     return( new );
 }
 
-static file_list *push_flist( char *name, bool is_a_file )
-/********************************************************/
+static file_list *push_flist( const char *name, bool is_a_file )
+/**************************************************************/
 {
     file_list   *new;
 
@@ -251,21 +250,18 @@ static file_list *push_flist( char *name, bool is_a_file )
 
         dir = (dir_node *)AsmGetSymbol( name );
         LineNumber = dir->line_num;
-        new->name = AsmAlloc( strlen( dir->e.macroinfo->filename ) + 1 );
-        strcpy( new->name, dir->e.macroinfo->filename );
+        new->srcfile = dir->e.macroinfo->srcfile;
     } else {
-        AddFlist( name );
-        new->name = AsmAlloc( strlen( name ) + 1 );
-        strcpy( new->name, name );
+        new->srcfile = AddFlist( name );
         LineNumber = 0;
     }
     return( new );
 }
 
-char *get_curr_filename( void )
-/*****************************/
+const FNAME *get_curr_srcfile( void )
+/************************************/
 {
-    return( file_stack == NULL ? AsmFiles.fname[ASM] : file_stack->name );
+    return( file_stack == NULL ? ModuleInfo.srcfile : file_stack->srcfile );
 }
 
 void print_include_file_nesting_structure( void )
@@ -283,9 +279,9 @@ void print_include_file_nesting_structure( void )
             break;
         if( !tmp->hidden ) {
             if( tmp->is_a_file ) {
-                AsmNote( NOTE_INCLUDED_BY, tmp->next->name, tmp->line_num );
+                AsmNote( NOTE_INCLUDED_BY, tmp->next->srcfile->name, tmp->line_num );
             } else {
-                AsmNote( NOTE_MACRO_CALLED_FROM, tmp->next->name, tmp->line_num );
+                AsmNote( NOTE_MACRO_CALLED_FROM, tmp->next->srcfile->name, tmp->line_num );
             }
         }
         tmp = tmp->next;
@@ -294,9 +290,9 @@ void print_include_file_nesting_structure( void )
 
     if( !tmp->hidden ) {
         if( tmp->is_a_file ) {
-            AsmNote( NOTE_INCLUDED_BY, AsmFiles.fname[ASM], tmp->line_num );
+            AsmNote( NOTE_INCLUDED_BY, ModuleInfo.srcfile->name, tmp->line_num );
         } else {
-            AsmNote( NOTE_MACRO_CALLED_FROM, AsmFiles.fname[ASM], tmp->line_num );
+            AsmNote( NOTE_MACRO_CALLED_FROM, ModuleInfo.srcfile->name, tmp->line_num );
         }
     }
 }
@@ -406,7 +402,6 @@ static char *input_get( char *string )
             /* EOF is reached */
             file_stack = inputfile->next;
             fclose( inputfile->file );
-            AsmFree( inputfile->name );
             LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         } else {
@@ -423,7 +418,6 @@ static char *input_get( char *string )
             MacroEnd( FALSE );
 
             file_stack = inputfile->next;
-            AsmFree( inputfile->name );
             AsmFree( inputfile->lines );
             LineNumber = inputfile->line_num;
             AsmFree( inputfile );
@@ -564,8 +558,8 @@ void FreeIncludePath( void )
     AsmFree( IncludePath );
 }
 
-void PushMacro( char *name, bool hidden )
-/***************************************/
+void PushMacro( const char *name, bool hidden )
+/*********************************************/
 {
     file_list *new;
 

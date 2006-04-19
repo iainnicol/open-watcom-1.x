@@ -65,6 +65,8 @@ extern void             CheckForOpenConditionals( void );
 extern void             set_cpu_parameters( void );
 extern void             set_fpu_parameters( void );
 extern void             CheckProcOpen( void );
+extern void             CmdlParamsInit( void );
+extern void             PrintStats( void );
 
 extern symbol_queue     Tables[];       // tables of definitions
 extern struct fixup     *FixupListHead; // head of list of fixups ( from WOMP )
@@ -93,41 +95,36 @@ extern uint             extdefidx;      // Number of Extern definition
 
 static char             **NameArray;
 
-typedef struct  fname_list {
-        struct  fname_list *next;
-        time_t  mtime;
-        char    *name;
-} FNAME, *FNAMEPTR;
-
 global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
-static FNAMEPTR         FNames = NULL;
+static FNAME            *FNames = NULL;
 static unsigned long    lastLineNumber;
 
-void AddFlist( char const *filename )
-/***********************************/
+const FNAME *AddFlist( char const *name )
+/***************************************/
 {
-    FNAMEPTR    flist;
-    FNAMEPTR    last;
-    int         index;
-    char        *fname;
-    char        buff[2*_MAX_PATH];
-
-    if( !Options.emit_dependencies )
-        return;
+    FNAME   *flist;
+    FNAME   *last;
+    int     index;
+    char    *fname;
+    char    buff[2*_MAX_PATH];
 
     index = 0;
+    fname = _getFilenameFullPath( buff, name, sizeof( buff ) );
     last = FNames;
     for( flist = last; flist != NULL; flist = flist->next ) {
-        if( strcmp( filename, flist->name ) == 0 )
-            return;
+        if( strcmp( name, flist->name ) == 0 )
+            return( flist );
+        if( strcmp( fname, flist->fullname ) == 0 )
+            return( flist );
         index++;
         last = flist;
     }
-    fname = _getFilenameFullPath( buff, filename, sizeof(buff) );
-    flist = (FNAMEPTR)AsmAlloc( sizeof( FNAME ) );
-    flist->name = (char *)AsmAlloc( strlen( fname ) + 1 );
-    strcpy( flist->name, fname );
+    flist = (FNAME *)AsmAlloc( sizeof( FNAME ) );
+    flist->name = (char *)AsmAlloc( strlen( name ) + 1 );
+    strcpy( flist->name, name );
+    flist->fullname = (char *)AsmAlloc( strlen( fname ) + 1 );
+    strcpy( flist->fullname, fname );
     flist->mtime = _getFilenameTimeStamp( fname );
     flist->next = NULL;
     if( FNames == NULL ) {
@@ -135,23 +132,21 @@ void AddFlist( char const *filename )
     } else {
         last->next = flist;
     }
-    return;
+    return( flist );
 }
 
 static void FreeFlist( void )
 /***************************/
 {
-    FNAMEPTR      curr;
-    FNAMEPTR      last;
-
-    if( !Options.emit_dependencies )
-        return;
+    const FNAME   *curr;
+    const FNAME   *last;
 
     for( curr = FNames; curr != NULL; ) {
-        AsmFree(curr->name);
+        AsmFree( curr->fullname );
+        AsmFree( curr->name );
         last = curr;
         curr = curr->next;
-        AsmFree(last);
+        AsmFree( (void *)last );
     }
     FNames = NULL;
     return;
@@ -160,13 +155,13 @@ static void FreeFlist( void )
 static void write_init( void )
 /****************************/
 {
-    BufSize     = 0;
+    BufSize       = 0;
     FixupListHead = NULL;
     FixupListTail = NULL;
-    ModendRec   = NULL;
-    CurrProc    = NULL;
-    DefineProc  = FALSE;
-    Use32       = FALSE;
+    ModendRec     = NULL;
+    CurrProc      = NULL;
+    DefineProc    = FALSE;
+    Use32         = FALSE;
     write_to_file = TRUE;
 
     IdxInit();
@@ -180,6 +175,7 @@ static void write_fini( void )
 /****************************/
 {
     FixFini();
+    FreeFlist();
 }
 
 void OutSelect( bool starts )
@@ -634,13 +630,12 @@ static void write_header( void )
     obj_rec     *objr;
     unsigned    len;
     char        *name;
-    char        full_name[_MAX_PATH];
 
     objr = ObjNewRec( CMD_THEADR );
     if( Options.module_name != NULL ) {
         name = Options.module_name;
     } else {
-        name = _getFilenameFullPath( full_name, AsmFiles.fname[ASM], sizeof( full_name ) );
+        name = ModuleInfo.srcfile->fullname;
     }
     len = strlen( name );
     ObjAllocData( objr, len + 1 );
@@ -663,19 +658,15 @@ static int write_modend( void )
 static int write_autodep( void )
 /******************************/
 {
-    obj_rec       *objr;
-    char          buff[2*PATH_MAX + 5];
-    unsigned int len;
-    FNAMEPTR      curr;
-    FNAMEPTR      last;
+    obj_rec         *objr;
+    char            buff[2*PATH_MAX + 5];
+    unsigned int    len;
+    const FNAME     *curr;
 
     if( !Options.emit_dependencies )
         return NOT_ERROR;
 
-    // add source file to autodependency list
-    AddFlist( AsmFiles.fname[ASM] );
-
-    for( curr = FNames; curr != NULL; ) {
+    for( curr = FNames; curr != NULL; curr = curr->next ) {
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEPENDENCY;
@@ -689,13 +680,7 @@ static int write_autodep( void )
         ObjAttachData( objr, buff, len );
 
         write_record( objr, TRUE );
-
-        AsmFree(curr->name);
-        last = curr;
-        curr = curr->next;
-        AsmFree(last);
     }
-    FNames = NULL;
     // one NULL dependency record must be on the end
     objr = ObjNewRec( CMD_COMENT );
     objr->d.coment.attr = 0x80;
@@ -709,8 +694,8 @@ void AddLinnumDataRef( void )
 /***************************/
 /* store a reference for the current line at the current address */
 {
-    struct linnum_data  *curr;
-    unsigned long       line_num;
+    struct line_num_info    *curr;
+    unsigned long           line_num;
 
     if( in_prologue ) {
         line_num = CurrProc->line_num;
@@ -719,9 +704,10 @@ void AddLinnumDataRef( void )
     }
     if( line_num < 0x8000 )  {
         if( lastLineNumber != line_num ) {
-            curr = AsmAlloc( sizeof( struct linnum_data ) );
+            curr = AsmAlloc( sizeof( struct line_num_info ) );
             curr->number = line_num;
             curr->offset = AsmCodeAddress;
+            curr->srcfile = get_curr_srcfile();
 
             AddLinnumData( curr );
             lastLineNumber = line_num;
@@ -1066,8 +1052,7 @@ static void writepass1stuff( void )
 static unsigned long OnePass( char *string )
 /******************************************/
 {
-    set_cpu_parameters();
-    set_fpu_parameters();
+    CmdlParamsInit();
 
     AssumeInit();
 
@@ -1168,8 +1153,9 @@ void WriteObjModule( void )
     }
     if( write_to_file && Options.error_count == 0 )
         write_modend();
+    if( !Options.quiet )
+        PrintStats();
 
-    FreeFlist();
     AsmSymFini();
     FreeIncludePath();
     write_fini();
