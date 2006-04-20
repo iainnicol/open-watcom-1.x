@@ -24,14 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  CodeView type support.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stddef.h>
 #include <string.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "cvinfo.h"
 
 #define UNKNOWN_TYPE_IDX        ((unsigned short)-1)
@@ -43,6 +44,9 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
 extern dip_status ImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, type_info *ti );
 
+/*
+    Stuff dealing with type handles.
+*/
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
                         char **namep, unsigned *lenp, lf_all **pp )

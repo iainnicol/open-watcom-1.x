@@ -12,19 +12,19 @@
 
     foo dd $
     kyb dd $
-    bar dd $ + 8
-        dd $ - 4
+    bar dd $ + 6
+        dd $ - 2
         dd foo
-        dd foo +4
-        dd bar -4
+        dd foo +2
+        dd bar -2
     db 2,4,6,7,8
 .code
 jmp $
 jmp $ + 2
 jmp $ + 4
 jmp $ - 4
-jmp foo + 4
-jmp foo + 8
+jmp foo + 2
+jmp foo + 7
 nop
 nop
 nop

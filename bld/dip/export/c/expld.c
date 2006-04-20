@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "exp.h"
 #include "exedos.h"
 #include "exeos2.h"

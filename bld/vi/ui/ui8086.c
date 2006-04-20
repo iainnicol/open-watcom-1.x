@@ -35,6 +35,7 @@
 #include <ctype.h>
 #ifdef __WATCOMC__
 #include <conio.h>
+#include <malloc.h>
 #endif
 #include "vi.h"
 #include "win.h"

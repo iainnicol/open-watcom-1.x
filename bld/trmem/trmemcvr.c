@@ -35,7 +35,7 @@
 #include <io.h>
 #endif
 #include <string.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include "trmem.h"
 
 #ifdef TRMEM
@@ -44,11 +44,9 @@ static int          TRFileHandle;   /* stream to put output on */
 static void TRPrintLine( int *, const char * buff, size_t len );
 #endif
 
-#if defined( NLM ) || !defined( __WATCOMC__ )
-/* There is no equivalent expand function in NetWare or non-Watcom libs. */
+#ifdef NLM
+/* There is no equivalent expand function in NetWare. */
 #define _expand NULL
-#else
-#include <malloc.h>
 #endif
 
 extern void TRMemRedirect( int handle )

@@ -7,7 +7,7 @@ foo ends
 .code
     mov ax, size a
     mov ax, sizeof a
-    mov ax, size b
+bar:    mov ax, size b
     mov ax, sizeof b
     mov ax, size d
     mov ax, sizeof d
@@ -29,6 +29,8 @@ foo ends
     mov ax, sizeof j.z
     mov ax, size j.z+2
     mov ax, sizeof j.z+2
+    mov ax, size bar
+;    mov ax, sizeof bar
 
     mov bx, length a
     mov bx, lengthof a
@@ -56,7 +58,7 @@ foo ends
     f dd 0
     g dd 2 dup ( 0 )
     h dd 4 dup ( 0 )
-    j foo 2 dup( <> )
+    j foo <>
 
     q dd 2 dup ( 0 ), 3 dup ( 4, 2 )
 

@@ -24,16 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  CodeView source line cues.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+#include <malloc.h>
 #include <stddef.h>
 #include <string.h>
-#include "walloca.h"
 #include "cvinfo.h"
 
+
+/*
+        Stuff for source line cues
+*/
 
 typedef struct {
     unsigned_32 start;

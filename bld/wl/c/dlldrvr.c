@@ -24,22 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  Mainline for DLL-using build of linker.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+#include <malloc.h>
 #include <process.h>
-#include "walloca.h"
 #include "idedrv.h"
 
 
-int main( void )
+int main()
 {
-    IDEDRV          inf;
-    char            *cmdline;
-    int             cmdlen;
-    IDEDRV_STATUS   status;
+    IDEDRV      inf;
+    char *      cmdline;
+    int         cmdlen;
+    IDEDRV_STATUS status;
 
     status = IDEDRV_ERR_LOAD;
     IdeDrvInit( &inf, "wlink.dll", NULL );

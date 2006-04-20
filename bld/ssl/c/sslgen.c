@@ -24,13 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Output generation routines for ssl.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <malloc.h>
 
 #include "ssl.h"
 #include "sslint.h"

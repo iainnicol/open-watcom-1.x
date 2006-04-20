@@ -24,19 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  Default memory management routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "auipvt.h"
+#include <malloc.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 /*
  * The app should replace this module
  */
-void    WndNoMemory( void )
+void    WndNoMemory()
 {
     Say( "No memory for window\n" );
     exit( 1 );
@@ -60,10 +62,11 @@ void    WndFree( void *chunk )
     free( chunk );
 }
 
-void WndMemInit( void )
+void WndMemInit()
 {
 }
 
-void WndMemFini( void )
+void WndMemFini()
 {
 }
+

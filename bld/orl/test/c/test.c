@@ -39,8 +39,13 @@
 #include "trmemcvr.h"
 #include "orl.h"
 
-
 #define MAX_SECS    255
+
+#if defined( __WATCOMC__ ) && !defined( __UNIX__ )
+extern int      getopt(int, char * const *, const char *);
+extern int      optind;
+extern char     *optarg;
+#endif
 
 typedef struct _dump_options {
     int         header;

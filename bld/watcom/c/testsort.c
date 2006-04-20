@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <malloc.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include "sortlist.h"
@@ -50,7 +51,7 @@ void *myalloc( unsigned size )
     return( malloc( size ) );
 }
 
-void main( void )
+main()
 {
     x   *head,*new;
 

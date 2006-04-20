@@ -43,7 +43,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "watcom.h"
 #include "demangle.h"
 

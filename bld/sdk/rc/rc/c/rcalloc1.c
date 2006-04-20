@@ -24,14 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Resource compiler memory layer 1.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include "rcalloc0.h"
 #include "rcalloc1.h"
 #include "errors.h"

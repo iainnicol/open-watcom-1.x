@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <stddef.h>
+#include <malloc.h>
 #include <string.h>
 #include "vi.h"
 

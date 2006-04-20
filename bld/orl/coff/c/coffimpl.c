@@ -31,10 +31,8 @@
 *
 ****************************************************************************/
 
-
-#include <stdlib.h>
+#include <malloc.h>
 #include <stdio.h>
-#include "walloca.h"
 
 #include "coffimpl.h"
 

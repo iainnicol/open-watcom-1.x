@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Window selection processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS MODULE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,8 +33,10 @@
 #include "auipvt.h"
 #include <string.h>
 #include <ctype.h>
-#include "walloca.h"
-
+#include <malloc.h>
+#ifdef UNIX
+    #include <alloca.h>
+#endif
 
 void WndChooseEvent( a_window *wnd, gui_event event, void *parm )
 {

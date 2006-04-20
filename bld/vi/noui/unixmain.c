@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Mainline for UI-less UNIX build of vi.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,8 +33,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __WATCOMC__
 #include <malloc.h>
+#ifdef __WATCOMC__
 #include <process.h>
 #endif
 #include "vi.h"

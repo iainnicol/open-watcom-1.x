@@ -807,18 +807,10 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void * d,
             if( mod == MOD_0 ) {
                 // I can use REG_RBP here because base is not fixed up
                 if( sib.split.base == REG_RBP ) {
-                    /*ins->op[oper].base = DR_NONE;
-                    ins->op[oper].op_position = ins->size;
-                    ins->op[oper].value = GetULong( d, ins->size );
-                    ins->size += 4;*/
-                    ins->op[oper].op_position = ins->size;
                     ins->op[oper].base = DR_NONE;
+                    ins->op[oper].op_position = ins->size;
                     ins->op[oper].value = GetULong( d, ins->size );
                     ins->size += 4;
-                    ins->op[oper].type = DO_MEMORY_REL;
-                    // following line is no more required because pass1.c and pass2.c are makeing
-                    // the correct value fixup
-                    //ins->op[oper].value += ins->size;
                 }
             }
         }
@@ -831,17 +823,16 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void * d,
         // Yeaaahhh.. in x86 was this disp32, now it's rip+disp32!!!
         // at the moment it's displaying as ex: adc rax, qword ptr [asdf]
         // sould it be adc rax, qword ptr asdf[rip] ?
+        // maybe the orl need additional work for rip-based addressing?
+        // the following code assembled with yasm: adc bl,  [asdf wrt rip]
+        // will product the follwing disassembly: 12 1D E6 FF FF FF         adc    bl,byte ptr ds:[0xffffffe6]
         if( rm == REG_RBP || rm == REG_R13 ) {
-            
+            //ins->op[oper].type = DO_MEMORY_REL;
             ins->op[oper].base = DR_NONE;
+            //ins->op[oper].base = X64GetRegister(rw, REG_RIP, ins);
             ins->op[oper].op_position = ins->size;
             ins->op[oper].value = GetULong( d, ins->size );
             ins->size += 4;
-            ins->op[oper].type = DO_MEMORY_REL;
-            
-            // following line is no more required because pass1.c and pass2.c are makeing
-            // the correct value fixup
-            //ins->op[oper].value += ins->size;
         }
         break;
     case MOD_1:
@@ -1158,32 +1149,27 @@ static void X64GetImmedVal( SBIT s, WBIT w, void *d, dis_dec_ins *ins )
     ins->size += 1;
     ins->op[oper].value += ins->size;
 }
-*/
 
-static void X64GetRelVal( void *d, dis_dec_ins *ins )
+static void X64GetRelVal( void *d, dis_dec_ins *ins )*/
 /*********************************************************************
  * Get Relative Value
  */
-{
+/*{
     int oper;
 
     oper = ins->num_ops;
     ins->op[oper].op_position = ins->size;
     ins->op[oper].type = DO_RELATIVE;
     ++ins->num_ops;
-    
-/*    if( ins->flags & DIF_X64_ADDR_SIZE ) {*/
-    
+    if( ins->flags & DIF_X64_ADDR_LONG ) {
         ins->op[oper].value = GetULong( d, ins->size );
         ins->size += 4;
-/*
     } else {
         ins->op[oper].value = GetSShort( d, ins->size );
         ins->size += 2;
-    }*/
-    
+    }
     ins->op[oper].value += ins->size;
-}
+}*/
 
 /*=====================================================================*/
 /*               Get Reference Type                                    */
@@ -1719,7 +1705,6 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )*/
 }
 
 
-
 dis_handler_return X64Abs_8( dis_handle *h, void *d, dis_dec_ins *ins )*/
 /**********************************************************************/
 /*{
@@ -1728,18 +1713,17 @@ dis_handler_return X64Abs_8( dis_handle *h, void *d, dis_dec_ins *ins )*/
     X64GetAbsVal( d, ins );
     return( DHR_DONE );
 }
-*/
 
-dis_handler_return X64Rel_8( dis_handle *h, void *d, dis_dec_ins *ins )
+
+dis_handler_return X64Rel_8( dis_handle *h, void *d, dis_dec_ins *ins )*/
 /**********************************************************************/
-{
+/*{
     ins->size   += 1;
     ins->num_ops = 0;
     X64GetRelVal( d, ins );
     return( DHR_DONE );
 }
 
-/*
 dis_handler_return X64Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )*/
 /**********************************************************************/
 //  Byte      OOOO OOSW
@@ -2672,18 +2656,6 @@ static unsigned X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
             *p++ = ':';
         }
         break;
-    case DO_MEMORY_REL:
-        //ins->op[op_num].value += 1;
-        if( NeedSizing( ins, flags, op_num ) ) {
-            len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, 0 );
-            if( len != 0 ) {
-                p += len;
-                #define SUFFIX " ptr "
-                memcpy( p, SUFFIX, sizeof( SUFFIX ) - 1 );
-                p += sizeof( SUFFIX ) - 1;
-            }
-        }
-        break;
     case DO_ABSOLUTE:
     case DO_RELATIVE:
         if( ( flags & DFF_ASM ) && !( flags & DFF_X86_UNIX ) ) {
@@ -2788,7 +2760,6 @@ static void X64PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 /********************************************************************/
 {
     ByteSwap( h, d, ins );
-
     if( ins->flags & DIF_X64_EMU_INT ) {
         process87EMUIns( ins );
     }
@@ -2799,7 +2770,7 @@ static unsigned X64PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 /**********************************************************************/
 {
     unsigned len = 0;
-    
+
 /*    if( ins->flags & DIF_X64_EMU_INT ) {
         #define EMU_INT        "; int "
         memcpy( op_buff, EMU_INT, sizeof( EMU_INT ) - 1 );

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Master include for librarian.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -40,7 +41,7 @@
 #include <time.h>
 #include <limits.h>
 #include <errno.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include <sys/stat.h>
 #ifdef __WATCOMC__
 #include <process.h>

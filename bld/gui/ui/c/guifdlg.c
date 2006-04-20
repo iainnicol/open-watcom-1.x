@@ -24,10 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  File open dialog.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-
 
 #if defined(__OS2__) || defined(__OS2_PM__)
     #ifndef OS2_INCLUDED
@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <malloc.h>
 #include <sys/stat.h>
 #if defined( __QNX__ )
     #include <dirent.h>
@@ -57,6 +58,7 @@
 #elif defined( UNIX )
     #include <dirent.h>
     #include <unistd.h>
+    #include <alloca.h>
     #ifdef SGI
         #include "fnmatch.h"    // We get fnmatch from wclib
     #else
@@ -67,7 +69,6 @@
     #include <direct.h>
     #include <dos.h>
 #endif
-#include "walloca.h"
 #include "guiwind.h"
 #include "guifdlg.h"
 #include "guidlg.h"
@@ -86,7 +87,7 @@
 #ifdef __LINUX__
 #define INDENT_STR      "\xa0"
 #define INDENT_CHAR     '\xa0'
-/* what's written below looks like a y with two dots to me... *
+/* what's written below looks like a y with two dots to me... * 
  * what is probably meant is the "NO BREAK SPACE"             */
 #else
 #define INDENT_STR      "ÿ"

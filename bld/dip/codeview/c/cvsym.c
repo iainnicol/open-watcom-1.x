@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  CodeView symbol processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,10 +33,13 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "demangle.h"
 #include "cvinfo.h"
 
+/*
+    Stuff dealing with symbol handles.
+*/
 
 #define SCOPE_CLASS_FLAG        0x80000000UL
 #define SCOPE_UNIQUE_MASK       (~SCOPE_CLASS_FLAG)

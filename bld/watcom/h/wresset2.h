@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Public interface to wres library.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -53,9 +54,6 @@ typedef struct handle_info * PHANDLE_INFO;
 #define WINAPI
 #endif
 typedef unsigned int UINT;
-#ifndef _WCI86FAR
-    #define _WCI86FAR   // Is there a cleaner way?
-#endif
 typedef char _WCI86FAR * LPSTR;
 typedef PHANDLE_INFO HINSTANCE;
 #endif

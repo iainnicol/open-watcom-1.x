@@ -37,7 +37,7 @@
 #if defined(__WATCOMC__)
     #include <sys/ioctl.h>
 #elif !defined( HP )
-    #include <termios.h>
+    #include <termio.h>
 #else
     #include <stdarg.h>
 #endif
@@ -53,6 +53,9 @@
 #include <term.h>
 #endif
 
+#ifndef __WATCOMC__
+#include <alloca.h>
+#endif
 #include <unistd.h>
 
 #include "stdui.h"

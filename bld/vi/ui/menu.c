@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <malloc.h>
 #include <ctype.h>
 #include "vi.h"
 #include "colors.h"

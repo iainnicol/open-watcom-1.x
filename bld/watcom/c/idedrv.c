@@ -30,14 +30,13 @@
 
 
 #include <fcntl.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
 #include "idedll.h"
 #include "idedrv.h"
-#include "walloca.h"
 
 
 #ifndef USE_RUNYOURSELF_ARGV

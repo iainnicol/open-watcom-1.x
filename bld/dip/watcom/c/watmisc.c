@@ -24,15 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Miscellaneous support routines for Watcom debugging format.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "dipwat.h"
 #include "demangle.h"
+#include <malloc.h>
 #include <string.h>
-#include "walloca.h"
 #if defined(M_I86)
 #include <i86.h>
 #endif

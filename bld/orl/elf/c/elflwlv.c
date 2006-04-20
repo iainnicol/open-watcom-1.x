@@ -30,7 +30,7 @@
 
 
 #include <assert.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "elflwlv.h"
 #include "orlhash.h"
 #ifdef _BSD_SOURCE

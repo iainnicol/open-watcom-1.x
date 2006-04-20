@@ -24,15 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Resource compiler memory management routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
+#include <malloc.h>
 #include <string.h>
 #include <assert.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include "rctypes.h"
 #include "errors.h"
 #include "rcmem.h"
@@ -160,3 +162,4 @@ int RcMemChkRange( void * start, size_t len )
     }
 }
 #endif
+

@@ -319,9 +319,3 @@ pick( MSG_CPU_OPTION_INVALID,
 pick( SEGMENT_IN_GROUP,
                                 "Segment is in another group already" ,
                                 "Segment is in another group already" )
-pick( LABEL_OUTSIDE_SEGMENT,
-                                "Label is defined outside segment" ,
-                                "Label is defined outside segment" )
-pick( DATA_LABEL_IS_EXPECTED,
-                                "Data label is expected" ,
-                                "Data label is expected" )

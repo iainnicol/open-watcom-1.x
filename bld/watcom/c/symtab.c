@@ -31,8 +31,7 @@
 
 
 #include <stddef.h>
-#include <stdlib.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "symtab.h"
 
 symbol_table SymInit( int (*cmp)( void *key1, void *key2 ) )

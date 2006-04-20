@@ -33,6 +33,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
+#include <malloc.h>
 #include "linkstd.h"
 #include "exeos2.h"
 #include "loados2.h"

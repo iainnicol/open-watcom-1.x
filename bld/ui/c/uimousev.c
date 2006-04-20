@@ -24,11 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  UI library mouse event processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+#include <malloc.h>
 #include "uidef.h"
 #include "uimouse.h"
 

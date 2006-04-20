@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 #include <unistd.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include "trmem.h"
 #include "memfuncs.h"
 
@@ -39,11 +39,9 @@ static int          TRFileHandle;   /* stream to put output on */
 static void MemPrintLine( int *, const char * buff, size_t len );
 #endif
 
-#if defined( NLM ) || !defined( __WATCOMC__ )
-    /* There is no equivalent expand function in NetWare or non-Watcom libs. */
-    #define _expand NULL
-#else
-    #include <malloc.h>
+#ifdef NLM
+/* There is no equivalent expand function in NetWare. */
+#define _expand NULL
 #endif
 
 void MemOpen( void )

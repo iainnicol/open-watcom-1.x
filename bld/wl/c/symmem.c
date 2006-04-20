@@ -24,13 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Symbol table extra memory routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+/*
+   SYMMEM  : symbol table extra memory routines
+
+*/
 #include <string.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <limits.h>
 #include "linkstd.h"
 #include "pcobj.h"
@@ -79,7 +85,6 @@ void MakePass1Blocks( void )
 static bool ShrinkBlock( block_data *block )
 /******************************************/
 {
-#ifdef __WATCOMC__
     sym_block   *new;
 
     if( block->list == NULL ) return( FALSE );
@@ -93,10 +98,6 @@ static bool ShrinkBlock( block_data *block )
     }
 #endif
     return( TRUE );
-#else
-    /* There is no guarantee realloc() won't move memory - just don't do it */
-    return( FALSE );
-#endif
 }
 
 bool PermShrink( void )

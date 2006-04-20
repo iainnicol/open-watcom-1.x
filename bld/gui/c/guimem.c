@@ -31,6 +31,7 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #ifdef TRMEM
@@ -47,11 +48,9 @@ static int  GUIMemOpened = 0;
 
 #endif
 
-#if defined( NLM ) || !defined( __WATCOMC__ )
-    /* There is no equivalent expand function in NetWare or non-Watcom libs. */
-    #define _expand NULL
-#else
-    #include <malloc.h>
+#ifdef NLM
+/* There is no equivalent expand function in NetWare. */
+#define _expand NULL
 #endif
 
 extern void GUIMemRedirect( int handle )

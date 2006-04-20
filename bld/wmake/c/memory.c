@@ -29,11 +29,9 @@
 ****************************************************************************/
 
 
+#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __WATCOMC__
-    #include <malloc.h>
-#endif
 
 #include "make.h"
 #include "massert.h"

@@ -30,14 +30,12 @@
 
 
 #include "dbglit.h"
-#ifdef __WATCOMC__
- /* it's important that <malloc> is included up here */
- #define __fmemneed foo
- #define __nmemneed bar
- #include <malloc.h>
- #undef __nmemneed
- #undef __fmemneed
-#endif
+/* it's important that <malloc> is included up here */
+#define __fmemneed foo
+#define __nmemneed bar
+#include <malloc.h>
+#undef __nmemneed
+#undef __fmemneed
 #include "dbgdefn.h"
 #include "dbgerr.h"
 #ifdef TRMEM

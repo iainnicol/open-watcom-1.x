@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <malloc.h>
 #include <stdio.h>
 
 #include "uidef.h"

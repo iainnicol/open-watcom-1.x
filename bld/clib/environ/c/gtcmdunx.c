@@ -33,9 +33,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
-#ifdef __WATCOMC__  // Needs to be built with other tools for clibext
-    #include <process.h>
-#endif
+#include <process.h>
 
 extern  char    **_argv;                /* argument vector */
 

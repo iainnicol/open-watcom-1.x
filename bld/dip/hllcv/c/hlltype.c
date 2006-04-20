@@ -31,7 +31,7 @@
 
 #include <stddef.h>
 #include <string.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "hllinfo.h"
 
 

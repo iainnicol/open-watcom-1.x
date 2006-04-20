@@ -24,12 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Librarian DLL version mainline.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <malloc.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #endif

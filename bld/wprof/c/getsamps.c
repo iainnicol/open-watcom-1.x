@@ -31,6 +31,7 @@
 
 #include <fcntl.h>
 #include <string.h>
+#include <malloc.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -43,7 +44,14 @@
 #include "sampinfo.h"
 #include "pathlist.h"
 
-
+//#include "getsamps.def"
+//#include "clrsamps.def"
+//#include "setsamps.def"
+//#include "msg.def"
+//#include "memutil.def"
+//#include "support.def"
+//#include "utils.def"
+//#include "dipinter.def"
 extern void ClearSample(sio_data *curr_sio);
 extern void *ProfAlloc(size_t size);
 extern void ProfFree(void *ptr);

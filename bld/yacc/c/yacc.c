@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Watcom's implementation of the classic YACC tool.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,9 +33,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <malloc.h>
 #include <string.h>
 #include "yacc.h"
-#include "walloca.h"
+
+#ifdef UNIX
+#include <alloca.h>
+#endif
 
 FILE *yaccin, *actout, *tokout;
 char *loadpath, *srcname;

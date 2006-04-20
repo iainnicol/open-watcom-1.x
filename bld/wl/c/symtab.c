@@ -31,7 +31,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "linkstd.h"
 #include "pcobj.h"
 #include "objio.h"

@@ -34,7 +34,10 @@
 #include "guiscale.h"
 #include "guix.h"
 #include <string.h>
-#include "walloca.h"
+#include <malloc.h>
+#ifdef UNIX
+    #include <alloca.h>
+#endif
 
 /*
  * GUIXDrawText -- draw text

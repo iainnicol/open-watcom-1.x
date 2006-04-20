@@ -24,13 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Mainline for OS/2 version of vi.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <malloc.h>
 #include "vi.h"
 #include "source.h"
 #ifndef __OS2V2__

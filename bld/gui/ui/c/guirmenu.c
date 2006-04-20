@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Load menu data from resources. 
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -40,7 +41,9 @@
 #include "guildstr.h"
 #include "guirmenu.h"
 #include "watcom.h"
-
+#ifdef UNIX
+#include "endian.h"
+#endif
 
 typedef struct GUIRMenuEntry {
     MenuItem                    *item;

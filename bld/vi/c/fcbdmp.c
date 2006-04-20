@@ -24,13 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Dump File Control Blocks.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <malloc.h>
 #ifdef M_I86
 #include <i86.h>
 #endif
@@ -39,7 +41,6 @@
 #include "win.h"
 
 #ifdef DBG
-#include <malloc.h>
 static type_style errStyle = { 7, 0, 0 };
 #endif
 

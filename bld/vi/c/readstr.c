@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "walloca.h"
+#include <malloc.h>
 #include "vi.h"
 #include "keys.h"
 #include "win.h"

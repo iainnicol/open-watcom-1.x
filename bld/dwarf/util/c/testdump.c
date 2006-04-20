@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-#include "walloca.h"
+#include <malloc.h>
 
 #include "watcom.h"
 #include "bool.h"

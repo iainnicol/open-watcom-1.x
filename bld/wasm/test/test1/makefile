@@ -21,9 +21,6 @@ data &
 diag01 &
 diag02 &
 diag03 &
-diag04 &
-diag05 &
-diag06 &
 dos16m &
 dosinite &
 dosstart &
@@ -37,7 +34,6 @@ fcom &
 five &
 float &
 foo &
-fubar &
 g &
 getenv &
 hello &
@@ -45,7 +41,6 @@ ifs &
 include &
 ins &
 irp &
-jmp &
 jmpext &
 jmpfword &
 jmpsize &
@@ -54,7 +49,6 @@ jmptst &
 l2 &
 l3 &
 labelbug &
-loader2 &
 lods &
 maaak &
 macro &
@@ -104,12 +98,14 @@ x &
 xx
 
 dev_objs = &
+fubar &
+jmp &
+loader2
 
 asm_flags_x = -c
 asm_flags_diag01 = -4s
 asm_flags_diag02 = -3
 asm_flags_diag03 = -wx
-asm_flags_diag05 = -e100
 asm_flags_getenv = -I"$(watcom_dir)/h"
 
 !include ../test.mif

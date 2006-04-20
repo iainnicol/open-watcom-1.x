@@ -36,6 +36,7 @@
 
 #ifndef HP
     #include <curses.h>
+    #include <termio.h>
 #else
     #include <stdarg.h>
     #include <curses.h>

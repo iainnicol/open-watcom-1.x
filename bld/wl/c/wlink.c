@@ -33,6 +33,7 @@
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
+#include <malloc.h>
 #include "linkstd.h"
 #include "msg.h"
 #include "alloc.h"
@@ -62,9 +63,6 @@
 #include "carve.h"
 #include "permdata.h"
 #include "toc.h"
-#if defined( _DLLHOST )
-    #include <malloc.h>
-#endif
 
 extern void     ResetAddr( void );
 extern void     ResetMsg( void );

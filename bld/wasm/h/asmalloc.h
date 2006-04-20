@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Memory manipulation routine prototypes.
+* Description:  memory manipulation routines
 *
 ****************************************************************************/
 
@@ -32,7 +32,7 @@
 #define _ASMALLOC_H_
 
 #if defined( _STANDALONE_ )
-  #include "walloca.h"
+  #include <malloc.h>
   #include "memutil.h"  // WOMP memory routines declaration
 
   #define AsmTmpAlloc( amount )   alloca( amount )

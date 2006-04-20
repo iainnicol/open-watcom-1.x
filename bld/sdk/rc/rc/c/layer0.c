@@ -347,15 +347,15 @@ int RcRead( int fileno, void * in_buff, size_t size )
     return( total_read );
 } /* RcRead */
 
-off_t RcSeek( int fileno, off_t amount, int where )
-/*************************************************/
+long RcSeek( int fileno, long amount, int where )
+/******************************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
 {
     RcBuffer *  buff;
-    off_t       currpos;
-    off_t       seek_rc;
+    long        currpos;
+    long        seek_rc;
     int         diff;
     int         error,
                 i;
@@ -443,8 +443,8 @@ off_t RcSeek( int fileno, off_t amount, int where )
     return( currpos );
 } /* RcSeek */
 
-off_t RcTell( int fileno )
-/************************/
+long RcTell( int fileno )
+/******************************/
 {
     RcBuffer *  buff;
     int         i;
