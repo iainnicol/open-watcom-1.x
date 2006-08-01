@@ -74,7 +74,7 @@ void    FreeITNodes( itnode *head ) {
             }
         }
         next = head->link;
-        FrlFree( &ITPool, head );
+        FreeITNode( head );
         head = next;
     }
 }
@@ -87,7 +87,7 @@ void    ITPurge( void ) {
 
     FreeITNodes( ITHead );
     ITHead = NULL;
-    FrlFini( &ITPool );
+    FiniITNode();
 }
 
 

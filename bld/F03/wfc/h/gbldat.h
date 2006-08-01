@@ -75,7 +75,7 @@ gbl_defn char           TokenBuff[TOKLEN+1];
 gbl_defn char           SrcBuff[SRCLEN+1]; // input buffer for source lines
 gbl_defn char           *Cursor;        // pointer to current char in SrcBuff
 gbl_defn char           *TkCrsr;        // pointer to current char in TokenBuff
-gbl_defn lex            Lex;            // information kept by lexical analyser
+gbl_defn lex_t          Lex;            // information kept by lexical analyser
 gbl_defn token_t        LexToken;       // information about token collected
 gbl_defn stnumbers      StNumbers;      // struct for statement number info
 gbl_defn token_state    State;          // state of token being collected
@@ -107,7 +107,7 @@ gbl_defn sym_id         IFList;         // start of intrinsic function list
 gbl_defn sym_id         CurrStruct;     // sym_id of structure being defined
 gbl_defn itnode         *FieldNode;     // I.T. node of current field
 
-gbl_defn pointer        ITPool;         // head of free list of I.T. nodes
+//gbl_defn pointer        ITPool;         // head of free list of I.T. nodes
 gbl_defn unsigned_32    CGOpts;         // code generator options
 gbl_defn unsigned_32    CPUOpts;        // code generator options (CPU target)
 gbl_defn unsigned_32    OZOpts;         // code generator options (optimizations)

@@ -28,10 +28,13 @@
 *
 ****************************************************************************/
 
-
+//#include "global.h"
 #include "ftnstd.h"
 #include "fmemmgr.h"
+#include "itdefn.h"
 #include "frl.h"
+
+static pointer        ITPool;         // head of free list of I.T. nodes
 
 
 void    *FrlAlloc( void ***head, int size ) {
@@ -90,4 +93,54 @@ void    FrlFini( void **head ) {
         curr = *curr;
         FMemFree( junk );
     }
+}
+
+////////////////////////////////
+//
+// Allocate an empty IT Node
+//
+///////////////////////////////
+itnode  *AllocITNode(void)
+{
+    return FrlAlloc( &ITPool, sizeof( itnode ) );
+}
+
+///////////////////////////////
+//
+// free IT List
+//
+//////////////////////////////
+void FiniITNode()
+{
+    FrlFini( &ITPool );
+}
+
+///////////////////////////////
+//
+// Initialize IT Pool root
+//
+///////////////////////////////
+void    InitITPoolRoot()
+{
+    ITPool = NULL;
+}
+
+////////////////////////////////////
+//
+// Initialize IT Pool
+//
+///////////////////////////////////
+void InitITPool()
+{
+    FrlInit( &ITPool );
+}
+
+////////////////////////////////////
+//
+// free an IT node
+//
+////////////////////////////////////
+void FreeITNode(itnode * head)
+{
+    FrlFree( &ITPool, head );
 }

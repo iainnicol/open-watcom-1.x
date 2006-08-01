@@ -40,6 +40,7 @@
 #include "ferror.h"
 #include "comio.h"
 #include "inout.h"
+#include "frl.h"
 
 extern  void            BIInit();
 extern  void            BIEnd();
@@ -85,7 +86,8 @@ static  bool    CompSProg( ) {
             if( CurrFile->flags & INC_PENDING ) {
                 CurrFile->flags &= ~INC_PENDING;
                 ProcInclude();
-                ComRead();
+                //ComRead();
+                ComReadFree();
             } else if( CurrFile->flags & CONC_PENDING ) {
                 if( ( ProgSw & PS_DONT_GENERATE ) &&
                     ( ( Options & OPT_SYNTAX ) == 0 ) &&
@@ -93,7 +95,8 @@ static  bool    CompSProg( ) {
                     ( CurrFile->link == NULL ) ) break;
                 Conclude();
                 if( CurrFile == NULL ) break;
-                ComRead();
+                //ComRead();
+                ComReadFree();
             } else {
                 break;
             }
@@ -182,7 +185,7 @@ void    InitSubProg() {
 //=====================
 
     ProgSw &= ~( PS_END_OF_SUBPROG | PS_IN_SUBPROGRAM | PS_BLOCK_DATA );
-    FrlInit( &ITPool );
+    InitITPool();
     SgmtSw       = 0;
     ArgList      = NULL;
     Entries      = NULL;
@@ -199,7 +202,7 @@ void    InitSubProg() {
 void    FiniSubProg() {
 //=====================
 
-    FrlFini( &ITPool );
+    FiniITNode();
     CheckCSList( CS_EMPTY_LIST ); // all control structures should be finished
     if( !Remember.endstmt ) {
         Error( EN_NO_END );

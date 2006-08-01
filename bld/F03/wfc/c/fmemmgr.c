@@ -91,7 +91,7 @@ void    *FMemAlloc( size_t size ) {
     p = malloc( size );
 #endif
     if( p == NULL ) {
-        FrlFini( &ITPool );
+        FiniITNode();
 #if defined( TRMEM )
         p = TRMemAlloc( size );
 #else

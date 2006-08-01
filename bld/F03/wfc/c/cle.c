@@ -43,6 +43,7 @@
 #include "inout.h"
 #include "cle.h"
 #include "utility.h"
+#include "frl.h"
 
 
 extern  void            DoCompile(void);
@@ -122,7 +123,8 @@ void            InvokeCompile() {
 //===============================
 
     InitMacros();
-    ComRead(); // pre-read must occur here in case of null program
+    //ComRead(); // pre-read must occur here in case of null program
+    ComReadFree();
     if( ProgSw & PS_SOURCE_EOF ) {
         Conclude();
     } else {
@@ -177,7 +179,7 @@ static  void    InitPurge() {
     VSTInit();
     // Initialize for ITPurge();
     ITHead = NULL;
-    ITPool = NULL;
+    InitITPoolRoot();
     // Initialize for CSPurge();
     CSHead = NULL;
     // Initialize for IOPurge();

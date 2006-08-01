@@ -253,7 +253,7 @@ static  void    InitStatement() {
     CpError = FALSE;
     // Create internal text list of statement
     MakeITList();
-//    DumpLex();
+    DumpLex(ITHead);
     // Finished statement scanning
     StmtSw &= ~SS_SCANNING;
     // Statement type not determined, yet
@@ -535,17 +535,17 @@ void    RemKeyword( itnode *itptr, int remove_len ) {
             if( curr_char - itptr->opnd != curr_size ) {
                 remove_len = curr_size - ( curr_char - itptr->opnd );
                 itptr->opnd_size = ( curr_char - itptr->opnd );
-                new_it_node = FrlAlloc( &ITPool, sizeof( itnode ) );
-                new_it_node->opnd_size = remove_len;
-                new_it_node->opnd = itptr->opnd + itptr->opnd_size;
-                new_it_node->opn.ds = DSOPN_NAM;
-                new_it_node->opr = OPR_PHI;
-                new_it_node->oprpos = itptr->opnpos + itptr->opnd_size;
-                new_it_node->opnpos = new_it_node->oprpos;
-                new_it_node->flags = 0;
-                new_it_node->list = itptr->list;
-                new_it_node->link = itptr->link;
-                new_it_node->typ = TY_NO_TYPE;
+                new_it_node = AllocITNode();
+                new_it_node->opnd_size  = remove_len;
+                new_it_node->opnd       = itptr->opnd + itptr->opnd_size;
+                new_it_node->opn.ds     = DSOPN_NAM;
+                new_it_node->opr        = OPR_PHI;
+                new_it_node->oprpos     = itptr->opnpos + itptr->opnd_size;
+                new_it_node->opnpos     = new_it_node->oprpos;
+                new_it_node->flags      = 0;
+                new_it_node->list       = itptr->list;
+                new_it_node->link       = itptr->link;
+                new_it_node->typ        = TY_NO_TYPE;
                 itptr->link = new_it_node;
             }
         }
