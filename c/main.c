@@ -46,6 +46,7 @@
 #include "genmsomf.h"
 #include "directiv.h"
 #include "womputil.h"
+#include "swchar.h"
 #include "asminput.h"
 #include "asmerr.h"
 
@@ -124,28 +125,6 @@ global_options Options = {
     /* stdcall at number */         TRUE,
     /* mangle stdcall   */          TRUE
 };
-
-#if defined( __DOS__ )
-
-extern unsigned char    _DOS_Switch_Char( void );
-#pragma aux     _DOS_Switch_Char = \
-    "mov ax,3700h"  \
-    "int 21h"       \
-    "mov al,dl"     \
-    modify [dx];
-
-#endif
-
-static unsigned char _dos_switch_char( void )
-{
-#if defined( __DOS__ )
-    return( _DOS_Switch_Char() );
-#elif defined( __UNIX__ )
-    return( '-' );
-#else
-    return( '/' );
-#endif
-}
 
 static char *CopyOfParm( void )
 /*****************************/
