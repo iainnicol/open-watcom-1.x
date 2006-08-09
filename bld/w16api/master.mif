@@ -1,0 +1,51 @@
+proj_name = w16api
+
+w16api_autodepends = .autodepend
+w16api_distrib_lib = 1
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.EXTENSIONS : .lbc .def
+
+libs =               &
+        commdlg.lib  &
+        ctl3d.lib    &
+        ctl3dv2.lib  &
+        ddeml.lib    &
+        shell.lib    &
+        stress.lib   &
+        toolhelp.lib &
+	ver.lib      &
+        windows.lib  &
+        winsock.lib
+
+winlibs =            &
+        gdi.lbc      &
+        kernel.lbc   &
+        keyboard.lbc &
+#        lzexpand.lbc &
+        sound.lbc    &
+        user.lbc     &
+        win87em.lbc
+
+extra_lib_flags = -io -ii -p=16
+
+.def: ../lib
+.asm: ../asm
+
+.def.lbc:
+        $(vi) -s ../def16lbc.vi -p"$*" ../lib/$[.
+
+.lbc.lib:
+        $(librarian) $(libflags) $@ @$<
+
+$(libs):
+
+windows.lbc : $(winlibs)
+        @%create $^@
+        @for %i in ($(winlibs)) do @%append $^@ @ %i
+
+windows.lib: windows.lbc profc.obj
+        $(librarian) $(libflags) $@ @$<

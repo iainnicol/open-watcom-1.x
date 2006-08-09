@@ -1,0 +1,101 @@
+proj_name = vi
+
+!ifndef vi_autodepends
+vi_autodepends = .AUTODEPEND
+!endif
+
+.EXTENSIONS: .ch .dh
+.EXTENSIONS: .ctl .dyn
+.EXTENSIONS: .vi
+
+name = $(proj_name).exe
+lname = $(name)
+!ifeq host_os win
+!ifeq host_cpu 386
+lname = $(proj_name).rex
+!endif
+!endif
+
+PROJECT : $(name) .symbolic
+
+additional_cleanup = *.dh *.ch
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+!ifndef prebuild
+!include ../mif/rcsdll.mif
+!endif
+!include ../mif/include.mif
+!include ../mif/objects.mif
+!include ../mif/compile.mif
+!include ../mif/special.mif
+!include ../mif/link.mif
+
+.h : $(vi_dir)/h
+.ctl : $(vi_dir)/ctl
+.dyn : $(vi_dir)/ctl
+
+!ifdef prebuild
+extra_c_flags +=-DPREBUILD
+!endif
+
+!ifdef bind
+.vi : $(vi_dir)/dat
+!include $(vi_dir)/dat/videps.mif
+!else
+videps =
+!endif
+
+!ifdef sys_windowed
+bindextra = -d$(vi_dir)\dat\winbind.dat
+!endif
+
+!ifdef bootstrap
+$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj
+        $(cl) $(clflags) $< $(cl_libs)
+!else
+$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj
+        $(linker) $(lflags) name $(lname) file version.obj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
+!ifdef sys_windowed
+!ifeq host_os win
+!ifeq host_cpu 386
+        wbind $(lname) -s $(lang_root)/binw/win386.ext -R -q $(proj_name).res
+        rm $(lname)
+!else
+        $(rc) -k -zk0 $(proj_name).res $^@
+!endif
+!else ifeq host_os nt
+        $(rc) -k -zk0 $(proj_name).res $^@
+!endif
+        # don't bind - it screws up everything - BBB
+!else
+!ifndef prebuild
+        set edpath=$(vi_dir)/dat
+# run the right version of edbind depending on host platform
+!ifdef __OS2__
+        $(vi_dir)\bind\os2386\edbind $(bindextra) -q $(name)
+!else ifdef __MSDOS__
+        $(vi_dir)\bind\dosi86\edbind $(bindextra) -q $(name)
+!else ifdef __LINUXMIPS__
+        $(vi_dir)/bind/linuxmps/edbind.exe $(bindextra) -q $(name)
+!else ifdef __LINUX__
+        $(vi_dir)/bind/linux386/edbind.exe $(bindextra) -q $(name)
+!else ifdef __NTAXP__
+        $(vi_dir)\bind\ntaxp\edbind.exe $(bindextra) -q $(name)
+!else
+        $(vi_dir)\bind\nt386\edbind $(bindextra) -q $(name)
+!endif
+!endif
+!endif
+!endif
+
+!ifeq host_os win
+!ifeq host_cpu i86
+tags : ../win/tags .SYMBOLIC
+
+../win/tags: vi.tag
+    ctags @vi.tag -f$^@
+!endif
+!endif
