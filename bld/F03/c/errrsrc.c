@@ -30,13 +30,15 @@
 
 
 #include "ftnstd.h"
+#include <unistd.h>
+#include <fcntl.h>
+#include <malloc.h>
 #include "cioconst.h"
 #include "wressetr.h"
 #include "errrtns.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <malloc.h>
+
+
 
 extern  void            Substitute(char *,char *,va_list args);
 
@@ -61,7 +63,7 @@ static  long    res_seek( int handle, long position, int where ) {
         return( lseek( handle, position, where ) );
     }
 }
-
+// What is this good for?
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 
