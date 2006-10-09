@@ -544,7 +544,7 @@ static  cg_name MkSCB16( cg_name src ) {
     CGTrash( CGAssign( SCBLenAddr( dst_2 ), SCBLength( src_2 ), T_UINT_2 ) );
     // Assumption: first field in SCB is pointer to data
     return( CGLVAssign( SCBPtrAddr( dst ),
-             CGUnary( O_PTR_TO_FORIEGN, SCBPointer( src ), T_GLOBAL_POINTER ),
+             CGUnary( O_PTR_TO_FOREIGN, SCBPointer( src ), T_GLOBAL_POINTER ),
              T_GLOBAL_POINTER ) );
 }
 
@@ -604,7 +604,7 @@ void    FCCall() {
             arg = SCBPointer( CGFEName( scb, T_CHAR ) );
 #if _CPU == 386
             if( aux->cclass & FAR16_CALL ) {
-                arg = CGUnary( O_PTR_TO_FORIEGN, arg, T_POINTER );
+                arg = CGUnary( O_PTR_TO_FOREIGN, arg, T_POINTER );
             }
 #endif
             CGAddParm( call, arg, T_POINTER );
@@ -760,7 +760,7 @@ void    FCCall() {
         }
 #if _CPU == 386 || _CPU == 8086
         if( (aux->cclass & FAR16_CALL) && chk_foreign ) {
-            arg = CGUnary( O_PTR_TO_FORIEGN, arg, cg_typ );
+            arg = CGUnary( O_PTR_TO_FOREIGN, arg, cg_typ );
         }
 #endif
         CGAddParm( call, arg, cg_typ );
@@ -786,7 +786,7 @@ void    FCCall() {
 #if _CPU == 386
                 if( aux->cclass & FAR16_CALL ) {
                     arg = MkSCB16( arg );
-                    arg = CGUnary( O_PTR_TO_FORIEGN, arg, T_GLOBAL_POINTER );
+                    arg = CGUnary( O_PTR_TO_FOREIGN, arg, T_GLOBAL_POINTER );
                 }
 #endif
                 CGAddParm( call, arg, T_POINTER );
