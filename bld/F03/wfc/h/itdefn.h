@@ -58,8 +58,8 @@ typedef struct itnode {
     char                *opnd;          // operand field
     TYPE                typ;            // type of symbol
     char                chsize : 4;     // size of character operand (OPN_SS1)
-    char                is_unsigned : 1;// integer constant is unsigned
-    char                is_catparen : 1;// left paren matches right paren of
+    char                isUnsigned : 1;// integer constant is unsigned
+    char                isCatparen : 1;// left paren matches right paren of
 } itnode;
 
 
