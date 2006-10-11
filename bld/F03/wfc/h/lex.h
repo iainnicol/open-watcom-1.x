@@ -33,7 +33,7 @@
 #include "opr.h"
 #include "opn.h"
 
-typedef struct lex {
+typedef struct lex_t {
     OPR         opr;
     union {
         DSOPN           ds;
@@ -43,4 +43,4 @@ typedef struct lex {
     unsigned_16 opnpos;
     char        *ptr;
     unsigned_16 len;
-} lex;
+} lex_t;
