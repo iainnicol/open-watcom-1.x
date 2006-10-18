@@ -61,39 +61,60 @@ static  const OPR __FAR        LogOpr[] = { // must correspond to table in SCAN
         OPR_PHI, OPR_PHI, OPR_PHI
 };
 
-static  itnode  *NewITNode( void ) {
+static  itnode  *NewITNode( lex_t lex ) {
 //==================================
 
 // Create a new itnode.
 
-    itnode      *new;
+    itnode      *newNode;
 
-    new = FrlAlloc( &ITPool, sizeof( itnode ) );
-    if( new != NULL ) {
-        new->opnd = Lex.ptr;
-        new->opnd_size = Lex.len;
-        new->opr = Lex.opr;
-        new->oprpos = Lex.oprpos;
-        new->opn.ds = Lex.opn.ds;
-        new->opnpos = Lex.opnpos;
-        new->link = NULL;
-        new->list = NULL;
-        new->flags = 0;
-        new->typ = TY_NO_TYPE;
-        new->chsize = 0;
-        new->is_unsigned = 0;
-        new->is_catparen = 0;
+    newNode = AllocITNode();
+    if( newNode != NULL ) {
+        newNode->opnd       = lex.ptr;
+        newNode->opnd_size  = lex.len;
+        newNode->opr        = lex.opr;
+        newNode->oprpos     = lex.oprpos;
+        newNode->opn.ds     = lex.opn.ds;
+        newNode->opnpos     = lex.opnpos;
+        newNode->link       = NULL;
+        newNode->list       = NULL;
+        newNode->flags      = 0;
+        newNode->typ        = TY_NO_TYPE;
+        newNode->chsize     = 0;
+        newNode->isUnsigned = 0;
+        newNode->isCatparen = 0;
     }
-    return( new );
+    return( newNode );
+}
+
+///////////////////////////////////////
+//
+// Create terminal IT node
+//
+//////////////////////////////////////
+static itnode  *GetITNodeEndMarker( void )
+{
+    // setup terminal node
+    Lex.opr     = OPR_TRM;
+    Lex.opn.ds  = DSOPN_PHI;
+    Lex.oprpos  = 9999;
+    Lex.opnpos  = 9999;
+    Lex.len     = 0;
+    return NewITNode(Lex);
 }
 
 
-void    MakeITList() {
-//====================
+///////////////////////////////////////////
+//
+// Create IT list for statement
+//
+///////////////////////////////////////////
+void    MakeITList()
+{
 
 // Make up the internal text list.
 
-    itnode      *new_it;
+    itnode      *newItNode;
 
     InitScan();
     Lex.opr = OPR_TRM;
@@ -108,7 +129,7 @@ void    MakeITList() {
     SPtr1 = NULL;
     SPtr2 = NULL;
     GetOpnd();
-    ITHead = NewITNode();
+    ITHead = NewITNode(Lex);
     if( ITHead == NULL ) {
         FlushStatement();
         return;
@@ -123,12 +144,12 @@ void    MakeITList() {
         // FMemAlloc() frees the I.T. list starting at ITHead so when
         // we return CITNode has been freed.
         // So don't code ---->    CITNode->link = NewITNode();
-        new_it = NewITNode();
-        if( new_it == NULL ) {
+        newItNode = NewITNode(Lex);
+        if( newItNode == NULL ) {
             FlushStatement();
             return;
         }
-        CITNode->link = new_it;
+        CITNode->link = newItNode;
         CITNode = CITNode->link;
         SetSwitch();
     }
@@ -142,17 +163,12 @@ void    MakeITList() {
     if( BrCnt != 0 ) {
         Error( PC_NO_CLOSEPAREN );
     }
-    Lex.opr = OPR_TRM;
-    Lex.opn.ds = DSOPN_PHI;
-    Lex.oprpos = 9999;
-    Lex.opnpos = 9999;
-    Lex.len = 0;
-    new_it = NewITNode();
-    if( new_it == NULL ) {
+    newItNode = GetITNodeEndMarker();
+    if( newItNode == NULL ) {
         FlushStatement();
         return;
     }
-    CITNode->link = new_it;
+    CITNode->link = newItNode;
     CITNode->link->link = NULL;
     CITNode = ITHead;
 }
@@ -162,7 +178,8 @@ static  void            FlushStatement() {
 //========================================
 
     for(;;) {
-        ComRead();
+        //ComRead();
+        ComReadFree();
         if( ( ProgSw & PS_SOURCE_EOF ) != 0 ) break;
         if( StmtType != STMT_CONT ) break;
         ComPrint();
