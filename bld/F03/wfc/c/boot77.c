@@ -55,8 +55,6 @@ extern  void            ShowOptions(char *);
 extern  char            *UsageLines[];
 
 
-// local prototypes
-int     ProcName(char *srcName); 
 
 void    InitCompMain() {
 //======================
