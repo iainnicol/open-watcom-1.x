@@ -52,10 +52,6 @@ static  char    *Opn[] = {
     "OPN_FMT"
 };
 
-// protoypes
-void    Node(itnode * ,int); 
-void    SLine(void);
-void    DLine(void);
 
 static const char   sline[] = "+------------+-----------+-------------+\n"; 
 static const char   dline[] = "+============+===========+=============+\n"; 
