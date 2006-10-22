@@ -184,7 +184,7 @@ static  void    ConstBase( uint base ) {
     if( ( *end != NULLCHAR ) || ( errno != 0 ) ) {
         Error( CN_BAD_HEX_OCT );
     }
-    CITNode->is_unsigned = 1;
+    CITNode->isUnsigned = 1;
 }
 
 

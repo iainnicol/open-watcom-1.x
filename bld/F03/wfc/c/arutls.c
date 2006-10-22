@@ -147,7 +147,7 @@ void    KillOpnOpr() {
     itnode      *itptr;
 
     CITNode->opr = BkLink->opr;                 // copy operator information
-    CITNode->is_catparen = BkLink->is_catparen; // ...
+    CITNode->isCatparen = BkLink->isCatparen; // ...
     CITNode->oprpos = BkLink->oprpos;
     if( BkLink->opr == OPR_TRM ) {
         BkLink->opr = OPR_PHI;

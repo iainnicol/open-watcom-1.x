@@ -254,7 +254,7 @@ void            CatAxeParens() {
     BackTrack();
     ReqNOpn();
     MoveDown();
-    if( CITNode->is_catparen ) {
+    if( CITNode->isCatparen ) {
         KillOpnOpr();
     } else {
         FiniCat();
@@ -284,7 +284,7 @@ static  itnode  *findMatch( bool *ok_to_axe, bool *all_const_opns ) {
             // if it is a left parenthesis of a concatenation expression, we
             // simply ignore it since the right parenthesis was already
             // removed prior to calling this function
-            if( !cit->is_catparen ) {
+            if( !cit->isCatparen ) {
                 num--;
             }
         } else if( cit->opr == OPR_RBR ) {
@@ -319,7 +319,7 @@ void            ParenCat() {
         // consider:    a(1)(2:3)//c
         if( ( cit->opr == OPR_LBR ) && ok_to_axe ) {
             ReqNOpn();
-            cit->is_catparen = 1;
+            cit->isCatparen = 1;
             cit = CITNode;
             AdvanceITPtr();
             FreeOneNode( cit );
@@ -347,7 +347,7 @@ void            CatParen() {
     cit = findMatch( &ok_to_axe, NULL );
     if( cit != NULL ) {
         if( ( cit->opr == OPR_LBR ) && ok_to_axe ) {
-            cit->is_catparen = 1;
+            cit->isCatparen = 1;
             cit = CITNode;
             AdvanceITPtr();
             ReqNOpn();

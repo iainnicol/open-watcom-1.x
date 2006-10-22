@@ -44,13 +44,13 @@ static  void    CnI2I( itnode *it, uint size ) {
     if( it->size == size ) return;
     if( it->size == sizeof( intstar1 ) ) {
         if( size == sizeof( intstar2 ) ) {
-            if( it->is_unsigned ) {
+            if( it->isUnsigned ) {
                 it->value.intstar2 = (unsigned char)it->value.intstar1;
             } else {
                 it->value.intstar2 = it->value.intstar1;
             }
         } else {
-            if( it->is_unsigned ) {
+            if( it->isUnsigned ) {
                 it->value.intstar4 = (unsigned char)it->value.intstar1;
             } else {
                 it->value.intstar4 = it->value.intstar1;
@@ -60,7 +60,7 @@ static  void    CnI2I( itnode *it, uint size ) {
         if( size == sizeof( intstar1 ) ) {
             it->value.intstar1 = it->value.intstar2;
         } else {
-            if( it->is_unsigned ) {
+            if( it->isUnsigned ) {
                 it->value.intstar4 = (unsigned short)it->value.intstar2;
             } else {
                 it->value.intstar4 = it->value.intstar2;

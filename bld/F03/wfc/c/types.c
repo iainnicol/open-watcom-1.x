@@ -90,14 +90,14 @@ intstar4        ITIntValue( itnode *it ) {
 // Get integer value from i.t. node.
 
     if( it->size == sizeof( intstar1 ) ) {
-        if( it->is_unsigned ) {
+        if( it->isUnsigned ) {
             return( (unsigned_8)it->value.intstar1 );
         } else {
             return( it->value.intstar1 );
         }
     }
     if( it->size == sizeof( intstar2 ) ) {
-        if( it->is_unsigned ) {
+        if( it->isUnsigned ) {
             return( (unsigned_16)it->value.intstar2 );
         } else {
             return( it->value.intstar2 );
