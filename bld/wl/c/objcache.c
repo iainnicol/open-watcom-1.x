@@ -44,7 +44,7 @@
 #include "objio.h"
 #include "objcache.h"
 
-bool CacheOpen( file_list *list )
+extern bool CacheOpen( file_list *list )
 /**************************************/
 {
     infilelist *file;
@@ -77,7 +77,7 @@ bool CacheOpen( file_list *list )
     return TRUE;
 }
 
-void CacheClose( file_list *list, unsigned pass )
+extern void CacheClose( file_list *list, unsigned pass )
 /******************************************************/
 {
     infilelist *file;
@@ -106,13 +106,13 @@ void CacheClose( file_list *list, unsigned pass )
     }
 }
 
-void * CachePermRead( file_list * list, unsigned long pos, unsigned len )
+extern void * CachePermRead( file_list * list, unsigned long pos, unsigned len )
 /******************************************************************************/
 {
     return CacheRead( list, pos, len );
 }
 
-void * CacheRead( file_list * list, unsigned long pos, unsigned len )
+extern void * CacheRead( file_list * list, unsigned long pos, unsigned len )
 /**************************************************************************/
 /* read len bytes out of the cache. */
 // NYI: will need to make this more sophisticated for libraries
@@ -121,31 +121,31 @@ void * CacheRead( file_list * list, unsigned long pos, unsigned len )
     return (char *)list->file->cache + pos;
 }
 
-bool CacheEnd( file_list * list, unsigned long pos )
+extern bool CacheEnd( file_list * list, unsigned long pos )
 /*********************************************************/
 {
     return pos >= list->file->len;
 }
 
-void CacheFini( void )
+extern void CacheFini( void )
 /***************************/
 {
 }
 
-void CacheFree( file_list * list, void * blk )
+extern void CacheFree( file_list * list, void * blk )
 /***************************************************/
 {
     list = list;
     blk = blk;
 }
 
-void FreeObjCache( file_list *list )
+extern void FreeObjCache( file_list *list )
 /*****************************************/
 {
     list = list;
 }
 
-bool DumpObjCache( void )
+extern bool DumpObjCache( void )
 /******************************/
 {
     return FALSE;

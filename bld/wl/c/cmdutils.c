@@ -164,12 +164,12 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 #endif
 }
 
-bool ProcArgList( bool (*rtn)( void ), tokcontrol ctrl )
+extern bool ProcArgList( bool (*rtn)( void ), tokcontrol ctrl )
 {
     return(ProcArgListEx(rtn, ctrl ,NULL));
 }
 
-bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl ,cmdfilelist *resetpoint)
+extern bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl ,cmdfilelist *resetpoint)
 /*************************************************************/
 {
     bool bfilereset = FALSE;    /* did we open a file and get reset ? */
@@ -202,7 +202,7 @@ bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl ,cmdfilelist *resetpoin
     return( TRUE );
 }
 
-bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
+extern bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
 /*******************************************************************/
 /* recognize token out of parse table, with required separator            */
 /* return FALSE if no separator, Suicide if not recognized (if suicide is */
@@ -253,7 +253,7 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
     return( ret );
 }
 
-bool MatchOne( parse_entry *entry , sep_type req , char * match, int len )
+extern bool MatchOne( parse_entry *entry , sep_type req , char * match, int len )
 /*******************************************************************/
 /* recognize token out of parse table */
 {
@@ -285,7 +285,7 @@ bool MatchOne( parse_entry *entry , sep_type req , char * match, int len )
     return( ret );
 }
 
-ord_state getatoi( unsigned_16 * pnt )
+extern ord_state getatoi( unsigned_16 * pnt )
 /*******************************************/
 {
     unsigned_32 value;
@@ -301,7 +301,7 @@ ord_state getatoi( unsigned_16 * pnt )
     return( retval );
 }
 
-ord_state getatol( unsigned_32 * pnt )
+extern ord_state getatol( unsigned_32 * pnt )
 /*******************************************/
 {
     char *          p;
@@ -364,7 +364,7 @@ ord_state getatol( unsigned_32 * pnt )
     return( ST_IS_ORDINAL );
 }
 
-bool HaveEquals( tokcontrol ctrl )
+extern bool HaveEquals( tokcontrol ctrl )
 /***************************************/
 {
     if( GetToken( SEP_EQUALS, ctrl ) == FALSE ) {
@@ -376,7 +376,7 @@ bool HaveEquals( tokcontrol ctrl )
     return( TRUE );
 }
 
-bool GetLong( unsigned_32 *addr )
+extern bool GetLong( unsigned_32 *addr )
 /**************************************/
 {
     unsigned_32     value;
@@ -392,7 +392,7 @@ bool GetLong( unsigned_32 *addr )
     return( TRUE );
 }
 
-char * tostring( void )
+extern char * tostring( void )
 /****************************/
 // make the current token into a C string.
 {
@@ -408,7 +408,7 @@ char * tostring( void )
     return( str );
 }
 
-char * totext()
+extern char * totext()
 /********************/
 /* get a possiblly quoted string */
 {
@@ -472,12 +472,12 @@ static bool CheckFence()
     return FALSE;
 }
 
-bool GetToken( sep_type req, tokcontrol ctrl)
+extern bool GetToken( sep_type req, tokcontrol ctrl)
 {
     return(GetTokenEx(req, ctrl, NULL, NULL));
 }
 
-bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool * pbreset)
+extern bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool * pbreset)
 /***************************************************/
 /* return TRUE if no problem */
 /* return FALSE if problem   */
@@ -714,7 +714,7 @@ static void BackupParser( void )
     memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
 }
 
-void RestoreParser( void )
+extern void RestoreParser( void )
 /*******************************/
 /* return the parser to the previous command state */
 {
@@ -724,7 +724,7 @@ void RestoreParser( void )
     memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
 }
 
-void NewCommandSource( char *name, char *buff, method how )
+extern void NewCommandSource( char *name, char *buff, method how )
 /****************************************************************/
 /* start reading from a new command source, and save the old one */
 {
@@ -759,7 +759,7 @@ void NewCommandSource( char *name, char *buff, method how )
     Token.quoted = FALSE;
 }
 
-void SetCommandFile( f_handle file, char *fname )
+extern void SetCommandFile( f_handle file, char *fname )
 /******************************************************/
 /* read input from given file */
 {
@@ -822,7 +822,7 @@ static void StartNewFile( void )
     DEBUG(( DBG_OLD, "processing command file %s", CmdFile->name ));
 }
 
-void EatWhite( void )
+extern void EatWhite( void )
 /**************************/
 {
     while( IS_WHITESPACE( Token.next ) ) {
@@ -1033,7 +1033,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 }
 
 
-char *FileName( char *buff, int len, byte etype, bool force )
+extern char *FileName( char *buff, int len, byte etype, bool force )
 /******************************************************************/
 {
     char *  namptr;
@@ -1084,7 +1084,7 @@ char *FileName( char *buff, int len, byte etype, bool force )
     return( ptr );
 }
 
-void RestoreCmdLine( void )
+extern void RestoreCmdLine( void )
 /********************************/
 // Restore a saved command line.
 {
@@ -1118,7 +1118,7 @@ void RestoreCmdLine( void )
     memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
 }
 
-bool IsSystemBlock()
+extern bool IsSystemBlock()
 /*************************/
 // Are we in a system block?
 {
@@ -1132,7 +1132,7 @@ bool IsSystemBlock()
     return( FALSE );
 }
 
-void BurnUtils( void )
+extern void BurnUtils( void )
 /***************************/
 // Burn data structures used in command utils.
 {
@@ -1164,7 +1164,7 @@ void BurnUtils( void )
     Token.how = BUFFERED;       // so error message stuff reports right name
 }
 
-outfilelist * NewOutFile( char * filename )
+extern outfilelist * NewOutFile( char * filename )
 /************************************************/
 {
     outfilelist *   fnode;
@@ -1190,7 +1190,7 @@ int stricmp_wrapper( const void *s1, const void *s2 )
     return stricmp( s1, s2 );
 }
 
-section * NewSection( void )
+extern section * NewSection( void )
 /*********************************/
 {
     section             *sect;
@@ -1218,7 +1218,7 @@ section * NewSection( void )
     return( sect );
 }
 
-char * GetFileName( char **membname, bool setname )
+extern char * GetFileName( char **membname, bool setname )
 /********************************************************/
 {
     char *  ptr;

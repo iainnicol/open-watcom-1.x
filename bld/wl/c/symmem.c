@@ -181,7 +181,7 @@ static void * AllocBlock( unsigned size, block_data *block )
     return( ptr );
 }
 
-void BasicInitSym( symbol *sym )
+extern void BasicInitSym( symbol *sym )
 /*************************************/
 {
     sym->hash = NULL;
@@ -197,7 +197,7 @@ void BasicInitSym( symbol *sym )
     sym->prefix = NULL;
 }
 
-symbol * AddSym( void )
+extern symbol * AddSym( void )
 /****************************/
 /* allocate and initialize a new symbol */
 {
@@ -211,7 +211,7 @@ symbol * AddSym( void )
     return( sym );
 }
 
-void ReleasePass1( void )
+extern void ReleasePass1( void )
 /******************************/
 /* free pass1 block allocations */
 {
@@ -219,7 +219,7 @@ void ReleasePass1( void )
     Pass1Blocks.list = NULL;
 }
 
-void RelSymBlock( void )
+extern void RelSymBlock( void )
 /*****************************/
 /* free memory used for symbol table allocation and code */
 {

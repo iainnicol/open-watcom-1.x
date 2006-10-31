@@ -43,4 +43,3 @@ extern void             DefDistribSym( symbol * );
 extern void             RefDistribSym( symbol * );
 extern void             FinishArcs( mod_entry * );
 extern void             DistIndCall( symbol * );
-extern void             ResetDistrib( void );

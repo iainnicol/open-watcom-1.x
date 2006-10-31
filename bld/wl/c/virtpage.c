@@ -45,13 +45,13 @@ static vmemblock *      VMemBlocks;
 
 #define TINY_ALLOC_CUTOFF (2*1024)
 
-void VirtMemInit( void )
+extern void VirtMemInit( void )
 /*****************************/
 {
     VMemBlocks = NULL;
 }
 
-virt_mem AllocStg( unsigned long size )
+extern virt_mem AllocStg( unsigned long size )
 /********************************************/
 {
     vmemblock * ptr;
@@ -72,7 +72,7 @@ virt_mem AllocStg( unsigned long size )
     return (virt_mem) ptr->mem;
 }
 
-void ReleaseInfo( virt_mem v )
+extern void ReleaseInfo( virt_mem v )
 /**********************************/
 {
     vmemblock * ptr;
@@ -95,13 +95,13 @@ void ReleaseInfo( virt_mem v )
     _LnkFree( ptr );
 }
 
-bool SwapOutVirt( void )
+extern bool SwapOutVirt( void )
 /*****************************/
 {
     return( FALSE );
 }
 
-void FreeVirtMem( void )
+extern void FreeVirtMem( void )
 /*****************************/
 {
     FreeList( VMemBlocks );

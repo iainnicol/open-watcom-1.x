@@ -189,7 +189,7 @@ static bool isCOMDEF32( void )
     return( (ObjFormat & FMT_32BIT_REC) != 0 );
 }
 
-void ProcComdef( bool isstatic )
+extern void ProcComdef( bool isstatic )
 /*************************************/
 {
     bool                is32bit = isCOMDEF32();
@@ -223,7 +223,7 @@ void ProcComdef( bool isstatic )
     }
 }
 
-void ProcLinsym( void )
+extern void ProcLinsym( void )
 /****************************/
 {
     list_of_names *     symname;
@@ -272,7 +272,7 @@ static void FinishComdat( void *inf )
     FreeCDatInfo( info );
 }
 
-void ResolveComdats( void )
+extern void ResolveComdats( void )
 /********************************/
 {
     RingWalk( CDatList, FinishComdat );
@@ -402,7 +402,7 @@ static bool CheckSameComdat( void *info, void *sym )
 
 #define ST_COMDAT (ST_REFERENCE | ST_CREATE | ST_NOALIAS)
 
-void ProcComdat( void )
+extern void ProcComdat( void )
 /****************************/
 /* process a comdat record */
 {

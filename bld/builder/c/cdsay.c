@@ -30,6 +30,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #ifdef __UNIX__
 #include <unistd.h>
 #else
@@ -39,18 +40,38 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
-#include "builder.h"
 
 #ifndef _MAX_PATH
 #define _MAX_PATH PATH_MAX
 #endif
 
-void LogDir( char *dir )
+#define BSIZE   256
+#define SCREEN  79
+const char Equals[] =   "========================================"\
+                        "========================================";
+
+static void LogDir( char *dir )
 {
-    printf( "%s", LogDirEquals( dir ) );
+    char        tbuff[BSIZE];
+    int         equals;
+    int         bufflen;
+    const char  *eq;
+    struct tm   *tm;
+    time_t      ttime;
+
+    ttime = time( NULL );
+    tm = localtime( &ttime );
+    strftime( tbuff, BSIZE, "%H:%M:%S", tm );
+    strcat( tbuff, " " );
+    strcat( tbuff, dir );
+    equals = ( SCREEN - ( bufflen = strlen( tbuff ) ) ) / 2 - 2;
+    if( equals < 1 )
+        equals = 1;
+    eq = &Equals[ ( sizeof( Equals ) - 1 ) - equals];
+    printf( "%s %s %s%s\n", eq, tbuff, eq, ( bufflen & 1 ) ? "" : "=" );
 }
 
-static unsigned ChgDir( char *dir )
+unsigned ChgDir( char *dir )
 {
     char        *end;
     unsigned    len;

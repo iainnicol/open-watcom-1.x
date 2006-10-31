@@ -64,7 +64,6 @@
 #include "objnode.h"
 #include "strtab.h"
 #include "permdata.h"
-#include "dllentry.h"
 
 seg_leader *    StackSegPtr;
 startinfo       StartInfo;
@@ -94,18 +93,18 @@ static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
 static void BufImpWrite( char *buffer, int len );
 static void FlushBuffFile( outfilelist *outfile );
 
-void ResetLoadFile( void )
+extern void ResetLoadFile( void )
 /*******************************/
 {
     ClearStartAddr();
 }
 
-void CleanLoadFile( void )
+extern void CleanLoadFile( void )
 /*******************************/
 {
 }
 
-void InitLoadFile( void )
+extern void InitLoadFile( void )
 /******************************/
 /* open the file, and write out header info */
 {
@@ -113,7 +112,7 @@ void InitLoadFile( void )
     LnkMsg( INF+MSG_CREATE_EXE, "f" );
 }
 
-void FiniLoadFile( void )
+extern void FiniLoadFile( void )
 /******************************/
 /* terminate writing of load file */
 {
@@ -218,7 +217,7 @@ static seg_leader *StackSegment( void )
     return( seg );
 }
 
-void GetStkAddr( void )
+extern void GetStkAddr( void )
 /****************************/
 /* Find the address of the stack */
 {
@@ -270,7 +269,7 @@ static void DefABSSSym( char *name )
     }
  }
 
-void DefBSSSyms( void )
+extern void DefBSSSyms( void )
 /****************************/
 {
     DefABSSSym( BSSStartSym );
@@ -345,7 +344,7 @@ static void DefBSSEndSize( char * name, class_entry * class )
     }
 }
 
-void GetBSSSize( void )
+extern void GetBSSSize( void )
 /****************************/
 /* Find size of BSS segment, and set the special symbols */
 {
@@ -361,7 +360,7 @@ void GetBSSSize( void )
     }
 }
 
-void SetStkSize( void )
+extern void SetStkSize( void )
 /****************************/
 {
     StackSegPtr = StackSegment();
@@ -385,13 +384,13 @@ void SetStkSize( void )
     }
 }
 
-void ClearStartAddr( void )
+extern void ClearStartAddr( void )
 /********************************/
 {
     memset( &StartInfo, 0, sizeof(startinfo) );
 }
 
-void SetStartSym( char *name )
+extern void SetStartSym( char *name )
 /***********************************/
 {
     size_t      namelen;
@@ -418,7 +417,7 @@ void SetStartSym( char *name )
     }
 }
 
-void GetStartAddr( void )
+extern void GetStartAddr( void )
 /******************************/
 {
     bool        addoff;
@@ -466,7 +465,7 @@ void GetStartAddr( void )
     }
 }
 
-offset CalcGroupSize( group_entry *group )
+extern offset CalcGroupSize( group_entry *group )
 /***********************************************/
 /* calculate the total memory size of a potentially split group */
 {
@@ -482,7 +481,7 @@ offset CalcGroupSize( group_entry *group )
     return( size );
 }
 
-offset CalcSplitSize( void )
+extern offset CalcSplitSize( void )
 /*********************************/
 /* calculate the size of the uninitialized portion of a group */
 {
@@ -500,19 +499,19 @@ offset CalcSplitSize( void )
     }
 }
 
-bool CompareDosSegments( targ_addr *left, targ_addr *right )
+extern bool CompareDosSegments( targ_addr *left, targ_addr *right )
 /*****************************************************************/
 {
     return LESS_THAN_ADDR( *left, *right );
 }
 
-bool CompareOffsets( targ_addr *left, targ_addr *right )
+extern bool CompareOffsets( targ_addr *left, targ_addr *right )
 /*****************************************************************/
 {
     return left->off < right->off;
 }
 
-bool CompareProtSegments( targ_addr *left, targ_addr *right )
+extern bool CompareProtSegments( targ_addr *left, targ_addr *right )
 /*****************************************************************/
 {
     if( left->seg == right->seg ) {
@@ -521,7 +520,7 @@ bool CompareProtSegments( targ_addr *left, targ_addr *right )
     return left->seg < right->seg;
 }
 
-void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
+extern void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
 /*******************************************************************/
 {
     group_entry     *group, *low_group, *firstgroup, **lastgroup;
@@ -553,7 +552,7 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
     }
 }
 
-bool WriteDOSGroup( group_entry *group )
+extern bool WriteDOSGroup( group_entry *group )
 /*********************************************/
 /* write the data for group to the loadfile */
 /* returns TRUE if the file should be repositioned */
@@ -591,7 +590,7 @@ bool WriteDOSGroup( group_entry *group )
     return( repos );
 }
 
-unsigned_32 MemorySize( void )
+extern unsigned_32 MemorySize( void )
 /***********************************/
 /* Compute size of image when loaded into memory. */
 {
@@ -617,7 +616,7 @@ unsigned_32 MemorySize( void )
     }
 }
 
-unsigned_32 AppendToLoadFile( char * name )
+extern unsigned_32 AppendToLoadFile( char * name )
 /************************************************/
 {
     f_handle        handle;
@@ -663,7 +662,7 @@ static void SetupImpLib( void )
     }
 }
 
-void BuildImpLib( void )
+extern void BuildImpLib( void )
 /*****************************/
 {
     if( LinkState & LINK_ERROR || ImpLib.handle == NIL_HANDLE
@@ -685,6 +684,7 @@ void BuildImpLib( void )
 }
 
 #if defined( _DLLHOST )
+extern bool ExecWlibDLL( char * );
 
 static void ExecWlib( void )
 /**************************/
@@ -755,7 +755,7 @@ static void ExecWlib( void )
 }
 #endif
 
-void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
+extern void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
 /**************************************************************************/
 {
     size_t      intlen;
@@ -828,7 +828,7 @@ static void BufImpWrite( char *buffer, int len )
     }
 }
 
-void WriteLoad3( void* dummy, char *buff, unsigned size )
+extern void WriteLoad3( void* dummy, char *buff, unsigned size )
 /**************************************************************/
 /* write a buffer out to the load file (useful as a callback) */
 {
@@ -836,7 +836,7 @@ void WriteLoad3( void* dummy, char *buff, unsigned size )
     WriteLoad( buff, size );
 }
 
-unsigned_32 CopyToLoad( f_handle handle, char * name )
+extern unsigned_32 CopyToLoad( f_handle handle, char * name )
 /***********************************************************/
 {
     unsigned_32     amt_read;
@@ -853,7 +853,7 @@ unsigned_32 CopyToLoad( f_handle handle, char * name )
     return( wrote );
 }
 
-unsigned long NullAlign( unsigned align )
+extern unsigned long NullAlign( unsigned align )
 /**********************************************/
 /* align loadfile -- assumed power of two alignment */
 {
@@ -867,7 +867,7 @@ unsigned long NullAlign( unsigned align )
     return( off + pad );
 }
 
-unsigned long OffsetAlign( unsigned long off, unsigned long align )
+extern unsigned long OffsetAlign( unsigned long off, unsigned long align )
 /************************************************************************/
 /* align loadfile -- assumed power of two alignment */
 {
@@ -904,7 +904,7 @@ static void DoWriteLeader( seg_leader *seg, unsigned long start )
     RingLookup( seg->pieces, WriteSegData, &start );
 }
 
-void WriteLeaderLoad( void *seg )
+extern void WriteLeaderLoad( void *seg )
 /**************************************/
 {
     DoWriteLeader( seg, PosLoad() );
@@ -952,7 +952,7 @@ static bool WriteCopyGroups( void *_seg, void *_info )
     return FALSE;
 }
 
-void WriteGroupLoad( group_entry *group )
+extern void WriteGroupLoad( group_entry *group )
 /**********************************************/
 {
     grpwriteinfo     info;
@@ -997,7 +997,7 @@ static void CloseOutFiles( void )
     }
 }
 
-void FreeOutFiles( void )
+extern void FreeOutFiles( void )
 /******************************/
 {
     outfilelist *   fnode;
@@ -1022,7 +1022,7 @@ static void * SetToZero( void *dest, const void *dummy, unsigned size )
     return (void *) dummy;
 }
 
-void PadLoad( unsigned long size )
+extern void PadLoad( unsigned long size )
 /***************************************/
 /* pad out load file with zeros */
 {
@@ -1037,7 +1037,7 @@ void PadLoad( unsigned long size )
     }
 }
 
-void PadBuffFile( outfilelist *outfile, unsigned long size )
+extern void PadBuffFile( outfilelist *outfile, unsigned long size )
 /*****************************************************************/
 /* pad out load file with zeros */
 {
@@ -1050,7 +1050,7 @@ void PadBuffFile( outfilelist *outfile, unsigned long size )
     }
 }
 
-void WriteLoad( void *buff, unsigned long size )
+extern void WriteLoad( void *buff, unsigned long size )
 /*****************************************************/
 /* write a buffer out to the load file */
 {
@@ -1072,7 +1072,7 @@ static void * NullBuffFunc( void *dest, const void *dummy, unsigned size )
     return dest;
 }
 
-void SeekLoad( unsigned long offset )
+extern void SeekLoad( unsigned long offset )
 /******************************************/
 {
     outfilelist *       outfile;
@@ -1088,7 +1088,7 @@ void SeekLoad( unsigned long offset )
     }
 }
 
-void SeekEndLoad( unsigned long offset )
+extern void SeekEndLoad( unsigned long offset )
 /*********************************************/
 {
     outfilelist *       outfile;
@@ -1102,7 +1102,7 @@ void SeekEndLoad( unsigned long offset )
     }
 }
 
-unsigned long PosLoad( void )
+extern unsigned long PosLoad( void )
 /**********************************/
 {
     if( CurrSect->outfile->buffer != NULL ) {
@@ -1114,7 +1114,7 @@ unsigned long PosLoad( void )
 
 #define BUFF_BLOCK_SIZE (16*1024)
 
-void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
+extern void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
 /*******************************************************************************/
 {
     outfile->fname    = filename;
@@ -1126,7 +1126,7 @@ void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
     outfile->is_exe   = executable;
 }
 
-void OpenBuffFile( outfilelist *outfile )
+extern void OpenBuffFile( outfilelist *outfile )
 /**********************************************/
 {
     if( outfile->is_exe )
@@ -1152,7 +1152,7 @@ static void FlushBuffFile( outfilelist *outfile )
     outfile->buffer = NULL;
 }
 
-void CloseBuffFile( outfilelist *outfile )
+extern void CloseBuffFile( outfilelist *outfile )
 /***********************************************/
 {
     if( outfile->buffer != NULL ) {

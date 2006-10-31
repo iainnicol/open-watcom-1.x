@@ -83,13 +83,9 @@ STATIC void doBuiltIns( const char *makeopts )
         list = Parse();
         FreeTList( list );
         strcpy(cpy, "MAKE=" );
-#ifdef BOOTSTRAP
-        strcat( cpy, "wmake" );
-#else
         if( _cmdname( cpy + sizeof "MAKE=" - 1 ) == NULL ) {
             strcat( cpy, "wmake" );
         }
-#endif
         InsString( cpy, FALSE );
         list = Parse();
         FreeTList( list );
@@ -620,6 +616,9 @@ int ExitSafe( int rc )
     return( rc );
 }
 
+#ifndef __WATCOMC__
+char **_argv;
+#endif
 int main( int argc, char * const *argv )
 /*********************************************/
 {

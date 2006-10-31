@@ -11,8 +11,6 @@ set PROJDIR=<CWD>
 [ BLOCK <1> boot ]
 #=================
     echo Building the wstrip bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../bootmake
-    <CPCMD> strip.exe <DEVDIR>/build/bin/wstrip
+    <MAKE> -f gnumake
+    <CPCMD> <OBJDIR>/wstrip <DEVDIR>/build/bin/wstrip
     cdsay <PROJDIR>

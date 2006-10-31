@@ -48,7 +48,7 @@
 
 static ENV_TRACKER  *envList;
 
-char *SkipWS( char *p )
+extern char *SkipWS( char *p )
 /*****************************
  * p is not const because the return value is usually used to write data.
  */
@@ -59,7 +59,7 @@ char *SkipWS( char *p )
     return( p );
 }
 
-char *FindNextWS( char *str )
+extern char *FindNextWS( char *str )
 /***********************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
@@ -98,7 +98,7 @@ char *FindNextWS( char *str )
     return( str );
 }
 
-char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
+extern char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
 /************************************************************************
  * Removes doublequote characters from string and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
@@ -160,7 +160,7 @@ char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
     return( orgdst );
 }
 
-char *FixName( char *name )
+extern char *FixName( char *name )
 {
 #if defined( __DOS__ )
 /*********************************
@@ -230,7 +230,7 @@ char *FixName( char *name )
 }
 
 
-int FNameCmp( const char *a, const char *b )
+extern int FNameCmp( const char *a, const char *b )
 /*************************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
@@ -253,7 +253,7 @@ static int FNameCmpChr( char a, char b )
 
 
 #ifdef USE_FAR
-int _fFNameCmp( const char FAR *a, const char FAR *b )
+extern int _fFNameCmp( const char FAR *a, const char FAR *b )
 /***********************************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
@@ -376,7 +376,7 @@ static DIR  *parent = NULL;  /* we need this across invocations */
 static char *path = NULL;
 static char *pattern = NULL;
 
-const char *DoWildCard( const char *base )
+extern const char *DoWildCard( const char *base )
 /***********************************************/
 {
     PGROUP          *pg;
@@ -457,7 +457,7 @@ const char *DoWildCard( const char *base )
 }
 
 
-void DoWildCardClose( void )
+extern void DoWildCardClose( void )
 /*********************************/
 {
     if( path != NULL ) {
@@ -475,14 +475,14 @@ void DoWildCardClose( void )
 }
 
 
-int KWCompare( const char **p1, const char **p2 )    /* for bsearch */
+extern int KWCompare( const char **p1, const char **p2 )    /* for bsearch */
 /******************************************************/
 {
     return( stricmp( *p1, *p2 ) );
 }
 
 
-int PutEnvSafe( ENV_TRACKER *env )
+extern int PutEnvSafe( ENV_TRACKER *env )
 /****************************************
  * This function takes over responsibility for freeing env
  */
@@ -527,7 +527,7 @@ int PutEnvSafe( ENV_TRACKER *env )
 
 
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
-void PutEnvFini( void )
+extern void PutEnvFini( void )
 /****************************/
 {
     ENV_TRACKER *cur;

@@ -8,11 +8,7 @@ proj_name = strip
 
 .EXTENSIONS: .gh .rc .msg .sp
 
-inc_dirs = -I"$(dip_dir)/watcom/h"
-
-!ifdef bootstrap
-inc_dirs += -I.
-!endif
+inc_dirs = -I$(wstrip_dir) -I"$(dip_dir)/watcom/h"
 
 .c .rc .msg .sp: ..
 
@@ -26,21 +22,11 @@ objs =               &
         strip.obj    &
         output.obj
 
-!ifdef bootstrap
-objs += clibext.obj
-!endif
-
 dependants = msg.gh $(objs) $(res_$(host_os)) $(wres_lib)
 
 $(proj_name).exe : $(dependants)
-!ifdef bootstrap
-        $(cc) $(objs) -o $@ $(wres_lib)
-        ./$@ -q -a -r $^@ strip2.exe $(res_$(host_os)) > /dev/null; true
-        mv strip2.exe $@
-!else
         $(linker) option quiet $(lflags) name $^. file { $(objs) } lib $(wres_lib)
         wstrip -q -a -r $^@ . $(res_$(host_os))
-!endif
 
 msg.gh : ../wstrip.msg
         $(vi) -s $(sdk_dir)/misc/msgtoh.vi -p"$^@" $[@

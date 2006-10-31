@@ -81,7 +81,7 @@ static void * MakeArray( unsigned size )
     return( nodes );
 }
 
-void InitNodes( void )
+extern void InitNodes( void )
 /***************************/
 // initialize the node array structures.
 {
@@ -102,7 +102,7 @@ static void BurnNodeArray( nodearray *list )
     _LnkFree( list );
 }
 
-void BurnNodes( void )
+extern void BurnNodes( void )
 /***************************/
 {
     BurnNodeArray( GrpNodes );
@@ -111,7 +111,7 @@ void BurnNodes( void )
     BurnNodeArray( NameNodes );
 }
 
-void * FindNode( nodearray *list, unsigned index )
+extern void * FindNode( nodearray *list, unsigned index )
 /*******************************************************/
 {
     index--;            // index is base 1
@@ -129,7 +129,7 @@ static void AllocNewArray( nodearray *list )
     memset( list->array[list->arraymax], 0, size );
 }
 
-void * AllocNode( nodearray * list )
+extern void * AllocNode( nodearray * list )
 /*****************************************/
 {
     if( ARRAY_NUM(list->num) > list->arraymax ) {
@@ -139,7 +139,7 @@ void * AllocNode( nodearray * list )
     return FindNode( list, list->num );
 }
 
-void * AllocNodeIdx( nodearray *list, unsigned index )
+extern void * AllocNodeIdx( nodearray *list, unsigned index )
 /***********************************************************/
 {
     if( list->num < index ) {
@@ -151,7 +151,7 @@ void * AllocNodeIdx( nodearray *list, unsigned index )
     return FindNode( list, index );
 }
 
-mod_entry * NewModEntry( void )
+extern mod_entry * NewModEntry( void )
 /************************************/
 /* Allocate a new object file entry structure and initialize it */
 {
@@ -164,13 +164,13 @@ mod_entry * NewModEntry( void )
     return( entry );
 }
 
-void FreeModEntry( mod_entry *mod )
+extern void FreeModEntry( mod_entry *mod )
 /****************************************/
 {
     CarveFree( CarveModEntry, mod );
 }
 
-void FreeNodes( nodearray *nodes )
+extern void FreeNodes( nodearray *nodes )
 /***************************************/
 {
     unsigned    index;
@@ -200,7 +200,7 @@ static void IterateNodeArray( char *narray, void (*fn)(void *, void *),
     }
 }
 
-void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
+extern void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
                              void *cookie )
 /***********************************************************************/
 {
@@ -217,7 +217,7 @@ void IterateNodelist( nodearray *list, void (*fn)(void *, void *),
                                               ELEMENT_NUM(list->num), cookie );
 }
 
-void ReleaseNames( void )
+extern void ReleaseNames( void )
 /******************************/
 /* Free list of names. */
 {
@@ -242,7 +242,7 @@ static void CollapseLazy( void *node, void *dummy )
     }
 }
 
-void CollapseLazyExtdefs( void )
+extern void CollapseLazyExtdefs( void )
 /*************************************/
 {
     IterateNodelist( ExtNodes, CollapseLazy, NULL );
@@ -286,13 +286,13 @@ static bool DoesExtHandleMatch( void *curr, void *target )
     return ((extnode *)curr)->handle == target;
 }
 
-extnode * FindExtHandle( void *handle )
+extern extnode * FindExtHandle( void *handle )
 /********************************************/
 {
     return (extnode *) IterateFindValue( ExtNodes, handle, DoesExtHandleMatch );
 }
 
-segdata * AllocSegData( void )
+extern segdata * AllocSegData( void )
 /***********************************/
 {
     segdata *sdata;
@@ -302,14 +302,14 @@ segdata * AllocSegData( void )
     return sdata;
 }
 
-void FreeSegData( void * sdata )
+extern void FreeSegData( void * sdata )
 /*************************************/
 /* put a segdata on the list of free segdatas */
 {
     CarveFree( CarveSegData, sdata );
 }
 
-list_of_names * MakeListName( char *name, size_t len )
+extern list_of_names * MakeListName( char *name, size_t len )
 /***********************************************************/
 {
     list_of_names *     new;
@@ -321,7 +321,7 @@ list_of_names * MakeListName( char *name, size_t len )
     return new;
 }
 
-unsigned long BadObjFormat( void )
+extern unsigned long BadObjFormat( void )
 /***************************************/
 {
     LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );

@@ -123,7 +123,7 @@ STATIC RET_T vecScarce( void )
 #endif
 
 
-void VecInit( void )
+extern void VecInit( void )
 /*************************/
 {
     unsigned count;
@@ -141,13 +141,13 @@ void VecInit( void )
 }
 
 
-void VecFini( void )
+extern void VecFini( void )
 /*************************/
 {
 }
 
 
-VECSTR StartVec( void )
+extern VECSTR StartVec( void )
 /****************************/
 {
     OURPTR new;
@@ -167,7 +167,7 @@ VECSTR StartVec( void )
 }
 
 
-void FreeVec( VECSTR vec )
+extern void FreeVec( VECSTR vec )
 /*******************************/
 {
     ENTRYPTR walk;
@@ -214,7 +214,7 @@ STATIC char *expandVec( VECSTR vec )
 }
 
 
-char *FinishVec( VECSTR vec )
+extern char *FinishVec( VECSTR vec )
 /**********************************/
 {
     char    *result;
@@ -282,7 +282,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
 }
 
 
-void WriteVec( VECSTR vec, const char *text )
+extern void WriteVec( VECSTR vec, const char *text )
 /**************************************************/
 {
     assert( vec != NULL );
@@ -293,7 +293,7 @@ void WriteVec( VECSTR vec, const char *text )
 }
 
 
-void WriteNVec( VECSTR vec, const char *text, size_t len )
+extern void WriteNVec( VECSTR vec, const char *text, size_t len )
 /****************************************************************
  * write vector with input string length len
  */
@@ -306,7 +306,7 @@ void WriteNVec( VECSTR vec, const char *text, size_t len )
 }
 
 
-void CatVec( VECSTR dest, VECSTR src )
+extern void CatVec( VECSTR dest, VECSTR src )
 /********************************************
  * Append the contents of src onto dest, and do a FreeVec(src)
  */
@@ -328,7 +328,7 @@ void CatVec( VECSTR dest, VECSTR src )
 // TODO: If these functions work the way I think they do, all calls to
 //       Cat(N)StrToVec should be just replaced with Write(N)Vec - MN
 
-void CatStrToVec( VECSTR dest, const char* str )
+extern void CatStrToVec( VECSTR dest, const char* str )
 /******************************************************
  *  Concatenate the whole string ended by nullchar to the end of dest
  */
@@ -337,7 +337,7 @@ void CatStrToVec( VECSTR dest, const char* str )
 }
 
 
-void CatNStrToVec( VECSTR dest, const char* str, size_t length )
+extern void CatNStrToVec( VECSTR dest, const char* str, size_t length )
 /**********************************************************************
  * Concatenate a string to the end of 'dest' with length 'length'
  */
