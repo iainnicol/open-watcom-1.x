@@ -631,13 +631,13 @@ STATIC RET_T percentMake( char *arg )
  * do a recursive make of the target in arg
  */
 {
-    char         *finish;
-    TARGET       *calltarg;
-    RET_T        ret;
-    char         *buf;
-    char         *start;
-    BOOLEAN      newtarg;
-    BOOLEAN      more_targets;
+    TARGET      *calltarg;
+    RET_T       ret;
+    char        *buf;
+    char        *start;
+    char        *finish;
+    BOOLEAN     newtarg;
+    BOOLEAN     more_targets;
 
     /* %make <target> <target> ... */
     buf = MallocSafe( _MAX_PATH );

@@ -50,13 +50,13 @@ static  void            PrintOvl( void );
 static bool             AddClass( void );
 static void             NewArea( section *sect );
 
-void SetDosFmt( void )
+extern void SetDosFmt( void )
 /***************************/
 {
     Extension = E_LOAD;
 }
 
-bool ProcDos( void )
+extern bool ProcDos( void )
 /*************************/
 {
     OvlLevel = 0;
@@ -91,27 +91,27 @@ static bool AddClass( void )
     return( TRUE );
 }
 
-bool ProcOverlay( void )
+extern bool ProcOverlay( void )
 /*****************************/
 {
     return( ProcArgList( &AddClass, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcDistribute( void )
+extern bool ProcDistribute( void )
 /********************************/
 {
     FmtData.u.dos.distribute = TRUE;
     return( TRUE );
 }
 
-bool ProcPadSections( void )
+extern bool ProcPadSections( void )
 /*********************************/
 {
     FmtData.u.dos.pad_sections = TRUE;
     return( TRUE );
 }
 
-bool ProcFixedLib( void )
+extern bool ProcFixedLib( void )
 /******************************/
 {
     bool    ret;
@@ -128,7 +128,7 @@ bool ProcFixedLib( void )
 
 #define SECT_ALREADY_MADE 1
 
-bool ProcBegin( void )
+extern bool ProcBegin( void )
 /***************************/
 /* process a new overlay area */
 {
@@ -160,7 +160,7 @@ bool ProcBegin( void )
     return( TRUE );
 }
 
-bool ProcInto( void )
+extern bool ProcInto( void )
 /**************************/
 // Process the into keyword.
 {
@@ -204,7 +204,7 @@ static void MakeNonArea( void )
 }
 
 
-bool ProcEnd( void )
+extern bool ProcEnd( void )
 /*************************/
 /* process the end of an overlay area */
 {
@@ -217,7 +217,7 @@ bool ProcEnd( void )
     return( FALSE );    /*  cause loop to be exited in ProcBegin */
 }
 
-void MakeNewSection( void )
+extern void MakeNewSection( void )
 /********************************/
 {
     section             *sect;
@@ -239,7 +239,7 @@ void MakeNewSection( void )
     }
 }
 
-bool ProcSection( void )
+extern bool ProcSection( void )
 /*****************************/
 /* process SECTION command */
 {
@@ -255,21 +255,21 @@ bool ProcSection( void )
     return( TRUE );
 }
 
-bool ProcSmall( void )
+extern bool ProcSmall( void )
 /***************************/
 {
     FmtData.u.dos.ovl_short = TRUE;
     return( TRUE );
 }
 
-bool ProcCom( void )
+extern bool ProcCom( void )
 /*************************/
 {
     Extension = E_COM;
     return( TRUE );
 }
 
-bool ProcDynamic( void )
+extern bool ProcDynamic( void )
 /*****************************/
 {
     FmtData.u.dos.dynamic = TRUE;
@@ -286,7 +286,7 @@ static bool AddNoVector( void )
     return( TRUE );
 }
 
-bool ProcNoVector( void )
+extern bool ProcNoVector( void )
 /******************************/
 {
     return( ProcArgList( AddNoVector, TOK_INCLUDE_DOT ) );
@@ -299,7 +299,7 @@ static bool AddVector( void )
     return(TRUE);
 }
 
-bool ProcVector( void )
+extern bool ProcVector( void )
 /****************************/
 {
     return( ProcArgList( AddVector, TOK_INCLUDE_DOT ) );
@@ -316,13 +316,13 @@ static bool AddForceVector( void )
     return(TRUE);
 }
 
-bool ProcForceVector( void )
+extern bool ProcForceVector( void )
 /*********************************/
 {
     return( ProcArgList( AddForceVector, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcAutoSection( void )
+extern bool ProcAutoSection( void )
 /*********************************/
 {
     if( OvlLevel == 0 ) {
@@ -337,21 +337,21 @@ bool ProcAutoSection( void )
     return( TRUE );
 }
 
-bool ProcNoIndirect( void )
+extern bool ProcNoIndirect( void )
 /********************************/
 {
     FmtData.u.dos.noindirect = TRUE;
     return( TRUE );
 }
 
-bool ProcStandard( void )
+extern bool ProcStandard( void )
 /******************************/
 {
     FmtData.u.dos.dynamic = FALSE;
     return( TRUE );
 }
 
-bool ProcArea( void )
+extern bool ProcArea( void )
 /**************************/
 // process the area size directive.
 {
@@ -365,7 +365,7 @@ bool ProcArea( void )
     return( ret );
 }
 
-void CmdOvlFini( void )
+extern void CmdOvlFini( void )
 /****************************/
 {
     if( OvlLevel != 0 ) {

@@ -51,7 +51,6 @@
 #include "permdata.h"
 #include "nwpfx.h"
 #include "command.h"
-#include "symtab.h"
 
 
 #define STATIC_TABSIZE  241  /* should be prime */
@@ -593,7 +592,7 @@ static const unsigned ScatterTable[] = {
 #endif
 };
 
-void ResetSym( void )
+extern void ResetSym( void )
 /**************************/
 {
     NameLen = 0;
@@ -605,7 +604,7 @@ void ResetSym( void )
     ClearHashPointers();
 }
 
-void InitSym( void )
+extern void InitSym( void )
 /*************************/
 {
     _ChkAlloc( GlobalSymPtrs, GLOBAL_TABALLOC );
@@ -691,7 +690,7 @@ static void FreeSymbol( symbol *sym )
     CarveFree( CarveSymbol, sym );
 }
 
-void CleanSym( void )
+extern void CleanSym( void )
 /*************************/
 {
     symbol *    sym;
@@ -710,7 +709,7 @@ void CleanSym( void )
     ReleasePass1();
 }
 
-void FiniSym( void )
+extern void FiniSym( void )
 /*************************/
 {
     _LnkFree( GlobalSymPtrs );
@@ -727,7 +726,7 @@ static void PrepHashTable( symbol **table, unsigned size )
     }
 }
 
-void WriteHashPointers( void *cookie )
+extern void WriteHashPointers( void *cookie )
 /*******************************************/
 {
     PrepHashTable( StaticSymPtrs, STATIC_TABSIZE );
@@ -746,7 +745,7 @@ static void RebuildHashTable( symbol **table, unsigned size )
     }
 }
 
-void ReadHashPointers( void *cookie )
+extern void ReadHashPointers( void *cookie )
 /******************************************/
 {
     ReadPermFile( cookie, StaticSymPtrs, STATIC_TABALLOC );
@@ -755,14 +754,14 @@ void ReadHashPointers( void *cookie )
     RebuildHashTable( GlobalSymPtrs, GLOBAL_TABSIZE );
 }
 
-void ClearHashPointers( void )
+extern void ClearHashPointers( void )
 /***********************************/
 {
     memset( GlobalSymPtrs, 0, GLOBAL_TABSIZE * sizeof(symbol *) );
     memset( StaticSymPtrs, 0, STATIC_TABSIZE * sizeof(symbol *) );
 }
 
-void SetSymCase( void )
+extern void SetSymCase( void )
 /****************************/
 {
     if( LinkFlags & CASE_FLAG ) {
@@ -772,14 +771,14 @@ void SetSymCase( void )
     }
 }
 
-void SymModStart( void )
+extern void SymModStart( void )
 /*****************************/
 /* do necessary symbol table processing before the start of a module in pass1 */
 {
     SymList = LastSym;
 }
 
-void SymModEnd( void )
+extern void SymModEnd( void )
 /***************************/
 /* go through the list of symbols generated in this module, and find all
  * references to symbols which are in this module only. */
@@ -806,7 +805,7 @@ void SymModEnd( void )
     SymList = NULL;
 }
 
-void ClearRefInfo( symbol *sym )
+extern void ClearRefInfo( symbol *sym )
 /*************************************/
 {
     symbol *    save;
@@ -818,7 +817,7 @@ void ClearRefInfo( symbol *sym )
     }
 }
 
-void ClearSymUnion( symbol * sym )
+extern void ClearSymUnion( symbol * sym )
 /***************************************/
 /* clear the symbol unions of any possible allocated data */
 {
@@ -830,13 +829,13 @@ void ClearSymUnion( symbol * sym )
     }
 }
 
-symbol * RefISymbol( char *name )
+extern symbol * RefISymbol( char *name )
 /**************************************/
 {
     return SymOp( ST_CREATE | ST_REFERENCE, name, strlen( name ) );
 }
 
-symbol * DefISymbol( char * name )
+extern symbol * DefISymbol( char * name )
 /***************************************/
 {
     symbol * sym;
@@ -849,13 +848,13 @@ symbol * DefISymbol( char * name )
     return sym;
 }
 
-symbol * FindISymbol( char *name )
+extern symbol * FindISymbol( char *name )
 /***************************************/
 {
     return SymOp( ST_FIND | ST_REFERENCE, name, strlen( name ) );
 }
 
-symbol * SymXOp( sym_flags op, char *name, int length )
+extern symbol * SymXOp( sym_flags op, char *name, int length )
 /************************************************************/
 {
     char *  symname;
@@ -872,7 +871,7 @@ symbol * SymXOp( sym_flags op, char *name, int length )
     return( SymOp( op, symname, length ) );
 }
 
-symbol * SymXOpNWPfx( sym_flags op, char *name, int length, char * prefix, int prefixLen)
+extern symbol * SymXOpNWPfx( sym_flags op, char *name, int length, char * prefix, int prefixLen)
 /************************************************************/
 {
     symbol * retsym = SymXOp(op, name, length);
@@ -903,7 +902,7 @@ symbol * SymXOpNWPfx( sym_flags op, char *name, int length, char * prefix, int p
     return retsym;
 }
 
-void MakeSymAlias( char *name, int namelen, char *target, int targetlen )
+extern void MakeSymAlias( char *name, int namelen, char *target, int targetlen )
 /******************************************************************************/
 /* make a symbol table alias */
 {
@@ -933,7 +932,7 @@ void MakeSymAlias( char *name, int namelen, char *target, int targetlen )
     SymOp( ST_CREATE, target, targetlen );
 }
 
-void WeldSyms( symbol * src, symbol * targ )
+extern void WeldSyms( symbol * src, symbol * targ )
 /*************************************************/
 /* make all references to src refer to targ. (alias src to targ) */
 {
@@ -1030,7 +1029,7 @@ static symbol * DoSymOp( byte op, char *symname, int length )
     return( sym );
 }
 
-symbol * UnaliasSym( sym_flags op, symbol *sym )
+extern symbol * UnaliasSym( sym_flags op, symbol *sym )
 /*****************************************************/
 {
     symbol *orig_sym = sym;
@@ -1043,7 +1042,7 @@ symbol * UnaliasSym( sym_flags op, symbol *sym )
     return sym;
 }
 
-symbol * SymOp( sym_flags op, char *symname, int length )
+extern symbol * SymOp( sym_flags op, char *symname, int length )
 /**************************************************************/
 /* search for symbols, handling aliases */
 {
@@ -1100,7 +1099,7 @@ static unsigned GlobalHashFn( char *name, int len )
     return( value % GLOBAL_TABSIZE );
 }
 
-void ReportMultiple( symbol *sym, char *name, unsigned len )
+extern void ReportMultiple( symbol *sym, char *name, unsigned len )
 /*****************************************************************/
 /* report a multiply-defined symbol */
 {
@@ -1127,7 +1126,7 @@ void ReportMultiple( symbol *sym, char *name, unsigned len )
     }
 }
 
-void ReportUndefined( void )
+extern void ReportUndefined( void )
 /*********************************/
 /* tell user about any undefined symbols */
 {
@@ -1148,7 +1147,7 @@ void ReportUndefined( void )
     }
 }
 
-void ClearFloatBits( void )
+extern void ClearFloatBits( void )
 /********************************/
 /* set all symbols to be not floating point */
 {
@@ -1159,7 +1158,7 @@ void ClearFloatBits( void )
     }
 }
 
-void XDefSymAddr( symbol *sym, offset off, unsigned_16 frame )
+extern void XDefSymAddr( symbol *sym, offset off, unsigned_16 frame )
 /*******************************************************************/
 /* set symbol adddress in symbol table */
 {
@@ -1177,7 +1176,7 @@ static void WriteSym( symbol * sym, char star )
     WriteFormat( 15, "%S", sym );
 }
 
-void XReportSymAddr( symbol *sym )
+extern void XReportSymAddr( symbol *sym )
 /***************************************/
 {
     char                star;
@@ -1197,7 +1196,7 @@ void XReportSymAddr( symbol *sym )
     WriteMapNL( 1 );
 }
 
-void XWriteImports( void )
+extern void XWriteImports( void )
 /*******************************/
 {
     symbol *    sym;
@@ -1223,7 +1222,7 @@ void XWriteImports( void )
     }
 }
 
-symbol * AddAltDef( symbol *sym, unsigned sym_type )
+extern symbol * AddAltDef( symbol *sym, unsigned sym_type )
 /*********************************************************/
 {
     symbol *    altsym;
@@ -1241,7 +1240,7 @@ symbol * AddAltDef( symbol *sym, unsigned sym_type )
     return altsym;
 }
 
-symbol * HashReplace( symbol *sym )
+extern symbol * HashReplace( symbol *sym )
 /****************************************/
 {
     symbol *    newsym;
@@ -1382,7 +1381,7 @@ static void WalkHashTables( void (*fn)(symbol **) )
     WalkAHashTable( fn, StaticSymPtrs, STATIC_TABSIZE );
 }
 
-void PurgeSymbols( void )
+extern void PurgeSymbols( void )
 /******************************/
 {
     symbol **   list;
@@ -1409,7 +1408,7 @@ void PurgeSymbols( void )
     }
 }
 
-void ConvertLazyRefs( void )
+extern void ConvertLazyRefs( void )
 /*********************************/
 /* go through all symbols, & turn lazy refs to aliases to default sym. */
 {
@@ -1452,13 +1451,13 @@ static void MarkSymTraced( void *sym )
     ((symbol *)sym)->info |= SYM_TRACE;
 }
 
-void TraceSymList( symbol * sym )
+extern void TraceSymList( symbol * sym )
 /**************************************/
 {
     Ring2Walk( sym, MarkSymTraced );
 }
 
-symbol * MakeWeakExtdef( char *name, symbol *def )
+extern symbol * MakeWeakExtdef( char *name, symbol *def )
 /*******************************************************/
 /* make a weak extdef */
 {
@@ -1470,7 +1469,7 @@ symbol * MakeWeakExtdef( char *name, symbol *def )
     return sym;
 }
 
-void ConvertVFSym( symbol * sym )
+extern void ConvertVFSym( symbol * sym )
 /**************************************/
 /* convert the symbol from a virtual function def. record to either a extdef
  * or a lazy reference*/
@@ -1488,7 +1487,7 @@ void ConvertVFSym( symbol * sym )
     sym->info &= ~SYM_CHECKED;
 }
 
-offset SymbolAbsAddr( symbol *sym )
+extern offset SymbolAbsAddr( symbol *sym )
 /****************************************/
 {
     offset      addr;
@@ -1504,7 +1503,7 @@ offset SymbolAbsAddr( symbol *sym )
     return addr;
 }
 
-group_entry *SymbolGroup( symbol *sym )
+extern group_entry *SymbolGroup( symbol *sym )
 /********************************************/
 {
     group_entry *group;
@@ -1529,7 +1528,7 @@ group_entry *SymbolGroup( symbol *sym )
 
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
-bool SetCurrentPrefix(const char * pszPrefix, int nLen)
+extern bool SetCurrentPrefix(const char * pszPrefix, int nLen)
 {
     const char *    pStart = pszPrefix;
     char *          pFix;

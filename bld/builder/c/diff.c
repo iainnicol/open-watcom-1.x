@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <stdarg.h>
 #include <limits.h>
 #include <sys/stat.h>
 #include "diff.h"
@@ -85,6 +85,14 @@ SLONG           suffix;         /* Identical lenes at end  */
 
 FILE            *infd[2] = { NULL, NULL}; /* Input file identifiers  */
 FILE            *tempfd;        /* Temp for input redirection  */
+
+/* forward declarations */
+void            error( char *, ... );
+void            fatal( char *, ... );
+char            *fgetss();
+USHORT          hash();
+extern char     *myalloc();     /* Storage allocator     */
+extern char     *compact();     /* Storage compactor     */
 
 /*
  * The following vectors overlay the area defined by fileA
@@ -139,38 +147,43 @@ char            *cmdusage =
 "        -x           shift return codes by 100\n"
 ;
 
-/* forward declarations */
-static SLONG   subseq( void );
-static SLONG   search( ULONG, ULONG, SLONG );
-static USHORT  hash( char * );
-static char    *myalloc( ULONG, char * );
-static char    *compact( char *, ULONG, char * );
-static char    *fgetss( char *, SLONG, FILE * );
-static void    cant( char *, char *, SLONG );
-static void    input( SLONG );
-static void    squish( void );
-static void    myfree( void *what );
-static void    noroom( char *why );
-static void    fputss( char *s, FILE *iop );
-static INT     streq( char *s1, char *s2 );
-static void    fatal( char *format, ... );
-static void    equiv( void );
-static void    unsort( void );
-static void    unravel( SLONG k );
-static void    sort( LINE *vector, SLONG vecsize );
-static void    error( char *format, ... );
-static INT     check( char *fileAname, char *fileBname );
-static void    output( char *fileAname, char *fileBname );
-static INT     getline( FILE *fd, char *buffer );
-static void    fetch( long *seekvec, SLONG start, SLONG end, SLONG trueend, FILE *fd, char *pfx );
-
-
+INT     main( INT, char ** );
+void    input( SLONG );
+void    squish( void );
+void    sort( LINE *, SLONG );
+void    equiv( void );
+void    unsort( void );
+SLONG   subseq( void );
+SLONG   newcand( SLONG, SLONG, SLONG );
+SLONG   search( ULONG, ULONG, SLONG );
+void    unravel( SLONG );
+INT     check( char *, char * );
+void    output( char *, char * );
+void    change( SLONG, SLONG, SLONG, SLONG );
+void    range( SLONG, SLONG, SLONG );
+void    fetch( long *, SLONG, SLONG, SLONG, FILE *, char * );
+INT     getline( FILE *, char * );
+USHORT  hash( char * );
+char    *myalloc( ULONG, char * );
+void    myfree( void * );
+char    *compact( char *, ULONG, char * );
+void    noroom( char * );
+INT     streq( char *, char * );
+void    cant( char *, char *, SLONG );
+void    fatal( char *, ... );
+void    error( char *, ... );
+void    fputss( char *, FILE * );
+char    *fgetss( char *, SLONG, FILE * );
 
 /*
  * Diff main program
  */
 
-INT main( int argc, char **argv )
+// #include "diff.def"
+
+INT main( argc, argv )
+     INT             argc;
+     char          **argv;
 {
     register SLONG      i;
     register char       *ap;
@@ -361,8 +374,8 @@ INT main( int argc, char **argv )
  * Read the file, building hash table
  */
 
-void input( SLONG which )
-    /* 0 or 1 to redefine infd[]  */
+void input( which )
+     SLONG             which;      /* 0 or 1 to redefine infd[]  */
 {
     register LINE       *lentry;
     register SLONG      linect = 0;
@@ -403,7 +416,7 @@ void input( SLONG which )
  * Don't bother building them into the candidate vector.
  */
 
-void squish( void )
+void squish()
 {
     register SLONG      i;
     register LINE       *ap;
@@ -456,7 +469,9 @@ void squish( void )
  * Sort hash entries
  */
 
-void sort( LINE *vector, SLONG vecsize )
+void sort( vector, vecsize )
+     LINE           *vector;     /* What to sort       */
+     SLONG             vecsize;    /* How many to sort      */
 {
     register SLONG      j;
     register LINE       *aim;
@@ -493,7 +508,7 @@ void sort( LINE *vector, SLONG vecsize )
  * Build equivalence class vector
  */
 
-void equiv( void )
+void equiv()
 {
     register LINE       *ap;
     union {
@@ -570,7 +585,7 @@ void equiv( void )
  * Build class vector
  */
 
-void unsort( void )
+void unsort()
 {
     SLONG               *temp;
     register SLONG      *tp;
@@ -617,29 +632,8 @@ void unsort( void )
  * Generate maximum common subsequence chain in clist[]
  */
 
-SLONG
-newcand(    SLONG a,        /* Line in fileA      */
-            SLONG b,        /* Line in fileB      */
-            SLONG pred      /* Line in fileB      */ )
-{
-    register CANDIDATE  *new;
-
-    clength++;
-    if( ++clength >= csize ) {
-        csize += CSIZE_INC;
-        clist = ( CANDIDATE * ) compact( ( char *) clist,
-                                         csize * sizeof( CANDIDATE ),
-                                         "extending clist" );
-    }
-    new = &clist[clength - 1];
-    new->a = a;
-    new->b = b;
-    new->link = pred;
-    return( clength - 1 );
-}
-
-
-SLONG subseq( void )
+SLONG newcand();
+SLONG subseq()
 {
     SLONG               a;
     register ULONG      ktop;
@@ -704,6 +698,27 @@ SLONG subseq( void )
     return( ktop - 1 );          /* Last entry found  */
 }
 
+SLONG
+newcand( a, b, pred )
+    SLONG             a;          /* Line in fileA      */
+    SLONG             b;          /* Line in fileB      */
+    SLONG             pred;       /* Link to predecessor, index in cand[]  */
+{
+    register CANDIDATE  *new;
+
+    clength++;
+    if( ++clength >= csize ) {
+        csize += CSIZE_INC;
+        clist = ( CANDIDATE * ) compact( ( char *) clist,
+                                         csize * sizeof( CANDIDATE ),
+                                         "extending clist" );
+    }
+    new = &clist[clength - 1];
+    new->a = a;
+    new->b = b;
+    new->link = pred;
+    return( clength - 1 );
+}
 
 /*
  * Search klist[low..top] (inclusive) for b.  If klist[low]->b >= b,
@@ -712,7 +727,10 @@ SLONG subseq( void )
  * preset "fence" elements, (0, 0) and (slenA, slenB).
  */
 
-SLONG search( ULONG low, ULONG high, SLONG b )
+SLONG search( low, high, b )
+     register ULONG    low;
+     register ULONG    high;
+     register SLONG    b;
 {
     register SLONG      temp;
     register ULONG      mid;
@@ -731,7 +749,8 @@ SLONG search( ULONG low, ULONG high, SLONG b )
     return( mid + 1 );
 }
 
-void unravel( SLONG k )
+void unravel( k )
+     register SLONG    k;
 {
     register SLONG      i;
     register CANDIDATE  *cp;
@@ -858,26 +877,75 @@ INT check( char *fileAname, char *fileBname )
     return( jackpot );
 }
 
-/*
- * Print a range
- */
-
-void range( SLONG from, SLONG to, SLONG w )
+void output( char *fileAname, char *fileBname )
 {
-    if( cflag ) {
-        if( ( from -= cflag ) <= 0 ) {
-            from = 1;
+    SLONG       astart;
+    SLONG       aend = 0;
+    SLONG       bstart;
+    SLONG       bend;
+
+    rewind( infd[0] );
+    rewind( infd[1] );
+    match[0] = 0;
+    match[lenA + 1] = lenB + 1;
+    if( !eflag ) {
+        if( cflag ) {
+
+            /*
+             * Should include ctime style dates after the file names, but
+             * this would be non-trivial on OSK.  Perhaps there should be a
+             * special case for stdin.
+             */
+            printf( "*** %s\n--- %s\n", fileAname, fileBname );
         }
-        if( ( to += cflag ) > len[w] ) {
-            to = len[w];
+
+        /*
+         * Normal printout
+         */
+        for( astart = 1; astart <= lenA; astart = aend + 1 ) {
+
+            /*
+             * New subsequence, skip over matching stuff
+             */
+            while( astart <= lenA && match[astart] == ( match[astart - 1] + 1 ) ) {
+                astart++;
+            }
+
+            /*
+             * Found a difference, setup range and print it
+             */
+            bstart = match[astart - 1] + 1;
+            aend = astart - 1;
+            while( aend < lenA && match[aend + 1] == 0 ) {
+                aend++;
+            }
+            bend = match[aend + 1] - 1;
+            match[aend] = bend;
+            change( astart, aend, bstart, bend );
+        }
+    } else {
+
+        /*
+         * Edit script output -- differences are output "backwards" for the
+         * benefit of a line-oriented editor.
+         */
+        for( aend = lenA; aend >= 1; aend = astart - 1 ) {
+            while( aend >= 1 && match[aend] == ( match[aend + 1] - 1 )
+                   && match[aend] != 0 ) {
+                aend--;
+            }
+            bend = match[aend + 1] - 1;
+            astart = aend + 1;
+            while( astart > 1 && match[astart - 1] == 0 ) {
+                astart--;
+            }
+            bstart = match[astart - 1] + 1;
+            match[astart] = bstart;
+            change( astart, aend, bstart, bend );
         }
     }
-    if( to > from ) {
-        printf( "%ld,%ld", from, to );
-    } else if( to < from ) {
-        printf( "%ld,%ld", to, from );
-    } else {
-        printf( "%ld", from );
+    if( lenA == 0 ) {
+        change( 1, 0, 1, lenB );
     }
 }
 
@@ -950,75 +1018,26 @@ void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
     }
 }
 
-void output( char *fileAname, char *fileBname )
+/*
+ * Print a range
+ */
+
+void range( SLONG from, SLONG to, SLONG w )
 {
-    SLONG       astart;
-    SLONG       aend = 0;
-    SLONG       bstart;
-    SLONG       bend;
-
-    rewind( infd[0] );
-    rewind( infd[1] );
-    match[0] = 0;
-    match[lenA + 1] = lenB + 1;
-    if( !eflag ) {
-        if( cflag ) {
-
-            /*
-             * Should include ctime style dates after the file names, but
-             * this would be non-trivial on OSK.  Perhaps there should be a
-             * special case for stdin.
-             */
-            printf( "*** %s\n--- %s\n", fileAname, fileBname );
+    if( cflag ) {
+        if( ( from -= cflag ) <= 0 ) {
+            from = 1;
         }
-
-        /*
-         * Normal printout
-         */
-        for( astart = 1; astart <= lenA; astart = aend + 1 ) {
-
-            /*
-             * New subsequence, skip over matching stuff
-             */
-            while( astart <= lenA && match[astart] == ( match[astart - 1] + 1 ) ) {
-                astart++;
-            }
-
-            /*
-             * Found a difference, setup range and print it
-             */
-            bstart = match[astart - 1] + 1;
-            aend = astart - 1;
-            while( aend < lenA && match[aend + 1] == 0 ) {
-                aend++;
-            }
-            bend = match[aend + 1] - 1;
-            match[aend] = bend;
-            change( astart, aend, bstart, bend );
-        }
-    } else {
-
-        /*
-         * Edit script output -- differences are output "backwards" for the
-         * benefit of a line-oriented editor.
-         */
-        for( aend = lenA; aend >= 1; aend = astart - 1 ) {
-            while( aend >= 1 && match[aend] == ( match[aend + 1] - 1 )
-                   && match[aend] != 0 ) {
-                aend--;
-            }
-            bend = match[aend + 1] - 1;
-            astart = aend + 1;
-            while( astart > 1 && match[astart - 1] == 0 ) {
-                astart--;
-            }
-            bstart = match[astart - 1] + 1;
-            match[astart] = bstart;
-            change( astart, aend, bstart, bend );
+        if( ( to += cflag ) > len[w] ) {
+            to = len[w];
         }
     }
-    if( lenA == 0 ) {
-        change( 1, 0, 1, lenB );
+    if( to > from ) {
+        printf( "%ld,%ld", from, to );
+    } else if( to < from ) {
+        printf( "%ld,%ld", to, from );
+    } else {
+        printf( "%ld", from );
     }
 }
 

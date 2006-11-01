@@ -95,4 +95,4 @@ char *_cmdname( char *name );
 void _searchenv( const char *name, const char *env_var, char *buf );
 char *strnset( char *string, int c, size_t len );
 
-extern char **_argv;    /* argument vector */
+extern char **_argv;

@@ -1,33 +1,26 @@
-TARG_CPU = __386__
+include $(DEVDIR)/build/mif/master.mk
 
-CPPFLAGS = -I$(OBJDIR) -Ih -I../watcom/h -I../lib_misc/h $(DEFS)
-CFLAGS = -funsigned-char -g -O2 -Wall -Wno-switch
-DEFS = -D$(TARG_CPU) -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE
+vpath %.c c ../watcom/c
 
-$(OBJDIR)/%.o : %.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OBJDIR) -o $@ $<
-
-vpath %.c c ../watcom/c ../builder/c
-
-all: $(OBJDIR) $(OWBINDIR)/wmake
+all: $(OBJDIR) $(OBJDIR)/wmake
 
 CFILES=macros.c main.c massert.c mautodep.c mautoomf.c mautoorl.c mautores.c \
  mcache.c memory.c mexec.c mglob.c mhash.c misc.c mlex.c mlexmac.c mlexprs.c \
  mparse.c mpathgrp.c mpreproc.c mrcmsg.c msg.c mstream.c msuffix.c msysdep.c \
- mtarget.c mupdate.c mvecstr.c autodept.c clibext.c
+ mtarget.c mupdate.c mvecstr.c autodept.c
 
 OBJS=$(CFILES:.c=.o)
 OBJS:=$(foreach i,$(OBJS),$(OBJDIR)/$i)
 
-$(OBJDIR)/wsplice: $(OBJDIR)/wsplice.o $(OBJDIR)/clibext.o
-	$(CC) -g $^ -o $@
+$(OBJDIR)/usage.rc : h/usage.sp
+	wsplice -kIS_RC -kENGLISH -f '%+(MSG_USE_E_BASE+%#-1), "%s"' $< $@
 
-$(OBJDIR)/usage.gh : h/usage.sp $(OBJDIR)/wsplice
-	$(OBJDIR)/wsplice -kIS_RC -kENGLISH -f '{%+(MSG_USE_E_BASE+%#-1), "%s"},' $< $@
+$(OBJDIR)/usagej.rc : h/usage.sp
+	wsplice -kIS_RC -kJAPANESE -f '%+(MSG_USE_J_BASE+%#-1), "%s"' $< $@
 
-$(OBJDIR)/usageend.gh: $(OBJDIR)/usage.gh $(OBJDIR)/wsplice
-	$(OBJDIR)/wsplice $< -o "%n%n%n%n" $(OBJDIR)/usage.rcp
-	$(OBJDIR)/wsplice -f "%+" $(OBJDIR)/usage.rcp -o "#define USAGE_LAST (USAGE_BASE+%#)%n" $@
+$(OBJDIR)/usageend.gh: $(OBJDIR)/usage.rc $(OBJDIR)/usagej.rc
+	wsplice $< -o "%n%n%n%n" $(OBJDIR)/usage.rcp
+	wsplice -f "%+" $(OBJDIR)/usage.rcp -o "#define USAGE_LAST (USAGE_BASE+%#)%n" $@
 	rm -f $(OBJDIR)/usage.rcp
 
 $(OBJDIR)/cretype : cretype.c
@@ -36,11 +29,16 @@ $(OBJDIR)/cretype : cretype.c
 $(OBJDIR)/isarray.gh : $(OBJDIR)/cretype
 	$< > $@
 
-$(OWBINDIR)/wmake: $(OBJDIR)/wmake
-	cp $< $@
+$(OBJDIR)/wmake.res : h/wmake.rc h/mrcmsg.h $(OBJDIR)/usage.rc $(OBJDIR)/usagej.rc
+	wrc -i$(OBJDIR) -q -bt=windows -ih -i../watcom/h -zk0 -q -r -fo=$@ $<
 
-$(OBJDIR)/wmake: $(OBJDIR)/usageend.gh $(OBJDIR)/isarray.gh $(OBJS)
-	$(CC) -g $(OBJS) -o $@
+INCDIRS = $(OBJDIR) h $(WATCOMH) $(RC_DIR)/h $(LIB_MISC_DIR)/h $(ORL_DIR)/h
+LIBDIRS = $(ORL_DIR)/$(OBJDIR) $(WRES_DIR)/$(OBJDIR) $(WCLIB_DIR)/$(OBJDIR)
+LIBS += -lorl -lwres -lwatcom
+
+$(OBJDIR)/wmake: $(OBJDIR)/usageend.gh $(OBJDIR)/isarray.gh $(OBJS) $(OBJDIR)/wmake.res
+	$(CC) -g -o wmake $(OBJS) $(LIBS) -o $@
+	wstrip -q -r -a $@ . $(OBJDIR)/wmake.res
 
 $(OBJDIR):
 	mkdir $(OBJDIR)

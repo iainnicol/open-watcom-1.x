@@ -100,7 +100,7 @@ static entry_export *FreeAnExport( entry_export *exp )
     return( next );
 }
 
-void FreeExportList( void )
+extern void FreeExportList( void )
 /********************************/
 {
     entry_export *  exp;
@@ -112,7 +112,7 @@ void FreeExportList( void )
     }
 }
 
-void AddToExportList( entry_export *exp )
+extern void AddToExportList( entry_export *exp )
 /**********************************************/
 {
     entry_export **     owner;
@@ -187,7 +187,7 @@ static unsigned CheckStdCall( char *name, unsigned len )
     return chop;
 }
 
-entry_export * AllocExport( char *name, unsigned len )
+extern entry_export * AllocExport( char *name, unsigned len )
 /***********************************************************/
 {
     entry_export *  exp;
@@ -223,7 +223,7 @@ entry_export * AllocExport( char *name, unsigned len )
 #define EXPDEF_RESIDENT 0x40
 #define EXPDEF_IOPLMASK 0x1F
 
-void MSExportKeyword( length_name *expname, length_name *intname,
+extern void MSExportKeyword( length_name *expname, length_name *intname,
                              unsigned flags, unsigned ordinal )
 /**********************************************************************/
 // Process the Microsoft Export keyword.
@@ -250,7 +250,7 @@ void MSExportKeyword( length_name *expname, length_name *intname,
     AddToExportList( exp );
 }
 
-dll_sym_info * AllocDLLInfo( void )
+extern dll_sym_info * AllocDLLInfo( void )
 /****************************************/
 {
     dll_sym_info * dll;
@@ -260,7 +260,7 @@ dll_sym_info * AllocDLLInfo( void )
     return dll;
 }
 
-void FreeImport( dll_sym_info * dll )
+extern void FreeImport( dll_sym_info * dll )
 /******************************************/
 {
     CarveFree( CarveDLLInfo, dll );
@@ -289,7 +289,7 @@ static symbol * GetIATSym( symbol *sym )
     return SymOp( ST_CREATE, iatname, prefixlen );
 }
 
-void MSImportKeyword( symbol *sym, length_name *modname,
+extern void MSImportKeyword( symbol *sym, length_name *modname,
                              length_name *extname, unsigned long ordinal )
 /************************************************************************/
 /* process the MS import keyword definition */
@@ -322,7 +322,7 @@ void MSImportKeyword( symbol *sym, length_name *modname,
     }
 }
 
-void KillDependantSyms( symbol *sym )
+extern void KillDependantSyms( symbol *sym )
 /******************************************/
 {
     if( !(FmtData.type & MK_PE) ) return;
@@ -330,7 +330,7 @@ void KillDependantSyms( symbol *sym )
     sym->info |= SYM_KILL;
 }
 
-void AssignOrdinals( void )
+extern void AssignOrdinals( void )
 /********************************/
 /* assign ordinal values to entries in the export list */
 {
@@ -438,7 +438,7 @@ static void ReadOldLib( void )
     FmtData.u.os2.old_lib_name = NULL;
 }
 
-void CheckExport( char * name, unsigned_16 ordinal,
+extern void CheckExport( char * name, unsigned_16 ordinal,
                          int (*compare_rtn)(const char *,const char *))
 /*********************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
@@ -498,7 +498,7 @@ static void ReadNameTable( f_handle the_file )
     }
 }
 
-unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
+extern unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
 /*********************************************************************/
 {
     unsigned_16     max_ord;
@@ -528,25 +528,25 @@ unsigned_16 FindEntryOrdinal( targ_addr addr, group_entry *grp )
     return( exp->ordinal );
 }
 
-char * ImpModuleName( dll_sym_info *dll )
+extern char * ImpModuleName( dll_sym_info *dll )
 /**********************************************/
 {
     return dll->m.modnum->name;
 }
 
-bool IsSymElfImported( symbol *s )
+extern bool IsSymElfImported( symbol *s )
 /***************************************/
 {
     return IS_SYM_IMPORTED(s);
 }
 
-bool IsSymElfExported( symbol *s )
+extern bool IsSymElfExported( symbol *s )
 /***************************************/
 {
     return FmtData.u.elf.exportallsyms || (s->info & SYM_EXPORTED);
 }
 
-bool IsSymElfImpExp( symbol *s )
+extern bool IsSymElfImpExp( symbol *s )
 /*************************************/
 {
     return IsSymElfImported(s) || IsSymElfExported(s);

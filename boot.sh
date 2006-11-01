@@ -17,4 +17,4 @@ cd ../builder
 $MAKE -f gnumake
 cp $OBJDIR/builder ../build/binl
 cd ..
-builder -s -c boot.ctl boot 
+builder -c boot.ctl boot 

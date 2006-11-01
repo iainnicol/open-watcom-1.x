@@ -43,21 +43,7 @@ extern char **_argv;    /* argument vector */
 
 /* NOTE: This file isn't used for QNX. It's got its own version. */
 
-#ifdef __APPLE__
-
-#include <mach-o/dyld.h>
-
-/* No procfs on Darwin, have to use special API */ 
-
-_WCRTLINK char *_cmdname( char *name )
-{
-    uint32_t    len = 4096;
-
-    _NSGetExecutablePath( name, &len );
-    return( name );
-}
-
-#elif defined __LINUX__
+#ifdef __LINUX__
 
 _WCRTLINK char *_cmdname( char *name )
 {

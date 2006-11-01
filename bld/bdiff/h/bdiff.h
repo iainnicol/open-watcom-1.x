@@ -68,6 +68,7 @@ typedef enum {
 } patch_cmd;
 
 #define s(x) #x
+#define assert( x )
 //if( !(x) ) printf("Internal error @" s(__LINE__) ": \n");
 
 /*

@@ -20,9 +20,8 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the object reading library
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../osi386/makefile bootstrap=1
+    cdsay <PROJDIR>
+    <MAKE> -f gnumake
 
 [ BLOCK . . ]
 #============

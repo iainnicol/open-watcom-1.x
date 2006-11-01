@@ -53,13 +53,13 @@ static bool             getimport( void );
 static bool             getexport( void );
 static bool             getsegflags( void );
 
-bool ProcOS2Import( void )
+extern bool ProcOS2Import( void )
 /*******************************/
 {
     return( ProcArgList( &getimport, 0 ) );
 }
 
-bool ProcOS2Export( void )
+extern bool ProcOS2Export( void )
 /*******************************/
 {
     bool    retval;
@@ -72,7 +72,7 @@ bool ProcOS2Export( void )
     return( retval );
 }
 
-bool ProcAnonExport( void )
+extern bool ProcAnonExport( void )
 /********************************/
 {
     bool    retval;
@@ -83,7 +83,7 @@ bool ProcAnonExport( void )
     return( retval );
 }
 
-bool ProcOS2Segment( void )
+extern bool ProcOS2Segment( void )
 /********************************/
 {
     return( ProcArgList( &getsegflags, TOK_INCLUDE_DOT ) );
@@ -254,21 +254,21 @@ static bool getexport( void )
     return( TRUE );
 }
 
-bool ProcExpResident( void )
+extern bool ProcExpResident( void )
 /*********************************/
 {
     FmtData.u.os2.exports->isresident = TRUE;
     return( TRUE );
 }
 
-bool ProcPrivate( void )
+extern bool ProcPrivate( void )
 /******************************/
 {
     FmtData.u.os2.exports->isprivate = TRUE;
     return( TRUE );
 }
 
-bool ProcOS2Alignment( void )
+extern bool ProcOS2Alignment( void )
 /**********************************/
 /* process Alignment option */
 {
@@ -284,7 +284,7 @@ bool ProcOS2Alignment( void )
     return( TRUE );
 }
 
-bool ProcObjAlign( void )
+extern bool ProcObjAlign( void )
 /******************************/
 /* process ObjAlign option */
 {
@@ -305,7 +305,7 @@ bool ProcObjAlign( void )
     return( TRUE );
 }
 
-bool ProcModName( void )
+extern bool ProcModName( void )
 /*****************************/
 {
     if( !HaveEquals(TOK_INCLUDE_DOT) ) return( FALSE );
@@ -313,21 +313,21 @@ bool ProcModName( void )
     return( TRUE );
 }
 
-bool ProcNewFiles( void )
+extern bool ProcNewFiles( void )
 /******************************/
 {
     FmtData.u.os2.flags |= LONG_FILENAMES;
     return( TRUE );
 }
 
-bool ProcProtMode( void )
+extern bool ProcProtMode( void )
 /******************************/
 {
     FmtData.u.os2.flags |= PROTMODE_ONLY;
     return( TRUE );
 }
 
-bool ProcOldLibrary( void )
+extern bool ProcOldLibrary( void )
 /********************************/
 {
     if( !HaveEquals(TOK_INCLUDE_DOT | TOK_IS_FILENAME) ) return( FALSE );
@@ -335,7 +335,7 @@ bool ProcOldLibrary( void )
     return( TRUE );
 }
 
-bool ProcOS2HeapSize( void )
+extern bool ProcOS2HeapSize( void )
 /*********************************/
 {
     ord_state           ret;
@@ -351,7 +351,7 @@ bool ProcOS2HeapSize( void )
     return( TRUE );
 }
 
-bool ProcDescription( void )
+extern bool ProcDescription( void )
 /*********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -361,13 +361,13 @@ bool ProcDescription( void )
     return( TRUE );
 }
 
-bool ProcCommitStack( void )
+extern bool ProcCommitStack( void )
 /*********************************/
 {
     return( GetLong( &FmtData.u.pe.stackcommit ) );
 }
 
-bool ProcCommitHeap( void )
+extern bool ProcCommitHeap( void )
 /********************************/
 {
     return( GetLong( &FmtData.u.pe.heapcommit ) );
@@ -381,14 +381,14 @@ static bool AddCommit( void )
     return( TRUE );
 }
 
-bool ProcCommit( void )
+extern bool ProcCommit( void )
 /****************************/
 // set NT stack commit and heap sizes.
 {
     return( ProcArgList( AddCommit, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcRWRelocCheck( void )
+extern bool ProcRWRelocCheck( void )
 /**********************************/
 // check for segment relocations pointing to read/write data segments
 {
@@ -396,14 +396,14 @@ bool ProcRWRelocCheck( void )
     return( TRUE );
 }
 
-bool ProcSelfRelative( void )
+extern bool ProcSelfRelative( void )
 /**********************************/
 {
     FmtData.u.os2.gen_rel_relocs = TRUE;
     return( TRUE );
 }
 
-bool ProcInternalRelocs( void )
+extern bool ProcInternalRelocs( void )
 /************************************/
 // in case someone wants internal relocs generated.
 {
@@ -411,7 +411,7 @@ bool ProcInternalRelocs( void )
     return( TRUE );
 }
 
-bool ProcToggleRelocsFlag( void )
+extern bool ProcToggleRelocsFlag( void )
 /***************************************/
 // Rational wants internal relocs generated, but wants the "no internal relocs"
 // flag set
@@ -420,21 +420,21 @@ bool ProcToggleRelocsFlag( void )
     return( TRUE );
 }
 
-bool ProcPENoRelocs( void )
+extern bool ProcPENoRelocs( void )
 /*********************************/
 {
     LinkState &= ~MAKE_RELOCS;
     return( TRUE );
 }
 
-bool ProcNoStdCall( void )
+extern bool ProcNoStdCall( void )
 /*******************************/
 {
     FmtData.u.pe.no_stdcall = TRUE;
     return( TRUE );
 }
 
-bool ProcOS2( void )
+extern bool ProcOS2( void )
 /*************************/
 // process the format os2 or format windows directives
 //
@@ -466,7 +466,7 @@ bool ProcOS2( void )
     return( TRUE );
 }
 
-bool ProcPE( void )
+extern bool ProcPE( void )
 /************************/
 {
     ProcOne( NTFormatKeywords, SEP_NO, FALSE );
@@ -477,7 +477,7 @@ bool ProcPE( void )
     return( TRUE );
 }
 
-bool ProcVXD( void )
+extern bool ProcVXD( void )
 /************************/
 {
     return( ProcOS2() );
@@ -490,13 +490,13 @@ bool ProcVXD( void )
 */
 }
 
-bool ProcWindows( void )
+extern bool ProcWindows( void )
 /*****************************/
 {
     return( ProcOS2() );
 }
 
-void ChkBase( offset align )
+extern void ChkBase( offset align )
 /*********************************/
 // Note: align must be a power of 2
 {
@@ -510,7 +510,7 @@ void ChkBase( offset align )
     }
 }
 
-void SetOS2Fmt()
+extern void SetOS2Fmt()
 /*********************/
 // set up the structures needed to be able to process something in OS/2 mode.
 {
@@ -532,7 +532,7 @@ void SetOS2Fmt()
     ChkBase(64*1024);
 }
 
-void FreeOS2Fmt()
+extern void FreeOS2Fmt()
 /**********************/
 {
     _LnkFree( FmtData.u.os2.stub_file_name );
@@ -544,19 +544,19 @@ void FreeOS2Fmt()
     FreeSegFlags( (seg_flags *) FmtData.u.os2.os2_seg_flags );
 }
 
-bool ProcLE( void )
+extern bool ProcLE( void )
 /************************/
 {
     return( TRUE );
 }
 
-bool ProcLX( void )
+extern bool ProcLX( void )
 /************************/
 {
     return( TRUE );
 }
 
-bool ProcOS2DLL( void )
+extern bool ProcOS2DLL( void )
 /****************************/
 {
     FmtData.dll = TRUE;
@@ -576,105 +576,105 @@ bool ProcOS2DLL( void )
     return( TRUE );
 }
 
-bool ProcPhysDevice( void )
+extern bool ProcPhysDevice( void )
 /********************************/
 {
     FmtData.u.os2.flags |= PHYS_DEVICE;
     return( TRUE );
 }
 
-bool ProcVirtDevice( void )
+extern bool ProcVirtDevice( void )
 /********************************/
 {
     FmtData.u.os2.flags |= VIRT_DEVICE;
     return( TRUE );
 }
 
-bool ProcPM( void )
+extern bool ProcPM( void )
 /************************/
 {
     FmtData.u.os2.flags |= PM_APPLICATION;
     return( TRUE );
 }
 
-bool ProcPMCompatible( void )
+extern bool ProcPMCompatible( void )
 /**********************************/
 {
     FmtData.u.os2.flags |= PM_COMPATIBLE;
     return( TRUE );
 }
 
-bool ProcPMFullscreen( void )
+extern bool ProcPMFullscreen( void )
 /**********************************/
 {
     FmtData.u.os2.flags |= PM_NOT_COMPATIBLE;
     return( TRUE );
 }
 
-bool ProcMemory( void )
+extern bool ProcMemory( void )
 /****************************/
 {
     FmtData.u.os2.flags |= CLEAN_MEMORY;
     return( TRUE );
 }
 
-bool ProcFont( void )
+extern bool ProcFont( void )
 /**************************/
 {
     FmtData.u.os2.flags |= PROPORTIONAL_FONT;
     return( TRUE );
 }
 
-bool ProcDynamicDriver( void )
+extern bool ProcDynamicDriver( void )
 /********************************/
 {
     FmtData.u.os2.flags |= VIRT_DEVICE;
     return( TRUE );
 }
 
-bool ProcStaticDriver( void )
+extern bool ProcStaticDriver( void )
 /********************************/
 {
     FmtData.u.os2.flags |= PHYS_DEVICE;
     return( TRUE );
 }
 
-bool ProcInitGlobal( void )
+extern bool ProcInitGlobal( void )
 /********************************/
 {
     FmtData.u.os2.flags &= ~INIT_INSTANCE_FLAG;
     return( TRUE );
 }
 
-bool ProcInitInstance( void )
+extern bool ProcInitInstance( void )
 /**********************************/
 {
     FmtData.u.os2.flags |= INIT_INSTANCE_FLAG;
     return( TRUE );
 }
 
-bool ProcInitThread( void )
+extern bool ProcInitThread( void )
 /********************************/
 {
     FmtData.u.os2.flags |= INIT_THREAD_FLAG;
     return( TRUE );
 }
 
-bool ProcTermGlobal( void )
+extern bool ProcTermGlobal( void )
 /********************************/
 {
     FmtData.u.os2.flags &= ~TERM_INSTANCE_FLAG;
     return( TRUE );
 }
 
-bool ProcTermInstance( void )
+extern bool ProcTermInstance( void )
 /**********************************/
 {
     FmtData.u.os2.flags |= TERM_INSTANCE_FLAG;
     return( TRUE );
 }
 
-bool ProcTermThread( void )
+extern bool ProcTermThread( void )
 /********************************/
 {
     FmtData.u.os2.flags |= TERM_THREAD_FLAG;
@@ -707,14 +707,14 @@ static bool getsegflags( void )
     return( TRUE );
 }
 
-bool ProcOS2Class( void )
+extern bool ProcOS2Class( void )
 /******************************/
 {
     FmtData.u.os2.os2_seg_flags->type = SEGFLAG_CLASS;
     return( TRUE );
 }
 
-bool ProcSegType( void )
+extern bool ProcSegType( void )
 /*****************************/
 {
     if( !ProcOne( SegTypeDesc, SEP_NO, FALSE ) ) {
@@ -723,21 +723,21 @@ bool ProcSegType( void )
     return( TRUE );
 }
 
-bool ProcSegCode( void )
+extern bool ProcSegCode( void )
 /*****************************/
 {
     FmtData.u.os2.os2_seg_flags->type = SEGFLAG_CODE;
     return( TRUE );
 }
 
-bool ProcSegData( void )
+extern bool ProcSegData( void )
 /*****************************/
 {
     FmtData.u.os2.os2_seg_flags->type = SEGFLAG_DATA;
     return( TRUE );
 }
 
-bool ProcPreload( void )
+extern bool ProcPreload( void )
 /*****************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_PRELOAD ) {
@@ -748,7 +748,7 @@ bool ProcPreload( void )
     return( TRUE );
 }
 
-bool ProcLoadoncall( void )
+extern bool ProcLoadoncall( void )
 /********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_PRELOAD ) {
@@ -759,7 +759,7 @@ bool ProcLoadoncall( void )
     return( TRUE );
 }
 
-bool ProcIopl( void )
+extern bool ProcIopl( void )
 /**************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_IOPL_SPECD ) {
@@ -771,7 +771,7 @@ bool ProcIopl( void )
     return( TRUE );
 }
 
-bool ProcNoIopl( void )
+extern bool ProcNoIopl( void )
 /****************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_IOPL_SPECD ) {
@@ -782,7 +782,7 @@ bool ProcNoIopl( void )
     return( TRUE );
 }
 
-bool ProcExecuteonly( void )
+extern bool ProcExecuteonly( void )
 /*********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_RFLAG ) {
@@ -793,7 +793,7 @@ bool ProcExecuteonly( void )
     return( TRUE );
 }
 
-bool ProcExecuteread( void )
+extern bool ProcExecuteread( void )
 /*********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_RFLAG ) {
@@ -804,7 +804,7 @@ bool ProcExecuteread( void )
     return( TRUE );
 }
 
-bool ProcReadOnly( void )
+extern bool ProcReadOnly( void )
 /******************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_RFLAG ) {
@@ -815,7 +815,7 @@ bool ProcReadOnly( void )
     return( TRUE );
 }
 
-bool ProcReadWrite( void )
+extern bool ProcReadWrite( void )
 /******************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_RFLAG ) {
@@ -826,7 +826,7 @@ bool ProcReadWrite( void )
     return( TRUE );
 }
 
-bool ProcShared( void )
+extern bool ProcShared( void )
 /****************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_PURE ) {
@@ -837,7 +837,7 @@ bool ProcShared( void )
     return( TRUE );
 }
 
-bool ProcNonShared( void )
+extern bool ProcNonShared( void )
 /*******************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_PURE ) {
@@ -848,7 +848,7 @@ bool ProcNonShared( void )
     return( TRUE );
 }
 
-bool ProcConforming( void )
+extern bool ProcConforming( void )
 /********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_CONFORMING ) {
@@ -859,7 +859,7 @@ bool ProcConforming( void )
     return( TRUE );
 }
 
-bool ProcNonConforming( void )
+extern bool ProcNonConforming( void )
 /***********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_CONFORMING ) {
@@ -870,7 +870,7 @@ bool ProcNonConforming( void )
     return( TRUE );
 }
 
-bool ProcMovable( void )
+extern bool ProcMovable( void )
 /*****************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_MOVABLE ) {
@@ -881,7 +881,7 @@ bool ProcMovable( void )
     return( TRUE );
 }
 
-bool ProcFixed( void )
+extern bool ProcFixed( void )
 /*****************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_MOVABLE ) {
@@ -892,7 +892,7 @@ bool ProcFixed( void )
     return( TRUE );
 }
 
-bool ProcNonPageable( void )
+extern bool ProcNonPageable( void )
 /*********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_NOPAGE ) {
@@ -903,7 +903,7 @@ bool ProcNonPageable( void )
     return( TRUE );
 }
 
-bool ProcPageable( void )
+extern bool ProcPageable( void )
 /******************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_NOPAGE ) {
@@ -914,35 +914,35 @@ bool ProcPageable( void )
     return( TRUE );
 }
 
-bool ProcDiscardable( void )
+extern bool ProcDiscardable( void )
 /*********************************/
 {
     FmtData.u.os2.os2_seg_flags->flags |= SEG_DISCARD;
     return( TRUE );
 }
 
-bool ProcNonDiscardable( void )
+extern bool ProcNonDiscardable( void )
 /*********************************/
 {
     FmtData.u.os2.os2_seg_flags->flags &= ~SEG_DISCARD;
     return( TRUE );
 }
 
-bool ProcOS2Dynamic( void )
+extern bool ProcOS2Dynamic( void )
 /********************************/
 {
 //    FmtData.u.os2.os2_seg_flags->flags |= SEG_DISCARD;
     return( TRUE );
 }
 
-bool ProcInvalid( void )
+extern bool ProcInvalid( void )
 /*****************************/
 {
     FmtData.u.os2.os2_seg_flags->flags |= SEG_INVALID;
     return( TRUE );
 }
 
-bool ProcPermanent( void )
+extern bool ProcPermanent( void )
 /*******************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_RESIDENT ) {
@@ -953,7 +953,7 @@ bool ProcPermanent( void )
     return( TRUE );
 }
 
-bool ProcNonPermanent( void )
+extern bool ProcNonPermanent( void )
 /**********************************/
 {
     if( FmtData.u.os2.os2_seg_flags->specified & SEG_RESIDENT ) {
@@ -964,14 +964,14 @@ bool ProcNonPermanent( void )
     return( TRUE );
 }
 
-bool ProcContiguous( void )
+extern bool ProcContiguous( void )
 /********************************/
 {
     FmtData.u.os2.os2_seg_flags->flags |= SEG_CONTIGUOUS;
     return( TRUE );
 }
 
-bool ProcSingle( void )
+extern bool ProcSingle( void )
 /****************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
@@ -982,7 +982,7 @@ bool ProcSingle( void )
     return( TRUE );
 }
 
-bool ProcMultiple( void )
+extern bool ProcMultiple( void )
 /******************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
@@ -993,7 +993,7 @@ bool ProcMultiple( void )
     return( TRUE );
 }
 
-bool ProcNone( void )
+extern bool ProcNone( void )
 /**************************/
 {
     if( CmdFlags & CF_AUTO_SEG_FLAG ) {
@@ -1003,7 +1003,7 @@ bool ProcNone( void )
     return( TRUE );
 }
 
-bool ProcRunNative( void )
+extern bool ProcRunNative( void )
 /*******************************/
 {
     FmtData.u.pe.subsystem = PE_SS_NATIVE;
@@ -1011,7 +1011,7 @@ bool ProcRunNative( void )
     return( TRUE );
 }
 
-bool ProcRunWindows( void )
+extern bool ProcRunWindows( void )
 /********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_WINDOWS_GUI;
@@ -1019,7 +1019,7 @@ bool ProcRunWindows( void )
     return( TRUE );
 }
 
-bool ProcRunConsole( void )
+extern bool ProcRunConsole( void )
 /********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_WINDOWS_CHAR;
@@ -1027,7 +1027,7 @@ bool ProcRunConsole( void )
     return( TRUE );
 }
 
-bool ProcRunPosix( void )
+extern bool ProcRunPosix( void )
 /******************************/
 {
     FmtData.u.pe.subsystem = PE_SS_POSIX_CHAR;
@@ -1035,7 +1035,7 @@ bool ProcRunPosix( void )
     return( TRUE );
 }
 
-bool ProcRunOS2( void )
+extern bool ProcRunOS2( void )
 /****************************/
 {
     FmtData.u.pe.subsystem = PE_SS_OS2_CHAR;
@@ -1044,7 +1044,7 @@ bool ProcRunOS2( void )
 }
 
 
-bool ProcRunDosstyle( void )
+extern bool ProcRunDosstyle( void )
 /*********************************/
 {
     FmtData.u.pe.subsystem = PE_SS_PL_DOSSTYLE;
@@ -1053,7 +1053,7 @@ bool ProcRunDosstyle( void )
     return( TRUE );
 }
 
-bool ProcTNT( void )
+extern bool ProcTNT( void )
 /*************************/
 {
     FmtData.u.pe.tnt = TRUE;
@@ -1090,7 +1090,7 @@ static bool AddResource( void )
     return( TRUE );
 }
 
-bool ProcResource( void )
+extern bool ProcResource( void )
 /******************************/
 {
     return( ProcArgList( &AddResource, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
@@ -1178,7 +1178,7 @@ static unsigned_32 ProcGenericVersion( VersBlock * pVers, unsigned_32 major_limi
     return( state );
 }
 
-bool     ProcLinkVersion( void )
+extern bool     ProcLinkVersion( void )
 {
     unsigned_32 result;
     VersBlock   vb;
@@ -1195,7 +1195,7 @@ bool     ProcLinkVersion( void )
     return( TRUE );
 }
 
-bool     ProcOsVersion( void )
+extern bool     ProcOsVersion( void )
 {
     unsigned_32 result;
     VersBlock   vb;
@@ -1212,7 +1212,7 @@ bool     ProcOsVersion( void )
     return( TRUE );
 }
 
-bool     ProcChecksum( void )
+extern bool     ProcChecksum( void )
 {
     FmtData.u.pe.checksumfile = 1;
     return( TRUE );
