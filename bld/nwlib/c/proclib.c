@@ -30,7 +30,11 @@
 
 
 #include <wlib.h>
-#include "symomf.h"
+
+
+extern void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) );
+extern void OMFSkipThisObject( arch_header *, libfile );
+
 
 static void ExtractObj( libfile io, char *name, file_offset size,
                         arch_header *arch, char *newname )

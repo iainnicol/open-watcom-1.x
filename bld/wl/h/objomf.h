@@ -37,6 +37,5 @@ extern unsigned long    OMFPass1( void );
 extern bool             IsOMF( file_list *, unsigned long );
 extern char *           GetOMFName( file_list *, unsigned long * );
 extern void             OMFSkipObj( file_list *, unsigned long * );
-extern void             ResetObjOMF( void );
 
 extern byte             OMFAlignTab[];

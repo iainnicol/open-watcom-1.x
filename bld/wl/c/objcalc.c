@@ -85,7 +85,7 @@ static void             FindFloatSyms( void );
 static void             CheckClassUninitialized( class_entry * currcl );
 static void             SortClasses ( section *sec );
 
-void CheckClassOrder( void )
+extern void CheckClassOrder( void )
 /*********************************/
 /* Reorder the classes if DOSSEG flag set or ORDER directive given */
 {
@@ -446,7 +446,7 @@ static void SortSegments( void )
 
 #define CODECL_SIZE ( sizeof( CodeClassName ) - 1 )
 
-bool IsCodeClass( char *name, unsigned namelen )
+extern bool IsCodeClass( char *name, unsigned namelen )
 /*****************************************************/
 {
     return( ( namelen >= CODECL_SIZE )
@@ -455,7 +455,7 @@ bool IsCodeClass( char *name, unsigned namelen )
 
 #define CONSTCL_SIZE ( sizeof( ConstClassName ) - 1 )
 
-bool IsConstClass( char *name, unsigned namelen )
+extern bool IsConstClass( char *name, unsigned namelen )
 /******************************************************/
 {
     return( ( namelen >= CONSTCL_SIZE )
@@ -464,7 +464,7 @@ bool IsConstClass( char *name, unsigned namelen )
 
 #define STACKCL_SIZE ( sizeof( StackClassName ) - 1 )
 
-bool IsStackClass( char *name, unsigned namelen )
+extern bool IsStackClass( char *name, unsigned namelen )
 /******************************************************/
 {
     return( ( namelen >= STACKCL_SIZE )
@@ -497,7 +497,7 @@ static void CalcSeg( seg_leader *seg )
     RingWalk( seg->pieces, AddUpSegData );
 }
 
-void CalcSegSizes( void )
+extern void CalcSegSizes( void )
 /******************************/
 {
     WalkLeaders( CalcSeg );
@@ -526,7 +526,7 @@ static void CalcInitSize( seg_leader *seg )
     }
 }
 
-void CalcAddresses( void )
+extern void CalcAddresses( void )
 /*******************************/
 /* Calculate the starting address in the file of each segment. */
 {
@@ -867,7 +867,7 @@ static void CalcGrpAddr( group_entry *currgrp )
     }
 }
 
-void AllocClasses( class_entry *class )
+extern void AllocClasses( class_entry *class )
 /********************************************/
 /* Allocate all classes in the list */
 {
@@ -921,13 +921,13 @@ static void AllocSeg( void *_seg )
     }
 }
 
-offset GetLeaderDelta( seg_leader *leader )
+extern offset GetLeaderDelta( seg_leader *leader )
 /************************************************/
 {
     return( SUB_ADDR( leader->seg_addr, leader->group->grp_addr ) );
 }
 
-void ConvertToFrame( targ_addr *addr, segment frame )
+extern void ConvertToFrame( targ_addr *addr, segment frame )
 /**********************************************************/
 {
     unsigned long   off;
@@ -978,7 +978,7 @@ static void DefinePublics( void )
     FindFloatSyms();
 }
 
-void ProcPubs( mod_entry *head, section *sect )
+extern void ProcPubs( mod_entry *head, section *sect )
 /****************************************************/
 {
     for( CurrMod = head; CurrMod != NULL; CurrMod = CurrMod->n.next_mod ) {
@@ -1008,13 +1008,13 @@ static int SymAddrCompare( const void *a, const void *b )
     return( 0 );
 }
 
-void StartMapSort( void )
+extern void StartMapSort( void )
 /******************************/
 {
     NumMapSyms = 0;
 }
 
-void FinishMapSort( void )
+extern void FinishMapSort( void )
 /*******************************/
 {
     symbol      **symarray;
@@ -1126,7 +1126,7 @@ static bool DefPubSym( void *_pub, void *_info )
     return( FALSE );
 }
 
-void DoPubs( section *sect )
+extern void DoPubs( section *sect )
 /*********************************/
 /* Process public definitions for an object file. */
 {
@@ -1165,7 +1165,7 @@ static void SetReadOnly( void *_seg )
     }
 }
 
-void SetSegFlags( seg_flags * flag_list )
+extern void SetSegFlags( seg_flags * flag_list )
 /**********************************************/
 {
     seg_flags       *next_one;

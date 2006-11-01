@@ -88,7 +88,7 @@ static bool ProcLibFile( file_list *lib, char *name )
 
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
 
-bool LibFind( char *name, bool old_sym )
+extern bool LibFind( char *name, bool old_sym )
 /*********************************************/
 /* Search for a file in a library */
 {
@@ -113,7 +113,7 @@ bool LibFind( char *name, bool old_sym )
     return found;
 }
 
-bool ModNameCompare( char *tname, char *membname )
+extern bool ModNameCompare( char *tname, char *membname )
 /*******************************************************/
 // check if a THEADR record name is equal to a library member name
 {

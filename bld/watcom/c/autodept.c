@@ -143,7 +143,6 @@ void _TimeToDOSStamp( time_t x, unsigned short *date, unsigned short *time )
     return;
 }
 
-#if !defined( WMAKE ) || !defined( BOOTSTRAP )
 char *_getFilenameFullPath( char *buff, char const *name, size_t max )
 /*********************************************************************/
 {
@@ -166,7 +165,6 @@ char *_getFilenameFullPath( char *buff, char const *name, size_t max )
 #endif
     return( p );
 }
-#endif
 
 time_t _getFilenameTimeStamp( char const *filename )
 {

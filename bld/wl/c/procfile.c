@@ -65,7 +65,7 @@ static void             IncLoadObjFiles( void );
 static void             DoPass1( mod_entry *next, file_list *list );
 static void             SkipFile( file_list *list, unsigned long *loc );
 
-void ProcObjFiles( void )
+extern void ProcObjFiles( void )
 /******************************/
 /* Perform Pass 1 on all object files */
 {
@@ -95,7 +95,7 @@ void ProcObjFiles( void )
     }
 }
 
-void SetupFakeModule( void )
+extern void SetupFakeModule( void )
 /*********************************/
 {
     if( FmtData.type & MK_PE ) {
@@ -106,7 +106,7 @@ void SetupFakeModule( void )
     }
 }
 
-void LinkFakeModule( void )
+extern void LinkFakeModule( void )
 /********************************/
 {
     if( FmtData.type & MK_PE ) {
@@ -442,7 +442,7 @@ static void IncLoadObjFiles( void )
     DoIncLibDefs();
 }
 
-void LoadObjFiles( section *sect )
+extern void LoadObjFiles( section *sect )
 /***************************************/
 {
     file_list * list;
@@ -560,7 +560,7 @@ static void DoPass1( mod_entry *next, file_list *list )
     CheckStop();
 }
 
-char * IdentifyObject( file_list * list, unsigned long *loc,
+extern char * IdentifyObject( file_list * list, unsigned long *loc,
                               unsigned long *size )
 /*****************************************************************/
 {
@@ -625,7 +625,7 @@ static unsigned long (*CallPass1[])() = {
     BadObjFormat
 };
 
-unsigned long ObjPass1( void )
+extern unsigned long ObjPass1( void )
 /***********************************/
 /* Pass 1 of 8086 linker. */
 {
@@ -672,7 +672,7 @@ static bool ResolveVFExtdefs( void )
     return resolved;
 }
 
-void ResolveUndefined( void )
+extern void ResolveUndefined( void )
 /**********************************/
 {
     symbol *    sym;

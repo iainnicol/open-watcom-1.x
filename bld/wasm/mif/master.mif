@@ -19,7 +19,7 @@ wasm_trmem = 1
 
 inc_dirs  = -I. -I"$(proj_path)/h" -I"$(womp_dir)/h"
 
-libs = $(wres_dir)/$(%OBJDIR)/wres.lib
+libs = -L$(clib_dir)/$(%OBJDIR) -lwatcom -L$(wres_dir)/$(%OBJDIR) -lwres
 
 #cflags stuff
 #########
@@ -88,10 +88,6 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
 
 proj_obj += $(trmem_objs)
 
-!ifdef bootstrap
-proj_obj += clibext.obj
-!endif
-
 #explicit rules
 ######
 
@@ -144,18 +140,33 @@ usagej.u : $(proj_path)/h/usage.sp
         wsplice -kJAPANESE -k$(host_OS) -t8 -u $[@ $^@
 
 msg.gh : $(proj_path)/h/asmshare.msg
+!ifdef __LINUX__
+        perl $(sdk_dir)/misc/msgtoh.pl < $[@ | sed -e '/0$$/d' | &
+        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_SHARE_RC_BASE/' > $^@
+!else
         $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_SHARE_RC_BASE" $[@
+!endif
 
 wasmmsg.gh : $(proj_path)/h/wasm.msg
+!ifdef __LINUX__
+        perl $(sdk_dir)/misc/msgtoh.pl < $[@ | &
+        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_WASM_RC_BASE/' > $^@
+!else
         $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_WASM_RC_BASE" $[@
+!endif
 
 wmpmsg.gh : $(proj_path)/h/womp.msg
+!ifdef __LINUX__
+        perl $(sdk_dir)/misc/msgtoh.pl < $< | sed '/0$$/d' | &
+        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_WOMP_RC_BASE/' > $^@
+!else
         $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_WOMP_RC_BASE" $[@
+!endif
 
 ###################################################################
 
 fullops.gh: $(proj_path)/fullops.tok $(proj_path)/inlnops.tok ./mkopcode.exe
         $]@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $^@
 
-./mkopcode.exe: $(proj_path)/mkopcode.c $(cl_objs)
-        $(bld_cl) $(inc_path) $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+./mkopcode.exe: $(proj_path)/mkopcode.c
+        $(bld_cl) $(inc_path) $[@ $(wcl_util_opts) $(cl_libs) # order is important for gcc (linux bootstrap)

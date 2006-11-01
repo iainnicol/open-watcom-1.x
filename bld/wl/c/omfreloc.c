@@ -77,13 +77,13 @@ static fix_type RelocTypeMap[] = {
 static void GetTarget( unsigned loc, frame_spec *targ );
 static void GetFrame( unsigned frame, frame_spec *refframe );
 
-void ResetOMFReloc( void )
+extern void ResetOMFReloc( void )
 /*******************************/
 {
     BakPats = NULL;
 }
 
-void DoRelocs( void )
+extern void DoRelocs( void )
 /**************************/
 /* Process FIXUP records. */
 {
@@ -252,7 +252,7 @@ static void StoreBakPat( segnode * seg, byte loctype )
     LinkList( &BakPats, bkptr );
 }
 
-void ProcBakpat( void )
+extern void ProcBakpat( void )
 /****************************/
 /* store the bakpat record away for future processing */
 {
@@ -265,7 +265,7 @@ void ProcBakpat( void )
     StoreBakPat( seg, loctype );
 }
 
-void DoBakPats( void )
+extern void DoBakPats( void )
 /***************************/
 /* go through the list of stored bakpats and apply them all */
 {
@@ -324,7 +324,7 @@ void DoBakPats( void )
     BakPats = NULL;
 }
 
-void ProcNbkpat( void )
+extern void ProcNbkpat( void )
 /****************************/
 /* process a named bakpat record */
 {
