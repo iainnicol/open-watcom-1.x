@@ -7,16 +7,16 @@ set PROJDIR=<CWD>
 
 set OWLINUXBUILD=bootstrap
 # compiled using GNU make + gcc + ar
-[ INCLUDE <DEVDIR>/wmake/prereq.ctl ]
+[ INCLUDE <DEVDIR>/clib/prereq.ctl ]
 [ INCLUDE <DEVDIR>/builder/lang.ctl ]
-
-# compiled using wmake + gcc + ar/wlib
 [ INCLUDE <DEVDIR>/pmake/prereq.ctl ]
 [ INCLUDE <DEVDIR>/yacc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/vi/prereq.ctl ]
 [ INCLUDE <DEVDIR>/sdk/rc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/wstrip/prereq.ctl ]
 [ INCLUDE <DEVDIR>/orl/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wstrip/prereq.ctl ]
+[ INCLUDE <DEVDIR>/wmake/prereq.ctl ]
+
+# compiled using wmake + gcc + wlib
 [ INCLUDE <DEVDIR>/nwlib/prereq.ctl ]
 [ INCLUDE <DEVDIR>/cfloat/prereq.ctl ]
 [ INCLUDE <DEVDIR>/owl/prereq.ctl ]
@@ -35,29 +35,22 @@ set OWLINUXBUILD=bootstrap
 [ INCLUDE <DEVDIR>/cfloat/lang.ctl ]
 [ INCLUDE <DEVDIR>/owl/lang.ctl ]
 [ INCLUDE <DEVDIR>/dwarf/lang.ctl ]
-[ INCLUDE <DEVDIR>/re2c/prereq.ctl ]
-[ INCLUDE <DEVDIR>/as/lang.ctl ]
 [ INCLUDE <DEVDIR>/cg/lang.ctl ]
 [ INCLUDE <DEVDIR>/cc/lang.ctl ]
 [ INCLUDE <DEVDIR>/plusplus/lang.ctl ]
 [ INCLUDE <DEVDIR>/plusplus/cpplib/lang.ctl ]
 [ INCLUDE <DEVDIR>/cc/wcl/lang.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
+[ BLOCK <1> build cprel2 ]
     <CPCMD> <DEVDIR>/cc/wcl/linux386.386/wcl386.exe    <OWBINDIR>/wcl386
     <CPCMD> <DEVDIR>/cc/wcl/linux386.i86/wcl.exe       <OWBINDIR>/wcl
-    <CPCMD> <DEVDIR>/cc/linux386.386/wcc386c.exe       <OWBINDIR>/wcc386
-    <CPCMD> <DEVDIR>/plusplus/linux386.386/wcpp386.exe <OWBINDIR>/wpp386
-    <CPCMD> <DEVDIR>/plusplus/linux386.i86/wcppi86.exe <OWBINDIR>/wpp
+    <CPCMD> <DEVDIR>/cc/linux386.386/wcc386c.elf       <OWBINDIR>/wcc386
+    <CPCMD> <DEVDIR>/cc/linux386.i86/wcci86c.elf       <OWBINDIR>/wcc
+    <CPCMD> <DEVDIR>/plusplus/linux386.386/wcpp386.elf <OWBINDIR>/wpp386
+    <CPCMD> <DEVDIR>/plusplus/linux386.i86/wcppi86.elf <OWBINDIR>/wpp
 
 [ BLOCK . . ]
 set OWLINUXBUILD=normal
-
-# create full-featured wmake...
-
-[ INCLUDE <DEVDIR>/sdk/rc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/orl/lang.ctl ]
-[ INCLUDE <DEVDIR>/wmake/prereq.ctl ]
 
 # all is ready to do everything else now
 
@@ -66,20 +59,18 @@ set OWLINUXBUILD=normal
     rm -rf <DEVDIR>/builder/<OBJDIR>
     rm -rf <DEVDIR>/pmake/<OBJDIR>
     rm -rf <DEVDIR>/yacc/<OBJDIR>
-    rm -rf <DEVDIR>/vi/<OBJDIR>
     rm -rf <DEVDIR>/sdk/rc/wres/<OBJDIR>
     rm -rf <DEVDIR>/sdk/rc/rc/<OBJDIR>
+    rm -rf <DEVDIR>/orl/<OBJDIR>
     rm -rf <DEVDIR>/wstrip/<OBJDIR>
     rm -rf <DEVDIR>/wmake/<OBJDIR>
 
-    rm -rf <DEVDIR>/orl/<OBJDIR>
     rm -rf <DEVDIR>/nwlib/<OBJDIR>
     rm -rf <DEVDIR>/cfloat/<OBJDIR>
     rm -rf <DEVDIR>/owl/<OBJDIR>
     rm -rf <DEVDIR>/dwarf/dw/<OBJDIR>
     rm -rf <DEVDIR>/cg/intel/386/<OBJDIR>
     rm -rf <DEVDIR>/cc/<OBJDIR>
-    rm -rf <DEVDIR>/cc/wcl/<OBJDIR>
     rm -rf <DEVDIR>/wasm/<OBJDIR>
     rm -rf <DEVDIR>/wl/<OBJDIR>
 
@@ -89,9 +80,4 @@ set OWLINUXBUILD=normal
     rm -f <OWBINDIR>/wcc
     rm -f <OWBINDIR>/wpp386
     rm -f <OWBINDIR>/wpp
-    rm -f <OWBINDIR>/wmake
-    rm -f <OWBINDIR>/wgml
-    rm -f <OWBINDIR>/parsedlg
-    rm -f <OWBINDIR>/diff
-    rm -f <OWBINDIR>/builder
     

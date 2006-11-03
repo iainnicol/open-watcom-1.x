@@ -38,21 +38,21 @@
 #include "exeelf.h"
 
 
-bool ProcELF( void )
+extern bool ProcELF( void )
 /*************************/
 {
     ProcOne( ELFFormatKeywords, SEP_NO, FALSE );
     return TRUE;
 }
 
-bool ProcELFDLL( void )
+extern bool ProcELFDLL( void )
 /****************************/
 {
     FmtData.dll = TRUE;
     return TRUE;
 }
 
-void SetELFFmt( void )
+extern void SetELFFmt( void )
 /***************************/
 {
     Extension = E_ELF;
@@ -63,20 +63,20 @@ void SetELFFmt( void )
     FmtData.u.elf.abiversion = 0;
 }
 
-void FreeELFFmt( void )
+extern void FreeELFFmt( void )
 /****************************/
 {
 /*  FreeList( FmtData.u.elf.exp.export );
     FreeList( FmtData.u.elf.exp.module ); Permalloc'd now */
 }
 
-void SetELFImportSymbol( symbol * sym )
+extern void SetELFImportSymbol( symbol * sym )
 /********************************************/
 {
     sym = sym;
 }
 
-bool ProcExportAll( void )
+extern bool ProcExportAll( void )
 /*******************************/
 {
     FmtData.u.elf.exportallsyms = TRUE;
@@ -98,13 +98,13 @@ static bool GetELFImport( void )
     return( TRUE );
 }
 
-bool ProcELFImport( void )
+extern bool ProcELFImport( void )
 /*******************************/
 {
     return( ProcArgList( GetELFImport, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcELFAlignment( void )
+extern bool ProcELFAlignment( void )
 /**********************************/
 {
     ord_state           ret;
@@ -125,13 +125,13 @@ bool ProcELFAlignment( void )
     return( TRUE );
 }
 
-bool ProcExtraSections( void )
+extern bool ProcExtraSections( void )
 /***********************************/
 {
     return GetLong( &FmtData.u.elf.extrasects );
 }
 
-bool ProcELFNoRelocs( void )
+extern bool ProcELFNoRelocs( void )
 /*********************************/
 {
     LinkState &= ~MAKE_RELOCS;
@@ -182,14 +182,14 @@ static void ParseABIVersion( void )
     }
 }
 
-bool ProcELFRNumber( void )
+extern bool ProcELFRNumber( void )
 /********************************/
 {
     ParseABITypeAndVersion();
     return( TRUE );
 }
 
-bool ProcELFRSVR4( void )
+extern bool ProcELFRSVR4( void )
 /******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_NONE;
@@ -197,7 +197,7 @@ bool ProcELFRSVR4( void )
     return( TRUE );
 }
 
-bool ProcELFRNetBSD( void )
+extern bool ProcELFRNetBSD( void )
 /********************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_NETBSD;
@@ -205,7 +205,7 @@ bool ProcELFRNetBSD( void )
     return( TRUE );
 }
 
-bool ProcELFRLinux( void )
+extern bool ProcELFRLinux( void )
 /*******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_LINUX;
@@ -213,7 +213,7 @@ bool ProcELFRLinux( void )
     return( TRUE );
 }
 
-bool ProcELFRSolrs( void )
+extern bool ProcELFRSolrs( void )
 /*******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_SOLARIS;
@@ -221,7 +221,7 @@ bool ProcELFRSolrs( void )
     return( TRUE );
 }
 
-bool ProcELFRFBSD( void )
+extern bool ProcELFRFBSD( void )
 /******************************/
 {
     FmtData.u.elf.abitype = ELFOSABI_FREEBSD;

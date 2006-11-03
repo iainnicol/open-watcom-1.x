@@ -96,14 +96,14 @@ const char FAR *BuiltIns = {
     "__QNX__=\n"
     "__UNIX__=\n"
 
-#elif defined( __LINUX__ ) || defined( __linux__ )
+#elif defined( __LINUX__ )
     "__LINUX__=\n"
     "__UNIX__=\n"
-    #if defined(__386__) || defined(__i386__)
+    #if defined(__386__)
         "__LINUX386__=\n"
-    #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
+    #elif defined(__PPC__)
         "__LINUXPPC__=\n"
-    #elif defined(__MIPS__)  || defined(__mips__)
+    #elif defined(__MIPS__)
         "__LINUXMIPS__=\n"
     #else
         #error Unknown CPU architecture

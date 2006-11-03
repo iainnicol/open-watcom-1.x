@@ -61,7 +61,7 @@ int                     NumGroups;
 
 static void AutoGroupSect( section * sec );
 
-void AutoGroup( void )
+extern void AutoGroup( void )
 /***************************/
 {
     ProcAllSects( &AutoGroupSect );
@@ -262,7 +262,7 @@ static void InitGroup( group_entry *group )
     group->g.grp_relocs = NULL;
 }
 
-group_entry * AllocGroup( char *name, group_entry ** grp_list )
+extern group_entry * AllocGroup( char *name, group_entry ** grp_list )
 /********************************************************************/
 {
     group_entry *group;

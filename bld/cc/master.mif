@@ -136,7 +136,8 @@ rc_objs = cc.rc
 
 !ifdef bootstrap
 
-exe_objs += clibext.obj
+ldflags = -L$(clib_dir)/$(%OBJDIR) -L$(wres_dir)/$(%OBJDIR)
+libs = -lwatcom -lwres
 
 !endif
 
@@ -264,8 +265,8 @@ usage01.int : ./usageenc.exe ../jusage.sp
         wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) ../jusage.sp usageenc.int
         $[@ usageenc.int usage01.int
 
-./msgencod.exe: $(fe_misc_dir)/c/msgencod.c $(cl_objs)
-        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts) $(cl_libs) $(cl_objs)
+./msgencod.exe: $(fe_misc_dir)/c/msgencod.c
+        $(bld_cl) -I"$(fe_misc_dir)/h" $[@ $(wcl_util_opts) $(cl_libs)
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ./msgencod.exe ../gml/cerrs.gml
         $[@ -i -ip -q -g ../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
@@ -286,8 +287,8 @@ patch_level=0
 cc.rc : ./genverrc.exe ../rc/r_$(host_os)$(host_cpu).rc
         $[@ $]@ $@ $$ $(dll_name).dll $(patch_level)
 
-./mkopcode.exe: $(wasm_dir)/mkopcode.c $(cl_objs)
-        $(bld_cl) $[@ $(wcl_util_opts) $(cl_libs) $(cl_objs)
+./mkopcode.exe: $(wasm_dir)/mkopcode.c
+        $(bld_cl) $[@ $(wcl_util_opts) $(cl_libs)
 
 inlnops.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
         $[@ $(wasm_dir)/inlnops.tok $@
