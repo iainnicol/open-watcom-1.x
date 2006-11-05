@@ -82,7 +82,7 @@ const char *MonthNames[] = {
 
 #define USE_AUTO_DEP( x )   ((Glob.auto_depends != 0) || ((x)->attr.auto_dep != 0))
 
-void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep )
+extern void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep )
 /*************************************************************/
 {
     if( exStackP == MAX_EXSTACK ) {
@@ -95,7 +95,7 @@ void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep )
 }
 
 
-void exPop( void )
+extern void exPop( void )
 /***********************/
 {
     assert( exStackP > 0 );
@@ -386,7 +386,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, time_t max_time )
 }
 
 
-RET_T MakeList( TLIST *tlist )
+extern RET_T MakeList( TLIST *tlist )
 /***********************************/
 {
     RET_T   ret;
@@ -891,7 +891,7 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
 }
 
 
-RET_T Update( TARGET *targ )
+extern RET_T Update( TARGET *targ )
 /*********************************/
 {
     DEPEND      *curdep;
@@ -1044,7 +1044,7 @@ static struct exStack exGetCurVars( void )
 }
 
 
-char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
+extern char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
 /**********************************************************/
 {
     TLIST           *walk;
@@ -1094,7 +1094,7 @@ char *GetCurDeps( BOOLEAN younger, BOOLEAN isMacInf )
 }
 
 
-const char *GetCurTarg( void )
+extern const char *GetCurTarg( void )
 /***********************************/
 {
     struct exStack  cur;
@@ -1107,7 +1107,7 @@ const char *GetCurTarg( void )
 }
 
 
-const char *GetFirstDep( void )
+extern const char *GetFirstDep( void )
 /************************************/
 {
     struct exStack  cur;
@@ -1123,7 +1123,7 @@ const char *GetFirstDep( void )
 }
 
 
-const char *GetLastDep( void )
+extern const char *GetLastDep( void )
 /***********************************/
 {
     struct exStack  cur;
@@ -1144,7 +1144,7 @@ const char *GetLastDep( void )
 }
 
 
-void UpdateInit( void )
+extern void UpdateInit( void )
 /****************************/
 {
     /* according to ANSI standard... this should be true */
@@ -1157,7 +1157,7 @@ void UpdateInit( void )
 }
 
 
-void UpdateFini( void )
+extern void UpdateFini( void )
 /****************************/
 {
     CLIST   *after;

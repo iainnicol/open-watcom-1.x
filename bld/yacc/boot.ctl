@@ -14,9 +14,7 @@ set PROJDIR=<CWD>
 [ BLOCK <1> boot ]
 #=================
     echo Building the yacc bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../bootmake
-    <CPCMD> yacc.exe <DEVDIR>/build/bin/byacc
-    <CPCMD> yacc.exe <DEVDIR>/build/binl/byacc
+    <MAKE> -f gnumake
+    <CPCMD> bootstrp/yacc <DEVDIR>/build/bin/byacc
+    <CPCMD> bootstrp/yacc <DEVDIR>/build/binl/byacc
     cdsay <PROJDIR>

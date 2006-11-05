@@ -88,6 +88,5 @@ extern void             HandleExport( length_name *, length_name *, unsigned,
                                       unsigned );
 extern bool             CheckVFList( symbol * );
 extern void             SetCurrSeg( segdata *, offset, char * );
-extern void             ResetObjPass1( void );
 
 extern obj_format       ObjFormat;

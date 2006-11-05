@@ -1,10 +1,9 @@
-# 386 cg Builder Control file
-# ===========================
-
 set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/bat/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
+
+cdsay .
 
 [ BLOCK <1> clean ]
 #==================
@@ -13,8 +12,6 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> boot ]
 #=================
-    echo Building the Intel 386 cg bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../bootmake
+    echo Building the Watcom support library
+    <MAKE> -f gnumake
     cdsay <PROJDIR>

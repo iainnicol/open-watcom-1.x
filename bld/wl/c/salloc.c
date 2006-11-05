@@ -37,12 +37,11 @@
 #include "loadpe.h"
 #include "ring.h"
 #include "objcalc.h"
-#include "salloc.h"
 
 static targ_addr    DataLoc;
 static targ_addr    CodeLoc;
 
-void ResetAddr( void )
+extern void ResetAddr( void )
 /***************************/
 {
     CurrLoc.seg = 0;
@@ -50,7 +49,7 @@ void ResetAddr( void )
     CurrentSeg = NULL;
 }
 
-void NormalizeAddr( void )
+extern void NormalizeAddr( void )
 /*******************************/
 {
     unsigned_32 new_seg;
@@ -80,14 +79,14 @@ static offset BumpUp( offset ptr, offset size )
 }
 
 
-void AddSize( offset size )
+extern void AddSize( offset size )
 /********************************/
 {
     CurrSect->size += size;
     CurrLoc.off = BumpUp( CurrLoc.off, size );
 }
 
-offset CAlign( offset off, unsigned align )
+extern offset CAlign( offset off, unsigned align )
 /************************************************/
 /* this aligns to 2^align */
 {
@@ -103,7 +102,7 @@ offset CAlign( offset off, unsigned align )
     return( off );
 }
 
-void Align( byte align )
+extern void Align( byte align )
 /*****************************/
 {
     offset  off;
@@ -112,13 +111,13 @@ void Align( byte align )
     AddSize( off - CurrLoc.off );
 }
 
-void MAlign( byte align )
+extern void MAlign( byte align )
 /******************************/
 {
     CurrLoc.off = CAlign( CurrLoc.off, align );
 }
 
-void StartMemMap( void )
+extern void StartMemMap( void )
 /*****************************/
 {
     if( FmtData.type & MK_ID_SPLIT ) {
@@ -149,7 +148,7 @@ static targ_addr * GetIDLoc( group_entry *group )
     return retval;
 }
 
-void ChkLocated( targ_addr * segadr, bool fixed)
+extern void ChkLocated( targ_addr * segadr, bool fixed)
 /*******************************************************/
 // If segment has been given a fixed address, use it
 //  unless location counter is already past it
@@ -169,7 +168,7 @@ void ChkLocated( targ_addr * segadr, bool fixed)
    }
 }
 
-void NewSegment( seg_leader *seg )
+extern void NewSegment( seg_leader *seg )
 /***************************************/
 {
     group_entry *group;

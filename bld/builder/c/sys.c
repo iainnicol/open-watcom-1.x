@@ -40,6 +40,8 @@
 #include "watcom.h"
 #include "builder.h"
 
+extern bool     Quiet;
+
 unsigned SysRunCommand( const char *cmd )
 {
     int         my_std_output;

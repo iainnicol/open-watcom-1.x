@@ -140,7 +140,7 @@ static void CheckUninit( void *_seg, void *dummy )
     }
 }
 
-unsigned long OMFPass1( void )
+extern unsigned long OMFPass1( void )
 /***********************************/
 // do pass 1 for OMF object files
 {
@@ -292,7 +292,7 @@ static void Pass1Cmd( byte cmd )
     }
 }
 
-bool IsOMF( file_list * list, unsigned long loc )
+extern bool IsOMF( file_list * list, unsigned long loc )
 /******************************************************/
 {
     byte *      rec;
@@ -301,7 +301,7 @@ bool IsOMF( file_list * list, unsigned long loc )
     return rec != NULL && *rec == CMD_THEADR;
 }
 
-char * GetOMFName( file_list *list, unsigned long * loc )
+extern char * GetOMFName( file_list *list, unsigned long * loc )
 /**************************************************************/
 {
     obj_record *rec;
@@ -323,7 +323,7 @@ char * GetOMFName( file_list *list, unsigned long * loc )
     return newname;
 }
 
-void OMFSkipObj( file_list *list, unsigned long *loc )
+extern void OMFSkipObj( file_list *list, unsigned long *loc )
 /***********************************************************/
 {
     *loc = ProcObj( list, *loc, NULL );
@@ -940,7 +940,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
     }
 }
 
-void SkipIdx( void )
+extern void SkipIdx( void )
 /*************************/
 /* skip the index */
 {
@@ -949,7 +949,7 @@ void SkipIdx( void )
     }
 }
 
-unsigned_16 GetIdx( void )
+extern unsigned_16 GetIdx( void )
 /*******************************/
 /* Get an index. */
 {
@@ -963,7 +963,7 @@ unsigned_16 GetIdx( void )
     return index;
 }
 
-list_of_names * FindName( unsigned_16 index )
+extern list_of_names * FindName( unsigned_16 index )
 /**************************************************/
 /* Find name of specified index. */
 {

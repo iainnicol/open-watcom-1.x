@@ -1053,10 +1053,6 @@ static int set_build_target( void )
         strcpy( Options.build_target, "QNX" );
 #elif defined(__LINUX__)
         strcpy( Options.build_target, "LINUX" );
-#elif defined(__BSD__)
-        strcpy( Options.build_target, "BSD" );
-#elif defined(__OSX__) || defined(__APPLE__)
-        strcpy( Options.build_target, "OSX" );
 #elif defined(__DOS__)
         strcpy( Options.build_target, "DOS" );
 #elif defined(__OS2__)
@@ -1163,6 +1159,10 @@ static void do_init_stuff( char **cmdline )
     PushLineQueue();
     AsmLookup( "$" );    // create "$" symbol for current segment counter
 }
+
+#ifndef __WATCOMC__
+char **_argv;
+#endif
 
 #ifdef __UNIX__
 

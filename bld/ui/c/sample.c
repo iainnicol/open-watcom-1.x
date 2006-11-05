@@ -32,19 +32,19 @@
 #define TRUE    1
 #define FALSE   0
 
-#ifdef __UNIX__
+#ifdef UNIX
 #include <stdlib.h>
 #endif
 #include <stdio.h>
 #include <string.h>
-#ifndef __UNIX__
+#ifndef UNIX
 #include <process.h>
 #endif
 #include "stdui.h"
 #include "uimenu.h"
 #include "uivedit.h"
 #include "uigchar.h"
-#ifdef __UNIX__
+#ifdef UNIX
 #include "uidef.h"
 #include "uivirt.h"
 #endif
@@ -279,7 +279,7 @@ int             BandOn = 0;
         FlipCharacterMap();
 #else
     if( uistart() ) {
-#ifdef __UNIX__
+#ifdef UNIX
         _initmouse( 2 );
 #else
         initmouse( 2 );
@@ -323,11 +323,11 @@ int             BandOn = 0;
                         uispawnstart();
                         uiblankscreen();
                         printf( "Type exit to return\n" );
-#if defined( __QNX__ ) || defined( __UNIX__ )
-                        system( "" );
-#elif defined( __WINDOWS__ )
-                        // do nothing
-#else
+                        #if defined( QNX ) || defined( UNIX )
+                            system( "" );
+                        #elif defined( __WINDOWS__ )
+//                          do nothing
+                        #else
                         {
                             char *command;
 
@@ -337,7 +337,7 @@ int             BandOn = 0;
                             }
                             system( command );
                         }
-#endif
+                        #endif
                         uispawnend();
 //                      uibackground( "wf.img" );
                         area.row = 0;
@@ -413,7 +413,7 @@ int             BandOn = 0;
         FlipCharacterMap();
         uifinigmouse();
 #else
-#ifdef __UNIX__
+#ifdef UNIX
         _finimouse();
 #else
         finimouse();

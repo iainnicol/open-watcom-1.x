@@ -83,7 +83,7 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
     int i;
     int s;
     int ls;
-    byte *p;
+    char *p;
 
     if( *bv == NULL ) {
         *bs = size;

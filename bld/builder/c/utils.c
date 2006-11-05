@@ -31,7 +31,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include <time.h>
 #ifndef __UNIX__
 #include <share.h>
 #endif
@@ -67,6 +66,16 @@ void Log( bool quiet, const char *str, ... )
         va_start( arg, str );
         vfprintf( LogFile, str, arg );
         va_end( arg );
+    }
+}
+
+void LogStream( bool quiet, const char *str, size_t len )
+{
+    if( !quiet ) {
+        fwrite( str, 1, len, stderr );
+    }
+    if( LogFile != NULL ) {
+        fwrite( str, 1, len, LogFile );
     }
 }
 
@@ -112,8 +121,14 @@ void *Alloc( unsigned size )
 
 char *SkipBlanks( const char *p )
 {
-    while( ( *p == ' ' ) || ( *p == '\t' ) ) {
+    for( ;; ) {
+        switch( *p ) {
+        case ' ':
+        case '\t':
+            break;
+        default:
+            return( ( char* ) p );
+        }
         ++p;
     }
-    return( ( char* ) p );
 }

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for imported memory management functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,8 +33,8 @@
 #ifndef HELPMEM_H_INCLUDED
 #define HELPMEM
 
-extern HELPMEM void *HelpMemAlloc( size_t size );
-extern HELPMEM void *HelpMemRealloc( void *ptr, size_t size );
+extern HELPMEM void *HelpMemAlloc( unsigned int size );
+extern HELPMEM void *HelpMemRealloc( void *ptr, unsigned int size );
 extern HELPMEM void HelpMemFree( void *ptr );
 
 #define HELPMEM_H_INCLUDED

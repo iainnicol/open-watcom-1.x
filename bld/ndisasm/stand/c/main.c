@@ -975,6 +975,10 @@ static void    doEpilogue( void )
     }
 }
 
+#if !defined( __WATCOMC__ )
+char    **_argv;
+#endif
+
 int main( int argc, char *argv[] )
 {
     section_ptr         sec;

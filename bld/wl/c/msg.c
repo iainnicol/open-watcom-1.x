@@ -66,7 +66,7 @@ bool            BannerPrinted;
 byte MsgFlags[ MSG_ARRAY_SIZE ];
 
 
-void ResetMsg( void )
+extern void ResetMsg( void )
 /**************************/
 {
     LocFile = NULL;
@@ -76,7 +76,7 @@ void ResetMsg( void )
     memset( MsgFlags, 0xFF, MSG_ARRAY_SIZE );
 }
 
-unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
+extern unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
 /****************************************************************/
 {
     va_list args;
@@ -85,7 +85,7 @@ unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
     return( DoFmtStr( buff, len, fmt, &args ) );
 }
 
-unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
+extern unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
 /****************************************************************************/
 /* quick vsprintf routine                                           */
 /* assumptions - format string does not end in '%'                  */
@@ -340,7 +340,7 @@ static void IncremIndex( void )
     MsgArgInfo.index++;
 }
 
-void Locator( char *filename, char *mem, unsigned rec )
+extern void Locator( char *filename, char *mem, unsigned rec )
 /************************************************************/
 {
     LocFile = filename;
@@ -371,7 +371,7 @@ static void LocateFile( unsigned num )
     }
 }
 
-unsigned CalcMsgNum( unsigned num )
+extern unsigned CalcMsgNum( unsigned num )
 /****************************************/
 // map the internal enum onto the value that the user sees.
 {
@@ -421,7 +421,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len,
     }
 }
 
-void LnkMsg(
+extern void LnkMsg(
     unsigned    num,    // A message number + control flags
     char        *types, // Conversion qualifiers
     ... )               // Arguments to interpolate into message
@@ -537,7 +537,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
     MessageFini( num, buff, len, prefix, prefixlen, TRUE );
 }
 
-void RcWarning( unsigned num, ... )
+extern void RcWarning( unsigned num, ... )
 /****************************************/
 {
     va_list args;
@@ -546,7 +546,7 @@ void RcWarning( unsigned num, ... )
     HandleRcMsg( num, &args );
 }
 
-void RcError( unsigned num, ... )
+extern void RcError( unsigned num, ... )
 /**************************************/
 {
     va_list args;
@@ -584,7 +584,7 @@ static void FileOrder( char rc_buff[], int which_file )
     }
 }
 
-void WLPrtBanner( void )
+extern void WLPrtBanner( void )
 /*****************************/
 // print the banner, if it hasn't already been printed.
 {
@@ -603,7 +603,7 @@ void WLPrtBanner( void )
     }
 }
 
-bool SkipSymbol( symbol * sym )
+extern bool SkipSymbol( symbol * sym )
 /************************************/
 {
     if( sym->info & SYM_STATIC && !(MapFlags & MAP_STATICS) ) return TRUE;
@@ -618,7 +618,7 @@ bool SkipSymbol( symbol * sym )
 #endif
 }
 
-int SymAlphaCompare( const void *a, const void *b )
+extern int SymAlphaCompare( const void *a, const void *b )
 /********************************************************/
 {
     symbol *    left;

@@ -131,7 +131,7 @@ static void massageDollarOctothorpe( char *p )
 }
 
 
-const char *procPath( const char *fullpath )
+extern const char *procPath( const char *fullpath )
 /**************************************************
  * process fullpath according to the form qualifier in CurAttr.num
  * returns: pointer to a static buffer
@@ -398,7 +398,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
 #endif
 
 
-char *GetMacroValue( const char *name )
+extern char *GetMacroValue( const char *name )
 /*********************************************
  * Now we need to check for string substitution
  * $(MACRONAME:oldstring=newstring)
@@ -522,7 +522,7 @@ STATIC void addMacro( const char *name, char *value )
 #endif
 
 
-BOOLEAN IsMacroName( const char *inName )
+extern BOOLEAN IsMacroName( const char *inName )
 /***********************************************
  * returns: TRUE if name is a valid macro name, otherwise FALSE and print
  * an error message
@@ -556,7 +556,7 @@ BOOLEAN IsMacroName( const char *inName )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-void UnDefMacro( const char *name )
+extern void UnDefMacro( const char *name )
 /*****************************************
  * pre:     IsMacroName( name ); getMacroNode( name ) != NULL
  * post:    MACRO node deallocated
@@ -589,7 +589,7 @@ void UnDefMacro( const char *name )
 #endif
 
 
-char *WrnGetMacroValue( const char *name )
+extern char *WrnGetMacroValue( const char *name )
 /***********************************************/
 {
     const char  *p;
@@ -607,7 +607,7 @@ char *WrnGetMacroValue( const char *name )
 }
 
 
-char *DeMacroSpecial( char *InString)
+extern char *DeMacroSpecial( char *InString)
 /*******************************************
  * This function is to specially handle the special macros
  * in the dependencies
@@ -974,7 +974,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
 }
 
 
-char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
+extern char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
 /*************************************************************************
  * This is the same as deMacro except that we retain any leading or trailing
  * ws. Ws is quietly truncated from pathologically long lines.
@@ -1041,7 +1041,7 @@ char *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN ForcedDeMacro )
 }
 
 
-char *DeMacro( TOKEN_T end1 )
+extern char *DeMacro( TOKEN_T end1 )
 /***********************************
  * same as deMacroText
  */
@@ -1110,7 +1110,7 @@ STATIC char *PartDeMacroProcess( void )
 }
 
 
-BOOLEAN ForceDeMacro ( void )
+extern BOOLEAN ForceDeMacro ( void )
 /***********************************
  * This function checks whether or not to deMacro the function later or not
  * because in Microsoft macros are expanded immediately and not after all
@@ -1123,7 +1123,7 @@ BOOLEAN ForceDeMacro ( void )
 }
 
 
-char *PartDeMacro( BOOLEAN ForcedDeMacro )
+extern char *PartDeMacro( BOOLEAN ForcedDeMacro )
 /************************************************
  * the addition of microsoft option needs this option
  * since MACROS are always fully expanded sequentially
@@ -1236,7 +1236,7 @@ STATIC char *DeMacroName( const char *text, const char *name )
 }
 
 
-void DefMacro( const char *name )
+extern void DefMacro( const char *name )
 /***************************************
  * define macro named name with the characters in the stream
  * post:    characters up to first EOL | STRM_END removed from stream;
@@ -1327,7 +1327,7 @@ static BOOLEAN printMac( const void *node, const void *ptr )
 }
 
 
-void PrintMacros( void )
+extern void PrintMacros( void )
 /*****************************/
 {
     WalkHashTab( macTab, (BOOLEAN (*)( void *, void * ))printMac, NULL );
@@ -1353,7 +1353,7 @@ STATIC void restoreEnvironment( void )
 #endif
 
 
-void MacroInit( void )
+extern void MacroInit( void )
 /***************************/
 {
     macTab = NewHashTab( HASH_PRIME );
@@ -1379,7 +1379,7 @@ STATIC BOOLEAN freeMacro( MACRO *mac, const void *ptr )
 #endif
 
 
-void MacroFini( void )
+extern void MacroFini( void )
 /***************************/
 {
 #ifndef NDEBUG

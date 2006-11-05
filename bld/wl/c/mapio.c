@@ -69,7 +69,7 @@ static bool             Buffering;  // buffering on/off.
 static int              BufferSize;          // # of chars in buffer.
 
 
-void ResetMapIO( void )
+extern void ResetMapIO( void )
 /****************************/
 {
     MapFlags = 0;
@@ -77,7 +77,7 @@ void ResetMapIO( void )
     SymTraceList = NULL;
 }
 
-void StartTime( void )
+extern void StartTime( void )
 /***************************/
 {
     StartT = time( NULL );
@@ -93,14 +93,14 @@ static char * PutDec( char *ptr, unsigned num )
     return( ptr );
 }
 
-void StartMapBuffering( void )
+extern void StartMapBuffering( void )
 /***********************************/
 {
     Buffering = TRUE;
     BufferSize = 0;
 }
 
-void StopMapBuffering( void )
+extern void StopMapBuffering( void )
 /**********************************/
 // flush buffer & shut buffering off.
 {
@@ -111,7 +111,7 @@ void StopMapBuffering( void )
     BufferSize = 0;
 }
 
-void MapInit( void )
+extern void MapInit( void )
 /*************************/
 {
     char                tim[ 8 + 1 ];
@@ -175,7 +175,7 @@ static void WriteBox( unsigned int msgnum )
     WriteMapNL( 1 );
 }
 
-void WriteGroups( void )
+extern void WriteGroups( void )
 /*****************************/
 {
     group_entry *   currgrp;
@@ -247,7 +247,7 @@ static void WriteNonAbsSeg( void *_seg )
     }
 }
 
-void WriteSegs( class_entry *firstcl )
+extern void WriteSegs( class_entry *firstcl )
 /*******************************************/
 /* write segment info into mapfile */
 {
@@ -271,7 +271,7 @@ void WriteSegs( class_entry *firstcl )
     }
 }
 
-void WritePubHead( void )
+extern void WritePubHead( void )
 /******************************/
 {
     WriteBox( MSG_MAP_BOX_MEMORY_MAP );
@@ -286,7 +286,7 @@ void WritePubHead( void )
     WriteMapNL( 1 );
 }
 
-void WritePubModHead( void )
+extern void WritePubModHead( void )
 /*********************************/
 {
     char        full_name[ PATH_MAX ];
@@ -305,7 +305,7 @@ void WritePubModHead( void )
     Msg_Write_Map( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name );
 }
 
-void WriteOvlHead( void )
+extern void WriteOvlHead( void )
 /******************************/
 {
     WriteBox( MSG_MAP_BOX_OVERLAY_VECTOR );
@@ -392,7 +392,7 @@ static void WriteVerbMod( mod_entry *mod )
     }
 }
 
-void WriteModSegs( void )
+extern void WriteModSegs( void )
 /******************************/
 {
     WriteModSegHead();
@@ -421,7 +421,7 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
     }
 }
 
-void ProcUndefined( symbol *sym )
+extern void ProcUndefined( symbol *sym )
 /***************************************/
 {
     if( ( LinkFlags & UNDEFS_ARE_OK ) == 0 )
@@ -429,7 +429,7 @@ void ProcUndefined( symbol *sym )
     AddSymRecList( sym, &UndefList );
 }
 
-void RecordTracedSym( symbol *sym )
+extern void RecordTracedSym( symbol *sym )
 /****************************************/
 {
     if( sym->mod != CurrMod ) {
@@ -459,7 +459,7 @@ static void PrintSymTrace( void *_info )
     LnkMsg( MAP+MSG_MOD_TRACE, "Ss", info->sym, info->mod->name );
 }
 
-void WriteUndefined( void )
+extern void WriteUndefined( void )
 /********************************/
 {
     if( SymTraceList != NULL ) {
@@ -479,7 +479,7 @@ void WriteUndefined( void )
     }
 }
 
-void FreeUndefs( void )
+extern void FreeUndefs( void )
 /****************************/
 {
     RingFree( &SymTraceList );
@@ -499,7 +499,7 @@ static void Write32( char *s, unsigned_32 size )
     }
 }
 
-void WriteLibsUsed( void )
+extern void WriteLibsUsed( void )
 /*******************************/
 {
     file_list * lib;
@@ -524,7 +524,7 @@ void WriteLibsUsed( void )
     }
 }
 
-void MapSizes( void )
+extern void MapSizes( void )
 /**************************/
 /*
   Write out code size to map file and print libraries used.
@@ -551,7 +551,7 @@ void MapSizes( void )
     }
 }
 
-void EndTime( void )
+extern void EndTime( void )
 /*************************/
 {
     char *      ptr;
@@ -587,7 +587,7 @@ void EndTime( void )
     }
 }
 
-void WriteMapNL( unsigned count )
+extern void WriteMapNL( unsigned count )
 /**************************************/
 {
     unsigned    len;
@@ -613,7 +613,7 @@ static unsigned MapPrint( char *str, va_list * args )
     return( len );
 }
 
-void DoWriteMap( char *format, va_list * arglist )
+extern void DoWriteMap( char *format, va_list * arglist )
 /*******************************************************/
 {
     if( MapFlags & MAP_FLAG ) {
@@ -622,7 +622,7 @@ void DoWriteMap( char *format, va_list * arglist )
     }
 }
 
-void WriteMap( char *format, ... )
+extern void WriteMap( char *format, ... )
 /***************************************/
 {
     va_list arglist;
@@ -631,7 +631,7 @@ void WriteMap( char *format, ... )
     DoWriteMap( format, &arglist );
 }
 
-void WriteFormat( int col, char *str, ... )
+extern void WriteFormat( int col, char *str, ... )
 /************************************************/
 {
     va_list         arglist;
@@ -652,7 +652,7 @@ void WriteFormat( int col, char *str, ... )
     }
 }
 
-void BufWrite( char *buffer, int len )
+extern void BufWrite( char *buffer, int len )
 /*******************************************/
 // write to the map file, buffering the write if buffering is on.
 {

@@ -45,6 +45,7 @@
 
 static bool             GetNovImport( void );
 static bool             GetNovExport( void );
+extern bool             ProcNLM( void );
 
 static bool             ProcModuleTypeN( int n );
 
@@ -171,14 +172,14 @@ static unsigned int DoWeNeedToSkipASeparator( bool CheckDirectives )
     return( 0 );
 }
 
-bool ProcNovImport( void )
+extern bool ProcNovImport( void )
 /*******************************/
 {
     SetCurrentPrefix( NULL, 0 );
     return( ProcArgListEx( GetNovImport, TOK_INCLUDE_DOT, CmdFile ) );
 }
 
-bool ProcNovExport( void )
+extern bool ProcNovExport( void )
 /*******************************/
 {
     SetCurrentPrefix( NULL, 0 );
@@ -186,7 +187,6 @@ bool ProcNovExport( void )
 }
 
 #ifndef NDEBUG
-/* F*!k. This one is my fault. Debug build only. Catch it on final pass */
 extern int printf( const char *fmt, ... );
 #endif
 
@@ -241,7 +241,7 @@ static bool GetNovImport( void )
     return( TRUE );
 }
 
-void SetNovImportSymbol( symbol * sym )
+extern void SetNovImportSymbol( symbol * sym )
 /********************************************/
 {
     sym->p.import = DUMMY_IMPORT_PTR;
@@ -287,7 +287,7 @@ static bool GetNovExport( void )
     return( TRUE );
 }
 
-bool ProcScreenName( void )
+extern bool ProcScreenName( void )
 /********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -304,7 +304,7 @@ bool ProcScreenName( void )
     return( TRUE );
 }
 
-bool ProcCheck( void )
+extern bool ProcCheck( void )
 /***************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
@@ -314,14 +314,14 @@ bool ProcCheck( void )
     return( TRUE );
 }
 
-bool ProcMultiLoad( void )
+extern bool ProcMultiLoad( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_MULTIPLE;
     return( TRUE );
 }
 
-bool ProcAutoUnload( void )
+extern bool ProcAutoUnload( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_AUTOUNLOAD;
@@ -329,28 +329,28 @@ bool ProcAutoUnload( void )
 }
 
 
-bool ProcReentrant( void )
+extern bool ProcReentrant( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_REENTRANT;
     return( TRUE );
 }
 
-bool ProcSynch( void )
+extern bool ProcSynch( void )
 /***************************/
 {
     FmtData.u.nov.exeflags |= NOV_SYNCHRONIZE;
     return( TRUE );
 }
 
-bool ProcPseudoPreemption( void )
+extern bool ProcPseudoPreemption( void )
 /**************************************/
 {
     FmtData.u.nov.exeflags |= NOV_PSEUDOPREEMPTION;
     return( TRUE );
 }
 
-bool ProcNLMFlags( void )
+extern bool ProcNLMFlags( void )
 /******************************/
 {
     unsigned_32 value;
@@ -360,7 +360,7 @@ bool ProcNLMFlags( void )
     return( TRUE );
 }
 
-bool ProcCustom( void )
+extern bool ProcCustom( void )
 /****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -370,7 +370,7 @@ bool ProcCustom( void )
     return( TRUE );
 }
 
-bool ProcMessages( void )
+extern bool ProcMessages( void )
 /******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -380,7 +380,7 @@ bool ProcMessages( void )
     return( TRUE );
 }
 
-bool ProcHelp( void )
+extern bool ProcHelp( void )
 /**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -390,7 +390,7 @@ bool ProcHelp( void )
     return( TRUE );
 }
 
-bool ProcXDCData( void )
+extern bool ProcXDCData( void )
 /*****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -400,7 +400,7 @@ bool ProcXDCData( void )
     return( TRUE );
 }
 
-bool ProcSharelib( void )
+extern bool ProcSharelib( void )
 /******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
@@ -410,7 +410,7 @@ bool ProcSharelib( void )
     return( TRUE );
 }
 
-bool ProcExit( void )
+extern bool ProcExit( void )
 /**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
@@ -420,7 +420,7 @@ bool ProcExit( void )
     return( TRUE );
 }
 
-bool ProcThreadName( void )
+extern bool ProcThreadName( void )
 /*******************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -438,7 +438,7 @@ bool ProcThreadName( void )
 #define DEFAULT_COPYRIGHT_LENGTH (sizeof( DEFAULT_COPYRIGHT ) - 1)
 #define YEAR_OFFSET (sizeof( COPYRIGHT_START ) - 1)
 
-bool ProcCopyright( void )
+extern bool ProcCopyright( void )
 /*******************************/
 {
     struct tm *     currtime;
@@ -475,7 +475,7 @@ bool ProcCopyright( void )
     return( TRUE );
 }
 
-bool ProcNovell( void )
+extern bool ProcNovell( void )
 /****************************/
 {
     if( !ProcOne( NovModels, SEP_NO, FALSE ) ) {  // get file type
@@ -501,7 +501,7 @@ bool ProcNovell( void )
     return( TRUE );
 }
 
-void SetNovFmt( void )
+extern void SetNovFmt( void )
 /***************************/
 {
     Extension = E_NLM;
@@ -511,7 +511,7 @@ void SetNovFmt( void )
     }
 }
 
-void FreeNovFmt( void )
+extern void FreeNovFmt( void )
 /****************************/
 {
     _LnkFree( FmtData.u.nov.screenname );
@@ -529,7 +529,7 @@ void FreeNovFmt( void )
     FreeList( FmtData.u.nov.exp.module );  Permalloc'd now */
 }
 
-bool ProcNLM( void )
+extern bool ProcNLM( void )
 /*************************/
 {
     Extension = E_NLM;
@@ -537,7 +537,7 @@ bool ProcNLM( void )
     return( TRUE );
 }
 
-bool ProcLAN( void )
+extern bool ProcLAN( void )
 /*************************/
 {
     Extension = E_LAN;
@@ -545,7 +545,7 @@ bool ProcLAN( void )
     return( TRUE );
 }
 
-bool ProcDSK( void )
+extern bool ProcDSK( void )
 /*************************/
 {
     Extension = E_DSK;
@@ -553,7 +553,7 @@ bool ProcDSK( void )
     return( TRUE );
 }
 
-bool ProcNAM( void )
+extern bool ProcNAM( void )
 /*************************/
 {
     Extension = E_NAM;
@@ -561,7 +561,7 @@ bool ProcNAM( void )
     return( TRUE );
 }
 
-bool     ProcModuleType4( void )
+extern bool     ProcModuleType4( void )
 /*************************/
 {
     Extension = E_NLM;
@@ -569,7 +569,7 @@ bool     ProcModuleType4( void )
     return( TRUE );
 }
 
-bool     ProcModuleType5( void )
+extern bool     ProcModuleType5( void )
 /*************************/
 {
     Extension = E_NOV_MSL;
@@ -577,7 +577,7 @@ bool     ProcModuleType5( void )
     return( TRUE );
 }
 
-bool     ProcModuleType6( void )
+extern bool     ProcModuleType6( void )
 /*************************/
 {
     Extension = E_NLM;
@@ -585,7 +585,7 @@ bool     ProcModuleType6( void )
     return( TRUE );
 }
 
-bool     ProcModuleType7( void )
+extern bool     ProcModuleType7( void )
 /*************************/
 {
     Extension = E_NLM;
@@ -593,7 +593,7 @@ bool     ProcModuleType7( void )
     return( TRUE );
 }
 
-bool     ProcModuleType8( void )
+extern bool     ProcModuleType8( void )
 /*************************/
 {
     Extension = E_NOV_HAM;
@@ -601,7 +601,7 @@ bool     ProcModuleType8( void )
     return( TRUE );
 }
 
-bool     ProcModuleType9( void )
+extern bool     ProcModuleType9( void )
 /*************************/
 {
     Extension = E_NOV_CDM;
@@ -611,8 +611,8 @@ bool     ProcModuleType9( void )
 
 #if 0
 /*
-// as I have got tired of writing, module types 10 through 12 are reserved */
-bool     ProcModuleType10( void )
+// as I have got tired ot writing, module types 10 through 12 are reserved */
+extern bool     ProcModuleType10( void )
 /*************************/
 {
     Extension = ;
@@ -620,7 +620,7 @@ bool     ProcModuleType10( void )
     return( TRUE );
 }
 
-bool     ProcModuleType11( void )
+extern bool     ProcModuleType11( void )
 /*************************/
 {
     Extension = ;
@@ -628,7 +628,7 @@ bool     ProcModuleType11( void )
     return( TRUE );
 }
 
-bool     ProcModuleType12( void )
+extern bool     ProcModuleType12( void )
 /*************************/
 {
     Extension = ;
@@ -653,34 +653,34 @@ static bool GetNovModule( void )
     return( TRUE );
 }
 
-bool ProcModule( void )
+extern bool ProcModule( void )
 /****************************/
 {
     return( ProcArgList( GetNovModule, TOK_INCLUDE_DOT ) );
 }
 
-bool ProcOSDomain( void )
+extern bool ProcOSDomain( void )
 /******************************/
 {
     FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
     return( TRUE );
 }
 
-bool ProcNovDBIExports( void )
+extern bool ProcNovDBIExports( void )
 /***********************************/
 {
     FmtData.u.nov.flags |= DO_NOV_EXPORTS;
     return( TRUE );
 }
 
-bool ProcNovDBIReferenced( void )
+extern bool ProcNovDBIReferenced( void )
 /**************************************/
 {
     FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
     return( TRUE );
 }
 
-bool ProcNovDBI( void )
+extern bool ProcNovDBI( void )
 /****************************/
 {
     LinkFlags |= NOVELL_DBI_FLAG;
@@ -690,7 +690,7 @@ bool ProcNovDBI( void )
     return( TRUE );
 }
 
-bool ProcExportsDBI( void )
+extern bool ProcExportsDBI( void )
 /********************************/
 {
     DBIFlag |= DBI_ONLY_EXPORTS;
@@ -698,7 +698,7 @@ bool ProcExportsDBI( void )
     return( TRUE );
 }
 
-void CmdNovFini( void )
+extern void CmdNovFini( void )
 /****************************/
 {
     if( FmtData.u.nov.description == NULL && Name != NULL ) {

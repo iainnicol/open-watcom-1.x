@@ -41,12 +41,15 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#ifdef UNIX
+    #include "clibext.h"
+#endif
 
 #include "wressetr.h"
 
 #define NIL_HANDLE      ((int)-1)
 
-#if defined( __QNX__ ) || defined( __UNIX__ )
+#if defined( __QNX__ ) || defined( UNIX )
     #define _newline "\n"
 #else
     #define _newline "\r\n"
@@ -77,7 +80,7 @@ static long GUIResSeek( int handle, long position, int where )
     }
 }
 
-#ifdef __WATCOMC__
+#if !defined( UNIX )
 WResSetRtns( open,
              close,
              read,
