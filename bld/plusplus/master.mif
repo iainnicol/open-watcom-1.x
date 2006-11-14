@@ -76,6 +76,7 @@ carvecpp_hdr = "carvecpp.h"
  
 !ifeq release 0
 extra_c_flags_axp = -si
+cflags += -db
 !endif
  
 extra_c_flags_osi   = -DIDE_PGM -D__OS2__
