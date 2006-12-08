@@ -35,6 +35,5 @@ extern void CheckLibTrace( file_list * );
 extern bool FindLibTrace( mod_entry * );
 extern void PrintBadTraces( void );
 extern void CleanTraces( void );
-extern void ResetSymTrace( void );
 
 extern trace_info *     TraceList;

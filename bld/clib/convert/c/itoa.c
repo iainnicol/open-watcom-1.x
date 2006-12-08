@@ -35,7 +35,6 @@
 
 extern const char __based(__segname("_CONST")) __Alphabet[];
 
-#if defined(__WATCOMC__)
 unsigned __udiv( unsigned, unsigned _WCNEAR * );
 #if defined(__386__)
     #pragma aux __udiv = \
@@ -62,7 +61,7 @@ unsigned __udiv( unsigned, unsigned _WCNEAR * );
         modify exact [ax dx] \
         value [dx];
 #endif
-#endif /* __WATCOMC__ */
+
 
 _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, int radix )
 {

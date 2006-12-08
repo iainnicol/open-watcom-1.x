@@ -30,7 +30,7 @@
 
 
 #include "bool.h"
-#ifndef __WATCOMC__
+#ifdef UNIX
     #include "clibext.h"
 #endif
 

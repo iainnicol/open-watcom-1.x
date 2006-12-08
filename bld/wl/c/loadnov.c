@@ -55,7 +55,7 @@ static unsigned_32  DbgInfoLen;
 static virt_mem     NovDbgInfo;
 static virt_mem     CurrDbgLoc;
 
-void ResetLoadNov( void )
+extern void ResetLoadNov( void )
 /******************************/
 {
     DbgInfoCount = 0;
@@ -212,7 +212,7 @@ static unsigned_32 WriteNovModules( fixed_header *header )
     return( wrote );
 }
 
-void NovDBIAddGlobal( void * _sym )
+extern void NovDBIAddGlobal( void * _sym )
 /****************************************/
 {
     symbol *sym = _sym;
@@ -228,7 +228,7 @@ void NovDBIAddGlobal( void * _sym )
     }
 }
 
-void NovDBIAddrStart( void )
+extern void NovDBIAddrStart( void )
 /*********************************/
 {
     if( DbgInfoLen != 0 ) {
@@ -237,7 +237,7 @@ void NovDBIAddrStart( void )
     }
 }
 
-void NovDBIGenGlobal( symbol *sym )
+extern void NovDBIGenGlobal( symbol *sym )
 /****************************************/
 {
     nov_dbg_info    info;
@@ -491,7 +491,7 @@ static int __min__(int a, int b)
         return( a );
 }
 
-void FiniNovellLoadFile( void )
+extern void FiniNovellLoadFile( void )
 /************************************/
 {
     unsigned_32         file_size;
@@ -646,7 +646,7 @@ void FiniNovellLoadFile( void )
     WriteLoad( &ext_header, sizeof( ext_header ) );
 }
 
-void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
+extern void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
                                                                  bool isdata )
 /****************************************************************************/
 // add a relocation to the import record.
@@ -711,7 +711,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative,
     }
 }
 
-void FindExportedSyms( void )
+extern void FindExportedSyms( void )
 /**********************************/
 {
     name_list *     export;

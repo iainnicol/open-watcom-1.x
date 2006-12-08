@@ -529,8 +529,7 @@ void fgetstring( char *buffer, int max, FILE *f )
         switch( ch ) {
         case EOF:
         case '\n':
-            *buffer++ = '\r';       /* ignore trailing spaces */
-            *buffer++ = '\n';
+            *buffer++ = '\n';       /* ignore trailing spaces */
             *buffer = '\0';
             return;
         case ' ':

@@ -46,6 +46,12 @@
 #include "guizlist.h"
 #include "guideath.h"
 #include "guidead.h"
+#ifndef __WATCOMC__
+    #include "clibext.h"
+#elif defined( UNIX )
+    #include "clibext.h"
+    #include "stdtypes.h"
+#endif
 #ifdef __UNIX__
     #include <termios.h>
 #endif
@@ -75,15 +81,19 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return( GUIXMain( _argc, _argv ) );
 }
 #else
-#ifdef __UNIX__
+#ifdef UNIX
+    char **             _argv;
+    int                 _argc;
+
     bool                In_raw_mode = FALSE;
     struct termios      Saved_terminal_configuration;
 #endif
 
 int main( int argc, char *argv[] )
 {
-#if defined(__UNIX__) && !defined(__WATCOMC__)
+#ifdef UNIX
     _argv = argv;
+    _argc = argc;
 #endif
     return( GUIXMain( argc, argv ) );
 }

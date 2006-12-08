@@ -18,5 +18,4 @@ set PROJDIR=<CWD>
     cdsay <PROJDIR>/<OBJDIR>
     wmake -h -f ../bootmake
     <CPCMD> ssl.exe <DEVDIR>/build/bin/ssl
-    <CPCMD> ssl.exe <DEVDIR>/build/binl/ssl
     cdsay <PROJDIR>

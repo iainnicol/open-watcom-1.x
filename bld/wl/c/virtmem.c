@@ -162,7 +162,7 @@ static seg_table *      NextSwap;       // next entry to swap out.
 static unsigned         TinyLeft;
 static virt_mem         TinyAddr;
 
-void VirtMemInit( void )
+extern void VirtMemInit( void )
 /*****************************/
 // Allocate space for the branch pointers.
 {
@@ -307,7 +307,7 @@ static virt_mem AllocTinyStg( unsigned size )
     return retval;
 }
 
-virt_mem AllocStg( unsigned long size )
+extern virt_mem AllocStg( unsigned long size )
 /********************************************/
 {
     if( size == 0 ) return 0;
@@ -321,13 +321,13 @@ virt_mem AllocStg( unsigned long size )
     }
 }
 
-void ReleaseInfo( virt_mem stg )
+extern void ReleaseInfo( virt_mem stg )
 /*************************************/
 // can't prematurely release, but no big deal
 {
 }
 
-bool SwapOutVirt( void )
+extern bool SwapOutVirt( void )
 /*****************************/
 // NOTE - this routine assumes that once something has been swapped out, it
 // will never be read back in again.
@@ -371,7 +371,7 @@ bool SwapOutVirt( void )
     return( FALSE );
 }
 
-void FreeVirtMem( void )
+extern void FreeVirtMem( void )
 /*****************************/
 {
     unsigned        index;
@@ -545,7 +545,7 @@ static bool LoadInfo( void * info, spilladdr loc, unsigned off, unsigned len,
     return TRUE;
 }
 
-void ReadInfo( virt_mem stg, void *buf, unsigned len )
+extern void ReadInfo( virt_mem stg, void *buf, unsigned len )
 /***********************************************************/
 /* copy data into info from the memory or spillfile referenced by stg */
 {
@@ -568,14 +568,14 @@ static bool SaveInfo( void * info, spilladdr loc, unsigned off, unsigned len,
     return TRUE;
 }
 
-void PutInfo( virt_mem stg, void * info, unsigned len )
+extern void PutInfo( virt_mem stg, void * info, unsigned len )
 /************************************************************/
 /* copy data at info to the memory or spillfile referenced by stg */
 {
     ScanNodes( stg, info, len, SaveInfo );
 }
 
-void CopyInfo( virt_mem a, virt_mem b, unsigned len )
+extern void CopyInfo( virt_mem a, virt_mem b, unsigned len )
 /**********************************************************/
 {
     void *      buf;
@@ -603,7 +603,7 @@ static bool CompareBlock( void * info, spilladdr loc, unsigned off,
     return memcmp( buf, info, len ) == 0;
 }
 
-bool CompareInfo( virt_mem stg, void *info, unsigned len )
+extern bool CompareInfo( virt_mem stg, void *info, unsigned len )
 /***************************************************************/
 {
     return ScanNodes( stg, info, len, CompareBlock );
@@ -635,7 +635,7 @@ static bool OutInfo( void * dummy, spilladdr loc, unsigned off, unsigned len,
     return TRUE;
 }
 
-void WriteInfo( virt_mem stg, unsigned long len )
+extern void WriteInfo( virt_mem stg, unsigned long len )
 /******************************************************/
 /* copy data in memory or spillfile referenced by stg to LoadFile */
 {
@@ -657,7 +657,7 @@ static bool NullInfo( void *dummy, spilladdr loc, unsigned off, unsigned len,
     return TRUE;
 }
 
-void PutNulls( virt_mem stg, unsigned long len )
+extern void PutNulls( virt_mem stg, unsigned long len )
 /*****************************************************/
 /* copy NULLS in memory or spillfile referenced by stg */
 {

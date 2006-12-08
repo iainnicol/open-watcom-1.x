@@ -11,8 +11,6 @@ wmake -h global
 wmake -h test4=
 wmake -h global
 wmake -h test5=
-rem Disable extra_arch testing for now
-goto no_extra
 if [%extra_arch%] == [] goto no_extra
 wmake -h global
 wmake -h arch=%extra_arch%

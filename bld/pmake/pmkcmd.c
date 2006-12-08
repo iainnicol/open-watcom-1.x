@@ -180,6 +180,8 @@ void PrintHelp( void )
 char    CmdBuff[512];
 
 #if !defined( __WATCOMC__ ) && defined( __UNIX__ )
+char    **_argv;
+
 int main( int argc, char **argv )
 {
     _argv = argv;

@@ -90,7 +90,7 @@ static void             Relocate( save_fixup *save, fix_data *fix, frame_spec *t
 
 #define FIX_POINTER_MASK ( FIX_BASE | FIX_HIGH | FIX_OFFSET_MASK )
 
-void ResetObj2Supp( void )
+extern void ResetObj2Supp( void )
 /*******************************/
 {
     FixupOverflow = 0;
@@ -158,7 +158,7 @@ static void TraceFixup( fix_type type, frame_spec *targ )
     }
 }
 
-void RelocStartMod( void )
+extern void RelocStartMod( void )
 /*******************************/
 {
     LastSegData = NULL;
@@ -426,7 +426,7 @@ static void BuildReloc( save_fixup *save, frame_spec *targ, frame_spec *frame )
     Relocate( save, &fix, targ );
 }
 
-unsigned IncExecRelocs( void *_save )
+extern unsigned IncExecRelocs( void *_save )
 /******************************************/
 {
     save_fixup *save = _save;
@@ -479,7 +479,7 @@ static void FixFrameValue( frame_type type, void **target )
     }
 }
 
-unsigned RelocMarkSyms( void *_fix )
+extern unsigned RelocMarkSyms( void *_fix )
 /*****************************************/
 {
     save_fixup *fix = _fix;
@@ -520,7 +520,7 @@ static bool MemIsZero( char *mem, unsigned size )
     return( TRUE );
 }
 
-void StoreFixup( offset off, fix_type type, frame_spec *frame,
+extern void StoreFixup( offset off, fix_type type, frame_spec *frame,
                         frame_spec *targ, offset addend )
 /*******************************************************************/
 {
@@ -574,7 +574,7 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame,
     }
 }
 
-unsigned IncSaveRelocs( void *_save )
+extern unsigned IncSaveRelocs( void *_save )
 /******************************************/
 {
     save_fixup *save = _save;

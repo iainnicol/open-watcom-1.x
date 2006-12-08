@@ -89,8 +89,8 @@ static void clearSpin( void )
 static int getOverrideKey( void )
 {
     int         c;
-    bool        mouse = FALSE;
-    int         mcnt = 0;
+    bool        mouse=FALSE;
+    int         mcnt;
 
     while( 1 ) {
         c = overrideKeyBuff[ overrideKeyPos ];
@@ -146,9 +146,7 @@ static int getOverrideKey( void )
  */
 int GetVIKey( int ch, int scan, int shift )
 {
-#if !defined NO_TRANSLATE
     int     i;
-#endif
 
     if( EditFlags.EscapedInsertChar ) return( ch );
 
@@ -277,9 +275,9 @@ int GetVIKey( int ch, int scan, int shift )
     }
     return( 128 );
 #else
-    /* avoid warning about unused arguments */
-    ( void ) scan;
-    ( void ) shift;
+    i = i;
+    scan = scan;
+    shift = shift;
     return( ch );
 #endif
 

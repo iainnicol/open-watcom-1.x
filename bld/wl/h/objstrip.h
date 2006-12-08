@@ -39,4 +39,3 @@ extern void     DefStripSym( symbol *, segdata * );
 extern void     DefStripImpSym( symbol * sym );
 extern void     CleanStripInfo( symbol * );
 extern void     RefGroupSegs( group_entry * );
-extern void     ResetObjStrip( void );
