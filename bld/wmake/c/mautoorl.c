@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if !defined( __I86__ ) && !defined( BOOTSTRAP )
+#if !defined( __I86__ )
 #include "make.h"
 #include "mmemory.h"
 #include "mrcmsg.h"

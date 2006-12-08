@@ -63,7 +63,7 @@ static stringblock * AllocNewBlock( stringtable *strtab )
     return blk;
 }
 
-void InitStringTable( stringtable *strtab, bool dontsplit )
+extern void InitStringTable( stringtable *strtab, bool dontsplit )
 /****************************************************************/
 {
     strtab->data = NULL;
@@ -75,19 +75,19 @@ void InitStringTable( stringtable *strtab, bool dontsplit )
     AllocNewBlock( strtab );
 }
 
-void CharStringTable( stringtable *strtab, char data )
+extern void CharStringTable( stringtable *strtab, char data )
 /***********************************************************/
 {
     AddStringTable( strtab, &data, sizeof(char) );
 }
 
-char * StringStringTable( stringtable *strtab, char *data )
+extern char * StringStringTable( stringtable *strtab, char *data )
 /****************************************************************/
 {
     return AddStringTable( strtab, data, strlen(data) + 1 );
 }
 
-void ReserveStringTable( stringtable *strtab, unsigned len )
+extern void ReserveStringTable( stringtable *strtab, unsigned len )
 /*****************************************************************/
 {
     stringblock *blk;
@@ -105,7 +105,7 @@ void ReserveStringTable( stringtable *strtab, unsigned len )
     }
 }
 
-char * AddStringTable( stringtable *strtab, char *data, unsigned len )
+extern char * AddStringTable( stringtable *strtab, char *data, unsigned len )
 /***************************************************************************/
 {
     stringblock *blk;
@@ -138,7 +138,7 @@ char * AddStringTable( stringtable *strtab, char *data, unsigned len )
     return dest;
 }
 
-void ZeroStringTable( stringtable *strtab, unsigned len )
+extern void ZeroStringTable( stringtable *strtab, unsigned len )
 /**************************************************************/
 {
     stringblock *blk;
@@ -163,7 +163,7 @@ static bool WriteStringBlock( void *_blk, void *_param )
     return FALSE;
 }
 
-void WriteStringTable( stringtable *strtab,
+extern void WriteStringTable( stringtable *strtab,
                               void (*fn)(void *, char *,unsigned), void *info )
 /*****************************************************************************/
 {
@@ -174,13 +174,13 @@ void WriteStringTable( stringtable *strtab,
     RingLookup( strtab->data, WriteStringBlock, &param );
 }
 
-void FiniStringTable( stringtable *strtab )
+extern void FiniStringTable( stringtable *strtab )
 /************************************************/
 {
     RingFree( &strtab->data );
 }
 
-unsigned GetStringTableSize( stringtable *strtab )
+extern unsigned GetStringTableSize( stringtable *strtab )
 /*******************************************************/
 {
     stringblock *blk;

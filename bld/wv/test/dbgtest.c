@@ -122,11 +122,6 @@ int main( int argc, char **argv )
     j = foo( p_i );
     dbl_var += flt_var;
     j += flt_var;
-    {   /* Test variable scoping */
-        int     i = 3;
-
-        j += i;
-    }
     sc += uc;
     return( j );
 }

@@ -188,7 +188,7 @@ static void SetHeaders( ElfHdr *hdr )
     SeekLoad( hdr->curr_off );
 }
 
-unsigned GetElfHeaderSize( void )
+extern unsigned GetElfHeaderSize( void )
 /**************************************/
 {
     unsigned    size;
@@ -197,7 +197,7 @@ unsigned GetElfHeaderSize( void )
     return ROUND_UP( size, 0x100 );
 }
 
-void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name )
+extern void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name )
 /***************************************************************/
 {
     sh->sh_name = GetStringTableSize( &hdr->secstrtab );
@@ -351,7 +351,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
     }
 }
 
-void FiniELFLoadFile( void )
+extern void FiniELFLoadFile( void )
 /*********************************/
 {
     ElfHdr      hdr;
@@ -395,7 +395,7 @@ void FiniELFLoadFile( void )
     SeekLoad( hdr.curr_off );
 }
 
-void ChkElfData( void )
+extern void ChkElfData( void )
 /****************************/
 {
     group_entry *group;
@@ -429,7 +429,7 @@ void ChkElfData( void )
 
 }
 
-int FindElfSymIdx( symbol *sym )
+extern int FindElfSymIdx( symbol *sym )
 /*************************************/
 {
     return FindSymIdxElfSymTable( ElfSymTab, sym );

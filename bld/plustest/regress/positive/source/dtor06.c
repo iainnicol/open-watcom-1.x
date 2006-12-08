@@ -7,15 +7,15 @@ struct S {
     ~S() { ++dtors; }
 };
 template <class T>
-struct C {
-    void free() { val->~T(); }
-    T *val;
-};
+    struct C {
+	void free() { val->~T(); }
+	T *val;
+    };
 
 C<S> x;
 C<int> y;
 C<void *> z;
-C<char const> w;
+C<void> w;
 
 int main()
 {

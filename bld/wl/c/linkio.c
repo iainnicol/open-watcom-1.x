@@ -61,7 +61,7 @@ static char         Rc_Buffer[RESOURCE_MAX_SIZE];
 #define     TOOMANY             4
 #define     ACCESS_DENIED       5
 
-void LnkFilesInit( void )
+extern void LnkFilesInit( void )
 /******************************/
 // the linker doesn't use stdaux or stdprn, so close these.
 {
@@ -75,7 +75,7 @@ void LnkFilesInit( void )
     }
 }
 
-void PrintIOError( unsigned msg, char *types, char *name )
+extern void PrintIOError( unsigned msg, char *types, char *name )
 /***************************************************************/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
@@ -84,7 +84,7 @@ void PrintIOError( unsigned msg, char *types, char *name )
     LnkMsg( msg, types, name, rc_buff );
 }
 
-void CheckBreak( void )
+extern void CheckBreak( void )
 /****************************/
 {
     if( CaughtBreak == BREAK_DETECTED ) {
@@ -125,7 +125,7 @@ static char *QErrMsg( unsigned status )
 }
 
 
-f_handle QOpenR( char *name )
+extern f_handle QOpenR( char *name )
 /**********************************/
 {
     tiny_ret_t h;
@@ -137,7 +137,7 @@ f_handle QOpenR( char *name )
 }
 
 
-f_handle QOpenRW( char *name )
+extern f_handle QOpenRW( char *name )
 /***********************************/
 {
     tiny_ret_t h;
@@ -148,7 +148,7 @@ f_handle QOpenRW( char *name )
     return( NIL_HANDLE );
 }
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
+extern unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
 /****************************************************************************/
 /* read into far memory */
 {
@@ -191,7 +191,7 @@ static unsigned TestWrite( f_handle file, void *buffer, unsigned len, char *name
     return( TINY_INFO(h) );
 }
 
-unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
+extern unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 /*****************************************************************************/
 {
     while( len > (16*1024) ) {
@@ -204,13 +204,13 @@ unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
 
 char    NLSeq[] = { "\r\n" };
 
-void QWriteNL( f_handle file, char *name )
+extern void QWriteNL( f_handle file, char *name )
 /***********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
-void QClose( f_handle file, char *name )
+extern void QClose( f_handle file, char *name )
 /*********************************************/
 /* file close */
 {
@@ -223,7 +223,7 @@ void QClose( f_handle file, char *name )
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
 }
 
-long QLSeek( f_handle file, long position, int start, char *name )
+extern long QLSeek( f_handle file, long position, int start, char *name )
 /***********************************************************************/
 {
     tiny_ret_t    rc;
@@ -239,13 +239,13 @@ long QLSeek( f_handle file, long position, int start, char *name )
     return( pos );
 }
 
-void QSeek( f_handle file, long position, char *name )
+extern void QSeek( f_handle file, long position, char *name )
 /***********************************************************/
 {
     QLSeek( file, position, TIO_SEEK_START, name );
 }
 
-unsigned long QPos( f_handle file )
+extern unsigned long QPos( f_handle file )
 /****************************************/
 {
     unsigned long pos;
@@ -257,7 +257,7 @@ unsigned long QPos( f_handle file )
     return( pos );
 }
 
-unsigned long QFileSize( f_handle file )
+extern unsigned long QFileSize( f_handle file )
 /*********************************************/
 {
     unsigned long   curpos;
@@ -270,7 +270,7 @@ unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-void QDelete( char *name )
+extern void QDelete( char *name )
 /*******************************/
 {
     tiny_ret_t   h;
@@ -285,7 +285,7 @@ void QDelete( char *name )
 }
 
 
-bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
+extern bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
 /**************************************************************************/
 /* quick read string (for reading directive file) */
 {
@@ -306,7 +306,7 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     return( eof );
 }
 
-bool QIsDevice( f_handle file )
+extern bool QIsDevice( f_handle file )
 /************************************/
 {
     if( TinyGetDeviceInfo( file ) & TIO_CTL_DEVICE ) {
@@ -316,7 +316,7 @@ bool QIsDevice( f_handle file )
     }
 }
 
-f_handle ExeCreate( char *name )
+extern f_handle ExeCreate( char *name )
 /*************************************/
 {
     tiny_ret_t      h;
@@ -338,26 +338,26 @@ static f_handle NSOpen( char *name, unsigned mode )
     return( NIL_HANDLE );
 }
 
-f_handle ExeOpen( char *name )
+extern f_handle ExeOpen( char *name )
 /***********************************/
 {
     return( NSOpen( name, TIO_READ_WRITE ) );
 }
 
-f_handle QObjOpen( char *name )
+extern f_handle QObjOpen( char *name )
 /************************************/
 {
     return( NSOpen( name, TIO_READ ) );
 }
 
-f_handle TempFileOpen( char *name )
+extern f_handle TempFileOpen( char *name )
 /****************************************/
 // open without suiciding. Don't create the file
 {
     return( NSOpen( name, TIO_READ ) );
 }
 
-int QMakeFileName( char **pos, char *name, char *fname )
+extern int QMakeFileName( char **pos, char *name, char *fname )
 /*************************************************************/
 {
     char                *pathptr;
@@ -393,19 +393,19 @@ int QMakeFileName( char **pos, char *name, char *fname )
     return( 0 );
 }
 
-bool QHavePath( char *name )
+extern bool QHavePath( char *name )
 /*********************************/
 {
     return( *name == '\\' || *name == '/' || *(name + 1) == ':' );
 }
 
-bool QSysHelp( char **cmd_ptr )
+extern bool QSysHelp( char **cmd_ptr )
 {
     cmd_ptr = cmd_ptr;
     return( FALSE );
 }
 
-bool QModTime( char *name, time_t *time )
+extern bool QModTime( char *name, time_t *time )
 /**********************************************/
 {
     int         result;
@@ -416,7 +416,7 @@ bool QModTime( char *name, time_t *time )
     return result != 0;
 }
 
-time_t QFModTime( int handle )
+extern time_t QFModTime( int handle )
 /***********************************/
 {
     struct stat buf;
@@ -434,19 +434,19 @@ int ResOpen( const char *name, int access, ... )
     return( NSOpen( (char *) name, TIO_READ ) );
 }
 
-char WaitForKey( void )
+extern char WaitForKey( void )
 /****************************/
 {
     return getch();
 }
 
-void GetCmdLine( char *buff )
+extern void GetCmdLine( char *buff )
 /**********************************/
 {
     getcmd( buff );
 }
 
-void TrapBreak( int sig_num )
+extern void TrapBreak( int sig_num )
 /**********************************/
 {
     sig_num = sig_num;          // to avoid a warning, will be optimized out.
@@ -455,14 +455,14 @@ void TrapBreak( int sig_num )
     }
 }
 
-void SetBreak( void )
+extern void SetBreak( void )
 /**************************/
 {
     BreakCond = TinyGetCtrlBreak();
     TinySetCtrlBreak( 1 );
 }
 
-void RestoreBreak( void )
+extern void RestoreBreak( void )
 /******************************/
 {
     TinySetCtrlBreak( BreakCond );

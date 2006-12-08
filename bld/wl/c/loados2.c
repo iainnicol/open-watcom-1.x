@@ -90,6 +90,8 @@ typedef struct ResTable {
     StringBlock Str;
 } ResTable;
 
+extern  unsigned_32      Write_Stub_File( void );
+
 static  void             SetGroupFlags( void );
 
 static  char            DosStub[] = {
@@ -403,14 +405,14 @@ static unsigned long WriteTabList( name_list * val, unsigned long *count,
     return( off );
 }
 
-unsigned long ImportProcTable( unsigned long *count )
+extern unsigned long ImportProcTable( unsigned long *count )
 /**********************************************************/
 {
     return( WriteTabList( FmtData.u.os2.imp_tab_list, count,
                           !(LinkFlags & CASE_FLAG) ) );
 }
 
-unsigned long ImportModTable( unsigned long *count )
+extern unsigned long ImportModTable( unsigned long *count )
 /*********************************************************/
 {
     return( WriteTabList( FmtData.u.os2.mod_ref_list, count, FALSE ) );
@@ -456,7 +458,7 @@ static unsigned long ModRefTable( void )
     return nodenum;
 }
 
-unsigned long ResNonResNameTable( bool dores )
+extern unsigned long ResNonResNameTable( bool dores )
 /***************************************************/
 /* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
 {
@@ -627,14 +629,14 @@ static unsigned long DumpEntryTable( void )
     return( size + 2 );
 }
 
-void ChkOS2Data()
+extern void ChkOS2Data()
 /**********************/
 {
     SetSegFlags( (seg_flags *) FmtData.u.os2.os2_seg_flags );
     FmtData.u.os2.os2_seg_flags = NULL;
 }
 
-void ChkOS2Exports( void )
+extern void ChkOS2Exports( void )
 /*******************************/
 // NOTE: there is a continue in this loop!
 {
@@ -689,7 +691,7 @@ void ChkOS2Exports( void )
     }
 }
 
-void PhoneyStack( void )
+extern void PhoneyStack( void )
 /*****************************/
 // signal that we will be making a fake stack later on.
 {
@@ -767,7 +769,7 @@ static uint_32 ComputeResourceSize( WResDir dir )
 
 #define MAX_DGROUP_SIZE (64*1024UL)
 
-void FiniOS2LoadFile()
+extern void FiniOS2LoadFile()
 /***************************/
 /* terminate writing of load file */
 {
@@ -972,7 +974,7 @@ void FiniOS2LoadFile()
     WriteLoad( &exe_head, sizeof(os2_exe_header) );
 }
 
-void FreeImpNameTab( void )
+extern void FreeImpNameTab( void )
 /********************************/
 {
     FmtData.u.os2.mod_ref_list = NULL;  /* these are permalloc'd */
@@ -1038,7 +1040,7 @@ static unsigned DoExeName( void )
 
 #define PARA_ALIGN( x ) (((x)+0xf) &  ~0xfUL)
 
-unsigned_32 GetStubSize( void )
+extern unsigned_32 GetStubSize( void )
 /************************************/
 /* return the size of the stub file */
 {
@@ -1094,7 +1096,7 @@ static unsigned WriteDefStub( void )
     return( fullsize );
 }
 
-unsigned_32 Write_Stub_File( void )
+extern unsigned_32 Write_Stub_File( void )
 /****************************************/
 {
     unsigned_32     stub_len;

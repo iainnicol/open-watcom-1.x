@@ -41,12 +41,15 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#ifdef UNIX
+    #include "clibext.h"
+#endif
 
 #include "wressetr.h"
 
 #define NIL_HANDLE      ((int)-1)
 
-#if defined( __QNX__ ) || defined( __UNIX__ )
+#if defined( __QNX__ ) || defined( UNIX )
     #define _newline "\n"
 #else
     #define _newline "\r\n"
@@ -66,7 +69,7 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  bool            GUIMsgInitFlag = FALSE;
 extern  long            FileShift;
 
-static off_t GUIResSeek( int handle, off_t position, int where )
+static long GUIResSeek( int handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {
@@ -77,7 +80,7 @@ static off_t GUIResSeek( int handle, off_t position, int where )
     }
 }
 
-#ifdef __WATCOMC__
+#if !defined( UNIX )
 WResSetRtns( open,
              close,
              read,

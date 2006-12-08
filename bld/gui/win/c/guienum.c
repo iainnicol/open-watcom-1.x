@@ -33,7 +33,7 @@
 #include "guiwind.h"
 #include <string.h>
 #include "guixutil.h"
-#if defined( __UNIX__ )
+#if defined( UNIX )
     // WindU stuff
     #include <windef.h>
 #endif
@@ -49,7 +49,7 @@ typedef struct {
     void                *param;
 } enum_info;
 
-#if defined( __UNIX__ )
+#if defined( UNIX )
 int EnumFunc( HWND hwnd, LONG lparam )
 #else
 BOOL CALLBACK EnumFunc( HWND hwnd, LONG lparam )

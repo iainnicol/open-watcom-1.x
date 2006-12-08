@@ -126,7 +126,7 @@
 #undef CALLBACK
 #if defined( __WINDOWS_386__ )
 #define CALLBACK        APIENTRY
-#elif defined( __UNIX__ )
+#elif defined( UNIX )
 #define CALLBACK
 #else
 #define CALLBACK        __export APIENTRY

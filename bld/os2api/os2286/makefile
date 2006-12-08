@@ -3,5 +3,8 @@
 host_os  = os2
 host_cpu = i86
 
-!include ../master.mif
+srcdir = lib286
 
+all: os2.lib
+
+!include ../master.mif

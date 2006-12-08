@@ -37,18 +37,16 @@
 #include "mupdate.h"
 #include "mautodep.h"
 
-#include "mautoomf.h"
-#include "mautoorl.h"
-#include "mautores.h"
+extern auto_dep_info const OMFAutoDepInfo;
+extern auto_dep_info const ORLAutoDepInfo;
+extern auto_dep_info const RESAutoDepInfo;
 
 static auto_dep_info const *AutoDepTypes[] = {
     &OMFAutoDepInfo,
-#if !defined( M_I86 ) && !defined( BOOTSTRAP )
+#if !defined( M_I86 )
     &ORLAutoDepInfo,
 #endif
-#ifndef BOOTSTRAP
     &RESAutoDepInfo,
-#endif
     NULL
 };
 

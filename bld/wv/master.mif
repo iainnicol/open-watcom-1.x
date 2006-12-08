@@ -280,7 +280,7 @@ inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
 inc_dirs += -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(ui_dir)/h" -I"$(posix_dir)/h"
 inc_dirs += -I"$(posix_dir)/h" -I"$(gui_dir)/ui/h" -I"$(help_dir)/h"
 !endif
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
+!ifeq host_os linux
 inc_dirs += -I"$(ncurses_dir)/h"
 dig_srcs +=;$(dig_dir)/c/dsx
 !else ifeq host_os dos
@@ -364,8 +364,8 @@ resname=$+$(resname)$-dll
 resfile = $(resname).res
 
 !ifdef bootstrap
-$(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(cl_objs) $(libs)
-        $(cl) $(clflags) fingmsg.obj $(objs) $(sysobjs) $(cl_objs) $(libs) $(cl_libs) -ldl
+$(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs)
+        $(cl) $(clflags) fingmsg.obj $(objs) $(sysobjs) $(libs) $(cl_libs)
         wstrip -q -a -r $^@ . $(resfile)
 !else
 $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk)

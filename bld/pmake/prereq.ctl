@@ -54,10 +54,9 @@ set ODIR=<OBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #==========================================
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../linux386/makefile bootstrap=1
-    <CPCMD> pmake.exe <OWBINDIR>/pmake
+    cdsay <PROJDIR>
+    <MAKE> -f gnumake
+    <CPCMD> <OBJDIR>/pmake <OWBINDIR>/pmake
 
 [ BLOCK <BUILD_PLATFORM> linux386 ]
 #======================================

@@ -40,7 +40,7 @@ void WriteNew( void *buff, file_offset len )
     LibWrite( NewLibrary, buff, len );
 }
 
-char *MakeTmpName(char *);
+extern char *MakeTmpName(char *);
 
 void WriteNewLib( void )
 {
