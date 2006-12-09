@@ -24,11 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  I/O routines for wpack.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
+/*
+ * NTIO.C     I/O routines for WPACK for Windows NT
+ *
+*/
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -36,15 +43,13 @@
 #include <string.h>
 #include <malloc.h>
 #include <sys/types.h>
-#ifdef __UNIX__
+#if defined( UNIX )
+#include <utime.h>
+#include <clibext.h>
+#elif defined( __UNIX__ )
 #include <utime.h>
 #else
 #include <sys/utime.h>
-#endif
-#ifndef __WATCOMC__
-#include "clibext.h"
-#elif defined( __UNIX__ )
-#include <utime.h>
 #endif
 #include <sys/stat.h>
 #include "wpack.h"

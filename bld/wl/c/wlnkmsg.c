@@ -53,15 +53,14 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 static  int             Res_Flag;
 
-#include "clibint.h"
-
+extern char *   _LpDllName;
 int WLinkItself;   // file handle
 
 #define NO_RES_MESSAGE "could not open message resource file"
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
 
-int InitMsg( void )
+extern int InitMsg( void )
 {
     char        buff[_MAX_PATH];
     int         initerror;
@@ -103,7 +102,7 @@ int InitMsg( void )
     return Res_Flag;
 }
 
-int Msg_Get( int resourceid, char *buffer )
+extern int Msg_Get( int resourceid, char *buffer )
 {
     if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift,
                 (LPSTR) buffer, RESOURCE_MAX_SIZE ) != 0 ) {
@@ -113,7 +112,7 @@ int Msg_Get( int resourceid, char *buffer )
     return( 1 );
 }
 
-void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
+extern void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
                         char *types, ... )
 {
     va_list     args;
@@ -124,7 +123,7 @@ void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
 }
 
 // Write arguments to put into a message and make it printf-like
-void Msg_Put_Args(
+extern void Msg_Put_Args(
     char                message[],      // Contains %s, etc. or %digit specifiers
     MSG_ARG_LIST        *arg_info,      // Arguments found
     char                *types,         // message conversion specifier types
@@ -184,7 +183,7 @@ static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
     }
 }
 
-void Msg_Write_Map( int resourceid, ... )
+extern void Msg_Write_Map( int resourceid, ... )
 {
     char        msg_buff[RESOURCE_MAX_SIZE];
     va_list     arglist;
@@ -195,7 +194,7 @@ void Msg_Write_Map( int resourceid, ... )
     va_end( arglist );
 }
 
-int FiniMsg()
+extern int FiniMsg()
 {
     int     retcode = EXIT_SUCCESS;
 

@@ -21,10 +21,9 @@ set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
     echo Building the wstrip bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../linux386/makefile bootstrap=1
-    <CPCMD> strip.exe <OWBINDIR>/wstrip
+    cdsay <PROJDIR>
+    <MAKE> -f gnumake
+    <CPCMD> <OBJDIR>/wstrip <OWBINDIR>/wstrip
 
 [ BLOCK . . ]
 #============

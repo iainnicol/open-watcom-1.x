@@ -48,17 +48,18 @@
 
 #define DOS_EOF_CHAR    0x1a
 
-bool               Quiet;
-include            *IncludeStk;
-FILE               *LogFile;
-static ctl_file    *CtlList;
-static char        Line[MAX_LINE];
-static char        ProcLine[MAX_LINE];
-static unsigned    VerbLevel;
-static bool        UndefWarn;
-static bool        StopOnError;
-static unsigned    ParmCount;
-static unsigned    LogBackup;
+ctl_file        *CtlList;
+include         *IncludeStk;
+FILE            *LogFile;
+char            Line[MAX_LINE];
+char            ProcLine[MAX_LINE];
+unsigned        VerbLevel;
+bool            UndefWarn;
+bool            Quiet;
+bool            StopOnError;
+unsigned        ParmCount;
+unsigned        LogBackup;
+
 
 static void PutNumber( char *src, char *dst, unsigned num )
 {

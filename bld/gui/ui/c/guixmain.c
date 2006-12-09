@@ -46,6 +46,12 @@
 #include "guizlist.h"
 #include "guideath.h"
 #include "guidead.h"
+#ifndef __WATCOMC__
+    #include "clibext.h"
+#elif defined( UNIX )
+    #include "clibext.h"
+    #include "stdtypes.h"
+#endif
 #ifdef __UNIX__
     #include <termios.h>
 #endif
@@ -75,10 +81,8 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return( GUIXMain( _argc, _argv ) );
 }
 #else
-#ifdef __UNIX__
-#ifdef __WATCOMC__ /* else _argv defined in clibext */
+#ifdef UNIX
     char **             _argv;
-#endif
     int                 _argc;
 
     bool                In_raw_mode = FALSE;
@@ -87,7 +91,7 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 int main( int argc, char *argv[] )
 {
-#ifdef __UNIX__
+#ifdef UNIX
     _argv = argv;
     _argc = argc;
 #endif

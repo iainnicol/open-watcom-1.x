@@ -42,7 +42,7 @@
 
 union CurAttrUnion  CurAttr;    /* Attribute for last LexToken call */
 
-const char * const DotNames[] = {    /* must be in alpha order! */
+extern const char * const DotNames[] = {    /* must be in alpha order! */
     "AFTER",
     "ALWAYS",
     "AUTODEPEND",
@@ -71,14 +71,14 @@ const char * const DotNames[] = {    /* must be in alpha order! */
 };
 
 
-void LexFini( void )
+extern void LexFini( void )
 /*************************/
 {
     PreProcFini();
 }
 
 
-void LexInit( void )
+extern void LexInit( void )
 /*************************/
 {
     PreProcInit();
@@ -88,7 +88,7 @@ void LexInit( void )
 }
 
 
-TOKEN_T LexToken( enum LexMode mode )
+extern TOKEN_T LexToken( enum LexMode mode )
 /*******************************************
  * returns: next token of input
  */
@@ -109,7 +109,7 @@ TOKEN_T LexToken( enum LexMode mode )
 }
 
 
-void LexMaybeFree( TOKEN_T tok )
+extern void LexMaybeFree( TOKEN_T tok )
 /**************************************
  * remarks: Some tokens set CurAttr.ptr to a memory region.  This routine
  *          FreeSafes the region if tok is one of these token types.

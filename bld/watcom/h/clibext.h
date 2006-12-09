@@ -11,13 +11,6 @@
     #include <strings.h>    /* for str*case* functions */
 #endif
 
-#if defined(__linux__) && !defined(__LINUX__)
-#define __LINUX__
-#endif
-#if defined(__unix__) && !defined(__UNIX__)
-#define __UNIX__
-#endif
-
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
@@ -101,9 +94,5 @@ char *getcmd( char *buffer );
 char *_cmdname( char *name );
 void _searchenv( const char *name, const char *env_var, char *buf );
 char *strnset( char *string, int c, size_t len );
-#ifdef __GLIBC__
-size_t strlcpy( char *dst, const char *src, size_t len );
-size_t strlcat( char *dst, const char *t, size_t n );
-#endif
 
-extern char **_argv;    /* argument vector */
+extern char **_argv;

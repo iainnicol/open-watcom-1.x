@@ -82,14 +82,14 @@ typedef struct readcache {
 
 static readcache * ReadCacheList;
 
-void InitObjORL( void )
+extern void InitObjORL( void )
 /****************************/
 {
     ORLHandle = ORLInit( &ORLFuncs );
     ReadCacheList = NULL;
 }
 
-void ObjORLFini( void )
+extern void ObjORLFini( void )
 /****************************/
 {
     ORLFini( ORLHandle );
@@ -126,7 +126,7 @@ static void * ORLRead( void *_list, size_t len )
     return result;
 }
 
-bool IsORL( file_list * list, unsigned loc )
+extern bool IsORL( file_list * list, unsigned loc )
 /*************************************************/
 // return TRUE if this is can be handled by ORL
 {
@@ -190,7 +190,7 @@ static void FiniFile( orl_file_handle filehdl, file_list *list )
     }
 }
 
-void ORLSkipObj( file_list *list, unsigned long *loc )
+extern void ORLSkipObj( file_list *list, unsigned long *loc )
 /***********************************************************/
 // skip the object file.
 // NYI: add an entry point in ORL for a more efficient way of doing this.
@@ -899,7 +899,7 @@ static orl_return ProcP1Specific( orl_sec_handle hdl )
     return (P1SpecificJumpTable[ORLSecGetType( hdl )])( hdl );
 }
 
-unsigned long ORLPass1( void )
+extern unsigned long ORLPass1( void )
 /***********************************/
 // do pass 1 for an object file handled by ORL.
 {

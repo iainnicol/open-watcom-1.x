@@ -37,7 +37,7 @@
 #include "mhash.h"
 
 
-HASH_T Hash( const char *s, HASH_T prime )
+extern HASH_T Hash( const char *s, HASH_T prime )
 /************************************************
  * Hash is modelled on hashpjw() function, from the book "Compilers:
  * Principles, Techniques, and Tools ", A.V.Aho, R.Sethi, J.D.Ullman, pg 437
@@ -102,7 +102,7 @@ HASH_T Hash( const char *s, HASH_T prime )
 }
 
 
-HASHTAB *NewHashTab( HASH_T prime )
+extern HASHTAB *NewHashTab( HASH_T prime )
 /*****************************************
  * allocate a new table, with prime entries
  */
@@ -116,7 +116,7 @@ HASHTAB *NewHashTab( HASH_T prime )
 }
 
 
-void AddHashNode( HASHTAB *tab, HASHNODE *node )
+extern void AddHashNode( HASHTAB *tab, HASHNODE *node )
 /******************************************************
  * add a node to a table in proper hash order
  */
@@ -132,7 +132,7 @@ void AddHashNode( HASHTAB *tab, HASHNODE *node )
 }
 
 
-BOOLEAN WalkHashTab( HASHTAB *tab,
+extern BOOLEAN WalkHashTab( HASHTAB *tab,
     BOOLEAN (*func)( void *node, void *ptr ), void *ptr )
 /********************************************************
  * walk a table applying func to each node.  If func returns TRUE,
@@ -163,7 +163,7 @@ BOOLEAN WalkHashTab( HASHTAB *tab,
 }
 
 
-void FreeHashTab( HASHTAB *tab )
+extern void FreeHashTab( HASHTAB *tab )
 /**************************************
  * Deallocate a HASHTAB structure.  It does NOT do anything
  * with any existing nodes.
@@ -173,7 +173,7 @@ void FreeHashTab( HASHTAB *tab )
 }
 
 
-HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
+extern HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
     BOOLEAN caseSensitive )
 /*************************************************************
  * Find node named name
@@ -195,7 +195,7 @@ HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
 }
 
 
-HASHNODE *RemHashNode( HASHTAB *tab, const char *name,
+extern HASHNODE *RemHashNode( HASHTAB *tab, const char *name,
                               BOOLEAN caseSensitive)
 /************************************************************
  * unlink a node named name, and return pointer to unlinked node.

@@ -30,7 +30,6 @@
 
 
 #include <wlib.h>
-#include "symomf.h"
 
 static unsigned short CurrSegRef = 0;
 static char                     Rec32Bit;

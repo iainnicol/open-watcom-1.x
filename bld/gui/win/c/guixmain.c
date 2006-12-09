@@ -31,7 +31,7 @@
 
 
 #include <stdlib.h>
-#if defined( __UNIX__ )
+#if defined( UNIX )
     #include "unsoasyc.h"
     #include "stdtypes.h"
 #endif
@@ -54,7 +54,7 @@ int main( SHORT sArgc,CHAR  *ppArgv[] )
 
 #else
 
-#if defined( __UNIX__ )
+#if defined( UNIX )
 
 a_bool In_raw_mode = FALSE;
 struct termios Saved_terminal_configuration;
@@ -104,7 +104,7 @@ extern int          GUIXMain( int argc, char *argv[],
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
                     int nShowCmd )
 {
-#if !defined( __UNIX__ )
+#if !defined( UNIX )
     extern char **_argv;
     extern int  _argc;
 #endif

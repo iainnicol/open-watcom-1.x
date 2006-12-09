@@ -65,7 +65,7 @@ static int ResWrite( int dummy, const void *buff, size_t size )
     return( size );
 }
 
-//extern int WLinkItself;
+extern int WLinkItself;
 static long ResSeek( int handle, off_t position, int where )
 /**********************************************************/
 /* Workaround wres bug */
@@ -98,19 +98,19 @@ static long ResPos( int handle )
 WResSetRtns( ResOpen, ResClose, ResRead, ResWrite, ResSeek, ResPos, ChkLAlloc, LFree );
 
 #if !defined( _DLLHOST )
-void WriteStdOut( char *str )
+extern void WriteStdOut( char *str )
 /**********************************/
 {
     QWrite( STDOUT_HANDLE, str, strlen( str ), NULL );
 }
 
-void WriteNLStdOut( void )
+extern void WriteNLStdOut( void )
 /*******************************/
 {
     QWriteNL( STDOUT_HANDLE, NULL );
 }
 
-void WriteInfoStdOut( char *str, unsigned level, char *sym )
+extern void WriteInfoStdOut( char *str, unsigned level, char *sym )
 /*****************************************************************/
 {
     level = level;
@@ -119,13 +119,13 @@ void WriteInfoStdOut( char *str, unsigned level, char *sym )
     WriteNLStdOut();
 }
 
-char * GetEnvString( char *envname )
+extern char * GetEnvString( char *envname )
 /*****************************************/
 {
     return( getenv( envname ) );
 }
 
-bool GetAddtlCommand( unsigned cmd, char *buf )
+extern bool GetAddtlCommand( unsigned cmd, char *buf )
 /****************************************************/
 {
     cmd = cmd;
@@ -133,14 +133,14 @@ bool GetAddtlCommand( unsigned cmd, char *buf )
     return( FALSE );
 }
 
-bool IsStdOutConsole( void )
+extern bool IsStdOutConsole( void )
 /*********************************/
 {
     return( QIsDevice( STDOUT_HANDLE ) );
 }
 #endif
 
-void WriteNulls( f_handle file, unsigned_32 len, char * name )
+extern void WriteNulls( f_handle file, unsigned_32 len, char * name )
 /*******************************************************************/
 /* copy nulls for uninitialized data */
 {
@@ -154,7 +154,7 @@ void WriteNulls( f_handle file, unsigned_32 len, char * name )
     }
 }
 
-void CheckErr( void )
+extern void CheckErr( void )
 /**************************/
 {
     if( LinkState & ( LINK_ERROR | STOP_WORKING ) ) {
@@ -163,7 +163,7 @@ void CheckErr( void )
     }
 }
 
-void CheckStop( void )
+extern void CheckStop( void )
 /***************************/
 {
     if( LinkState & STOP_WORKING ) {
@@ -171,13 +171,13 @@ void CheckStop( void )
     }
 }
 
-void LnkFatal( char * msg )
+extern void LnkFatal( char * msg )
 /********************************/
 {
     LnkMsg( FTL+MSG_INTERNAL, "s", msg );
 }
 
-bool TestBit( byte * array, unsigned num )
+extern bool TestBit( byte * array, unsigned num )
 /***********************************************/
 /* return TRUE if the specified bit is on */
 {
@@ -188,7 +188,7 @@ bool TestBit( byte * array, unsigned num )
     return( *( array + num ) & mask );
 }
 
-void ClearBit( byte * array, unsigned num )
+extern void ClearBit( byte * array, unsigned num )
 /************************************************/
 /* make sure a bit is turned off */
 {
@@ -200,7 +200,7 @@ void ClearBit( byte * array, unsigned num )
     *array &= ~mask;
 }
 
-char * ChkStrDup( char * str )
+extern char * ChkStrDup( char * str )
 /***********************************/
 {
     size_t      len;
@@ -212,7 +212,7 @@ char * ChkStrDup( char * str )
     return( copy );
 }
 
-void * ChkMemDup( void * mem, unsigned len  )
+extern void * ChkMemDup( void * mem, unsigned len  )
 /**************************************************/
 {
     char *      copy;
@@ -229,7 +229,7 @@ static void WalkModList( section *sect, void *rtn )
     WalkList( (node *) sect->mods, rtn );
 }
 
-void WalkMods( void (*rtn)( mod_entry * ) )
+extern void WalkMods( void (*rtn)( mod_entry * ) )
 /************************************************/
 {
     ParmWalkAllSects( WalkModList, rtn );
@@ -243,7 +243,7 @@ static void WalkClass( class_entry *class, void (*rtn)( seg_leader * ) )
     RingWalk( class->segs, (void (*)(void *))rtn );
 }
 
-void SectWalkClass( section *sect, void *rtn )
+extern void SectWalkClass( section *sect, void *rtn )
 /***************************************************/
 {
     class_entry *       class;
@@ -254,7 +254,7 @@ void SectWalkClass( section *sect, void *rtn )
     }
 }
 
-void WalkLeaders( void (*rtn)( seg_leader * ) )
+extern void WalkLeaders( void (*rtn)( seg_leader * ) )
 /****************************************************/
 {
     ParmWalkAllSects( SectWalkClass, rtn );
@@ -275,7 +275,7 @@ static bool CmpSegName( void *leader, void *name )
     return( stricmp( ((seg_leader *)leader)->segname, name ) == 0 );
 }
 
-seg_leader * FindSegment( char *name )
+extern seg_leader * FindSegment( char *name )
 /*******************************************/
 /* NOTE: this doesn't work for overlays! */
 {
@@ -292,7 +292,7 @@ seg_leader * FindSegment( char *name )
     return( seg );
 }
 
-void LinkList( void **in_head, void *newnode )
+extern void LinkList( void **in_head, void *newnode )
 /***************************************************/
 /* Link a new node into a linked list (new node goes at the end of the list) */
 {
@@ -306,7 +306,7 @@ void LinkList( void **in_head, void *newnode )
     *owner = newnode;
 }
 
-void FreeList( void *_curr )
+extern void FreeList( void *_curr )
 /*********************************/
 /* Free a list of nodes. */
 {
@@ -320,7 +320,7 @@ void FreeList( void *_curr )
     }
 }
 
-name_list * AddNameTable( char *name, unsigned len, bool is_mod,
+extern name_list * AddNameTable( char *name, unsigned len, bool is_mod,
                                                         name_list **owner )
 /*************************************************************************/
 {
@@ -352,7 +352,7 @@ name_list * AddNameTable( char *name, unsigned len, bool is_mod,
     return( imp );
 }
 
-unsigned_16 binary_log( unsigned_16 value )
+extern unsigned_16 binary_log( unsigned_16 value )
 /************************************************/
 // This calculates the binary log of value, truncating decimals.
 {
@@ -372,7 +372,7 @@ unsigned_16 binary_log( unsigned_16 value )
     return( log );
 }
 
-unsigned_16 blog_32( unsigned_32 value )
+extern unsigned_16 blog_32( unsigned_32 value )
 /*********************************************/
 // This calculates the binary log of a 32-bit value, truncating decimals.
 {
@@ -392,7 +392,7 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-char * RemovePath( char *name, int *len )
+extern char * RemovePath( char *name, int *len )
 /**********************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
@@ -426,7 +426,7 @@ char * RemovePath( char *name, int *len )
 
 #define MAXDEPTH        ( sizeof( unsigned ) * 8 )
 
-void VMemQSort( virt_mem base, unsigned n, unsigned width,
+extern void VMemQSort( virt_mem base, unsigned n, unsigned width,
                         void (*swapfn)( virt_mem, virt_mem ),
                         int (*cmpfn)( virt_mem, virt_mem ) )
 /***************************************************************/
@@ -523,7 +523,7 @@ void VMemQSort( virt_mem base, unsigned n, unsigned width,
 
 static void *SpawnStack;
 
-int Spawn( void (*fn)() )
+extern int Spawn( void (*fn)() )
 /******************************/
 {
     void *  save_env;
@@ -540,7 +540,7 @@ int Spawn( void (*fn)() )
     return( status );
 }
 
-void Suicide( void )
+extern void Suicide( void )
 /*************************/
 {
     if( SpawnStack != NULL ) {
@@ -548,7 +548,7 @@ void Suicide( void )
     }
 }
 
-f_handle SearchPath( char *name )
+extern f_handle SearchPath( char *name )
 /**************************************/
 {
     char *      path;
@@ -575,7 +575,7 @@ f_handle SearchPath( char *name )
     return( NIL_HANDLE );
 }
 
-group_entry *FindGroup( segment seg )
+extern group_entry *FindGroup( segment seg )
 /******************************************/
 {
     group_entry *group;
@@ -591,7 +591,7 @@ group_entry *FindGroup( segment seg )
     return( group );
 }
 
-offset FindLinearAddr( targ_addr *addr )
+extern offset FindLinearAddr( targ_addr *addr )
 /*********************************************/
 {
     group_entry *group;
@@ -603,7 +603,7 @@ offset FindLinearAddr( targ_addr *addr )
     return( addr->off );
 }
 
-offset FindLinearAddr2( targ_addr *addr )
+extern offset FindLinearAddr2( targ_addr *addr )
 /*********************************************/
 {
     group_entry *group;
