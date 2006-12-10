@@ -74,7 +74,6 @@ usr="wsample.h"
 #
 # C++ headers
 #
-usr="_hash.h"
 usr="_rbtree.h"
 usr="_strdef.h"
 usr="eh.h"
@@ -162,7 +161,6 @@ usr="string"
 usr="strstrea"
 usr="typeinfo"
 usr="type_tra"
-usr="unordere"
 usr="utility"
 usr="valarray"
 usr="vector"
@@ -254,7 +252,6 @@ usr="varargs.h"
 #
 # C++ headers
 #
-usr="_hash.h"
 usr="_rbtree.h"
 usr="_strdef.h"
 usr="fstream.h"
@@ -341,7 +338,6 @@ usr="string"
 usr="strstrea"
 usr="typeinfo"
 usr="type_tra"
-usr="unordere"
 usr="utility"
 usr="valarray"
 usr="vector"

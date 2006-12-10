@@ -34,10 +34,10 @@
 #include <malloc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef __WATCOMC__
-#include "clibext.h"
-#endif
-#ifndef __UNIX__
+#if defined( UNIX )
+#include <clibext.h>
+#elif defined( __UNIX__ )
+#else
 #include <dos.h>
 #endif
 #include "wpack.h"
@@ -516,14 +516,14 @@ extern bool DecodeFile( file_info *info, arccmd *cmd )
 static int FileExists( char *name, file_info *info )            /* 26-may-90 */
 {
     auto struct stat            statblk;
-#if !defined( __UNIX__ )
+#if !defined( UNIX ) && !defined( __UNIX__ )
     unsigned                    attribute;
 #endif
     int                         rc;
 
     rc = stat( name, &statblk );
     if( rc == 0 ) {
-#if defined( __UNIX__ )
+#if defined( UNIX ) || defined( __UNIX__ )
         if( !( statblk.st_mode & S_IWRITE ) ) {
 #else
         _dos_getfileattr( name, &attribute );
@@ -533,7 +533,7 @@ static int FileExists( char *name, file_info *info )            /* 26-may-90 */
             if( !OK_ReplaceRDOnly( name ) ) {
                 return( 1 );
             }
-#if defined( __UNIX__ )
+#if defined( UNIX ) || defined( __UNIX__ )
             chmod( name, 0777 );
 #else
             _dos_setfileattr( name, _A_NORMAL );

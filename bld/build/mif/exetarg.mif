@@ -1,4 +1,4 @@
-$(proj_name).exe : $(objs) $(libs) $(cl_objs)
+$(proj_name).exe : $(objs) $(libs)
 !ifeq verbose 1
         $(cl) $(clflags) $< $(cl_libs)
 !else

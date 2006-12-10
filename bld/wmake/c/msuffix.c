@@ -98,7 +98,7 @@ STATIC BOOLEAN freeSuffix( void *node, void *ptr )
 }
 
 
-void ClearSuffixes( void )
+extern void ClearSuffixes( void )
 /********************************
  * clear all suffix definitions
  */
@@ -158,14 +158,14 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **p )
 #endif
 
 
-SUFFIX *FindSuffix( const char *name )
+extern SUFFIX *FindSuffix( const char *name )
 /*******************************************/
 {
     return( findSuffixNode( name, NULL ) );
 }
 
 
-BOOLEAN SufExists( const char *name )    /* with . */
+extern BOOLEAN SufExists( const char *name )    /* with . */
 /******************************************/
 {
     assert( name != NULL && name[0] == DOT );
@@ -195,7 +195,7 @@ STATIC void AddFrontSuffix( char const *name )
 }
 
 
-BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
+extern BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
 /************************************************
  *  for MS-Option it only checks if the dependent suffix is defined
  *  so no need for checking the target suffix if it exists
@@ -225,7 +225,7 @@ BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
 }
 
 
-void AddSuffix( char *name )
+extern void AddSuffix( char *name )
 /**********************************
  * pass name with leading .; adds name to suffix table and assigns id
  * retains use of name after call
@@ -298,7 +298,7 @@ STATIC void ringPath( PATHRING **pring, const char *path )
 }
 
 
-void SetSufPath( const char *name, const char *path )
+extern void SetSufPath( const char *name, const char *path )
 /**********************************************************/
 /* name with . */
 {
@@ -331,7 +331,7 @@ STATIC CREATOR *newCreator( void )
 }
 
 
-void AddCreator( const char *sufsuf )
+extern void AddCreator( const char *sufsuf )
 /*******************************************
  * add the creation .src.dest
  */
@@ -425,7 +425,7 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
 }
 
 
-void PrintSuffixes( void )
+extern void PrintSuffixes( void )
 /*******************************/
 {
     WalkHashTab( sufTab, printSuf, NULL );
@@ -486,7 +486,7 @@ STATIC RET_T tryPathRing( PATHRING **pring, char *buffer,
 }
 
 
-RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg,
+extern RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg,
     BOOLEAN tryenv )
 /*****************************************************************************
  * it is NOT necessary that filename != buffer
@@ -562,7 +562,7 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg,
 }
 
 
-void SuffixInit( void )
+extern void SuffixInit( void )
 /****************************/
 {
     sufTab = NewHashTab( HASH_PRIME );
@@ -571,7 +571,7 @@ void SuffixInit( void )
 }
 
 
-void SuffixFini( void )
+extern void SuffixFini( void )
 /****************************/
 {
 #ifdef DEVELOPMENT

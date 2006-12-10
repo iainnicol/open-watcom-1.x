@@ -69,7 +69,7 @@ void ResetObjPass1( void )
     ObjFormat = 0;
 }
 
-void P1Start( void )
+extern void P1Start( void )
 /*************************/
 {
     LastCodeSeg = NULL;
@@ -126,7 +126,7 @@ static bool StoreCDatData( void *_piece, void *_loc )
     return FALSE;
 }
 
-void StoreInfoData( comdat_info *info )
+extern void StoreInfoData( comdat_info *info )
 /********************************************/
 {
     virt_mem    temp;
@@ -193,7 +193,7 @@ static bool CheckAltSym( void *_sym, void *_info )
     return FALSE;
 }
 
-void InfoCDatAltDef( comdat_info *info )
+extern void InfoCDatAltDef( comdat_info *info )
 /*********************************************/
 {
     symbol *    mainsym;
@@ -280,7 +280,7 @@ static void DoIncSymbol( void *_sym )
     }
 }
 
-unsigned long IncPass1( void )
+extern unsigned long IncPass1( void )
 /***********************************/
 {
     segdata *   seglist;
@@ -359,7 +359,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
     return FALSE;
 }
 
-void DoIncGroupDefs( void )
+extern void DoIncGroupDefs( void )
 /********************************/
 {
     unsigned            numgroups;
@@ -373,7 +373,7 @@ void DoIncGroupDefs( void )
     IncGroupDefs = NULL;
 }
 
-void Set32BitMode( void )
+extern void Set32BitMode( void )
 /******************************/
 // make sure that the executable format is a 386 format.
 {
@@ -387,7 +387,7 @@ void Set32BitMode( void )
     }
 }
 
-void Set16BitMode( void )
+extern void Set16BitMode( void )
 /******************************/
 {
     if( !HintFormat( MK_ALLOW_16 ) ) {
@@ -399,7 +399,7 @@ void Set16BitMode( void )
     }
 }
 
-void AllocateSegment( segnode *newseg, char *clname )
+extern void AllocateSegment( segnode *newseg, char *clname )
 /**********************************************************/
 // allocate a new segment (or new piece of a segment)
 {
@@ -451,7 +451,7 @@ static void CheckQNXSegMismatch( stateflag mask )
     }
 }
 
-void AddSegment( segdata *sd, class_entry *class )
+extern void AddSegment( segdata *sd, class_entry *class )
 /*******************************************************/
 /* Add a segment to the segment list for an object file */
 {
@@ -513,7 +513,7 @@ void AddSegment( segdata *sd, class_entry *class )
     }
 }
 
-class_entry * FindClass( section *sect, char *name, bool is32bit,
+extern class_entry * FindClass( section *sect, char *name, bool is32bit,
                                 bool iscode )
 /*********************************************************************/
 {
@@ -618,7 +618,7 @@ static void FindALeader( segdata *sdata, class_entry *class, unsigned_16 info )
     }
 }
 
-seg_leader *InitLeader( char *segname, unsigned_16 info )
+extern seg_leader *InitLeader( char *segname, unsigned_16 info )
 /**************************************************************/
 {
     seg_leader * seg;
@@ -640,7 +640,7 @@ seg_leader *InitLeader( char *segname, unsigned_16 info )
     return( seg );
 }
 
-void FreeLeader( void *seg )
+extern void FreeLeader( void *seg )
 /*********************************/
 {
     RingWalk( ((seg_leader *)seg)->pieces, FreeSegData );
@@ -665,7 +665,7 @@ static bool CmpLeaderPtr( void *a, void *b )
     return a == b;
 }
 
-void AddToGroup( group_entry *group, seg_leader *seg )
+extern void AddToGroup( group_entry *group, seg_leader *seg )
 /***********************************************************/
 {
     if( Ring2Lookup( group->leaders, CmpLeaderPtr, seg ) ) return;
@@ -691,7 +691,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     Ring2Append( &group->leaders, seg );
 }
 
-void SetAddPubSym(symbol *sym, int type, mod_entry *mod, offset off,
+extern void SetAddPubSym(symbol *sym, int type, mod_entry *mod, offset off,
                          unsigned_16 frame )
 /*************************************************************************/
 {
@@ -701,7 +701,7 @@ void SetAddPubSym(symbol *sym, int type, mod_entry *mod, offset off,
     Ring2Append( &mod->publist, sym );
 }
 
-void DefineSymbol( symbol *sym, segnode *seg, offset off,
+extern void DefineSymbol( symbol *sym, segnode *seg, offset off,
                           unsigned_16 frame )
 /**************************************************************/
 // do the object file independent public symbol definition.
@@ -827,7 +827,7 @@ static void FarAllocCommunal( symbol *sym, unsigned size )
     sym->info |= SYM_DEFINED;
 }
 
-void AllocCommunal( symbol *sym, offset size )
+extern void AllocCommunal( symbol *sym, offset size )
 /***************************************************/
 {
     if( LinkFlags & STRIP_CODE ) {
@@ -840,7 +840,7 @@ void AllocCommunal( symbol *sym, offset size )
     }
 }
 
-symbol * MakeCommunalSym( symbol *sym, offset size, bool isfar,
+extern symbol * MakeCommunalSym( symbol *sym, offset size, bool isfar,
                                  bool is32bit )
 /*********************************************************************/
 {
@@ -879,7 +879,7 @@ symbol * MakeCommunalSym( symbol *sym, offset size, bool isfar,
     return sym;
 }
 
-void CheckComdatSym( symbol *sym, unsigned flags )
+extern void CheckComdatSym( symbol *sym, unsigned flags )
 /*******************************************************/
 // check a comdat redefinition to see if it is OK
 // NYI: SYM_CDAT_SEL_SIZE, SYM_CDAT_SEL_EXACT, & SYM_CDAT_SEL_ASSOC not yet
@@ -898,7 +898,7 @@ void CheckComdatSym( symbol *sym, unsigned flags )
     }
 }
 
-void SetComdatSym( symbol *sym, segdata *sdata )
+extern void SetComdatSym( symbol *sym, segdata *sdata )
 /*****************************************************/
 {
     if( LinkFlags & STRIP_CODE ) {
@@ -914,7 +914,7 @@ void SetComdatSym( symbol *sym, segdata *sdata )
     sym->p.seg = sdata;
 }
 
-void DefineComdat( segdata *sdata, symbol *sym, offset value,
+extern void DefineComdat( segdata *sdata, symbol *sym, offset value,
                           sym_info select, char *data )
 /******************************************************************/
 {
@@ -944,7 +944,7 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
     }
 }
 
-void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
+extern void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
 /*******************************************************************/
 /* handle the lazy and weak extdef comments */
 {
@@ -1047,7 +1047,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
     }
 }
 
-void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
+extern void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
                                  vflistrtns *rtns )
 /**********************************************************************/
 // process the watcom virtual function table information extension
@@ -1096,7 +1096,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
     }
 }
 
-void DefineVFReference( void *src, symbol * targ, bool issym )
+extern void DefineVFReference( void *src, symbol * targ, bool issym )
 /*******************************************************************/
 {
     if( issym ) {
@@ -1108,7 +1108,7 @@ void DefineVFReference( void *src, symbol * targ, bool issym )
     }
 }
 
-void DefineReference( symbol * sym )
+extern void DefineReference( symbol * sym )
 /*****************************************/
 // we have an object file reference for sym
 {
@@ -1122,7 +1122,7 @@ void DefineReference( symbol * sym )
     }
 }
 
-group_entry * GetGroup( char *name )
+extern group_entry * GetGroup( char *name )
 /*****************************************/
 /* Get group of specified name. */
 {
@@ -1135,7 +1135,7 @@ group_entry * GetGroup( char *name )
     return grp;
 }
 
-group_entry * SearchGroups( char *name )
+extern group_entry * SearchGroups( char *name )
 /*********************************************/
 /* Find group of specified name. */
 {
@@ -1150,7 +1150,7 @@ group_entry * SearchGroups( char *name )
     return NULL;
 }
 
-void SetCurrSeg( segdata *seg, offset obj_offset, char *data )
+extern void SetCurrSeg( segdata *seg, offset obj_offset, char *data )
 /*******************************************************************/
 /* register a segment for the purposes of storing relocations */
 {
@@ -1160,7 +1160,7 @@ void SetCurrSeg( segdata *seg, offset obj_offset, char *data )
     CurrRec.data = data;
 }
 
-void SeenDLLRecord( void )
+extern void SeenDLLRecord( void )
 /*******************************/
 {
     LinkState |= FMT_SEEN_IMPORT_CMT;
@@ -1170,7 +1170,7 @@ void SeenDLLRecord( void )
     }
 }
 
-void HandleImport( length_name *intname, length_name *modname,
+extern void HandleImport( length_name *intname, length_name *modname,
                           length_name *extname, unsigned long ordinal )
 /*********************************************************************/
 // handle the import coment record
@@ -1197,7 +1197,7 @@ void HandleImport( length_name *intname, length_name *modname,
     }
 }
 
-void HandleExport( length_name *expname, length_name *intname,
+extern void HandleExport( length_name *expname, length_name *intname,
                           unsigned flags, unsigned ordinal )
 /*******************************************************************/
 {
@@ -1212,7 +1212,7 @@ void HandleExport( length_name *expname, length_name *intname,
     AddNameTable( expname->name, expname->len, TRUE, &FmtData.u.nov.exp.export);
 }
 
-bool CheckVFList( symbol * sym )
+extern bool CheckVFList( symbol * sym )
 /*************************************/
 /* see if any of the conditional symbols for this symbol are defined */
 {

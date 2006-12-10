@@ -214,9 +214,7 @@ namespace std {
     typedef typename iterator_traits< Iterator >::reference reference;
     typedef typename iterator_traits< Iterator >::pointer pointer;
 
-    reverse_iterator( ) : current( )
-      { }
-
+    reverse_iterator( );
     explicit reverse_iterator( Iterator it ) : current( it )
       { }
 

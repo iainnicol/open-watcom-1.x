@@ -62,7 +62,7 @@ static unsigned long ARstrlen( char * str )
     return( c-str );
 }
 
-char *GetARName( ar_header *header, arch_header *arch )
+extern char *GetARName( ar_header *header, arch_header *arch )
 /************************************************************/
 {
     char        buffer[AR_NAME_LEN + 1];
@@ -84,7 +84,7 @@ char *GetARName( ar_header *header, arch_header *arch )
     return( name );
 }
 
-char *GetFFName( arch_header *arch )
+extern char *GetFFName( arch_header *arch )
 {
     char        *name=NULL;
     file_offset len;

@@ -46,7 +46,7 @@
     #endif
     #define NOCOMM
     #include <windows.h>
-    #if defined( __UNIX__ )
+    #if defined( UNIX )
         #include <wtypes.h>
         #include <windef.h>
     #endif

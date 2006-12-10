@@ -39,7 +39,7 @@
 #include "distrib.h"
 #include "overlays.h"
 
-void ProcAllSects( void (*rtn)( section * ) )
+extern void ProcAllSects( void (*rtn)( section * ) )
 /**************************************************/
 {
     rtn( Root );
@@ -48,7 +48,7 @@ void ProcAllSects( void (*rtn)( section * ) )
     }
 }
 
-void ProcAllOvl( void (*rtn)( section * ) )
+extern void ProcAllOvl( void (*rtn)( section * ) )
 /************************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -56,7 +56,7 @@ void ProcAllOvl( void (*rtn)( section * ) )
     }
 }
 
-void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
+extern void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
 /**************************************************************************/
 {
     rtn( Root, parm );
@@ -65,7 +65,7 @@ void ParmWalkAllSects( void (*rtn)( section *, void * ), void *parm )
     }
 }
 
-void ParmWalkAllOvl( void (*rtn)( section *, void * ), void *parm )
+extern void ParmWalkAllOvl( void (*rtn)( section *, void * ), void *parm )
 /************************************************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -82,7 +82,7 @@ static void NumASect( section *sect )
     sect->ovl_num = OvlNum++;
 }
 
-void NumberSections( void )
+extern void NumberSections( void )
 /********************************/
 {
     if( ( FmtData.type & MK_OVERLAYS ) && FmtData.u.dos.distribute ) {
@@ -93,13 +93,13 @@ void NumberSections( void )
     ProcAllOvl( &NumASect );
 }
 
-void FillOutFilePtrs( void )
+extern void FillOutFilePtrs( void )
 /*********************************/
 {
     ProcAllOvl( FillOutPtr );
 }
 
-void TryDefVector( symbol * sym )
+extern void TryDefVector( symbol * sym )
 /**************************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -111,7 +111,7 @@ void TryDefVector( symbol * sym )
     }
 }
 
-void TryUseVector( symbol * sym, extnode *newnode )
+extern void TryUseVector( symbol * sym, extnode *newnode )
 /********************************************************/
 {
     if( newnode != NULL ) {
@@ -122,7 +122,7 @@ void TryUseVector( symbol * sym, extnode *newnode )
     }
 }
 
-section * GetOvlSect( char *clname )
+extern section * GetOvlSect( char *clname )
 /*****************************************/
 /* Pick the right section for this segment, based on its class */
 {
@@ -143,7 +143,7 @@ static void PSection( section *sec )
     PModList( sec->mods );
 }
 
-void OvlPass2( void )
+extern void OvlPass2( void )
 /**************************/
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -153,7 +153,7 @@ void OvlPass2( void )
 }
 
 #ifdef OVERLAY_VERSION1
-void TryGetVector( extnode *ext, thread *targ )
+extern void TryGetVector( extnode *ext, thread *targ )
 /****************************************************/
 {
     /* check if reference needs overlay vector */
