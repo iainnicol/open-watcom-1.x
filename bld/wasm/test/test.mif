@@ -17,7 +17,7 @@ log_file=testasm.log
 .BEFORE
     @%create $(log_file)
 
-all : clean $(objs) .SYMBOLIC
+all : clean $(objs) $(dev_objs) .SYMBOLIC
 
 !ifdef objs
 !ifneq objs
@@ -27,10 +27,25 @@ $(objs) : .SYMBOLIC
     @echo ==============================================================
     @%append $(nulldevice) $^@
     @%append $(log_file) === $(testasm) $^@ ===
-    @$(testasm) -q -zld -wx -nm=$^@.asm $(asm_flags_$^@) $^@.asm -fr=$^@.out -fo=$^@.obj > $(nulldevice)
+    @$(testasm) -q -zld -wx -nm=$^@.asm $(asm_flags_$^@) $^@.asm -fr=$^@.out >>$(nulldevice)
     @wmake -h -f ../check.mif name=$^@ log_file=$(log_file)
 !endif
 !endif
 
+!ifdef dev_objs
+!ifneq dev_objs
+$(dev_objs) : .SYMBOLIC
+    @echo .
+    @echo ==============================================================
+    @echo DEVELOPMENT - $(testasm) $^@.asm 
+    @echo ==============================================================
+    @%append $(nulldevice) $^@
+    @%append $(log_file) === $(testasm) $^@ ===
+    @$(testasm) -q -zld -wx -nm=$^@.asm $(asm_flags_$^@) $^@.asm -fr=$^@.out >>$(nulldevice)
+    @wmake -h -f ../check.mif name=$^@ log_file=$(log_file)
+    @echo .
+!endif
+!endif
+
 clean : .SYMBOLIC
-    @rm -f *.obj *.err *.dis *.lst *.tmp *.out mem.trk *.log
+    @rm -f *.obj *.err *.dis *.lst *.tmp *.out mem.trk

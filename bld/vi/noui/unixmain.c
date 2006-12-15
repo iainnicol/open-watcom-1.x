@@ -42,6 +42,7 @@
 
 #ifndef __WATCOMC__
 int _argc;
+char **_argv;
 #endif
 
 void main( int argc, char *argv[] )

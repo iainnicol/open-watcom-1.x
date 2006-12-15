@@ -11,10 +11,10 @@ fi
 if [ ! -f $DEVDIR/build/binl/wtouch ]; then
     cp -p `which touch` $DEVDIR/build/binl/wtouch
 fi
-cd bld/wmake
+cd bld/clib
 $MAKE -f gnumake
-mkdir ../builder/$OBJDIR
-cd ../builder/$OBJDIR
-wmake -h -f ../linux386/makefile builder.exe bootstrap=1
-cd ../..
-builder -s -c boot.ctl boot 
+cd ../builder
+$MAKE -f gnumake
+cp $OBJDIR/builder ../build/binl
+cd ..
+builder -c boot.ctl boot 

@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#if defined(__WATCOMC__)
 extern unsigned int __rotl( unsigned int value, unsigned int shift );
 
 #if defined(__386__)
@@ -42,7 +41,6 @@ extern unsigned int __rotl( unsigned int value, unsigned int shift );
 #elif defined(M_I86)
 #pragma aux __rotl = "rol ax,cl" parm [ax] [cx] value [ax] modify [cx];
 #endif
-#endif /* __WATCOMC__ */
 
 _WCRTLINK unsigned int _rotl( unsigned int value, unsigned int shift )
 {

@@ -43,4 +43,3 @@ extern void             InitTokBuff( void );
 extern void             FreeTokBuffs( void );
 extern void             BadObject( void );
 extern void             EarlyEOF( void );
-extern void             ResetObjIO( void );

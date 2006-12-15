@@ -143,7 +143,7 @@ void FiniMem( void )
     TRMemClose();
 }
 
-char *DupStr( char *str )
+extern char *DupStr( char *str )
 {
     char *ptr;
 
@@ -152,7 +152,7 @@ char *DupStr( char *str )
     return( ptr );
 }
 
-char *DupStrGlobal( char *str )
+extern char *DupStrGlobal( char *str )
 {
     char *ptr;
 

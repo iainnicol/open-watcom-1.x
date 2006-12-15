@@ -33,8 +33,6 @@
 #include <string.h>
 #ifdef __WATCOMC__
 #include <process.h>
-#else
-#include "clibext.h"
 #endif
 #ifdef IDE_PGM
 #include <stdlib.h>
@@ -49,6 +47,10 @@ char *ImageName;
 static IDEDRV info =
 {   DLL_NAME
 };
+
+#ifndef __WATCOMC__
+const char **_argv;
+#endif
 
 int main                        // MAIN-LINE FOR DLL DRIVER
     ( int count                 // - # args

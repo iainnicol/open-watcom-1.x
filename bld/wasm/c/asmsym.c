@@ -86,7 +86,7 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
         sym->segment = NULL;
         sym->offset = 0;
         sym->public = FALSE;
-        sym->langtype = LANG_NONE;
+        sym->langtype = ModuleInfo.langtype;
         sym->first_size = 0;
         sym->first_length = 0;
         sym->total_size = 0;
@@ -436,37 +436,24 @@ static const char *get_seg_combine( seg_info *seg )
     }
 }
 
-static void log_segment( struct asm_sym *sym, struct asm_sym *group )
-/*******************************************************************/
+static void log_segment( struct asm_sym *sym )
+/********************************************/
 {
     if( sym->state == SYM_SEG ) {
         dir_node    *dir = (dir_node *)sym;
         seg_info    *seg = dir->e.seginfo;
 
-        if( seg->group == group ) {
-            LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-            if( seg->segrec->d.segdef.use_32 ) {
-                LstMsg( "32 Bit   %08lX ", seg->current_loc );
-            } else {
-                LstMsg( "16 Bit   %04lX     ", seg->current_loc );
-            }
-            LstMsg( "%s   %s", get_seg_align( seg ), get_seg_combine( seg ) );
-            LstMsg( "'%s'\n", GetLname( seg->segrec->d.segdef.class_name_idx ) );
+        LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
+        if( seg->segrec->d.segdef.use_32 ) {
+            LstMsg( "32 Bit   %08lX ", seg->current_loc );
+        } else {
+            LstMsg( "16 Bit   %04lX     ", seg->current_loc );
         }
-    }
-}
-
-static void log_group( struct asm_sym **syms, struct asm_sym *sym )
-/*****************************************************************/
-{
-    unsigned        i;
-
-    if( sym->state == SYM_GRP ) {
+        LstMsg( "%s   %s", get_seg_align( seg ), get_seg_combine( seg ) );
+        LstMsg( "'%s'\n", GetLname( seg->segrec->d.segdef.class_name_idx ) );
+    } else if( sym->state == SYM_GRP ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
         LstMsg( "GROUP\n" );
-        for( i = 0; i < AsmSymCount; ++i ) {
-            log_segment( syms[i], sym );
-        }
     }
 }
 
@@ -493,52 +480,6 @@ static const char *get_sym_type( struct asm_sym *sym )
     }
 }
 
-static const char *get_proc_type( struct asm_sym *sym )
-/*****************************************************/
-{
-    switch( sym->mem_type ) {
-    case MT_NEAR:
-        return( "P Near " );
-    case MT_FAR:
-        return( "P Far  " );
-    default:
-        return( "       " );
-    }
-}
-
-static const char *get_sym_lang( struct asm_sym *sym )
-/****************************************************/
-{
-    switch( sym->langtype ) {
-    case LANG_C:
-        return( "C" );
-    case LANG_BASIC:
-        return( "BASIC" );
-    case LANG_FORTRAN:
-        return( "FORTRAN" );
-    case LANG_PASCAL:
-        return( "PASCAL" );
-    case LANG_WATCOM_C:
-        return( "WATCOM_C" );
-    case LANG_STDCALL:
-        return( "STDCALL" );
-    case LANG_SYSCALL:
-        return( "SYSCALL" );
-    default:
-        return( "" );
-    }
-}
-
-static const char *get_sym_seg_name( struct asm_sym *sym )
-/********************************************************/
-{
-    if( sym->segment ) {
-        return( sym->segment->name );
-    } else {
-        return( "No Seg" );
-    }
-}
-
 static void log_symbol( struct asm_sym *sym )
 /*******************************************/
 {
@@ -555,36 +496,19 @@ static void log_symbol( struct asm_sym *sym )
     } else if( sym->state == SYM_INTERNAL && !IS_SYM_COUNTER( sym->name ) ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
         LstMsg( "%s  %04X     ", get_sym_type( sym ), sym->offset );
-        LstMsg( "%s\t", get_sym_seg_name( sym ) );
-        if( sym->public ) {
-            LstMsg( "Public " );
+        if( sym->segment ) {
+            LstMsg( "%s", sym->segment->name );
+        } else {
+            LstMsg( "No Seg" );
         }
-        LstMsg( "%s", get_sym_lang( sym ) );
+        if( sym->public ) {
+            LstMsg( "\tPublic" );
+        }
         LstMsg( "\n" );
     } else if( sym->state == SYM_EXTERNAL ) {
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
         LstMsg( "%s  %04X     ", get_sym_type( sym ), sym->offset );
-        LstMsg( "%s\t", get_sym_seg_name( sym ) );
-        LstMsg( "External " );
-        LstMsg( "%s", get_sym_lang( sym ) );
-        LstMsg( "\n" );
-    }
-}
-
-static void log_proc( struct asm_sym *sym )
-/*****************************************/
-{
-    if( sym->state == SYM_PROC ) {
-        LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-        LstMsg( "%s  %08X ", get_proc_type( sym ), sym->offset );
-        LstMsg( "%s\t", get_sym_seg_name( sym ) );
-        LstMsg( "Length= %08X ", sym->total_size );
-        if( sym->public ) {
-            LstMsg( "Public " );
-        } else {
-            LstMsg( "Private " );
-        }
-        LstMsg( "%s", get_sym_lang( sym ) );
+        LstMsg( "External" );
         LstMsg( "\n" );
     }
 }
@@ -604,24 +528,12 @@ void WriteListing( void )
         LstMsg( "\n\nSegments and Groups:\n\n" );
         LstMsg( "                N a m e                 Size" );
         LstMsg( "     Length   Align   Combine Class\n\n" );
-        /* write out groups with associated segments */
         for( i = 0; i < AsmSymCount; ++i ) {
-            log_group( syms, syms[i] );
-        }
-        /* write out remaining segments, outside any group */
-        for( i = 0; i < AsmSymCount; ++i ) {
-            log_segment( syms[i], NULL );
+            log_segment( syms[i] );
         }
         LstMsg( "\n" );
 
         /* next write out procedures and stuff */
-        LstMsg( "\n\nProcedures:\n\n" );
-        LstMsg( "                N a m e                 Type" );
-        LstMsg( "     Value    Attr\n\n" );
-        for( i = 0; i < AsmSymCount; ++i ) {
-            log_proc( syms[i] );
-        }
-        LstMsg( "\n" );
 
         /* next write out symbols */
         LstMsg( "\n\nSymbols:\n\n" );
@@ -645,7 +557,7 @@ static void DumpSymbol( struct asm_sym *sym )
     dir_node    *dir;
     char        *type;
     char        value[512];
-    const char  *langtype;
+    char        *langtype;
     char        *public;
 
     dir = (dir_node *)sym;
@@ -741,7 +653,32 @@ static void DumpSymbol( struct asm_sym *sym )
     } else {
         public = "";
     }
-    langtype = get_sym_lang( sym );
+    switch( sym->langtype ) {
+    case LANG_C:
+        langtype = "C";
+        break;
+    case LANG_BASIC:
+        langtype = "BASIC";
+        break;
+    case LANG_FORTRAN:
+        langtype = "FORTRAN";
+        break;
+    case LANG_PASCAL:
+        langtype = "PASCAL";
+        break;
+    case LANG_WATCOM_C:
+        langtype = "WATCOM_C";
+        break;
+    case LANG_STDCALL:
+        langtype = "STDCALL";
+        break;
+    case LANG_SYSCALL:
+        langtype = "SYSCALL";
+        break;
+    default:
+        langtype = "";
+        break;
+    }
     DoDebugMsg( "%-30s\t%s\t%s%s\t%8X\t%s\n", sym->name, type, public, langtype, sym->offset, value );
 }
 

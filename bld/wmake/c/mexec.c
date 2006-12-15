@@ -631,13 +631,13 @@ STATIC RET_T percentMake( char *arg )
  * do a recursive make of the target in arg
  */
 {
-    char         *finish;
-    TARGET       *calltarg;
-    RET_T        ret;
-    char         *buf;
-    char         *start;
-    BOOLEAN      newtarg;
-    BOOLEAN      more_targets;
+    TARGET      *calltarg;
+    RET_T       ret;
+    char        *buf;
+    char        *start;
+    char        *finish;
+    BOOLEAN     newtarg;
+    BOOLEAN     more_targets;
 
     /* %make <target> <target> ... */
     buf = MallocSafe( _MAX_PATH );
@@ -1007,31 +1007,19 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
     }
 
     closeCurrentFile();
-#ifdef __UNIX__
+#ifdef __LINUX__
     retcode = intSystem( cmd );
 #else
     retcode = system( cmd );
 #endif
     lastErrorLevel = (UINT8)retcode;
-#ifdef __UNIX__
-    if( retcode != -1 && WIFEXITED( retcode ) ) {
-        lastErrorLevel = WEXITSTATUS( retcode );
-        if( lastErrorLevel == 0 ) {
-            return( RET_SUCCESS );
-        }
-        if( lastErrorLevel == 127 ) {
-            PrtMsg( ERR| UNABLE_TO_EXEC, cmdname );
-        }
-    }
-#else
     if( retcode < 0 ) {
         PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );
     }
-    if( retcode == 0 ) {
-        return( RET_SUCCESS );
+    if( retcode != 0 ) {
+        return( RET_ERROR );
     }
-#endif
-    return( RET_ERROR );
+    return( RET_SUCCESS );
 }
 
 

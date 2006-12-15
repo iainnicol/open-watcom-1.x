@@ -34,4 +34,3 @@ extern void     DoRelocs( void );
 extern void     ProcBakpat( void );
 extern void     DoBakPats( void );
 extern void     ProcNbkpat( void );
-extern void     ResetOMFReloc( void );

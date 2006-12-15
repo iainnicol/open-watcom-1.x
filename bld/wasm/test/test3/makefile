@@ -25,6 +25,7 @@ float &
 indirect &
 jmpimpl &
 jmpshrt &
+lea &
 lsxxx &
 mmx &
 movx &
@@ -47,6 +48,9 @@ support &
 tbyte &
 testequ &
 tst1
+
+dev_objs = &
+irpexitm
 
 asm_flags_callcnv1 = -zcm
 asm_flags_callcnv3 = -3r

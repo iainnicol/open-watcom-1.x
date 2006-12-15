@@ -19,5 +19,4 @@ set PROJDIR=<CWD>
     wmake -h -f ../bootmake
     <CPCMD> wlib.exe <DEVDIR>/build/bin/wlib
     <CPCMD> wlib.exe <DEVDIR>/build/bin/bwlib
-    <CPCMD> wlib.exe <DEVDIR>/build/binl/bwlib
     cdsay <PROJDIR>

@@ -54,10 +54,9 @@ set ODIR=<OBJDIR>
 
 [ BLOCK <BUILD_PLATFORM> linux386boot ]
 #======================================
-    mkdir <PROJDIR>/<PREOBJDIR>
-    cdsay <PROJDIR>/<PREOBJDIR>
-    wmake -h -f ../linux386/makefile bootstrap=1
-    <CPCMD> yacc.exe <OWBINDIR>/byacc
+    cdsay <PROJDIR>
+    <MAKE> -f gnumake
+    <CPCMD> <OBJDIR>/yacc <OWBINDIR>/byacc
 
 [ BLOCK <BUILD_PLATFORM> linux386 ]
 #==================================

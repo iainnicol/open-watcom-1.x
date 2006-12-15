@@ -100,6 +100,6 @@ void FinishWindows( void )
     FiniColors();
     ct.height = 7;
     ct.width = 100;
-    NewCursor( (window_id) 0, ct );
+    NewCursor( NULL, ct );
     MemFree( ScreenImage );
 } /* FinishWindows */

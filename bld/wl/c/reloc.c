@@ -66,7 +66,7 @@ typedef struct os2_reloc_header {
 unsigned        FmtRelocSize;
 reloc_info  *   FloatFixups;
 
-void ResetReloc( void )
+extern void ResetReloc( void )
 /****************************/
 {
     FloatFixups = NULL;
@@ -161,7 +161,7 @@ static void DoWriteReloc( reloc_info **list, void *reloc, unsigned size )
     info->sizeleft -= size;
 }
 
-void WriteReloc( group_entry *group, offset off, void *reloc,
+extern void WriteReloc( group_entry *group, offset off, void *reloc,
                         unsigned size )
 /******************************************************************/
 /* write the given relocation to virtual memory */
@@ -212,13 +212,13 @@ void WriteReloc( group_entry *group, offset off, void *reloc,
 }
 
 #ifdef _QNXLOAD
-void FloatReloc( reloc_item * item )
+extern void FloatReloc( reloc_item * item )
 /****************************************/
 {
     DoWriteReloc( &FloatFixups, item, sizeof( qnx_reloc_item ) );
 }
 
-void QNXLinearReloc( group_entry * group, reloc_item * item )
+extern void QNXLinearReloc( group_entry * group, reloc_item * item )
 /******************************************************************/
 {
     DoWriteReloc( &group->g.grp_relocs, item, sizeof( qnx_linear_item ) );
@@ -261,7 +261,7 @@ static bool TraverseRelocBlock( reloc_info ** reloclist, unsigned num,
     return( FALSE );
 }
 
-bool TraverseOS2RelocList( group_entry * group, bool (*fn)( reloc_info * ) )
+extern bool TraverseOS2RelocList( group_entry * group, bool (*fn)( reloc_info * ) )
 /******************************************************************************/
 /* traverse all items in one of the big OS2 page relocation lists */
 {
@@ -317,7 +317,7 @@ static void FreeGroupRelocs( group_entry *group )
     }
 }
 
-void FreeRelocInfo( void )
+extern void FreeRelocInfo( void )
 /*******************************/
 /* free up blocks allocated for relocations */
 {
@@ -338,7 +338,7 @@ void FreeRelocInfo( void )
     }
 }
 
-unsigned_32 RelocSize( reloc_info * list )
+extern unsigned_32 RelocSize( reloc_info * list )
 /***********************************************/
 /* find the size of all the relocations stored here */
 {
@@ -352,7 +352,7 @@ unsigned_32 RelocSize( reloc_info * list )
     return( size );
 }
 
-unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
+extern unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
 /***********************************************************************/
 /* write the given reloc information list to loadfile */
 {
@@ -383,14 +383,14 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
     return( total );
 }
 
-bool DumpRelocList( reloc_info * list )
+extern bool DumpRelocList( reloc_info * list )
 /********************************************/
 {
     DumpMaxRelocList( &list, 0 );
     return( FALSE );            /* so traverse works */
 }
 
-void SetRelocSize( void )
+extern void SetRelocSize( void )
 /******************************/
 {
     if( FmtData.type & ( MK_OS2 | MK_WIN_VXD ) ) {
@@ -462,7 +462,7 @@ static bool SpillAreas( OVL_AREA *ovl )
     return( FALSE );
 }
 
-bool SwapOutRelocs( void )
+extern bool SwapOutRelocs( void )
 /*******************************/
 {
     group_entry         *group;

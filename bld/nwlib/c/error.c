@@ -30,8 +30,6 @@
 
 
 #include <wlib.h>
-#include <wresset2.h>   /* for FileShift */
-
 jmp_buf Env;
 
 #define NIL_HANDLE      ((int)-1)
@@ -40,6 +38,9 @@ jmp_buf Env;
 static  HANDLE_INFO     hInstance = { 0 };
 static  int             Res_Flag;
 static  unsigned        MsgShift;
+extern  long            FileShift;
+
+
 
 static off_t res_seek( WResFileID handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
