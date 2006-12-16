@@ -8,6 +8,4 @@ rm foo < /dev/null
 rm -f foo
 rm -f foo
 mkdir food
-rm -f food
-rm: cannot remove `food': Is a directory
 rm -f -r food

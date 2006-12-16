@@ -7,7 +7,7 @@ DIR = dyr
 !   error failed
 !endif
 
-!if [false] != 255
+!if [false] < 1
 !    error failed
 !endif
 

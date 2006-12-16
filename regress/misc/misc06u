@@ -15,5 +15,6 @@ all: .symbolic
     rm -f foo
     rm -f foo
     mkdir food
-    -rm -f food
+# The following is difficult to test as the rm error message varies among implementations
+#    -rm -f food
     rm -f -r food

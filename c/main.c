@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  wmake input analysis
+* Description:  Mainline and command line processing for wmake.
 *
 ****************************************************************************/
 
@@ -32,9 +32,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#if defined(__OS2__) || defined(__DOS__)
-   #include <stdio.h>
-#endif
+#include <stdio.h>
 #ifdef __WATCOMC__
     #include <process.h>
 #endif

@@ -37,10 +37,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#if defined( __WATCOMC__ ) || !defined( __LINUX__ )
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-#ifdef __LINUX__
+#ifdef __UNIX__
     #include <sys/wait.h>
 #endif
 #include <stdio.h>
@@ -958,7 +958,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
     return( RET_SUCCESS );
 }
 
-#ifdef __LINUX__
+#ifdef __UNIX__
 STATIC int intSystem( const char *cmd )
 /**************************************
  * interruptable "system" (so that ctrl-c works)
@@ -1031,6 +1031,7 @@ STATIC RET_T mySystem( const char *cmdname, const char *cmd )
         return( RET_SUCCESS );
     }
 #endif
+    // FIXME: This probably ought to return actual retcode from child process
     return( RET_ERROR );
 }
 
@@ -1415,6 +1416,7 @@ STATIC RET_T handleFor( char *line )
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_FOR] );
 #endif
 
+    var = cmd = set = NULL;     /* just to shut up GCC */
     if( getForArgs( line, &var, &set, &cmd ) != RET_SUCCESS ) {
         busy = FALSE;
         return( RET_ERROR );
@@ -1926,7 +1928,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
         closeCurrentFile();
         dll_cmd = OSFindDLL( argv[0] );
         if( dll_cmd == NULL ) {
-#ifdef __LINUX__ /* For Linux we must for now use system since
+#ifdef __UNIX__ /* For UNIX we must for now use system since
                     without splitting argv[1] the spawnvp below
                     does not always work */
             retcode = mySystem( cmdname, cmd );

@@ -55,10 +55,6 @@
         #include "usage.gh"
     };
 
-    static int compar( const void *s1, const void *s2 ) {
-        return ((struct idstr *)s1)->id - ((struct idstr *)s2)->id;
-    }
-
     #ifndef _arraysize
         #define _arraysize( a ) (sizeof(a)/sizeof(a[0]))
     #endif
@@ -139,16 +135,23 @@ int MsgGet( int resourceid, char *buffer )
 /***********************************************/
 {
 #ifdef BOOTSTRAP
-    {
-        struct idstr *s;
-        s = bsearch( &resourceid, StringTable, _arraysize( StringTable ),
-                     sizeof( *s ), compar );
-        if( !s ) {
-            buffer[0] = '\0';
-            return( 0 );
+    struct idstr        *s;
+    int                 i;
+
+    /* Simple linear search must be used because messages are not necessarily in
+     * any particular order (and guaranteeing order is difficult).
+     */
+    for( s = NULL, i = 0; i < _arraysize( StringTable ); ++i ) {
+        if( StringTable[i].id == resourceid ) {
+            s = &StringTable[i];
+            break;
         }
-        strcpy( buffer, s->s );
     }
+    if( !s ) {
+        buffer[0] = '\0';
+        return( 0 );
+    }
+    strcpy( buffer, s->s );
 #else
     if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer,
             MAX_RESOURCE_SIZE ) == -1 ) {
