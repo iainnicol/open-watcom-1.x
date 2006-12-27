@@ -31,6 +31,7 @@ cdsay .
     <CPCMD> <PROJDIR>/dos/csignal        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/cstdarg        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/cstddef        <RELROOT>/rel2/h/
+    <CPCMD> <PROJDIR>/dos/cstdint        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/cstdio         <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/cstdlib        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/cstring        <RELROOT>/rel2/h/
@@ -56,6 +57,7 @@ cdsay .
     <CPCMD> <PROJDIR>/dos/numeric        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/ostream        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/queue          <RELROOT>/rel2/h/
+    <CPCMD> <PROJDIR>/dos/random         <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/set            <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/sstream        <RELROOT>/rel2/h/
     <CPCMD> <PROJDIR>/dos/stack          <RELROOT>/rel2/h/
@@ -89,6 +91,7 @@ cdsay .
     <CPCMD> <PROJDIR>/linux/csignal      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/cstdarg      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/cstddef      <RELROOT>/rel2/lh/
+    <CPCMD> <PROJDIR>/linux/cstdint      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/cstdio       <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/cstdlib      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/cstring      <RELROOT>/rel2/lh/
@@ -114,6 +117,7 @@ cdsay .
     <CPCMD> <PROJDIR>/linux/numeric      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/ostream      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/queue        <RELROOT>/rel2/lh/
+    <CPCMD> <PROJDIR>/linux/random       <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/set          <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/sstream      <RELROOT>/rel2/lh/
     <CPCMD> <PROJDIR>/linux/stack        <RELROOT>/rel2/lh/
