@@ -55,6 +55,7 @@ template = &
         mmwin16$(ext)   &
         mmwindef$(ext)  &
         numer01$(ext)   &
+        random01$(ext)  &
         stack01$(ext)   &
         set01$(ext)     &
         set02$(ext)     &
@@ -77,6 +78,7 @@ ext = ._do_test_
 do_tests = $+ $(template) $-
 
 # define flags specific to tests here
+extra_cflags_random01 = -za0x
 extra_cflags_typetr01 = -za0x
 extra_cflags_mmwin16 = -i$(%WATCOM)\h\win -dmmWin16
 extra_cflags_mmwindef = -i$(%WATCOM)\h\nt
