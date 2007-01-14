@@ -11,7 +11,7 @@ comroot = &
     cbsize.obj &
     chain.obj &
     fmemmgr.obj &
-    fmeminit.obj &
+#    fmeminit.obj &
     mkname.obj &
     rstutils.obj &
     subscr.obj &

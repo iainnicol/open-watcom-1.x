@@ -47,23 +47,28 @@
 #include "frl.h"
 #include "fspawn.h"
 
-
-void    FMemInit( void ) {
-//========================
-
-    UnFreeMem = 0;
+/////////////////////////////
+//
+// Initialize compiler memory
+//
+////////////////////////////
+void    FMemInit( void )
+{
+   UnFreeMem = 0;
 #if defined( TRMEM )
-    TRMemOpen();
-#else
-    SysMemInit();
+   TRMemOpen();
 #endif
 }
 
-
-void    FMemFini( void ) {
-//========================
-
-    ProgSw &= ~PS_ERROR; // we always want to report memory problems
+//////////////////////////////////////
+//
+// Finalize memory used by compiler
+//
+/////////////////////////////////////
+void    FMemFini( void )
+{
+    // we always want to report memory problems
+    ProgSw &= ~PS_ERROR; 
     if( UnFreeMem > 0 ) {
         CompErr( CP_MEMORY_NOT_FREED );
     } else if( UnFreeMem < 0 ) {
@@ -71,18 +76,17 @@ void    FMemFini( void ) {
     }
 #if defined( TRMEM )
     TRMemClose();
-#else
-    SysMemFini();
 #endif
 }
 
 
-//**************************************************
-//  Allocate memory chunk for fortran compiler
-//**************************************************
-void    *FMemAlloc( size_t size ) {
-//=================================
-
+/////////////////////////////////////////
+//
+//  Allocate a memory chunk 
+//
+/////////////////////////////////////////
+void  *FMemAlloc( size_t size )
+{
     void        *p;
 
 #if defined( TRMEM )
@@ -91,7 +95,9 @@ void    *FMemAlloc( size_t size ) {
     p = malloc( size );
 #endif
     if( p == NULL ) {
+        // Release unused memory of internal text nodes
         FiniITNode();
+        // try again to allocate
 #if defined( TRMEM )
         p = TRMemAlloc( size );
 #else
@@ -108,20 +114,26 @@ void    *FMemAlloc( size_t size ) {
                 ProgSw |= PS_FATAL_ERROR;
                 PurgeAll(); // free up memory so we can process the error
                 Error( MO_DYNAMIC_OUT );
+                // R.I.P.
                 Suicide();
             }
         } else {
-            UnFreeMem++;
+            ++UnFreeMem;
         }
     } else {
-        UnFreeMem++;
+        ++UnFreeMem;
     }
     return( p );
 }
 
 
-void    FMemFree( void *p ) {
-
+///////////////////////////////////////////
+//
+//  Release a memory chunck
+//
+//////////////////////////////////////////
+void  FMemFree( void *p )
+{
 #if defined( TRMEM )
     TRMemFree( p );
 #else
