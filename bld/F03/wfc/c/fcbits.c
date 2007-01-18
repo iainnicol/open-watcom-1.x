@@ -88,10 +88,11 @@ void    FCBitTest() {
     unsigned_16 typ_info;
 
     typ_info = GetU16();
-    typ = GetType1( typ_info );
-    op = XPopValue( typ );
+    typ      = GetType1( typ_info );
+    op       = XPopValue( typ );
+
     XPush( CGCompare( O_NE, CGBinary( O_AND, op, BitPosition( typ_info ), typ ),
-                            CGInteger( 0, T_INTEGER ), typ ) );
+                      CGInteger( 0, T_INTEGER ), typ ) );
 }
 
 
@@ -117,8 +118,8 @@ void    FCBitClear() {
     unsigned_16 typ_info;
 
     typ_info = GetU16();
-    typ = GetType1( typ_info );
-    op = XPopValue( typ );
+    typ      = GetType1( typ_info );
+    op       = XPopValue( typ );
     XPush( CGBinary( O_AND, op,
                      CGUnary( O_COMPLEMENT, BitPosition( typ_info ), typ ),
                      typ ) );
@@ -146,7 +147,7 @@ static  cg_type BitWise( cg_op op ) {
     typ_info = GetU16();
     typ1 = GetType1( typ_info );
     typ2 = GetType2( typ_info );
-    op1 = XPopValue( typ1 );
+    op1  = XPopValue( typ1 );
     typ2 = ResCGType( typ1, typ2 );
     XPush( CGBinary( op, op1, XPopValue( typ2 ), typ2 ) );
     return( typ2 );
