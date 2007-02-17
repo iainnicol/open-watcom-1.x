@@ -9,10 +9,18 @@ class B {
 public:
     B( ) {}
     B( int ii ) : i(ii) {}
-    friend A& operator<<( A&, const B<T> & );
-    friend int fnb( B<T> );
-    friend int fnb2( T );
+
+    template<class U>
+    friend A& operator<<( A&, const B<U> & );
+
+    template<class U>
+    friend int fnb( B<U> );
+
+    template<class U>
+    friend int fnb2( U );
+
     friend int fnb3( int );
+
 private:
     int i;
 };

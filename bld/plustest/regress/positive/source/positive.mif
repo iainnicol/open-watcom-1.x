@@ -240,6 +240,8 @@ positive_tests = &
     cltemp21.$(ext) &
     cltemp22.$(ext) &
     cltemp23.$(ext) &
+    cltemp24.$(ext) &
+    cltemp25.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
@@ -412,6 +414,9 @@ positive_tests = &
     fntemp14.$(ext) &
     fntemp15.$(ext) &
     fntemp16.$(ext) &
+    fntemp17.$(ext) &
+    fntemp18.$(ext) &
+    fntemp19.$(ext) &
     fold01.$(ext) &
     fold02.$(ext) &
     for01.$(ext) &
@@ -493,6 +498,9 @@ positive_tests = &
     link14.$(ext) &
     link15.$(ext) &
     main1.$(ext) &
+    memtmp01.$(ext) &
+    memtmp02.$(ext) &
+    memtmp03.$(ext) &
     mp01.$(ext) &
     mp02.$(ext) &
     mp03.$(ext) &
@@ -568,6 +576,8 @@ positive_tests = &
     ns37.$(ext) &
     ns38.$(ext) &
     ns39.$(ext) &
+    ns40.$(ext) &
+    ns41.$(ext) &
     offset01.$(ext) &
     opeq01.$(ext) &
     opeq02.$(ext) &
