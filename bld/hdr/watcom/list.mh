@@ -95,7 +95,7 @@ public:
     void assign( size_type, value_type const & );
 
     allocator_type get_allocator() const 
-        { allocator_type a( mMem ); return( mMem ); }
+        { allocator_type a( mMem ); return( a ); }
 
     
     /* ------------------------------------------------------------------

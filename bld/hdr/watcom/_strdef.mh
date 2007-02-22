@@ -192,30 +192,37 @@ namespace std {
             class Allocator = allocator< CharT > >
   class basic_string {
 
+    template< class CharT, class Traits, class Allocator >
     friend
     bool operator==( const basic_string< CharT, Traits, Allocator > &left,
                      const basic_string< CharT, Traits, Allocator > &right );
-          
+
+    template< class CharT, class Traits, class Allocator >
     friend
     bool operator==( const CharT *left,
                      const basic_string< CharT, Traits, Allocator > &right );
 
+    template< class CharT, class Traits, class Allocator >
     friend
     bool operator==( const basic_string< CharT, Traits, Allocator > &left,
                      const CharT *right );
 
+    template< class CharT, class Traits, class Allocator >
     friend
     bool operator<( const basic_string< CharT, Traits, Allocator > &left,
                     const basic_string< CharT, Traits, Allocator > &right );
 
+    template< class CharT, class Traits, class Allocator >
     friend
     bool operator<( const CharT *left,
                     const basic_string< CharT, Traits, Allocator > &right );
 
+    template< class CharT, class Traits, class Allocator >
     friend
     bool operator<( const basic_string< CharT, Traits, Allocator > &left,
                     const CharT *right );
 
+    template< class CharT, class Traits, class Allocator >
     friend
     void swap( basic_string< CharT, Traits, Allocator > &left,
                basic_string< CharT, Traits, Allocator > &right );
