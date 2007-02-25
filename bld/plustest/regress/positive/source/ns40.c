@@ -6,6 +6,14 @@ namespace ns {
     };
 
     int B;
+
+    namespace ns2 {
+        template< class T >
+        int f( T t )
+        {
+            return B + 4;
+        }
+    }
 }
 
 int ns::B::f()
@@ -24,6 +32,9 @@ int main() {
 
     struct ns::B b2;
     if( b2.f() != 8 ) fail( __LINE__ );
+
+
+    if( ns::ns2::f< int >( 1 ) != 9 ) fail( __LINE__ );
 
 
     _PASS;
