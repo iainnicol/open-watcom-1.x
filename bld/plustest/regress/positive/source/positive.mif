@@ -242,6 +242,8 @@ positive_tests = &
     cltemp23.$(ext) &
     cltemp24.$(ext) &
     cltemp25.$(ext) &
+    cltemp26.$(ext) &
+    cltemp27.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
@@ -579,6 +581,7 @@ positive_tests = &
     ns39.$(ext) &
     ns40.$(ext) &
     ns41.$(ext) &
+    ns42.$(ext) &
     offset01.$(ext) &
     opeq01.$(ext) &
     opeq02.$(ext) &
