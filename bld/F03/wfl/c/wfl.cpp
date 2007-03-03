@@ -47,9 +47,9 @@
 #include <process.h>
 #include <malloc.h>
 
-extern  void                    MsgBuffer(uint,char *,...);
-extern  void                    ShowOptions(char *);
-extern  void                    __InitResource(void);
+extern  "C" void                    MsgBuffer(uint,char *,...);
+extern  "C" void                    ShowOptions(char *);
+extern  "C" void                    __InitResource(void);
 
 #if _CPU == 386
   #define _CmpName        "wfc386"        // compiler name
@@ -156,6 +156,16 @@ static  struct flags {
     #error Unknown System
 #endif
 
+static  void    Usage( void );
+static  int     Parse( void );
+static  void    FindPath( char *name, char *buf );
+static  int     CompLink( void );
+static  void    MakeName( char *name, char *ext );
+static  void    Fputnl( char *text, FILE *fptr );
+         int    IsOption( char *cmd, int cmd_len, char *opt );
+static  void    AddName( char *name, FILE *link_fp );
+
+
 
 static  void    wfl_exit( int rc ) {
 //==================================
@@ -229,8 +239,8 @@ void    main( int argc, char *argv[] ) {
     SwitchChars[1] = '-';
     SwitchChars[2] = '\0';
 
-    Word = MemAlloc( MAX_CMD );
-    Cmd = MemAlloc( 2*MAX_CMD ); // for "wfl" environment variable and command line
+    Word = static_cast<char*>(MemAlloc( MAX_CMD ));
+    Cmd  = static_cast<char*>(MemAlloc( 2*MAX_CMD )); // for "wfl" environment variable and command line
 
     // add "wcl" environment variable to "Cmd" unless "/y" is specified
     // in "Cmd" or the "wcl" environment string
@@ -313,7 +323,7 @@ static  int     Parse( void ) {
     char        *end;
     int         len;
     int         cmp_option;
-    char        in_quotes;
+    bool        in_quotes;
 
     Flags.no_link = 0;
     Flags.link_for_sys = 0;
@@ -791,7 +801,7 @@ static  void    AddName( char *name, FILE *link_fp ) {
         last_name = curr_name;
         curr_name = curr_name->next;
     }
-    new_name = MemAlloc( sizeof( struct list ) );
+    new_name = static_cast<list *>(MemAlloc( sizeof( struct list ) ));
     if( ObjList == NULL ) {
         ObjList = new_name;
     } else {
@@ -828,14 +838,14 @@ static  void    FindPath( char *name, char *buf ) {
 }
 
 
-void    TOutNL( char *msg ) {
+extern "C" void    TOutNL( char *msg ) {
 //===========================
 
     puts( msg );
 }
 
 
-void    TOut( char *msg ) {
+extern "C" void    TOut( char *msg ) {
 //===========================
 
     fputs( msg, stdout );

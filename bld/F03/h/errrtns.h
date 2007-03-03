@@ -29,7 +29,13 @@
 ****************************************************************************/
 
 #include <stdarg.h>
+#ifdef __cplusplus
 
-extern  void    (* __BldErrMsg)(uint,char *,va_list);
-extern  void    (* __ErrorInit)(char *);
-extern  void    (* __ErrorFini)(void);
+   extern  "C" void    (* __BldErrMsg)(uint,char *,va_list);
+   extern  "C" void    (* __ErrorInit)(char *);
+   extern  "C" void    (* __ErrorFini)(void);
+#else
+   extern  void    (* __BldErrMsg)(uint,char *,va_list);
+   extern  void    (* __ErrorInit)(char *);
+   extern  void    (* __ErrorFini)(void);
+#endif

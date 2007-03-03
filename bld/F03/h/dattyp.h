@@ -29,8 +29,8 @@
 *
 ****************************************************************************/
 
-#if !defined(_F77_DATTYP_H_)
-#define _F77_DATTYP_H_ 1
+#ifndef dattyp_h_
+#define dattyp_h_ 
 
 typedef struct adv_entry {
     signed_32   lo_bound;
@@ -83,6 +83,18 @@ typedef struct arr_desc {
 
 typedef     union symbol        *sym_id;
 
+typedef struct sc {                             // we don't want the structure chain
+        intstar4        field_offset;   // to destroy the field offset during
+        void            *struct_chain;  // down-scan.
+    } sc ;
+typedef struct st {
+        sym_id          field_id;       // structure name of fields
+        sym_id          ss_id;          // substrung symbol
+        uint            ss_size;        // length of substrung/subscripted
+                                        // character string
+    } st;
+
+
 typedef union ftn_type {
     logstar1            logstar1;
     logstar4            logstar4;
@@ -92,23 +104,25 @@ typedef union ftn_type {
     single              single;
     double              dble;
     extended            extended;
-    struct complex      complex;
-    struct dcomplex     dcomplex;
-    struct xcomplex     xcomplex;
+    complex             complex;
+    dcomplex            dcomplex;
+    xcomplex            xcomplex;
     struct cstring      cstring;
     struct string       string;
     struct arr_desc     arr_desc;
     void                *pgm_ptr;
-    struct {                            // we don't want the structure chain
-        intstar4        field_offset;   // to destroy the field offset during
-        void            *struct_chain;  // down-scan.
-    } sc;
-    struct {
-        sym_id          field_id;       // structure name of fields
-        sym_id          ss_id;          // substrung symbol
-        uint            ss_size;        // length of substrung/subscripted
-                                        // character string
-    } st;
+    sc                  sc;
+    st                  st;
+    //struct {                            // we don't want the structure chain
+    //    intstar4        field_offset;   // to destroy the field offset during
+    //    void            *struct_chain;  // down-scan.
+    //} sc;
+    //struct {
+    //    sym_id          field_id;       // structure name of fields
+    //    sym_id          ss_id;          // substrung symbol
+    //    uint            ss_size;        // length of substrung/subscripted
+    //                                    // character string
+    //} st;
 } ftn_type;
 
     typedef     unsigned int    label_id;

@@ -31,6 +31,10 @@
 
 #include "compcfg.h"
 
+#ifdef __cplusplus
+extern "C" 
+#endif
+
 opt_entry       CompOptns[] = {
 #if defined( __WFL__ )
 //                      Compile and Link Options

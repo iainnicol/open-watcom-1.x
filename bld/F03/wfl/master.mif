@@ -15,6 +15,7 @@ inc_dirs=-I"../h" -I"../../wfc/h" -I"../../h" -I"$(comp_cfg_dir)/h"
 extra_c_flags = -d__WFL__
 
 .c: ../c;../../wfc/c;../../c
+.cpp: ../c
 
 files = &
     blderr.obj &
