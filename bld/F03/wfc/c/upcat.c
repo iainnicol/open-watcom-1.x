@@ -45,9 +45,9 @@
 #include "insert.h"
 #include "ferror.h"
 #include "utility.h"
+#include "upscan.h"
 
 extern  void            BackTrack(void);
-extern  void            AddConst(itnode *);
 extern  void            ConstCat(int);
 extern  sym_id          GStartCat(int,int);
 extern  void            GStopCat(int,sym_id);
@@ -361,24 +361,28 @@ void            CatParen() {
 }
 
 
-void            ChkCatOpn() {
-//===========================
 
-// Check if ) is the start of a concatenation operand.
-// Called on ) rel sequence since only relational operators are allowed with
-// character arguments.
-// Consider:
-//      if( a(1)//a(2) .eq. 'ab' )then
-// We want to evaluate 'ab' first. Otherwise, a(2) would get evaluated,
-// followed by 'ab' and finally a(1) -- which is incorrect.
+//===========================
+void            ChkCatOpn(void)
+{
+    // Check if ) is the start of a concatenation operand.
+    // Called on ) rel sequence since only relational operators are allowed with
+    // character arguments.
+    // Consider:
+    //      if( a(1)//a(2) .eq. 'ab' )then
+    // We want to evaluate 'ab' first. Otherwise, a(2) would get evaluated,
+    // followed by 'ab' and finally a(1) -- which is incorrect.
 
     itnode      *cit;
     bool        ok_to_axe;
 
     cit = findMatch( &ok_to_axe, NULL );
-    if( cit != NULL ) {
-        if( cit->opr == OPR_FBR ) {
-            if( cit->link->opr == OPR_CAT ) {
+    if( cit != NULL )
+    {
+        if( cit->opr == OPR_FBR )
+        {
+            if( cit->link->opr == OPR_CAT )
+            {
                 CatOpn();
                 return;
             }

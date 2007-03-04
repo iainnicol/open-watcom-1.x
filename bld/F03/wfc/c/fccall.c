@@ -566,7 +566,7 @@ void    FCCall() {
     cg_name     rtn;
     unsigned_16 arg_info;
     PTYPE       arg_type;
-    PCODE       arg_code;
+    PARAM_CODES arg_code;
     pass_by     *arg_aux;
     cg_name     arg;
     cg_type     cg_typ;

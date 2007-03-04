@@ -44,7 +44,10 @@ typedef void            *pointer;
 typedef float           real;
 
 #if !defined( __AXP__ ) && !defined( __PPC__ )
+#ifndef __cplusplus
+//TODO: clarify what aux is doing in C++
 #pragma aux Suicide aborts;
+#endif
 #endif
 
 #ifdef M_I86

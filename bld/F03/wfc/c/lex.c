@@ -251,7 +251,7 @@ static  void    GetOpr() {
 // Collect an operator.
 
     Lex.oprpos = ( LexToken.line << 8 ) + LexToken.col + 1;
-    if( LexToken.class == TO_OPR ) {
+    if( LexToken.tclass == TO_OPR ) {
         Lex.opr = LkUpOpr();
         // this is to tell scan not to collect
         //     4d4      in    INTEGER*4  d4,a,b . . .
@@ -261,7 +261,7 @@ static  void    GetOpr() {
             LexToken.flags |= TK_LENSPEC;
         }
         Scan();
-        if( ( LexToken.class == TO_OPR ) && !(LexToken.flags & TK_EOL) &&
+        if( ( LexToken.tclass == TO_OPR ) && !(LexToken.flags & TK_EOL) &&
             ( ( Lex.opr == OPR_MUL ) || ( Lex.opr == OPR_DIV ) ) &&
             ( Lex.opr == LkUpOpr() ) ) {
             if( Lex.opr == OPR_MUL ) {
@@ -271,7 +271,7 @@ static  void    GetOpr() {
             }
             Scan();
         }
-    } else if( LexToken.class == TO_LGL ) {
+    } else if( LexToken.tclass == TO_LGL ) {
         Lex.opr = LogOpr[ LexToken.log ];
         if( LexToken.log >= XLOG_OPS ) {
             Extension( MD_LOGOPR_EXTN, LogTab[ LexToken.log ] );
@@ -292,10 +292,10 @@ static  void    GetOpnd() {
 
     Lex.ptr = LexToken.start;
     Lex.opnpos = ( LexToken.line << 8 ) + LexToken.col + 1;
-    if( LexToken.class == TO_OPR ) {
+    if( LexToken.tclass == TO_OPR ) {
         Lex.opn.ds = DSOPN_PHI;
         Lex.len = 0;
-    } else if( LexToken.class == TO_LGL ) {
+    } else if( LexToken.tclass == TO_LGL ) {
         if( LexToken.log > LOG_OPS ) {
             Lex.len = LexToken.stop - LexToken.start;
             Lex.opn.ds = DSOPN_LGL;
@@ -306,7 +306,7 @@ static  void    GetOpnd() {
         }
     } else {
         Lex.len = LexToken.stop - LexToken.start;
-        Lex.opn.ds = LexToken.class;
+        Lex.opn.ds = LexToken.tclass;
         // this is a kludge to collect FORMAT/INCLUDE statements
         // we don't want INCLUDE statements to span lines
         if( (ITHead == NULL) && (Lex.opr == OPR_TRM) && (Lex.opn.ds == DSOPN_NAM) ) {

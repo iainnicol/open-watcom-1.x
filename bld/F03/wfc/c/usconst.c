@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include <string.h>
 
 #include "ftnstd.h"
 #include "opr.h"
@@ -37,12 +38,13 @@
 #include "global.h"
 #include "fmemmgr.h"
 #include "types.h"
+#include "ferror.h"
+#include "errcod.h"
+#include "upscan.h"
+#include "usconst.h"
 
-#include <string.h>
 
 extern  void            FreeITNodes(itnode *);
-extern  void            BadEqual(void);
-extern  void            AddConst(itnode *);
 extern  void            AddI(ftn_type *,ftn_type *);
 extern  void            SubI(ftn_type *,ftn_type *);
 extern  void            DivI(ftn_type *,ftn_type *);
@@ -266,6 +268,18 @@ static  void    ExpOp( TYPE typ1, TYPE typ2, OPTR op ) {
     }
 }
 
+//========================
+static void    BadEqual( TYPE typ1, TYPE typ2, OPTR op )
+{
+    // taken from upscan routine for illegal quantity on left side of equal sign
+    // and added parameters.
+    Error( EQ_BAD_TARGET );
+}
+
+static void dummy(TYPE typ1, TYPE typ2, OPTR op )
+{
+    //does nothing
+}
 
 void    ConstCat( int size ) {
 //============================
@@ -301,22 +315,23 @@ void    ConstCat( int size ) {
     FMemFree( string );
 }
 
-
-void    (* const __FAR ConstTable[])() = {
-         &LogOp,            // 0    .EQV.
-         &LogOp,            // 1    .NEQV.
-         &LogOp,            // 2    .OR.
-         &LogOp,            // 3    .AND.
-         &LogOp,            // 4    .NOT.
-          0,                // 5    filler
-         &BadEqual,         // 6      =
-          0,                // 7    filler
-          0,                // 8    filler
-         &RelOp,            // 9    relop
-         &BinOp,            // A      +
-         &BinOp,            // B      -
-         &BinOp,            // C      *
-         &BinOp,            // D      /
-         &ExpOp,            // E      **
-          0                 // F      // handled by FiniCat in UPSCAN who
-};                          //        will call ConstCat().
+//typedef void (*ConstTable_t)(TYPE typ1, TYPE typ2, OPTR op);
+const ConstTable_t ConstTable[] = {
+//void    (* const __FAR ConstTable[])() = {
+         LogOp,            // 0    .EQV.
+         LogOp,            // 1    .NEQV.
+         LogOp,            // 2    .OR.
+         LogOp,            // 3    .AND.
+         LogOp,            // 4    .NOT.
+         dummy,            // 5    filler
+         BadEqual,         // 6      =
+         dummy,            // 7    filler
+         dummy,            // 8    filler
+         RelOp,            // 9    relop
+         BinOp,            // A      +
+         BinOp,            // B      -
+         BinOp,            // C      *
+         BinOp,            // D      /
+         ExpOp,            // E      **
+         dummy             // F      // handled by FiniCat in UPSCAN who
+};                         //        will call ConstCat().

@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef _OPN_H_INCLUDED
-#define _OPN_H_INCLUDED
+#ifndef opn_h_
+#define opn_h_
 
 //
 // Flags for 'opn' field of 'itnode'
@@ -80,7 +80,9 @@ enum US_CODES {
 #define WHERE_SHIFT     4       // bits to shift to make OPN_WHERE origin 0
 #define USOPN_WHERE     0x30    // where is the operand?
 
-typedef enum DS_CODES DSOPN;
-typedef enum US_CODES USOPN;
+//typedef enum DS_CODES DSOPN; enums don't work this way in C++
+//typedef enum US_CODES USOPN;
+typedef int DSOPN;
+typedef int USOPN;
 
 #endif

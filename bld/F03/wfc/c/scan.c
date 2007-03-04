@@ -473,7 +473,7 @@ token:  LexToken.stop  = TkCrsr;
             class = TO_LIT;
             break;
         }
-        LexToken.class = class;
+        LexToken.tclass = class;
         if( !(ExtnSw & XS_CHAR_EXTN) && ( class != TO_LIT ) &&
             ( class != TO_FMT ) && ( wasextch & C_EXT ) ) {
             Extension( CC_SET_EXTEND );
@@ -487,9 +487,9 @@ token:  LexToken.stop  = TkCrsr;
             // so that last token is "FIELD".
             LexToken.start = LexToken.stop;
             LexToken.stop = TkCrsr;
-            LexToken.class = TO_NAM;
+            LexToken.tclass = TO_NAM;
         } else {
-            LexToken.class = TO_OPR;
+            LexToken.tclass = TO_OPR;
         }
         LexToken.flags |= TK_EOL;
     }

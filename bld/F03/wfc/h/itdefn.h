@@ -40,6 +40,7 @@
 
 // Definition of an INTERNAL TEXT NODE:
 // ====================================
+
 typedef struct itnode {
     struct itnode       *link;          // link to next itnode
     struct itnode       *list;          // link to argument list

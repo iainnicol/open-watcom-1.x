@@ -38,37 +38,43 @@
 #include "astype.h"
 #include "opn.h"
 #include "global.h"
+#include "upscan.h"
 
 extern  void            SFEpilogue(void);
 extern  void            GCallNoArgs(void);
 extern  void            GCallWithArgs(void);
-extern  void            AddConst(itnode *);
 extern  void            EmExprDone(void);
 
 
-void    EndExpr() {
 //=================
-
+void    EndExpr()
+{
     // If we get an error during UPSCAN process, the argument list may
     // not have been detached.
-    if( !AError ) {
-        if( ASType & AST_CNA ) {
+    if( !AError )
+    {
+        if( ASType & AST_CNA )
+        {
             GCallNoArgs();
-        } else if( StmtProc == PR_CALL ) {
+        }else if( StmtProc == PR_CALL )
+        {
             GCallWithArgs();
         }
     }
     if( ( ( ASType & ( AST_DIM | AST_CEX ) ) == 0 ) &&
-        ( CITNode->opn.us == USOPN_CON ) ) {
+        ( CITNode->opn.us == USOPN_CON ) )
+    {
         AddConst( CITNode );
     }
     // We don't want to finish off the expression if an error
     // occurred during upscan process.
     if( !AError &&
-        ( ( ASType & ( AST_DIM | AST_IO | AST_SUB | AST_CEX ) ) == 0 ) ) {
+        ( ( ASType & ( AST_DIM | AST_IO | AST_SUB | AST_CEX ) ) == 0 ) )
+    {
         EmExprDone();
     }
-    if( ASType & AST_ASF ) {
+    if( ASType & AST_ASF )
+    {
         SFEpilogue();    // epilogue for stmt function
     }
     ASType = AST_OFF;

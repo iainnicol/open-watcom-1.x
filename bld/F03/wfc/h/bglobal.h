@@ -34,7 +34,10 @@
 // ====================================================
 
 #include <sdfile.h>
-
+#ifdef __cplusplus
+#define gbl_defn extern "C"
+#else
 #define gbl_defn extern
+#endif
 #include <gblboth.h>
 #include "cioconst.h"

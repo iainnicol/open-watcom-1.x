@@ -42,8 +42,9 @@
 
 
 
+static PARAM_CODES     ParmClass( itnode *arg );
 
-int     ParmCode( itnode *arg ) {
+PARAM_CODES ParmCode( itnode *arg ) {
 //===============================
 
 // Return the argument code.
@@ -70,7 +71,7 @@ int     ParmCode( itnode *arg ) {
 }
 
 
-int     ParmClass( itnode *arg ) {
+static PARAM_CODES     ParmClass( itnode *arg ) {
 //===============================
 
 // Return the argument class.

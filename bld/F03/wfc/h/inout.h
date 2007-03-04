@@ -36,7 +36,42 @@
 #pragma once
 
 /* needs #include "standard.h" */
+#ifdef __cplusplus
+extern "C" void    CompErr( uint );
+extern "C" bool    isErrFileOpen(void);
+extern "C" void    OpenErr(void); 
+extern "C" void    InitComIO(void);
+extern "C" void    InitMemIO(void);
+extern "C" void    FiniComIO(void);
+extern "C" void    OpenSrc(void);
+extern "C" void    IOPurge(void);
+extern "C" void    ReadSrc(void);
+extern "C" void    Include(char *);
+extern "C" bool    SetLst(bool);
+extern "C" void    SrcInclude( char *, const file_handle);
+extern "C" void    Conclude(void);
+extern "C" void    PrintErr(char *);
+extern "C" void    PrtErrNL(void);
+extern "C" void    JustErr(char *);
+extern "C" void    CloseErr(void);
+extern "C" void    TOutNL(char *);
+extern "C" void    TOut(char *);
+extern "C" void    OpenLst(void);
+extern "C" void    ChkPntLst(void);
+extern "C" bool    WasStmtListed(void);
+extern "C" void    GetBanner(char *);
+extern "C" void    GetCopyright(char *);
+extern "C" void    GetTrademark(char *);
+extern "C" void    GetMoreInfo(char *);
+extern "C" void    PrtBanner(void);
+extern "C" void    PrtLstNL(char *);
+extern "C" void    PrtLst(char *);
+extern "C" void    CloseLst(void);
+extern "C" void    LFEndSrc(void);
+extern "C" void    LFNewPage(void);
+extern "C" void    LFSkip(void);
 
+#else
 extern void    CompErr( uint );
 extern bool    isErrFileOpen(void);
 extern void    OpenErr(void); 
@@ -70,6 +105,7 @@ extern void    CloseLst(void);
 extern void    LFEndSrc(void);
 extern void    LFNewPage(void);
 extern void    LFSkip(void);
+#endif
 
 
 #endif

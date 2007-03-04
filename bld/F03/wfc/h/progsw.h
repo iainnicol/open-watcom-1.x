@@ -28,12 +28,12 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
-#ifndef PROGSW_H_
-#define PROGSW_H_
+#ifndef progsw_h_
+#define progsw_h_
 
 // values for compiler internal program switches during compilation
 // used with global variable ProgSw
-typedef enum {
+typedef enum ProgSwType_t {
     PS_FIRST_COMPILE   =  0x0001,
     PS_END_OF_SUBPROG  =  0x0002,
     PS_SOURCE_EOF      =  0x0004,

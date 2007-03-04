@@ -48,11 +48,11 @@ typedef enum {
 } tokenType;
 
 // structure of raw element (token)  
-typedef struct token_s {
+typedef struct token_t {
     char        *start; // start of lexem
     char        *stop;  // end of lexem
     int         line;   // continuation line counter
-    token_class class;  // class of token
+    token_class tclass;  // class of token
     tokenType   flags;  // token type
     byte        log;    // flag for logical operators
     byte        col;    // column counter

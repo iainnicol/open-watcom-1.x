@@ -24,47 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  declaration for recognizing specific tokens routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+#pragma once
 
+typedef void  (*GenOprTable_t)( TYPE typ1, TYPE typ2, OPTR op );
 
-#include "opr.h"
+extern const GenOprTable_t GenOprTable[];
 
-extern bool    RecEquSign( void );
-extern bool    ReqOperator( OPR roperator, int error );
-extern bool    ReqEquSign( void );
-extern bool    RecColon( void );
-extern bool    RecComma( void );
-extern bool    ReqComma( void );
-extern bool    ReqColon( void );
-extern bool    RecCloseParen( void );
-extern bool    ReqCloseParen( void );
-extern bool    RecOpenParen( void );
-extern bool    ReqOpenParen( void );
-extern bool    RecMul( void );
-extern bool    ReqMul( void );
-extern bool    RecDiv( void );
-extern bool    ReqDiv( void );
-extern bool    RecPlus( void );
-extern bool    RecMin( void );
-extern bool    RecCat( void );
-extern bool    RecNOpr( void );
-extern bool    RecFBr( void );
-extern bool    RecTrmOpr( void );
-extern bool    RecEOS( void );
-extern bool    ReqEOS( void );
-extern bool    RecNOpn( void );
-extern bool    ReqNOpn( void );
-extern bool    RecKeyWord( char *key );
-extern bool    RecName( void );
-extern bool    ReqName( int index );
-extern bool    RecNWL( void );
-extern bool    RecNumber( void );
-extern bool    RecLiteral( void );
-extern bool    RecNextOpr( OPR roperator );
-extern bool    ReqNextOpr( OPR roperator, int error );
-extern bool    RecIntVar( void );
-extern bool    ReqIntVar( void );
-extern bool    ReqDoVar( void );
-extern bool    RecArrName( void );

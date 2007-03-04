@@ -38,11 +38,11 @@
 #include "ferror.h"
 #include "recog.h"
 #include "utility.h"
+#include "upscan.h"
 
 extern  void            GBreak(unsigned_16);
 extern  void            GReturn(void);
 extern  void            CSNoMore(void);
-extern  void            AddConst(itnode *);
 extern  void            GetConst(void);
 extern  void            FScan(int,char *,cs_label);
 extern  sym_id          FmtPointer(void);

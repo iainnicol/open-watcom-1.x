@@ -34,8 +34,13 @@
 #ifndef fspawn_h_
 #define fspawn_h_
 
-
+#ifdef __cplusplus
+extern "C" int     Spawn( void (*)() );
+extern "C" void    Suicide() ;
+#else
 extern int     Spawn( void (*)() );
 extern void    Suicide() ;
+#endif
+
 
 #endif

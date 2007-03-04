@@ -48,7 +48,7 @@ extern  void            BIStartSubProg();
 extern  void            BIResolveUndefTypes();
 extern  void            BIEndSubProg();
 extern  void            FrlInit(void **);
-extern  void            FrlFini(void **);
+//extern  void            FrlFini(void **);
 extern  void            TrapInit(void);
 extern  void            TrapFini(void);
 extern  void            CompStatement(void);

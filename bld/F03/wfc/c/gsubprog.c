@@ -205,7 +205,7 @@ static  int     DumpArgInfo( itnode *node ) {
     int         num_args;
     unsigned_16 arg_info;
     PTYPE       parm_type;
-    PCODE       parm_code;
+    PARAM_CODES parm_code;
 #if _CPU == 386
     aux_info    *aux;
 #endif

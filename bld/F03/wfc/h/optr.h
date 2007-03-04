@@ -45,7 +45,8 @@ enum OPERATIONS {
    OPTR_MUL,            //  * operation
    OPTR_DIV,            //  / operation
    OPTR_EXP,            //  exponentiation
-   OPTR_CAT             //  concatenation
+   OPTR_CAT ,           //  concatenation
+   OPTR_NONE            //  no operation (TODo: Should be the first element)
 };
 
 typedef enum OPERATIONS OPTR;

@@ -34,9 +34,10 @@
 #ifndef frl_h_
 #define frl_h_
 
-extern void    FrlFree( void *, void * );  
-extern void    FrlFini( void ** ); 
-extern void    *FrlAlloc( void ***, int ); // not quite clear about the triple indirection?
+//extern void    FrlFree( void *, void * );  
+//extern void    FrlFini( void ** ); 
+//extern void    *FrlAlloc( void ***, int ); // not quite clear about the triple indirection?
+//TODO: remove its used locally only
 extern itnode  *AllocITNode(void);
 extern void    FiniITNode(void);
 extern void    InitITPoolRoot(void);

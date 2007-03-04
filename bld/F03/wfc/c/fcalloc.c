@@ -89,11 +89,11 @@ static cg_name  getFlags( sym_id sym ) {
     cg_type             typ;
 
     if( sym->ns.flags & SY_SUBSCRIPTED ) {
-        typ = ArrayPtrType( sym );
+        typ  = ArrayPtrType( sym );
         tlen = BETypeLength( typ );
     } else {
         tlen = BETypeLength( T_CHAR );
-        typ = T_CHAR;
+        typ  = T_CHAR;
     }
     fl = StructRef( CGFEName( sym, typ ), tlen );
     return( CGUnary( O_POINTS, fl, T_UINT_2 ) );

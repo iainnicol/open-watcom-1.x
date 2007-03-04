@@ -58,7 +58,7 @@ gbl_defn sym_id         SubProgId;      // SymId of subprogram being compiled
 gbl_defn impl_entry     ImplicitTab[IMPL_SIZE+1];
 gbl_defn byte           IFUsed[24];     // indicates intrinsic functions used
 gbl_defn SgmtSwType     SgmtSw;         // program segment switches
-gbl_defn ProgSwType_t   ProgSw;         // program switches
+gbl_defn int            ProgSw;         // program switches
 gbl_defn XSwitchType_t  ExtnSw;         // extension switches
 gbl_defn TYPE           ResultType;     // result type of operation in upscan
 gbl_defn StmtSwType     StmtSw;         // statement switches
@@ -87,11 +87,11 @@ gbl_defn byte           ContType;       // type of continuation char
 
 gbl_defn char           *LibMember;     // name of library member
 gbl_defn unsigned_16    ISNNumber;      // ISN # only for FORTRAN statements;
-gbl_defn byte           *CmdPtr;        // pointer to command line
+gbl_defn char           *CmdPtr;        // pointer to command line
 gbl_defn uint           NumExtens;      // number of extens. during compilation
 gbl_defn uint           NumWarns;       // number of warnings during compilation
-gbl_defn byte           *SrcExtn;       // pointer to source file extension
-gbl_defn int            RetCode;        // return code for Main()
+gbl_defn char           *SrcExtn;       // pointer to source file extension
+gbl_defn int        RetCode;        // return code for Main()
 
 
 gbl_defn sym_id         NList;          // start of name list

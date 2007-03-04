@@ -38,6 +38,7 @@
 #include "symtypes.h"
 #include "optr.h"
 #include "opr.h"
+#include "oprtab.h"
 
 extern  void            LogOp(TYPE,TYPE,OPTR);
 extern  void            AsgnOp(TYPE,TYPE,OPTR);
@@ -46,21 +47,22 @@ extern  void            BinOp(TYPE,TYPE,OPTR);
 extern  void            ExpOp(TYPE,TYPE,OPTR);
 extern  void            FieldOp(TYPE,TYPE,OPTR);
 
-void    (* const __FAR GenOprTable[])() = {
-        &LogOp,            // 0    .EQV.
-        &LogOp,            // 1    .NEQV.
-        &LogOp,            // 2    .OR.
-        &LogOp,            // 3    .AND.
-        &LogOp,            // 4    .NOT.
-        &FieldOp,          // 5      %
-        &AsgnOp,           // 6      =
+//void    (* const GenOprTable[])() = {
+const GenOprTable_t GenOprTable[] = {
+        LogOp,            // 0    .EQV.
+        LogOp,            // 1    .NEQV.
+        LogOp,            // 2    .OR.
+        LogOp,            // 3    .AND.
+        LogOp,            // 4    .NOT.
+        FieldOp,          // 5      %
+        AsgnOp,           // 6      =
          0,                // 7    filler
-        &FieldOp,          // 8      .
-        &RelOp,            // 9    relop
-        &BinOp,            // A      +
-        &BinOp,            // B      -
-        &BinOp,            // C      *
-        &BinOp,            // D      /
-        &ExpOp,            // E      **
+        FieldOp,          // 8      .
+        RelOp,            // 9    relop
+        BinOp,            // A      +
+        BinOp,            // B      -
+        BinOp,            // C      *
+        BinOp,            // D      /
+        ExpOp,            // E      **
         0                  // F      // AsgnOp handles a = b // c
 };

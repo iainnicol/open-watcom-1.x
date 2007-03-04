@@ -27,14 +27,14 @@
 * Description:  compile-time constants indicating parameter class
 *
 ****************************************************************************/
-
+#pragma once
 
 //
 // NOTE: These constants should stay in the following order.
 //       ( routines rely on them being sequential )
 //
 
-enum PARAM_CODES {
+typedef enum PARAM_CODES {
   PC_CONST,             //  Non-modifiable argument. Passed by value.
   PC_VARIABLE,          //  Simple variable name.
   PC_ARRAY_ELT,         //  Array element.
@@ -45,6 +45,9 @@ enum PARAM_CODES {
   PC_STATEMENT,         //  Alternate return specifier.
   PC_RESULT,            //  Expected result type of subprogram.
   PC_PROC_FAR16 = 0x80
-};
+} PARAM_CODES;
 
-typedef enum PARAM_CODES PCODE;
+
+extern PARAM_CODES ParmCode( itnode *arg );
+
+//typedef enum PARAM_CODES PCODE;

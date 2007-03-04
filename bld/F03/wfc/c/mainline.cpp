@@ -1,0 +1,130 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WATFOR-77 main line
+*
+****************************************************************************/
+
+
+//
+// MAINLINE  : Watcom F2003 main line
+//
+
+#include <stdlib.h>
+#include <process.h>
+#include <string.h>
+
+#include "ftnstd.h"
+#include "global.h"
+#include "cpopt.h"
+#include "fcgbls.h"
+#include "boot77.h"
+#include "errrtns.h"
+
+extern  bool            MainCmdLine(char **,char **,char **,char *);
+extern  char            *SDSrcExtn(char *);
+extern  void            InitPredefinedMacros(void);
+
+
+static  char            CmdBuff[2*128];
+
+#if _CPU == 386
+    #define _WFC "wfc386"
+#else
+    #define _WFC "wfc"
+#endif
+
+
+
+int     main( int argc, char *argv[] ) {
+//======================================
+
+// Watcom Fortran 2003 main line.
+      
+    int         ret_code = 0;
+    char        *opts[MAX_OPTIONS+1];
+    char        *p;
+    //to satisfy the compiler
+    argc = argc;
+ 
+    // init error messaging
+#ifdef __INCL_ERRMSGS__ 
+    {
+        extern  void    __InitError(void);
+
+        __InitError();
+        __ErrorInit( NULL );
+    }
+#else
+    {
+        extern  void    __InitResource(void);
+
+        __InitResource();
+        __ErrorInit( argv[0] );
+    }
+#endif
+
+    
+    // check for env variable _WFC
+    p = getenv( _WFC );
+    if( p != NULL ){
+        // preset CmdBuffer with params from environment
+        strcpy( CmdBuff, p );
+        p = &CmdBuff[ strlen( p ) ];
+        *p = ' ';
+        ++p;
+    } else{
+        p = CmdBuff;
+    }
+
+    // get command line
+    getcmd( p );
+    
+    // initialize compiler
+    InitCompMain();
+
+    // parse command line
+    if( MainCmdLine( &SrcName, &CmdPtr, opts, CmdBuff ) ) {
+        SrcExtn = SDSrcExtn( SrcName ); // parse the file name in case we get
+        ProcOpts( opts );               // an error in ProcOpts() so error
+        InitPredefinedMacros();         // file can be created
+        ///////////////////   
+        // Compile
+        ////////////////// 
+        ret_code = CompMain( CmdBuff );
+
+    } else{
+        // error in command line
+        // show how to use it   
+        ShowUsage();
+    }
+
+    // finish up compilation    
+    FiniCompMain();
+    __ErrorFini();
+
+    return( ret_code );
+}

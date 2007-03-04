@@ -47,6 +47,7 @@
 #include "recog.h"
 #include "types.h"
 #include "utility.h"
+#include "upscan.h"
 
 extern  int             RecIOKW(void);
 extern  bool            Permission(int);
@@ -64,7 +65,6 @@ extern  void            GPassLabel(label_id,uint);
 extern  void            GArrIntlSet(void);
 extern  void            GIntlSet(void);
 extern  sym_id          CkAssignOk(void);
-extern  void            AddConst(itnode *);
 extern  label_id        NextLabel(void);
 extern  void            FScan(int,char *,cs_label);
 extern  void            ScanExpr(void);

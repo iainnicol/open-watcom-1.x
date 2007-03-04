@@ -30,5 +30,9 @@
 ****************************************************************************/
 
 
+#ifdef __cplusplus
+#define gbl_defn extern "C"
+#else
 #define gbl_defn extern
+#endif
 #include <fcdata.h>

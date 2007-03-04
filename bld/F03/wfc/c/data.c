@@ -44,6 +44,7 @@
 #include "recog.h"
 #include "types.h"
 #include "utility.h"
+#include "upscan.h"
 
 
 
@@ -59,7 +60,6 @@ extern  void            ListItem(void);
 extern  bool            StartImpDo(void);
 extern  void            FinishImpDo(void);
 extern  void            GetConst(void);
-extern  void            AddConst(itnode *);
 extern  sym_id          LkSym(void);
 extern  sym_id          SymFind(char *,int);
 extern  void            TermDo(void);

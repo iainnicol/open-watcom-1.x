@@ -31,12 +31,12 @@
 // it hold relationship for OPR, OPRI and OPTR indexes
 //
 //      id      opr_index      proc_index
-pick( OPR_PHI,  OPRI_PHI,      0            ) //  null operator
-pick( OPR_TRM,  OPRI_TRM,      0            ) //  start/terminate symbol
-pick( OPR_FBR,  OPRI_FBR,      0            ) //  function/array bracket
-pick( OPR_LBR,  OPRI_LBR,      0            ) //  (
-pick( OPR_COM,  OPRI_COM,      0            ) //  ,
-pick( OPR_COL,  OPRI_COL,      0            ) //  :
+pick( OPR_PHI,  OPRI_PHI,      OPTR_NONE    ) //  null operator
+pick( OPR_TRM,  OPRI_TRM,      OPTR_NONE    ) //  start/terminate symbol
+pick( OPR_FBR,  OPRI_FBR,      OPTR_NONE    ) //  function/array bracket
+pick( OPR_LBR,  OPRI_LBR,      OPTR_NONE    ) //  (
+pick( OPR_COM,  OPRI_COM,      OPTR_NONE    ) //  ,
+pick( OPR_COL,  OPRI_COL,      OPTR_NONE    ) //  :
 pick( OPR_EQU,  OPRI_EQU,      OPTR_ASGN    ) //  =
 pick( OPR_RBR,  OPRI_RBR,      OPTR_CH_ASGN ) //  )
 pick( OPR_DPT,  OPRI_FLD,      OPTR_CH_REL  ) //  .

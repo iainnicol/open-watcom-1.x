@@ -30,8 +30,15 @@
 
 
 #include <stdlib.h>
-
+#ifdef __cplusplus
+extern "C" void     FMemInit( void );
+extern "C" void     FMemFini( void );
+extern "C" void     *FMemAlloc( size_t size );
+extern "C" void     FMemFree( void *p );
+#else
 extern void     FMemInit( void );
 extern void     FMemFini( void );
 extern void     *FMemAlloc( size_t size );
 extern void     FMemFree( void *p );
+
+#endif

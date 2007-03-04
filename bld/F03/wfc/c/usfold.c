@@ -35,10 +35,10 @@
 #include "global.h"
 #include "rtenv.h"
 #include "ferror.h"
+#include "upscan.h"
 
 extern  void            (* const __FAR GenOprTable[])();
 
-extern  void            AddConst(itnode *);
 extern  int             LexStrCmp(char *,int,char *,int);
 extern  bool            AddIOFlo(intstar4 *,intstar4 *);
 extern  bool            SubIOFlo(intstar4 *,intstar4 *);
