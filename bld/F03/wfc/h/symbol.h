@@ -218,7 +218,7 @@ typedef struct literal {
     void                *address;       // back handle
     uint                length;         // length of literal
     unsigned_8          flags;          // constant appeared in DATA statement
-    byte                value;          // value of literal
+    char                value;          // value of literal
 } literal;
 
 #define LT_DATA_STMT            0x01    // literal used in DATA statement

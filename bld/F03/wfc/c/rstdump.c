@@ -42,7 +42,6 @@
 
 extern  void            Error(int,...);
 extern  void            NameErr(int,sym_id);
-extern  void            NamNamErr(int,sym_id,sym_id);
 extern  void            NameWarn(int,sym_id);
 extern  void            NameExt(int,sym_id);
 extern  void            Warning(int,...);

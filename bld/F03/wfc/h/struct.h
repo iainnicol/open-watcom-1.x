@@ -53,7 +53,7 @@ typedef struct fmap {
 
 typedef struct field {
     sym_id              link;                   // next field
-    byte                typ;                    // type of field
+    TYPE                typ;                    // type of field
     union {
         uint            size;                   // size of field
         struct fstruct  *record;                // pointer to structure

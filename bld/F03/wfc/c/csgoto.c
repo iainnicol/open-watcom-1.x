@@ -45,10 +45,10 @@
 #include "insert.h"
 #include "recog.h"
 #include "utility.h"
+#include "ioprockw.h"
 
 
 extern  sym_id          CkAssignOk(void);
-extern  void            CkSize4(void);
 extern  void            ScanExpr(void);
 extern  label_id        NextLabel(void);
 extern  void            CkTypeDeclared(void);

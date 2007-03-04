@@ -40,8 +40,8 @@
 #include "insert.h"
 #include "recog.h"
 #include "utility.h"
+#include "ioprockw.h"
 
-extern  void            ChkAssumed(void);
 extern  void            TermDo(void);
 extern  void            ImpDo(void);
 extern  void            DelCSNode(void);

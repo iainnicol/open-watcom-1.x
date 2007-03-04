@@ -44,13 +44,12 @@
 #include "ferror.h"
 #include "recog.h"
 #include "utility.h"
+#include "ioprockw.h"
 
 extern  sym_id          LkSym(void);
 extern  void            InitIO(void);
 extern  void            FiniIO(void);
 extern  void            KeywordList(void);
-extern  void            Unit(void);
-extern  void            FormatIdd(void);
 extern  void            IOList(void);
 extern  bool            Permission(int);
 extern  void            GStartIO(void);

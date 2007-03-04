@@ -59,9 +59,9 @@ gbl_defn impl_entry     ImplicitTab[IMPL_SIZE+1];
 gbl_defn byte           IFUsed[24];     // indicates intrinsic functions used
 gbl_defn SgmtSwType     SgmtSw;         // program segment switches
 gbl_defn int            ProgSw;         // program switches
-gbl_defn XSwitchType_t  ExtnSw;         // extension switches
+gbl_defn int            ExtnSw;         // extension switches
 gbl_defn TYPE           ResultType;     // result type of operation in upscan
-gbl_defn StmtSwType     StmtSw;         // statement switches
+gbl_defn int            StmtSw;         // statement switches
 gbl_defn rememb         Remember;       // info about the last executable stmt
 gbl_defn char           *SrcName;       // name of source file
 gbl_defn char           *ObjName;       // name of object output file

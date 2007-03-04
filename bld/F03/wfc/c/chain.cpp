@@ -24,43 +24,67 @@
 *
 *  ========================================================================
 *
-* Description:  compile-time constants define symbols type
+* Description:  chain processing
 *
 ****************************************************************************/
 
-#ifndef _SYMTYPES_H_INCLUDED
-#define _SYMTYPES_H_INCLUDED
+//These methods are terrible. They are some generic functions used for fidderent types
+// Has to be fixed in C++ and is terrible code anyways. That's what templates are for.
 
-// TYPES
-// =====
+#include "ftnstd.h"
+#include "fmemmgr.h"
 
-#ifdef pick
-#undef pick
-#endif
+//================================
+void    FreeChain( void **head )
+{
+    // Free a chain.
+    // The "link" field in the chain must be first in the structure.
 
-#define pick(id,text,size,ptype) id,
+    void        *next;
+    void        **chain;
 
-typedef enum TYPE {
-#include "symdefn.h"
-} TYPE;
+    chain = (void**)*head;
+    while( chain != NULL )
+    {
+        next  = *chain;
+        FMemFree( chain );
+        chain = (void**)next;
+    }
+    *head = NULL;
+}
 
-//typedef enum SYM_TYPES TYPE;
 
-#define TY_FIRST    TY_LOGICAL_1
+//================================
+void    *FreeLink( void **link )
+{
+    // Free a link in the chain.
+    // The "link" field in the chain must be first in the structure.
 
-#define TY_EXTENDED TY_DOUBLE
-#define TY_XCOMPLEX TY_DCOMPLEX
+    void        *next;
 
-#define FIRST_BASE_TYPE TY_LOGICAL_1
-#define LAST_BASE_TYPE  TY_TRUE_XCOMPLEX
+    next = *link;
+    FMemFree( link );
+    return( next );
+}
 
-#if _CPU == 8086
- #define TY_INTEGER_TARG TY_INTEGER_2
-#else
- #define TY_INTEGER_TARG TY_INTEGER
-#endif
 
-#define _IsTypeLogical( typ )   ((typ >= TY_LOGICAL_1) && (typ <= TY_LOGICAL))
-#define _IsTypeInteger( typ )   ((typ >= TY_INTEGER_1) && (typ <= TY_INTEGER))
+//==================================
+void    ReverseList( void **head )
+{
+    // Reverse a linked list.
+    void        *rev_list;
+    void        *next;
+    void        **entry;
 
-#endif
+    rev_list    = NULL;
+    entry       = (void**)*head;
+    while( entry != NULL )
+    {
+        next     = *entry;
+        *entry   = rev_list;
+        rev_list = entry;
+        entry    = (void**)next;
+    }
+
+    *head = rev_list;
+}
