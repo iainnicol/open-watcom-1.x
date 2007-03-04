@@ -582,6 +582,7 @@ positive_tests = &
     ns40.$(ext) &
     ns41.$(ext) &
     ns42.$(ext) &
+    ns43.$(ext) &
     offset01.$(ext) &
     opeq01.$(ext) &
     opeq02.$(ext) &
