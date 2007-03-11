@@ -48,6 +48,32 @@ int f3( const T &a, const T &b )
 }
 
 
+template< class T >
+struct C
+{ };
+
+template< class T >
+struct D
+{
+    D()
+        : val( 0 )
+    { }
+
+    template< class U >
+    D( const D< U > & )
+        : val( 1 )
+    { }
+
+    template< class U >
+    D( const C< U > & )
+        : val( 2 )
+    { }
+
+
+    int val;
+};
+
+
 int main()
 {
     char **c = 0;
@@ -78,6 +104,22 @@ int main()
     if( f3( A(), B()) != 1 ) fail( __LINE__ );
     if( f3( B(), A()) != 1 ) fail( __LINE__ );
     if( f3( B(), B()) != 2 ) fail( __LINE__ );
+
+
+    D< int > d1;
+    if( d1.val != 0 ) fail( __LINE__ );
+
+    D< long > d2( d1 );
+    if( d2.val != 1 ) fail( __LINE__ );
+
+    D< short > d3;
+    if( d3.val != 0 ) fail( __LINE__ );
+
+    d3 = d1;
+    if( d3.val != 1 ) fail( __LINE__ );
+
+    d3 = d2;
+    if( d3.val != 1 ) fail( __LINE__ );
 
 
     _PASS;
