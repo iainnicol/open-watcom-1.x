@@ -64,9 +64,13 @@ struct D
         : val( 1 )
     { }
 
+    D( const D< int > & )
+        : val( 2 )
+    { }
+
     template< class U >
     D( const C< U > & )
-        : val( 2 )
+        : val( 3 )
     { }
 
 
@@ -110,13 +114,13 @@ int main()
     if( d1.val != 0 ) fail( __LINE__ );
 
     D< long > d2( d1 );
-    if( d2.val != 1 ) fail( __LINE__ );
+    if( d2.val != 2 ) fail( __LINE__ );
 
     D< short > d3;
     if( d3.val != 0 ) fail( __LINE__ );
 
     d3 = d1;
-    if( d3.val != 1 ) fail( __LINE__ );
+    if( d3.val != 2 ) fail( __LINE__ );
 
     d3 = d2;
     if( d3.val != 1 ) fail( __LINE__ );
