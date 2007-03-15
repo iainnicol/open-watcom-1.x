@@ -962,7 +962,8 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                 }
             }
         }
-        if( ! AnalyseSymbolAccess( expr, left, this_node, &diagAccess ) ) {
+        type = expr->type;
+        if( ( !type || type->id != TYP_PROPERTY ) && ! AnalyseSymbolAccess( expr, left, this_node, &diagAccess ) ) {
             NodeFreeDupedExpr( this_node );
             ArgListTempFree( alist, count );
             PtListFree( ptlist, count );

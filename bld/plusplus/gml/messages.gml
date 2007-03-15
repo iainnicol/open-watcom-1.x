@@ -11946,3 +11946,30 @@ template MyTemplate< int >;
 :errgood.
 template class MyTemplate< int >;
 :eerrgood.
+
+:MSGSYM. ERR_UNKNOWN_EXTENDED_ATTR
+:MSGTXT. '%N' unrecognized extended attribute
+:MSGJTXT. 
+The identifier used in the
+.kw __declspec
+declaration modifier is not supported by Open Watcom C++.
+
+:MSGSYM. ERR_DUP_EXTENDED_ATTR
+:MSGTXT. '%N' duplicated extended attribute
+:MSGJTXT.
+
+:MSGSYM. ERR_TOO_MANY_DIM
+:MSGTXT. '%S': too many dimensions
+:MSGJTXT.
+
+:MSGSYM. ERR_PROP_GET_UNDEFINED
+:MSGTXT. '%S' : no 'get' method is associated with this property
+:MSGJTXT.
+
+:MSGSYM. ERR_PROP_PUT_UNDEFINED
+:MSGTXT. '%S' : no 'put' method is associated with this property
+:MSGJTXT.
+
+:MSGSYM. ERR_PROP_TYPE_MISMATCH
+:MSGTXT. '%S' : property has a type which is incompatible with one of its accessors '%T'
+:MSGJTXT.

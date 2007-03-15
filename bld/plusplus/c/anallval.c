@@ -186,21 +186,23 @@ boolean AnalyseThisDataItem(    // ANALYSE "THIS" DATA ITEM IN PARSE TREE
         type = TypeMergeForMember( type, expr->type );
         result = right->u.symcg.result;
         right->u.symcg.result = NULL;
-        if( expr->u.subtree[0]->flags & PTF_MEMORY_EXACT ) {
-            offset = result->exact_delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
-            *r_right = right;
-        } else if( result->non_virtual ) {
-            offset = result->delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
-            *r_right = right;
-        } else {
-            expr = NodePruneRight( expr );
-            expr = NodePruneTop( expr );
-            expr->flags |= PTF_PTR_NONZERO;
-            NodeConvertToBasePtr( &expr, type, result, TRUE );
-            expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
-            expr = NodeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+        if( type->id != TYP_PROPERTY ) {
+          if( expr->u.subtree[0]->flags & PTF_MEMORY_EXACT ) {
+              offset = result->exact_delta + result->offset;
+              right = NodeReplace( right, NodeOffset( offset ) );
+              *r_right = right;
+          } else if( result->non_virtual ) {
+              offset = result->delta + result->offset;
+              right = NodeReplace( right, NodeOffset( offset ) );
+              *r_right = right;
+          } else {
+              expr = NodePruneRight( expr );
+              expr = NodePruneTop( expr );
+              expr->flags |= PTF_PTR_NONZERO;
+              NodeConvertToBasePtr( &expr, type, result, TRUE );
+              expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
+              expr = NodeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+          }
         }
         expr->type = type;
         expr->flags |= PTF_LVALUE;

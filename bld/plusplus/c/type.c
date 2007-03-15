@@ -67,6 +67,7 @@ TYPE: C++ type system
 #include "fmttype.h"
 #include "dwarfdbg.h"
 #include "rtti.h"
+#include "yydriver.h"
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed
 #define TYPE_HASH_MASK          (TYPE_HASH_MODULUS-1)// mask for above modulus
@@ -894,6 +895,17 @@ static boolean dupCompare( TYPE test1, TYPE test2 )
         break;
     case TYP_ARRAY:
         if( test1->u.a.array_size != test2->u.a.array_size ) {
+            return( FALSE );
+        }
+        break;
+    case TYP_PROPERTY :
+        if( test1->u.p.get != test2->u.p.get ) {
+            return( FALSE );
+        }
+        if( test1->u.p.put != test2->u.p.put ) {
+            return( FALSE );
+        }
+        if( test1->of != test2->of ) {
             return( FALSE );
         }
         break;
@@ -2252,8 +2264,8 @@ static void checkSpecifier( DECL_SPEC *d1, DECL_SPEC *d2 )
 static void checkMSDeclspec( DECL_SPEC *d1, DECL_SPEC *d2 )
 /********************************************************/
 {
-    TYPE ms_fnmod1;
-    TYPE ms_fnmod2;
+    TYPE  ms_fnmod1;
+    TYPE  ms_fnmod2;
 
     d1->ms_declspec |= d2->ms_declspec;
     ms_fnmod2 = d2->ms_declspec_fnmod;
@@ -2513,6 +2525,79 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
         spec = PTypeCombine( dspec, spec );
     }
     return( spec );
+}
+
+typedef enum {
+  PROPERTY_GETTER,
+  PROPERTY_PUTTER
+} PROPERTY_HANDLER;
+
+static PROPERTY_HANDLER checkPropertyAttr( PTREE pa )
+{
+    char  *name;
+    int    rc = -1;
+    
+    if( pa != NULL ) {
+      name = pa->u.id.name;
+      if( !strcmp( name, "get" ) )      rc = PROPERTY_GETTER;
+      else if( !strcmp( name, "put" ) ) rc = PROPERTY_PUTTER;
+      else                              PTreeErrorExprName( pa, ERR_UNKNOWN_EXTENDED_ATTR, name );
+      
+    }
+    return( rc );
+}
+
+TYPE MakeProperty( PTREE id, PTREE pget, PTREE gval, PTREE pput, PTREE pval)
+{
+    PTREE  get;
+    PTREE  put;
+    TYPE   type;
+    char  *name;
+    int    rc1, rc2;
+
+    if( id == NULL || pget == NULL || gval == NULL ) return NULL;
+    
+    name = id->u.id.name;
+    if( strcmp( name, "property" ) != 0 )
+      PTreeErrorExprName( id, ERR_UNKNOWN_EXTENDED_ATTR, name );
+    
+    get  = NULL;
+    put  = NULL;
+    type = MakeType( TYP_PROPERTY );
+    rc1  = checkPropertyAttr( pput );
+    switch( rc1 ) {
+      case PROPERTY_GETTER: 
+           get = pval; 
+           break;
+      case PROPERTY_PUTTER: 
+           put = pval; 
+           break;
+    }
+    rc2 = checkPropertyAttr( pget );
+    switch( rc2 ) {
+      case PROPERTY_GETTER:
+           get = gval; 
+           break;
+      case PROPERTY_PUTTER: 
+           put = gval; 
+           break;
+    }
+    
+    if( rc1 == rc2 ) {
+        if( rc1 < 0 ) PTreeErrorExpr( id, ERR_SYNTAX );
+        PTreeErrorExprName( pput, ERR_DUP_EXTENDED_ATTR, pput->u.id.name );
+    }
+    
+    PTreeSetErrLoc( id );
+    if( put != NULL ) type->u.p.put = put->u.id.name;
+    if( get != NULL ) type->u.p.get = get->u.id.name;
+    
+    PTreeFree( id );
+    PTreeFree( pget );
+    PTreeFree( pput );
+    PTreeFree( put );
+    PTreeFree( get );
+    return( type );
 }
 
 DECL_SPEC *PTypeMSDeclSpecModifier( DECL_SPEC *dspec, TYPE fnmod_type )
@@ -3680,6 +3765,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     unsigned arg_count;
     int status;
     int msg_num;
+    int prop;
     type_flag mod_flags;
     type_flag fn_flag;
     type_flag ptr_flags;
@@ -3696,6 +3782,8 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     if( id_tree != NULL ) {
         id = id_tree->u.id.name;
     }
+    fnmod_type = dspec->ms_declspec_fnmod;
+    prop       = fnmod_type != 0 && fnmod_type->id == TYP_PROPERTY; 
     figureOutDSpec( dspec );
     checkForUnnamedStruct( dspec, id );
     curr_type = dinfo->list;
@@ -3703,6 +3791,10 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     prev_type = dspec->partial;
     curr_type = massageFunctionTypeInDSpec( &prev_type, curr_type );
     status = scanDeclarator( curr_type, &arg_count );
+    
+    if( fnmod_type != 0 && fnmod_type->id == TYP_PROPERTY && curr_type != 0 && curr_type->id == TYP_FUNCTION )
+        CErr( ERR_UNKNOWN_EXTENDED_ATTR, "property" );
+    
     if( status & SM_CV_FUNCTION_ERROR ) {
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
     }
@@ -3815,6 +3907,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
             break;
         case TYP_ARRAY:
+            if( prop ) break;
             flag.memory_model_movement = TRUE;
             /* check base type */
             switch( of_type->id ) {
@@ -4205,6 +4298,7 @@ TYPE MakeClassModDeclSpec( DECL_SPEC *dspec )
     type = NULL;
     if( dspec->ms_declspec != STS_NULL ) {
         type = makeMSDeclSpecType( dspec );
+        if( type->id == TYP_PROPERTY ) CErr( ERR_UNKNOWN_EXTENDED_ATTR, "property" );
         type->flag |= TF1_OUTERMOST;
         DbgAssert( type->of == NULL );
     }
@@ -5056,6 +5150,7 @@ TYPE TypeModExtract(            // EXTRACT MODIFIER INFORMATION
             }
             continue;
           case TYP_TYPEDEF :
+          case TYP_PROPERTY :
             continue;
           case TYP_BOOL :
           case TYP_CHAR :
@@ -5115,6 +5210,7 @@ TYPE TypeModFlagsEC(            // GET MODIFIER FLAGS, UNMODIFIED TYPE
             flag |= type->flag;
             continue;
           case TYP_TYPEDEF :
+          case TYP_PROPERTY :
             continue;
           default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
@@ -5150,6 +5246,7 @@ TYPE TypeModFlagsBaseEC(        // GET MODIFIER FLAGS & BASE, UNMODIFIED TYPE
             }
             continue;
           case TYP_TYPEDEF :
+          case TYP_PROPERTY :
             continue;
           default :
             if( (flag & TF1_MEM_MODEL) == 0 ) {
@@ -5177,6 +5274,7 @@ TYPE TypeModFlags(              // GET MODIFIER FLAGS, UNMODIFIED TYPE
           case TYP_MODIFIER :
             flag |= type->flag;
             continue;
+          case TYP_PROPERTY :
           case TYP_TYPEDEF :
             continue;
           case TYP_BOOL :
@@ -6860,6 +6958,7 @@ void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
         }
     }
+    type = dinfo->type;
     FreeDeclInfo( dinfo );
 }
 
@@ -7463,6 +7562,7 @@ static void scanForGenerics( PSTK_CTL *stk, TYPE type )
         case TYP_TYPEDEF:
         case TYP_ARRAY:
         case TYP_MODIFIER:
+        case TYP_PROPERTY :
             type = type->of;
             break;
         case TYP_CLASS:
@@ -9059,6 +9159,7 @@ static void typesInit(          // TYPES INITIALIZATION
 #define ENTRY_MODIFIER "TYP_MODIFIER",
 #define ENTRY_MEMBER_POINTER "TYP_MEMBER_POINTER",
 #define ENTRY_GENERIC "TYP_GENERIC",
+#define ENTRY_PROPERTY "TYP_PROPERTY",
         static char const * const typeIdNames[] = {
             #include "type_arr.h"
             "Total"
@@ -9378,6 +9479,7 @@ static void saveType( void *e, carve_walk_base *d )
     SCOPE save_scope;
     CLASSINFO *save_info;
     TYPE save_type;
+    char *save_get, *save_put;
     void *save_base;
     AUX_INFO *save_pragma;
     arg_list *save_args;
@@ -9406,6 +9508,12 @@ static void saveType( void *e, carve_walk_base *d )
     case TYP_MEMBER_POINTER:
         save_type = s->u.mp.host;
         s->u.mp.host = TypeGetIndex( save_type );
+        break;
+    case TYP_PROPERTY:
+        save_get   = s->u.p.get;    
+        save_put   = s->u.p.put;
+        if( save_get ) s->u.p.get = NameGetIndex( s->u.p.get );
+        if( save_put ) s->u.p.put = NameGetIndex( s->u.p.put );
         break;
     case TYP_MODIFIER:
         save_base = s->u.m.base;
@@ -9440,6 +9548,10 @@ static void saveType( void *e, carve_walk_base *d )
     case TYP_ENUM:
         s->u.t.sym = save_sym;
         s->u.t.scope = save_scope;
+        break;
+    case TYP_PROPERTY:
+        s->u.p.get = save_get;
+        s->u.p.put = save_put;
         break;
     case TYP_CLASS:
         s->u.c.scope = save_scope;
@@ -9614,6 +9726,10 @@ static void readTypes( type_pch_walk *type_data )
             break;
         case TYP_MEMBER_POINTER:
             t->u.mp.host = TypeMapIndex( pch->u.mp.host );
+            break;
+        case TYP_PROPERTY:
+            t->u.p.get = NameMapIndex( pch->u.p.get );
+            t->u.p.put = NameMapIndex( pch->u.p.put );
             break;
         case TYP_MODIFIER:
             if( pch->flag & TF1_BASED ) {
