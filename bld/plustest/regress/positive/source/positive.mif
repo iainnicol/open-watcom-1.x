@@ -308,6 +308,7 @@ positive_tests = &
     deftemp03.$(ext) &
     deftemp04.$(ext) &
     deftemp05.$(ext) &
+    deftemp06.$(ext) &
     digraph1.$(ext) &
     dtor01.$(ext) &
     dtor02.$(ext) &

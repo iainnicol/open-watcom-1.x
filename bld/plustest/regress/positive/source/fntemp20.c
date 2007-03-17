@@ -78,6 +78,25 @@ struct D
 };
 
 
+struct E
+{
+    E()
+        : val( 0 )
+    { }
+
+    template< class T >
+    E( const T * const * )
+        : val( 1 )
+    { }
+
+    explicit E( const char * const * )
+        : val( 2 )
+    { }
+
+    int val;
+};
+
+
 int main()
 {
     char **c = 0;
@@ -124,6 +143,16 @@ int main()
 
     d3 = d2;
     if( d3.val != 1 ) fail( __LINE__ );
+
+
+    E e1;
+    if( e1.val != 0 ) fail( __LINE__ );
+    
+    E e2( c );
+    if( e2.val != 2 ) fail( __LINE__ );
+
+    e2 = c;
+    if( e2.val != 1 ) fail( __LINE__ );
 
 
     _PASS;
