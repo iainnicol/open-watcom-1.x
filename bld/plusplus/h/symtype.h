@@ -631,6 +631,7 @@ PCH_struct type {
         } mp;
         struct {                        // TYP_GENERIC
             unsigned    index;          // keeps template args distinct
+            char       *name;
         } g;
         struct {                        // TYP_GENERIC
             char       *get;

@@ -962,7 +962,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                 }
             }
         }
-        type = expr->type;
+        type = TypedefModifierRemove( expr->type );
         if( ( !type || type->id != TYP_PROPERTY ) && ! AnalyseSymbolAccess( expr, left, this_node, &diagAccess ) ) {
             NodeFreeDupedExpr( this_node );
             ArgListTempFree( alist, count );

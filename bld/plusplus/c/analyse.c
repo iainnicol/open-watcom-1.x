@@ -68,6 +68,8 @@ ANALYSE.C -- analyse parsed tree of tokens
 #endif
 #include "mngless.h"
 
+static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv );
+
 // define action-codes for (operation,operand,operand)-combination actions
 
 typedef enum            // OPAC -- operation actions
@@ -2609,248 +2611,7 @@ INITDEFN( analyse_reports, init, InitFiniStub )
 #endif
 
 
-/*static SYMBOL findFunction( PTREE expr, SCOPE scope, arg_list* alist, char* name )
-{
-    SYMBOL         sym, orig; 
-    SEARCH_RESULT *result;
-    int            rc;
-     
-    result = ScopeContainsMember( scope, name );
-    if( result != 0 ) {
-        FNOV_DIAG fnov_diag;
-        
-        orig = result->sym_name->name_syms;
-        rc   = FuncOverloadedDiag( &sym, result, orig, alist, NULL, &fnov_diag );
-        ScopeFreeResult( result );
-        switch( rc ) {
-          case FNOV_AMBIGUOUS :
-            CallDiagAmbiguous( expr, diagCall.msg_ambiguous, &fnov_diag );
-            sym = 0;
-            break;
-          case FNOV_NO_MATCH :
-            CallDiagNoMatch( expr, diagCall.msg_no_match_one, 
-                             diagCall.msg_no_match_many, 
-                             NULL, orig, &fnov_diag );
-            sym = 0;
-            break;
-        }
-        FnovFreeDiag( &fnov_diag );
-        return( sym );
-    }
-    return( NULL );
-}                                     */
-
-
-static PTREE dupTree( PTREE expr ) 
-{
-    if( expr != 0 ) {
-        PTREE node  = PTreeAssign( 0, expr );
-        int   flags = PTreeOpFlags( expr );
-        if( flags & PTS_OPERATOR ) {
-            node->u.subtree[0] = dupTree( expr->u.subtree[0] );
-            if( !( flags & PTO_UNARY ) )
-                node->u.subtree[1] = dupTree( expr->u.subtree[1] );
-            else
-                node->u.subtree[1] = 0;
-        } 
-        return node;
-    }
-    return 0;
-}
-
-static PTREE makePropertyCall( PTREE expr, PTREE rval, boolean cnv )
-{
-    SEARCH_RESULT *result;
-    char          *name;
-    int            inum;
-    int            code;
-    TYPE           type;
-    TYPE           ret;
-    PTREE          temp; 
-    PTREE          pnode; 
-    SYMBOL         sym, fsym;
-    
-    if( expr != 0 ) {
-        code = expr->cgop;
-        if( code == CO_CALL || code == CO_DOT || code == CO_ARROW || expr->op == PT_SYMBOL ) {
-            type = expr->type;
-            if( type != NULL && type->id == TYP_PROPERTY ) {
-                if( !cnv ) expr = dupTree( expr );
-                  
-                inum  = 0;
-                pnode = expr;
-                name  = rval ? type->u.p.put : type->u.p.get;
-                
-                for( ret = type->of; ret->id == TYP_ARRAY; ret = ret->of, ++inum );
-                if( expr->cgop == CO_CALL ) {
-                    for( temp = expr->u.subtree[1]; temp != 0; temp = temp->u.subtree[0], --inum );
-                    pnode = expr->u.subtree[0];
-                    if( rval != 0 ) {
-                        temp               = NodeBinary( CO_LIST, expr->u.subtree[1], rval );
-                        temp->type         = rval->type;
-                        temp->sym_name     = rval->sym_name;
-                        expr->u.subtree[1] = AnalyseOperator( temp );
-                    }
-                } 
-                
-                temp = pnode;
-                if( pnode->cgop == CO_DOT || pnode->cgop == CO_ARROW ) {
-                    pnode = pnode->u.subtree[0];
-                    type  = TypedefModifierRemoveOnly( pnode->type );
-                    if( type->id == TYP_POINTER ) type = type->of;
-                    pnode = temp->u.subtree[1];
-                }
-                
-                sym = pnode->u.symcg.symbol;
-                if( inum != 0 ) {
-                    PTreeSetErrLoc( pnode );
-                    CErr( ERR_TOO_MANY_DIM, sym );
-                    PTreeErrorNode( expr );
-                } else if( !name || !(result = ScopeContainsMember( SymScope( sym ), name )) ) {
-                    PTreeSetErrLoc( pnode );
-                    CErr( rval ? ERR_PROP_PUT_UNDEFINED : ERR_PROP_GET_UNDEFINED, sym );
-                    PTreeErrorNode( expr );
-                } else {
-                    fsym                  = result->sym_name->name_syms;
-                    pnode->type           = fsym->sym_type;
-                    temp->type            = fsym->sym_type;
-                    pnode->sym_name       = fsym->name;
-                    pnode->u.symcg.symbol = fsym;
-                    pnode->u.symcg.result = result;
-                    
-                    if( expr->cgop != CO_CALL ) {
-                        if( !FunctionDeclarationType( pnode->type ) ) {
-                            if( pnode->type != ret ) {
-                                PTreeSetErrLoc( expr );
-                                CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
-                            }
-                            return 0;
-                        } else {
-                            expr = NodeBinary( CO_CALL, expr, NULL );
-                            PTreeExtractLocn( pnode, &expr->locn );                         
-                        }
-                    }
-                    
-                    if( !rval ) {
-                        expr = AnalyseOperator( expr );
-                        if( expr->type != ret ) {
-                            PTreeSetErrLoc( expr );
-                            CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
-                            PTreeErrorNode( expr );
-                        }
-                    }
-                }
-                return expr;
-            }
-        }
-    }
-    return 0;  
-}
-
-static PTREE analyseProperty( PTREE expr ) 
-{
-    boolean opsok;
-    int     code, flags;
-    PTREE   left, right, temp;
-    
-    opsok = TRUE;
-    code  = expr->cgop;
-    flags = PTreeOpFlags( expr );
-    if( (flags & PTS_OPERATOR) && code != CO_INDEX && code != CO_LIST ) {
-        left  = expr->u.subtree[0];
-        right = expr->u.subtree[1];
-        if( flags & PTO_UNARY ) {
-            if( expr->cgop == CO_ADDR_OF || expr->cgop == CO_INDIRECT ) {
-                if( ! ( left->flags & PTF_LV_CHECKED ) ) 
-                    opsok = AnalyseLvalueAddrOf( &expr->u.subtree[0] );
-            } else if( left != NULL && !( left->flags & PTF_LV_CHECKED ) ) {
-                opsok = AnalyseLvalue( &expr->u.subtree[0] );
-            }
-        } else {
-            if( left != NULL && !( left->flags & PTF_LV_CHECKED ) )
-                opsok = AnalyseLvalue( &expr->u.subtree[0] );
-            
-            if( ( flags & PTO_BINARY ) && right != NULL && ! ( right->flags & PTF_LV_CHECKED ) ) {
-                boolean al_ret = AnalyseLvalue( &expr->u.subtree[1] );
-                DbgAssert( DbgIsBoolean( al_ret ) );
-                opsok &= al_ret;
-            }
-        }
-        
-        if( ! opsok ) PTreeErrorNode( expr );
-        else {
-            right = makePropertyCall( expr->u.subtree[1], NULL, TRUE );
-            left  = expr->u.subtree[0];
-            
-            if( !right ) right = expr->u.subtree[1];
-            else {
-                expr->u.subtree[1] = right;
-                if( right->op == PT_ERROR ) {
-                    PTreeErrorNode( expr );
-                    return expr;
-                }
-            }
-            
-            switch( code ) {
-              case CO_EQUAL: 
-                left = makePropertyCall( left, right, TRUE );
-                if( left != 0 ) {
-                    expr->u.subtree[0] = 0;
-                    expr->u.subtree[1] = 0;
-                    PTreeFree( expr );
-                    expr = left;
-                }
-                break;
-              case CO_POST_MINUS_MINUS: 
-              case CO_PRE_MINUS_MINUS: 
-              case CO_POST_PLUS_PLUS: 
-              case CO_PRE_PLUS_PLUS:
-                temp = makePropertyCall( left, NULL, FALSE );
-                if( temp != 0 ) {
-                    if( flags & PTO_UN_ASSIGN ) {
-                        expr->u.subtree[0] = temp;
-                        if( temp->op == PT_ERROR ) {
-                            PTreeErrorNode( expr );
-                            break;
-                        }
-                        expr = makePropertyCall( left, AnalyseOperator( expr ), TRUE );
-                    }
-                }
-                break;
-              case CO_PLUS_EQUAL: code = CO_PLUS; goto mBin;
-              case CO_MINUS_EQUAL: code = CO_MINUS; goto mBin;
-              case CO_TIMES_EQUAL: code = CO_TIMES; goto mBin;
-              case CO_DIVIDE_EQUAL: code = CO_DIVIDE; goto mBin;
-              case CO_PERCENT_EQUAL: code = CO_PERCENT; goto mBin;
-              case CO_AND_EQUAL: code = CO_AND; goto mBin;
-              case CO_OR_EQUAL: code = CO_OR; goto mBin;
-              case CO_XOR_EQUAL: code = CO_XOR; goto mBin;
-              case CO_RSHIFT_EQUAL: code = CO_RSHIFT; goto mBin;
-              case CO_LSHIFT_EQUAL: code = CO_LSHIFT; goto mBin;
-              mBin:  
-                temp = makePropertyCall( left, NULL, FALSE );
-                if( temp != 0 ) {
-                    right              = PTreeBinary( code, temp, right );
-                    left               = makePropertyCall( left, right, TRUE );
-                    expr->u.subtree[0] = 0;
-                    expr->u.subtree[1] = 0;
-                    PTreeFree( expr );
-                    expr = left;
-                }
-                break;
-              default:
-                left = makePropertyCall( left, NULL, TRUE );
-                if( left != 0 ) {
-                    expr->u.subtree[0] = left;
-                    if( left->op == PT_ERROR ) PTreeErrorNode( expr );
-                }
-            }
-        }
-    }
-    return( expr );
-}
-
-PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
+static PTREE analyseOperator(          // ANALYSE AN OPERATOR
     PTREE expr )                // - expression
 {
     PTREE left;                 // - left operand
@@ -2987,9 +2748,10 @@ start_opac_string:
             type = operandError( expr, ERR_EXPR_MUST_BE_POINTER_TO );
             break;
           case CONV_PROP_INDEX :
-            right = makePropertyCall( expr->u.subtree[1], NULL, TRUE );
-            if( !right ) right = expr->u.subtree[1];
+            right = convertProperty( expr->u.subtree[1], NULL, TRUE );
+            if( !right )                     right = expr->u.subtree[1];
             else if( right->op == PT_ERROR ) break;
+            else                             expr->u.subtree[1] = right;
             expr->cgop     = CO_LIST;
             expr->type     = right->type;
             expr->sym_name = right->sym_name;
@@ -3427,7 +3189,7 @@ start_opac_string:
             type = left->type;
             continue;
           case CONV_TYPE_RIGHT :
-            right = makePropertyCall( right, NULL, TRUE );
+            right = convertProperty( right, NULL, TRUE );
             if( !right ) right = expr->u.subtree[1];
             else {
                 if( right->op == PT_ERROR ) break;
@@ -4428,6 +4190,266 @@ start_opac_string:
 }
 
 
+/*static SYMBOL findFunction( PTREE expr, SCOPE scope, arg_list* alist, char* name )
+{
+    SYMBOL         sym, orig; 
+    SEARCH_RESULT *result;
+    int            rc;
+     
+    result = ScopeContainsMember( scope, name );
+    if( result != 0 ) {
+        FNOV_DIAG fnov_diag;
+        
+        orig = result->sym_name->name_syms;
+        rc   = FuncOverloadedDiag( &sym, result, orig, alist, NULL, &fnov_diag );
+        ScopeFreeResult( result );
+        switch( rc ) {
+          case FNOV_AMBIGUOUS :
+            CallDiagAmbiguous( expr, diagCall.msg_ambiguous, &fnov_diag );
+            sym = 0;
+            break;
+          case FNOV_NO_MATCH :
+            CallDiagNoMatch( expr, diagCall.msg_no_match_one, 
+                             diagCall.msg_no_match_many, 
+                             NULL, orig, &fnov_diag );
+            sym = 0;
+            break;
+        }
+        FnovFreeDiag( &fnov_diag );
+        return( sym );
+    }
+    return( NULL );
+}                                     */
+
+
+static PTREE dupTree( PTREE expr ) 
+{
+    if( expr != 0 ) {
+        PTREE node  = PTreeAssign( 0, expr );
+        int   flags = PTreeOpFlags( expr );
+        if( flags & PTS_OPERATOR ) {
+            node->u.subtree[0] = dupTree( expr->u.subtree[0] );
+            if( !( flags & PTO_UNARY ) )
+                node->u.subtree[1] = dupTree( expr->u.subtree[1] );
+            else
+                node->u.subtree[1] = 0;
+        } 
+        return node;
+    }
+    return 0;
+}
+
+static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv )
+{
+    SEARCH_RESULT *result;
+    char          *name;
+    int            inum;
+    int            code;
+    TYPE           type;
+    TYPE           ret;
+    PTREE          temp; 
+    PTREE          pnode; 
+    SYMBOL         sym, fsym;
+    
+    if( expr != 0 ) {
+        code = expr->cgop;
+        if( code == CO_CALL || code == CO_DOT || code == CO_ARROW || expr->op == PT_SYMBOL ) {
+            type = TypedefModifierRemove( expr->type );
+            if( type != NULL && type->id == TYP_PROPERTY ) {
+                if( !cnv ) expr = dupTree( expr );
+                  
+                inum  = 0;
+                pnode = expr;
+                name  = rval ? type->u.p.put : type->u.p.get;
+                
+                for( ret = type->of; ret->id == TYP_ARRAY; ret = ret->of, ++inum );
+                if( expr->cgop == CO_CALL ) {
+                    for( temp = expr->u.subtree[1]; temp != 0; temp = temp->u.subtree[0], --inum );
+                    pnode = expr->u.subtree[0];
+                    if( rval != 0 ) {
+                        temp               = NodeBinary( CO_LIST, expr->u.subtree[1], rval );
+                        temp->type         = rval->type;
+                        temp->sym_name     = rval->sym_name;
+                        expr->u.subtree[1] = analyseOperator( temp );
+                    }
+                }
+                   
+                temp = pnode;
+                if( pnode->cgop == CO_DOT || pnode->cgop == CO_ARROW ) 
+                    pnode = temp->u.subtree[1];
+                
+                sym = pnode->u.symcg.symbol;
+                if( inum != 0 ) {
+                    PTreeSetErrLoc( pnode );
+                    CErr( ERR_TOO_MANY_DIM, sym );
+                    PTreeErrorNode( expr );
+                } else if( !name || !(result = ScopeContainsMember( SymScope( sym ), name )) ) {
+                    PTreeSetErrLoc( pnode );
+                    CErr( rval ? ERR_PROP_PUT_UNDEFINED : ERR_PROP_GET_UNDEFINED, sym );
+                    PTreeErrorNode( expr );
+                } else {
+                    fsym                  = result->sym_name->name_syms;
+                    pnode->type           = fsym->sym_type;
+                    temp->type            = fsym->sym_type;
+                    pnode->sym_name       = fsym->name;
+                    pnode->u.symcg.symbol = fsym;
+                    pnode->u.symcg.result = result;
+                    
+                    if( expr->cgop != CO_CALL ) {
+                        if( !FunctionDeclarationType( pnode->type ) ) {
+                            if( pnode->type != ret ) {
+                                PTreeSetErrLoc( expr );
+                                CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
+                            }
+                            return 0;
+                        } else {
+                            if( !rval ) expr = NodeBinary( CO_CALL, expr, NULL );
+                            else        expr = NodeBinary( CO_CALL, expr, analyseOperator( NodeBinary( CO_LIST, NULL, rval ) ) );
+                            
+                            expr->type = type;
+                            PTreeExtractLocn( pnode, &expr->locn );                         
+                        }
+                    } else if( !FunctionDeclarationType( pnode->type ) ) {
+                        PTreeSetErrLoc( expr );
+                        CErr( ERR_PROP_ARRAY, sym );
+                        return 0;
+                    }
+                    
+                    if( !rval ) {
+                        expr = analyseOperator( expr );
+                        if( expr->type != ret ) { 
+                            if( ret->id == TYP_POINTER && ( ret->flag & TF1_REFERENCE ) ) {
+                                ret = ret->of;
+                                if( ret == expr->type ) return expr;
+                            }
+                            PTreeSetErrLoc( expr );
+                            CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
+                            PTreeErrorNode( expr );
+                        }
+                    }
+                }
+                return expr;
+            }
+        }
+    }
+    return 0;  
+}
+
+void AnalyseProperty( PTREE *a_expr )
+{
+    if( a_expr != NULL ) {
+        PTREE expr = *a_expr;
+        if( expr != 0 && expr->op != PT_ERROR ) {
+            expr = convertProperty( expr, NULL, TRUE );
+            if( expr != 0 ) *a_expr = expr;
+        }
+    }
+}
+
+PTREE AnalyseOperator( PTREE expr ) 
+{
+    boolean opsok;
+    int     code, flags;
+    PTREE   left, right, temp;
+    
+    opsok = TRUE;
+    code  = expr->cgop;
+    flags = PTreeOpFlags( expr );
+    if( (flags & PTS_OPERATOR) && code != CO_INDEX && code != CO_LIST ) {
+        left  = expr->u.subtree[0];
+        right = expr->u.subtree[1];
+        if( flags & PTO_UNARY ) {
+            if( expr->cgop == CO_ADDR_OF || expr->cgop == CO_INDIRECT ) {
+                if( ! ( left->flags & PTF_LV_CHECKED ) ) 
+                    opsok = AnalyseLvalueAddrOf( &expr->u.subtree[0] );
+            } else if( left != NULL && !( left->flags & PTF_LV_CHECKED ) ) {
+                opsok = AnalyseLvalue( &expr->u.subtree[0] );
+            }
+        } else {
+            if( left != NULL && !( left->flags & PTF_LV_CHECKED ) )
+                opsok = AnalyseLvalue( &expr->u.subtree[0] );
+            
+            if( ( flags & PTO_BINARY ) && right != NULL && ! ( right->flags & PTF_LV_CHECKED ) ) {
+                boolean al_ret = AnalyseLvalue( &expr->u.subtree[1] );
+                DbgAssert( DbgIsBoolean( al_ret ) );
+                opsok &= al_ret;
+            }
+        }
+        
+        if( ! opsok ) PTreeErrorNode( expr );
+        else {
+            right = convertProperty( expr->u.subtree[1], NULL, TRUE );
+            left  = expr->u.subtree[0];
+            
+            if( !right ) right = expr->u.subtree[1];
+            else {
+                expr->u.subtree[1] = right;
+                if( right->op == PT_ERROR ) {
+                    PTreeErrorNode( expr );
+                    return expr;
+                }
+            }
+            
+            switch( code ) {
+              case CO_EQUAL: 
+                left = convertProperty( left, right, TRUE );
+                if( left != 0 ) {
+                    expr->u.subtree[0] = 0;
+                    expr->u.subtree[1] = 0;
+                    PTreeFree( expr );
+                    expr = left;
+                }
+                break;
+              case CO_POST_MINUS_MINUS: 
+              case CO_PRE_MINUS_MINUS: 
+              case CO_POST_PLUS_PLUS: 
+              case CO_PRE_PLUS_PLUS:
+                temp = convertProperty( left, NULL, FALSE );
+                if( temp != 0 ) {
+                    if( flags & PTO_UN_ASSIGN ) {
+                        expr->u.subtree[0] = temp;
+                        if( temp->op == PT_ERROR ) {
+                            PTreeErrorNode( expr );
+                            break;
+                        }
+                        expr = convertProperty( left, analyseOperator( expr ), TRUE );
+                    }
+                }
+                break;
+              case CO_PLUS_EQUAL: code = CO_PLUS; goto mBin;
+              case CO_MINUS_EQUAL: code = CO_MINUS; goto mBin;
+              case CO_TIMES_EQUAL: code = CO_TIMES; goto mBin;
+              case CO_DIVIDE_EQUAL: code = CO_DIVIDE; goto mBin;
+              case CO_PERCENT_EQUAL: code = CO_PERCENT; goto mBin;
+              case CO_AND_EQUAL: code = CO_AND; goto mBin;
+              case CO_OR_EQUAL: code = CO_OR; goto mBin;
+              case CO_XOR_EQUAL: code = CO_XOR; goto mBin;
+              case CO_RSHIFT_EQUAL: code = CO_RSHIFT; goto mBin;
+              case CO_LSHIFT_EQUAL: code = CO_LSHIFT; goto mBin;
+              mBin:  
+                temp = convertProperty( left, NULL, FALSE );
+                if( temp != 0 ) {
+                    right              = PTreeBinary( code, temp, right );
+                    left               = convertProperty( left, right, TRUE );
+                    expr->u.subtree[0] = 0;
+                    expr->u.subtree[1] = 0;
+                    PTreeFree( expr );
+                    expr = left;
+                }
+                break;
+              default:
+                left = convertProperty( left, NULL, TRUE );
+                if( left != 0 ) {
+                    expr->u.subtree[0] = left;
+                    if( left->op == PT_ERROR ) PTreeErrorNode( expr );
+                }
+            }
+        }
+    }
+    if( expr->op != PT_ERROR ) expr = analyseOperator( expr );
+    return( expr );
+}
+
 PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
     PTREE expr )                // - current node
 {
@@ -4450,6 +4472,7 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
               case CO_OFFSETOF :
                 ExtraRptTabIncr( ctrOps, CO_OFFSETOF, 0 );
                 expr = AnalyseOffsetOf( expr );
+                AnalyseProperty( &expr );
                 break;
               case CO_DOT :
                 ExtraRptTabIncr( ctrOps, CO_DOT, 0 );
@@ -4460,8 +4483,7 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
                 expr = AnalyseLvArrow( expr );
                 break;
               default :
-                expr = analyseProperty( expr );
-                if( expr->op != PT_ERROR ) expr = AnalyseOperator( expr );
+                expr = AnalyseOperator( expr );
                 break;
             }
         }
@@ -4469,8 +4491,7 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
       case PT_UNARY :
         if( expr->u.subtree[0] == NULL
          || expr->u.subtree[0]->op != PT_ERROR ) {
-            expr = analyseProperty( expr );
-            if( expr->op != PT_ERROR ) expr = AnalyseOperator( expr );
+            expr = AnalyseOperator( expr );
         } else {
             PTreePropogateError( expr );
         }
@@ -4502,6 +4523,10 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
      && !( expr->flags & PTF_LV_CHECKED ) ) {
 //      AnalyseLvalue( PTreeRef( &expr ) );
         AnalyseLvalue( &expr );
+        if( expr->op != PT_ERROR ) {
+            PTREE temp = convertProperty( expr, NULL, TRUE );
+            if( temp != 0 ) expr = temp;
+        }
     }
     return expr;
 }
@@ -4599,11 +4624,11 @@ PTREE AnalyseReturnExpr(    // ANALYSE A RETURN EXPRESSION
 
     if( expr != NULL ) {
         fun_type = SymFuncReturnType( func );
-        right = expr;
-        expr = NodeBinary( CO_RETURN, PTreeType( fun_type ), right );
-        expr = PTreeCopySrcLocation( expr, right );
-        expr = run_traversals( expr );
-        expr = NodeDone( expr );
+        right    = expr;
+        expr     = NodeBinary( CO_RETURN, PTreeType( fun_type ), right );
+        expr     = PTreeCopySrcLocation( expr, right );
+        expr     = run_traversals( expr );
+        expr     = NodeDone( expr );
         if( FnRetnOpt() ) {
             expr->flags |= PTF_RETN_OPT;
         }

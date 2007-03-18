@@ -11973,3 +11973,8 @@ declaration modifier is not supported by Open Watcom C++.
 :MSGSYM. ERR_PROP_TYPE_MISMATCH
 :MSGTXT. '%S' : property has a type which is incompatible with one of its accessors '%T'
 :MSGJTXT.
+
+:MSGSYM. ERR_PROP_ARRAY
+:MSGTXT. '%S' : array property accessor must be a function
+:MSGJTXT.
+
