@@ -4251,7 +4251,7 @@ static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv )
     PTREE          pnode; 
     SYMBOL         sym, fsym;
     
-    if( expr != 0 ) {
+    if( expr != 0 && expr->op != PT_ERROR && (!rval || rval->op != PT_ERROR) ) {
         code = expr->cgop;
         if( code == CO_CALL || code == CO_DOT || code == CO_ARROW || expr->op == PT_SYMBOL ) {
             type = TypedefModifierRemove( expr->type );
@@ -4406,13 +4406,20 @@ PTREE AnalyseOperator( PTREE expr )
               case CO_PRE_PLUS_PLUS:
                 temp = convertProperty( left, NULL, FALSE );
                 if( temp != 0 ) {
-                    if( flags & PTO_UN_ASSIGN ) {
+                    if( temp->op != PT_ERROR ) {
+                      
+                        if( code == CO_POST_MINUS_MINUS ) expr->cgop = CO_PRE_MINUS_MINUS;
+                        else if( code == CO_POST_PLUS_PLUS ) expr->cgop = CO_PRE_PLUS_PLUS;
+                        
                         expr->u.subtree[0] = temp;
-                        if( temp->op == PT_ERROR ) {
-                            PTreeErrorNode( expr );
-                            break;
-                        }
-                        expr = convertProperty( left, analyseOperator( expr ), TRUE );
+                        expr = analyseOperator( expr );
+                        if( expr->op != PT_ERROR ) 
+                            expr = convertProperty( left, expr, TRUE );
+                        else
+                            PTreeFreeSubtrees( left );
+                    } else {
+                        PTreeErrorNode( expr );
+                        PTreeFreeSubtrees( temp );
                     }
                 }
                 break;
