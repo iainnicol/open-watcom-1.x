@@ -316,7 +316,8 @@ void TemplateDeclAddArgument( DECL_INFO *new_dinfo )
 
     if( sym != NULL ) {
         /* template type parameter */
-        new_dinfo->type = setArgIndex( sym, currentTemplate->nr_args );
+        sym->sym_type->u.g.name = name;
+        new_dinfo->type         = setArgIndex( sym, currentTemplate->nr_args );
         DbgAssert( name != NULL );
         sym = ScopeInsert( GetCurrScope(), sym, name );
     } else if( ( new_dinfo->type != NULL ) ) {

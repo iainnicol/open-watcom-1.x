@@ -2369,6 +2369,8 @@ void ClassMember( SCOPE scope, SYMBOL sym )
         checkConstMutable( data, info, mod_flags );
     }
     switch( typ->id ) {
+    case TYP_PROPERTY:
+        return;    
     case TYP_BITFIELD:
         sym->u.offset = data->boffset;
         setHasData( data );

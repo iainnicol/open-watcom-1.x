@@ -219,7 +219,8 @@ typedef enum {
     TYP_MODIFIER        = 0x1a,
     TYP_MEMBER_POINTER  = 0x1b,
     TYP_GENERIC         = 0x1c,
-    TYP_FREE            = 0x1d,
+    TYP_PROPERTY        = 0x1d,
+    TYP_FREE            = 0x1e,
     TYP_MAX,
 
     TYP_FIRST_VALID     = TYP_BOOL,
@@ -630,7 +631,12 @@ PCH_struct type {
         } mp;
         struct {                        // TYP_GENERIC
             unsigned    index;          // keeps template args distinct
+            char       *name;
         } g;
+        struct {                        // TYP_GENERIC
+            char       *get;
+            char       *put;
+        } p;                  
     } u;
     dbg_info            dbg;            // FOR D2 AND DWARF
     type_flag           flag;
@@ -1480,6 +1486,7 @@ extern TYPE MakeMemberPointer( PTREE, specifier_t );
 extern TYPE MakeMemberPointerTo( TYPE class_type, TYPE base_type );
 extern TYPE MakeFarPointerToNear( TYPE );
 extern TYPE MakePointerTo( TYPE );
+extern TYPE MakeProperty( PTREE, PTREE, PTREE, PTREE, PTREE );
 extern TYPE MakeReferenceTo( TYPE );
 extern TYPE MakeConstReferenceTo( TYPE );
 extern TYPE GetReferenceTo( TYPE );

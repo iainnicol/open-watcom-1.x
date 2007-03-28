@@ -339,6 +339,7 @@ Modified        By              Reason
 %type <type> pragma-modifier
 %type <type> based-expression
 %type <type> ptr-mod
+%type <type> ms-property-seq
 
 %type <base> base-specifier base-specifier-list
 
@@ -1460,12 +1461,21 @@ ms-declspec-seq
     { $$ = PTypeMSDeclSpec( NULL, $1 ); }
     | pragma-modifier
     { $$ = PTypeMSDeclSpecModifier( NULL, $1 ); }
+    | ms-property-seq
+    { $$ = PTypeMSDeclSpecModifier( NULL, $1 ); }
     | ms-declspec-seq make-id
     { $$ = PTypeMSDeclSpec( $1, $2 ); }
     | ms-declspec-seq pragma-modifier
     { $$ = PTypeMSDeclSpecModifier( $1, $2 ); }
     ;
 
+ms-property-seq
+    : Y_ID Y_LEFT_PAREN Y_ID Y_EQUAL Y_ID Y_RIGHT_PAREN
+    { $$ = MakeProperty( $1, $3, $5, NULL, NULL ); }
+    | Y_ID Y_LEFT_PAREN Y_ID Y_EQUAL Y_ID Y_COMMA Y_ID Y_EQUAL Y_ID Y_RIGHT_PAREN
+    { $$ = MakeProperty( $1, $3, $5, $7, $9 ); }
+    ;
+    
 storage-class-specifier
     : Y_AUTO
     { $$ = PTypeStgClass( STG_AUTO ); }

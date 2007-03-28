@@ -39,6 +39,7 @@
 #include "stats.h"
 #include "brinfo.h"
 
+extern void AnalyseProperty( PTREE* );
 
 #define isUDF( node ) ( node->cgop == CO_NAME_CONVERT )
 
@@ -186,21 +187,23 @@ boolean AnalyseThisDataItem(    // ANALYSE "THIS" DATA ITEM IN PARSE TREE
         type = TypeMergeForMember( type, expr->type );
         result = right->u.symcg.result;
         right->u.symcg.result = NULL;
-        if( expr->u.subtree[0]->flags & PTF_MEMORY_EXACT ) {
-            offset = result->exact_delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
-            *r_right = right;
-        } else if( result->non_virtual ) {
-            offset = result->delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
-            *r_right = right;
-        } else {
-            expr = NodePruneRight( expr );
-            expr = NodePruneTop( expr );
-            expr->flags |= PTF_PTR_NONZERO;
-            NodeConvertToBasePtr( &expr, type, result, TRUE );
-            expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
-            expr = NodeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+        if( TypedefModifierRemoveOnly( type )->id != TYP_PROPERTY ) {
+          if( expr->u.subtree[0]->flags & PTF_MEMORY_EXACT ) {
+              offset = result->exact_delta + result->offset;
+              right = NodeReplace( right, NodeOffset( offset ) );
+              *r_right = right;
+          } else if( result->non_virtual ) {
+              offset = result->delta + result->offset;
+              right = NodeReplace( right, NodeOffset( offset ) );
+              *r_right = right;
+          } else {
+              expr = NodePruneRight( expr );
+              expr = NodePruneTop( expr );
+              expr->flags |= PTF_PTR_NONZERO;
+              NodeConvertToBasePtr( &expr, type, result, TRUE );
+              expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
+              expr = NodeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+          }
         }
         expr->type = type;
         expr->flags |= PTF_LVALUE;
@@ -666,6 +669,10 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
     expr = *a_expr;
     left = NodeRvalueLeft( expr );
     type = TypedefModifierRemove( left->type );
+    
+    if( type->id == TYP_PROPERTY ) 
+        type = TypedefModifierRemove( type->of );
+       
     if( ( type->id != TYP_POINTER ) || ( TF1_REFERENCE & type->flag ) ) {
         type = diagMember( left, expr, ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION );
     } else {
@@ -867,6 +874,7 @@ PTREE AnalyseLvArrow(           // ANALYSE LVALUE "->"
         if( expr->type == NULL ) {
             PTREE orig = expr;
             orig = OverloadOperator( orig );
+            AnalyseProperty( &orig->u.subtree[0] );
             if( orig->op != PT_ERROR ) {
                 type = analyseClPtrLeft( &orig );
                 if( analyseMembRight( &orig, type ) ) {
@@ -911,6 +919,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
 #endif
                 }
             }
+            AnalyseProperty( &expr->u.subtree[0] );
             orig = expr;
             type = analyseClassLeft( &orig );
             if( analyseMembRight( &orig, type ) ) {
