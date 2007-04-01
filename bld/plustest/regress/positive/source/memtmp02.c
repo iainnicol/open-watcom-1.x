@@ -6,6 +6,12 @@ struct A
 {
     static const int C = 2;
 
+    A()
+    { }
+
+    template< class T >
+    explicit inline A( T t );
+
     template< class T >
     int f( T t );
 
@@ -19,6 +25,10 @@ struct A
     template< int i >
     int h();
 };
+
+template< class T >
+inline A::A( T t )
+{ }
 
 template< class T >
 int A::f( T t )
