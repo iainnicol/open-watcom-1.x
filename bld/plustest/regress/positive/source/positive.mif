@@ -719,6 +719,7 @@ positive_tests = &
     pp36.$(ext) &
     pp37.$(ext) &
     prag01.$(ext) &
+    property.$(ext) &
     quest01.$(ext) &
     quest02.$(ext) &
     quest03.$(ext) &
