@@ -4297,14 +4297,16 @@ static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv )
                     
                     if( expr->cgop != CO_CALL ) {
                         if( !FunctionDeclarationType( pnode->type ) ) {
-                            if( pnode->type != ret ) {
-                                PTreeSetErrLoc( expr );
-                                CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
-                            }
-                            return 0;
+                            PTreeSetErrLoc( pnode );
+                            CErr( rval ? ERR_PROP_PUT_UNDEFINED : ERR_PROP_GET_UNDEFINED, sym );
+                            PTreeErrorNode( expr );
+                            return expr;
                         } else {
-                            if( !rval ) expr = NodeBinary( CO_CALL, expr, NULL );
-                            else        expr = NodeBinary( CO_CALL, expr, analyseOperator( NodeBinary( CO_LIST, NULL, rval ) ) );
+                          
+                            if( rval != NULL ) 
+                                expr = NodeBinary( CO_CALL, expr, analyseOperator( NodeBinary( CO_LIST, NULL, rval ) ) );
+                            else        
+                                expr = NodeBinary( CO_CALL, expr, NULL );
                             
                             expr->type = type;
                             PTreeExtractLocn( pnode, &expr->locn );                         
@@ -4312,7 +4314,8 @@ static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv )
                     } else if( !FunctionDeclarationType( pnode->type ) ) {
                         PTreeSetErrLoc( expr );
                         CErr( ERR_PROP_ARRAY, sym );
-                        return 0;
+                        PTreeErrorNode( expr );
+                        return expr;
                     }
                     
                     if( !rval ) {
@@ -4326,6 +4329,7 @@ static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv )
                             CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
                             PTreeErrorNode( expr );
                         }
+                        expr = NodeForceLvalue( expr );
                     }
                 }
                 return expr;
@@ -4394,10 +4398,13 @@ PTREE AnalyseOperator( PTREE expr )
               case CO_EQUAL: 
                 left = convertProperty( left, right, TRUE );
                 if( left != 0 ) {
-                    expr->u.subtree[0] = 0;
-                    expr->u.subtree[1] = 0;
-                    PTreeFree( expr );
-                    expr = left;
+                    if( left->op == PT_ERROR ) PTreeErrorNode( expr );
+                    else {
+                        expr->u.subtree[0] = 0;
+                        expr->u.subtree[1] = 0;
+                        PTreeFree( expr );
+                        expr = left;
+                    } 
                 }
                 break;
               case CO_POST_MINUS_MINUS: 
@@ -4407,16 +4414,12 @@ PTREE AnalyseOperator( PTREE expr )
                 temp = convertProperty( left, NULL, FALSE );
                 if( temp != 0 ) {
                     if( temp->op != PT_ERROR ) {
-                      
                         if( code == CO_POST_MINUS_MINUS ) expr->cgop = CO_PRE_MINUS_MINUS;
                         else if( code == CO_POST_PLUS_PLUS ) expr->cgop = CO_PRE_PLUS_PLUS;
-                        
                         expr->u.subtree[0] = temp;
                         expr = analyseOperator( expr );
-                        if( expr->op != PT_ERROR ) 
-                            expr = convertProperty( left, expr, TRUE );
-                        else
-                            PTreeFreeSubtrees( left );
+                        if( expr->op != PT_ERROR ) expr = convertProperty( left, expr, TRUE );
+                        else                       PTreeFreeSubtrees( left );
                     } else {
                         PTreeErrorNode( expr );
                         PTreeFreeSubtrees( temp );
@@ -4436,12 +4439,23 @@ PTREE AnalyseOperator( PTREE expr )
               mBin:  
                 temp = convertProperty( left, NULL, FALSE );
                 if( temp != 0 ) {
-                    right              = PTreeBinary( code, temp, right );
-                    left               = convertProperty( left, right, TRUE );
-                    expr->u.subtree[0] = 0;
-                    expr->u.subtree[1] = 0;
-                    PTreeFree( expr );
-                    expr = left;
+                    if( temp->op == PT_ERROR ) {
+                        PTreeErrorNode( expr );
+                        PTreeFreeSubtrees( temp );
+                    } else {
+                        right = analyseOperator( PTreeBinary( code, temp, right ) );
+                        if( right->op == PT_ERROR ) PTreeErrorNode( expr );
+                        else {
+                            left = convertProperty( left, right, TRUE );
+                            if( left->op == PT_ERROR ) PTreeErrorNode( expr );
+                            else {
+                                expr->u.subtree[0] = 0;
+                                expr->u.subtree[1] = 0;
+                                PTreeFree( expr );
+                                expr = left;
+                            }
+                        }
+                    }
                 }
                 break;
               default:

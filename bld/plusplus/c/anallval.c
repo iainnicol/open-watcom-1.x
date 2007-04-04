@@ -901,7 +901,9 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
     if( ( expr->u.subtree[0]->flags & PTF_LV_CHECKED )
      || AnalyseLvalue( &expr->u.subtree[0] ) ) {
         if( expr->type == NULL ) {
-            PTREE left = expr->u.subtree[0];
+            PTREE left;
+            AnalyseProperty( &expr->u.subtree[0] );
+            left = expr->u.subtree[0];
             if( ! ( left->flags & PTF_LVALUE ) ) {
                 TYPE cl_type = StructType( left->type );
                 if( cl_type != NULL ) {
@@ -919,7 +921,6 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
 #endif
                 }
             }
-            AnalyseProperty( &expr->u.subtree[0] );
             orig = expr;
             type = analyseClassLeft( &orig );
             if( analyseMembRight( &orig, type ) ) {
