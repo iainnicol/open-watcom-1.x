@@ -52,6 +52,9 @@
 #include "brinfo.h"
 #include "pragdefn.h"
 
+extern void ScopeClassClose();
+extern void ScopeClassOpen( SCOPE scope );
+
 /*
     Future object model changes:
         - force vfptr to offset 0 (if possible)
@@ -1021,11 +1024,13 @@ void ClassStart( void )
     CLASS_DATA *data;
     CLASSINFO *info;
     TYPE type;
+    SCOPE scope;
 
     data = classDataStack;
     data->start = data->offset;
     type = data->type;
     info = type->u.c.info;
+    scope = data->scope;
     info->index = nextClassIndex();
 #if 0
     /* TODO */
@@ -1033,7 +1038,8 @@ void ClassStart( void )
         CFatal( "class open is out of synch" );
     }
 #endif
-    ScopeOpen( data->scope );
+    if( !info->anonymous ) ScopeClassOpen( scope );
+    else                   ScopeOpen( scope );
 }
 
 static void insertCtorTypedef( CLASS_DATA *data  )
@@ -1139,7 +1145,7 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     strcpy( Buffer, Tokens[ T_RIGHT_BRACE ] );
 }
 
-static void unfinishedClass( SYMBOL_NAME sym_name )
+/* static void unfinishedClass( SYMBOL_NAME sym_name )
 {
     char *name;
     SYMBOL sym;
@@ -1175,7 +1181,7 @@ static void checkForUnfinishedNestedClasses( CLASS_DATA *data )
 
     class_scope = data->scope;
     ScopeWalkNames( class_scope, unfinishedClass );
-}
+} */
 
 static void checkClassStatus( CLASS_DATA *data )
 {
@@ -1691,9 +1697,10 @@ DECL_SPEC *ClassEnd( void )
     info->class_mod = data->class_mod_type;
     checkClassStatus( data );
     warnAboutHiding( data );
-    checkForUnfinishedNestedClasses( data );
+    // checkForUnfinishedNestedClasses( data );
     insertCtorTypedef( data );
-    ScopeEnd( SCOPE_CLASS );
+    if( !info->anonymous ) ScopeClassClose();
+    else                   ScopeEnd( SCOPE_CLASS );
     if( data->specific_defn ) {
         TemplateSpecificDefnEnd();
     }

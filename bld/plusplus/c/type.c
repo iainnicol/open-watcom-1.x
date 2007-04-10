@@ -93,7 +93,6 @@ static AUX_INFO *cdeclPragma;
 static type_flag defaultFunctionMemFlag;
 static type_flag defaultDataMemFlag;
 static unsigned typeHashCtr;
-static TOKEN_LOCN err_prop_locn;
 
 #define BLOCK_TYPE              64
 #define BLOCK_DECL_SPEC         8
@@ -2445,6 +2444,9 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
             sym = TemplateSymFromClass( type );
         } else {
             sym = checkPreviouslyDeclared( sym, name );
+            if( type != NULL && sym == NULL && type->id == TYP_CLASS ) {
+                sym = SymForClass( type );
+            }
         }
         if( sym != NULL ) {
             ScopeAddFriend( GetCurrScope(), sym );
@@ -2562,8 +2564,9 @@ TYPE MakeProperty( PTREE id, PTREE pget, PTREE gval, PTREE pput, PTREE pval)
     if( id == NULL || pget == NULL || gval == NULL ) return NULL;
     
     name = id->u.id.name;
-    if( strcmp( name, "property" ) != 0 )
+    if( strcmp( name, "property" ) != 0 || ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
         PTreeErrorExprName( id, ERR_UNKNOWN_EXTENDED_ATTR, name );
+    }
     
     get  = NULL;
     put  = NULL;
@@ -2591,8 +2594,6 @@ TYPE MakeProperty( PTREE id, PTREE pget, PTREE gval, PTREE pput, PTREE pval)
         if( rc1 < 0 ) PTreeErrorExpr( id, ERR_SYNTAX );
         PTreeErrorExprName( pput, ERR_DUP_EXTENDED_ATTR, pput->u.id.name );
     }
-    
-    PTreeExtractLocn( id, &err_prop_locn );
     
     if( put != NULL ) type->u.p.put = put->u.id.name;
     if( get != NULL ) type->u.p.get = get->u.id.name;
@@ -3797,11 +3798,6 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
     curr_type = massageFunctionTypeInDSpec( &prev_type, curr_type );
     status = scanDeclarator( curr_type, &arg_count );
     
-    if( fnmod_type != 0 && fnmod_type->id == TYP_PROPERTY && curr_type != 0 && curr_type->id == TYP_FUNCTION ) {
-        SetErrLoc( &err_prop_locn );
-        CErr( ERR_UNKNOWN_EXTENDED_ATTR, "property" );
-    }
-    
     if( status & SM_CV_FUNCTION_ERROR ) {
         CErr1( ERR_CONST_VOLATILE_IN_A_TYPE );
     }
@@ -4305,10 +4301,6 @@ TYPE MakeClassModDeclSpec( DECL_SPEC *dspec )
     type = NULL;
     if( dspec->ms_declspec != STS_NULL ) {
         type = makeMSDeclSpecType( dspec );
-        if( type->id == TYP_PROPERTY ) {
-            SetErrLoc( &err_prop_locn );
-            CErr( ERR_UNKNOWN_EXTENDED_ATTR, "property" );
-        }
         type->flag |= TF1_OUTERMOST;
         DbgAssert( type->of == NULL );
     }

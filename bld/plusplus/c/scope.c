@@ -1133,15 +1133,15 @@ SCOPE ScopeSetContaining( SYMBOL_NAME sym_name, SCOPE new_containing )
     return( old_containing );
 }
 
-#define doScopeEstablish( s, cs )               \
-    {                                           \
-        SCOPE enclosing;                        \
-                                                \
-        enclosing = cs;                         \
-        s->enclosing = enclosing;               \
-        if( enclosing->in_unnamed ) {           \
-            s->in_unnamed = TRUE;               \
-        }                                       \
+#define doScopeEstablish( s, cs )           \
+    {                                       \
+        SCOPE enclosing;                    \
+                                            \
+        enclosing = cs;                     \
+        s->enclosing = enclosing;           \
+        if( enclosing->in_unnamed ) {       \
+            s->in_unnamed = TRUE;           \
+        }                                   \
     }
 
 
@@ -1157,7 +1157,6 @@ SCOPE ScopeSetEnclosing( SCOPE scope, SCOPE new_enclosing )
 }
 
 SCOPE ScopeEstablishEnclosing( SCOPE scope, SCOPE new_enclosing )
-/***************************************************************/
 {
     SCOPE old_enclosing;
 
@@ -1169,13 +1168,43 @@ SCOPE ScopeEstablishEnclosing( SCOPE scope, SCOPE new_enclosing )
 void ScopeOpen( SCOPE scope )
 /***************************/
 {
+    /*SCOPE s = scope, e;
+    
+    for( ; s != NULL; s = e ) {
+        e = s->enclosing;
+        if( s == GetCurrScope() ) break;
+        if( e == NULL ) {
+            doScopeEstablish( s, GetCurrScope() );
+        }
+    } */
     doScopeEstablish( scope, GetCurrScope() );
     SetCurrScope(scope);
     BrinfOpenScope( GetCurrScope() );
 }
 
+void ScopeClassOpen( SCOPE scope )
+/***************************/
+{
+    SCOPE s = scope, e;
+    
+    for( ; s != NULL; s = e ) {
+        e = s->enclosing;
+        if( s == GetCurrScope() ) break;
+        if( e == NULL ) {
+            doScopeEstablish( s, GetCurrScope() );
+        }
+    }
+    ScopeQualifyPush( scope, scope );
+    BrinfOpenScope( GetCurrScope() );
+}
+
+void ScopeClassClose()
+{
+  ScopeEnd( SCOPE_CLASS );
+  ScopeQualifyPop();
+}
+
 void ScopeEstablish( SCOPE scope )
-/********************************/
 {
     doScopeEstablish( scope, GetCurrScope() );
 }
@@ -2923,6 +2952,17 @@ static boolean protectedPathOK( access_data *data )
     return( FALSE );
 }
 
+static boolean isNestedClass( SCOPE scope, SCOPE nested )
+{
+    if( scope != NULL && _IsClassScope( scope ) ) {  
+        for( ; nested != NULL; nested = nested->enclosing ) {
+            if( !_IsClassScope( nested ) ) break;
+            if( nested == scope ) return( TRUE );
+        }
+    }
+    return( FALSE );
+}
+
 static inherit_flag verifyAccess( access_data *data )
 {
     inherit_flag perm;
@@ -2957,7 +2997,7 @@ static inherit_flag verifyAccess( access_data *data )
         return( IN_PUBLIC );
     }
     access = data->access;
-    if( isScopeFriend( access, located ) ) {
+    if( isScopeFriend( access, located ) || isNestedClass( located, class_scope ) ) {
         /* accessing a friend's members is always OK */
         return( IN_PUBLIC );
     }

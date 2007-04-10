@@ -644,6 +644,11 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id, unsigned ctrl
             }
             id_check = lexCategory( scope, id, LK_NULL,
                                     &yylval.tree->sym_name );
+            
+            if( yylval.tree->sym_name == NULL ) {
+                PTreeErrorExprName( id, ERR_SYNTAX_UNDECLARED_ID, id->u.id.name );
+                return Y_IMPOSSIBLE;
+            }
             switch( id_check ) {
             case LK_ID:
                 return( Y_SCOPED_ID );
