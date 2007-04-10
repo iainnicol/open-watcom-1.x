@@ -2397,7 +2397,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
                 /* MS/Borland allow zero sized arrays at the end of a class */
                 if( typ->u.a.array_size == 0 && ! flags.static_member ) {
                     if( data->bases != NULL ) {
-                        CErr2p( ERR_CANNOT_HAVE_ZERO_ARRAY_AND_BASES, sym );
+                        //CErr2p( ERR_CANNOT_HAVE_ZERO_ARRAY_AND_BASES, sym );
                     } else {
                         CErr2p( WARN_NON_PORTABLE_DECL_ZERO_SIZED_ARRAY, sym );
                     }
