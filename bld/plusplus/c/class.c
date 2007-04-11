@@ -52,9 +52,6 @@
 #include "brinfo.h"
 #include "pragdefn.h"
 
-extern void ScopeClassClose();
-extern void ScopeClassOpen( SCOPE scope );
-
 /*
     Future object model changes:
         - force vfptr to offset 0 (if possible)
@@ -1038,7 +1035,7 @@ void ClassStart( void )
         CFatal( "class open is out of synch" );
     }
 #endif
-    if( !info->anonymous ) ScopeClassOpen( scope );
+    if( !info->anonymous ) ScopeQualifyPush( scope, scope );
     else                   ScopeOpen( scope );
 }
 
@@ -1699,8 +1696,8 @@ DECL_SPEC *ClassEnd( void )
     warnAboutHiding( data );
     // checkForUnfinishedNestedClasses( data );
     insertCtorTypedef( data );
-    if( !info->anonymous ) ScopeClassClose();
-    else                   ScopeEnd( SCOPE_CLASS );
+    ScopeEnd( SCOPE_CLASS );
+    if( !info->anonymous ) ScopeQualifyPop();
     if( data->specific_defn ) {
         TemplateSpecificDefnEnd();
     }

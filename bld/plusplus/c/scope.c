@@ -285,6 +285,7 @@ typedef struct access_data {
 typedef struct qualify_stack QUALIFICATION;
 struct qualify_stack {
     QUALIFICATION       *next;
+    SCOPE               end;
     SCOPE               reset;
     SCOPE               access;
 };
@@ -1180,28 +1181,6 @@ void ScopeOpen( SCOPE scope )
     doScopeEstablish( scope, GetCurrScope() );
     SetCurrScope(scope);
     BrinfOpenScope( GetCurrScope() );
-}
-
-void ScopeClassOpen( SCOPE scope )
-/***************************/
-{
-    SCOPE s = scope, e;
-    
-    for( ; s != NULL; s = e ) {
-        e = s->enclosing;
-        if( s == GetCurrScope() ) break;
-        if( e == NULL ) {
-            doScopeEstablish( s, GetCurrScope() );
-        }
-    }
-    ScopeQualifyPush( scope, scope );
-    BrinfOpenScope( GetCurrScope() );
-}
-
-void ScopeClassClose()
-{
-  ScopeEnd( SCOPE_CLASS );
-  ScopeQualifyPop();
 }
 
 void ScopeEstablish( SCOPE scope )
@@ -6748,10 +6727,24 @@ void ScopeQualifyPush( SCOPE scope, SCOPE access )
 /************************************************/
 {
     QUALIFICATION *qual;
+    SCOPE          s = scope, e;
+    
 
     qual = CarveAlloc( carveQUALIFICATION );
-    qual->reset = GetCurrScope();
     qual->access = access;
+    access       = GetCurrScope();
+    qual->reset  = access;
+    qual->end    = 0;
+    
+    for( ; s != NULL; s = e ) {
+        e = s->enclosing;
+        if( s == access ) break;
+        if( e == NULL ) {
+            doScopeEstablish( s, access );
+            qual->end = s;
+        }
+    }
+    
     SetCurrScope(scope);
     ParsePushQualification( qual );
 }
@@ -6760,12 +6753,14 @@ SCOPE ScopeQualifyPop( void )
 /***************************/
 {
     QUALIFICATION *qual;
-    SCOPE scope_popped;
+    SCOPE scope_popped, end;
 
     scope_popped = GetCurrScope();
     qual = ParsePopQualification();
     if( qual != NULL ) {
         SetCurrScope(qual->reset);
+        end = qual->end;
+        if( end != NULL ) end->enclosing = NULL;
         CarveFree( carveQUALIFICATION, qual );
     }
     return( scope_popped );
