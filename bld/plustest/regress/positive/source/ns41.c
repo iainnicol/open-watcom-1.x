@@ -10,6 +10,13 @@ namespace ns {
         struct B {
         };
     }
+
+    struct C {
+    };
+
+    struct D;
+    struct D {
+    };
 }
 
 int main() {
@@ -22,6 +29,13 @@ int main() {
     ns::B b2;
     struct ::ns::B b3;
     struct ns::B b4;
+
+    struct ::ns::C::C c3;
+    struct ns::C::C c4;
+
+    struct ::ns::D::D d3;
+    struct ns::D::D d4;
+
 
     _PASS;
 }

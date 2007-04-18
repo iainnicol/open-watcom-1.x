@@ -1,22 +1,22 @@
 #include "fail.h"
 
 
-struct A{
+struct A {
 };
 
-template<class T>
+template< class T >
 class B {
 public:
     B( ) {}
-    B( int ii ) : i(ii) {}
+    B( int ii ) : i( ii ) {}
 
-    template<class U>
-    friend A& operator<<( A&, const B<U> & );
+    template< class U >
+    friend A& operator<<( A&, const B< U > & );
 
-    template<class U>
+    template< class U >
     friend int fnb( B<U> );
 
-    template<class U>
+    template< class U >
     friend int fnb2( U );
 
     friend int fnb3( int );
@@ -25,13 +25,13 @@ private:
     int i;
 };
 
-template<class T>
-A& operator<<( A& a, const B<T> & ) {
+template< class T >
+A& operator << ( A& a, const B<T> & ) {
     return( a );
 }
 
 template< class T >
-int fnb( B<T> b )
+int fnb( B< T > b )
 {
     return( b.i );
 }
@@ -39,13 +39,13 @@ int fnb( B<T> b )
 template< class T >
 int fnb2( T i )
 {
-    B<T> b(3);
+    B< T > b( 3 );
     return( b.i+i );
 }
 
 int fnb3( int i )
 {
-    B<int> b(7);
+    B< int > b( 7 );
     return( b.i+i );
 }
 
@@ -53,6 +53,14 @@ B<char> fn( void )
 { 
     return( B<char>() );
 }
+
+
+struct C {
+    struct D {
+        friend class C;
+    };
+};
+
 
 int main()
 {
