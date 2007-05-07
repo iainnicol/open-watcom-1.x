@@ -61,7 +61,6 @@ extern  cg_type         F772CGType(sym_id sym);
 extern  sym_id          STAdd(char *name,int length);
 extern  sym_id          STFree(sym_id sym_ptr);
 extern  segment_id      AllocImpSegId(void);
-extern  void            DoPragma(char *);
 extern  aux_info        *AuxLookupName(char *,uint);
 
 
