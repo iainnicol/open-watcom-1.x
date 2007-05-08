@@ -38,17 +38,18 @@
 #include "symbol.h"
 #include "argument.h"
 
-
-bool    InArgList( entry_pt *entry, sym_id sym_ptr ) {
 //====================================================
-
+bool    InArgList( entry_pt *entry, sym_id sym_ptr )
+{
 // Check for duplicate dummy arguments.
 
     parameter   *args;
 
     args = entry->parms;
-    while( args != NULL ) {
-        if( ( args->flags & ARG_STMTNO ) == 0 ) {
+    while( args != NULL )
+	{
+        if( ( args->flags & ARG_STMTNO ) == 0 )
+		{
             if( args->id == sym_ptr ) return( TRUE );
         }
         args = args->link;
