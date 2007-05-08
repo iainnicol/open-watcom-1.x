@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  enum statement processing
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -35,7 +36,7 @@
 #include <limits.h>
 #include "i64.h"
 
-void EnumInit( void )
+void EnumInit()
 {
     int i;
 
@@ -76,7 +77,6 @@ local ENUM_HANDLE EnumLkAdd( TAGPTR tag )
 #   define i64val(h,l) { l, h }
 #endif
 enum enum_rng {
-    ENUM_UNDEF = -1,
     ENUM_S8,
     ENUM_U8,
     ENUM_S16,
@@ -131,14 +131,6 @@ struct { DATA_TYPE decl_type; int size; } ItypeTable[ENUM_SIZE] =
     { TYPE_ULONG64, TARGET_LONG64 },//U64
 };
 
-void get_msg_range( char *buff, enum enum_rng index )
-{
-    if( index & 1 ) {
-        sprintf( buff, "%llu to %llu", RangeTable[index][LOW], RangeTable[index][HIGH] );
-    } else {
-        sprintf( buff, "%lld to %lld", RangeTable[index][LOW], RangeTable[index][HIGH] );
-    }
-}
 
 TYPEPTR EnumDecl( int flags )
 {
@@ -179,24 +171,19 @@ TYPEPTR EnumDecl( int flags )
         const_val       val;
         enum enum_rng   index;
         enum enum_rng   const_index;
-        enum enum_rng   start_index;
-        enum enum_rng   step;
-        enum enum_rng   error;
         uint64          n;
         uint64          Inc;
         bool            minus;
         bool            has_sign;
         ENUM_HANDLE     *prev_lnk;
         ENUM_HANDLE     esym;
-        int             error_line;
-        char            buff[50];
 
         if( CompFlags.make_enums_an_int ) {
-            start_index = ENUM_INT;
+            index = ENUM_INT;
         } else {
-            start_index = ENUM_S8;
+            index = ENUM_S8;
         }
-        const_index = ENUM_UNDEF;
+        const_index = ENUM_INT;
         NextToken();
         if( CurToken == T_RIGHT_BRACE ) {
             CErr1( ERR_EMPTY_ENUM_LIST );
@@ -205,98 +192,78 @@ TYPEPTR EnumDecl( int flags )
         U64Clear( n );
         minus = FALSE;
         has_sign = FALSE;
-        step = 1;
         prev_lnk = &esym;
         esym = NULL;
         while( CurToken == T_ID ) {
             esym = EnumLkAdd( tag );
             *prev_lnk = esym;
             prev_lnk = &esym->thread;
-            error_line = TokenLine;
             NextToken();
             if( CurToken == T_EQUAL ) {
                 NextToken();
-                error_line = TokenLine;
                 ConstExprAndType( &val );
+                minus = FALSE;
                 switch( val.type ){
                 case TYPE_ULONG:
                 case TYPE_UINT:
                 case TYPE_ULONG64:
-                    minus = FALSE;
                     break;
                 default:
                     if( val.value.u.sign.v ) {
+                        if( !has_sign && ( index & 1 ) )
+                            index++;
                         minus = TRUE;
-                        step = 2;
-                    } else {
-                        minus = FALSE;
+                        has_sign = TRUE;
                     }
                     break;
                 }
                 n = val.value;
-            } else if( has_sign ) {
-                if( n.u.sign.v ) {
-                    minus = TRUE;
-                } else {
+            } else if( minus ) {
+                if( n.u.sign.v == 0 ) {
                     minus = FALSE;
                 }
             }
-            for( index = start_index; index < ENUM_SIZE; index += step ) {
+            for( ; index < ENUM_SIZE; index++ ) {
                 if( minus ) {
                     if( I64Cmp( &n, &( RangeTable[ index ][LOW] ) ) >= 0 ) break;
                 } else {
                     if( U64Cmp( &n, &( RangeTable[ index ][HIGH]) ) <= 0 ) break;
                 }
-            }
-            error = ENUM_UNDEF;
-            if( !CompFlags.extensions_enabled && ( index > ENUM_INT )) {
-                error = ENUM_INT;
+                if( has_sign ) {
+                    index++;
+                }
             }
             if( index >= ENUM_SIZE ) {
-                // overflow signed maximum range
-                if( error == ENUM_UNDEF ) {
-                    error = const_index;
-                }
-            } else if(( const_index == ENUM_SIZE - 1 ) && minus ) {
-                // overflow unsigned maximum range by any negative signed value
-                if( error == ENUM_UNDEF )
-                    error = const_index;
-                step = 1;
-            } else {
-                if( !has_sign && minus) {
-                    has_sign = TRUE;
-                    if( index < const_index ) {
-                        // round up to signed
-                        index = ( const_index + 1 ) & ~1;
-                    }
-                }
-                if( index > const_index ) {
-                    const_index = index;
-                    typ->object = GetType( ItypeTable[const_index].decl_type );
-                    tag->size   = ItypeTable[const_index].size;
-                }
+                CErr1( ERR_ENUM_CONSTANT_TOO_LARGE );
             }
-            if( error != ENUM_UNDEF ) {
-                TokenLine = error_line;
-                get_msg_range( buff, error );
-                CErr( ERR_ENUM_CONSTANT_OUT_OF_RANGE, buff );
+            EnumTable[ esym->hash ] = esym;             /* 08-nov-94 */
+            if( index > const_index ){ // change type of enum to fit const
+                if( CompFlags.extensions_enabled  ) {
+                    typ->object = GetType( ItypeTable[index].decl_type );
+                    tag->size   = ItypeTable[index].size;
+                } else {
+                    CErr1( ERR_ENUM_CONSTANT_TOO_LARGE );
+                }
+                const_index = index;
             }
             esym->value = n;
-            EnumTable[ esym->hash ] = esym;             /* 08-nov-94 */
-            if( CurToken == T_RIGHT_BRACE )
-                break;
+            if( CurToken == T_RIGHT_BRACE ) break;
             U64Add( &n, &Inc, &n );
             MustRecog( T_COMMA );
-            if( !CompFlags.extensions_enabled
-              && !CompFlags.c99_extensions
-              && ( CurToken == T_RIGHT_BRACE )) {
-                ExpectIdentifier();         /* 13-may-91 */
+            if( CurToken == T_RIGHT_BRACE ) {
+                if( !CompFlags.extensions_enabled ) {
+                    ExpectIdentifier();         /* 13-may-91 */
+                }
             }
         }
         MustRecog( T_RIGHT_BRACE );
+        typ->object = GetType( ItypeTable[index].decl_type );
+        tag->size   = ItypeTable[index].size;
     }
     return( typ );
 }
+
+
 
 
 int EnumLookup( int hash_value, char *name, struct enum_info *eip )
@@ -308,16 +275,18 @@ int EnumLookup( int hash_value, char *name, struct enum_info *eip )
             eip->value = esym->value;
             eip->parent = esym->parent;
             eip->level = esym->parent->level;
+//          eip->enum_entry = esym;
             return( 1 );            /* indicate ENUM was found */
         }
         esym = esym->next_enum;
     }
+//  eip->enum_entry = NULL;
     eip->level = -1;                /* indicate not found */
     return( 0 );                    /* indicate this was not an ENUM */
 }
 
 
-void FreeEnums( void )
+void FreeEnums()
 {
     ENUMPTR     esym;
     int         i;
@@ -332,7 +301,7 @@ void FreeEnums( void )
 
 #ifndef NDEBUG
 
-void DumpEnumTable( void )
+void DumpEnumTable()
 {
     ENUMPTR     esym;
     int         i;

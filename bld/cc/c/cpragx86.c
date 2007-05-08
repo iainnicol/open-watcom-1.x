@@ -36,64 +36,33 @@
 #include "asminlin.h"
 #include "asmstmt.h"
 
-extern struct aux_info  *GetLangInfo( type_modifiers flags );
+local   void    GetParmInfo( void );
+local   void    GetRetInfo( void );
+local   void    GetSTRetInfo( void );
+local   void    GetSaveInfo( void );
+local   int     GetByteSeq( void );
 
-extern  TREEPTR         CurFuncNode;
+extern  TREEPTR     CurFuncNode;
 
 static  int             AsmFuncNum;
 static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  struct aux_info AuxInfo;
-
+static  hw_reg_set      StackParms[] = { HW_D( HW_EMPTY ) };
 #if _CPU == 386
+static  hw_reg_set      OptlinkParms[] = {
+    HW_D( HW_FLTS ), HW_D( HW_EMPTY )
+};
+static  hw_reg_set      FastParms[] = {
+    HW_D( HW_ECX ), HW_D( HW_EDX ), HW_D( HW_EMPTY )
+};
 static  hw_reg_set      STOSBParms[] = {
-    HW_D( HW_EAX ), HW_D( HW_EDX ), HW_D( HW_ECX ),
-    HW_D( HW_EMPTY )
+    HW_D( HW_EAX ), HW_D( HW_EDX ), HW_D( HW_ECX ), HW_D( HW_EMPTY )
 };
 #endif
-
-static struct {
-    unsigned    f_near : 1;
-    unsigned    f_routine_pops : 1;
-    unsigned    f_caller_return : 1;
-    unsigned    f_8087_returns : 1;
-} AuxInfoFlg;
-
-void PragmaAuxInit( void )
-/************************/
-{
-    PragmaAuxInfoInit( CompFlags.use_stdcall_at_number );
-
-#if _CPU == 386
-    HW_CTurnOff( AsmRegsSaved, HW_EAX );
-    HW_CTurnOff( AsmRegsSaved, HW_EBX );
-    HW_CTurnOff( AsmRegsSaved, HW_ECX );
-    HW_CTurnOff( AsmRegsSaved, HW_EDX );
-    HW_CTurnOff( AsmRegsSaved, HW_ESI );
-    HW_CTurnOff( AsmRegsSaved, HW_EDI );
-#else
-    HW_CTurnOff( AsmRegsSaved, HW_ABCD );
-    HW_CTurnOff( AsmRegsSaved, HW_SI );
-    HW_CTurnOff( AsmRegsSaved, HW_DI );
-    HW_CTurnOff( AsmRegsSaved, HW_ES );
-#endif
-
-#if _CPU == 386
-    /* these are internal, and will never be pointed to by
-       an aux_entry, so we don't have to worry about them
-       or their fields being freed */
-
-    STOSBInfo = WatcallInfo;
-    STOSBInfo.cclass = NO_FLOAT_REG_RETURNS |
-                       NO_STRUCT_REG_RETURNS |
-                       SPECIAL_STRUCT_RETURN;
-    STOSBInfo.parms = STOSBParms;
-    STOSBInfo.objname = "*";
-#endif
-}
 
 void PragmaInit( void )
 /*********************/
 {
+    call_class  call_type;
     int         cpu;
     int         fpu;
     int         use32;
@@ -122,131 +91,303 @@ void PragmaInit( void )
 
     AsmInit( cpu, fpu, use32, 1 );
 
+    PragInit();
+
     HeadLibs = NULL;
-}
 
-static void InitAuxInfo( void )
-/*****************************/
-{
-    CurrAlias   = NULL;
-    CurrInfo    = NULL;
-    CurrEntry   = NULL;
+    /* predefine "cdecl" and "pascal" pragmas  18-aug-90 */
 
-    memset( &AuxInfo, 0, sizeof( AuxInfo ) );
+    call_type = ( DefaultInfo.class & FAR );
+    CdeclInfo.class =  call_type |
+                       CALLER_POPS |
+                       NO_FLOAT_REG_RETURNS |
+                       NO_STRUCT_REG_RETURNS |
+                       ROUTINE_RETURN |
+#if _CPU == 8086
+                       LOAD_DS_ON_CALL |
+#endif
+                       SPECIAL_STRUCT_RETURN;
+    CdeclInfo.objname = CStrSave( "_*" );
+    CdeclInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
+    memcpy( CdeclInfo.parms, StackParms, sizeof( StackParms ) );
+    HW_CAsgn( CdeclInfo.returns, HW_EMPTY );
 
-    AuxInfoFlg.f_near           = 0;
-    AuxInfoFlg.f_routine_pops   = 0;
-    AuxInfoFlg.f_caller_return  = 0;
-    AuxInfoFlg.f_8087_returns   = 0;
-}
+    PascalInfo.class = call_type |
+                       REVERSE_PARMS |
+                       NO_FLOAT_REG_RETURNS |
+                       NO_STRUCT_REG_RETURNS |
+/*                         ROUTINE_RETURN |             JFD Nov-15-91 */
+                       SPECIAL_STRUCT_RETURN;
+    PascalInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
+    memcpy( PascalInfo.parms, StackParms, sizeof( StackParms ) );
+    PascalInfo.objname = CStrSave( "^" );
+    HW_CAsgn( PascalInfo.returns, HW_EMPTY );
 
-static void CopyAuxInfo( void )
-/*****************************/
-{
-    hw_reg_set      default_flt_n_seg;
-    hw_reg_set      flt_n_seg;
+    FortranInfo.objname = CStrSave( "^" );
 
-    if( CurrEntry == NULL ) {
-        // Redefining a built-in calling convention
+    StdcallInfo.class =  call_type |
+                         // NO_FLOAT_REG_RETURNS | BBB - Jan-31-94
+                         // NO_STRUCT_REG_RETURNS |
+                         // ROUTINE_RETURN;
+                         SPECIAL_STRUCT_RETURN;
+    if( CompFlags.use_stdcall_at_number ) {
+        StdcallInfo.objname = CStrSave( "_*@#" );
     } else {
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
-        *CurrInfo = *CurrAlias;
+        StdcallInfo.objname = CStrSave( "_*" );
     }
-    if( AuxInfo.code != NULL ) {
-        CurrInfo->code = AuxInfo.code;
-    }
-    if( AuxInfoFlg.f_near ) {
-        CurrInfo->cclass &= ~FAR;
-    }
-    if( AuxInfoFlg.f_routine_pops ) {
-        CurrInfo->cclass &= ~CALLER_POPS;
-    }
-    if( AuxInfoFlg.f_caller_return ) {
-        CurrInfo->cclass &= ~ROUTINE_RETURN;
-    }
-    if( AuxInfoFlg.f_8087_returns ) {
-        CurrInfo->cclass &= ~NO_8087_RETURNS;
-    }
-    CurrInfo->cclass |= AuxInfo.cclass;
-    CurrInfo->flags |= AuxInfo.flags;
-    if( AuxInfo.objname != NULL )
-        CurrInfo->objname = AuxInfo.objname;
-    if( AuxInfo.cclass & SPECIAL_RETURN )
-        CurrInfo->returns = AuxInfo.returns;
-    if( AuxInfo.cclass & SPECIAL_STRUCT_RETURN )
-        CurrInfo->streturn = AuxInfo.streturn;
-    if( AuxInfo.parms != NULL )
-        CurrInfo->parms = AuxInfo.parms;
+    StdcallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
+    memcpy( StdcallInfo.parms, StackParms, sizeof( StackParms ) );
+    HW_CAsgn( StdcallInfo.returns, HW_EMPTY );
 
-    if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
-        HW_CTurnOn( CurrInfo->save, HW_FULL );
-        if( !( AuxInfo.cclass & MODIFY_EXACT ) && !CompFlags.save_restore_segregs ) {
-            HW_Asgn( default_flt_n_seg, WatcallInfo.save );
-            HW_CAsgn( flt_n_seg, HW_FLTS );
-            HW_CTurnOn( flt_n_seg, HW_SEGS );
-            HW_TurnOff( CurrInfo->save, flt_n_seg );
-            HW_OnlyOn( default_flt_n_seg, flt_n_seg );
-            HW_TurnOn( CurrInfo->save, default_flt_n_seg );
-        }
-        HW_TurnOff( CurrInfo->save, AuxInfo.save );
-    }
+#if _CPU == 386
+    FastcallInfo.class =  call_type |
+                         // NO_FLOAT_REG_RETURNS |
+                         // NO_STRUCT_REG_RETURNS |
+                         // ROUTINE_RETURN |
+                         // SPECIAL_RETURN |
+                         SPECIAL_STRUCT_RETURN;
+    FastcallInfo.objname = CStrSave( "@*@#" );
+    FastcallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( FastParms ) );
+    memcpy( FastcallInfo.parms, FastParms, sizeof( FastParms ) );
+#endif
+
+    OptlinkInfo.class =  call_type |
+                         CALLER_POPS  |
+#ifdef PARMS_STACK_RESERVE
+                         PARMS_STACK_RESERVE |
+#endif
+                         NO_STRUCT_REG_RETURNS |
+                         SPECIAL_STRUCT_RETURN;
+    OptlinkInfo.objname = CStrSave( "*" );
+#if _CPU == 386
+    HW_CTurnOn( OptlinkParms[0], HW_EAX );
+    HW_CTurnOn( OptlinkParms[0], HW_ECX );
+    HW_CTurnOn( OptlinkParms[0], HW_EDX );
+    OptlinkInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( OptlinkParms ) );
+    memcpy( OptlinkInfo.parms, OptlinkParms, sizeof( OptlinkParms ) );
+#else
+    OptlinkInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
+    memcpy( OptlinkInfo.parms, StackParms, sizeof( StackParms ) );
+#endif
+    HW_CAsgn( OptlinkInfo.returns, HW_FLTS );
+
+    SyscallInfo.parms = (hw_reg_set *)CMemAlloc( sizeof( StackParms ) );
+    memcpy( SyscallInfo.parms, StackParms, sizeof( StackParms ) );
+    SyscallInfo.objname = CStrSave( "*" );
+    SyscallInfo.class = CALLER_POPS |
+                        NO_STRUCT_REG_RETURNS |
+                        SPECIAL_STRUCT_RETURN;
+
+#if _CPU == 386
+    HW_CAsgn( CdeclInfo.streturn, HW_EAX );
+    HW_CTurnOff( CdeclInfo.save, HW_EAX );
+    HW_CTurnOff( CdeclInfo.save, HW_ECX );
+    HW_CTurnOff( CdeclInfo.save, HW_EDX );
+
+    HW_CTurnOff( PascalInfo.save, HW_EAX );
+    HW_CTurnOff( PascalInfo.save, HW_EBX );
+    HW_CTurnOff( PascalInfo.save, HW_ECX );
+    HW_CTurnOff( PascalInfo.save, HW_EDX );
+
+    HW_CTurnOff( StdcallInfo.save, HW_EAX );
+    HW_CTurnOff( StdcallInfo.save, HW_ECX );
+    HW_CTurnOff( StdcallInfo.save, HW_EDX );
+
+    HW_CTurnOff( FastcallInfo.save, HW_EAX );
+    HW_CTurnOff( FastcallInfo.save, HW_ECX );
+    HW_CTurnOff( FastcallInfo.save, HW_EDX );
+
+    HW_CTurnOff( SyscallInfo.save, HW_EAX );
+    HW_CTurnOn ( SyscallInfo.save, HW_EBX );
+    HW_CTurnOff( SyscallInfo.save, HW_ECX );
+    HW_CTurnOff( SyscallInfo.save, HW_EDX );
+
+    HW_CTurnOff( OptlinkInfo.save, HW_EAX );
+    HW_CTurnOff( OptlinkInfo.save, HW_ECX );
+    HW_CTurnOff( OptlinkInfo.save, HW_EDX );
+
+    HW_CTurnOff( AsmRegsSaved, HW_EAX );
+    HW_CTurnOff( AsmRegsSaved, HW_EBX );
+    HW_CTurnOff( AsmRegsSaved, HW_ECX );
+    HW_CTurnOff( AsmRegsSaved, HW_EDX );
+    HW_CTurnOff( AsmRegsSaved, HW_ESI );
+    HW_CTurnOff( AsmRegsSaved, HW_EDI );
+#else
+    HW_CAsgn( CdeclInfo.streturn, HW_AX );
+    HW_CTurnOff( CdeclInfo.save, HW_ABCD );
+    HW_CTurnOff( CdeclInfo.save, HW_ES );
+
+    HW_CTurnOff( PascalInfo.save, HW_ABCD );
+    HW_CTurnOff( PascalInfo.save, HW_ES );
+
+    HW_CAsgn( StdcallInfo.streturn, HW_AX );
+    HW_CTurnOff( StdcallInfo.save, HW_ABCD );
+    HW_CTurnOff( StdcallInfo.save, HW_ES );
+
+    /* roughly like pascal */
+    HW_CTurnOff( SyscallInfo.save, HW_ABCD );
+    HW_CTurnOff( SyscallInfo.save, HW_ES );
+
+    /* roughly like pascal */
+    HW_CTurnOff( OptlinkInfo.save, HW_ABCD );
+    HW_CTurnOff( OptlinkInfo.save, HW_ES );
+
+    HW_CTurnOff( AsmRegsSaved, HW_ABCD );
+    HW_CTurnOff( AsmRegsSaved, HW_SI );
+    HW_CTurnOff( AsmRegsSaved, HW_DI );
+    HW_CTurnOff( AsmRegsSaved, HW_ES );
+#endif
+
+#if _CPU == 386
+    /* these are internal, and will never be pointed to by
+       an aux_entry, so we don't have to worry about them
+       or their fields being freed */
+
+    call_type = NO_FLOAT_REG_RETURNS | NO_STRUCT_REG_RETURNS
+              | SPECIAL_STRUCT_RETURN;
+
+    STOSBInfo = DefaultInfo;
+    STOSBInfo.class = call_type;
+    STOSBInfo.parms = STOSBParms;
+    STOSBInfo.objname = "*";
+
+
+    /*
+     * These are not freed when we shut down so we can't just point at the
+     * CdeclInfo parms etc. Do not call FreeInfo on these. BBB
+     */
+
+    Far16CdeclInfo = CdeclInfo;
+    Far16CdeclInfo.class |= FAR16_CALL;
+    // __far16 __cdecl depends on EBX being trashed in __cdecl
+    // but NT 386 __cdecl preserves EBX
+    HW_CTurnOff( Far16CdeclInfo.save, HW_EBX );
+
+    Far16PascalInfo = PascalInfo;
+    Far16PascalInfo.class |= FAR16_CALL;
+#endif
 }
 
-static void AdvanceToken( void )
-/******************************/
-{
-    CMemFree( SavedId );
-    SavedId = NULL;
-    CurToken = LAToken;
-}
 
 static int GetAliasInfo( void )
 /*****************************/
 {
-    int     isfar16;
+    int         isfar16;
+    auto char   buff[256];
 
-    if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( 1 );
+    CurrAlias = &DefaultInfo;
+    if( CurToken != T_LEFT_PAREN ) return( 1 );
     NextToken();
-    if( CurToken != T_ID )                  // error
-        return( 0 );
-    LookAhead();
-    if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
-        PragCurrAlias( SavedId );
-        AdvanceToken();
+    if( CurToken != T_ID ) return( 0 );
+    PragCurrAlias();
+    strcpy( buff, Buffer );
+    NextToken();
+    if( CurToken == T_RIGHT_PAREN ) {
         NextToken();
         return( 1 );
-    } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
-        HashValue = SavedHash;
-        SetCurrInfo( SavedId );
-        AdvanceToken();
+    } else if( CurToken == T_COMMA ) {
         NextToken();
-        if( CurToken != T_ID )              // error
-            return( 0 );
+        if( CurToken != T_ID ) return( 0 );
         isfar16 = PragRecog( "far16" );
-        if( CurToken == T_ID ) {
-            PragCurrAlias( Buffer );
+        CreateAux( buff );
+        PragCurrAlias();
+        NextToken();
+        if( CurToken == T_RIGHT_PAREN ) {
+            *CurrInfo = *CurrAlias;
             NextToken();
         }
-        if( CurToken == T_RIGHT_PAREN )
-            NextToken();
-        if( isfar16 )
-            AuxInfo.flags |= AUX_FLAG_FAR16;
-        CopyAuxInfo();
+        if( isfar16 ) {
+            CurrInfo->flags |= AUX_FLAG_FAR16;
+        }
         PragEnding();
         return( 0 ); /* process no more! */
-    } else {                                // error
-        AdvanceToken();
+    } else {
         return( 0 ); // shut up the compiler
     }
 }
 
+
+void PragAux( void )
+/******************/
+{
+    struct {
+        unsigned f_call   : 1;
+        unsigned f_loadds : 1;
+        unsigned f_export : 1;
+        unsigned f_parm   : 1;
+        unsigned f_value  : 1;
+        unsigned f_modify : 1;
+        unsigned f_frame  : 1;
+        unsigned uses_auto: 1;
+    } have;
+
+    if( !GetAliasInfo() ) return;
+    CurrEntry = NULL;
+    if( CurToken != T_ID ) return;
+    SetCurrInfo();
+    NextToken();
+    *CurrInfo = *CurrAlias;
+    PragObjNameInfo();
+    have.f_call   = 0;
+    have.f_loadds = 0;
+    have.f_export = 0;
+    have.f_parm   = 0;
+    have.f_value  = 0;
+    have.f_modify = 0;
+    have.f_frame = 0;
+    have.uses_auto = 0; /* BBB - Jan 26, 1994 */
+    for( ;; ) {
+        if( !have.f_call && CurToken == T_EQUAL ) {
+            have.uses_auto = GetByteSeq();
+            have.f_call = 1;
+        } else if( !have.f_call && PragRecog( "far" ) ) {
+            CurrInfo->class |= FAR;
+            have.f_call = 1;
+        } else if( !have.f_call && PragRecog( "near" ) ) {
+            CurrInfo->class &= ~FAR;
+            have.f_call = 1;
+        } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
+            CurrInfo->class |= LOAD_DS_ON_ENTRY;
+            have.f_loadds = 1;
+        } else if( !have.f_export && PragRecog( "export" ) ) {
+            CurrInfo->class |= DLL_EXPORT;
+            have.f_export = 1;
+        } else if( !have.f_parm && PragRecog( "parm" ) ) {
+            GetParmInfo();
+            have.f_parm = 1;
+        } else if( !have.f_value && PragRecog( "value" ) ) {
+            GetRetInfo();
+            have.f_value = 1;
+        } else if( !have.f_value && PragRecog( "aborts" ) ) {
+            CurrInfo->class |= SUICIDAL;
+            have.f_value = 1;
+        } else if( !have.f_modify && PragRecog( "modify" ) ) {
+            GetSaveInfo();
+            have.f_modify = 1;
+        } else if( !have.f_frame && PragRecog( "frame" ) ) {
+            CurrInfo->class |= GENERATE_STACK_FRAME;
+            have.f_frame = 1;
+        } else {
+            break;
+        }
+    }
+    if( have.uses_auto ) {
+        /*
+           We want to force the calling routine to set up a [E]BP frame
+           for the use of this pragma. This is done by saying the pragma
+           modifies the [E]SP register. A kludge, but it works.
+        */
+        HW_CTurnOff( CurrInfo->save, HW_SP );
+    }
+    PragEnding();
+}
+
 typedef enum {
-    FIXWORD_NONE,
-    FIXWORD_FLOAT,
-    FIXWORD_SEGMENT,
-    FIXWORD_OFFSET,
-    FIXWORD_RELOFF
+        FIXWORD_NONE,
+        FIXWORD_FLOAT,
+        FIXWORD_SEGMENT,
+        FIXWORD_OFFSET,
+        FIXWORD_RELOFF
 } fix_words;
 
 local fix_words FixupKeyword( void )
@@ -266,17 +407,12 @@ local fix_words FixupKeyword( void )
 enum sym_state AsmQueryExternal( char *name )
 /*******************************************/
 {
-    SYM_HANDLE  sym_handle;
-    SYM_ENTRY   sym;
+    SYM_HANDLE sym_handle;
+    auto SYM_ENTRY sym;
 
     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
-    if( sym_handle == 0 )
-        return( SYM_UNDEFINED );
+    if( sym_handle == 0 ) return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
-    if( !(sym.flags & SYM_REFERENCED) ) {
-        sym.flags |= SYM_REFERENCED;
-        SymReplace( &sym, sym_handle );
-    }
     switch( sym.stg_class ) {
     case SC_AUTO:
     case SC_REGISTER:
@@ -299,8 +435,8 @@ enum sym_state AsmQueryExternal( char *name )
     #define SYM_DNEAR   SYM_INT4
 #endif
 
-static int AsmCodePtrType( type_modifiers flags )
-/***********************************************/
+static int CodePtrType( int flags )
+/*********************************/
 {
     if( flags & FLAG_FAR ) {
         return( SYM_FFAR );
@@ -314,13 +450,12 @@ static int AsmCodePtrType( type_modifiers flags )
 }
 
 
-static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
-/********************************************************/
+static int PtrType( TYPEPTR typ, int flags )
+/******************************************/
 {
-
-    SKIP_TYPEDEFS( typ );
+    while( typ->decl_type == TYPE_TYPEDEF ) typ = typ->object;
     if( typ->decl_type == TYPE_FUNCTION ) {
-        return( AsmCodePtrType( flags ) );
+        return( CodePtrType( flags ) );
     } else if( flags & (FLAG_FAR|FLAG_HUGE) ) {
         return( SYM_DFAR );
     } else if( flags & FLAG_NEAR ) {
@@ -334,15 +469,46 @@ static int AsmPtrType( TYPEPTR typ, type_modifiers flags )
 
 /* matches enum DataType in ctypes.h */
 static enum sym_type AsmDataType[] = {
-#undef  pick1
-#define pick1(enum,cgtype,x86asmtype,name,size) x86asmtype,
-#include "cdatatyp.h"
+        SYM_INT1,       /* TYPE_CHAR,*/
+        SYM_INT1,       /* TYPE_UCHAR,*/
+        SYM_INT2,       /* TYPE_SHORT,*/
+        SYM_INT2,       /* TYPE_USHORT,*/
+        SYM_INT,        /* TYPE_INT,*/
+        SYM_INT,        /* TYPE_UINT,*/
+        SYM_INT4,       /* TYPE_LONG,*/
+        SYM_INT4,       /* TYPE_ULONG,*/
+        SYM_INT8,       /* TYPE_LONG64,*/
+        SYM_INT8,       /* TYPE_ULONG64,*/
+        SYM_FLOAT4,     /* TYPE_FLOAT,*/
+        SYM_FLOAT8,     /* TYPE_DOUBLE,*/
+        0,              /* TYPE_POINTER,*/
+        0,              /* TYPE_ARRAY,*/
+        0,              /* TYPE_STRUCT,*/
+        0,              /* TYPE_UNION,*/
+        0,              /* TYPE_FUNCTION,*/
+        0,              /* TYPE_FIELD,*/
+        SYM_INT1,       /* TYPE_VOID,*/
+        0,              /* TYPE_ENUM,*/
+        0,              /* TYPE_TYPEDEF,*/
+        0,              /* TYPE_UFIELD,*/
+        0,              /* TYPE_DOT_DOT_DOT,*/
+        SYM_INT1,       /* TYPE_PLAIN_CHAR,*/
+        SYM_INT2,       /* TYPE_WCHAR,  */
+        SYM_FLOAT10,    /* TYPE_LONG_DOUBLE */
+        0,              /* TYPE_FCOMPLEX, */
+        0,              /* TYPE_DCOMPLEX, */
+        0,              /* TYPE_LDCOMPLEX, */
+        SYM_FLOAT4,     /* TYPE_FIMAGINARY, */
+        SYM_FLOAT8,     /* TYPE_DIMAGINARY, */
+        SYM_FLOAT10,    /* TYPE_LDIMAGINARY, */
+        SYM_INT1,       /* TYPE_BOOL, */
+        0,              /* TYPE_UNUSED,  */
 };
 
-local int AsmType( TYPEPTR typ, type_modifiers flags )
-/****************************************************/
+local int AsmType( TYPEPTR typ, int flags )
+/*****************************************/
 {
-    SKIP_TYPEDEFS( typ );
+    while( typ->decl_type == TYPE_TYPEDEF )  typ = typ->object;
     switch( typ->decl_type ) {
     case TYPE_STRUCT:
     case TYPE_UNION:
@@ -353,9 +519,9 @@ local int AsmType( TYPEPTR typ, type_modifiers flags )
     case TYPE_UFIELD:
         return( AsmDataType[ typ->u.f.field_type ] );
     case TYPE_FUNCTION:
-        return( AsmCodePtrType( flags ) );
+        return( CodePtrType( flags ) );
     case TYPE_POINTER:
-        return( AsmPtrType( typ->object, typ->u.p.decl_flags ) );
+        return( PtrType( typ->object, typ->u.p.decl_flags ) );
     case TYPE_ENUM:
         typ = typ->object;
         /* fall through */
@@ -367,8 +533,8 @@ local int AsmType( TYPEPTR typ, type_modifiers flags )
 enum sym_type AsmQueryType( char *name )
 /**************************************/
 {
-    SYM_HANDLE  sym_handle;
-    SYM_ENTRY   sym;
+    SYM_HANDLE sym_handle;
+    auto SYM_ENTRY sym;
 
     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
     if( sym_handle == 0 ) return( SYM_INT1 );
@@ -376,11 +542,11 @@ enum sym_type AsmQueryType( char *name )
     return( AsmType( sym.sym_type, sym.attrib ) );
 }
 
-static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
-/*************************************************************************/
+static int InsertFixups( unsigned char *buff, unsigned i )
+/********************************************************/
 {
                         /* additional slop in buffer to simplify the code */
-    unsigned char       temp[ MAXIMUM_BYTESEQ + 1 + 2 * sizeof( long ) ];
+    unsigned char       temp[ MAXIMUM_BYTESEQ + 1 + 2*sizeof(long) ];
     struct asmfixup     *fix;
     struct asmfixup     *head;
     struct asmfixup     *chk;
@@ -508,8 +674,8 @@ static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
                 }
                 if( skip != 0 ) {
                     *dst++ = cg_fix;
-                    *((CGSYM_HANDLE *)dst) = sym_handle;
-                    dst += sizeof( CGSYM_HANDLE );
+                    *((unsigned long *)dst) = sym_handle;
+                    dst += sizeof( long );
                     *((unsigned long *)dst) = fix->offset;
                     dst += sizeof( long );
                     src += skip;
@@ -562,10 +728,10 @@ static int InsertFixups( unsigned char *buff, unsigned i, byte_seq **code )
         i = dst - temp;
         perform_fixups = DO_FLOATING_FIXUPS;
     }
-    seq = (byte_seq *)CMemAlloc( sizeof( byte_seq ) + i );
+    seq = (byte_seq *) CMemAlloc( sizeof(byte_seq) + i );
     seq->length = i | perform_fixups;
     memcpy( &seq->data[0], buff, i );
-    *code = seq;
+    CurrInfo->code = seq;
     return( uses_auto );
 }
 
@@ -590,7 +756,7 @@ local void FreeAsmFixups( void )
 {
     struct asmfixup     *fix;
 
-    for( ;; ) {
+    for(;;) {
         fix = FixupHead;
         if( fix == NULL ) break;
         FixupHead = fix->next;
@@ -599,30 +765,34 @@ local void FreeAsmFixups( void )
 }
 
 
-local int GetByteSeq( byte_seq **code )
+local int GetByteSeq( void )
 /**************************/
 {
-    unsigned char       buff[ MAXIMUM_BYTESEQ + 32 ];
+    auto unsigned char  buff[ MAXIMUM_BYTESEQ + 32 ];
+    int                 code_length;
     char                *name;
     unsigned long       offset;
     unsigned            fixword;
     int                 uses_auto;
     char                too_many_bytes;
 
-    AsmSysInit( buff );
     CompFlags.pre_processing = 1;       /* enable macros */
     NextToken();
     too_many_bytes = 0;
     uses_auto = 0;
-    for( ;; ) {
+    AsmSysSetCodeBuffer( buff );
+    code_length = 0;
+    for(;;) {
         if( CurToken == T_STRING ) {    /* 06-sep-91 */
-            AsmLine( Buffer );
+            AsmSysSetCodeAddr( code_length );
+            AsmSysParseLine( Buffer );
+            code_length = AsmSysGetCodeAddr();
             NextToken();
             if( CurToken == T_COMMA ) {
                 NextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
-            AsmCodeBuffer[AsmCodeAddress++] = Constant;
+            buff[ code_length++ ] = Constant;
             NextToken();
         } else {
             fixword = FixupKeyword();
@@ -631,7 +801,7 @@ local int GetByteSeq( byte_seq **code )
             if( fixword == FIXWORD_FLOAT ) {
 #if _CPU == 8086
                 if( GET_FPU_EMU( ProcRevision ) ) {
-                    AddAFix( AsmCodeAddress, NULL, FIX_SEG, 0 );
+                    AddAFix( code_length, NULL, FIX_SEG, 0 );
                 }
 #endif
             } else { /* seg or offset */
@@ -658,45 +828,45 @@ local int GetByteSeq( byte_seq **code )
                 switch( fixword ) {
                 case FIXWORD_RELOFF:
 #if _CPU == 8086
-                    AddAFix( AsmCodeAddress, name, FIX_RELOFF16, offset );
-                    AsmCodeAddress += 2;
+                    AddAFix( code_length, name, FIX_RELOFF16, offset );
+                    code_length += 2;
 #else
-                    AddAFix( AsmCodeAddress, name, FIX_RELOFF32, offset );
-                    AsmCodeAddress += 4;
+                    AddAFix( code_length, name, FIX_RELOFF32, offset );
+                    code_length += 4;
 #endif
                     break;
                 case FIXWORD_OFFSET:
 #if _CPU == 8086
-                    AddAFix( AsmCodeAddress, name, FIX_OFF16, offset );
-                    AsmCodeAddress += 2;
+                    AddAFix( code_length, name, FIX_OFF16, offset );
+                    code_length += 2;
 #else
-                    AddAFix( AsmCodeAddress, name, FIX_OFF32, offset );
-                    AsmCodeAddress += 4;
+                    AddAFix( code_length, name, FIX_OFF32, offset );
+                    code_length += 4;
 #endif
                     break;
                 case FIXWORD_SEGMENT:
-                    AddAFix( AsmCodeAddress, name, FIX_SEG, 0 );
-                    AsmCodeAddress += 2;
+                    AddAFix( code_length, name, FIX_SEG, 0 );
+                    code_length += 2;
                     break;
                 }
             }
         }
-        if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
+        if( code_length > MAXIMUM_BYTESEQ ) {
             if( ! too_many_bytes ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
                 too_many_bytes = 1;
             }
-            AsmCodeAddress = 0;          // reset index to we don't overrun buffer
+            code_length = 0;          // reset index to we don't overrun buffer
         }
     }
     if( too_many_bytes ) {
         FreeAsmFixups();
         uses_auto = 0;
     } else {
-        uses_auto = InsertFixups( buff, AsmCodeAddress, code );
+        uses_auto = InsertFixups( buff, code_length );
     }
     CompFlags.pre_processing = 2;
-    AsmSysFini();
+    AsmSymFini();
     return( uses_auto );
 }
 
@@ -704,34 +874,26 @@ local int GetByteSeq( byte_seq **code )
 hw_reg_set PragRegName( char *str )
 /*********************************/
 {
-    int         index;
+    int         i;
     char        *p;
     hw_reg_set  name;
 
-    if( *str == '\0' ) {
-        HW_CAsgn( name, HW_EMPTY );
-        return( name );
-    }
     if( *str == '_' ) {
         ++str;
         if( *str == '_' ) {
             ++str;
         }
     }
-    index = 0;
+    i = 0;
     p = Registers;
     while( *p != '\0' ) {
-        if( stricmp( p, str ) == 0 )
-            return( RegBits[ index ] );
-        index++;
-        while( *p++ != '\0' ) {
-            ;
-        }
+        if( stricmp( p, str ) == 0 ) return( RegBits[ i ] );
+        i++;
+        while( *p++ != '\0' ) {;}
     }
     if( strcmp( str, "8087" ) == 0 ) {
         HW_CAsgn( name, HW_FLTS );
     } else {
-        CErr2p( ERR_BAD_REGISTER_NAME, str );
         HW_CAsgn( name, HW_EMPTY );
     }
     return( name );
@@ -757,24 +919,55 @@ local void GetParmInfo( void )
     have.f_list          = 0;
     for( ;; ) {
         if( !have.f_pop && PragRecog( "caller" ) ) {
-            AuxInfo.cclass |= CALLER_POPS;
+            CurrInfo->class |= CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_pop && PragRecog( "routine" ) ) {
-            AuxInfo.cclass &= ~ CALLER_POPS;
-            AuxInfoFlg.f_routine_pops = 1;
+            CurrInfo->class &= ~ CALLER_POPS;
             have.f_pop = 1;
         } else if( !have.f_reverse && PragRecog( "reverse" ) ) {
-            AuxInfo.cclass |= REVERSE_PARMS;
+            CurrInfo->class |= REVERSE_PARMS;
             have.f_reverse = 1;
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
-            AuxInfo.cclass |= NO_MEMORY_READ;
+            CurrInfo->class |= NO_MEMORY_READ;
             have.f_nomemory = 1;
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
-            AuxInfo.cclass |= LOAD_DS_ON_CALL;
+            CurrInfo->class |= LOAD_DS_ON_CALL;
             have.f_loadds = 1;
-        } else if( !have.f_list && PragRegSet() != T_NULL ) {
-            AuxInfo.parms = PragManyRegSets();
+        } else if( !have.f_list && PragSet() != T_NULL ) {
+            PragManyRegSets();
             have.f_list = 1;
+        } else {
+            break;
+        }
+    }
+}
+
+
+local void GetRetInfo( void )
+/***************************/
+{
+    struct {
+        unsigned f_no8087        : 1;
+        unsigned f_list          : 1;
+        unsigned f_struct        : 1;
+    } have;
+
+    have.f_no8087  = 0;
+    have.f_list    = 0;
+    have.f_struct  = 0;
+    CurrInfo->class &= ~ NO_8087_RETURNS;               /* 29-mar-90 */
+    for( ;; ) {
+        if( !have.f_no8087 && PragRecog( "no8087" ) ) {
+            have.f_no8087 = 1;
+            HW_CTurnOff( CurrInfo->returns, HW_FLTS );
+            CurrInfo->class |= NO_8087_RETURNS;
+        } else if( !have.f_list && PragSet() != T_NULL ) {
+            have.f_list = 1;
+            CurrInfo->class |= SPECIAL_RETURN;
+            CurrInfo->returns = PragRegList();
+        } else if( !have.f_struct && PragRecog( "struct" ) ) {
+            have.f_struct = 1;
+            GetSTRetInfo();
         } else {
             break;
         }
@@ -799,54 +992,20 @@ local void GetSTRetInfo( void )
     for( ;; ) {
         if( !have.f_float && PragRecog( "float" ) ) {
             have.f_float = 1;
-            AuxInfo.cclass |= NO_FLOAT_REG_RETURNS;
+            CurrInfo->class |= NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecog( "struct" ) ) {
             have.f_struct = 1;
-            AuxInfo.cclass |= NO_STRUCT_REG_RETURNS;
+            CurrInfo->class |= NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecog( "routine" ) ) {
             have.f_allocs = 1;
-            AuxInfo.cclass |= ROUTINE_RETURN;
+            CurrInfo->class |= ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecog( "caller" ) ) {
             have.f_allocs = 1;
-            AuxInfo.cclass &= ~ROUTINE_RETURN;
-            AuxInfoFlg.f_caller_return = 1;
-        } else if( !have.f_list && PragRegSet() != T_NULL ) {
+            CurrInfo->class &= ~ROUTINE_RETURN;
+        } else if( !have.f_list && PragSet() != T_NULL ) {
             have.f_list = 1;
-            AuxInfo.cclass |= SPECIAL_STRUCT_RETURN;
-            AuxInfo.streturn = PragRegList();
-        } else {
-            break;
-        }
-    }
-}
-
-
-local void GetRetInfo( void )
-/***************************/
-{
-    struct {
-        unsigned f_no8087        : 1;
-        unsigned f_list          : 1;
-        unsigned f_struct        : 1;
-    } have;
-
-    have.f_no8087  = 0;
-    have.f_list    = 0;
-    have.f_struct  = 0;
-    AuxInfo.cclass &= ~ NO_8087_RETURNS;               /* 29-mar-90 */
-    AuxInfoFlg.f_8087_returns = 1;
-    for( ;; ) {
-        if( !have.f_no8087 && PragRecog( "no8087" ) ) {
-            have.f_no8087 = 1;
-            HW_CTurnOff( AuxInfo.returns, HW_FLTS );
-            AuxInfo.cclass |= NO_8087_RETURNS;
-        } else if( !have.f_list && PragRegSet() != T_NULL ) {
-            have.f_list = 1;
-            AuxInfo.cclass |= SPECIAL_RETURN;
-            AuxInfo.returns = PragRegList();
-        } else if( !have.f_struct && PragRecog( "struct" ) ) {
-            have.f_struct = 1;
-            GetSTRetInfo();
+            CurrInfo->class |= SPECIAL_STRUCT_RETURN;
+            CurrInfo->streturn = PragRegList();
         } else {
             break;
         }
@@ -857,10 +1016,14 @@ local void GetRetInfo( void )
 local void GetSaveInfo( void )
 /****************************/
 {
+    hw_reg_set  modlist;
+    hw_reg_set  default_flt_n_seg;
+    hw_reg_set  flt_n_seg;
+
     struct {
-        unsigned    f_exact     : 1;
-        unsigned    f_nomemory  : 1;
-        unsigned    f_list      : 1;
+        unsigned f_exact        : 1;
+        unsigned f_nomemory     : 1;
+        unsigned f_list         : 1;
     } have;
 
     have.f_exact    = 0;
@@ -868,111 +1031,65 @@ local void GetSaveInfo( void )
     have.f_list     = 0;
     for( ;; ) {
         if( !have.f_exact && PragRecog( "exact" ) ) {
-            AuxInfo.cclass |= MODIFY_EXACT;
+            CurrInfo->class |= MODIFY_EXACT;
             have.f_exact = 1;
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
-            AuxInfo.cclass |= NO_MEMORY_CHANGED;
+            CurrInfo->class |= NO_MEMORY_CHANGED;
             have.f_nomemory = 1;
-        } else if( !have.f_list && PragRegSet() != T_NULL ) {
-            HW_TurnOn( AuxInfo.save, PragRegList() );
+        } else if( !have.f_list && PragSet() != T_NULL ) {
+            modlist = PragRegList();
             have.f_list = 1;
         } else {
             break;
         }
     }
-}
-
-void PragAux( void )
-/******************/
-{
-    struct {
-        unsigned    f_call   : 1;
-        unsigned    f_loadds : 1;
-        unsigned    f_export : 1;
-        unsigned    f_parm   : 1;
-        unsigned    f_value  : 1;
-        unsigned    f_modify : 1;
-        unsigned    f_frame  : 1;
-        unsigned    uses_auto: 1;
-    } have;
-
-    InitAuxInfo();
-    if( !GetAliasInfo() )
-        return;
-    if( CurToken != T_ID )
-        return;
-    SetCurrInfo( Buffer );
-    NextToken();
-    PragObjNameInfo( &AuxInfo.objname );
-    have.f_call   = 0;
-    have.f_loadds = 0;
-    have.f_export = 0;
-    have.f_parm   = 0;
-    have.f_value  = 0;
-    have.f_modify = 0;
-    have.f_frame = 0;
-    have.uses_auto = 0; /* BBB - Jan 26, 1994 */
-    for( ;; ) {
-        if( !have.f_call && CurToken == T_EQUAL ) {
-            have.uses_auto = GetByteSeq( &AuxInfo.code );
-            have.f_call = 1;
-        } else if( !have.f_call && PragRecog( "far" ) ) {
-            AuxInfo.cclass |= FAR;
-            have.f_call = 1;
-        } else if( !have.f_call && PragRecog( "near" ) ) {
-            AuxInfo.cclass &= ~FAR;
-            AuxInfoFlg.f_near = 1;
-            have.f_call = 1;
-        } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
-            AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
-            have.f_loadds = 1;
-        } else if( !have.f_export && PragRecog( "export" ) ) {
-            AuxInfo.cclass |= DLL_EXPORT;
-            have.f_export = 1;
-        } else if( !have.f_parm && PragRecog( "parm" ) ) {
-            GetParmInfo();
-            have.f_parm = 1;
-        } else if( !have.f_value && PragRecog( "value" ) ) {
-            GetRetInfo();
-            have.f_value = 1;
-        } else if( !have.f_value && PragRecog( "aborts" ) ) {
-            AuxInfo.cclass |= SUICIDAL;
-            have.f_value = 1;
-        } else if( !have.f_modify && PragRecog( "modify" ) ) {
-            GetSaveInfo();
-            have.f_modify = 1;
-        } else if( !have.f_frame && PragRecog( "frame" ) ) {
-            AuxInfo.cclass |= GENERATE_STACK_FRAME;
-            have.f_frame = 1;
-        } else {
-            break;
+    if( have.f_list ) {
+        HW_Asgn( default_flt_n_seg, DefaultInfo.save );
+        HW_CTurnOn( CurrInfo->save, HW_FULL );
+        if( !have.f_exact && !CompFlags.save_restore_segregs ) {
+            HW_CAsgn( flt_n_seg, HW_FLTS );
+            HW_CTurnOn( flt_n_seg, HW_SEGS );
+            HW_TurnOff( CurrInfo->save, flt_n_seg );
+            HW_OnlyOn( default_flt_n_seg, flt_n_seg );
+            HW_TurnOn( CurrInfo->save, default_flt_n_seg );
         }
+        HW_TurnOff( CurrInfo->save, modlist );
     }
-    if( have.uses_auto ) {
-        /*
-           We want to force the calling routine to set up a [E]BP frame
-           for the use of this pragma. This is done by saying the pragma
-           modifies the [E]SP register. A kludge, but it works.
-        */
-        HW_CTurnOn( AuxInfo.save, HW_SP );
-    }
-    CopyAuxInfo();
-    PragEnding();
 }
 
-void AsmSysInit( unsigned char *buf )
-/***********************************/
+void AsmSysInit( void )
+/*********************/
 {
-    AsmCodeBuffer = buf;
-    AsmCodeAddress = 0;
-    AsmSaveCPUInfo();
 }
 
 void AsmSysFini( void )
 /*********************/
 {
     AsmSymFini();
-    AsmRestoreCPUInfo();
+}
+
+uint_32 AsmSysGetCodeAddr( void )
+/******************************/
+{
+    return( Address );
+}
+
+void AsmSysSetCodeAddr( uint_32 len )
+/***********************************/
+{
+    Address = len;
+}
+
+void AsmSysSetCodeBuffer( void *buf )
+/***********************************/
+{
+    CodeBuffer = buf;
+}
+
+void AsmSysParseLine( char *line )
+/********************************/
+{
+    AsmLine( line );
 }
 
 void AsmSysMakeInlineAsmFunc( int code_ovrflw )
@@ -982,18 +1099,17 @@ void AsmSysMakeInlineAsmFunc( int code_ovrflw )
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
     int                 uses_auto;
-    char                name[8];
+    auto char           name[8];
 
-    code_length = AsmCodeAddress;
+    code_length = AsmSysGetCodeAddr();
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );
         ++AsmFuncNum;
         CreateAux( name );
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
-        *CurrInfo = WatcallInfo;
+        *CurrInfo = DefaultInfo;
         CurrInfo->use = 1;
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
-        uses_auto = InsertFixups( AsmCodeBuffer, code_length, &CurrInfo->code );
+        uses_auto = InsertFixups( CodeBuffer, code_length );
         if( uses_auto ) {
             /*
                We want to force the calling routine to set up a [E]BP frame

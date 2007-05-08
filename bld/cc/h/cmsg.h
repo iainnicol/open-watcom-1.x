@@ -24,24 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  C compiler message formatting.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define MAX_MSG_LEN  300
-
+//
+// C message formating
+//
+#define MAX_MSG_LEN  144
 typedef enum{
     CMSG_INFO,
     CMSG_WARN,
     CMSG_ERRO,
-} cmsg_class;
+}cmsg_class;
 
 typedef struct {
     int         msgnum;
     int         line;
     int         col;
-    char const  *fname;
+    char const* fname;
     cmsg_class  class;
-    char        msgtxt[MAX_MSG_LEN];    //actual message text
-} cmsg_info;
+    char        msgtxt[MAX_MSG_LEN]; //actual message text
+}cmsg_info;

@@ -32,7 +32,7 @@
 #include "cvars.h"
 
 
-void InitStats( void )
+void InitStats()
 {
     CompFlags.stats_printed = 0;
     CompFlags.extra_stats_wanted = 0;
@@ -51,11 +51,14 @@ void InitStats( void )
     TmpSymCount = 0;
     LitPoolSize = 0;
     LitCount = 0;
+    ReclaimCount = 0;
     /* still useful for internal debugging */
+    AllocCount = 0;
+    FreeCount = 0;
     FuncCount = 0;
 }
 
-void PrintStats( void )
+void PrintStats()
 {
     FCB         *nest_fcb;
     char        *fname;

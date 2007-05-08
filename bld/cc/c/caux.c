@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Management of #pragma aux information.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,11 +33,12 @@
 #include "cvars.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
+extern  void    CMemFree();
 
 
 struct aux_entry *AuxLookup( char *name )
 {
-    struct aux_entry    *ent;
+    struct aux_entry *ent;
 
     for( ent = AuxList; ent; ent = ent->next ) {
         if( strcmp( ent->name, name ) == 0 ) break;
@@ -51,7 +53,7 @@ local void FreeInfo( struct aux_info *info )            /* 18-aug-90 */
         CMemFree( info->code );
         info->code = NULL;
     }
-    if( !IsAuxParmsBuiltIn( info->parms ) ) {
+    if( info->parms != NULL && info->parms != DefaultParms ) {
         CMemFree( info->parms );
         info->parms = NULL;
     }
@@ -70,7 +72,7 @@ local void FreeInfo( struct aux_info *info )            /* 18-aug-90 */
 }
 
 
-void PragmaFini( void )
+void PragmaFini()
 {
     struct aux_entry    *next;
     void                *junk;
@@ -83,16 +85,13 @@ void PragmaFini( void )
                 next->info->use--;
             } else {
                 FreeInfo( next->info );
-                if( !IsAuxInfoBuiltIn( next->info ) ) {
-                    CMemFree( next->info );
-                }
+                if( next->info != &DefaultInfo )  CMemFree( next->info );
             }
         }
         next = next->next;
         CMemFree( junk );
     }
     FreeInfo( &DefaultInfo );
-    FreeInfo( &WatcallInfo );
     FreeInfo( &CdeclInfo );
     FreeInfo( &PascalInfo );
     FreeInfo( &SyscallInfo );
@@ -100,10 +99,6 @@ void PragmaFini( void )
     FreeInfo( &FortranInfo );
     FreeInfo( &StdcallInfo );
     FreeInfo( &FastcallInfo );
-#if _CPU == 386
-    FreeInfo( &Far16CdeclInfo );
-    FreeInfo( &Far16PascalInfo );
-#endif
     AuxList = NULL;
     while( HeadLibs != NULL ) {
         junk = HeadLibs;
@@ -111,3 +106,4 @@ void PragmaFini( void )
         CMemFree( junk );
     }
 }
+

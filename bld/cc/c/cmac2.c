@@ -32,41 +32,39 @@
 #include "cvars.h"
 #include "scan.h"
 #include <stddef.h>
-#include "cgmisc.h"
 
-static void    CSkip( void );
-static void    CSkipIf( void );
-static void    CDefine( void );
-static void    CInclude( void );
-static void    CIfDef( void );
-static void    CIfNDef( void );
-static void    CIf( void );
-static void    CElif( void );
-static void    CElse( void );
-static void    CEndif( void );
-static void    CUndef( void );
-static void    CLine( void );
-static void    CError( void );
-static void    CIdent( void );
-static void    CUnknown( void );
+static void    CSkip(void);
+static void    CSkipIf(void);
+static void    CDefine(void);
+static void    CInclude(void);
+static void    CIfDef(void);
+static void    CIfNDef(void);
+static void    CIf(void);
+static void    CElif(void);
+static void    CElse(void);
+static void    CEndif(void);
+static void    CUndef(void);
+static void    CLine(void);
+static void    CError(void);
+static void    CIdent(void);
+static void    CUnknown(void);
 
 local void Flush2EOL( void );
-local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name );
+local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, int defn_offset );
 local void IncLevel( int value );
 local int  FormalParm( struct macro_parm *formal_parms );
 local void ChkEOL( void );
 
 struct preproc {
     char  *directive;
-    void  (*samelevel)( void ); /* func to call when NestLevel == SkipLevel */
-    void  (*skipfunc)( void );  /* func to call when NestLevel != SkipLevel */
+    void  (*samelevel)(void);   /* func to call when NestLevel == SkipLevel */
+    void  (*skipfunc)(void);    /* func to call when NestLevel != SkipLevel */
 };
 
 static unsigned char PreProcWeights[] = {
 //a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
   2, 0, 0,11, 1, 4, 0, 0, 5, 0, 0,12, 0, 0, 0,13, 0,14, 0, 9,15, 0, 0, 0, 0,0
 };
-
 static struct preproc PreProcTable[] = {
     { "",       NULL,           NULL },  // 0
     { "line",   CLine,          CSkip }, // 4 +12 + 1 = 17 mod 16 = 1
@@ -100,8 +98,7 @@ struct  cpp_info {              /* C Pre-processor information */
         int             processing;
 };
 
-
-static void PreProcStmt( void )
+static void PreProcStmt(void)
 {
     struct preproc      *pp;
     int                 hash;
@@ -128,14 +125,13 @@ static void PreProcStmt( void )
 }
 
 extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
-
-int ChkControl( void )
+int ChkControl(void)
 {
     int lines_skipped;
 
 
-    if( !CompFlags.doing_macro_expansion ) {
-        if( CompFlags.cpp_output ) {
+    if( ! CompFlags.doing_macro_expansion ) {
+        if( CompFlags.cpp_output ){
             PrintWhiteSpace = FALSE;
         }
     }
@@ -145,10 +141,8 @@ int ChkControl( void )
             CSuicide();
         }
         lines_skipped = 0;
-        for( ;; ) {
-            if( CompFlags.cpp_output ) {
-                PrtChar( '\n' );
-            }
+        for(;;) {
+            if( CompFlags.cpp_output )  PrtChar( '\n' );
             NextChar();
             if( CurrChar != PreProcChar ) {
                 SkipAhead();
@@ -158,14 +152,14 @@ int ChkControl( void )
             if( CurrChar == PreProcChar ) { /* start of comp control line */
                 PreProcStmt();
             } else if( NestLevel != SkipLevel ) {
-                PPNextToken();              /* get into token mode */
+                PPNextToken();          /* get into token mode */
                 Flush2EOL();
             }
             if( NestLevel == SkipLevel ) break;
             if( CurrChar == '\n' ) {
                 lines_skipped = 1;
             }
-            if( CurrChar == EOF_CHAR ) break;   /* 16-may-89 */
+            if( CurrChar == EOF_CHAR ) break;           /* 16-may-89 */
         }
         CompFlags.pre_processing = 0;
         if( CompFlags.cpp_output ) {
@@ -182,28 +176,81 @@ int ChkControl( void )
     return( T_WHITE_SPACE );
 }
 
+#if 0
+int ScanCharacters()
+{
+    int         c;
+    char        *scanptr;
+
+    scanptr = ScanCharPtr;
+    for(;;) {
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+        c = *scanptr++;
+        if( CharSet[c] & C_EX ) break;
+    }
+    ScanCharPtr = scanptr;
+    return( c );
+}
+#endif
 
 static void Flush2EOL( void )
 {
+#if 1
     while( CurToken != T_NULL ) {
         if( CurToken == T_EOF ) break;          /* 07-may-89 */
         PPNextToken();
     }
+#else
+    int         c;
+
+    // mark some special characters so that we only have to do one test
+    // for each character inside the main loop
+    c = CurrChar;
+    for(;;) {
+        CharSet['/']  |= C_EX;          // make '/' special character
+        if( (CharSet[c] & C_EX) == 0 ) {
+            c = ScanCharacters();
+        }
+        if( c == '\n' ) {               // we are at end of line
+            SrcFile->src_line++;
+            SrcFileLineNum = SrcFile->src_line;
+            break;
+        }
+        if( c == '/' ) {                // check for comment
+            ScanSlash();
+            c = CurrChar;
+        } else {                // one of the other special characters
+            c = GetCharCheck( c );
+            if( c == EOF_CHAR ) break;
+        }
+    }
+    CharSet['/']  &= ~C_EX;             // undo '/' special character
+#endif
 }
 
-
-local void CSkip( void )
+local void CSkip(void)
 {
 }
 
-
-local void CSkipIf( void )
+local void CSkipIf(void)
 {
     IncLevel( 0 );
 }
 
-
-local void CUnknown( void )
+local void CUnknown()
 {
     if( NestLevel == SkipLevel ) {
         CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
@@ -211,53 +258,50 @@ local void CUnknown( void )
 }
 
 
-local void CIdent( void )
+local void CIdent()
 {
-    if( !CompFlags.extensions_enabled )
-        CUnknown();
+    if( !CompFlags.extensions_enabled ) CUnknown();
     Flush2EOL();
 }
 
 
-void CInclude( void )
+void CInclude()
 {
     char        in_macro;
     auto char   buf[82];
 
-    if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
+    if( PCH_FileName != NULL  &&  CompFlags.make_precompiled_header == 0 ) {
         if( CompFlags.ok_to_use_precompiled_hdr ) {     /* 27-jun-94 */
             CompFlags.use_precompiled_header = 1;
         }
     }
-    if( CompFlags.make_precompiled_header ) {
+    if( CompFlags.make_precompiled_header ){
         InitBuildPreCompiledHeader();
     }
     InitialMacroFlag = 0;
     in_macro = 0;
-    if( MacroPtr != NULL )
-        in_macro = 1;
+    if( MacroPtr != NULL ) in_macro = 1;
     CompFlags.pre_processing = 1;
     PPNextToken();
     if( CurToken == T_STRING ) {
         OpenSrcFile( Buffer, 0 );
-#if _CPU == 370
-        if( !CompFlags.use_precompiled_header ) {
-            SrcFile->colum = Column;    /* do trunc and col on  */
-            SrcFile->trunc = Trunc;     /* on user source files */
-        }
-#endif
+        #if _CPU == 370
+            if( ! CompFlags.use_precompiled_header ) {
+                SrcFile->colum = Column;   /* do trunc and col on  */
+                SrcFile->trunc = Trunc;  /* on user source files */
+            }
+        #endif
     } else if( CurToken == T_LT ) {
-        if( !in_macro )                 /* 28-may-89 */
-            CompFlags.pre_processing = 2;
+        if( ! in_macro )  CompFlags.pre_processing = 2; /* 28-may-89 */
         buf[0] = '\0';
-        for( ;; ) {
+        for(;;) {
             PPNextToken();
             if( CurToken == T_GT ) {
                 OpenSrcFile( buf, '<' );
                 break;
             }
             strncat( buf, Buffer, 80 );
-            if( (in_macro != 0  &&  MacroPtr == NULL)
+            if( ( in_macro != 0  &&  MacroPtr == NULL)
                 ||      CurToken == T_NULL
                 ||      CurToken == T_EOF ) {
                 CErr1( ERR_INVALID_INCLUDE );
@@ -267,19 +311,17 @@ void CInclude( void )
     } else {
         CErr1( ERR_INVALID_INCLUDE );
     }
-    if( CurToken != T_EOF ) {
-        PPNextToken();
-    }
+    if( CurToken != T_EOF )  PPNextToken();
     CompFlags.use_precompiled_header = 0;
 }
 
 
-local void CDefine( void )
+local void CDefine()
 {
     struct macro_parm *mp, *prev_mp, *formal_parms;
     int         parm_cnt, parm_end = 0;
+    int         i, j;
     int         ppscan_mode;
-    char        *token_buf;
 
     PPNextToken();
     if( CurToken != T_ID ) {
@@ -290,10 +332,12 @@ local void CDefine( void )
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return;
     }
-    token_buf = CStrSave( Buffer );
+    i = 0;
+    while( (TokenBuf[i] = Buffer[i]) ) ++i;
+    ++i;
     formal_parms = NULL;
     parm_cnt = -1;              /* -1 ==> no () following */
-    if( CurrChar == '(' ) {     /* parms present */
+    if( CurrChar == '(' ) {         /* parms present */
         PPNextToken();          /* grab the '(' */
         PPNextToken();
         parm_cnt = 0;           /* 0 ==> () following */
@@ -311,10 +355,12 @@ local void CDefine( void )
                 return;
             }
             ++parm_cnt;
-            if( CurToken == T_DOT_DOT_DOT ) {
+            if( CurToken == T_DOT_DOT_DOT )
+            {
                 parm_end = 1; /* can have no more parms after this. */
             }
-            mp = (struct macro_parm *)CMemAlloc( sizeof( struct macro_parm ) );
+            mp = (struct macro_parm *)
+                            CMemAlloc( sizeof( struct macro_parm ) );
             if( formal_parms == NULL ) {
                 formal_parms = mp;
             } else {
@@ -328,6 +374,9 @@ local void CDefine( void )
             else
                 mp->parm = CStrSave( Buffer );
             prev_mp = mp;
+            j = 0;
+            while( (TokenBuf[i++] = Buffer[j++]) )
+                /* empty */;
             PPNextToken();
             if( CurToken == T_RIGHT_PAREN ) break;
             if( CurToken == T_NULL ) {
@@ -339,7 +388,8 @@ local void CDefine( void )
                 return;
             }
             MustRecog( T_COMMA );
-            if( CurToken != T_ID && CurToken != T_DOT_DOT_DOT ) {   /* 16-nov-94 */
+            if( CurToken != T_ID &&
+                CurToken != T_DOT_DOT_DOT ) {            /* 16-nov-94 */
                 ExpectIdentifier();
                 return;
             }
@@ -347,144 +397,141 @@ local void CDefine( void )
     }
     /* grab replacement tokens */
     ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    GrabTokens( parm_end ? -(parm_cnt + 1) : (parm_cnt + 1), formal_parms, token_buf );
+    GrabTokens( parm_end?-(parm_cnt + 1):(parm_cnt + 1), formal_parms, i );
     FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
-    for( ; mp = formal_parms; ) {
+    for(; (mp = formal_parms); ) {
         formal_parms = mp->next_macro_parm;
         CMemFree( mp->parm );
         CMemFree( mp );
     }
-    CMemFree( token_buf );
 }
 
 
-local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name )
-{
-    MEPTR       mentry;
-    int         i;
-    int         j;
-    TOKEN       prev_token;
-    int         prev_non_ws_token;
-    unsigned    mlen;
-    int         has_var_args = 0;
-    TOKEN       *p_token;
+local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, int defn_offset )
+    {
+        MEPTR   mentry;
+        int     i;
+        int     j;
+        int     prev_token;
+        int     prev_non_ws_token;
+        unsigned mlen;
+        int     has_var_args = 0;
 
-    j = strlen( mac_name ) + 1;
-    mentry = (MEPTR)CMemAlloc( sizeof( MEDEFN ) + j );
-    if( parm_cnt < 0 ) {
-        has_var_args = 1;
-        parm_cnt = -parm_cnt;
-    }
-    mentry->parm_count = parm_cnt;
-    strcpy( mentry->macro_name, mac_name );
-    mlen = offsetof( MEDEFN, macro_name ) + j;
-    mentry->macro_defn = mlen;
-    MacroOverflow( mlen, 0 );
-    MacroCopy( (const char *)mentry, MacroOffset, mlen );
-    prev_token = T_NULL;
-    prev_non_ws_token = T_NULL;
-    if( CurToken != T_NULL ) {
-        do {
-            CurToken = ScanToken();
-        } while( CurToken == T_WHITE_SPACE );
-        if( CurToken == T_SHARP_SHARP ) {
-            CErr1( ERR_MISPLACED_SHARP_SHARP );
-            PPNextToken();
+        i = defn_offset;
+        j = strlen( TokenBuf );
+        mentry = (MEPTR) CMemAlloc( sizeof(MEDEFN) + j );
+        if( parm_cnt < 0 )
+        {
+            has_var_args    = 1;
+            parm_cnt = -parm_cnt;
         }
-    }
-    for( ;; ) {
-        i = 0;
-        if( (CurToken == T_STRING) && CompFlags.wide_char_string ) {
-            CurToken = T_LSTRING;                   /* 15-may-92 */
-        }
-        p_token = (TOKEN *)&TokenBuf[i];
-        *p_token = CurToken;
-        i += sizeof( TOKEN );
-        if( CurToken == T_NULL ) break;
-        if( CurToken == T_EOF )  break;
-        switch( CurToken ) {
-        case T_SHARP:
-            /* if it is a function-like macro definition */
-            if( parm_cnt != 0 ) {
-                *p_token = T_MACRO_SHARP;
-                CurToken = T_MACRO_SHARP;           /* 26-mar-91 */
+        mentry->parm_count = parm_cnt;
+        strcpy( mentry->macro_name, TokenBuf );
+        mlen = offsetof(MEDEFN,macro_name) + i;
+        mentry->macro_defn = mlen;
+        MacroOverflow( mlen, 0 );
+        MacroCopy( (char *)mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
+        MacroCopy( TokenBuf, MacroOffset + offsetof(MEDEFN,macro_name), i );
+        prev_token = T_NULL;
+        prev_non_ws_token = T_NULL;
+        if( CurToken != T_NULL ) {
+            do {
+                CurToken = ScanToken();
+            } while( CurToken == T_WHITE_SPACE );
+            if( CurToken == T_SHARP_SHARP ) {
+                CErr1( ERR_MISPLACED_SHARP_SHARP );
+                PPNextToken();
             }
-            break;
-        case T_SHARP_SHARP:
-            *p_token = T_MACRO_SHARP_SHARP;
-            break;
-        case T_WHITE_SPACE:
-            if( prev_token == T_WHITE_SPACE )
-                --i;
-            break;
-        case T_ID:
-            j = FormalParm( formal_parms );
-            if( j != 0 ) {
-                if( has_var_args && (j == parm_cnt - 1) )
-                    CurToken = T_MACRO_VAR_PARM;
-                else
-                    CurToken = T_MACRO_PARM;
-                *p_token = CurToken;
-                TokenBuf[i] = j - 1;
-                ++i;
-            } else {
+        }
+        for(;;) {
+            i = 0;
+            if( CurToken == T_STRING  &&  CompFlags.wide_char_string ) {
+                CurToken = T_LSTRING;                   /* 15-may-92 */
+            }
+            TokenBuf[i++] = CurToken;
+            if( CurToken == T_NULL ) break;
+            if( CurToken == T_EOF )  break;
+            switch( CurToken ) {
+            case T_SHARP:
+                /* if it is a function-like macro definition */
+                if( parm_cnt != 0 ) {
+                    TokenBuf[i-1] = T_MACRO_SHARP;
+                    CurToken = T_MACRO_SHARP;           /* 26-mar-91 */
+                }
+                break;
+            case T_SHARP_SHARP:
+                TokenBuf[i-1] = T_MACRO_SHARP_SHARP;
+                break;
+            case T_WHITE_SPACE:
+                if( prev_token == T_WHITE_SPACE ) --i;
+                break;
+            case T_ID:
+                j = FormalParm( formal_parms );
+                if( j != 0 ) {
+                    if( has_var_args && ( j == parm_cnt-1 ) )
+                        CurToken = T_MACRO_VAR_PARM;
+                    else
+                        CurToken = T_MACRO_PARM;
+                    TokenBuf[i-1] = CurToken;
+                    TokenBuf[i] = j - 1;
+                    ++i;
+                } else {
+                    j = 0;
+                    while( (TokenBuf[i++] = Buffer[j++]) )
+                        /*empty*/ ;
+                }
+                break;
+            case T_BAD_CHAR:
+                TokenBuf[i++] = Buffer[0];
+                if( Buffer[1] != '\0' ) TokenBuf[i++] = T_WHITE_SPACE;
+                break;
+            case T_CONSTANT:
+            case T_STRING:
+            case T_LSTRING:
+            case T_BAD_TOKEN:
+            case T_PPNUMBER:
                 j = 0;
                 while( (TokenBuf[i++] = Buffer[j++]) )
-                    ;   /*empty*/
+                    /* empty */ ;
+                break;
+            default:
+                break;
             }
-            break;
-        case T_BAD_CHAR:
-            TokenBuf[i++] = Buffer[0];
-            if( Buffer[1] != '\0' )
-                TokenBuf[i++] = T_WHITE_SPACE;
-            break;
-        case T_CONSTANT:
-        case T_STRING:
-        case T_LSTRING:
-        case T_BAD_TOKEN:
-        case T_PPNUMBER:
-            j = 0;
-            while( (TokenBuf[i++] = Buffer[j++]) )
-                ;   /* empty */
-            break;
-        default:
-            break;
-        }
-        if( CurToken != T_WHITE_SPACE ) {
-            if( prev_non_ws_token == T_MACRO_SHARP &&       /* 26-mar-91 */
-                CurToken != T_MACRO_PARM &&
-                CurToken != T_MACRO_VAR_PARM ) {
-                CErr1( ERR_MUST_BE_MACRO_PARM );
-                prev_token = *(TOKEN *)TokenBuf;
-                *(TOKEN *)TokenBuf = T_SHARP;               /* 17-jul-92 */
-                MacroCopy( TokenBuf, MacroOffset + mlen - 1, 1 );
-                *(TOKEN *)TokenBuf = prev_token;
+            if( CurToken != T_WHITE_SPACE ) {
+                if( prev_non_ws_token == T_MACRO_SHARP &&       /* 26-mar-91 */
+                    CurToken != T_MACRO_PARM &&
+                    CurToken != T_MACRO_VAR_PARM ) {
+                    CErr1( ERR_MUST_BE_MACRO_PARM );
+                    prev_token = TokenBuf[0];
+                    TokenBuf[0] = T_SHARP;              /* 17-jul-92 */
+                    MacroCopy( TokenBuf, MacroOffset + mlen - 1, 1 );
+                    TokenBuf[0] = prev_token;
+                }
+                prev_non_ws_token = CurToken;
             }
-            prev_non_ws_token = CurToken;
+            prev_token = CurToken;
+            CurToken = ScanToken();
+            MacroOverflow( mlen + i, mlen );
+            MacroCopy( TokenBuf, MacroOffset + mlen, i );
+            mlen += i;
         }
-        prev_token = CurToken;
-        CurToken = ScanToken();
-        MacroOverflow( mlen + i, mlen );
-        MacroCopy( TokenBuf, MacroOffset + mlen, i );
-        mlen += i;
+        if( prev_non_ws_token == T_MACRO_SHARP ) {      /* 16-nov-94 */
+            CErr1( ERR_MUST_BE_MACRO_PARM );
+        }
+        if( prev_token == T_WHITE_SPACE ) {
+            --mlen;
+        }
+        MacroOverflow( mlen + 1, mlen );                /* 27-apr-94 */
+        *(char *)(MacroOffset + mlen) = T_NULL;
+        ++mlen;
+        if( prev_non_ws_token == T_SHARP_SHARP ) {
+            CErr1( ERR_MISPLACED_SHARP_SHARP );
+        }
+        mentry->macro_len = mlen;
+        MacLkAdd( mentry, mlen, MACRO_USER_DEFINED|(has_var_args?MACRO_VAR_ARGS:0) );   /* 15-apr-94 */
+        CMemFree( mentry );                     /* 22-aug-88, FWC */
+        MacroSize += mlen;
     }
-    if( prev_non_ws_token == T_MACRO_SHARP ) {      /* 16-nov-94 */
-        CErr1( ERR_MUST_BE_MACRO_PARM );
-    }
-    if( prev_token == T_WHITE_SPACE ) {
-        --mlen;
-    }
-    MacroOverflow( mlen + 1, mlen );                /* 27-apr-94 */
-    *(char *)(MacroOffset + mlen) = T_NULL;
-    ++mlen;
-    if( prev_non_ws_token == T_SHARP_SHARP ) {
-        CErr1( ERR_MISPLACED_SHARP_SHARP );
-    }
-    mentry->macro_len = mlen;
-    MacLkAdd( mentry, mlen, MACRO_USER_DEFINED | (has_var_args ? MACRO_VAR_ARGS : 0) );
-    CMemFree( mentry );                     /* 22-aug-88, FWC */
-    MacroSize += mlen;
-}
 
 
 local int FormalParm( struct macro_parm *formal_parms )
@@ -501,7 +548,7 @@ local int FormalParm( struct macro_parm *formal_parms )
 }
 
 
-local void CIfDef( void )
+local void CIfDef()
 {
     MEPTR       mentry;
 
@@ -523,7 +570,7 @@ local void CIfDef( void )
 }
 
 
-local void CIfNDef( void )
+local void CIfNDef()
 {
     MEPTR       mentry;
 
@@ -544,8 +591,7 @@ local void CIfNDef( void )
     ChkEOL();
 }
 
-
-local int GetConstExpr( void )                              /* 13-nov-91 */
+local int GetConstExpr()                                /* 13-nov-91 */
 {
     int         value;
     int         useful_side_effect;
@@ -566,7 +612,7 @@ local int GetConstExpr( void )                              /* 13-nov-91 */
     return( value );
 }
 
-local void CIf( void )
+local void CIf()
 {
     int value;
 
@@ -578,13 +624,13 @@ local void CIf( void )
 }
 
 
-local void CElif( void )
+local void CElif()
 {
     int value;
 
     CompFlags.pre_processing = 1;
     PPNextToken();
-    if( (NestLevel == 0) || (CppStack->cpp_type == PRE_ELSE) ) {
+    if( NestLevel == 0  ||  CppStack->cpp_type == PRE_ELSE ) {
         CErr1( ERR_MISPLACED_ELIF );
     } else {
         if( NestLevel == SkipLevel ) {
@@ -628,7 +674,7 @@ local void IncLevel( int value )
 }
 
 
-local void WantEOL( void )
+local void WantEOL()
 {
     if( CompFlags.extensions_enabled ) {
         if( CurToken != T_NULL  &&  CurToken != T_EOF ) {
@@ -643,9 +689,9 @@ local void WantEOL( void )
 }
 
 
-local void CElse( void )
+local void CElse()
 {
-    if( (NestLevel == 0) || (CppStack->cpp_type == PRE_ELSE) ) {
+    if( NestLevel == 0  ||      CppStack->cpp_type == PRE_ELSE ) {
         CErr1( ERR_MISPLACED_ELSE );
     } else {
         if( NestLevel == SkipLevel ) {
@@ -665,8 +711,9 @@ local void CElse( void )
 }
 
 
-local void CEndif( void )
+local void CEndif()
 {
+
     if( NestLevel == 0 ) {
         CErr1( ERR_MISPLACED_ENDIF );
     } else {
@@ -687,9 +734,8 @@ local void CEndif( void )
     WantEOL();
 }
 
-extern bool MacroDel( char *name )
-/********************************/
-{
+extern bool MacroDel( char *name ){
+/*********************************/
     MEPTR       mentry;
     MEPTR       prev_entry;
     int         len;
@@ -704,7 +750,7 @@ extern bool MacroDel( char *name )
     len = strlen( name ) + 1;
     mentry = MacHash[ MacHashValue ];
     while( mentry != NULL ) {
-        if( memcmp( mentry->macro_name, name, len ) == 0 ) break;
+        if( far_strcmp( mentry->macro_name, name, len ) == 0 ) break;
         prev_entry = mentry;
         mentry = mentry->next_macro;
     }
@@ -717,7 +763,7 @@ extern bool MacroDel( char *name )
             } else {
                 MacHash[ MacHashValue ] = mentry->next_macro;
             }
-            if( (InitialMacroFlag & MACRO_DEFINED_BEFORE_FIRST_INCLUDE) == 0 ) {
+            if(( InitialMacroFlag & MACRO_DEFINED_BEFORE_FIRST_INCLUDE ) == 0 ) {
                 /* remember macros that were defined before first include */
                 if( mentry->macro_flags & MACRO_DEFINED_BEFORE_FIRST_INCLUDE ) {
                     mentry->next_macro = UndefMacroList;
@@ -731,7 +777,7 @@ extern bool MacroDel( char *name )
 }
 
 
-local void CUndef( void )
+local void CUndef()
 {
 
     PPNextToken();
@@ -747,16 +793,16 @@ local void CUndef( void )
 
 local void ChkEOL( void )
 {
-    if( (CurToken != T_NULL) && (CurToken != T_EOF) ) { /* 15-dec-91 */
+    if( CurToken != T_NULL  &&  CurToken != T_EOF ) { /* 15-dec-91 */
         ExpectEndOfLine();
     }
 }
 
 
-local void CLine( void )
+local void CLine()
 {
-    FNAMEPTR        flist;
-    unsigned long   src_line;
+    FNAMEPTR    flist;
+    unsigned long src_line;
 
     CompFlags.pre_processing = 1;
     PPNextToken();
@@ -764,33 +810,29 @@ local void CLine( void )
         ExpectConstant();
         return;
     }
-    if( CompFlags.cpp_ignore_line == 0 ) {
-        src_line = Constant; // stash in case of side effects
-        SrcFile->src_line = src_line - 1; /* don't count this line */
-    }
+    src_line = Constant; // stash in case of side effects
+    SrcFile->src_line = src_line - 1; /* don't count this line */
     PPNextToken();
     if( CurToken != T_NULL ) {
-        if( (CurToken != T_STRING) || CompFlags.wide_char_string ) {
+        if( CurToken != T_STRING  ||  CompFlags.wide_char_string ) {
             /* wide char string not allowed, 26-mar-91 */
             ExpectString();
             return;
         }
-        if( CompFlags.cpp_ignore_line == 0 ) {
-            //          RemoveEscapes( Buffer );                /* 04-apr-91 */
-            flist = AddFlist( Buffer );
-            flist->rwflag = FALSE;  // not a real file so no autodep
-            SrcFile->src_name = flist->name;
-            SrcFile->src_fno  = flist->index;
-            TokenFno = flist->index;
-            SrcFile->src_flist = flist;             /* 21-dec-93 */
-            ErrFName = SrcFile->src_name;
-            if( CompFlags.cpp_output ) {            /* 30-may-95 */
-                EmitLine( src_line, SrcFile->src_name );
-            }
+//      RemoveEscapes( Buffer );                /* 04-apr-91 */
+        flist = AddFlist( Buffer );
+        flist->rwflag = FALSE;  // not a real file so no autodep
+        SrcFile->src_name = flist->name;
+        SrcFile->src_fno  = flist->index;
+        TokenFno = flist->index;
+        SrcFile->src_flist = flist;             /* 21-dec-93 */
+        ErrFName = SrcFile->src_name;
+        if( CompFlags.cpp_output ) {            /* 30-may-95 */
+            EmitLine( src_line, SrcFile->src_name );
         }
         PPNextToken();
         ChkEOL();
-    } else if( CompFlags.cpp_ignore_line == 0 ) {
+    } else {
         if( CompFlags.cpp_output ) {            /* 30-may-95 */
             EmitLine( src_line, SrcFile->src_name );
         }
@@ -798,7 +840,7 @@ local void CLine( void )
 }
 
 
-local void CError( void )
+local void CError()
 {
     int i;
     int save;
@@ -806,12 +848,12 @@ local void CError( void )
     i = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != EOF_CHAR ) {
         if( i != 0 || CurrChar != ' ' ) {
-            Buffer[i] = CurrChar;
+            Buffer[ i ] = CurrChar;
             ++i;
         }
         NextChar();
     }
-    Buffer[i] = '\0';
+    Buffer[ i ] = '\0';
     /* Force #error output to be reported, even with preprocessor */
     save = CompFlags.cpp_output;
     CompFlags.cpp_output = 0;
@@ -819,14 +861,12 @@ local void CError( void )
     CompFlags.cpp_output = save;
 }
 
-
 void CppStackInit( void )
 {
     NestLevel = 0;
     SkipLevel = 0;
     CppStack = NULL;
 }
-
 
 void CppStackFini( void )
 {
@@ -840,3 +880,4 @@ void CppStackFini( void )
     }
     CppStack = NULL;
 }
+

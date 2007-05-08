@@ -64,8 +64,8 @@ static char *_Ops[] = {
     "||",
     "&&",
     "*",
-    "pushbackhdl",
-    "callback",
+    "spare",
+    "spare",
     "++",
     "--",
     "convert",
@@ -77,7 +77,6 @@ static char *_Ops[] = {
     "pushseg",
     "dupe",
     "convert_ptr",
-    "convert_seg",
     "nop",
     ".",
     "->",
@@ -124,9 +123,6 @@ static char *_Ops[] = {
     "post ||",
     "side_effect",
     "&index",
-    "dbg{",
-    "dbg}",
-    "_abnormal_termination",
 };
 
 char    *CCOps[] = { "==", "!=", "<", "<=", ">", ">=" };

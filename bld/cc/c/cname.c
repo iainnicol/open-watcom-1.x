@@ -35,7 +35,7 @@
 // especially on RISC machines (particularly Alpha since it does not have
 // byte access instructions).
 
-static unsigned_32 DwordMasks[] = {
+static unsigned DwordMasks[] = {
 #ifdef __BIG_ENDIAN__
     0x00000000,
     0xFF000000,
@@ -56,14 +56,14 @@ static unsigned_32 DwordMasks[] = {
 
 int NameCmp( const void *p1, const void *p2, int len )
 {
-    const unsigned_32 *p = p1;
-    const unsigned_32 *q = p2;
+    const unsigned *p = p1;
+    const unsigned *q = p2;
 
-    while( len > sizeof(unsigned_32) ) {
+    while( len > sizeof(unsigned) ) {
         if( *p != *q )  return( -1 );   // indicate names not equal
         ++p;
         ++q;
-        len -= sizeof(unsigned_32);
+        len -= sizeof(unsigned);
     }
-    return( ((*p ^ *q) & DwordMasks[ len ]) != 0 );
+    return( (*p ^ *q) & DwordMasks[ len ] );
 }

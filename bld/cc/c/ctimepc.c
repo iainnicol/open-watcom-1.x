@@ -24,28 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  Set up current time information for __TIME__ and __DATE__.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
 
-static char     *Months[] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
+static char *Months[] = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+ };
 
 
-void TimeInit( void )
-{
-    struct tm   *tod;
-    time_t      time_of_day;
+void TimeInit()
+    {
+        register struct tm *tod;
+        auto time_t time_of_day;
 
-    time_of_day = time( &time_of_day );
-    tod = localtime( &time_of_day );
-    sprintf( __Time, "%.2d:%.2d:%.2d", tod->tm_hour, tod->tm_min,
-                            tod->tm_sec );
-    sprintf( __Date, "%3s %.2d %d", Months[ tod->tm_mon ],
-                            tod->tm_mday, tod->tm_year + 1900 );
-}
+        time_of_day = time( &time_of_day );
+        tod = localtime( &time_of_day );
+        sprintf( __Time, "%.2d:%.2d:%.2d", tod->tm_hour, tod->tm_min,
+                                        tod->tm_sec );
+        sprintf( __Date, "%3s %.2d %d", Months[ tod->tm_mon ],
+                                tod->tm_mday, tod->tm_year + 1900 );
+    }

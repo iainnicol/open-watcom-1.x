@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Miscellaneous C front end utilities.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -56,7 +57,7 @@ void MustRecog( TOKEN this_token )
     }
 }
 
-static char *NameOfToken( void )
+static char *NameOfToken()
 {
     char        *token;
 
@@ -94,27 +95,27 @@ void ExpectingAfter( char *a_token, char *after_token )
 }
 
 
-void ExpectEndOfLine( void )
+void ExpectEndOfLine()
 {
     CErr( ERR_EXPECTING_END_OF_LINE_BUT_FOUND, NameOfToken() );
 }
 
-void ExpectIdentifier( void )
+void ExpectIdentifier()
 {
     CErr( ERR_EXPECTING_IDENTIFIER_BUT_FOUND, NameOfToken() );
 }
 
-void ExpectConstant( void )
+void ExpectConstant()
 {
     CErr( ERR_EXPECTING_CONSTANT_BUT_FOUND, NameOfToken() );
 }
 
-void ExpectString( void )
+void ExpectString()
 {
     CErr( ERR_EXPECTING_STRING_BUT_FOUND, NameOfToken() );
 }
 
-void ExpectStructUnionTag( void )
+void ExpectStructUnionTag()
 {
     CErr( ERR_EXPECTING_STRUCT_UNION_TAG_BUT_FOUND, NameOfToken() );
 }
@@ -124,10 +125,7 @@ SYM_NAMEPTR SymName( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
 {
     SYM_HASHPTR hsym;
 
-    if( sym_handle == CharSymHandle )
-        return( "char" );    /* 08-may-89 */
-    if( sym->name != NULL )
-        return( sym->name );
+    if( sym_handle == CharSymHandle )  return( "char" );    /* 08-may-89 */
     hsym = HashTab[ sym->info.hash_value ];
     while( hsym->handle != sym_handle )  hsym = hsym->next_sym;
     return( hsym->name );

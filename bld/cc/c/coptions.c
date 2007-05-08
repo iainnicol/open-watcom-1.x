@@ -40,7 +40,6 @@
 #include <ctype.h>
 #include "pragdefn.h"
 #include "pdefn2.h"
-#include "cgdefs.h"
 #include "cgswitch.h"
 #include "iopath.h"
 #include <unistd.h>
@@ -48,9 +47,6 @@
 #ifdef __OSI__
  #include "ostype.h"
 #endif
-#define BY_CLI
-#include "feprotos.h"
-
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
@@ -209,7 +205,7 @@ local void SetTargName( char *name, unsigned len )
 
 #define _SetConstTarg( name ) SetTargName( name, sizeof( name ) - 1 )
 
-local void SetTargSystem( void )                            /* 07-aug-90 */
+local void SetTargSystem()                               /* 07-aug-90 */
 {
     char        buff[128];
 
@@ -231,20 +227,14 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
     PreDefine_Macro( "__POWERPC__" );
     PreDefine_Macro( "__PPC__" );
     PreDefine_Macro( "_PPC_" );
-#elif _CPU == _MIPS
-    PreDefine_Macro( "M_MRX000" );
-    PreDefine_Macro( "_M_MRX000" );
-    PreDefine_Macro( "__MIPS__" );
 #elif _CPU == 386
     PreDefine_Macro( "M_I386" );                    /* 03-jul-91 */
-    PreDefine_Macro( "_M_I386" );
     PreDefine_Macro( "__386__" );
     PreDefine_Macro( "__X86__" );
     PreDefine_Macro( "_X86_" );
     PreDefine_Macro( "_STDCALL_SUPPORTED" );
 #elif _CPU == 8086
     PreDefine_Macro( "M_I86" );
-    PreDefine_Macro( "_M_I86" );
     PreDefine_Macro( "__I86__" );
     PreDefine_Macro( "__X86__" );
     PreDefine_Macro( "_X86_" );
@@ -278,8 +268,6 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
                 _SetConstTarg( "qnx" );
             #elif defined( __LINUX__ )
                 _SetConstTarg( "linux" );
-            #elif defined( __OSX__ ) || defined( __APPLE__ )
-                _SetConstTarg( "osx" );
             #elif defined( __OS2__ )
                 _SetConstTarg( "os2" );
             #elif defined( __NT__ )
@@ -289,7 +277,7 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
             #else
                 #error "Target OS not defined"
             #endif
-        #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
+        #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC
             /* we only have NT libraries for Alpha right now */
             _SetConstTarg( "nt" );
         #else
@@ -423,11 +411,11 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
 
 #define SET_PEG( r ) if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = 1;
 
-static void SetGenSwitches( void )
+static void SetGenSwitches()
 {
 #if _CPU == 8086 || _CPU == 386
     #if _CPU == 386
-        if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU6;
+        if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU5;
         if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU3;
         if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MF;
         TargetSwitches |= USE_32;
@@ -525,7 +513,7 @@ static void SetGenSwitches( void )
     }
 }
 
-static void MacroDefs( void )
+static void MacroDefs()
 {
     if( TargetSwitches & I_MATH_INLINE ) {
         Define_Macro( "__SW_OM" );
@@ -593,14 +581,6 @@ static void MacroDefs( void )
     if( TargetSwitches & NEED_STACK_FRAME ) {
         Define_Macro( "__SW_OF" );
     }
-    if( TargetSwitches & GEN_FWAIT_386 ) {
-        Define_Macro( "__SW_ZFW" );
-    }
-#endif
-#if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
-    if( GenSwitches & OBJ_ENDIAN_BIG ) {
-        Define_Macro( "__BIG_ENDIAN__" );
-    }
 #endif
     if( GenSwitches & SUPER_OPTIMAL ) {
         Define_Macro( "__SW_OH" );
@@ -648,13 +628,13 @@ static void MacroDefs( void )
     if( CompFlags.unique_functions ) {
         Define_Macro( "__SW_OU" );
     }
-#if _CPU == 386
-    if( CompFlags.register_conventions ) {
-        Define_Macro( "__SW_3R" );
-    } else {
-        Define_Macro( "__SW_3S" );
-    }
-#endif
+    #if _CPU == 386
+        if( CompFlags.register_conventions ) {
+            Define_Macro( "__SW_3R" );
+        } else {
+            Define_Macro( "__SW_3S" );
+        }
+    #endif
     if( CompFlags.emit_names ) {
         Define_Macro( "__SW_EN" );
     }
@@ -815,7 +795,7 @@ static void AddIncList( char *str )
 
 #define INC_VAR "INCLUDE"
 
-void MergeInclude( void )
+void MergeInclude()
 {
     /* must be called after GenCOptions to get req'd HFileList */
     char        *env_var;
@@ -865,7 +845,7 @@ static int OptionDelimiter( char c )
     return( 0 );
 }
 
-static void EnsureEndOfSwitch( void )
+static void EnsureEndOfSwitch()
 {
     char        c;
 
@@ -880,67 +860,67 @@ static void EnsureEndOfSwitch( void )
 }
 
 #if _CPU == _AXP
-static void SetStructPack( void )   { CompFlags.align_structs_on_qwords = 1; }
+static void SetStructPack()    { CompFlags.align_structs_on_qwords = 1; }
 #endif
 
-static void SetPackAmount( void )   { PackAmount = OptValue; }
-static void Set_DbgFmt( void )      { SwData.dbg_fmt = OptValue; }
+static void SetPackAmount()    { PackAmount = OptValue; }
+static void Set_DbgFmt()       { SwData.dbg_fmt = OptValue; }
 
 #if _CPU == 8086 || _CPU == 386
-static void SetCPU( void )          { SwData.cpu = OptValue; }
+static void SetCPU()           { SwData.cpu = OptValue; }
 #endif
 #if _CPU == 386
-static void SetCPU_xR( void )   { SwData.cpu = OptValue; CompFlags.register_conventions = 1; }
-static void SetCPU_xS( void )   { SwData.cpu = OptValue; CompFlags.register_conventions = 0; }
+static void SetCPU_xR(){ SwData.cpu = OptValue; CompFlags.register_conventions = 1; }
+static void SetCPU_xS(){ SwData.cpu = OptValue; CompFlags.register_conventions = 0; }
 #endif
 #if _CPU == 8086 || _CPU == 386
-static void SetFPU( void )          { SwData.fpu = OptValue; }
-static void Set_FPR( void )         { Stack87 = 4; }
-static void Set_FPI87( void )       { SwData.fpt = SW_FPT_INLINE; }
-static void Set_Emu( void )         { SwData.fpt = SW_FPT_EMU; }
-static void Set_FPC( void )         { SwData.fpt = SW_FPT_CALLS; }
-static void Set_FPD( void )         { TargetSwitches |= P5_DIVIDE_CHECK; }
+static void SetFPU()           { SwData.fpu = OptValue; }
+static void Set_FPR()          { Stack87 = 4; }
+static void Set_FPI87()        { SwData.fpt = SW_FPT_INLINE; }
+static void Set_Emu()          { SwData.fpt = SW_FPT_EMU; }
+static void Set_FPC()          { SwData.fpt = SW_FPT_CALLS; }
+static void Set_FPD()          { TargetSwitches |= P5_DIVIDE_CHECK; }
 
-static void SetMemoryModel( void )  { SwData.mem = OptValue; }
+static void SetMemoryModel()   { SwData.mem = OptValue; }
 #endif
 
-static void Set_BD( void )          { CompFlags.bd_switch_used = 1; GenSwitches |= DLL_RESIDENT_CODE; }
-static void Set_BC( void )          { CompFlags.bc_switch_used = 1; }
-static void Set_BG( void )          { CompFlags.bg_switch_used = 1; }
-static void Set_BM( void )          { CompFlags.bm_switch_used = 1; }
+static void Set_BD()           { CompFlags.bd_switch_used = 1; GenSwitches |= DLL_RESIDENT_CODE; }
+static void Set_BC()           { CompFlags.bc_switch_used = 1; }
+static void Set_BG()           { CompFlags.bg_switch_used = 1; }
+static void Set_BM()           { CompFlags.bm_switch_used = 1; }
 
 #if _CPU != 8086
-static void Set_BR( void )          { CompFlags.br_switch_used = 1; }
+static void Set_BR()           { CompFlags.br_switch_used = 1; }
 #endif
 
-static void Set_BW( void )          { CompFlags.bw_switch_used = 1; }
-static void Set_BT( void )          { SetTargName( OptParm,  OptScanPtr - OptParm ); }
+static void Set_BW()           { CompFlags.bw_switch_used = 1; }
+static void Set_BT()           { SetTargName( OptParm,  OptScanPtr - OptParm ); }
 
-static void SetExtendedDefines( void )
+static void SetExtendedDefines()
 {
     CompFlags.extended_defines = 1;
     EnsureEndOfSwitch();
 }
-static void SetBrowserInfo( void )  { CompFlags.emit_browser_info = 1; }
+static void SetBrowserInfo()   { CompFlags.emit_browser_info = 1; }
 
 #if _CPU == _AXP
-static void Set_AS( void )
+static void Set_AS()
 {
     TargetSwitches |= ALIGNED_SHORT;
 }
 #endif
 
-static void Set_AA( void )          { CompFlags.auto_agg_inits = 1; }
-static void Set_AI( void )          { CompFlags.no_check_inits = 1; }
-static void Set_AQ( void )          { CompFlags.no_check_qualifiers = 1; }
-static void Set_D0( void )
+static void Set_AA()           { CompFlags.auto_agg_inits = 1; }
+static void Set_AI()           { CompFlags.no_check_inits = 1; }
+static void Set_AQ()           { CompFlags.no_check_qualifiers = 1; }
+static void Set_D0()
 {
     GenSwitches &= ~(NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION);
     CompFlags.debug_info_some = 0;
     CompFlags.no_debug_type_names = 0;
     EnsureEndOfSwitch();
 }
-static void Set_D1( void )
+static void Set_D1()
 {
     GenSwitches |= NUMBERS;
     if( *OptScanPtr == '+' ) {
@@ -950,7 +930,7 @@ static void Set_D1( void )
     }
     EnsureEndOfSwitch();
 }
-static void Set_D2( void )
+static void Set_D2()
 {
     GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION;
     CompFlags.inline_functions = 0;
@@ -960,92 +940,52 @@ static void Set_D2( void )
     }
     EnsureEndOfSwitch();
 }
-static void Set_D3( void )
+static void Set_D3()
 {
     CompFlags.dump_types_with_names = 1;
     Set_D2();
 }
-static void Set_D9( void )          { CompFlags.use_full_codegen_od = 1; }
-static void DefineMacro( void )     { OptScanPtr = Define_UserMacro( OptScanPtr ); }
+static void Set_D9()           { CompFlags.use_full_codegen_od = 1; }
+static void DefineMacro()      { OptScanPtr = Define_UserMacro( OptScanPtr ); }
 
-static void SetErrorLimit( void )   { ErrLimit = OptValue; }
+static void SetErrorLimit()    { ErrLimit = OptValue; }
 
 #if _CPU == 8086 || _CPU == 386
-static void SetDftCallConv( void )
-{
-    switch( OptValue ) {
-    case 1:
-        DftCallConv = &CdeclInfo;
-        break;
-    case 2:
-        DftCallConv = &StdcallInfo;
-        break;
-    case 3:
-        DftCallConv = &FastcallInfo;
-        break;
-    case 4:
-        DftCallConv = &OptlinkInfo;
-        break;
-    case 5:
-        DftCallConv = &PascalInfo;
-        break;
-    case 6:
-        DftCallConv = &SyscallInfo;
-        break;
-    case 7:
-        DftCallConv = &FortranInfo;
-        break;
-    case 8:
-    default:
-        DftCallConv = &WatcallInfo;
-        break;
-    }
-}
-static void Set_EC( void )          { CompFlags.ec_switch_used = 1; }
+static void Set_EC()           { CompFlags.ec_switch_used = 1; }
 #endif
 
-static void Set_EE( void )          { CompFlags.ee_switch_used = 1; }
-static void Set_EF( void )          { CompFlags.ef_switch_used = 1; }
-static void Set_EN( void )          { CompFlags.emit_names = 1; }
-static void Set_EI( void )          { CompFlags.make_enums_an_int = 1;
-                                      CompFlags.original_enum_setting = 1;}
-static void Set_EM( void )          { CompFlags.make_enums_an_int = 0;
-                                      CompFlags.original_enum_setting = 0;}
+static void Set_EE()           { CompFlags.ee_switch_used = 1; }
+static void Set_EF()           { CompFlags.ef_switch_used = 1; }
+static void Set_EN()           { CompFlags.emit_names = 1; }
+static void Set_EI()           { CompFlags.make_enums_an_int = 1;
+                                 CompFlags.original_enum_setting = 1;}
+static void Set_EM()           { CompFlags.make_enums_an_int = 0;
+                                 CompFlags.original_enum_setting = 0;}
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_ET( void )          { TargetSwitches |= P5_PROFILING; }
-static void Set_ETP( void )         { TargetSwitches |= NEW_P5_PROFILING; }
-static void Set_ESP( void )         { TargetSwitches |= STATEMENT_COUNTING; }
+static void Set_ET()           { TargetSwitches |= P5_PROFILING; }
+static void Set_ETP()          { TargetSwitches |= NEW_P5_PROFILING; }
+static void Set_ESP()          { TargetSwitches |= STATEMENT_COUNTING; }
 #endif
 
 #if _CPU == 386
-static void Set_EZ( void )          { TargetSwitches |= EZ_OMF; }
-static void Set_OMF( void )         { TargetSwitches &= ~(OBJ_ELF | OBJ_COFF); }
+static void Set_EZ()           { TargetSwitches |= EZ_OMF; }
+void Set_ELF()          { TargetSwitches |= ELF; }
+void Set_COFF()         { TargetSwitches |= COFF; }
 #endif
 
-#if /*_CPU == 386 || */_CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
-static void Set_ELF( void )         { GenSwitches &= ~OBJ_OWL;
-                                      GenSwitches |= OBJ_ELF; }
-static void Set_COFF( void )        { GenSwitches &= ~OBJ_OWL;
-                                      GenSwitches |= OBJ_COFF; }
-#endif
-#if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
-static void Set_EndianLittle( void ){ GenSwitches &= ~OBJ_ENDIAN_BIG; }
-static void Set_EndianBig( void )   { GenSwitches |= OBJ_ENDIAN_BIG; }
-#endif
-
-static void Set_EP( void )
+static void Set_EP()
 {
     CompFlags.ep_switch_used = 1;
     ProEpiDataSize = OptValue;
 }
 
-void SetNoCurrInc( void )           { CompFlags.curdir_inc = 0;}
+void SetNoCurrInc( void ) { CompFlags.curdir_inc = 0;}
 
 static void StripQuotes( char *fname )
 {
-    char    *s;
-    char    *d;
+    char *s;
+    char *d;
 
     if( *fname == '"' ) {
         // string will shrink so we can reduce in place
@@ -1063,7 +1003,7 @@ static void StripQuotes( char *fname )
     }
 }
 
-static char *CopyOfParm( void )
+static char *CopyOfParm()
 {
     char        *p;
     unsigned    len;
@@ -1075,16 +1015,15 @@ static char *CopyOfParm( void )
     return( p );
 }
 
-static char *GetAFileName( void )
+static char *GetAFileName()
 {
-    char    *fname;
-
+    char *fname;
     fname = CopyOfParm();
     StripQuotes( fname );
     return( fname );
 }
 
-static void Set_FH( void )
+static void Set_FH()
 {
     if( OptParm == OptScanPtr ) {
         PCH_FileName = DEFAULT_PCH_NAME;
@@ -1093,47 +1032,42 @@ static void Set_FH( void )
     }
 }
 
-static void Set_FHQ( void )
+static void Set_FHQ()
 {
     CompFlags.no_pch_warnings = 1;
     Set_FH();
 }
 
-static void Set_FI( void )
+static void Set_FI()
 {
     ForceInclude = GetAFileName();
 }
 
-static void Set_FLD( void )
+static void Set_FLD()
 {
     CompFlags.use_long_double = 1;
 }
 
-static void SetTrackInc( void )
-{
-    CompFlags.track_includes = 1;
-}
-
-static void Set_FO( void )
+static void Set_FO()
 {
     CMemFree( ObjectFileName );
     ObjectFileName = GetAFileName();
     CompFlags.cpp_output_to_file = 1;   /* in case '-p' option */
 }
 
-static void Set_FR( void )
+static void Set_FR()
 {
     CMemFree( ErrorFileName );
     ErrorFileName = GetAFileName();
-    if( *ErrorFileName == '\0' ) {
+    if( *ErrorFileName == '\0' ){
         CMemFree( ErrorFileName );
         ErrorFileName = NULL;
     }
 }
 
 #if _CPU == 8086 || _CPU == 386
-static void SetCodeClass( void )    { CodeClassName = CopyOfParm(); }
-static void SetDataSegName( void )
+static void SetCodeClass()     { CodeClassName = CopyOfParm(); }
+static void SetDataSegName()
 {
     SwData.nd_used = 1;
     DataSegName = CopyOfParm();
@@ -1143,168 +1077,166 @@ static void SetDataSegName( void )
         DataSegName = NULL;
     }
 }
-static void SetTextSegName( void )  { TextSegName = CopyOfParm(); }
-static void SetGroup( void )        { GenCodeGroup = CopyOfParm(); }
+static void SetTextSegName()   { TextSegName = CopyOfParm(); }
+static void SetGroup()         { GenCodeGroup = CopyOfParm(); }
 #endif
-static void SetModuleName( void )   { ModuleName = CopyOfParm(); }
+static void SetModuleName()    { ModuleName = CopyOfParm(); }
 
-static void SetAPILogging( void )   { GenSwitches |= ECHO_API_CALLS; }
+static void SetAPILogging()    { GenSwitches |= ECHO_API_CALLS; }
 
 #ifndef NDEBUG
 #ifdef ASM_OUTPUT
-static void SetAsmListing( void )   { TargetSwitches |= ASM_OUTPUT; }
+static void SetAsmListing()    { TargetSwitches |= ASM_OUTPUT; }
 #endif
 #ifdef OWL_LOGGING
-static void SetOwlLogging( void )   { TargetSwitches |= OWL_LOGGING; }
+static void SetOwlLogging()    { TargetSwitches |= OWL_LOGGING; }
 #endif
 #endif
 
-static void SetInclude( void )
+static void SetInclude()
 {
-    char    *fname;
+    char *fname;
 
     fname = GetAFileName();
     AddIncList( fname );
     CMemFree( fname );
 }
 
-static void SetReadOnlyDir( void )
-{
-    char    *dirpath;
+static void SetReadOnlyDir(){
+    char *dirpath;
 
     dirpath = GetAFileName();
     SrcFileReadOnlyDir( dirpath );
     CMemFree( dirpath );
 }
 
-static void SetCharType( void )
+static void SetCharType()
 {
     SetSignedChar();
     CompFlags.signed_char = 1;
 }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_RE( void )          { CompFlags.rent = 1; }
-static void Set_RI( void )          { CompFlags.returns_promoted = 1; }
-static void Set_R( void )           { CompFlags.save_restore_segregs = 1; }
-static void Set_SG( void )          { CompFlags.sg_switch_used = 1; }
-static void Set_ST( void )          { CompFlags.st_switch_used = 1; }
+static void Set_RE()           { CompFlags.rent = 1; }
+static void Set_RI()           { CompFlags.returns_promoted = 1; }
+static void Set_R()            { CompFlags.save_restore_segregs = 1; }
+static void Set_SG()           { CompFlags.sg_switch_used = 1; }
+static void Set_ST()           { CompFlags.st_switch_used = 1; }
 #endif
-#if _CPU == _AXP || _CPU == _MIPS
-static void Set_SI( void )          { TargetSwitches |= STACK_INIT; }
+#if _CPU == _AXP
+static void Set_SI()           { TargetSwitches |= STACK_INIT; }
 #endif
-static void Set_S( void )           { Toggles &= ~TOGGLE_CHECK_STACK; }
+static void Set_S()            { Toggles &= ~TOGGLE_CHECK_STACK; }
 
-static void Set_TP( void )
+static void Set_TP()
 {
-    char    *togname;
-
+    char *togname;
     togname = CopyOfParm();
     SetToggleFlag( togname, TRUE );
     CMemFree( togname );
 }
 
-static void SetDataThreshHold( void ){ DataThreshold = OptValue; }
+static void SetDataThreshHold(){ DataThreshold = OptValue; }
 
-static void Set_U( void )
+static void Set_U()
 {
-    char    *name;
-
+    char *name;
     name = CopyOfParm();
     AddUndefName( name );
     CMemFree( name );
 }
-static void Set_V( void )           { CompFlags.generate_prototypes = 1; }
+static void Set_V()            { CompFlags.generate_prototypes = 1; }
 
-static void Set_WE( void )          { CompFlags.warnings_cause_bad_exit = 1; }
-static void Set_WO( void )          { CompFlags.using_overlays = 1; }
-static void Set_WX( void )          { WngLevel = 4; }
-static void SetWarningLevel( void ) { WngLevel = OptValue; }
-static void Set_WCD( void )         { EnableDisableMessage( 0, OptValue ); }
-static void Set_WCE( void )         { EnableDisableMessage( 1, OptValue ); }
+static void Set_WE()           { CompFlags.warnings_cause_bad_exit = 1; }
+static void Set_WO()           { CompFlags.using_overlays = 1; }
+static void Set_WX()           { WngLevel = 4; }
+static void SetWarningLevel()  { WngLevel = OptValue; }
+static void Set_WCD()          { EnableDisableMessage( 0, OptValue ); }
+static void Set_WCE()          { EnableDisableMessage( 1, OptValue ); }
 
 #if _CPU == 386
-static void Set_XGV( void )         { TargetSwitches |= INDEXED_GLOBALS; }
+static void Set_XGV()          { GenSwitches |= INDEXED_GLOBALS; }
 #endif
 
-static void Set_XBSA( void )
+static void Set_XBSA()
 {
     CompFlags.unaligned_segs = 1;
 }
 
 #if _CPU == _AXP
-static void Set_XD( void )          { TargetSwitches |= EXCEPT_FILTER_USED; }
+static void Set_XD()           { TargetSwitches |= EXCEPT_FILTER_USED; }
 #endif
 
-static void Set_ZA99( void )
+static void Set_ZA99()
 {
+    PreDefine_Macro( "__STDC_VERSION__=199901L" );
     CompFlags.c99_extensions = 1;
 }
 
-static void Set_ZA( void )
+static void Set_ZA()
 {
     CompFlags.extensions_enabled = 0;
     CompFlags.unique_functions = 1;
     TargetSwitches &= ~I_MATH_INLINE;
 }
 
-static void SetStrictANSI( void )
+static void SetStrictANSI()
 {
     CompFlags.strict_ANSI = 1;
     Set_ZA();
 }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_ZC( void )
+static void Set_ZC()
 {
     CompFlags.strings_in_code_segment = 1;
     CompFlags.zc_switch_used = 1;       /* 04-jun-91 */
     TargetSwitches |= CONST_IN_CODE;
 }
-static void Set_ZDF( void )         { SwData.peg_ds_used = 1; SwData.peg_ds_on = 0; }
-static void Set_ZDP( void )         { SwData.peg_ds_used = 1; SwData.peg_ds_on = 1; }
-static void Set_ZDL( void )         { TargetSwitches |= LOAD_DS_DIRECTLY; }
-static void Set_ZFF( void )         { SwData.peg_fs_used = 1; SwData.peg_fs_on = 0; }
-static void Set_ZFP( void )         { SwData.peg_fs_used = 1; SwData.peg_fs_on = 1; }
-static void Set_ZGF( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on = 0; }
-static void Set_ZGP( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on = 1; }
+static void Set_ZDF()          { SwData.peg_ds_used = 1; SwData.peg_ds_on = 0; }
+static void Set_ZDP()          { SwData.peg_ds_used = 1; SwData.peg_ds_on = 1; }
+static void Set_ZDL()          { TargetSwitches |= LOAD_DS_DIRECTLY; }
+static void Set_ZFF()          { SwData.peg_fs_used = 1; SwData.peg_fs_on = 0; }
+static void Set_ZFP()          { SwData.peg_fs_used = 1; SwData.peg_fs_on = 1; }
+static void Set_ZGF()          { SwData.peg_gs_used = 1; SwData.peg_gs_on = 0; }
+static void Set_ZGP()          { SwData.peg_gs_used = 1; SwData.peg_gs_on = 1; }
 #endif
-static void Set_ZE( void )          { CompFlags.extensions_enabled = 1; }
-static void Set_ZG( void )
+static void Set_ZE()           { CompFlags.extensions_enabled = 1; }
+static void Set_ZG()
 {
     CompFlags.generate_prototypes = 1;
     CompFlags.dump_prototypes     = 1;
 }
 
-static void Set_ZI( void )          { CompFlags.extra_stats_wanted = 1; }
+static void Set_ZI()           { CompFlags.extra_stats_wanted = 1; }
 
-static void Set_ZK( void )          { character_encoding = ENC_ZK; }
-static void Set_ZK0( void )         { character_encoding = ENC_ZK0; }
-static void Set_ZK1( void )         { character_encoding = ENC_ZK1; }
-static void Set_ZK2( void )         { character_encoding = ENC_ZK2; }
-static void Set_ZK3( void )         { character_encoding = ENC_ZK3; }
-static void Set_ZKL( void )         { character_encoding = ENC_ZKL; }
-static void Set_ZKU( void )
+static void Set_ZK()           { character_encoding = ENC_ZK; }
+static void Set_ZK0()          { character_encoding = ENC_ZK0; }
+static void Set_ZK1()          { character_encoding = ENC_ZK1; }
+static void Set_ZK2()          { character_encoding = ENC_ZK2; }
+static void Set_ZK3()          { character_encoding = ENC_ZK3; }
+static void Set_ZKL()          { character_encoding = ENC_ZKL; }
+static void Set_ZKU()
 {
     character_encoding = ENC_ZKU;
     unicode_CP = OptValue;
 }
-static void Set_ZK0U( void )        { character_encoding = ENC_ZK0U; }
+static void Set_ZK0U()         { character_encoding = ENC_ZK0U; }
 
-static void Set_ZL( void )          { CompFlags.emit_library_with_main = 0; }
-static void Set_ZLF( void )         { CompFlags.emit_library_any  = 1; }
-static void Set_ZLD( void )         { CompFlags.emit_dependencies = 0; }
-static void Set_ZLS( void )         { CompFlags.emit_targimp_symbols = 0; }
-static void Set_ZEV( void )         { CompFlags.unix_ext = 1; }
-static void Set_ZM( void )
+static void Set_ZL()           { CompFlags.emit_library_with_main = 0; }
+static void Set_ZLF()          { CompFlags.emit_library_any  = 1; }
+static void Set_ZLD()          { CompFlags.emit_dependencies = 0; }
+static void Set_ZLS()          { CompFlags.emit_targimp_symbols = 0; }
+static void Set_ZEV()          { CompFlags.unix_ext = 1; }
+static void Set_ZM()
 {
     CompFlags.multiple_code_segments = 1;
     CompFlags.zm_switch_used = 1;
 }
-static void Set_ZPW( void )         { CompFlags.slack_byte_warning = 1; }
+static void Set_ZPW()          { CompFlags.slack_byte_warning = 1; }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_ZRO( void )
+static void Set_ZRO()
 {
     GenSwitches |= FPU_ROUNDING_OMIT;
     GenSwitches &= ~FPU_ROUNDING_INLINE;
@@ -1312,39 +1244,34 @@ static void Set_ZRO( void )
 #endif
 
 #if _CPU == 386
-static void Set_ZRI( void )
+static void Set_ZRI()
 {
     GenSwitches |= FPU_ROUNDING_INLINE;
     GenSwitches &= ~FPU_ROUNDING_OMIT;
 }
 #endif
 
-static void Set_ZQ( void )          { CompFlags.quiet_mode = 1; }
-static void Set_ZS( void )          { CompFlags.check_syntax = 1; }
+static void Set_ZQ()           { CompFlags.quiet_mode = 1; }
+static void Set_ZS()           { CompFlags.check_syntax = 1; }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_EQ( void )          { CompFlags.no_conmsg  = 1; }
+static void Set_EQ()           { CompFlags.no_conmsg  = 1; }
 
-static void Set_ZFW( void )
-{
-    TargetSwitches |= GEN_FWAIT_386;
-}
-
-static void Set_ZU( void )
+static void Set_ZU()
 {
     CompFlags.zu_switch_used = 1;
     TargetSwitches |= FLOATING_SS;
 }
 
 #if _CPU == 386
-static void Set_ZZ( void )
+static void Set_ZZ()
 {
     CompFlags.use_stdcall_at_number = 0;
 }
 #endif
 
 #if _CPU == 8086
-static void ChkSmartWindows( void )
+static void ChkSmartWindows()
 {
     if( tolower(*OptScanPtr) == 's' ) {        /* 22-mar-94 */
         TargetSwitches |= SMART_WINDOWS;
@@ -1353,14 +1280,14 @@ static void ChkSmartWindows( void )
     EnsureEndOfSwitch();
 }
 
-static void SetCheapWindows( void )
+static void SetCheapWindows()
 {
     _SetConstTarg( "cheap_windows" );
     ChkSmartWindows();
 }
 #endif
 
-static void SetWindows( void )
+static void SetWindows()
 {
     _SetConstTarg( "windows" );
 #if _CPU == 8086
@@ -1369,7 +1296,7 @@ static void SetWindows( void )
 }
 #endif
 
-static void SetGenerateMakeAutoDepend( void )
+static void SetGenerateMakeAutoDepend()
 {
     CompFlags.generate_auto_depend = 1;
     CMemFree( DependFileName );
@@ -1381,7 +1308,7 @@ static void SetGenerateMakeAutoDepend( void )
     }
 }
 
-static void SetAutoDependTarget( void )
+static void SetAutoDependTarget()
 {
    // auto set depend yes...
     CompFlags.generate_auto_depend = 1;
@@ -1389,77 +1316,76 @@ static void SetAutoDependTarget( void )
     DependTarget = GetAFileName();
 }
 
-static void SetAutoDependSrcDepend( void )
+static void SetAutoDependSrcDepend()
 {
     CompFlags.generate_auto_depend = 1;
     CMemFree( SrcDepName );
     SrcDepName = GetAFileName();
 }
 
-static void SetAutoDependHeaderPath( void )
+static void SetAutoDependHeaderPath()
 {
     CompFlags.generate_auto_depend = 1;
     CMemFree( DependHeaderPath );
     DependHeaderPath = GetAFileName();
 }
 
-static void SetAutoDependForeSlash( void )
+static void SetAutoDependForeSlash()
 {
     DependForceSlash = '/';
 }
 
-static void SetAutoDependBackSlash( void )
+static void SetAutoDependBackSlash()
 {
     DependForceSlash = '\\';
 }
 
-static void Set_PIL( void )         { CompFlags.cpp_ignore_line = 1; }
-static void Set_PL( void )          { CompFlags.cpp_line_wanted = 1; }
-static void Set_PC( void )
+static void Set_PL()           { CompFlags.cpp_line_wanted = 1; }
+static void Set_PC()
 {
     CompFlags.keep_comments = 1;
     CompFlags.comments_wanted = 1;
 }
-static void Set_PW( void )
+static void Set_PW()
 {
     if( OptValue != 0 && OptValue < 20 ) OptValue = 20;
     if( OptValue > 10000 ) OptValue = 10000;
     SetCppWidth( OptValue );
 }
-static void Set_PreProcChar( void ) { PreProcChar = *OptScanPtr++; }
+static void Set_PreProcChar()  { PreProcChar = *OptScanPtr++; }
 
-static void Set_OA( void )          { GenSwitches |= RELAX_ALIAS; }
-static void Set_OB( void )          { GenSwitches |= BRANCH_PREDICTION; }
-static void Set_OD( void )          { GenSwitches |= NO_OPTIMIZATION; }
-static void Set_OE( void )
+static void Set_OA()           { GenSwitches |= RELAX_ALIAS; }
+static void Set_OB()           { GenSwitches |= BRANCH_PREDICTION; }
+static void Set_OD()           { GenSwitches |= NO_OPTIMIZATION; }
+static void Set_OE()
 {
     Inline_Threshold = OptValue;
     Toggles |= TOGGLE_INLINE;
 }
 #if _CPU == 8086 || _CPU == 386
-static void Set_OC( void )          { TargetSwitches |= NO_CALL_RET_TRANSFORM; }
-static void Set_OF( void )
+static void Set_OC()           { TargetSwitches |= NO_CALL_RET_TRANSFORM; }
+static void Set_OF()
 {
     TargetSwitches |= NEED_STACK_FRAME;
     if( OptValue != 0 ) {
-        WatcallInfo.cclass |= GENERATE_STACK_FRAME;
+        DefaultInfo.class |= GENERATE_STACK_FRAME;
     }
 }
-static void Set_OM( void )          { TargetSwitches |= I_MATH_INLINE; }
-static void Set_OP( void )          { CompFlags.op_switch_used = 1; } // force floats to memory
+static void Set_OM()           { TargetSwitches |= I_MATH_INLINE; }
+static void Set_OP()           { CompFlags.op_switch_used = 1; } // force floats to memory
 #endif
-static void Set_OH( void )          { GenSwitches |= SUPER_OPTIMAL; }
-static void Set_OK( void )          { GenSwitches |= FLOW_REG_SAVES; }
-static void Set_OI( void )          { CompFlags.inline_functions = 1; }
-static void Set_OL( void )          { GenSwitches |= LOOP_OPTIMIZATION; }
-static void Set_OL_plus( void )     { GenSwitches |= LOOP_OPTIMIZATION | LOOP_UNROLLING; }
-static void Set_ON( void )          { GenSwitches |= FP_UNSTABLE_OPTIMIZATION; }
-static void Set_OO( void )          { GenSwitches &= ~MEMORY_LOW_FAILS; }
-static void Set_OR( void )          { GenSwitches |= INS_SCHEDULING; }
-static void Set_OS( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize = 100; }
-static void Set_OT( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize = 0; }
-static void Set_OU( void )          { CompFlags.unique_functions = 1; }
-static void Set_OX( void )
+static void Set_OH()           { GenSwitches |= SUPER_OPTIMAL; }
+static void Set_OK()           { GenSwitches |= FLOW_REG_SAVES; }
+static void Set_OI()           { CompFlags.inline_functions = 1; }
+static void Set_OL()           { GenSwitches |= LOOP_OPTIMIZATION; }
+static void Set_OL_plus()      { GenSwitches |= LOOP_OPTIMIZATION | LOOP_UNROLLING; }
+static void Set_ON()           { GenSwitches |= FP_UNSTABLE_OPTIMIZATION; }
+static void Set_OO()           { GenSwitches &= ~MEMORY_LOW_FAILS; }
+static void Set_OR()           { GenSwitches |= INS_SCHEDULING; }
+static void Set_OS()           { GenSwitches &= ~NO_OPTIMIZATION; OptSize = 100; }
+static void Set_OT()           { GenSwitches &= ~NO_OPTIMIZATION; OptSize = 0; }
+static void Set_OU()           { CompFlags.unique_functions = 1; }
+static void Set_OX()
 {
     Toggles &= ~TOGGLE_CHECK_STACK;
     GenSwitches &= ~NO_OPTIMIZATION;
@@ -1471,7 +1397,7 @@ static void Set_OX( void )
     TargetSwitches |= I_MATH_INLINE;
 #endif
 }
-static void Set_OZ( void )          { GenSwitches |= NULL_DEREF_OK; }
+static void Set_OZ()           { GenSwitches |= NULL_DEREF_OK; }
 
 // '=' indicates optional '='
 // '#' indicates a decimal numeric value
@@ -1518,13 +1444,12 @@ static struct option const Preprocess_Options[] = {
     { 0,        0,              0 },
 };
 
-static void SetOptimization( void );
-static void SetPreprocessOptions( void );
+static void SetOptimization();
+static void SetPreprocessOptions();
 static struct option const CFE_Options[] = {
     { "o*",     0,              SetOptimization },
     { "i=@",    0,              SetInclude },
     { "zq",     0,              Set_ZQ },
-    { "q",      0,              Set_ZQ },
 #if _CPU == 8086
     { "0",      SW_CPU0,        SetCPU },
     { "1",      SW_CPU1,        SetCPU },
@@ -1577,31 +1502,16 @@ static struct option const CFE_Options[] = {
     { "ei",     0,              Set_EI },
     { "em",     0,              Set_EM },
 #if _CPU == 8086 || _CPU == 386
-    { "ecc",    1,              SetDftCallConv },
-    { "ecd",    2,              SetDftCallConv },
-    { "ecf",    3,              SetDftCallConv },
-    { "eco",    4,              SetDftCallConv },
-    { "ecp",    5,              SetDftCallConv },
-    { "ecs",    6,              SetDftCallConv },
-    { "ecr",    7,              SetDftCallConv },
-    { "ecw",    8,              SetDftCallConv },
     { "ec",     0,              Set_EC },
     { "et",     0,              Set_ET },
     { "eq",     0,              Set_EQ },
     { "etp",    0,              Set_ETP },
     { "esp",    0,              Set_ESP },
 #endif
-#if /*_CPU == 386 ||*/ _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
-    { "eoe",    0,              Set_ELF },
-    { "eoc",    0,              Set_COFF },
-#endif
-#if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
-    { "el",     0,              Set_EndianLittle },
-    { "eb",     0,              Set_EndianBig },
-#endif
 #if _CPU == 386
-    { "eoo",    0,              Set_OMF },
     { "ez",     0,              Set_EZ },
+    { "eelf",   0,		Set_ELF },
+    { "ecoff",  0,		Set_COFF },
 #endif
     { "e=#",    0,              SetErrorLimit },
 #if _CPU == 8086 || _CPU == 386
@@ -1641,7 +1551,6 @@ static struct option const CFE_Options[] = {
     { "nt=$",   0,              SetTextSegName },
 #endif
     { "nm=$",   0,              SetModuleName },
-    { "pil",    0,              Set_PIL },
     { "p*",     0,              SetPreprocessOptions },
     { "rod=@",  0,              SetReadOnlyDir },
 #if _CPU == 8086 || _CPU == 386
@@ -1651,7 +1560,7 @@ static struct option const CFE_Options[] = {
     { "sg",     0,              Set_SG },
     { "st",     0,              Set_ST },
 #endif
-#if _CPU == _AXP || _CPU == _MIPS
+#if _CPU == _AXP
     { "si",     0,              Set_SI },
 #endif
     { "s",      0,              Set_S },
@@ -1670,7 +1579,6 @@ static struct option const CFE_Options[] = {
     { "fld",    0,              Set_FLD },
     { "fo=@",   0,              Set_FO },
     { "fr=@",   0,              Set_FR },
-    { "fti",    0,              SetTrackInc },
 #if _CPU == 8086 || _CPU == 386
     { "fp2",    SW_FPU0,        SetFPU },
     { "fp3",    SW_FPU3,        SetFPU },
@@ -1713,9 +1621,6 @@ static struct option const CFE_Options[] = {
     { "zgp",    0,              Set_ZGP },
 #endif
     { "ze",     0,              Set_ZE },
-#if _CPU == 8086 || _CPU == 386
-    { "zfw",    0,              Set_ZFW },
-#endif
     { "zg",     0,              Set_ZG },
     { "zi",     0,              Set_ZI },
     { "zk0u",   0,              Set_ZK0U },
@@ -1865,12 +1770,12 @@ static void ProcessSubOption( struct option const *op_table )
     }
 }
 
-static void SetOptimization( void )
+static void SetOptimization()
 {
     ProcessSubOption( Optimization_Options );
 }
 
-static void SetPreprocessOptions( void )
+static void SetPreprocessOptions()
 {
     CompFlags.cpp_output_requested = 1;
     if( !OptionDelimiter( *OptScanPtr ) ) {
@@ -1901,7 +1806,7 @@ static char *CollectEnvOrFileName( char *str )
     return( str );
 }
 
-static char *ReadIndirectFile( void )
+static char *ReadIndirectFile()
 {
     char        *env;
     char        *str;
@@ -2017,24 +1922,19 @@ local void ProcOptions( char *str )
     }
 }
 
-static void InitCPUModInfo( void )
+static void InitCPUModInfo()
 {
     CodeClassName = NULL;
     PCH_FileName  = NULL;
     TargetSwitches = 0;
     TargSys = TS_OTHER;
-#if _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
+#if _CPU == _AXP | _CPU == _PPC | _CPU == _SPARC
     TextSegName   = ".text";
     DataSegName   = ".data";
     GenCodeGroup  = "";
     DataPtrSize   = TARGET_POINTER;
     CodePtrSize   = TARGET_POINTER;
     GenSwitches   = MEMORY_LOW_FAILS;
-  #if _CPU == _AXP
-    GenSwitches  |= OBJ_COFF;
-  #else
-    GenSwitches  |= OBJ_ELF;
-  #endif
 #elif _CPU == 386 || _CPU == 8086
     Stack87 = 8;
     TextSegName   = "";
@@ -2048,7 +1948,7 @@ static void InitCPUModInfo( void )
 #endif
 }
 
-local void Define_Memory_Model( void )
+local void Define_Memory_Model()
 {
 #if _CPU == 8086 || _CPU == 386
     char        model;
@@ -2071,7 +1971,7 @@ local void Define_Memory_Model( void )
         break;
     case BIG_CODE:                      /* -mm */
         model = 'm';
-        WatcallInfo.cclass |= FAR;
+        DefaultInfo.class |= FAR;
         CodePtrSize = TARGET_FAR_POINTER;
         Define_Macro( "M_I86MM" );
         Define_Macro( "__MEDIUM__" );
@@ -2085,7 +1985,7 @@ local void Define_Memory_Model( void )
         DataPtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         break;
     case BIG_CODE | BIG_DATA:
-        WatcallInfo.cclass |= FAR;
+        DefaultInfo.class |= FAR;
         CodePtrSize = TARGET_FAR_POINTER;                       /* 04-may-90 */
         if( TargetSwitches & CHEAP_POINTER ) {
             model = 'l';
@@ -2113,12 +2013,18 @@ local void Define_Memory_Model( void )
                 strcpy( CLIB_Name, "1clibdl?" );
             }
         }
+        #ifdef __PCODE__
+            PcodeLib_Name = "2p16fpi";                      /* 19-may-91 */
+        #endif
         if( GET_FPU_EMU( ProcRevision ) ) {         /* 07-jan-90 */
             strcpy( MATHLIB_Name, "8math87?" );
             EmuLib_Name = "9emu87";                     /* 02-apr-90 */
         } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
             strcpy( MATHLIB_Name, "5math?" );
             EmuLib_Name = NULL;
+            #ifdef __PCODE__
+                PcodeLib_Name = "2p16fpc";                  /* 19-may-91 */
+            #endif
         } else {
             strcpy( MATHLIB_Name, "8math87?" );
             EmuLib_Name = "9noemu87";                   /* 02-apr-90 */
@@ -2153,7 +2059,7 @@ local void Define_Memory_Model( void )
             }
             EmuLib_Name = "9noemu387";
         }
-    #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
+    #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC
         if( CompFlags.br_switch_used ) {                /* 15-may-95 */
             strcpy( CLIB_Name, "1clbdll" );
             strcpy( MATHLIB_Name, "8mthdll" );
@@ -2170,20 +2076,32 @@ local void Define_Memory_Model( void )
     #endif
 }
 
+#if _CPU == 386
+
+static hw_reg_set MetaWareParms[] = {
+        {0}, {0}
+};
+
+local void SetStackConventions( void )
+{
+    DefaultInfo.class &= (GENERATE_STACK_FRAME | FAR); /* 19-nov-93 */
+    DefaultInfo.class |= CALLER_POPS | NO_8087_RETURNS;
+    DefaultInfo.parms = (hw_reg_set *)CMemAlloc( sizeof(MetaWareParms) );
+    memcpy( DefaultInfo.parms, MetaWareParms, sizeof( MetaWareParms ) );
+    HW_CTurnOff( DefaultInfo.save, HW_EAX );
+    HW_CTurnOff( DefaultInfo.save, HW_EDX );
+    HW_CTurnOff( DefaultInfo.save, HW_ECX );
+    HW_CTurnOff( DefaultInfo.save, HW_FLTS );
+    DefaultInfo.objname = CStrSave( "*" );   /* DefaultObjName; */
+}
+#endif
+
 void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
     EnableDisableMessage( 0, ERR_PARM_NOT_REFERENCED );
     /* 29-oct-03 Add precision warning but disabled by default */
     EnableDisableMessage( 0, ERR_LOSE_PRECISION );
-    /* Warning about non-prototype declarations is disabled by default
-     * because Windows and OS/2 API headers use it
-     */
-    EnableDisableMessage( 0, ERR_OBSOLETE_FUNC_DECL );
-    /* Warnings about calling functions with non-prototype declaration */
-    /* Disabled at least until source tree is cleaned up. */
-    EnableDisableMessage( 0, ERR_NONPROTO_FUNC_CALLED );
-    EnableDisableMessage( 0, ERR_NONPROTO_FUNC_CALLED_INDIRECT );
     InitModInfo();
     InitCPUModInfo();
 #if _CPU == 386
@@ -2194,8 +2112,6 @@ void GenCOptions( char **cmdline )
     ProcOptions( FEGetEnv( "WCCAXP" ) );
 #elif _CPU == _PPC
     ProcOptions( FEGetEnv( "WCCPPC" ) );
-#elif _CPU == _MIPS
-    ProcOptions( FEGetEnv( "WCCMPS" ) );
 #elif _CPU == _SPARC
     ProcOptions( FEGetEnv( "WCCSPC" ) );
 #else
@@ -2214,6 +2130,10 @@ void GenCOptions( char **cmdline )
     SetGenSwitches();
     SetCharacterEncoding();
     Define_Memory_Model();
+#ifdef __PCODE__                                                /* 04-feb-91 */
+    if( Toggles & TOGGLE_PCODE )
+        CompFlags.inline_functions = 0;
+#endif
 #if _CPU == 8086 || _CPU == 386
     if( GET_CPU( ProcRevision ) < CPU_386 ) {
         /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
@@ -2221,21 +2141,22 @@ void GenCOptions( char **cmdline )
     }
     if( ! CompFlags.save_restore_segregs ) {                /* 11-apr-91 */
         if( TargetSwitches & FLOATING_DS ) {
-            HW_CTurnOff( WatcallInfo.save, HW_DS );
+            HW_CTurnOff( DefaultInfo.save, HW_DS );
         }
         if( TargetSwitches & FLOATING_ES ) {
-            HW_CTurnOff( WatcallInfo.save, HW_ES );
+            HW_CTurnOff( DefaultInfo.save, HW_ES );
         }
         if( TargetSwitches & FLOATING_FS ) {
-            HW_CTurnOff( WatcallInfo.save, HW_FS );
+            HW_CTurnOff( DefaultInfo.save, HW_FS );
         }
         if( TargetSwitches & FLOATING_GS ) {
-            HW_CTurnOff( WatcallInfo.save, HW_GS );
+            HW_CTurnOff( DefaultInfo.save, HW_GS );
         }
     }
+    FastcallInfo = DefaultInfo; // save reg conventions
   #if _CPU == 386
     if( ! CompFlags.register_conventions )
-        SetAuxStackConventions();
+        SetStackConventions();
   #endif
 #endif
     MacroDefs();                                        /* 07-aug-90 */

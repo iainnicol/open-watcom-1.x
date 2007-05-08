@@ -34,9 +34,7 @@
 #include "cgswitch.h"
 #include "pragdefn.h"
 #include "standard.h"
-#define BY_CLI
 #include "cgprotos.h"
-#include "feprotos.h"
 
 static void EmitDQuad( DATA_QUAD *dq );
 
@@ -62,7 +60,7 @@ void AlignIt( TYPEPTR typ )
 }
 
 
-void EmitDataQuads( void )
+void EmitDataQuads()
 {
     DATA_QUAD   *dq;
 
@@ -70,6 +68,7 @@ void EmitDataQuads( void )
         for(;;) {
             dq = NextDataQuad();
             if( dq == NULL ) break;
+            if( dq->opr == T_EOF ) break;
             for(;;) {
                 EmitDQuad( dq );
                 if( ! (dq->flags & Q_REPEATED_DATA) ) break; /* 06-apr-92 */
@@ -122,8 +121,8 @@ static void EmitDQuad( DATA_QUAD *dq )
         }
     }
 #endif
-    switch( dq->type ) {
-    case QDT_STATIC:
+    switch( dq->opr ) {
+    case T_STATIC:
         SymGet( &sym, dq->u.var.sym_handle );
         segment = sym.u.var.segment;
         BESetSeg( segment );
@@ -131,9 +130,7 @@ static void EmitDQuad( DATA_QUAD *dq )
         DGLabel( FEBack( dq->u.var.sym_handle ) );
         size = 0;
         break;
-    case QDT_CHAR:
-    case QDT_UCHAR:
-    case QDT_BOOL:
+    case T_CHAR:
         DGInteger( dq->u.long_values[0], T_UINT_1 );
         size += sizeof( char );
         if( dq->flags & Q_2_INTS_IN_ONE ) {
@@ -141,8 +138,7 @@ static void EmitDQuad( DATA_QUAD *dq )
             size += sizeof( char );
         }
         break;
-    case QDT_SHORT:
-    case QDT_USHORT:
+    case T_SHORT:
         DGInteger( dq->u.long_values[0], T_UINT_2 );
         size += sizeof( target_short );
         if( dq->flags & Q_2_INTS_IN_ONE ) {
@@ -150,8 +146,7 @@ static void EmitDQuad( DATA_QUAD *dq )
             size += sizeof( target_short );
         }
         break;
-    case QDT_INT:
-    case QDT_UINT:
+    case T_INT:
         DGInteger( dq->u.long_values[0], T_INTEGER );
         size += sizeof( target_int );
         if( dq->flags & Q_2_INTS_IN_ONE ) {
@@ -159,8 +154,7 @@ static void EmitDQuad( DATA_QUAD *dq )
             size += sizeof( target_int );
         }
         break;
-    case QDT_LONG:
-    case QDT_ULONG:
+    case T_LONG:
         DGInteger( dq->u.long_values[0], T_UINT_4 );
         size += sizeof( target_long );
         if( dq->flags & Q_2_INTS_IN_ONE ) {
@@ -168,14 +162,11 @@ static void EmitDQuad( DATA_QUAD *dq )
             size += sizeof( target_long );
         }
         break;
-    case QDT_LONG64:
-    case QDT_ULONG64:
+    case T___INT64:
         DGInteger64( dq->u.long64, T_UINT_8 );
         size += sizeof( int64 );
         break;
-
-    case QDT_FLOAT:
-    case QDT_FIMAGINARY:
+    case T_FLOAT:
 //      ftoa( dq->u.double_value, Buffer );
 //      DGFloat( Buffer, T_SINGLE );
         {
@@ -192,24 +183,21 @@ static void EmitDQuad( DATA_QUAD *dq )
         }
         size += sizeof( float );
         break;
-    case QDT_DOUBLE:
-    case QDT_DIMAGINARY:
+    case T_DOUBLE:
 //      ftoa( dq->u.double_value, Buffer );
 //      DGFloat( Buffer, TY_DOUBLE );
         DGBytes( sizeof(double), (char *)&dq->u.double_value );
         size += sizeof( double );
         break;
-    case QDT_LONG_DOUBLE:
-    case QDT_LDIMAGINARY:
+    case T_LONG_DOUBLE:
         DGBytes( sizeof(long_double), (char *)&dq->u.long_double_value );
         size += sizeof( long_double );
         break;
-    case QDT_STRING:
+    case T_STRING:
         EmitStrPtr( dq->u.string_leaf, data_type );
         size += size_of_item;
         break;
-    case QDT_POINTER:
-    case QDT_ID:
+    case T_ID:
         if( dq->u.var.sym_handle == 0 ) {
             DGInteger( dq->u.var.offset, data_type );
         } else {
@@ -217,10 +205,10 @@ static void EmitDQuad( DATA_QUAD *dq )
         }
         size += size_of_item;
         break;
-    case QDT_CONST:                       /* array of characters */
+    case T_CONST:                       /* array of characters */
         size += EmitBytes( dq->u.string_leaf );
         break;
-    case QDT_CONSTANT:
+    case T_CONSTANT:
 #if _CPU == 8086
         for( amount = dq->u.long_values[0]; amount != 0; ) {
             if( amount + size >= 0x00010000 ) {

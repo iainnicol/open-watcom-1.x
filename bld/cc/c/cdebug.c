@@ -34,25 +34,23 @@
 #include "cgswitch.h"
 #include "cg.h"
 #include "standard.h"
-#define BY_CLI
 #include "cgprotos.h"
-#include "feprotos.h"
 
 
-static dbug_type DBTypeStruct( TYPEPTR typ );
-static dbug_type DBTypeEnum( TYPEPTR typ );
+static dbug_type DBTypeStruct();
+static dbug_type DBTypeEnum();
 static void InitDBType( void );
 
 //void RevTypeList();
 extern  int     CGenType( TYPEPTR );
+extern  int     PtrType( TYPEPTR typ, int flags );
 extern  void    SymGet(SYMPTR,SYM_HANDLE);
 extern  SYMPTR  SymGetPtr(SYM_HANDLE);
 
 
 static void InitDBType( void )
 {
-    TYPEPTR     typ;
-
+    TYPEPTR  typ;
     ScopeStruct = DBScope( "struct" );
     ScopeUnion = DBScope( "union" );
     ScopeEnum = DBScope( "enum" );
@@ -77,12 +75,11 @@ static void InitDBType( void )
     B_UInt32  = DBScalar( "unsigned long", T_UINT_4 );
     B_Int64  = DBScalar( "__int64", T_INT_8 );
     B_UInt64 = DBScalar( "unsigned __int64", T_UINT_8 );
-    B_Bool   = DBScalar( "_Bool", T_UINT_1 );
     DebugNameList = NULL;
 }
 
 #if 0
-static void RevTypeList( void )
+static void RevTypeList()
 {
     TYPEPTR     previous, current, following;
 
@@ -126,7 +123,7 @@ static void EmitADBType( TYPEPTR typ )
     }
 }
 
-void EmitDBType( void )
+void EmitDBType()
 {
 //    RevTypeList();
     InitDBType();
@@ -168,9 +165,6 @@ static dbug_type DBIntegralType( int decl_type )
         break;
     case TYPE_ULONG64:
         ret_val = B_UInt64;
-        break;
-    case TYPE_BOOL:
-        ret_val = B_Bool;
         break;
     }
     return( ret_val );
@@ -289,7 +283,7 @@ dbug_type DBType( TYPEPTR typ )
     case TYPE_FUNCTION:
         cg_pnt_mod = T_CODE_PTR;
         pr = DBBegProc( cg_pnt_mod, DBType( typ->object ) );
-        for( pparms = typ->u.fn.parms; pparms; pparms++ ) {
+        for( pparms = typ->u.parms; pparms; pparms++ ) {
             if( (*pparms == NULL) ) break;
             if( (*pparms)->decl_type == TYPE_DOT_DOT_DOT ) break;
             DBAddParm( pr, DBType( *pparms ));
@@ -404,7 +398,7 @@ static dbug_type DBTypeEnum( TYPEPTR typ )
 
 dbug_type FEDbgType( CGSYM_HANDLE cgsym_handle )
 {
-    SYM_HANDLE     sym_handle = cgsym_handle;
+    SYM_HANDLE          sym_handle = cgsym_handle;
 
     return( DBType( SymGetPtr( sym_handle )->sym_type ) );
 }

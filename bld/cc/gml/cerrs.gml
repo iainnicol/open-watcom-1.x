@@ -160,7 +160,7 @@ statement or change the function return type to
 :MSGJTXT. すでに定義されたtypedefを再定義しています
 :WARNING. 1
 .np
-A duplicate typedef is not allowed in ISO C.
+A duplicate typedef is not allowed in ANSI C.
 This warning is issued when compiling with extensions enabled.
 You should delete the duplicate typedef definition.
 :MSGSYM. ERR_UNUSED_1
@@ -269,9 +269,9 @@ This warning may indicate a potential problem when the program is overlayed.
 :MSGJTXT. 左辺値のキャストは，標準のCではありません
 :WARNING. 1
 .np
-A cast operation does not yield an lvalue in ISO C.
+A cast operation does not yield an lvalue in ANSI standard C.
 However, to provide compatibility with code written prior to the availability
-of ISO compliant C compilers, if an expression was an lvalue prior to the
+of ANSI standard C compilers, if an expression was an lvalue prior to the
 cast operation, and the cast operation does not cause any conversions, the
 compiler treats the result as an lvalue and issues this warning.
 :MSGSYM. ERR_JUNK_FOLLOWS_DIRECTIVE
@@ -300,20 +300,20 @@ of a C++ style comment ("//").  The warning can be removed by switching to
 a C style comment ("/**/").  If you require the comment to be terminated
 at the end of the line, make sure that the backslash character is not
 the last character in the line.
-.errbad
+.exam begin
 #define XX 23 // comment start \
 comment \
 end
 
 int x = XX; // comment start ...\
 comment end
-.eerrbad
+.exam end
 :MSGSYM. ERR_COMPARE_ALWAYS
 :MSGTXT. Comparison result always %d
 :MSGJTXT. 比較の結果は常に%dです
 :WARNING. 1
 .np
-The line contains a comparison that is always true (1) or false (0).
+The line contains a comparison that is alway true (1) or false (0).
 For example comparing an unsigned expression to see if it is >= 0 or < 0
 is redundant.
 Check to see if the expression should be signed instead of unsigned.
@@ -368,7 +368,7 @@ and it is hoped will provide information to
 solve a preprocessing directive problem.
 :MSGSYM. ERR_LOSE_PRECISION
 :MSGTXT. Possible loss of precision
-:MSGJTXT. 精度が落ちている可能性があります。
+:MSGJTXT. Possible loss of precision
 :WARNING. 1
 .np
 This warning indicates that you may be converting a argument
@@ -376,8 +376,8 @@ of one size to another, different size. For instance, you may be
 losing precision by passing a long argument to a function that
 takes a short.
 This warning is initially disabled. It must be explicitly enabled with
-.us #pragma enable_message(130)
-or option "-wce=130". It can be disabled later by using
+.us #pragma enable_message(130).
+It can be disabled later by using
 .us #pragma disable_message(130).
 :MSGSYM. ERR_ASSUMED_IMPORT
 :MSGTXT. No prototype found for function '%s'
@@ -390,7 +390,7 @@ be used, but this will cause problems if the assumed prototype does
 not match actual function definition.
 :MSGSYM. ERR_NO_STG_OR_TYPE
 :MSGTXT. No storage class or type specified
-:MSGJTXT. 記憶クラスまたは型が指定されていません
+:MSGJTXT.
 :WARNING. 1
 .np
 When declaring a data object, either storage class or data type must be
@@ -400,88 +400,18 @@ is assumed. If no storage class is specified, the default depends on
 scope (see the
 .us C Language Reference
 for details). For instance
-.errgood
+.exam begin
 auto i;
-.eerrgood
+.exam end
 is a valid declaration, as is
-.errgood
+.exam begin
 short i;
-.eerrgood
+.exam end
 However,
-.errbad
+.exam begin
 i;
-.eerrbad
+.exam end
 is not a correctly formed declaration.
-:MSGSYM. ERR_SYMBOL_NAME_TOO_LONG
-:MSGTXT. Symbol name truncated for '%s'
-:MSGJTXT. シンボル名が'%s'に切捨てられました
-:WARNING. 1
-.np
-Symbol is longer than the object file format allows and has been truncated
-to fit. Maximum length is 255 characters for OMF and 1024 characters for
-COFF or ELF object files.
-:MSGSYM. ERR_SHIFT_AMOUNT_NEGATIVE
-:MSGTXT. Shift amount negative
-:MSGJTXT. シフト量が負です
-:WARNING. 1
-.np
-The right operand of a left or right shift operator is a negative value.
-The result of the shift operation is undefined.
-:errbad.
-int a = 1 << -2;
-:eerrbad.
-The value of 'a' in the above example is undefined.
-:MSGSYM. ERR_SHIFT_AMOUNT_TOO_BIG
-:MSGTXT. Shift amount too large
-:MSGJTXT. シフト量が大き過ぎます
-:WARNING. 1
-.np
-The right operand of a left or right shift operator is a value greater than
-or equal to the width in bits of the type of the promoted left operand.
-The result of the shift operation is undefined.
-:errbad.
-int a = 1 >> 123;
-:eerrbad.
-The value of 'a' in the above example is undefined.
-:MSGSYM. ERR_COMPARE_UNSIGNED_VS_ZERO
-:MSGTXT. Comparison equivalent to 'unsigned == 0'
-:MSGJTXT. 比較の結果は常に%dです
-:WARNING. 1
-.np
-Comparing an unsigned expression to see whether it is <= 0 is equivalent to
-testing for == 0.
-Check to see if the expression should be signed instead of unsigned.
-:MSGSYM. ERR_FUNCTION_STG_CLASS_REDECLARED
-:MSGTXT. Extern function '%s' redeclared as static
-:MSGJTXT. 外部関数'%s'はstaticとして再宣言されました
-:WARNING. 1
-.np
-The specified function was either explicitly or implicitly declared as
-.kw extern
-and later redeclared as
-.kw static.
-This is not allowed in ISO C and may produce unexpected results with ISO
-compliant compilers.
-:errbad.
-int bar( void );
-
-void foo( void )
-{
-    bar();
-}
-
-static int bar( void )
-{
-    return( 0 );
-}
-:eerrbad.
-:MSGSYM. ERR_NO_EOL_BEFORE_EOF
-:MSGTXT. No newline at end of file
-:MSGJTXT. ファイルの最後に改行文字がありません
-:WARNING. 1
-ISO C requires that a non-empty source file must include a newline character
-at the end of the last line. If no newline was found, it will be automatically
-inserted.
 :eMSGGRP. Warn1
 :cmt -------------------------------------------------------------------
 :MSGGRP. Warn2
@@ -542,7 +472,7 @@ for the symbol.
 While scanning a comment for its end, the compiler detected
 .id /*
 for the start of another comment.
-Nested comments are not allowed in ISO C.
+Nested comments are not allowed in ANSI C.
 You may be missing the
 .id */
 for the previous comment.
@@ -574,83 +504,33 @@ You can prevent the message from being issued through use of
 .us #pragma off(unreferenced).
 .np
 This warning is initially disabled. It must be specifically enabled with
-.us #pragma enable_message(303)
-or option "-wce=303". It can be disabled later by using
+.us #pragma enable_message(303).
+It can be disabled later by using
 .us #pragma disable_message(303).
 :MSGSYM. ERR_NO_RET_TYPE_GIVEN
 :MSGTXT. Return type 'int' assumed for function '%s'
-:MSGJTXT. 関数'%s'の戻り型はintとみなします
+:MSGJTXT.
 :WARNING. 3
 .np
 If a function is declared without specifying return type, such as
-.errbad
+.exam begin
 foo( void );
-.eerrbad
+.exam end
 then its return type will be assumed to be
 .kw int
 .
 :MSGSYM. ERR_NO_DATA_TYPE_GIVEN
 :MSGTXT. Type 'int' assumed in declaration of '%s'
-:MSGJTXT. '%s'の宣言における型はintとみなします
+:MSGJTXT.
 :WARNING. 3
 .np
 If an object is declared without specifying its type, such as
-.errbad
+.exam begin
 register count;
-.eerrbad
+.exam end
 then its type will be assumed to be
 .kw int
 .
-:MSGSYM. ERR_ASSEMBLER_WARNING
-:MSGTXT. Assembler warning: '%s'
-:MSGJTXT. アセンブラ警告: '%s'
-:WARNING. 3
-.np
-A problem has been detected by the in-line assembler.
-The message indicates the problem detected.
-:MSGSYM. ERR_OBSOLETE_FUNC_DECL
-:MSGTXT. Obsolete non-prototype declarator
-:MSGJTXT. 廃止された非プロトタイプ宣言子です
-:WARNING. 3
-.np
-Function parameter declarations containing only empty parentheses,
-that is, non-prototype declarations, are an obsolescent language feature.
-Their use is dangerous and discouraged.
-.errbad
-int func();
-.eerrbad
-:MSGSYM. ERR_NONPROTO_FUNC_CALLED
-:MSGTXT. Unprototyped function '%s' called
-:MSGJTXT. 非プロトタイプの関数'%s'が呼ばれました
-:WARNING. 3
-.np
-A call to an unprototyped function was made, preventing the compiler
-from checking the number of function arguments and their types. Use
-of unprototyped functions is obsolescent, dangerous and discouraged.
-.errbad
-int func();
-
-void bar( void )
-{
-    func( 4, "s" );     /* possible argument mismatch */
-}
-.eerrbad
-:MSGSYM. ERR_NONPROTO_FUNC_CALLED_INDIRECT
-:MSGTXT. Unprototyped function indirectly called
-:MSGJTXT. 非プロトタイプの関数が間接的に呼ばれました
-:WARNING. 3
-.np
-An indirect call to an unprototyped function was made, preventing the
-compiler from checking the number of function arguments and their types.
-Use of unprototyped functions is obsolescent, dangerous and discouraged.
-.errbad
-int (*func)();
-
-void bar( void )
-{
-    func( 4, "s" );     /* possible argument mismatch */
-}
-.eerrbad
 :eMSGGRP. Warn3
 :cmt -------------------------------------------------------------------
 :MSGGRP. Errs
@@ -1105,7 +985,7 @@ Make sure that the file name is spelled correctly, or that the
 appropriate path for the file is included in the list of paths
 specified in the
 .id &incvarup
-environment variable or the "-I" option on the command line.
+environment variable or the "i=" option on the command line.
 :MSGSYM. ERR_TOO_MANY_MACRO_PARMS
 :MSGTXT. Too many parameters given for macro '%s'
 :MSGJTXT. マクロ'%s'に与えられたパラメータが多すぎます
@@ -1179,8 +1059,8 @@ Do not
 header files that are not required.
 .np
 For the 16-bit C compiler,
-the "-d2" option causes the compiler to use more memory.
-Try compiling with the "-d1" option instead.
+the "/d2" switch causes the compiler to use more memory.
+Try compiling with the "/d1" switch instead.
 :MSGSYM. ERR_INV_CHAR_CONSTANT
 :MSGTXT. Invalid character constant
 :MSGJTXT. 不適切な文字定数です
@@ -1207,14 +1087,10 @@ to
 .np
 The specified variable has already been statically initialized.
 :MSGSYM. ERR_MISSING_QUOTE
-:MSGTXT. String literal not terminated before end of line
-:MSGJTXT. 文字列定数の最後が見つかりません
+:MSGTXT. Ending \" missing for string literal
+:MSGJTXT. 文字列定数の最後の\"がありません
 .np
-A string literal is enclosed by double quote " characters.
-.np
-The compiler did not find a closing double quote " or line
-continuation character \ before the end of a line or before
-the end of the source file.
+The compiler did not find a second double quote to end the string literal.
 :MSGSYM. ERR_NEED_BRACES
 :MSGTXT. Data for aggregate type must be enclosed in curly braces
 :MSGJTXT. 集合体型のデータは，波括弧に入れられなければなりません
@@ -1229,7 +1105,7 @@ The type of the specified parameter is incompatible with the prototype
 for that function.
 The following example illustrates a problem that can arise when the
 sequence of declarations is in the wrong order.
-.errbad
+.exam begin
 /* Uncommenting the following line will
    eliminate the error */
 /* struct foo; */
@@ -1244,7 +1120,7 @@ void fn1( struct foo *bar )
 {
     fn2( bar );
 }
-.eerrbad
+.exam end
 .pc
 The problem can be corrected by reordering the sequence in which items
 are declared (by moving the description of the structure
@@ -1263,11 +1139,6 @@ The current definition must have a storage class of
 .kw static
 or
 .kw extern.
-.np
-Alternatively, a variable was previously declared as
-.kw extern
-and later defined as
-.kw static.
 :MSGSYM. ERR_INVALID_OPTION
 :MSGTXT. Invalid option '%s'
 :MSGJTXT. オプション'%s'は不適切です
@@ -1679,11 +1550,14 @@ class.
 .np
 If the first parameter in a function definition or prototype is defined
 with a type, then all of the parameters must have a type specified.
-:MSGSYM. ERR_ENUM_CONSTANT_OUT_OF_RANGE
-:MSGTXT. Enum constant is out of range %s
-:MSGJTXT. enum定数が%sの範囲外です
+:MSGSYM. ERR_ENUM_CONSTANT_TOO_LARGE
+:MSGTXT. Enum constant too large
+:MSGJTXT. Enum定数が大きすぎます
 .np
-All of the constants must fit into appropriate value range.
+All of the constants must fit in either an
+.kw int
+or
+.kw unsigned.
 :MSGSYM. ERR_TYPE_DOES_NOT_AGREE
 :MSGTXT. Type does not agree with previous definition of '%s'
 :MSGJTXT. 型が'%s'の前の定義と一致しません
@@ -1902,10 +1776,10 @@ The system dependent reason is also displayed in the message.
 The compiler does not have any segment registers available to access the
 desired far memory location.
 :MSGSYM. ERR_NO_MACRO_ID_COMMAND_LINE
-:MSGTXT. No identifier provided for '-D' option
+:MSGTXT. No identifier provided for /D option
 :MSGJTXT. /Dオプションに対する識別子がありません
 .np
-The command line option "-D" must be followed by the name of the macro
+The command line option /D must be followed by the name of the macro
 to be defined.
 :MSGSYM. ERR_BAD_PEG_REG
 :MSGTXT. Invalid register pegged to a segment in '%s'
@@ -1949,10 +1823,10 @@ remainder by zero.
 .np
 The argument to a macro that uses the stringize operator '#'
 on that argument must not end in a backslash character.
-.errbad
+.exam begin
 #define str(x) #x
 str(@#\)
-.eerrbad
+.exam end
 :MSGSYM. ERR_INVALID_DECLSPEC
 :MSGTXT. Invalid __declspec declaration
 :MSGJTXT. 不適切な__declspec宣言です
@@ -2033,91 +1907,23 @@ You have two pointers that point to types that have different sign specifiers.
 .np
 You have two pointers that point to types that have different sign specifiers.
 :MSGSYM. ERR_MISSING_LINE_CONTINUE
-:cmt This message not currently used.  25-June-2006
 :MSGTXT. Missing \\ for string literal
 :MSGJTXT. 文字列定数に対して \\ がありません
 .np
 You need a '\' to continue a string literal across a line.
 :MSGSYM. ERR_EXPECTING_AFTER_BUT_FOUND
 :MSGTXT. Expecting '%s' after '%s' but found '%s'
-:MSGJTXT. '%s'が'%s'の後にあるはずですが，'%s'があります
+:MSGJTXT. Expecting '%s' after '%s' but found '%s'
 .np
 A syntax error has been detected.
 The tokens displayed in the message should help you to determine the problem.
 :MSGSYM. ERR_EXPECTING_AFTER_BUT_FOUND_END_OF_FILE
 :MSGTXT. Expecting '%s' after '%s' but found end of file
-:MSGJTXT. '%s'が'%s'の後にあるはずですが，ファイルが終了してしまいました
+:MSGJTXT. Expecting '%s' after '%s' but found end of file
 .np
 A syntax error has been detected.
 The compiler is still expecting more input when it reached the
 end of the source program.
-:MSGSYM. ERR_BAD_REGISTER_NAME
-:MSGTXT. Invalid register name '%s' in #pragma
-:MSGJTXT. #pragmaの中に無効なレジスタ名'%s'があります
-.np
-The register name is invalid/unknown.
-:MSGSYM. ERR_INVALID_STG_CLASS_FOR_LOOP_DECL
-:MSGTXT. Storage class of 'for' statement declaration not register or auto
-:MSGJTXT. 'for'ステートメント記憶クラスがレジスタまたはautoでありません
-.np
-The only storage class allowed for the optional declaration part of a
-.kw for
-statement is
-.kw auto
-or
-.kw register.
-:MSGSYM. ERR_NO_TYPE_IN_DECL
-:MSGTXT. No type specified in declaration
-:MSGJTXT. 宣言内で型が指定されていません
-.np
-A declaration specifier must include a type specifier.
-.errbad
-auto i;
-.eerrbad
-:MSGSYM. ERR_DECL_IN_LOOP_NOT_OBJECT
-:MSGTXT. Symbol '%s' declared in 'for' statement must be object
-:MSGJTXT. 'for'ステートメント内で宣言されたシンボル'%s'はオブジェクトでなければなりません
-.np
-Any identifier declared in the optional declaration part of a
-.kw for
-statement must denote an object. Functions, structures, or enumerations may
-not be declared in this context.
-.errbad
-for( int i = 0, j( void ); i < 5; ++i ) {
-    ...
-}
-.eerrbad
-:MSGSYM. ERR_UNEXPECTED_DECLARATION
-:MSGTXT. Unexpected declaration
-:MSGJTXT. 予期しない宣言です
-.np
-Within a function body, in C99 mode a declaration is only allowed in
-a compound statement and in the opening clause of a
-.kw for
-loop.
-Declarations are not allowed after
-.kw if,
-.kw while,
-or
-.kw switch
-statement, etc.
-.errbad
-void foo( int a )
-{
-    if( a > 0 )
-        int j = 3;
-}
-.eerrbad
-.np
-In C89 mode, declarations within a function body are only allowed at
-the beginning of a compound statement.
-.errbad
-void foo( int a )
-{
-    ++a;
-    int j = 3;
-}
-.eerrbad
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info
@@ -2179,14 +1985,6 @@ preceding conversion diagnostic.
 :INFO.
 This informational message indicates the target type of the conversion,
 for the preceding conversion diagnostic.
-:MSGSYM. INFO_INCLUDING_FILE
-:MSGTXT. Including file '%s'
-:MSGJTXT. ファイル'%s'をインクルードします
-:INFO.
-This informational message indicates that the specified file was opened
-as a result of
-.id #include
-directive processing.
 :eMSGGRP. Info
 :cmt -------------------------------------------------------------------
 :MSGGRP. PCHDR

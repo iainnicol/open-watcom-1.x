@@ -24,20 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Inline assembler statement processing.
+* Description:  asm statement processing
 *
 ****************************************************************************/
-
 
 #include "cvars.h"
 #include "pragdefn.h"
 #include "asmstmt.h"
-
-#if _INTEL_CPU
-    #include "asminlin.h"
-#else
-    #include "asinline.h"
-#endif
 
 static int EndOfAsmStmt( void )
 /*****************************/
@@ -70,7 +63,7 @@ static void GetAsmLine( void )
     int         AsmLineNo;
     enum TOKEN  LastToken = T_DOT;
     char        buf[256] = { '\0' };
-
+   
     CompFlags.pre_processing = 1;
     AsmLineNo = TokenLine;
     if( strcmp( Buffer, "_emit" ) == 0 ) {
@@ -90,7 +83,7 @@ static void GetAsmLine( void )
     }
     TokenLine = AsmLineNo;
     if( *buf != '\0' ) {
-        AsmLine( buf );
+        AsmSysParseLine( buf );
     }
     CompFlags.pre_processing = 0;
 }
@@ -99,7 +92,7 @@ void AsmStmt( void )
 /******************/
 {
     int                 too_many_bytes;
-    unsigned char       buff[ MAXIMUM_BYTESEQ + 32 ];
+    auto unsigned char  buff[ MAXIMUM_BYTESEQ + 32 ];
     enum TOKEN          skip_token;
 
     // indicate that we are inside an __asm statement so scanner will
@@ -107,19 +100,21 @@ void AsmStmt( void )
     CompFlags.inside_asm_stmt = 1;
 
     NextToken();
-    AsmSysInit( buff );
+    AsmSysInit();
+    AsmSysSetCodeBuffer( buff );
+    AsmSysSetCodeAddr( 0 );
     too_many_bytes = 0;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
-        for( ;; ) {             // grab assembler lines
+        for(;;) {               // grab assembler lines
             GetAsmLine();
-            if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
+            if( AsmSysGetCodeAddr() > MAXIMUM_BYTESEQ ) {
                 if( ! too_many_bytes ) {
                     CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
                     too_many_bytes = 1;
                 }
                 // reset index to we don't overrun buffer
-                AsmCodeAddress = 0;
+                AsmSysSetCodeAddr( 0 );
             }
             if( CurToken == T_RIGHT_BRACE )
                 break;

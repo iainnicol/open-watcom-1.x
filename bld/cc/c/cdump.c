@@ -36,10 +36,40 @@ extern  char    *Tokens[];
 
 /* matches table of type in ctypes.h */
 static  char    *CTypeNames[] = {
-#undef  pick1
-#define pick1(enum,cgtype,x86asmtype,name,size) name,
-#include "cdatatyp.h"
-};
+        "signed char",
+        "unsigned char",
+        "short",
+        "unsigned short",
+        "int",
+        "unsigned int",
+        "long",
+        "unsigned long",
+        "__int64",
+        "unsigned __int64",
+        "float",
+        "double",
+        "pointer",
+        "array",
+        "struct",
+        "union",
+        "function",
+        "field",
+        "void",
+        "enum",
+        "<typdef>",
+        "<ufield>",
+        "...",
+        "<char>",
+        "<wide char>",
+        "long double",
+        "float _Complex",
+        "double _Complex",
+        "long double _Complex",
+        "float _Imaginary",
+        "double _Imaginary",
+        "long double _Imaginary",
+        "_Bool",
+ };
 
 static  char   do_message_output; /* Optimize output for human */
 
@@ -51,22 +81,22 @@ typedef struct
 } STRCHUNK;
 #define STRCHUNK_INCREMENT 512
 
-static void ChunkInit( STRCHUNK *pch )
+static void ChunkInit(STRCHUNK *pch)
 {
     pch->data = NULL;
     pch->cursize = 0;
     pch->maxsize = 0;
 }
 
-static char *ChunkToStr( STRCHUNK *pch )
+static char *ChunkToStr(STRCHUNK *pch)
 {
-    char    *ret;
+    char *ret;
 
     ret = pch->data;
     if( ret == NULL ) {
         ret = CStrSave( "" );
     }
-    return( ret );
+    return ret;
 }
 
 static void ChunkSaveData( STRCHUNK *pch, const char *data, size_t len )
@@ -112,9 +142,9 @@ static void ChunkSaveStrWord( STRCHUNK *pch, const char *str )
 }
 
 #ifdef FDEBUG
-void DumpToken( void )
+void DumpToken()
 {
-    int     value;
+    int value;
 
     if( DebugFlag >= 3 ) {
         printf( "%2d: ", CurToken );
@@ -132,10 +162,9 @@ void DumpToken( void )
 #endif
 
 #if 0
-void DumpTypeCounts( void )
+void DumpTypeCounts()
 {
-    int     i;
-
+    int i;
     for( i = TYPE_CHAR; i <= TYPE_VOID; ++i ) {
         printf( "%3d %s\n", CTypeCounts[i], CTypeNames[i] );
     }
@@ -145,28 +174,28 @@ void DumpTypeCounts( void )
 
 static TYPEPTR TrueType( TYPEPTR typ )
 {
-    TYPEPTR     newtyp;
+    TYPEPTR newtyp;
 
     if ( typ == NULL )
         return typ;
 
-    if( do_message_output ) {
+    if ( do_message_output ) {
         /* For human: smart typedef expansion. Stop before unnamed struct */
-        while( typ->decl_type == TYPE_TYPEDEF ) {
+        while ( typ->decl_type == TYPE_TYPEDEF ) {
             newtyp = typ->object;
             if( newtyp->decl_type == TYPE_STRUCT ||
                 newtyp->decl_type == TYPE_UNION  ||
-                newtyp->decl_type == TYPE_ENUM ) {
+                newtyp->decl_type == TYPE_ENUM  ) {
 
-                if( *newtyp->u.tag->name == '\0' )
+                if ( *newtyp->u.tag->name == '\0' )
                     break;
             }
             typ = newtyp;
         }
     } else {
-        if( !CompFlags.dump_prototypes ) {
+        if( !CompFlags.dump_prototypes) {
             /* -zg, not -v */
-            SKIP_TYPEDEFS( typ );
+            while( typ->decl_type == TYPE_TYPEDEF ) typ = typ->object;
         }
     }
     return( typ );
@@ -177,17 +206,19 @@ static TYPEPTR Object( TYPEPTR typ )
     return( TrueType( typ->object ) );
 }
 
-static  void    DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch );
-static  void    put_keyword( int keyword, STRCHUNK *pch );
-static  void    DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp );
-static  void    DumpBaseType( TYPEPTR typ, STRCHUNK *pch );
-static  void    DumpArray( TYPEPTR typ, STRCHUNK *pch );
-static  void    DumpParmTags( TYPEPTR *parm, FILE *fp );
-static  void    DumpTagName( char *tag_name, STRCHUNK *pch );
-static  void    DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch );
+static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )      ;
+static void DumpTail( TYPEPTR typ, SYMPTR funcsym, int pointer_flags, STRCHUNK *pch );
+static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch );
+static void put_keyword( int keyword, STRCHUNK *pch );
+static void DumpFlags( int flags, TYPEPTR typ, STRCHUNK *fp );
+static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch );
+static void DumpArray( TYPEPTR typ, STRCHUNK *pch );
+static void DumpParmTags( TYPEPTR *parm, FILE *fp );
+static void DumpTagName( char *tag_name, STRCHUNK *pch );
+static TYPEPTR DefArgPromotion( TYPEPTR arg_typ );
+static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch );
 
-
-void DumpFuncDefn( void )
+void DumpFuncDefn(void)
 {
     TYPEPTR     typ;
     FNAMEPTR    flist;
@@ -195,7 +226,7 @@ void DumpFuncDefn( void )
     char        *result;
 
     typ = CurFunc->sym_type;
-    DumpParmTags( typ->u.fn.parms, DefFile );
+    DumpParmTags( typ->u.parms, DefFile );
     flist = FileIndexToFName( CurFunc->defn_file_index );
     fprintf( DefFile, "//#line \"%s\" %u\n",            /* 07-jun-94 */
                 flist->name,
@@ -224,9 +255,9 @@ static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )        /* 26-may-89 */
     if( typ->decl_type == TYPE_POINTER ) {
         DumpPointer( Object( typ ), pch );
         if( !( typ->u.p.decl_flags & FLAG_WAS_ARRAY) ) {    /* 07-jun-94 */
-            DumpFlags( typ->u.p.decl_flags & ~(FLAG_CONST | FLAG_VOLATILE),
+            DumpFlags( typ->u.p.decl_flags & ~(FLAG_CONST|FLAG_VOLATILE),
                                 typ, pch );
-            DumpFlags( typ->u.p.decl_flags &  (FLAG_CONST | FLAG_VOLATILE),
+            DumpFlags( typ->u.p.decl_flags & (FLAG_CONST|FLAG_VOLATILE),
                                 typ, pch );
             ChunkSaveChar( pch, '*' );
         }
@@ -234,17 +265,17 @@ static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )        /* 26-may-89 */
 }
 
 
-static void DumpTail( TYPEPTR typ, SYMPTR funcsym, type_modifiers pointer_flags, STRCHUNK *pch )
+static void DumpTail( TYPEPTR typ, SYMPTR funcsym, int pointer_flags, STRCHUNK *pch )
 {
     TYPEPTR     top_typ;
     TYPEPTR     obj;
 
     top_typ = typ;
-    for( ;; ) {
+    for(;;) {
         if( typ->decl_type == TYPE_FUNCTION ) {
             ChunkSaveChar( pch, '(' );
-            if( typ == top_typ  ||  typ->u.fn.parms != NULL ) {
-                DumpParmList( typ->u.fn.parms, funcsym, pch);
+            if( typ == top_typ  ||  typ->u.parms != NULL ) {
+                DumpParmList( typ->u.parms, funcsym, pch);
                 funcsym = NULL;
             }
             ChunkSaveChar( pch, ')' );
@@ -276,39 +307,34 @@ static void DumpTail( TYPEPTR typ, SYMPTR funcsym, type_modifiers pointer_flags,
 
 static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
 {
-    TYPEPTR         obj;
-    type_modifiers  flags;
+    TYPEPTR     obj;
+    int         flags;
 
     switch( typ->decl_type ) {
     case TYPE_FUNCTION:
         DumpDecl( Object( typ ), NULL, pch );
         if ( funcsym ) {
             flags = funcsym->attrib;
-            if( flags & FLAG_LOADDS )
-                put_keyword( T___LOADDS, pch );
-            if( flags & FLAG_EXPORT )
-                put_keyword( T___EXPORT, pch );
-            if( flags & FLAG_SAVEREGS)
-                put_keyword( T___SAVEREGS, pch );
+            if( flags & FLAG_LOADDS )  put_keyword( T___LOADDS, pch );
+            if( flags & FLAG_EXPORT )  put_keyword( T___EXPORT, pch );
+            if( flags & FLAG_SAVEREGS) put_keyword( T___SAVEREGS, pch );
             flags &= ~(FLAG_LOADDS | FLAG_EXPORT | FLAG_SAVEREGS);
             DumpFlags( flags, typ, pch );               /* 03-aug-88, FWC */
             ChunkSaveStr( pch, funcsym->name );
         }
     case TYPE_ARRAY:
-        DumpTail( typ, funcsym, FLAG_NONE, pch );
+        DumpTail( typ, funcsym, 0, pch );
         break;
     case TYPE_POINTER:
         obj = Object( typ );
-        while( obj->decl_type == TYPE_POINTER )
-            obj = Object( obj );
+        while( obj->decl_type == TYPE_POINTER ) obj = Object( obj );
         switch( obj->decl_type ) {
         case TYPE_FUNCTION:
             DumpDecl( Object( obj ), NULL, pch );
             ChunkSaveChar( pch, '(' );
             break;
         case TYPE_ARRAY:
-            while( obj->decl_type == TYPE_ARRAY )
-                obj = Object( obj );
+            while( obj->decl_type == TYPE_ARRAY ) obj = Object( obj );
             DumpDecl( obj, NULL, pch );
             ChunkSaveChar( pch, '(' );
             break;
@@ -329,21 +355,18 @@ static void put_keyword( int keyword, STRCHUNK *pch )
 }
 
 
-static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
+static void DumpFlags( int flags, TYPEPTR typ, STRCHUNK *fp )
 {
-    SYM_NAMEPTR     p;
-    SYM_ENTRY       sym;
+    SYM_NAMEPTR p;
+    SYM_ENTRY   sym;
 
-    if( flags & FLAG_VOLATILE )
-        put_keyword( T_VOLATILE, fp );
-    if( flags & FLAG_CONST )
-        put_keyword( T_CONST, fp );
-    if( flags & FLAG_RESTRICT )
-        put_keyword( T_RESTRICT, fp );
-    if( ( flags & FLAG_INTERRUPT ) == FLAG_INTERRUPT ) {
-        put_keyword( T___INTERRUPT, fp );
-    } else if( flags & FLAG_NEAR ) {
-        if( flags & FLAG_BASED ) {
+    if( flags & FLAG_VOLATILE ) put_keyword( T_VOLATILE, fp );
+    if( flags & FLAG_CONST )    put_keyword( T_CONST, fp );
+    if( flags & FLAG_RESTRICT ) put_keyword( T_RESTRICT, fp );
+    if( flags & FLAG_NEAR ) {
+        if( flags & FLAG_FAR  ) {
+            put_keyword( T___INTERRUPT, fp );
+        } else if( flags & FLAG_BASED ) {               /* 13-nov-91 */
             ChunkSaveStr( fp, "__based(" );
             if( typ->u.p.based_sym == 0 ) {
                 ChunkSaveStr( fp, "void" );
@@ -356,16 +379,10 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
         } else {
             put_keyword( T___NEAR, fp );
         }
-    } else if( flags & FLAG_FAR ) {
-        put_keyword( T___FAR, fp );
     }
-    if( flags & FLAG_HUGE ) {
-        put_keyword( T___HUGE, fp );
-    }
+    if( flags & FLAG_FAR  )     put_keyword( T___FAR, fp );
+    if( flags & FLAG_HUGE )     put_keyword( T___HUGE, fp );
     switch( flags & FLAG_LANGUAGES ) {
-    case LANG_WATCALL:
-        put_keyword( T___WATCALL, fp );
-        break;
     case LANG_CDECL:
         put_keyword( T___CDECL, fp );
         break;
@@ -378,13 +395,13 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
     case LANG_SYSCALL:
         put_keyword( T__SYSCALL, fp );
         break;
-    case LANG_STDCALL:
+    case LANG_STDCALL:                          /* 08-jan-92 */
         put_keyword( T___STDCALL, fp );
         break;
-    case LANG_OPTLINK:
+    case LANG_OPTLINK:                          /* 08-jan-92 */
         put_keyword( T__OPTLINK, fp );
         break;
-    case LANG_FASTCALL:
+    case LANG_FASTCALL:                         /* 08-jan-92 */
         put_keyword( T___FASTCALL, fp );
         break;
     }
@@ -392,22 +409,18 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
 
 static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
 {
-    SYM_ENTRY           sym;
+    auto SYM_ENTRY      sym;
     TYPEPTR             obj;
 
-    for( ;; ) {
-        if( typ->decl_type == TYPE_TYPEDEF )
-            break;
+    for(;;) {
+        if( typ->decl_type == TYPE_TYPEDEF ) break;
         obj = Object( typ );
-        if( obj == NULL )
-            break;
+        if( obj == NULL ) break;
         typ = obj;
     }
-    for( ;; ) {
-        if( typ->decl_type != TYPE_TYPEDEF )
-            break;
-        if( !(typ->type_flags & TF2_DUMMY_TYPEDEF) )
-            break;
+    for(;;) {
+        if( typ->decl_type != TYPE_TYPEDEF ) break;
+        if( !(typ->type_flags & TF2_DUMMY_TYPEDEF) ) break;
         typ = typ->object;                      // skip over dummy typedef
     }
     if( typ->decl_type == TYPE_TYPEDEF ) {
@@ -434,8 +447,8 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
 
 static void DumpArray( TYPEPTR typ, STRCHUNK *pch )
 {
-    unsigned long   size;
-    char            tempbuf[20];
+    unsigned long size;
+    char tempbuf[20];
 
     while( typ->decl_type == TYPE_ARRAY ) {
         size = typ->u.array->dimension;
@@ -457,7 +470,7 @@ static void DumpParmTags( TYPEPTR *parm, FILE *fp )
     char        *result;
 
     if( parm != NULL ) {
-        for( ;; ) {
+        for(;;) {
             typ = *parm;
             if( typ == NULL ) break;
             typ = TrueType( typ );
@@ -516,8 +529,8 @@ static TYPEPTR DefArgPromotion( TYPEPTR arg_typ )
 
 static void DoDumpType( TYPEPTR realtype, char *symname, STRCHUNK *pch )
 {
-    type_modifiers  pointer_flags;
-    TYPEPTR         typ;
+    type_modifiers     pointer_flags;
+    TYPEPTR typ;
 
     realtype = TrueType( realtype );
     DumpBaseType( realtype, pch );
@@ -588,9 +601,7 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
             }
             DoDumpType( typ, sym_name, pch );
             ++parm;
-            if( *parm != NULL ) {
-                ChunkSaveChar( pch, ',' );
-            }
+            if( *parm != NULL )  ChunkSaveChar( pch, ',' );
             ++parm_num;
         }
     }
@@ -598,11 +609,11 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
 
 char *DiagGetTypeName( TYPEPTR typ )
 {
-    STRCHUNK    chunk;
+    STRCHUNK  chunk;
 
     ChunkInit( &chunk );
     do_message_output = 1;
     DoDumpType( typ, NULL, &chunk );
     do_message_output = 0;
-    return( ChunkToStr( &chunk ) );
+    return ChunkToStr( &chunk );
 }

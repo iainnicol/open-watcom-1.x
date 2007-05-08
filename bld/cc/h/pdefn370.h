@@ -38,10 +38,6 @@ hw_reg_set DefaultParms[] = {
         HW_D( HW_EMPTY )
 };
 
-hw_reg_set DefaultVarParms[] = {
-        HW_D( HW_EMPTY )
-};
-
 linkage_regs DefaultLinkage = {
         HW_D( HW_G10 ),  /* GP */
         HW_D( HW_G12 ),  /* SP */
@@ -98,4 +94,8 @@ hw_reg_set RegBits[] ={
         HW_D( HW_G13 ),
         HW_D( HW_G14 ),
         HW_D( HW_G15 ),
+ };
+
+hw_reg_set DefaultVarParms[] = {
+        HW_D( HW_EMPTY )
 };

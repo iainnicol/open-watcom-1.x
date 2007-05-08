@@ -49,7 +49,7 @@ char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
 #endif
 
 
-void CBanner( void )
+void CBanner()
 {
     if( CompFlags.banner_printed ) return;              /* 13-mar-90 */
     if( CompFlags.quiet_mode )     return;
@@ -58,9 +58,6 @@ void CBanner( void )
                                                 _WCC_VERSION_ ) );
 #elif _CPU == _PPC
     BannerMsg( banner1w( "C PowerPC Optimizing Compiler",
-                                                _WCC_VERSION_ ) );
-#elif _CPU == _MIPS
-    BannerMsg( banner1w( "C MIPS Optimizing Compiler",
                                                 _WCC_VERSION_ ) );
 #else
     BannerMsg( banner1w( "C" _386 _COMPILER, _WCC_VERSION_ ) );

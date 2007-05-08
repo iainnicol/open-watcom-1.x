@@ -24,50 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  convert float binary format to string representation
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <ctype.h>
-#include "cvars.h"
 
-#define MAX_DIGIT 21
-
-static char     buf[80];
-
-char *ftoa( FLOATVAL *flt )
-{
-#ifdef __WATCOMC__
-    CVT_INFO    cvt;
-    char        mant[MAX_DIGIT + 1];
-
-    cvt.flags = G_FMT + F_CVT + NO_TRUNC + LONG_DOUBLE;
-    cvt.scale = 1;
-    cvt.ndigits = MAX_DIGIT;
-    cvt.expwidth = 0;
-    cvt.expchar  = 0;
-    __LDcvt( &flt->ld, &cvt, mant );
-    if( !isdigit( *mant ) ) {
-        /* special magical thingy (nan, inf, ...) */
-        strcpy( buf, mant );
-        return( buf );
+void ftoa( value, buf )
+        double value;
+        char *buf;
+    {
+        sprintf( buf, "%.19e", value );
     }
-    if( *mant != '0' )
-        --cvt.decimal_place;
-    sprintf( buf, "%c%c.%sE%+1d", 
-        ( cvt.sign ) ? '-' : '+', *mant, mant + 1, cvt.decimal_place );
-#else
-  #ifdef _LONG_DOUBLE_
-    double      dbl;
-    long_double ld;
-    ld = flt->ld;
-    __LDFD( (long_double near *)&ld, (double near *)&dbl );
-    sprintf( buf, "%.19e", dbl );
-  #else
-    sprintf( buf, "%.19e", flt->ld );
-  #endif
-#endif
-    return( buf );
-}

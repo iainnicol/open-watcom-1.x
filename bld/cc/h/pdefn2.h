@@ -32,6 +32,7 @@
 #ifndef __PDEFN2_H
 #define __PDEFN2_H
 
+global struct toggle            ToggleNames[];
 #if _CPU == 370
 global  linkage_regs            DefaultLinkage;
 global  linkage_regs            OSLinkage;

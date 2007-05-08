@@ -1,7 +1,0 @@
-LIBRARY COMCTL32.DLL
-EXPORTS
-CreatePropertySheetPageA
-CreatePropertySheetPageW
-DestroyPropertySheetPage
-PropertySheetA
-PropertySheetW

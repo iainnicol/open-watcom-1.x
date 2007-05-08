@@ -72,9 +72,9 @@ static  bool    LineLabel( ins_entry *label )
     if( _LblLine( label ) != 0 ) {
         return( TRUE );
     }
-#else
+//#else
     label = label;
-#endif
+//#endif
     return( FALSE );
 }
 

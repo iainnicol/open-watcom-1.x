@@ -87,7 +87,6 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
     MEPTR       mentry;
     FCB         tmp_file;
     FCB         *old_file;
-    TOKEN       *p_token;
 
     str = copy_eq( Buffer, str);
     i = strlen( Buffer );
@@ -100,9 +99,7 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
     mentry->parm_count = 0;
     i = 0;
     if( !EqualChar( *str ) ) {
-        p_token = (TOKEN *)&TokenBuf[i];
-        *p_token = T_PPNUMBER;
-        i += sizeof( TOKEN );
+        TokenBuf[ i++ ] = T_PPNUMBER;
         TokenBuf[ i++ ] = '1';
         TokenBuf[ i++ ] = '\0';
     } else {
@@ -118,9 +115,7 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
             if( ReScanPos() == str ) break;
             if( CurToken == T_WHITE_SPACE ) break;      /* 28-apr-94 */
             if( CurToken == T_BAD_CHAR && ! multiple_tokens ) break;
-            p_token = (TOKEN *)&TokenBuf[i];
-            *p_token = CurToken;
-            i += sizeof( TOKEN );
+            TokenBuf[i++] = CurToken;
 
             switch( CurToken ) {
             case T_BAD_CHAR:
@@ -148,7 +143,7 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, int flags )
     }
     TokenBuf[i] = T_NULL;
     if( strcmp( mentry->macro_name, "defined" ) != 0 ){
-        MacroAdd( mentry, TokenBuf, i + sizeof( TOKEN ), flags );
+        MacroAdd( mentry, TokenBuf, i + 1, flags );
     }else{
         CErr1( ERR_CANT_DEFINE_DEFINED );
         CMemFree( mentry );
@@ -219,7 +214,7 @@ char *AddUndefName( char *str )
 }
 
 
-static void FreeUndefNames( void )
+static void FreeUndefNames()
 {
     struct undef_names *uname;
 
@@ -231,7 +226,7 @@ static void FreeUndefNames( void )
 }
 
 
-static void Define_Extensions( void )
+static void Define_Extensions()
 {
     PreDefine_Macro( "_far16=__far16" );
     PreDefine_Macro( "near=__near" );
@@ -254,44 +249,53 @@ static void Define_Extensions( void )
     PreDefine_Macro( "_loadds=__loadds" );
     PreDefine_Macro( "_saveregs=__saveregs" );
     PreDefine_Macro( "_stdcall=__stdcall" );
-    PreDefine_Macro( "_syscall=__syscall" );
-    PreDefine_Macro( "_based=__based" );
+    PreDefine_Macro( "_syscall=_Syscall" );        /* 04-jul-91 */
+    PreDefine_Macro( "_based=__based" );                /* 31-jan-92 */
     PreDefine_Macro( "_self=__self" );
     PreDefine_Macro( "_segname=__segname" );
     PreDefine_Macro( "_segment=__segment" );
-    PreDefine_Macro( "_try=__try");
-    PreDefine_Macro( "_except=__except");
-    PreDefine_Macro( "_finally=__finally");
-    PreDefine_Macro( "_leave=__leave");
+    PreDefine_Macro( "_try=_Try");
+    PreDefine_Macro( "_except=_Except");
+    PreDefine_Macro( "_finally=_Finally");
+    PreDefine_Macro( "_leave=_Leave");
     PreDefine_Macro( "_asm=__asm");
 #if _CPU == 8086
     /* SOM for Windows macros */
-    PreDefine_Macro( "SOMLINK=__cdecl" );
+    PreDefine_Macro( "SOMLINK=__cdecl" );               /* 29-mar-94 */
     PreDefine_Macro( "SOMDLINK=__far" );
 #else
-    PreDefine_Macro( "SOMLINK=_Syscall" );
-    PreDefine_Macro( "SOMDLINK=_Syscall" );
+    PreDefine_Macro( "SOMLINK=_Syscall" );              /* 09-apr-93 */
+    PreDefine_Macro( "SOMDLINK=_Syscall" );             /* 10-apr-95 */
 #endif
 }
 
 
-void MiscMacroDefs( void )
+void MiscMacroDefs()
 {
     if( CompFlags.inline_functions ) {
         Define_Macro( "__INLINE_FUNCTIONS__" );
     }
-    if( ! CompFlags.extensions_enabled ) {
+    if( ! CompFlags.extensions_enabled ) {  /* 21-jul-88 */
         Define_Macro( "NO_EXT_KEYS" );
     } else {
         Define_Extensions();
     }
     if( CompFlags.signed_char ) {
-        Define_Macro( "__CHAR_SIGNED__" );
+        Define_Macro( "__CHAR_SIGNED__" );              /* 20-apr-90 */
     }
     if( CompFlags.rent ) {
-        Define_Macro( "__RENT__" );
+        Define_Macro( "__RENT__" );                     /* 20-apr-90 */
     }
-    PreDefine_Macro( "_PUSHPOP_SUPPORTED" );
+    PreDefine_Macro( "_Far16=__far16" );
+    PreDefine_Macro( "__syscall=_Syscall" );            /* 04-jul-91 */
+    PreDefine_Macro( "_System=_Syscall" );
+    PreDefine_Macro( "_Cdecl=__cdecl" );
+    PreDefine_Macro( "_Pascal=__pascal");
+    PreDefine_Macro( "__try=_Try");
+    PreDefine_Macro( "__except=_Except");
+    PreDefine_Macro( "__finally=_Finally");
+    PreDefine_Macro( "__leave=_Leave");
+    PreDefine_Macro( "_PUSHPOP_SUPPORTED" );             /* 10-apr-95 */
     PreDefine_Macro( CompilerID );
     FreeUndefNames();
 }
@@ -315,7 +319,7 @@ void InitModInfo( void )
     ErrLimit = 20;
     WngLevel = 1;
     PackAmount = 8;
-#if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
+#if _CPU == _AXP || _CPU == _PPC
     CompFlags.make_enums_an_int = 1;     // make enums ints
     CompFlags.original_enum_setting = 1;
     PackAmount = 8;
@@ -354,5 +358,15 @@ void InitModInfo( void )
     CompFlags.use_stdcall_at_number = 1;
     CompFlags.rent = 0;
 
-    SetAuxWatcallInfo();
+    DefaultInfo.class   = 0;
+    DefaultInfo.code    = NULL;
+    DefaultInfo.parms   = DefaultParms;
+#if _CPU == 370
+    DefaultInfo.linkage = &DefaultLinkage;
+#endif
+    HW_CAsgn( DefaultInfo.returns, HW_EMPTY );
+    HW_CAsgn( DefaultInfo.streturn, HW_EMPTY );
+    HW_CAsgn( DefaultInfo.save, HW_FULL );
+    DefaultInfo.use     = 0;
+    DefaultInfo.objname = NULL;      /* DefaultObjName; */
 }

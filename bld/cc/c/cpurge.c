@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Purge non-permanent memory. Mostly obsolete.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,19 +33,24 @@
 #include "cvars.h"
 
 
-extern  void    FreeFNames( void );
+extern  void    CMemFree();
+extern  void    CClose();
+extern  void    FreeFNames(void);
 extern  void    FreeRDir( void );
-extern  void    SymsPurge( void );
+extern  void    PragmaFini();
+extern  void    SymsPurge();
+extern  void    QuadFini();
+extern  void    FreeDataQuads();
 
 
-void InitPurge( void )
-/********************/
+void InitPurge()
+/**************/
 {
 }
 
 
-void SrcPurge( void )
-/*******************/
+void SrcPurge()
+/*************/
 {
     FCB *src_file;
 
@@ -66,11 +72,12 @@ static void Purge( char **ptr )
     }
 }
 
-void PurgeMemory( void )
-/**********************/
+void PurgeMemory()
+/****************/
 {
 //  MacroPurge();
     SymsPurge();        /* calls TypesPurge */
+    PragmaFini();
     FreeDataQuads();
     FreeFNames();
     FreeRDir();

@@ -41,7 +41,7 @@ struct  _CONTEXT;
 
 struct  try_block {
         struct try_block        *next;
-        void                    (*try_handler)( void );
+        void                    (*try_handler)();
         unsigned long           saved_EBP;
         struct scope_entry      *scope_table;
         unsigned char           scope_index;

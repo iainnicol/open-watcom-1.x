@@ -80,6 +80,7 @@ extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
 extern  sym_handle  AskForLblSym(label_handle);
 extern  void        CodeLabel(label_handle,unsigned);
+extern  void        CodeLabelLinenum( label_handle, unsigned, cg_linenum );
 extern  void        EmitRtnBeg( void );
 extern  void        CodeLineNum( cg_linenum,bool);
 extern  seg_id      SetOP(seg_id);
@@ -105,6 +106,7 @@ extern  void        GenP5ProfilingEpilog( label_handle );
 extern  bool        SymIsExported( sym_handle );
 extern  void        FlowSave( hw_reg_set * );
 extern  void        FlowRestore( hw_reg_set * );
+extern  void        TellProcLabel( label_handle );
 
 /* forward declarations */
 static  void        MoveParms( void );
@@ -616,7 +618,7 @@ extern  void    GenProlog( void ) {
         EmitNameInCode();
     }
 
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( NUMBERS ) && _IsTargetModel( OWL )) {
         CodeLineNum( HeadBlock->ins.hd.line_num, FALSE );
     }
 
@@ -640,7 +642,8 @@ extern  void    GenProlog( void ) {
     }
     #endif
 
-    CodeLabel( label, DepthAlign( PROC_ALIGN ) );
+    TellProcLabel( label );
+    CodeLabelLinenum( label, DepthAlign( PROC_ALIGN ), HeadBlock->ins.hd.line_num);
 
     attr = FEAttr( AskForLblSym( origlabel ) );
 

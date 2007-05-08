@@ -75,16 +75,15 @@ typedef enum ops {
         OPR_PUSHSEG,    // push seg of sym_handle
         OPR_DUPE,       // dupe value
         OPR_CONVERT_PTR,// convert pointer
-    OPR_CONVERT_SEG,// convert pointer to segment value
         OPR_NOP,        // no operation
         OPR_DOT,        // sym.field
         OPR_ARROW,      // sym->field
         OPR_INDEX,      // array[index]
         OPR_ADDROF,     // & expr
-
-        OPR_FARPTR,     // segment :> offset         0x30
+        OPR_FARPTR,     // segment :> offset
         OPR_FUNCNAME,   // function name
-        OPR_CALL,       // function call
+
+        OPR_CALL,       // function call        0x30
         OPR_CALL_INDIRECT,// indirect function call
         OPR_PARM,       // function parm
         OPR_COMMA,      // expr , expr
@@ -98,10 +97,10 @@ typedef enum ops {
         OPR_FUNCTION,   // start of function
         OPR_FUNCEND,    // end of function
         OPR_STMT,       // node for linking statements together
-
-        OPR_NEWBLOCK,   // start of new block with local variables    0x40
+        OPR_NEWBLOCK,   // start of new block with local variables
         OPR_ENDBLOCK,   // end of block
-        OPR_TRY,        // start of try block
+
+        OPR_TRY,        // start of try block   0x40
         OPR_EXCEPT,     // start of except block
         OPR_EXCEPT_CODE,// __exception_code
         OPR_EXCEPT_INFO,// __exception_info
@@ -115,9 +114,9 @@ typedef enum ops {
         OPR_MATHFUNC2,  // intrinsic math function with 2 parms, eg. atan2
         OPR_VASTART,    // va_start (for ALPHA)
         OPR_INDEX2,     // part of a multi-dimensional array
-
-        OPR_ALLOCA,     // alloca (for ALPHA)   0x50
+        OPR_ALLOCA,     // alloca (for ALPHA)
         OPR_PATCHNODE,  // patch node
+
         OPR_INLINE_CALL,// call is to be made inline
         OPR_TEMPADDR,   // address of temp
         OPR_PUSHTEMP,   // push value of temp
@@ -178,16 +177,12 @@ typedef enum    pointer_class{
     PTR_NOT,
 }pointer_class;
 
-#define FAR16_PTRCLASS(cls)     ((cls == PTR_FAR16) || (cls == PTR_FUNC_FAR16))
-
 #define MAX_INLINE_DEPTH  3         // how deep to inline
 typedef enum{
     FUNC_NONE         = 0x00,
     FUNC_OK_TO_INLINE = 0x01,       // can inline this node
     FUNC_INUSE        = 0x02,       // inuse as inline or gen
     FUNC_USES_SEH     = 0x04,       // uses structure exceptions
-    FUNC_USED         = 0x08,       // function should really be emitted
-    FUNC_MARKED       = 0x10,       // function marked for emit investigation
 }func_flags;
 
 typedef unsigned short  LABEL_INDEX;
@@ -221,6 +216,8 @@ typedef struct  string_literal {
         char            flags;          /* 0 or FLAG_FAR */
         char           *literal;        /* actual literal string */
 } STRING_LITERAL;
+
+#include "xfloat.h"
 
 // if we end up converting the string to binary to store in long_double
 // then at the same time, we should set string[0] to '\0' to indicate
@@ -285,11 +282,10 @@ typedef struct expr_node {
     union {
         TYPEPTR         expr_type;      // used during pass 1
         TREEPTR         thread;         // used during pass 2 full codegen
-        int             srclinenum;     // OPR_STMT, and OPR_NOP for callnode
+        int     srclinenum;             // OPR_STMT, and OPR_NOP for callnode
     };
     OPNODE          op;
     bool            visit;
-    bool            checked;            // opnd values have been checked
 } EXPRNODE;
 
 extern  TREEPTR LeafNode(int);
@@ -306,9 +302,10 @@ extern  int     WalkExprTree( TREEPTR,
                         void (*postfix_operator)(TREEPTR) );
 extern void     CastFloatValue(TREEPTR,DATA_TYPE);
 extern void     CastConstValue(TREEPTR,DATA_TYPE);
-extern void     MakeBinaryFloat(TREEPTR);
+extern void     InitExpressCode(int,int);
 
 typedef struct  sym_lists {
     struct sym_lists    *next;
     SYM_HANDLE          sym_head;
 } SYM_LISTS;
+

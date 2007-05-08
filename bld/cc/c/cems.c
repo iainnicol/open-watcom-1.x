@@ -32,6 +32,10 @@
 
 #include "cvars.h"
 
+extern  void *FEmalloc();                       /* cmemmgr */
+extern  void FEfree();                          /* cmemmgr */
+
+
 void CSegFree( SEGADDR_T segment )
 {
     FEfree( segment );

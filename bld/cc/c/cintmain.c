@@ -33,29 +33,25 @@
 #include <unistd.h>
 #include <limits.h>
 #if defined( __DOS__ ) || defined( __OS2__ ) || defined( __OSI__ ) || defined( __NT__ )
-  #include <process.h>
+    #include <process.h>
 #endif
-#ifdef __OSI__
-  #include "ostype.h"
-#endif
-#include "cgdefs.h"
-#define BY_CLI
-#include "feprotos.h"
 
-void ResetHandlers( void )
+void ResetHandlers()
 {
     CloseFiles();                       /* 09-may-89 */
 }
 
+#ifndef __WATCOMC__
+char **_argv;
+#endif
+
 #if defined( __DOS__ ) || defined( __OS2__ ) || defined( __OSI__ ) || defined( __NT__ )
-int main( void )
+int main()
     {
         char       *argv[2];
-        int        ret;
-#if !defined( __OSI__ )	
         char       *buffer;
         int        len;
-#endif	
+        int        ret;
 #else
 int main( int argc, char **argv )
     {
@@ -163,14 +159,14 @@ extern char *FEGetEnv( char const *name ){
 extern void FESetCurInc( void ){
 }
 
-extern void MyExit( int rc )
+extern void MyExit( rc )
 {
         exit( rc );
 } /* myexit */
 
 #if 0
 
-void FECompile( void )
+void FECompile()
 {
     DoCompile();
 }

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DWARF browsing information support.
+* Description:  DWARF debug support.
 *
 ****************************************************************************/
 
@@ -39,10 +39,11 @@
 
 static dw_client       Client;
 static dw_loc_handle   dummyLoc;
+static dw_handle       *SymDWHandles;
 static int             CurFile;
 static int             CurLine;
 
-extern  void    InitDebugTypes( void );         /* from pchdr.c */
+extern  void    InitDebugTypes();               /* from pchdr.c */
 
 typedef enum
 {   DC_RETURN           = 0x01,         // this is a return type
@@ -50,7 +51,12 @@ typedef enum
     DC_DEFAULT          = 0x00          // default behaviour
 } DC_CONTROL;
 
+static dw_handle dwarfTypeArray( TYPEPTR );
+static dw_handle dwarfTypeFunction( TYPEPTR, char * );
 static dw_handle dwarfType( TYPEPTR, DC_CONTROL );
+static dw_handle dwarfStructUnion( TYPEPTR, DC_CONTROL );
+static dw_handle dwarfVariable( SYMPTR );
+
 static void dwarfEmitVariables( SYM_HANDLE sym_handle );
 
 static void type_update( TYPEPTR typ, int mask, dw_handle dh )
@@ -61,7 +67,6 @@ static void type_update( TYPEPTR typ, int mask, dw_handle dh )
 }
 
 static void dwarfFile( unsigned filenum )
-/***************************************/
 {
     static unsigned short Current_File_Index = ~0;
     FNAMEPTR    flist;
@@ -114,7 +119,6 @@ static void dwarfStructInfo( TAGPTR tag )
                         DW_FLAG_PUBLIC );
         } else {
             fld_dh =  dwarfType( typ, DC_DEFAULT );
-            xref = field->xref; // re-get in case the struct was freed during recursion
             if( xref != NULL ){  //stupid struct { int x; int y[] ) = init thing
                   dwarfFile( xref->filenum );
                   DWDeclPos( Client, xref->linenum, 0 );
@@ -179,7 +183,7 @@ static dw_handle dwarfStructUnion( TYPEPTR typ, DC_CONTROL control )
     return( dh );
 }
 
-static ENUMPTR ReverseEnums( ENUMPTR esym )    /* reverse order of enums */
+ENUMPTR ReverseEnums( ENUMPTR esym )    /* reverse order of enums */
 {
     ENUMPTR     prev_enum;
     ENUMPTR     next_enum;
@@ -243,7 +247,7 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
                                 0,
                                 DW_FLAG_DECLARATION | DW_FLAG_PROTOTYPED );
     type_update( typ, TF2_DWARF_DEF, dh );
-    parm_list = typ->u.fn.parms;
+    parm_list = typ->u.parms;
     while( parm_list != NULL ) {
         typ = *parm_list++;
         if( typ == NULL ) break;
@@ -262,7 +266,7 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
 }
 
 uint dwarfTypeModifier( type_modifiers decl_flags )
-/*************************************************/
+/***********************************************/
 {
     uint        modtype = 0;
 
@@ -409,8 +413,8 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
     return( dh );
 }
 
-static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
-/***********************************************************************/
+static void dwarfFunctionDefine(SYM_HANDLE  sym_handle, SYMPTR func_sym )
+/********************************************************************/
 {
     TYPEPTR     typ;
     dw_handle   return_dh;
@@ -434,8 +438,8 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
         flags |= DW_SUB_STATIC;
     }
     return_dh = dwarfType( typ->object, DC_RETURN );
-    func_dh = func_sym->dwarf_handle;
-    if( func_dh != 0 ) {    // was forward ref'd
+    func_dh = SymDWHandles[ sym_handle ];
+    if( func_dh != 0 ){ //was forward ref'd
         DWHandleSet( Client, func_dh );
     }
     dwarfLocation( func_sym );
@@ -450,7 +454,7 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
                    func_sym->name,
                    0,
                    flags );
-    func_sym->dwarf_handle = func_dh;
+    SymDWHandles[ sym_handle ] = func_dh;
     for( sym_handle = func_sym->u.func.parms; sym_handle; ) {
         sym = SymGetPtr( sym_handle );
         dh = DWFormalParameter( Client,
@@ -459,14 +463,14 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
                         NULL,
                         sym->name,
                         DW_DEFAULT_NONE );
-        sym->dwarf_handle = dh;
+        SymDWHandles[ sym_handle ] = dh;
         sym_handle = sym->handle;
     }
     dwarfEmitVariables( func_sym->u.func.locals );
 }
 
 static dw_handle dwarfFunctionDecl( SYMPTR func_sym )
-/***************************************************/
+/*********************************************/
 {
     TYPEPTR     typ;
     dw_handle   return_dh;
@@ -530,7 +534,6 @@ static dw_handle dwarfVariable( SYMPTR sym )
 
 
 static void dwarfEmitVariables( SYM_HANDLE sym_handle )
-/*****************************************************/
 {
     SYMPTR      sym;
     TYPEPTR     typ;
@@ -553,15 +556,14 @@ static void dwarfEmitVariables( SYM_HANDLE sym_handle )
                 dh = dwarfVariable( sym );
 //              printf( "var:: %s", sym->name );
             }
-            sym->dwarf_handle = dh;
+            SymDWHandles[ sym_handle ] = dh;
 //          printf( " defined on line %u\n", sym->d.defn_line );
         }
         sym_handle = sym->handle;
     }
 }
 
-static void dwarfDumpNode( TREEPTR node )
-/***************************************/
+void dwarfDumpNode( TREEPTR node )
 {
     SYMPTR      sym;
 
@@ -587,10 +589,10 @@ static void dwarfDumpNode( TREEPTR node )
         if( !(sym->flags & SYM_TEMP) ) {
             dw_handle   dh;
 
-            dh = sym->dwarf_handle;
-            if( dh == 0 ) {     // forward ref
+            dh = SymDWHandles[ node->op.sym_handle ];
+            if( dh == 0 ){   // forward ref
                 dh = DWHandle( Client, DW_ST_NONE );
-                sym->dwarf_handle = dh;
+                SymDWHandles[ node->op.sym_handle ] = dh;
             }
             dwarfFile( CurFile );
             DWReference( Client, CurLine, 0, dh );
@@ -602,8 +604,7 @@ static void dwarfDumpNode( TREEPTR node )
 }
 
 
-static void dwarfEmitFunctions( void )
-/************************************/
+void dwarfEmitFunctions()
 {
     TREEPTR     tree;
 
@@ -634,19 +635,18 @@ static void EmitAType( TYPEPTR typ )
     dwarfType( typ, DC_DEFAULT );
 }
 
-static void dwarfInitTypes( void )
-/********************************/
+void InitDwarfTypes()
 {
     WalkTypeList( SetDwarfType );
     WalkFuncTypeList( SetFuncDwarfType );
 }
 
-static void dwarfEmit( void )
-/***************************/
+void dwarfEmit( void )
+/********************/
 {
     int         i;
 
-    dwarfInitTypes();
+    InitDwarfTypes();
     for( i = TYPE_CHAR; i <= TYPE_DOUBLE; i++ ) {
         dwarfType( GetType( i ), DC_DEFAULT );
     }
@@ -656,9 +656,21 @@ static void dwarfEmit( void )
     InitDebugTypes();
 }
 
+static void InitSymDWHandles( void )
+/***********************************/
+{
+    int i , count;
+
+    count =  NextSymHandle + 1;
+    SymDWHandles = (dw_handle *) CMemAlloc( count * sizeof(dw_handle) );
+    for( i = 0; i < count; ++i ){
+        SymDWHandles[i] = 0;
+    }
+}
 extern void DwarfBrowseEmit( void )
 /*********************************/
 {
+    InitSymDWHandles();
     Client = DwarfInit();
     dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
     CurFile = 0;
@@ -666,4 +678,23 @@ extern void DwarfBrowseEmit( void )
     dwarfEmit();
     DWLocTrash( Client, dummyLoc );
     DwarfFini( Client );
+    CMemFree( SymDWHandles );
+}
+
+
+extern void DwarfDebugInit( void )
+/********************************/
+{
+    SymDWHandles = (dw_handle *)
+                CMemAlloc( (NextSymHandle + 1) * sizeof(dw_handle) );
+    Client = DFClient();
+    dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
+}
+
+extern void DwarfDebugFini( void )
+/****************************/
+{
+    DWLocTrash( Client, dummyLoc );
+    CMemFree( SymDWHandles );
+    SymDWHandles = NULL;
 }

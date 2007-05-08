@@ -30,19 +30,18 @@
 ****************************************************************************/
 
 
-#include "cvars.h"
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <setjmp.h>
 #include "bool.h"
 #include "idedll.h"
-#include "cgdefs.h"
-#include "cgmisc.h"
-#include "cgdllcli.h"
-#define BY_CLI
-#include "feprotos.h"
-
+#include "cmsg.h"
+extern  void    FrontEndInit( bool reuse );     /* ccmain */
+extern  int     FrontEnd(char const **);        /* ccmain */
+extern  void    FrontEndFini( void );           /* ccmain */
+extern  void    CauseTBreak( void );    // stop compiler
+extern  void    TBreak( void );    // stop compiler
 extern  void    SetNoCurrInc( void ); // no curr inc
 
 static   IDECBHdl      Hdl;          // - handle for this instantiation
@@ -51,7 +50,7 @@ static   IDEInitInfo   Info;
 
 #pragma  aux xref "*"
 #pragma  aux (xref) __DLLstart_;
-extern void  __DLLstart_( void );
+extern void  __DLLstart_();
 void * Dll = &__DLLstart_;
 
 
@@ -294,7 +293,7 @@ IDEBool IDEDLL_EXPORT IDERunYourSelf // COMPILE A PROGRAM
     }
     argv[0] = opts;
     argv[3] = NULL;
-    ret = FrontEnd( (char **)argv );
+    ret = FrontEnd( argv );
 #if HEAP_CHK  == 1
 
     switch( heap_size( &after ) ){

@@ -5,8 +5,6 @@
 Usage: wccaxp [options] file [options]
 :elsesegment Tppc
 Usage: wccppc [options] file [options]
-:elsesegment Tmps
-Usage: wccmps [options] file [options]
 :elsesegment T386
 Usage: wcc386 [options] file [options]
 :elsesegment
@@ -37,7 +35,7 @@ Options:
 :endsegment
 -aa           allow non const initializers for local aggregates or unions
 -ad[=<file>]  generate make style auto depend file
--add[=<file>] set source dependancy name in auto depend file
+-add[=<file>] set souce dependancy name in auto depend file
 -adt[=<file>] set make style auto depend target name
 -adhp[=<file>]set default for no header path
 -adbs         force slashes to backward '\\' slashes (auto dep gen)
@@ -47,9 +45,7 @@ Options:
 :segment Taxp
 -as           assume short integers are aligned
 :endsegment
--bc           build target is a console application
 -bd           build target is a dynamic link library (DLL)
--bg           build target is a GUI application
 -bm           build target is a multi-thread environment
 :segment T386 | Taxp
 -br           build with dll run-time library
@@ -68,16 +64,6 @@ Options:
 -ec           emit code coverage gear
 :endsegment
 :segment T386 | Ti86
--ecc          set default calling convention to __cdecl
--ecd          set default calling convention to __stdcall
--ecf          set default calling convention to __fastcall
-:segment HIDDEN
--eco          set default calling convention to _Optlink
-:endsegment
--ecp          set default calling convention to __pascal
--ecr          set default calling convention to __fortran
--ecs          set default calling convention to __syscall
--ecw          set default calling convention to __watcall (default)
 -ee           call epilogue hook routine
 -ef           use full pathnames in error and warning messages
 :endsegment
@@ -87,21 +73,9 @@ Options:
 -en           emit routine names in the code segment
 -ep[=<num>]   call prologue hook routine with <num> stack bytes available
 :endsegment
-:segment Taxp | Tppc | Tmps
--eb           emit big-endian object files
--el           emit little-endian object files
-:endsegment
-:: add T386 later
-:segment Taxp | Tppc | Tmps
--eoc          emit COFF object files
--eoe          emit ELF object files
-:endsegment
-:segment HIDDEN
--eoo          emit OMF object files
-:endsegment
 -eq           do not display error messages (they are still written to a file)
 :segment T386
--et           Pentium profiling
+-et           P5 profiling
 -ez           generate PharLap EZ-OMF object files
 :endsegment
 -fh[=<file>]  use pre-compiled headers
@@ -109,7 +83,6 @@ Options:
 -fi=<file>    force <file> to be included
 -fo[=<file>]  set object or preprocessor output file name
 -fr[=<file>]  set error file name
--fti          print informational message when opening include file
 :segment T386 | Ti86
 -fp2          generate 287 floating-point code
 -fp3          generate 387 floating-point code
@@ -152,8 +125,8 @@ Options:
 :segment T386 | Ti86
 -nt=<id>      set name of text segment
 :endsegment
-:segment Taxp | Tppc | Tmps
--o{a,b,d,e,h,i,k,h,l,n,o,p,r,s,t,u,x,z} control optimization
+:segment Taxp
+-o{a,b,d,e,h,i,k,l,n,o,r,s,t,u,x,z} control optimization
 :elsesegment
 -o{a,b,c,d,e,f[+],h,i,k,l,m,n,o,p,r,s,t,u,x,z} control optimization
 :endsegment
@@ -183,18 +156,16 @@ Options:
   s           -> favor code size over execution time in optimizations
   t           -> favor execution time over code size in optimizations
   u           -> all functions must have unique addresses
-:segment Taxp | Tppc | Tmps
+:segment Taxp
   x           -> equivalent to -obiler -s
 :elsesegment
   x           -> equivalent to -obmiler -s
 :endsegment
   z           -> NULL points to valid memory in the target environment
--pil          preprocessor ignores #line directive
 -p{c,l,w=<num>} preprocess source file
   c           -> preserve comments
   l           -> insert #line directives
   w=<num>     -> wrap output lines at <num> columns. Zero means no wrap.
--q            operate quietly
 :segment T386 | Ti86
 -r            save/restore segment registers across calls
 -ri           return chars and shorts as ints
@@ -204,7 +175,7 @@ Options:
 -sg           generate calls to grow the stack
 -st           touch stack through SS first
 :endsegment
-:segment Taxp | Tmps
+:segment Taxp
 -si           initialize stack frame storage with pattern
 :endsegment
 -tp=<id>      set #pragma on( <id> )
@@ -241,12 +212,6 @@ Options:
 :endsegment
 -ze           enable extensions (i.e., near, far, export, etc.)
 -zev          enable arithmetic on void derived types
-:segment T386
--zfw          generate FWAIT instructions
-:endsegment
-:segment Ti86
--zfw          generate FWAIT instructions on 386 and later
-:endsegment
 :segment T386 | Ti86
 -zff          FS floats i.e. not fixed to a segment
 -zfp          FS is pegged to a segment
@@ -273,7 +238,7 @@ Options:
 :segment Taxp
 -zps          always align structs on qword boundaries
 :endsegment
--zq           operate quietly (equivalent to -q)
+-zq           operate quietly
 :segment T386 | Ti86
 -zro          omit floating point rounding calls (non ANSI)
 :endsegment

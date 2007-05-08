@@ -24,30 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  Expression tree utility routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #include "cvars.h"
 
-
 TREEPTR ExprNodeList;
 int     NodeCount;
 
-void InitExprTree( void )
+void InitExprTree()
 {
     ExprNodeList = NULL;
 }
 
-void AllocMoreExprNodes( void )
+void AllocMoreExprNodes()
 {
     TREEPTR     node;
     int         i;
 
-    node = (TREEPTR)CMemAlloc( 500 * sizeof( EXPRNODE ) );
+    node = (TREEPTR)CMemAlloc( 500 * sizeof(EXPRNODE) );
     ExprNodeList = node;
-    for( i = 0; i < (500 - 1); i++ ) {
+    for( i = 0; i < (500-1); i++ ) {
         node->left = node + 1;
         ++node;
     }
@@ -63,12 +63,11 @@ TREEPTR ExprNode( TREEPTR left, int opcode, TREEPTR right )
     }
     node = ExprNodeList;
     ExprNodeList = node->left;
-    node->left     = left;
-    node->right    = right;
-    node->op.opr   = opcode;
+    node->visit  = FALSE;
+    node->left = left;
+    node->right = right;
+    node->op.opr = opcode;
     node->op.flags = 0;
-    node->visit    = FALSE;
-    node->checked  = FALSE;
     ++NodeCount;
     return( node );
 }
@@ -93,7 +92,7 @@ void FreeExprNode( TREEPTR node )
                 CMemFree( cse );
             }
             CMemFree( sw );
-        } else if ( node->op.opr == OPR_CALL ) {
+        }else if ( node->op.opr == OPR_CALL ){
             ChkCallNode( node );
         }
         --NodeCount;

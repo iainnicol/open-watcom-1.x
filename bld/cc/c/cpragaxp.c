@@ -36,28 +36,21 @@
 #include "asinline.h"
 #include "asmstmt.h"
 #include "scan.h"
-#include <ctype.h>
+
+static  hw_reg_set      StackParms[] = { HW_D( HW_EMPTY ) };
+static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
+static  int             AsmFuncNum;
 
 extern void *AsmAlloc( unsigned amount );
 extern void AsmFree( void *ptr );
 
-extern  TREEPTR     CurFuncNode;
-
-static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
-static  int             AsmFuncNum;
-static  struct aux_info AuxInfo;
-
-static struct {
-    unsigned    f_returns : 1;
-//    unsigned    f_streturn : 1;
-} AuxInfoFlg;
 
 void AsmWarning( char *msg )
 /**************************/
 {
-    CWarn( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
-}
+// CC provides this
 
+}
 
 uint_32 AsmQuerySPOffsetOf( char *name )
 /**************************************/
@@ -66,7 +59,6 @@ uint_32 AsmQuerySPOffsetOf( char *name )
     return( 0 );
 }
 
-
 enum sym_state AsmQueryExternal( char *name )
 /*******************************************/
 {
@@ -74,13 +66,8 @@ enum sym_state AsmQueryExternal( char *name )
     auto SYM_ENTRY sym;
 
     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
-    if( sym_handle == 0 )
-        return( SYM_UNDEFINED );
+    if( sym_handle == 0 ) return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
-    if( !(sym.flags & SYM_REFERENCED) ) {
-        sym.flags |= SYM_REFERENCED;
-        SymReplace( &sym, sym_handle );
-    }
     switch( sym.stg_class ) {
     case SC_AUTO:
     case SC_REGISTER:
@@ -88,7 +75,6 @@ enum sym_state AsmQueryExternal( char *name )
     }
     return( SYM_EXTERNAL );
 }
-
 
 local void FreeAsmFixups( void )
 /******************************/
@@ -102,37 +88,19 @@ local void FreeAsmFixups( void )
 //  AsmRelocs = NULL;
 }
 
-
 static byte_seq_reloc *GetFixups( void )
 /**************************************/
 {
-    asmreloc            *reloc;
-    byte_seq_reloc      *head;
-    byte_seq_reloc      *new;
-    byte_seq_reloc      **lnk;
-    SYM_HANDLE          sym_handle;
-    SYM_ENTRY           sym;
+    asmreloc       *reloc;
+    byte_seq_reloc  *head,*new;
+    byte_seq_reloc **lnk;
+    SYM_HANDLE     sym_handle;
 
     head = NULL;
     lnk = &head;
     for( reloc = AsmRelocs; reloc; reloc = reloc->next ) {
         new = CMemAlloc( sizeof( byte_seq_reloc ) );
         sym_handle = SymLook( CalcHash( reloc->name, strlen( reloc->name ) ), reloc->name );
-        if( sym_handle == 0 ) {
-            CErr2p( ERR_UNDECLARED_SYM, reloc->name );
-            return( 0 );
-        }
-        SymGet( &sym, sym_handle );
-        sym.flags |= SYM_REFERENCED | SYM_ADDR_TAKEN;
-        switch( sym.stg_class ) {
-        case SC_REGISTER:
-        case SC_AUTO:
-            sym.flags |= SYM_USED_IN_PRAGMA;
-            CurFuncNode->op.func.flags &= ~FUNC_OK_TO_INLINE;
-//            uses_auto = 1;
-            break;
-        }
-        SymReplace( &sym, sym_handle );
         new->off = reloc->offset;
         new->type = reloc->type;
         new->sym = (void *)sym_handle;
@@ -143,56 +111,58 @@ static byte_seq_reloc *GetFixups( void )
     return( head );
 }
 
-
-local int GetByteSeq( risc_byte_seq **code )
-/******************************************/
+local int GetByteSeq( void )
+/**************************/
 {
-    unsigned char       buff[MAXIMUM_BYTESEQ + 32];
+    auto unsigned char  buff[ MAXIMUM_BYTESEQ + 32 ];
+    int                 code_length;
     int                 uses_auto;
     char                too_many_bytes;
 
-    AsmSysInit( buff );
+    AsmInit();
     CompFlags.pre_processing = 1;       /* enable macros */
     NextToken();
     too_many_bytes = 0;
     uses_auto = 0;
-    for( ;; ) {
+    AsmSysSetCodeBuffer( buff );
+    code_length = 0;
+    for(;;) {
         if( CurToken == T_STRING ) {    /* 06-sep-91 */
-            AsmLine( Buffer );
+            AsmSysSetCodeAddr( code_length );
+            AsmSysParseLine( Buffer );
+            code_length = AsmSysGetCodeAddr();
             NextToken();
             if( CurToken == T_COMMA ) {
                 NextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
-            AsmCodeBuffer[AsmCodeAddress++] = Constant;
+            buff[ code_length++ ] = Constant;
             NextToken();
         } else {
             break;
         }
-        if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
-            if( !too_many_bytes ) {
+        if( code_length > MAXIMUM_BYTESEQ ) {
+            if( ! too_many_bytes ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
                 too_many_bytes = 1;
             }
-            AsmCodeAddress = 0; // reset index to we don't overrun buffer
+            code_length = 0;          // reset index to we don't overrun buffer
         }
     }
     if( too_many_bytes ) {
         uses_auto = 0;
     } else {
         risc_byte_seq *seq;
-        uint_32       len;
 
-        len = AsmCodeAddress;
-        seq = (risc_byte_seq *)CMemAlloc( sizeof( risc_byte_seq ) + len );
+        seq = (risc_byte_seq *) CMemAlloc( sizeof( risc_byte_seq ) + code_length );
         seq->relocs = GetFixups();
-        seq->length = len;
-        memcpy( &seq->data[0], buff, len );
-        *code = seq;
+        seq->length = code_length;
+        memcpy( &seq->data[0], buff, code_length );
+        CurrInfo->code = seq;
     }
     FreeAsmFixups();
     CompFlags.pre_processing = 2;
-    AsmSysFini();
+    AsmFini();
     return( uses_auto );
 }
 
@@ -201,92 +171,40 @@ void PragmaInit( void )
 /*********************/
 {
     AsmFuncNum = 0;
-}
-
-static void InitAuxInfo( void )
-/*****************************/
-{
-    CurrAlias   = NULL;
-    CurrInfo    = NULL;
-    CurrEntry   = NULL;
-
-    memset( &AuxInfo, 0, sizeof( AuxInfo ) );
-
-    AuxInfoFlg.f_returns    = 0;
-//    AuxInfoFlg.f_streturn   = 0;
-;
-}
-
-static void AdvanceToken( void )
-/******************************/
-{
-    CMemFree( SavedId );
-    SavedId = NULL;
-    CurToken = LAToken;
-}
-
-static void CopyAuxInfo( void )
-/*****************************/
-{
-    if( CurrEntry == NULL ) {
-        // Redefining a built-in calling convention
-    } else {
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
-        *CurrInfo = *CurrAlias;
-    }
-    if( AuxInfo.code != NULL ) {
-        CurrInfo->code = AuxInfo.code;
-    }
-    CurrInfo->cclass |= AuxInfo.cclass;
-    if( AuxInfo.objname != NULL )
-        CurrInfo->objname = AuxInfo.objname;
-    if( AuxInfoFlg.f_returns )
-        CurrInfo->returns = AuxInfo.returns;
-//    if( AuxInfoFlg.f_streturn )
-//        CurrInfo->streturn = AuxInfo.streturn;
-    if( AuxInfo.parms != NULL )
-        CurrInfo->parms = AuxInfo.parms;
-    if( AuxInfo.except_rtn != NULL )
-        CurrInfo->except_rtn = AuxInfo.except_rtn;
-    if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
-        HW_TurnOff( CurrInfo->save, AuxInfo.save );
-    }
+    PragInit();
 }
 
 static int GetAliasInfo( void )
 /*****************************/
 {
-    if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( 1 );
+    auto char   buff[256];
+
+    CurrAlias = &DefaultInfo;
+    if( CurToken != T_LEFT_PAREN ) return( 1 );
     NextToken();
-    if( CurToken != T_ID )                  // error
-        return( 0 );
-    LookAhead();
-    if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
-        PragCurrAlias( SavedId );
-        AdvanceToken();
+    if( CurToken != T_ID ) return( 0 );
+    PragCurrAlias();
+    strcpy( buff, Buffer );
+    NextToken();
+    if( CurToken == T_RIGHT_PAREN ) {
         NextToken();
         return( 1 );
-    } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
-        HashValue = SavedHash;
-        SetCurrInfo( SavedId );
-        AdvanceToken();
+    } else if( CurToken == T_COMMA ) {
         NextToken();
-        if( CurToken != T_ID )              // error
-            return( 0 );
-        PragCurrAlias( Buffer );
+        if( CurToken != T_ID ) return( 0 );
+        CreateAux( buff );
+        PragCurrAlias();
         NextToken();
-        if( CurToken == T_RIGHT_PAREN )
+        if( CurToken == T_RIGHT_PAREN ) {
+            *CurrInfo = *CurrAlias;
             NextToken();
-        CopyAuxInfo();
+        }
         PragEnding();
         return( 0 ); /* process no more! */
-    } else {                                // error
-        AdvanceToken();
+    } else {
         return( 0 ); // shut up the compiler
     }
 }
-
 
 static void GetPdata( void )
 /**************************/
@@ -297,38 +215,10 @@ static void GetPdata( void )
         CErr1( ERR_EXPECTING_ID );
     } else {
         name = CStrSave( Buffer );
-        AuxInfo.except_rtn = name;
+        CurrInfo->except_rtn = name;
         NextToken();
     }
 }
-
-
-static void GetParmInfo( void )
-/*****************************/
-{
-    if( PragRegSet() != T_NULL ) {
-        AuxInfo.parms = PragManyRegSets();
-    }
-}
-
-
-static void GetSaveInfo( void )
-/*****************************/
-{
-    hw_reg_set      reg;
-
-    reg = PragRegList();
-    HW_TurnOn( AuxInfo.save, reg );
-}
-
-
-static void GetRetInfo( void )
-/****************************/
-{
-    AuxInfoFlg.f_returns = 1;
-    AuxInfo.returns = PragRegList();
-}
-
 
 void PragAux( void )
 /******************/
@@ -343,14 +233,13 @@ void PragAux( void )
         unsigned uses_auto: 1;
     } have;
 
-    InitAuxInfo();
-    if( !GetAliasInfo() )
-        return;
-    if( CurToken != T_ID )
-        return;
-    SetCurrInfo( Buffer );
+    if( !GetAliasInfo() ) return;
+    CurrEntry = NULL;
+    if( CurToken != T_ID ) return;
+    SetCurrInfo();
     NextToken();
-    PragObjNameInfo( &AuxInfo.objname );
+    *CurrInfo = *CurrAlias;
+    PragObjNameInfo();
     have.f_export = 0;
     have.f_parm   = 0;
     have.f_value  = 0;
@@ -360,24 +249,24 @@ void PragAux( void )
     have.uses_auto = 0; /* BBB - Jan 26, 1994 */
     for( ;; ) {
         if( CurToken == T_EQUAL ) {
-            have.uses_auto = GetByteSeq( &AuxInfo.code );
+            have.uses_auto = GetByteSeq();
         } else if( !have.f_export && PragRecog( "export" ) ) {
-            AuxInfo.cclass |= DLL_EXPORT;
+            CurrInfo->class |= DLL_EXPORT;
             have.f_export = 1;
         } else if( !have.f_parm && PragRecog( "parm" ) ) {
-            GetParmInfo();
+//          GetParmInfo();
             have.f_parm = 1;
         } else if( !have.f_value && PragRecog( "value" ) ) {
-            GetRetInfo();
+//          GetRetInfo();
             have.f_value = 1;
         } else if( !have.f_value && PragRecog( "aborts" ) ) {
-            AuxInfo.cclass |= SUICIDAL;
+            CurrInfo->class |= SUICIDAL;
             have.f_value = 1;
         } else if( !have.f_modify && PragRecog( "modify" ) ) {
-            GetSaveInfo();
+//          GetSaveInfo();
             have.f_modify = 1;
         } else if( !have.f_frame && PragRecog( "frame" ) ) {
-//          AuxInfo.cclass |= GENERATE_STACK_FRAME;
+//          CurrInfo->class |= GENERATE_STACK_FRAME;
             have.f_frame = 1;
         } else if( !have.f_except && PragRecog( "pdata_exception" ) ) {
             GetPdata();
@@ -392,9 +281,8 @@ void PragAux( void )
            for the use of this pragma. This is done by saying the pragma
            modifies the [E]SP register. A kludge, but it works.
         */
-//      HW_CTurnOn( AuxInfo.save, HW_SP );
+//      HW_CTurnOff( CurrInfo->save, HW_SP );
     }
-    CopyAuxInfo();
     PragEnding();
 }
 
@@ -402,64 +290,14 @@ void PragAux( void )
 hw_reg_set PragRegName( char *str )
 /*********************************/
 {
-    int         index;
-    char        *p;
-    hw_reg_set  name;
-
-    if( *str == '\0' ) {
-        HW_CAsgn( name, HW_EMPTY );
-        return( name );
-    }
-    if( *str == '_' ) {
-        ++str;
-        if( *str == '_' ) {
-            ++str;
-        }
-    }
-    if( *str == '$' ) {
-        ++str;
-        // search alias name
-        p = Registers;
-        index = *(p++);
-        while( *p != '\0' ) {
-            if( strcmp( p, str ) == 0 )
-                return( RegBits[ index ] );
-            while( *(p++) != '\0' )
-                ;
-            index = *(p++);
-        }
-        // decode regular register index
-        if( isdigit( *str ) ) {
-            index = atoi( str );
-            if( str[ 1 ] == '\0' ) {
-                //  0....9
-                if(( index > 0 )
-                  || ( index == 0 ) && ( str[ 0 ] == '0' )) {
-                    return( RegBits[ index ] );
-                }
-            } else if( str[ 2 ] == '\0' ) {
-                // 10....31
-                if(( index > 9 ) && ( index < 32 )) {
-                    return( RegBits[ index ] );
-                }
-            }
-        }
-        --str;
-    }
-    CErr2p( ERR_BAD_REGISTER_NAME, str );
-    HW_CAsgn( name, HW_EMPTY );
-    return( name );
+    return( StackParms[ 0 ] );
 }
 
-
-void AsmSysInit( unsigned char *buf )
-/***********************************/
+void AsmSysInit( void )
+/*********************/
 {
     AsmInit();
-    AsmCodeBuffer = buf;
-    AsmCodeAddress = 0;
 }
-
 
 void AsmSysFini( void )
 /*********************/
@@ -467,6 +305,29 @@ void AsmSysFini( void )
     AsmFini();
 }
 
+uint_32 AsmSysGetCodeAddr( void )
+/******************************/
+{
+    return( AsmCodeAddress );
+}
+
+void AsmSysSetCodeAddr( uint_32 len )
+/***********************************/
+{
+    AsmCodeAddress = len;
+}
+
+void AsmSysSetCodeBuffer( void *buf )
+/***********************************/
+{
+    AsmCodeBuffer = buf;
+}
+
+void AsmSysParseLine( char *line )
+/********************************/
+{
+    AsmLine( line );
+}
 
 void AsmSysMakeInlineAsmFunc( int too_many_bytes )
 /************************************************/
@@ -478,21 +339,20 @@ void AsmSysMakeInlineAsmFunc( int too_many_bytes )
     auto char           name[8];
 
     uses_auto = 0;
-    code_length = AsmCodeAddress;
+    code_length = AsmSysGetCodeAddr();
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );
         ++AsmFuncNum;
         CreateAux( name );
-        CurrInfo = (struct aux_info *)CMemAlloc( sizeof( struct aux_info ) );
-        *CurrInfo = WatcallInfo;
+        *CurrInfo = DefaultInfo;
         CurrInfo->use = 1;
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
         if( too_many_bytes ) {
             uses_auto = 0;
         } else {
-            risc_byte_seq   *seq;
+            risc_byte_seq *seq;
 
-            seq = (risc_byte_seq *)CMemAlloc( sizeof( risc_byte_seq ) + code_length );
+            seq = (risc_byte_seq *) CMemAlloc( sizeof( risc_byte_seq ) + code_length );
             seq->relocs = GetFixups();
             seq->length = code_length;
             memcpy( &seq->data[0], AsmCodeBuffer, code_length );
@@ -520,7 +380,6 @@ void AsmSysMakeInlineAsmFunc( int too_many_bytes )
         AddStmt( tree );
     }
 }
-
 
 char const *AsmSysDefineByte( void )
 /**********************************/

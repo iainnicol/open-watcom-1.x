@@ -33,8 +33,6 @@
 "Usage:  wclaxp [options] file(s)",
 #elif defined(WCLPPC)
 "Usage:  wclppc [options] file(s)",
-#elif defined(WCLMPS)
-"Usage:  wclmps [options] file(s)",
 #elif defined(WCL386)
 "Usage:  wcl386 [options] file(s)",
 #else
@@ -50,8 +48,6 @@
 "-y    ignore the WCLAXP environment variable",
 #elif defined(WCLPPC)
 "-y    ignore the WCLPPC environment variable",
-#elif defined(WCLMPS)
-"-y    ignore the WCLMPS environment variable",
 #elif defined(WCL386)
 "-y    ignore the WCL386 environment variable",
 #else
@@ -94,18 +90,6 @@
 "-bt=<os> compile for target OS.",
 "-db generate browsing information",
 "-e=<n> set error limit number",
-#if defined(WCLI86) || defined(WCL386)
-"-ecc set calling conv. to __cdecl",
-"-ecd set calling conv. to __stdcall",
-"-ecf set calling conv. to __fastcall",
-#if 0 // not officially supported
-"-eco set calling conv. to _Optlink",
-#endif
-"-ecp set calling conv. to __pascal",
-"-ecr set calling conv. to __fortran",
-"-ecs set calling conv. to __syscall",
-"-ecw set calling conv. to __watcall",
-#endif
 "-ee call epilogue hook routine",
 "-ef full paths in messages",
 "-ei force enums to be type int",
@@ -146,7 +130,6 @@
 "-nd=<name>  set data segment name",
 "-nm=<module_name> set module name",
 "-nt=<name>  set text segment name",
-"-q  operate quietly",
 "-r  save/restore segregs across calls",
 #endif
 "-ri promote function args/rets to int",
@@ -262,7 +245,6 @@
 "-t=<n> (C++) # of spaces in tab stop",
 "-tp=<name> (C) set #pragma on( <name>",
 "-u<name>  undefine macro name",
-"-pil ignore #line directives",
 "-p{c,l,w=<n>} preprocess source file",
 "   c     -> preserve comments",
 "   l     -> insert #line directives",
