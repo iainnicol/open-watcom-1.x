@@ -100,6 +100,8 @@ extern  void            WVObjInitInfo( void );
 extern  void            WVTypesEof( void );
 extern  void            WVDmpCueInfo( long_offset here );
 
+extern  void            ObjBytes( char *buffer, unsigned size );
+
 /* Forward ref's */
 static  array_control   *InitArray(int ,int ,int );
 extern  seg_id          SetOP(seg_id );
@@ -244,7 +246,7 @@ typedef struct virt_func_ref_list {
 #define _ARRAYOF( what, type )  ((type *)(what)->array)
 #define _CHGTYPE( what, type )  (*(type *)&(what))
 
-extern  void    InitSegDefs( void ) {
+extern  void    OMFInitSegDefs( void ) {
 /*****************************/
 
     SegDefs = NULL;
@@ -296,6 +298,16 @@ static unsigned GetNameIdx( char *name, char *suff, bool alloc )
     return( NameIndex );
 }
 
+extern  void    OWLInitSegDefs( void );
+extern  void    InitSegDefs( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        OMFInitSegDefs();
+    } else {
+        OWLInitSegDefs();
+    }
+}
+
 static void FlushNames( void )
 {
     /*
@@ -339,7 +351,7 @@ bool FreeObjCache( void )
     return( TRUE );
 }
 
-extern  void    DefSegment( seg_id id, seg_attr attr, char *str, uint align, bool use_16 ) {
+extern  void    OMFDefSegment( seg_id id, seg_attr attr, char *str, uint align, bool use_16 ) {
 /******************************************************************************************/
 
     segdef              *new;
@@ -380,6 +392,16 @@ extern  void    DefSegment( seg_id id, seg_attr attr, char *str, uint align, boo
     }
 }
 
+extern  void    OWLDefSegment( seg_id id, seg_attr attr, char *str, uint align, bool use_16 );
+extern  void    DefSegment( seg_id id, seg_attr attr, char *str, uint align, bool use_16 ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFDefSegment(id,attr,str,align,use_16);
+    } else {
+        OMFDefSegment(id,attr,str,align,use_16);
+        OWLDefSegment(id,attr,str,align,use_16);
+    }
+}
+
 static void DoEmptyQueue( void )
 /*******************/
 {
@@ -393,6 +415,7 @@ static  index_rec       *AskSegIndex( seg_id seg ) {
     index_rec   *rec;
     int         i;
 
+    if (SegInfo == NULL) return ( NULL );
     i = 0;
     rec = SegInfo->array;
     for( ;; ) {
@@ -406,7 +429,7 @@ static  index_rec       *AskSegIndex( seg_id seg ) {
 
 
 
-extern  void    ObjInit( void ) {
+extern  void    OMFObjInit( void ) {
 /*************************/
 
     array_control       *names; /* for LNAMES*/
@@ -557,6 +580,15 @@ extern  void    ObjInit( void ) {
     }
 }
 
+extern  void    OWLObjInit( void );
+extern  void    ObjInit( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        OMFObjInit();
+    } else {
+        OWLObjInit();
+    }
+}
 
 extern seg_id DbgSegDef( char *seg_name, char *seg_class,
                                 int            seg_modifier )
@@ -916,7 +948,7 @@ extern  bool    AskSegNear( segment_id id ) {
 }
 
 
-extern        bool    AskSegBlank( segment_id id ) {
+extern        bool    OMFAskSegBlank( segment_id id ) {
 /*******************************************/
 
     index_rec *rec;
@@ -924,9 +956,19 @@ extern        bool    AskSegBlank( segment_id id ) {
     if( id < 0 )
         return( TRUE );
     rec = AskSegIndex( id );
+    if (rec == NULL)
+      return (TRUE);
     return( rec->cidx == _NIDX_BSS );
 }
 
+extern  bool  OWLAskSegBlank( segment_id id );
+extern  bool  AskSegBlank( segment_id id ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskSegBlank(id);
+    } else {
+        return OWLAskSegBlank(id);
+    }
+}
 
 extern  bool    AskSegPrivate( segment_id id ) {
 /**********************************************/
@@ -936,6 +978,8 @@ extern  bool    AskSegPrivate( segment_id id ) {
     if( id < 0 )
         return( TRUE );
     rec = AskSegIndex( id );
+    if (rec == NULL)
+      return (TRUE);
     return( rec->private || rec->exec );
 }
 
@@ -952,31 +996,64 @@ extern  bool    AskSegROM( segment_id id ) {
 }
 
 
-extern  seg_id  AskBackSeg( void ) {
+extern  seg_id  OMFAskBackSeg( void ) {
 /****************************/
 
     return( BackSeg );
 }
 
+extern  seg_id  OWLAskBackSeg( void );
+extern  seg_id  AskBackSeg( void ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskBackSeg();
+    } else {
+        return OWLAskBackSeg();
+    }
+}
 
-extern  seg_id  AskCodeSeg( void ) {
+extern  seg_id  OMFAskCodeSeg( void ) {
 /****************************/
 
     return( CodeSeg );
 }
 
+extern  seg_id  OWLAskCodeSeg( void );
+extern  seg_id  AskCodeSeg( void ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskCodeSeg();
+    } else {
+        return OWLAskCodeSeg();
+    }
+}
 
-extern  bool    HaveCodeSeg( void ) {
+extern  bool    OMFHaveCodeSeg( void ) {
 /*****************************/
 
     return( CodeSeg != BACKSEGS );
 }
 
+extern  bool    OWLHaveCodeSeg( void );
+extern  bool    HaveCodeSeg( void ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFHaveCodeSeg();
+    } else {
+        return OWLHaveCodeSeg();
+    }
+}
 
-extern  seg_id  AskAltCodeSeg( void ) {
+extern  seg_id  OMFAskAltCodeSeg( void ) {
 /****************************/
 
     return( CodeSeg );
+}
+
+extern  seg_id  OWLAskAltCodeSeg( void );
+extern  seg_id  AskAltCodeSeg( void ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskAltCodeSeg();
+    } else {
+        return OWLAskAltCodeSeg();
+    }
 }
 
 static  seg_id  Code16Seg;
@@ -1002,7 +1079,7 @@ static  cmd_omf    PickOMF( cmd_omf cmd )
     return( cmd );
 }
 
-extern  void    FlushOP( seg_id id ) {
+extern  void    OMFFlushOP( seg_id id ) {
 /************************************/
 
     seg_id      old;
@@ -1023,6 +1100,15 @@ extern  void    FlushOP( seg_id id ) {
     FiniTarg();
     CurrSeg->obj = NULL;
     SetOP( old );
+}
+
+extern  void    OWLFlushOP( seg_id id );
+extern  void    FlushOP( seg_id id ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFFlushOP(id);
+    } else {
+        OWLFlushOP(id);
+    }
 }
 
 static  void    DoASegDef( index_rec *rec, bool use_16 ) {
@@ -1377,7 +1463,15 @@ static  void    DoPatch( patch *pat, offset lc ) {
     }
 }
 
-
+extern  void    OWLObjFini( void );
+extern  void    ObjFini( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        OMFObjFini();
+    } else {
+        OWLObjFini();
+    }
+}
 
 static  void    FreeAbsPatch( abspatch *patch ) {
 /***********************************************/
@@ -1418,6 +1512,7 @@ extern  void    SetUpObj( bool is_data ) {
     object      *obj;
     bool        old_data;
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     if( obj == NULL )
         return;
@@ -1456,6 +1551,7 @@ static  void    OutExport( sym_handle sym ) {
     fe_attr             attr;
 
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     exp = obj->exports;
     if( exp == NULL ) {
@@ -1509,6 +1605,7 @@ static  void    GenComdef( void ) {
     sym_handle          sym;
     unsigned            rec;
 
+    if( CurrSeg == NULL ) return;
     if( CurrSeg->comdat_label != NULL &&
         CurrSeg->max_written < CurrSeg->comdat_size ) {
         if( CurrSeg->max_written != 0 ) {
@@ -1671,7 +1768,7 @@ static void     OutVirtFuncRef( sym_handle virt ) {
 }
 
 
-extern  void    OutLabel( label_handle lbl ) {
+extern  void    OMFOutLabel( label_handle lbl ) {
 /********************************************/
 
     temp_patch          **owner;
@@ -1778,8 +1875,16 @@ extern  void    OutLabel( label_handle lbl ) {
     TellDonePatch( lbl );
 }
 
+extern  void    OWLOutLabel( label_handle lbl );
+extern  void    OutLabel( label_handle lbl ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFOutLabel(lbl);
+    } else {
+        OWLOutLabel(lbl);
+    }
+}
 
-extern  void    AbsPatch( abspatch *patch, offset lc ) {
+extern  void    OMFAbsPatch( abspatch *patch, offset lc ) {
 /******************************************************/
 
     if( patch->flags & AP_HAVE_OFFSET ) {
@@ -1791,6 +1896,15 @@ extern  void    AbsPatch( abspatch *patch, offset lc ) {
     }
 }
 
+extern  void    OWLAbsPatch( abspatch *patch, offset lc );
+extern  void    AbsPatch( abspatch *patch, offset lc ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFAbsPatch(patch,lc);
+    } else {
+        OWLAbsPatch(patch,lc);
+    }
+}
+
 
 static  void    SetAbsPatches( void ) {
 /*******************************/
@@ -1798,6 +1912,7 @@ static  void    SetAbsPatches( void ) {
     abspatch    *patch;
     object      *obj;
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     patch = AbsPatches;
     while( patch != NULL ) {
@@ -1818,6 +1933,7 @@ static  void    SetPatches( void ) {
     array_control       *ctl;
     patch               *pat;
 
+    if( CurrSeg == NULL ) return;
     curr_pat = CurrSeg->obj->patches;
     while( curr_pat != NULL ) {
         ctl = AskLblPatch( curr_pat->lbl );
@@ -1833,7 +1949,7 @@ static  void    SetPatches( void ) {
 }
 
 
-extern  array_control   *InitPatch( void ) {
+extern  array_control   *OMFInitPatch( void ) {
 /************************************/
 
 #define MODEST_PAT 10
@@ -1842,6 +1958,15 @@ extern  array_control   *InitPatch( void ) {
     return( InitArray( sizeof( patch ),  MODEST_PAT, INCREMENT_PAT ) );
 }
 
+extern  array_control *OWLInitPatch( void );
+extern  array_control *InitPatch( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFInitPatch();
+    } else {
+        return OMFInitPatch();
+    }
+}
 
 static  void    InitFPPatches( void ) {
 /*******************************/
@@ -1897,6 +2022,7 @@ extern  void    OutPatch( label_handle lbl, patch_attr attr ) {
     temp_patch  *pat;
     object      *obj;
 
+    if( CurrSeg == NULL ) return;
      /* careful, might be patching offset of seg:off*/
     CheckLEDataSize( 3*sizeof( offset ), TRUE );
     pat = CGAlloc( sizeof( temp_patch ));
@@ -1926,8 +2052,18 @@ extern  void    OutAbsPatch( abspatch *patch, patch_attr attr ) {
 /***************************************************************/
 
     object      *obj;
-    long_offset value;
+    long_offset value = patch->value;
 
+    if( CurrSeg == NULL ) {
+        if( attr & LONG_PATCH ) {
+            OutDataLong( value );
+        } else if( attr & WORD_PATCH ) {
+            OutDataInt( value );
+        } else {
+            OutDataByte( (byte)value );
+        }
+        return;
+    }
     CheckLEDataSize( 2*sizeof( offset ), TRUE );
     if( patch->flags & AP_HAVE_VALUE ) {
         value = patch->value;
@@ -2065,6 +2201,7 @@ static  void    DoFix( int idx, bool rel, base_type base,
     byte        b;
     fix_class   class_flags;
 
+    if( CurrSeg == NULL ) return;
     b = rel ? LOCAT_REL : LOCAT_ABS;
     if( (class & F_MASK) == F_PTR && CurrSeg->data_in_code ) {
         CurrSeg->data_ptr_in_code = TRUE;
@@ -2157,7 +2294,7 @@ static  void    DoFix( int idx, bool rel, base_type base,
 }
 
 
-extern  void    OutReloc( seg_id seg, fix_class class, bool rel ) {
+extern  void    OMFOutReloc( seg_id seg, fix_class class, bool rel ) {
 /*****************************************************************/
 
     index_rec   *rec;
@@ -2171,6 +2308,18 @@ extern  void    OutReloc( seg_id seg, fix_class class, bool rel ) {
     DoFix( rec->base, rel, rec->btype, class, rec->sidx );
 }
 
+extern  void    OutSegReloc( void *label, seg_id seg );
+extern  void    OWLOutReloc( label_handle lbl, fix_class class, bool rel );
+extern  void    OutReloc( label_handle lbl, seg_id seg, fix_class class, bool rel ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFOutReloc(seg, class, rel);
+    } else {
+        if (lbl == NULL)
+            OutSegReloc(lbl, seg);
+        else
+            OWLOutReloc(lbl, rel ? OWL_RELOC_BRANCH_REL : OWL_RELOC_WORD, 0);
+    }
+}
 
 static  void    CheckImportSwitch( bool next_is_static ) {
 /********************************************************/
@@ -2192,6 +2341,10 @@ static  void    CheckImportSwitch( bool next_is_static ) {
 extern  void    OutSpecialCommon( int imp_idx, fix_class class, bool rel ) {
 /**************************************************************************/
 
+    if (_IsTargetModel( OWL )) {
+        printf("out special common\n");
+        return;
+    }
     CheckLEDataSize( 3*sizeof( offset ), TRUE );
     DoFix( imp_idx, rel, BASE_IMP, class, 0 );
 }
@@ -2202,6 +2355,10 @@ extern  void    OutImport( sym_handle sym, fix_class class, bool rel ) {
 
     fe_attr     attr;
 
+    if (_IsTargetModel( OWL )) {
+        OutReloc(FEBack(sym)->lbl, 0, class, rel);
+        return;
+    }
     attr = FEAttr( sym );
 #if  _TARGET & _TARG_80386
     {
@@ -2234,6 +2391,10 @@ extern  void    OutRTImportRel( int rtindex, fix_class class, bool rel ) {
 
     import_handle       idx;
 
+    if (_IsTargetModel( OWL )) {
+        printf("out rt import rel\n");
+        return;
+    }
     idx = AskRTHandle( rtindex );
     if( idx == NOT_IMPORTED ) {
         idx = ImportHdl++;
@@ -2256,6 +2417,7 @@ extern  void    OutBckExport( char *name, bool is_export ) {
     object              *obj;
 
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     exp = obj->exports;
     if( exp == NULL ) {
@@ -2301,6 +2463,9 @@ extern  void    OutBckImport( char *name, bck_info  *bck, fix_class class ) {
 
     import_handle       idx;
 
+    if (_IsTargetModel( OWL )) {
+        return;
+    }
     idx = bck->imp;
     if( idx == NOT_IMPORTED ) {
         idx = ImportHdl++;
@@ -2316,7 +2481,7 @@ extern  void    OutBckImport( char *name, bck_info  *bck, fix_class class ) {
 }
 
 
-extern  void    OutLineNum( cg_linenum  line, bool label_line ) {
+extern  void    OMFOutLineNum( cg_linenum  line, bool label_line ) {
 /***************************************************************/
 
     object      *obj;
@@ -2330,6 +2495,15 @@ extern  void    OutLineNum( cg_linenum  line, bool label_line ) {
     }
 }
 
+extern  void    OWLOutLineNum( cg_linenum line, bool label_line );
+extern  void    OutLineNum( cg_linenum line, bool label_line )
+{
+    if (_IsTargetModel( OWL )) {
+        OWLOutLineNum(line, label_line);
+    } else {
+        OMFOutLineNum(line, label_line);
+    }
+}
 
 #include <cgnoalgn.h>
 typedef struct line_num_entry {
@@ -2425,6 +2599,7 @@ extern  unsigned        SavePendingLine( unsigned new ) {
 */
     unsigned    old;
 
+    if( CurrSeg == NULL ) return 0;
     old = CurrSeg->obj->pending_line_number;
     CurrSeg->obj->pending_line_number = new;
     return( old );
@@ -2440,6 +2615,7 @@ static  void    InitLineInfo( void ) {
 
     object      *obj;
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     if( obj->lines == NULL ) {
         obj->lines = InitArray( sizeof( byte ), MODEST_LINE, INCREMENT_LINE );
@@ -2470,6 +2646,7 @@ static  void    FlushLineNum( void ) {
     object      *obj;
     cmd_omf     rec;
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     if( obj->line_info ) {
         if( CurrSeg->comdat_label != NULL ) {
@@ -2514,6 +2691,7 @@ static void     EjectLEData( void ) {
     }           cmt;
 #include "cgnoalgn.h"
 
+    if( CurrSeg == NULL ) return;
     EjectImports();
     obj = CurrSeg->obj;
     if( obj->data.used > CurrSeg->data_prefix_size ) {
@@ -2558,6 +2736,7 @@ static  void    EjectExports( void ) {
     object      *obj;
     cmd_omf     rec;
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     if( obj->exports != NULL && obj->exports->used != 0 ) {
         if( obj->gen_static_exports ) {
@@ -2576,6 +2755,7 @@ static  void    FlushObject( void ) {
 
     object      *obj;
 
+    if( CurrSeg == NULL ) return;
     SetUpObj( FALSE );
     GenComdef();
     CurrSeg->total_comdat_size += CurrSeg->comdat_size;
@@ -2632,6 +2812,16 @@ extern char GetMemModel( void ) {
     return( model );
 }
 
+extern  char    OWLGetMemModel( void );
+extern  char    GetMemModel( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFGetMemModel();
+    } else {
+        return OWLGetMemModel();
+    }
+}
+
 static void OutModel( array_control *dest ) {
 /*******************************************/
 
@@ -2669,6 +2859,7 @@ static  void    OutString( char *name, array_control *dest ) {
     int len;
 
     len = Length( name );
+    printf("outstring %s\n", name);
     NeedMore( dest, len );
     _CopyTrans( name, &_ARRAY( dest, char ), len );
     dest->used += len;
@@ -2724,6 +2915,7 @@ static  void    OutConcat( char *name1, char *name2, array_control *dest ) {
 static  void    SetMaxWritten( void ) {
 /*******************************/
 
+    if( CurrSeg == NULL ) return;
     if( CurrSeg->location > CurrSeg->max_written ) {
         CurrSeg->max_written = CurrSeg->location;
     }
@@ -2735,6 +2927,12 @@ extern  void    OutDataByte( byte value ) {
 
     int i;
 
+    if( CurrSeg == NULL ) {
+        /* OWL writes */
+        printf("OWL write %x\n", value);
+        ObjBytes(&value, 1);
+        return;
+    }
     SetPendingLine();
     CheckLEDataSize( sizeof( byte ), TRUE );
     i = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
@@ -2754,6 +2952,12 @@ extern  void    OutDBytes( unsigned_32 len, byte *src ) {
     unsigned    max;
     unsigned    n;
 
+    if( CurrSeg == NULL ) {
+        /* OWL writes */
+        printf("OWL dbytes write len %lu start %x\n", len, src[0]);
+        ObjBytes(src, len);
+        return;
+    }
     SetPendingLine();
     CheckLEDataSize( sizeof( byte ), TRUE );
     i = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
@@ -2813,6 +3017,7 @@ extern  void    OutSelect( bool starts ) {
 
     object      *obj;
 
+    if( CurrSeg == NULL ) return;
     if( starts ) {
         SelIdx = CurrSeg->sidx;
         SelStart = CurrSeg->location;
@@ -2858,6 +3063,12 @@ static void FlushSelect( void )
 static  void    OutByte( byte value ) {
 /*************************************/
 
+    if (_IsTargetModel( OWL )) {
+        /* OWL writes */
+        printf("OWL outbyte write %x\n", value);
+        ObjBytes(&value, 1);
+        return;
+    }
     NeedMore( Out, 1 );
     OutBuff[  Out->used++  ] = value;
 }
@@ -2867,6 +3078,14 @@ extern  void    OutIBytes( byte pat, offset len ) {
 
     object      *obj;
 
+    if( CurrSeg == NULL ) {
+        /* use OWL */
+        while( len != 0 ) {
+            OutDataByte( pat );
+            --len;
+        }
+        return;
+    };
     SetPendingLine();
     if( len <= TRADEOFF ) {
         while( len != 0 ) {
@@ -2899,8 +3118,16 @@ extern  void    OutIBytes( byte pat, offset len ) {
 extern  void    OutDataLong( long value ) {
 /*****************************************/
 
-    OutDataInt( value );
-    OutDataInt( value >> 16 );
+    if( _IsTargetModel( OWL ) ) {
+        offset val = _TargetBigInt( value );
+        /* OWL writes */
+        printf( "OWL outdatalong write %x\n", value );
+        ObjBytes( (byte *)&val, 4 );
+        return;
+    } else {
+        OutDataInt( value );
+        OutDataInt( value >> 16 );
+    }
 }
 
 
@@ -2909,6 +3136,13 @@ extern  void    OutDataInt( int value ) {
 
     int i;
 
+    if (_IsTargetModel( OWL )) {
+        offset val = _TargetInt(value);
+        /* OWL writes */
+        printf("OWL outdataint write %x\n", value);
+        ObjBytes((byte *)&val, 2);
+        return;
+    }
     SetPendingLine();
     CheckLEDataSize( sizeof( unsigned_16 ), TRUE );
     i = CurrSeg->location - CurrSeg->obj->start + CurrSeg->data_prefix_size;
@@ -2925,6 +3159,13 @@ extern  void    OutDataInt( int value ) {
 static  void    OutOffset( offset value ) {
 /***********************************/
 
+    if (_IsTargetModel( OWL )) {
+        offset val = _TargetOffset(value);
+        /* OWL writes */
+        printf("OWL outoffset write %lx\n", value);
+        ObjBytes((byte *)&val, sizeof(val));
+        return;
+    }
     NeedMore( Out, sizeof( offset ) );
     *(offset *)&OutBuff[ Out->used ] = _TargetOffset( value );
     Out->used += sizeof( offset );
@@ -2943,6 +3184,13 @@ static  void    OutLongOffset( long_offset value ) {
 static  void    OutInt( int value ) {
 /***********************************/
 
+    if (_IsTargetModel( OWL )) {
+        int val = _TargetInt(value);
+        /* OWL writes */
+        printf("OWL outint write %x\n", value);
+        ObjBytes((byte *)&val, 2);
+        return;
+    }
     NeedMore( Out, sizeof( unsigned_16 ) );
     *(unsigned_16 *)&OutBuff[ Out->used ] = _TargetInt( value );
     Out->used += sizeof( unsigned_16 );
@@ -2956,6 +3204,7 @@ static  void    CheckLEDataSize( int max_size, bool need_init ) {
     object          *obj;
     long_offset      end_valid;
 
+    if( CurrSeg == NULL ) return;
     obj = CurrSeg->obj;
     start = obj->start;
     used = obj->data.used;
@@ -2995,6 +3244,7 @@ static  void    OutLEDataStart( bool iterated ) {
     byte        flag;
     index_rec   *rec;
 
+    if( CurrSeg == NULL ) return;
     rec = CurrSeg;
     if( Out->used == 0 ) {
         if( rec->comdat_label != NULL ) {
@@ -3105,7 +3355,7 @@ static  void    KillStatic( array_control *arr ) {
     CGFree( arr->array );
 }
 
-extern  seg_id  SetOP( seg_id seg ) {
+extern  seg_id  OMFSetOP( seg_id seg ) {
 /***********************************/
 
     seg_id      old;
@@ -3123,13 +3373,31 @@ extern  seg_id  SetOP( seg_id seg ) {
     return( old );
 }
 
-extern  seg_id  AskOP( void ) {
+extern  seg_id    OWLSetOP( seg_id seg );
+extern  seg_id    SetOP( seg_id seg ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFSetOP(seg);
+    } else {
+        return OWLSetOP(seg);
+    }
+}
+
+extern  seg_id  OMFAskOP( void ) {
 /************************/
 
     return( CurrSeg->seg );
 }
 
-extern  bool    NeedBaseSet( void ) {
+extern  seg_id  OWLAskOP( void );
+extern  seg_id  AskOP( void ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskOP();
+    } else {
+        return OWLAskOP();
+    }
+}
+
+extern  bool    OMFNeedBaseSet( void ) {
 /****************************/
 
     bool        need;
@@ -3139,47 +3407,105 @@ extern  bool    NeedBaseSet( void ) {
     return( need );
 }
 
+extern  seg_id    OWLNeedBaseSet( void );
+extern  seg_id    NeedBaseSet( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFNeedBaseSet();
+    } else {
+        return OWLNeedBaseSet();
+    }
+}
 
-extern  offset  AskLocation( void ) {
+extern  offset  OMFAskLocation( void ) {
 /*****************************/
 
     return( CurrSeg->location );
 }
 
-extern  offset  AskMaxSize( void ) {
+extern  offset  OWLAskLocation( void );
+extern  offset  AskLocation( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskLocation();
+    } else {
+        return OWLAskLocation();
+    }
+}
+
+extern  offset  OMFAskMaxSize( void ) {
 /*****************************/
 
     return( CurrSeg->max_size );
 }
 
+extern  offset  OWLAskMaxSize( void );
+extern  offset  AskMaxSize( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskMaxSize();
+    } else {
+        return OWLAskMaxSize();
+    }
+}
+
+extern  void    OMFSetBigLocation( long_offset loc ) {
+/*****************************************/
+
+    CurrSeg->location = loc;
+    if( CurrSeg->comdat_label != NULL ) {
+        if( loc > CurrSeg->comdat_size ) {
+            CurrSeg->comdat_size = loc;
+        }
+    } else {
+        if( loc > CurrSeg->max_size ) {
+            CurrSeg->max_size = loc;
+        }
+    }
+}
+
+extern  void    OWLSetBigLocation( long_offset loc );
 extern  void    SetBigLocation( long_offset loc ) {
-/*****************************************/
-
-    CurrSeg->location = loc;
-    if( CurrSeg->comdat_label != NULL ) {
-        if( loc > CurrSeg->comdat_size ) {
-            CurrSeg->comdat_size = loc;
-        }
+    if (_IsntTargetModel( OWL )) {
+        OMFSetBigLocation(loc);
     } else {
-        if( loc > CurrSeg->max_size ) {
-            CurrSeg->max_size = loc;
-        }
+        OWLSetBigLocation(loc);
     }
 }
 
-extern  long_offset  AskBigLocation( void ) {
+extern  long_offset  OMFAskBigLocation( void ) {
 /*****************************/
 
     return( CurrSeg->location );
 }
 
-extern  long_offset  AskBigMaxSize( void ) {
+extern  long_offset  OWLAskBigLocation( void );
+extern  long_offset  AskBigLocation( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskBigLocation();
+    } else {
+        return OWLAskBigLocation();
+    }
+}
+
+extern  long_offset  OMFAskBigMaxSize( void ) {
 /*****************************/
 
     return( CurrSeg->max_size );
 }
 
-extern  void    SetLocation( offset loc ) {
+extern  long_offset  OWLAskBigMaxSize( void );
+extern  long_offset  AskBigMaxSize( void )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskBigMaxSize();
+    } else {
+        return OWLAskBigMaxSize();
+    }
+}
+
+extern  void    OMFSetLocation( offset loc ) {
 /*****************************************/
 
     CurrSeg->location = loc;
@@ -3194,7 +3520,16 @@ extern  void    SetLocation( offset loc ) {
     }
 }
 
-extern  void    IncLocation( offset by ) {
+extern  void    OWLSetLocation2( long_offset loc );
+extern  void    SetLocation( offset loc ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFSetLocation(loc);
+    } else {
+        OWLSetLocation2(loc);
+    }
+}
+
+extern  void    OMFIncLocation( offset by ) {
 /****************************************/
 
     unsigned_32 sum;
@@ -3222,6 +3557,14 @@ extern  void    IncLocation( offset by ) {
     }
 }
 
+extern  void    OWLIncLocation( offset by );
+extern  void    IncLocation( offset by ) {
+    if (_IsntTargetModel( OWL )) {
+        OMFIncLocation(by);
+    } else {
+        OWLIncLocation(by);
+    }
+}
 
 static  void    DecLocation( offset by ) {
 /****************************************/
@@ -3261,7 +3604,7 @@ extern  void    TellObjNewLabel( sym_handle lbl ) {
     }
 }
 
-extern  void    TellObjNewProc( sym_handle proc ) {
+extern  void    OMFTellObjNewProc( sym_handle proc ) {
 /*************************************************/
 
     seg_id      old;
@@ -3309,6 +3652,17 @@ extern  void    TellObjNewProc( sym_handle proc ) {
     SetOP( old );
 }
 
+extern  void    OWLTellObjNewProc( sym_handle proc );
+extern  void    TellObjNewProc( sym_handle proc )
+{
+    if (_IsntTargetModel( OWL )) {
+        OMFTellObjNewProc(proc);
+    } else {
+        OWLTellObjNewProc(proc);
+    }
+}
+
+
 extern void     TellObjVirtFuncRef( void *cookie ) {
 /**************************************************/
 
@@ -3337,7 +3691,7 @@ static  bool            InlineFunction( pointer hdl ) {
     return( rtn_class & MAKE_CALL_INLINE );
 }
 
-extern  segment_id      AskSegID( pointer hdl, cg_class class ) {
+extern  segment_id      OMFAskSegID( pointer hdl, cg_class class ) {
 /******************************************************************/
 
     switch( class ) {
@@ -3358,6 +3712,16 @@ extern  segment_id      AskSegID( pointer hdl, cg_class class ) {
     }
 }
 
+extern  segment_id      OWLAskSegID( pointer hdl, cg_class class );
+extern  segment_id      AskSegID( pointer hdl, cg_class class )
+{
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskSegID(hdl,class);
+    } else {
+        return OWLAskSegID(hdl,class);
+    }
+}
+
 extern  bool            AskNameCode( pointer hdl, cg_class class ) {
 /******************************************************************/
 
@@ -3374,8 +3738,18 @@ extern  bool            AskNameCode( pointer hdl, cg_class class ) {
     return( FALSE );
 }
 
-extern  bool            AskNameROM( pointer hdl, cg_class class ) {
+extern  bool            OMFAskNameROM( pointer hdl, cg_class class ) {
 /*****************************************************************/
 
     return( AskSegROM( AskSegID( hdl, class ) ) );
 }
+extern  bool            OWLAskNameROM( pointer hdl, cg_class class );
+extern  bool            AskNameROM( pointer hdl, cg_class class ) {
+    if (_IsntTargetModel( OWL )) {
+        return OMFAskNameROM(hdl,class);
+    } else {
+        return OWLAskNameROM(hdl,class);
+    }
+}
+
+

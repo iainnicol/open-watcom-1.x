@@ -1602,6 +1602,8 @@ static struct option const CFE_Options[] = {
 #if _CPU == 386
     { "eoo",    0,              Set_OMF },
     { "ez",     0,              Set_EZ },
+    { "eelf",   0,		Set_ELF },
+    { "ecoff",  0,		Set_COFF },
 #endif
     { "e=#",    0,              SetErrorLimit },
 #if _CPU == 8086 || _CPU == 386
