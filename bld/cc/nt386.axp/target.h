@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Configuration for Win32 x86 host, Alpha AXP target.
 *
 ****************************************************************************/
 
@@ -38,15 +37,8 @@
 #include "targdef.h"
 #include "langenvd.h"
 
-#define VERSION         PRODUCTION
+#define _CPU            _AXP
 
-#define _MACHINE        _PC
-#define _CPU            386
+#define __TGT_SYS       __TGT_SYS_AXP_NT
 
-#define _OS             _NT
-#define _EMS            0
-
-#define __TGT_SYS       __TGT_SYS_X86
-
-#define _HOST           0000
 #endif
