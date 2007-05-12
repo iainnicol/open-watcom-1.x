@@ -44,8 +44,7 @@
 #include "wf77labe.h"
 #include "compcfg.h"
 #include "emitobj.h"
-#include "cgswitch.h"
-#define  BY_CLI
+#define BY_CLI
 #include "cgprotos.h"
 
 #include <stdarg.h>

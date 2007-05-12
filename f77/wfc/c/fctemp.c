@@ -36,8 +36,9 @@
 #include "global.h"
 #include "fcdata.h"
 #include "model.h"
-#include "cgprotos.h"
 #include "fmemmgr.h"
+#define BY_CLI
+#include "cgprotos.h"
 
 //=========================================================================
 

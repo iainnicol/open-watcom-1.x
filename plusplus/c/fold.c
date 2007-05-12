@@ -444,13 +444,7 @@ static PTREE castFloatingConstant( PTREE expr, TYPE type, boolean *happened )
         new_expr = PTreeIntConstant( (target_ulong) value, id );
         new_expr = CastIntConstant( new_expr, type, happened );
         break;
-    case TYP_FLOAT: {
-        CPP_FLOAT *flt_val;
-
-        flt_val = BFCopy( expr->u.floating_constant );
-        new_expr = PTreeFloatingConstant( flt_val, id );
-    }
-        break;
+    case TYP_FLOAT:
     case TYP_LONG_DOUBLE:
     case TYP_DOUBLE:
     {   CPP_FLOAT *flt_val;

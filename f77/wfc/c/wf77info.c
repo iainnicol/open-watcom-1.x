@@ -855,68 +855,68 @@ void    DefTypes( void ) {
 
 #if _CPU == 386 || _CPU == 8086
     if( _BigDataModel( CGOpts ) ) {
-        BEAliasType( T_LOCAL_POINTER, T_LONG_POINTER );
-        BEAliasType( T_GLOBAL_POINTER, T_LONG_POINTER );
+        BEAliasType( CGTY_LOCAL_POINTER, CGTY_LONG_POINTER );
+        BEAliasType( CGTY_GLOBAL_POINTER, CGTY_LONG_POINTER );
     } else {
-        BEAliasType( T_LOCAL_POINTER, T_NEAR_POINTER );
-        BEAliasType( T_GLOBAL_POINTER, T_NEAR_POINTER );
+        BEAliasType( CGTY_LOCAL_POINTER, CGTY_NEAR_POINTER );
+        BEAliasType( CGTY_GLOBAL_POINTER, CGTY_NEAR_POINTER );
     }
 #else
-    BEAliasType( T_LOCAL_POINTER, T_POINTER );
-    BEAliasType( T_GLOBAL_POINTER, T_POINTER );
+    BEAliasType( CGTY_LOCAL_POINTER, CGTY_POINTER );
+    BEAliasType( CGTY_GLOBAL_POINTER, CGTY_POINTER );
 #endif
-    BEAliasType( T_ADV_LO, T_INT_4 );
-    BEAliasType( T_ADV_HI, T_UNSIGNED );
-    BEAliasType( T_ADV_HI_CV, T_INT_4 );
+    BEAliasType( CGTY_ADV_LO, CGTY_INT_4 );
+    BEAliasType( CGTY_ADV_HI, CGTY_UNSIGNED );
+    BEAliasType( CGTY_ADV_HI_CV, CGTY_INT_4 );
 
-    BEDefType( T_COMPLEX, ALIGN_BYTE, 2*BETypeLength( T_SINGLE ) );
-    BEDefType( T_DCOMPLEX, ALIGN_BYTE, 2*BETypeLength( T_DOUBLE ) );
-    BEDefType( T_XCOMPLEX, ALIGN_BYTE, 2*BETypeLength( T_LONGDOUBLE ) );
-    BEDefType( T_CHAR, ALIGN_BYTE,
-               BETypeLength( T_UNSIGNED ) + BETypeLength( T_GLOBAL_POINTER ) );
+    BEDefType( CGTY_COMPLEX, ALIGN_BYTE, 2*BETypeLength( CGTY_SINGLE ) );
+    BEDefType( CGTY_DCOMPLEX, ALIGN_BYTE, 2*BETypeLength( CGTY_DOUBLE ) );
+    BEDefType( CGTY_XCOMPLEX, ALIGN_BYTE, 2*BETypeLength( CGTY_LONGDOUBLE ) );
+    BEDefType( CGTY_CHAR, ALIGN_BYTE,
+               BETypeLength( CGTY_UNSIGNED ) + BETypeLength( CGTY_GLOBAL_POINTER ) );
 #if _CPU == 386
-    BEDefType( T_CHAR16, ALIGN_BYTE,
-               BETypeLength( T_UINT_2 ) + BETypeLength( T_GLOBAL_POINTER ) );
+    BEDefType( CGTY_CHAR16, ALIGN_BYTE,
+               BETypeLength( CGTY_UINT_2 ) + BETypeLength( CGTY_GLOBAL_POINTER ) );
 #endif
-    BEDefType( T_CHAR_ALLOCATABLE, ALIGN_BYTE,
-               BETypeLength( T_CHAR ) + BETypeLength( T_UINT_2 ) );
+    BEDefType( CGTY_CHAR_ALLOCATABLE, ALIGN_BYTE,
+               BETypeLength( CGTY_CHAR ) + BETypeLength( CGTY_UINT_2 ) );
 
-    BEDefType( T_ADV_ENTRY_CV, ALIGN_BYTE,
-               BETypeLength( T_ADV_LO ) + BETypeLength( T_ADV_HI_CV ) );
+    BEDefType( CGTY_ADV_ENTRY_CV, ALIGN_BYTE,
+               BETypeLength( CGTY_ADV_LO ) + BETypeLength( CGTY_ADV_HI_CV ) );
 
-    BEDefType( T_ADV_ENTRY, ALIGN_BYTE,
-               BETypeLength( T_ADV_LO ) + BETypeLength( T_ADV_HI ) );
+    BEDefType( CGTY_ADV_ENTRY, ALIGN_BYTE,
+               BETypeLength( CGTY_ADV_LO ) + BETypeLength( CGTY_ADV_HI ) );
 
-    adv_size = BETypeLength( T_ADV_ENTRY );
+    adv_size = BETypeLength( CGTY_ADV_ENTRY );
     if( CGOpts & CGOPT_DI_CV ) {
-        adv_size += BETypeLength( T_ADV_ENTRY_CV );
+        adv_size += BETypeLength( CGTY_ADV_ENTRY_CV );
     }
     if( Options & OPT_BOUNDS ) {
-        total_size = BETypeLength( T_POINTER );
+        total_size = BETypeLength( CGTY_POINTER );
     } else {
         total_size = 0;
     }
     for( adv_cnt = 0; adv_cnt < MAX_DIM; adv_cnt++ ) {
         total_size += adv_size;
-        BEDefType( ( T_ADV_ENTRY_1 + adv_cnt ), ALIGN_BYTE, total_size );
+        BEDefType( ( CGTY_ADV_ENTRY_1 + adv_cnt ), ALIGN_BYTE, total_size );
     }
 
-    BEDefType( T_ARR_ALLOCATABLE, ALIGN_BYTE,
-               ( BETypeLength( T_UINT_2 ) + BETypeLength( T_POINTER ) ) );
+    BEDefType( CGTY_ARR_ALLOCATABLE, ALIGN_BYTE,
+               ( BETypeLength( CGTY_UINT_2 ) + BETypeLength( CGTY_POINTER ) ) );
 
 #if _CPU == 386
-    total_size = BETypeLength( T_LONG_POINTER );
+    total_size = BETypeLength( CGTY_LONG_POINTER );
 #elif _CPU == 8086
     if( CGOpts & CGOPT_M_LARGE ) {
-        total_size = BETypeLength( T_HUGE_POINTER );
+        total_size = BETypeLength( CGTY_HUGE_POINTER );
     } else { // if( CGOpts & CGOPT_M_MEDIUM ) {
-        total_size = BETypeLength( T_LONG_POINTER );
+        total_size = BETypeLength( CGTY_LONG_POINTER );
     }
 #else
-    total_size = BETypeLength( T_POINTER );
+    total_size = BETypeLength( CGTY_POINTER );
 #endif
-    BEDefType( T_ARR_ALLOCATABLE_EXTENDED, ALIGN_BYTE,
-                BETypeLength(T_UINT_2) + total_size );
+    BEDefType( CGTY_ARR_ALLOCATABLE_EXTENDED, ALIGN_BYTE,
+                BETypeLength(CGTY_UINT_2) + total_size );
 }
 
 
@@ -927,7 +927,7 @@ void    DefStructs( void ) {
 
     sym_id      sym;
 
-    UserType = T_USER_DEFINED;
+    UserType = CGTY_USER_DEFINED;
     for( sym = RList; sym != NULL; sym = sym->sd.link ) {
         BEDefType( UserType, ALIGN_BYTE, sym->sd.size );
         sym->sd.cg_typ = UserType;
@@ -1203,7 +1203,7 @@ static int GetParmsSize( sym_id sym )
         } else if( arg->info & ARG_SIZE_16 ) {
             args_size += 16;
         } else if( arg->info & PASS_BY_REFERENCE ) {
-            args_size += BETypeLength( T_POINTER );
+            args_size += BETypeLength( CGTY_POINTER );
         }
     }
     return( args_size );
@@ -1268,25 +1268,25 @@ cg_type FEParmType( sym_id fn, sym_id parm, cg_type tipe ) {
     parm = parm;
     switch( tipe ) {
 #if _CPU == 386
-    case T_UINT_2:
-    case T_INT_2:
+    case CGTY_UINT_2:
+    case CGTY_INT_2:
 #endif
-    case T_INT_1:
-    case T_UINT_1:
+    case CGTY_INT_1:
+    case CGTY_UINT_1:
 #if _CPU == 386
         {
             aux_info    *aux;
             aux = AuxLookup( fn );
             if( aux != NULL ) {
                 if( aux->cclass & FAR16_CALL ) {
-                    return( T_INT_2 );
+                    return( CGTY_INT_2 );
                 }
             }
         }
 #else
         fn = fn;
 #endif
-        tipe = T_INTEGER;
+        tipe = CGTY_INTEGER;
     }
     return( tipe );
 }
@@ -1443,13 +1443,13 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             loc = DBLocInit();
             if( Options & OPT_DESCRIPTOR ) {
                 loc = DBLocSym( loc, ReturnValue );
-                loc = DBLocOp( loc, DB_OP_POINTS, T_POINTER );
-                loc = DBLocConst( loc, BETypeLength( T_POINTER ) );
+                loc = DBLocOp( loc, DB_OP_POINTS, CGTY_POINTER );
+                loc = DBLocConst( loc, BETypeLength( CGTY_POINTER ) );
                 loc = DBLocOp( loc, DB_OP_ADD, 0 );
             } else {
                 loc = DBLocSym( loc, FindArgShadow( ReturnValue ) );
             }
-            type = DBLocCharBlock( loc, T_INTEGER );
+            type = DBLocCharBlock( loc, CGTY_INTEGER );
             DBLocFini( loc );
             return( type );
         } else {
@@ -1460,13 +1460,13 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             loc = DBLocInit();
             if( Options & OPT_DESCRIPTOR ) {
                 loc = DBLocSym( loc, sym );
-                loc = DBLocOp( loc, DB_OP_POINTS, T_POINTER );
-                loc = DBLocConst( loc, BETypeLength( T_POINTER ) );
+                loc = DBLocOp( loc, DB_OP_POINTS, CGTY_POINTER );
+                loc = DBLocConst( loc, BETypeLength( CGTY_POINTER ) );
                 loc = DBLocOp( loc, DB_OP_ADD, 0 );
             } else {
                 loc = DBLocSym( loc, FindArgShadow( sym ) );
             }
-            type = DBLocCharBlock( loc, T_INTEGER );
+            type = DBLocCharBlock( loc, CGTY_INTEGER );
             DBLocFini( loc );
             return( type );
         }
@@ -1489,7 +1489,7 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 
     dims = 1;
     bounds = &dim_ptr->subs_1_lo;
-    db_arr = DBBegArray( db_type, T_UNKNOWN, TRUE );
+    db_arr = DBBegArray( db_type, CGTY_UNKNOWN, TRUE );
     while( dims <= _DimCount( dim_ptr->dim_flags ) ) {
         lo = *bounds;
         ++bounds;
@@ -1555,29 +1555,29 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
     dbg_type    arg_type;
 
     if( sym->ns.typ == TY_CHAR ) {
-        db_type = DBDereference( T_POINTER, db_type );
+        db_type = DBDereference( CGTY_POINTER, db_type );
     }
-    db_proc = DBBegProc( T_CODE_PTR, db_type );
+    db_proc = DBBegProc( CGTY_CODE_PTR, db_type );
     for( ep = Entries; ep != NULL; ep = ep->link ) {
         if( ep->id != sym ) continue;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( arg->flags & ARG_STMTNO ) continue;
             arg_type = GetDbgType( arg->id );
             if( ( arg->id->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-                arg_type = DBDereference( T_CODE_PTR,
-                               DBEndProc( DBBegProc( T_CODE_PTR,
+                arg_type = DBDereference( CGTY_CODE_PTR,
+                               DBEndProc( DBBegProc( CGTY_CODE_PTR,
                                           GetDBGSubProgType( arg->id ) ) ) );
 
             } else {
                 if( arg->id->ns.typ == TY_CHAR ) {
                     if( !(arg->id->ns.flags & SY_VALUE_PARM) ) {
                         if( Options & OPT_DESCRIPTOR ) {
-                            arg_type = DBDereference( T_POINTER, arg_type );
+                            arg_type = DBDereference( CGTY_POINTER, arg_type );
                         }
                     }
                 } else {
                     if( !(arg->id->ns.flags & SY_VALUE_PARM) ) {
-                        arg_type = DBDereference( T_POINTER, arg_type );
+                        arg_type = DBDereference( CGTY_POINTER, arg_type );
                     }
                 }
             }
@@ -1726,7 +1726,7 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 
     idx = 0;
     dims = _DimCount( dim_ptr->dim_flags );
-    db_arr = DBBegArray( db_type, T_UNKNOWN, TRUE );
+    db_arr = DBBegArray( db_type, CGTY_UNKNOWN, TRUE );
     if( dim_ptr->adv == NULL ) {
         // ADV allocated on the stack (debugging API's can't support this)
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
@@ -1737,19 +1737,19 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
         }
         return( DBEndArray( db_arr ) );
     }
-    len = dims * BETypeLength( T_ADV_ENTRY );
+    len = dims * BETypeLength( CGTY_ADV_ENTRY );
     if( Options & OPT_BOUNDS ) {
-        len += BETypeLength( T_POINTER );
+        len += BETypeLength( CGTY_POINTER );
     }
     while( idx < dims ) {
         if( CGOpts & CGOPT_DI_CV ) {
             DBDimVar( db_arr, dim_ptr->adv,
-                      ( len + ( idx * BETypeLength( T_ADV_ENTRY_CV ) ) ),
-                      T_ADV_LO, T_ADV_HI_CV );
+                      ( len + ( idx * BETypeLength( CGTY_ADV_ENTRY_CV ) ) ),
+                      CGTY_ADV_LO, CGTY_ADV_HI_CV );
         } else {
             DBDimVar( db_arr, dim_ptr->adv,
-                      idx * BETypeLength( T_ADV_ENTRY ),
-                      T_ADV_LO, T_ADV_HI );
+                      idx * BETypeLength( CGTY_ADV_ENTRY ),
+                      CGTY_ADV_LO, CGTY_ADV_HI );
         }
         ++idx;
     }
@@ -1779,16 +1779,16 @@ dbg_type        FEDbgType( sym_id sym ) {
             db_type = DefDbgSubprogram( sym, db_type );
             if( sym->ns.flags & SY_SUB_PARM ) {
                 // subprogram is an argument
-                db_type = DBDereference( T_CODE_PTR, db_type );
+                db_type = DBDereference( CGTY_CODE_PTR, db_type );
             }
         } else {
             if( sym->ns.flags & SY_PS_ENTRY ) {
                 // shadow symbols for all function entry points
                 // return value always points to the return value
                 db_type = GetDbgType( sym->ns.si.ms.sym );
-                db_type = DBDereference( T_POINTER, db_type );
+                db_type = DBDereference( CGTY_POINTER, db_type );
                 if( SubProgId->ns.typ == TY_CHAR ) { // character function
-                    db_type = DBDereference( T_POINTER, db_type );
+                    db_type = DBDereference( CGTY_POINTER, db_type );
                 }
             } else {
                 db_type = GetDbgType( sym );
@@ -1800,31 +1800,31 @@ dbg_type        FEDbgType( sym_id sym ) {
                         db_type = ArrayDbgType( dim_ptr, db_type );
                     }
                     if( sym->ns.flags & SY_SUB_PARM ) {
-                        db_type = DBDereference( T_POINTER, db_type );
+                        db_type = DBDereference( CGTY_POINTER, db_type );
                         if( sym->ns.typ == TY_CHAR ) {
                             if( !(sym->ns.flags & SY_VALUE_PARM) ) {
                                 if( Options & OPT_DESCRIPTOR ) {
-                                    db_type = DBDereference( T_POINTER, db_type );
+                                    db_type = DBDereference( CGTY_POINTER, db_type );
                                 }
                             }
                         }
                     }
                     if( _Allocatable( sym ) ) {
-                        db_type = DBDereference( T_POINTER, db_type );
+                        db_type = DBDereference( CGTY_POINTER, db_type );
                     }
                 } else if( sym->ns.typ == TY_CHAR ) {
                     // character variable
-                    db_type = DBDereference( T_POINTER, db_type );
+                    db_type = DBDereference( CGTY_POINTER, db_type );
                     if( sym->ns.flags & SY_SUB_PARM ) {
                         if( !(sym->ns.flags & SY_VALUE_PARM) ) {
                             if( Options & OPT_DESCRIPTOR ) {
-                                db_type = DBDereference( T_POINTER, db_type );
+                                db_type = DBDereference( CGTY_POINTER, db_type );
                             }
                         }
                     }
                 } else if( sym->ns.flags & SY_SUB_PARM ) {
                     if( !(sym->ns.flags & SY_VALUE_PARM) ) {
-                        db_type = DBDereference( T_POINTER, db_type );
+                        db_type = DBDereference( CGTY_POINTER, db_type );
                     }
                 }
             }

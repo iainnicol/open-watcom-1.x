@@ -221,7 +221,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     table->size = cases;
     old = SetOP( AskCodeSeg() );
     table->value_lbl = AskForNewLabel();
-    CodeLabel( table->value_lbl, TypeAddress( T_NEAR_CODE_PTR )->length );
+    CodeLabel( table->value_lbl, TypeAddress( CGTY_NEAR_CODE_PTR )->length );
     GenSelEntry( TRUE );
     table->lbl = AskForNewLabel();
     if( tipe != real_tipe ) {
@@ -232,7 +232,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     if( other == NULL ) {
         other = table->cases[ 0 ];  /* no otherwise? he bakes!*/
     }
-    if( tipe == T_WORD ) {
+    if( tipe == CGTY_WORD ) {
         GenValuesForward( list, hi, lo, to_sub, tipe );
     } else {
         GenValuesBackward( list, hi, lo, to_sub, tipe );
@@ -242,7 +242,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     tab_ptr = &table->cases[ 0 ];
     curr = lo;
     scan = list;
-    if( tipe != T_WORD ) {
+    if( tipe != CGTY_WORD ) {
         GenCodePtr( other );
     }
     for(;;) {
@@ -257,7 +257,7 @@ extern  tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
             ++curr;
         }
     }
-    if( tipe == T_WORD ) {
+    if( tipe == CGTY_WORD ) {
         GenCodePtr( other );
     }
     SetOP( old );
@@ -275,13 +275,13 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
     curr = lo;
     for(;;) {
         switch( tipe ) {
-        case T_UINT_1:
+        case CGTY_UINT_1:
             Gen1ByteValue( curr - to_sub );
             break;
-        case T_UINT_2:
+        case CGTY_UINT_2:
             Gen2ByteValue( curr - to_sub );
             break;
-        case T_UINT_4:
+        case CGTY_UINT_4:
             Gen4ByteValue( curr - to_sub );
             break;
         }
@@ -311,13 +311,13 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
     }
     for(;;) {
         switch( tipe ) {
-        case T_UINT_1:
+        case CGTY_UINT_1:
             Gen1ByteValue( curr - to_sub );
             break;
-        case T_UINT_2:
+        case CGTY_UINT_2:
             Gen2ByteValue( curr - to_sub );
             break;
-        case T_UINT_4:
+        case CGTY_UINT_4:
             Gen4ByteValue( curr - to_sub );
             break;
         }
@@ -349,7 +349,7 @@ extern  tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
     old = SetOP( AskCodeSeg() );
     table->lbl = AskForNewLabel();
     table->value_lbl = NULL;
-    CodeLabel( table->lbl, TypeAddress( T_NEAR_CODE_PTR )->length );
+    CodeLabel( table->lbl, TypeAddress( CGTY_NEAR_CODE_PTR )->length );
     table->size = cases;
     tab_ptr = &table->cases[ 0 ];
     for(;;) {
@@ -379,7 +379,7 @@ extern  name_def        *SelIdx( tbl_control *table, an node ) {
 
     /* use CG routines here to get folding*/
     idxan = TreeGen( TGBinary( O_TIMES, TGLeaf( BGDuplicate( node ) ),
-                                TGLeaf( BGInteger( WORD_SIZE, TypeAddress( T_WORD ) ) ), TypeAddress( T_WORD ) ) );
+                                TGLeaf( BGInteger( WORD_SIZE, TypeAddress( CGTY_WORD ) ) ), TypeAddress( CGTY_WORD ) ) );
     idx = GenIns( idxan );
     BGDone( idxan );
     return( &AllocIndex( idx, AllocMemory( table, 0, CG_TBL, WD ), 0, WD )->n );
@@ -394,20 +394,20 @@ extern  type_def        *SelNodeType( an node, bool is_signed ) {
 
     switch( node->tipe->length ) {
     case 1:
-        unsigned_t = T_UINT_1;
-        signed_t = T_INT_1;
+        unsigned_t = CGTY_UINT_1;
+        signed_t = CGTY_INT_1;
         break;
     case 4:
-        unsigned_t = T_UINT_4;
-        signed_t = T_INT_4;
+        unsigned_t = CGTY_UINT_4;
+        signed_t = CGTY_INT_4;
         break;
     case 8:
-        unsigned_t = T_UINT_8;
-        signed_t = T_INT_8;
+        unsigned_t = CGTY_UINT_8;
+        signed_t = CGTY_INT_8;
         break;
     default:
-        unsigned_t = T_UINT_2;
-        signed_t = T_INT_2;
+        unsigned_t = CGTY_UINT_2;
+        signed_t = CGTY_INT_2;
         break;
     }
     return( TypeAddress( is_signed ? signed_t : unsigned_t ) );

@@ -39,14 +39,14 @@
 
 // get name consistency
 //
-#define T_NR_CODE_PTR       T_NEAR_CODE_PTR
-#define T_FR_CODE_PTR       T_LONG_CODE_PTR
-#define T_HG_CODE_PTR       T_LONG_CODE_PTR
-#define T_NR_POINTER        T_NEAR_POINTER
-#define T_FR_POINTER        T_LONG_POINTER
-#define T_HG_POINTER        T_HUGE_POINTER
-#define T_FAR16_POINTER     T_NEAR_POINTER
-#define T_FAR16_CODE_PTR    T_NEAR_POINTER
+#define T_NR_CODE_PTR       CGTY_NEAR_CODE_PTR
+#define T_FR_CODE_PTR       CGTY_LONG_CODE_PTR
+#define T_HG_CODE_PTR       CGTY_LONG_CODE_PTR
+#define T_NR_POINTER        CGTY_NEAR_POINTER
+#define T_FR_POINTER        CGTY_LONG_POINTER
+#define T_HG_POINTER        CGTY_HUGE_POINTER
+#define T_FAR16_POINTER     CGTY_NEAR_POINTER
+#define T_FAR16_CODE_PTR    CGTY_NEAR_POINTER
 #define TARGET_HG_POINTER   TARGET_FAR_POINTER
 #define TARGET_FR_POINTER   TARGET_FAR_POINTER
 #define TARGET_NR_POINTER   TARGET_NEAR_POINTER
@@ -82,7 +82,7 @@ static TYPE *ptr_diff_type[] =
 ;
 
 static CGREFNO defined_type     // next refno for defined types
-            = T_FIRST_FREE;
+            = CGTY_FIRST_FREE;
 static CGREFNO cg_member_ptr    // CG type for member pointers
             = NULL_CGREFNO;
 static PTR_CLASS defaultDataPtrClass;// default data pointer type
@@ -177,47 +177,47 @@ unsigned CgTypeOutput(          // COMPUTE TYPE FOR CODE GENERATOR
     type = TypeModFlags( type, &mod_flags );
     switch( type->id ) {
       case TYP_SCHAR :
-        retn = T_INT_1;
+        retn = CGTY_INT_1;
         break;
       case TYP_BOOL :
-        retn = TY_BOOLEAN;
+        retn = CGTY_BOOL;
         break;
       case TYP_UCHAR :
-        retn = T_UINT_1;
+        retn = CGTY_UINT_1;
         break;
       case TYP_UINT :
-        retn = TY_UNSIGNED;
+        retn = CGTY_UNSIGNED;
         break;
       case TYP_USHORT :
       case TYP_WCHAR :
-        retn = T_UINT_2;
+        retn = CGTY_UINT_2;
         break;
       case TYP_SINT :
-        retn = T_INTEGER;
+        retn = CGTY_INTEGER;
         break;
       case TYP_SSHORT :
-        retn = T_INT_2;
+        retn = CGTY_INT_2;
         break;
       case TYP_ULONG :
-        retn = T_UINT_4;
+        retn = CGTY_UINT_4;
         break;
       case TYP_SLONG :
-        retn = T_INT_4;
+        retn = CGTY_INT_4;
         break;
       case TYP_ULONG64 :
-        retn = T_UINT_8;
+        retn = CGTY_UINT_8;
         break;
       case TYP_SLONG64 :
-        retn = T_INT_8;
+        retn = CGTY_INT_8;
         break;
       case TYP_FLOAT :
-        retn = T_SINGLE;
+        retn = CGTY_SINGLE;
         break;
       case TYP_LONG_DOUBLE :
-        retn = TY_DOUBLE;           // change later when long-double support
+        retn = CGTY_DOUBLE;           // change later when long-double support
         break;
       case TYP_DOUBLE :
-        retn = TY_DOUBLE;
+        retn = CGTY_DOUBLE;
         break;
       case TYP_POINTER :
         type = TypeModFlags( type->of, &mod_flags );
@@ -240,7 +240,7 @@ unsigned CgTypeOutput(          // COMPUTE TYPE FOR CODE GENERATOR
         retn = cg_defined_type( type, &cg_member_ptr );
         break;
       default:
-        retn = T_INTEGER;
+        retn = CGTY_INTEGER;
         break;
     }
     return( retn );
@@ -428,21 +428,21 @@ unsigned CgTypePtrSym(          // COMPUTE OUTPUT TYPE OF POINTER TO SYMBOL
     type = TypeModFlags( sym->sym_type, &mod_flags );
     if( type->id == TYP_FUNCTION ) {
         if( mod_flags & TF1_NEAR ) {
-            codegen_type = T_NEAR_CODE_PTR;
+            codegen_type = CGTY_NEAR_CODE_PTR;
         } else if( mod_flags & TF1_FAR ) {
-            codegen_type = T_LONG_CODE_PTR;
+            codegen_type = CGTY_LONG_CODE_PTR;
         } else {
-            codegen_type = T_CODE_PTR;
+            codegen_type = CGTY_CODE_PTR;
         }
     } else {
         if( mod_flags & TF1_NEAR ) {
-            codegen_type = T_NEAR_POINTER;
+            codegen_type = CGTY_NEAR_POINTER;
         } else if( mod_flags & TF1_FAR ) {
-            codegen_type = T_LONG_POINTER;
+            codegen_type = CGTY_LONG_POINTER;
         } else if( mod_flags & TF1_HUGE ) {
-            codegen_type = T_HUGE_POINTER;
+            codegen_type = CGTY_HUGE_POINTER;
         } else {
-            codegen_type = T_POINTER;
+            codegen_type = CGTY_POINTER;
         }
     }
     return codegen_type;
@@ -566,12 +566,12 @@ unsigned CgTypeOffset(          // GET CODEGEN TYPE FOR AN OFFSET
 {
 #if _INTEL_CPU
   #if _CPU == 386
-    return T_UINT_4;
+    return CGTY_UINT_4;
   #else
-    return T_UINT_2;
+    return CGTY_UINT_2;
   #endif
 #elif _CPU == _AXP
-    return T_UINT_4;
+    return CGTY_UINT_4;
 #else
     #error bad target
 #endif
@@ -582,7 +582,7 @@ static void init(               // MODULE INITIALIZATION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    defined_type = T_FIRST_FREE;
+    defined_type = CGTY_FIRST_FREE;
     cg_member_ptr = NULL_CGREFNO;
 #if _CPU == _AXP
     defaultDataPtrClass = PTR_NEAR;

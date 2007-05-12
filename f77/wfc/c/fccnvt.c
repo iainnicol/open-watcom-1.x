@@ -55,8 +55,8 @@ void    FCIChar( void ) {
 //=================
 
     XPush( CGUnary( O_CONVERT,
-                    CGUnary( O_POINTS, SCBPointer( XPop() ), T_UINT_1 ),
-                    T_UINT_4 ) );
+                    CGUnary( O_POINTS, SCBPointer( XPop() ), CGTY_UINT_1 ),
+                    CGTY_UINT_4 ) );
 }
 
 
@@ -73,67 +73,67 @@ void    FCConvert( void ) {
     typ_info = GetU16();
     from = GetType1( typ_info );
     to = GetType2( typ_info );
-    if( from == T_COMPLEX ) {
-        XPopCmplx( &z, T_COMPLEX );
-        if( to == T_DCOMPLEX ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, T_DOUBLE );
-            XPush( CGUnary( O_CONVERT, z.imagpart, T_DOUBLE ) );
-        } else if( to == T_COMPLEX ) {
+    if( from == CGTY_COMPLEX ) {
+        XPopCmplx( &z, CGTY_COMPLEX );
+        if( to == CGTY_DCOMPLEX ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, CGTY_DOUBLE );
+            XPush( CGUnary( O_CONVERT, z.imagpart, CGTY_DOUBLE ) );
+        } else if( to == CGTY_COMPLEX ) {
             XPush( z.imagpart );
-        } else if( to == T_XCOMPLEX ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, T_LONGDOUBLE );
-            XPush( CGUnary( O_CONVERT, z.imagpart, T_LONGDOUBLE ) );
+        } else if( to == CGTY_XCOMPLEX ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, CGTY_LONGDOUBLE );
+            XPush( CGUnary( O_CONVERT, z.imagpart, CGTY_LONGDOUBLE ) );
         } else {
             CGTrash( z.imagpart );
-            if( to != T_SINGLE ) {
+            if( to != CGTY_SINGLE ) {
                 z.realpart = CGUnary( O_CONVERT, z.realpart, to );
             }
         }
         XPush( z.realpart );
-    } else if( from == T_DCOMPLEX ) {
-        XPopCmplx( &z, T_DCOMPLEX );
-        if( to == T_COMPLEX ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, T_SINGLE );
-            XPush( CGUnary( O_CONVERT, z.imagpart, T_SINGLE ) );
-        } else if( to == T_DCOMPLEX ) {
+    } else if( from == CGTY_DCOMPLEX ) {
+        XPopCmplx( &z, CGTY_DCOMPLEX );
+        if( to == CGTY_COMPLEX ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, CGTY_SINGLE );
+            XPush( CGUnary( O_CONVERT, z.imagpart, CGTY_SINGLE ) );
+        } else if( to == CGTY_DCOMPLEX ) {
             XPush( z.imagpart );
-        } else if( to == T_XCOMPLEX ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, T_LONGDOUBLE );
-            XPush( CGUnary( O_CONVERT, z.imagpart, T_LONGDOUBLE ) );
+        } else if( to == CGTY_XCOMPLEX ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, CGTY_LONGDOUBLE );
+            XPush( CGUnary( O_CONVERT, z.imagpart, CGTY_LONGDOUBLE ) );
         } else {
             CGTrash( z.imagpart );
-            if( to != T_DOUBLE ) {
+            if( to != CGTY_DOUBLE ) {
                 z.realpart = CGUnary( O_CONVERT, z.realpart, to );
             }
         }
         XPush( z.realpart );
-    } else if( from == T_XCOMPLEX ) {
-        XPopCmplx( &z, T_XCOMPLEX );
-        if( to == T_COMPLEX ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, T_SINGLE );
-            XPush( CGUnary( O_CONVERT, z.imagpart, T_SINGLE ) );
-        } else if( to == T_DCOMPLEX ) {
-            z.realpart = CGUnary( O_CONVERT, z.realpart, T_DOUBLE );
-            XPush( CGUnary( O_CONVERT, z.imagpart, T_DOUBLE ) );
-        } else if( to == T_XCOMPLEX ) {
+    } else if( from == CGTY_XCOMPLEX ) {
+        XPopCmplx( &z, CGTY_XCOMPLEX );
+        if( to == CGTY_COMPLEX ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, CGTY_SINGLE );
+            XPush( CGUnary( O_CONVERT, z.imagpart, CGTY_SINGLE ) );
+        } else if( to == CGTY_DCOMPLEX ) {
+            z.realpart = CGUnary( O_CONVERT, z.realpart, CGTY_DOUBLE );
+            XPush( CGUnary( O_CONVERT, z.imagpart, CGTY_DOUBLE ) );
+        } else if( to == CGTY_XCOMPLEX ) {
             XPush( z.imagpart );
         } else {
             CGTrash( z.imagpart );
-            if( to != T_LONGDOUBLE ) {
+            if( to != CGTY_LONGDOUBLE ) {
                 z.realpart = CGUnary( O_CONVERT, z.realpart, to );
             }
         }
         XPush( z.realpart );
     } else { // converting a scalar
         z.realpart = XPopValue( from );
-        if( to == T_COMPLEX ) {
-            to = T_SINGLE;
+        if( to == CGTY_COMPLEX ) {
+            to = CGTY_SINGLE;
             XPush( CGInteger( 0, to ) );
-        } else if( to == T_DCOMPLEX ) {
-            to = T_DOUBLE;
+        } else if( to == CGTY_DCOMPLEX ) {
+            to = CGTY_DOUBLE;
             XPush( CGInteger( 0, to ) );
-        } else if( to == T_XCOMPLEX ) {
-            to = T_LONGDOUBLE;
+        } else if( to == CGTY_XCOMPLEX ) {
+            to = CGTY_LONGDOUBLE;
             XPush( CGInteger( 0, to ) );
         }
         if( to != from ) {
@@ -149,7 +149,7 @@ void            FCMakeComplex( void ) {
 
 // Make a COMPLEX number from 2 scalars.
 
-    MakeComplex( T_SINGLE );
+    MakeComplex( CGTY_SINGLE );
 }
 
 
@@ -158,7 +158,7 @@ void            FCMakeDComplex( void ) {
 
 // Make a DCOMPLEX number from 2 scalars.
 
-    MakeComplex( T_DOUBLE );
+    MakeComplex( CGTY_DOUBLE );
 }
 
 
@@ -167,7 +167,7 @@ void            FCMakeXComplex( void ) {
 
 // Make a XCOMPLEX number from 2 scalars.
 
-    MakeComplex( T_LONGDOUBLE );
+    MakeComplex( CGTY_LONGDOUBLE );
 }
 
 

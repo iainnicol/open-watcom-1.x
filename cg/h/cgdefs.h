@@ -199,60 +199,52 @@ typedef enum {
 
 /*  The first part must correspond to <typclass> */
 
-        T_UINT_1,       /*   0 */
-        T_INT_1,
-        T_UINT_2,
-        T_INT_2,
-        T_UINT_4,
-        T_INT_4,
-        T_UINT_8,
-        T_INT_8,
+        CGTY_UINT_1,       /*   0 */
+        CGTY_INT_1,
+        CGTY_UINT_2,
+        CGTY_INT_2,
+        CGTY_UINT_4,
+        CGTY_INT_4,
+        CGTY_UINT_8,
+        CGTY_INT_8,
 
-        T_LONG_POINTER,
-        T_HUGE_POINTER,
-        T_NEAR_POINTER,
-        T_LONG_CODE_PTR,
-        T_NEAR_CODE_PTR,
+        CGTY_LONG_POINTER,
+        CGTY_HUGE_POINTER,
+        CGTY_NEAR_POINTER,
+        CGTY_LONG_CODE_PTR,
+        CGTY_NEAR_CODE_PTR,
 
-        T_SINGLE,
-#if defined( BY_C_FRONT_END ) || defined( BY_CPP_FRONT_END )
-        TY_DOUBLE,
-#else
-        T_DOUBLE,
-#endif
-        T_LONG_DOUBLE,
+        CGTY_SINGLE,
+        CGTY_DOUBLE,
+        CGTY_LONG_DOUBLE,
 
-        T_UNKNOWN,
+        CGTY_UNKNOWN,
 
-#if defined( BY_C_FRONT_END ) || defined( BY_CPP_FRONT_END )
-        TY_DEFAULT,     /*  11  Use defaults */
-#else
-        T_DEFAULT,      /*  11  Use defaults */
-#endif
+        CGTY_DEFAULT,      /*  11  Use defaults */
 
-        T_INTEGER,      /*  Default integer */
-#if defined( BY_C_FRONT_END ) || defined( BY_CPP_FRONT_END )
-        TY_UNSIGNED,    /*  Default unsigned */
-#else
-        T_UNSIGNED,     /*  Default unsigned */
-#endif
-        T_POINTER,      /*  Default data pointer */
-        T_CODE_PTR,     /*  Default code pointer */
-        T_BOOLEAN,      /*  Resultant type for O_FLOW, comparison ops */
+        CGTY_INTEGER,      /*  Default integer */
+        CGTY_UNSIGNED,     /*  Default unsigned */
+        CGTY_POINTER,      /*  Default data pointer */
+        CGTY_CODE_PTR,     /*  Default code pointer */
+        CGTY_BOOLEAN,      /*  Resultant type for O_FLOW, comparison ops */
 
-        T_PROC_PARM,    /*  For Pascal procedural parameters */
-        T_VA_LIST,      /*  For RISC-based O_VA_START support */
-        T_FIRST_FREE    /*  First user definable type */
-} predefined_cg_types;
+        CGTY_PROC_PARM,    /*  For Pascal procedural parameters */
+        CGTY_VA_LIST,      /*  For RISC-based O_VA_START support */
 
-#define T_HUGE_CODE_PTR T_LONG_CODE_PTR  /* for now */
+        CGTY_FIRST_FREE,   /*  First user definable type */
 
-#define T_LAST_FREE     65530U
+       /*  user definable types */
+
+        CGTY_LAST_FREE = 65530U  
+
+} cg_type;
+
+#define CGTY_HUGE_CODE_PTR  CGTY_LONG_CODE_PTR  /* for now */
 
 typedef enum {
-        T_NEAR_INTEGER = T_LAST_FREE,
-        T_LONG_INTEGER,
-        T_HUGE_INTEGER
+        CGTY_NEAR_INTEGER = CGTY_LAST_FREE,
+        CGTY_LONG_INTEGER,
+        CGTY_HUGE_INTEGER
 } more_cg_types;
 
 #define MIN_OP          O_NOP
@@ -260,8 +252,6 @@ typedef enum {
 #define O_LAST_COND     O_GE
 #define O_FIRST_FLOW    O_FLOW_AND
 #define O_LAST_FLOW     O_FLOW_NOT
-
-typedef unsigned short  cg_type;
 
 #define _CG_DEFS_INCLUDED
 #endif

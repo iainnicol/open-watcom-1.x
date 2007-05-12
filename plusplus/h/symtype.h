@@ -223,6 +223,7 @@ typedef enum {
     TYP_MAX,
 
     TYP_FIRST_VALID     = TYP_BOOL,
+    TYP_LAST_VALID      = TYP_DOUBLE,
 } type_id;
 
 typedef enum {

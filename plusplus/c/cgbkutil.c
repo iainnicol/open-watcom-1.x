@@ -145,7 +145,7 @@ void DgByte(                    // DATA GENERATE A BYTE
 #if 0
     DGBytes( 1, &byte );
 #else
-    DGInteger( byte, T_UINT_1 );
+    DGInteger( byte, CGTY_UINT_1 );
 #endif
 }
 
@@ -182,7 +182,7 @@ static void dataGenPtrSym(      // GENERATE POINTER FOR A SYMBOL + OFFSET
         DGInteger( 0, type );
     } else {
         DGFEPtr( (cg_sym_handle)sym, type, offset );
-        if( type == T_CODE_PTR
+        if( type == CGTY_CODE_PTR
          && SymIsThunk( sym ) ) {
             CgioThunkAddrTaken( sym );
         }
@@ -197,9 +197,9 @@ void DgPtrSymOff(               // GENERATE POINTER FOR A SYMBOL + OFFSET
     if( sym == NULL || SymIsFunction( sym ) ) {
         DbgVerify( offset == 0
                  , "DgPtrSymOffset -- function with offset <> 0" );
-        dataGenPtrSym( NULL, offset, T_CODE_PTR );
+        dataGenPtrSym( NULL, offset, CGTY_CODE_PTR );
     } else {
-        dataGenPtrSym( sym, offset, T_POINTER );
+        dataGenPtrSym( sym, offset, CGTY_POINTER );
     }
 }
 
@@ -215,7 +215,7 @@ void DgPtrSymDataOffset(        // GENERATE POINTER FOR A DATA SYMBOL, OFFSET
     SYMBOL sym,                 // - the symbol
     target_size_t offset )      // - the offset
 {
-    dataGenPtrSym( sym, offset, T_POINTER );
+    dataGenPtrSym( sym, offset, CGTY_POINTER );
 }
 
 
@@ -229,7 +229,7 @@ void DgPtrSymData(              // GENERATE POINTER FOR A DATA SYMBOL
 void DgPtrSymCode(              // GENERATE POINTER FOR A CODE SYMBOL
     SYMBOL sym )                // - the symbol
 {
-    dataGenPtrSym( sym, 0, T_CODE_PTR );
+    dataGenPtrSym( sym, 0, CGTY_CODE_PTR );
 }
 
 
@@ -419,7 +419,7 @@ cg_name CgFetchType(            // PERFORM A FETCH
 cg_name CgFetchPtr(             // FETCH A POINTER
     cg_name operand )           // - operand to be fetched
 {
-    return CgFetchType( operand, T_POINTER );
+    return CgFetchType( operand, CGTY_POINTER );
 }
 
 
@@ -565,8 +565,8 @@ cg_name CgMakeTwoDups(          // MAKE TWO DUPLICATES
 static cg_type prcCgType(       // PROCESS A NEW CODE-GEN TYPE
     cg_type type )              // - code generation type
 {
-    if( ( type == T_SINGLE )
-      ||( type == TY_DOUBLE ) ) {         //***** LATER UPGRADE FOR LONG DBL
+    if( ( type == CGTY_SINGLE )
+      ||( type == CGTY_DOUBLE ) ) {         //***** LATER UPGRADE FOR LONG DBL
         CompFlags.float_used = TRUE;
     }
     return type;
@@ -584,7 +584,7 @@ cg_type CgGetCgType(            // GET CODEGEN TYPE
         if( OMR_CLASS_VAL == ObjModelArgument( basic ) ) {
             cgtype = prcCgType( CgTypeOutput( type ) );
         } else {
-            cgtype = T_POINTER;
+            cgtype = CGTY_POINTER;
         }
     } else {
         cgtype = prcCgType( CgTypeOutput( type ) );
@@ -601,7 +601,7 @@ cg_type CgFuncRetnType(         // GET CG RETURN TYPE FOR A FUNCTION
 
     ftype = FunctionDeclarationType( func->sym_type );
     if( OMR_CLASS_REF == ObjModelFunctionReturn( ftype ) ) {
-        cgtype = T_POINTER;
+        cgtype = CGTY_POINTER;
     } else {
         cgtype = prcCgType( CgTypeOutput( ftype->of ) );
     }
@@ -621,7 +621,7 @@ void CgAssign(                  // EMIT AN ASSIGNMENT
     cg_name rhs,                // - rhs argument
     cg_type type )              // - type for assignment
 {
-    CgDone( CGLVAssign( lhs, rhs, type ), T_POINTER );
+    CgDone( CGLVAssign( lhs, rhs, type ), CGTY_POINTER );
 }
 
 
@@ -629,7 +629,7 @@ void CgAssignPtr(               // EMIT A POINTER ASSIGNMENT
     cg_name lhs,                // - lhs argument
     cg_name rhs )               // - rhs argument
 {
-    CgAssign( lhs, rhs, T_POINTER );
+    CgAssign( lhs, rhs, CGTY_POINTER );
 }
 
 
@@ -653,16 +653,16 @@ static void addDtorArgs(        // ADD DTOR ARGUMENTS
 {
     cg_name expr;               // - expression for CDTOR
 
-    expr = CGInteger( cdtor, TY_UNSIGNED );
+    expr = CGInteger( cdtor, CGTY_UNSIGNED );
     switch( PcCallImpl( dtor->sym_type ) ) {
       case CALL_IMPL_REV_CPP :
       case CALL_IMPL_REV_C :
-        addArgument( handle, var, T_POINTER );
-        addArgument( handle, expr, TY_UNSIGNED );
+        addArgument( handle, var, CGTY_POINTER );
+        addArgument( handle, expr, CGTY_UNSIGNED );
         break;
       default :
-        addArgument( handle, expr, TY_UNSIGNED );
-        addArgument( handle, var, T_POINTER );
+        addArgument( handle, expr, CGTY_UNSIGNED );
+        addArgument( handle, var, CGTY_POINTER );
         break;
     }
 }
@@ -697,7 +697,7 @@ cg_name CgDestructSymOffset(    // CONSTRUCT DTOR CALL FOR SYMBOL+OFFSET
     handle = initDtorCall( dtor );
     inlined = CgBackFuncInlined( dtor );
     if( inlined ) {
-        CallStackPush( dtor, handle, T_POINTER );
+        CallStackPush( dtor, handle, CGTY_POINTER );
         IbpAdd( sym, offset, fctl );
         IbpDefineIndex( 0 );
     }
@@ -908,7 +908,7 @@ void CgRtParamAddrSym(          // SET UP PARAMETER: ADDR( SYMBOL )
     RT_DEF *def,                // - definition for call
     SYMBOL sym )                // - symbol
 {
-    CgRtParam( CgAddrSymbol( sym ), def, T_POINTER );
+    CgRtParam( CgAddrSymbol( sym ), def, CGTY_POINTER );
 }
 
 
@@ -1026,43 +1026,43 @@ TYPE TypeFromCgType(            // GET C++ TYPE FOR cg_type
     TYPE type;                  // - C++ type
 
     switch( cgtype ) {
-      case T_UINT_1 :
+      case CGTY_UINT_1 :
         type = GetBasicType( TYP_UCHAR );
         break;
-      case T_INT_1 :
+      case CGTY_INT_1 :
         type = GetBasicType( TYP_SCHAR );
         break;
-      case T_UINT_2 :
+      case CGTY_UINT_2 :
         type = GetBasicType( TYP_USHORT );
         break;
-      case T_INT_2 :
+      case CGTY_INT_2 :
         type = GetBasicType( TYP_SSHORT );
         break;
-      case T_UINT_4 :
+      case CGTY_UINT_4 :
       #if( TARGET_INT == 4 )
         type = GetBasicType( TYP_UINT );
       #else
         type = GetBasicType( TYP_ULONG );
       #endif
         break;
-      case T_INT_4 :
+      case CGTY_INT_4 :
       #if( TARGET_INT == 4 )
         type = GetBasicType( TYP_SINT );
       #else
         type = GetBasicType( TYP_SLONG );
       #endif
         break;
-      case T_INT_8 :
+      case CGTY_INT_8 :
         type = GetBasicType( TYP_SLONG64 );
         break;
-      case T_UINT_8 :
+      case CGTY_UINT_8 :
         type = GetBasicType( TYP_ULONG64 );
         break;
-      case T_BOOLEAN :
-      case T_INTEGER :
+      case CGTY_BOOLEAN :
+      case CGTY_INTEGER :
         type = GetBasicType( TYP_SINT );
         break;
-      case TY_UNSIGNED :
+      case CGTY_UNSIGNED :
         type = GetBasicType( TYP_UINT );
         break;
       default :

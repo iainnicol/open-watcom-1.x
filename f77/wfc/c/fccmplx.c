@@ -78,9 +78,9 @@ cg_name ImagPtr( cg_name dest, cg_type typ ) {
 cg_type         CmplxBaseType( cg_type typ ) {
 //============================================
 
-    if( typ == T_COMPLEX ) return( T_SINGLE );
-    if( typ == T_DCOMPLEX ) return( T_DOUBLE );
-    return( T_LONGDOUBLE );
+    if( typ == CGTY_COMPLEX ) return( CGTY_SINGLE );
+    if( typ == CGTY_DCOMPLEX ) return( CGTY_DOUBLE );
+    return( CGTY_LONGDOUBLE );
 }
 
 
@@ -109,14 +109,14 @@ void    DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d ) {
     cg_type     r_typ;
 
     typ = ResCGType( CGType( a ), CGType( c ) );
-    if( typ == T_DOUBLE ) {
+    if( typ == CGTY_DOUBLE ) {
         rtn_id += RT_C_DOUBLE;
-        r_typ = T_DCOMPLEX;
-    } else if( typ == T_LONGDOUBLE ) {
+        r_typ = CGTY_DCOMPLEX;
+    } else if( typ == CGTY_LONGDOUBLE ) {
         rtn_id += RT_C_EXTENDED;
-        r_typ = T_XCOMPLEX;
+        r_typ = CGTY_XCOMPLEX;
     } else {
-        r_typ = T_COMPLEX;
+        r_typ = CGTY_COMPLEX;
     }
     handle = InitCall( rtn_id );
     CGAddParm( handle, a, typ );
@@ -533,8 +533,8 @@ void    FCExpMixXC( void ) {
 static cg_type PromoteIntType( cg_type typ ) {
 //============================================
 
-    if( ( typ == T_INT_1 ) || ( typ == T_INT_2 ) ) {
-        typ = T_INT_4;
+    if( ( typ == CGTY_INT_1 ) || ( typ == CGTY_INT_2 ) ) {
+        typ = CGTY_INT_4;
     }
     return( typ );
 }
@@ -550,14 +550,14 @@ void    DoCmplxScalarOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name s ) {
     cg_type     r_typ;
 
     typ = CGType( a );
-    if( typ == T_DOUBLE ) {
+    if( typ == CGTY_DOUBLE ) {
         rtn_id += RT_C_DOUBLE;
-        r_typ = T_DCOMPLEX;
-    } else if( typ == T_LONGDOUBLE ) {
+        r_typ = CGTY_DCOMPLEX;
+    } else if( typ == CGTY_LONGDOUBLE ) {
         rtn_id += RT_C_EXTENDED;
-        r_typ = T_XCOMPLEX;
+        r_typ = CGTY_XCOMPLEX;
     } else {
-        r_typ = T_COMPLEX;
+        r_typ = CGTY_COMPLEX;
     }
     handle = InitCall( rtn_id );
     CGAddParm( handle, a, typ );
@@ -598,7 +598,7 @@ void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar ) {
         // operand is complex and the right operand is a scalar, is for
         // exponentiation
         s_typ = PromoteIntType( s_typ );
-        if( s_typ == T_INT_4 ) {
+        if( s_typ == CGTY_INT_4 ) {
             DoCmplxScalarOp( RT_C8POWI, x.realpart, x.imagpart, s );
         } else {
             DoCmplxOp( rtn_id, x.realpart, x.imagpart, s, CGInteger( 0, x_typ ) );
@@ -752,19 +752,19 @@ void            PushCmplxConst( sym_id sym ) {
 
     if( sym->cn.typ == TY_COMPLEX ) {
         CnvS2S( &sym->cn.value.complex.imagpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_SINGLE ) );
+        XPush( CGFloat( fmt_buff, CGTY_SINGLE ) );
         CnvS2S( &sym->cn.value.complex.realpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_SINGLE ) );
+        XPush( CGFloat( fmt_buff, CGTY_SINGLE ) );
     } else if( sym->cn.typ == TY_DCOMPLEX ) {
         CnvD2S( &sym->cn.value.dcomplex.imagpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_DOUBLE ) );
+        XPush( CGFloat( fmt_buff, CGTY_DOUBLE ) );
         CnvD2S( &sym->cn.value.dcomplex.realpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_DOUBLE ) );
+        XPush( CGFloat( fmt_buff, CGTY_DOUBLE ) );
     } else {
         CnvX2S( &sym->cn.value.xcomplex.imagpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_LONGDOUBLE ) );
+        XPush( CGFloat( fmt_buff, CGTY_LONGDOUBLE ) );
         CnvX2S( &sym->cn.value.xcomplex.realpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_LONGDOUBLE ) );
+        XPush( CGFloat( fmt_buff, CGTY_LONGDOUBLE ) );
     }
 }
 
@@ -803,8 +803,8 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
         }
     }
     typ = CmplxBaseType( dst_typ );
-    if( ( src_typ != T_COMPLEX ) && ( src_typ != T_DCOMPLEX ) &&
-                                                ( src_typ != T_XCOMPLEX ) ) {
+    if( ( src_typ != CGTY_COMPLEX ) && ( src_typ != CGTY_DCOMPLEX ) &&
+                                                ( src_typ != CGTY_XCOMPLEX ) ) {
         z.realpart = XPopValue( src_typ );
         z.imagpart = CGInteger( 0, typ );
     } else {
@@ -854,12 +854,12 @@ cg_name         CmplxAddr( cg_name real, cg_name imag ) {
     cg_type     c_type;
 
     typ = CGType( real );
-    if( typ == T_SINGLE ) {
-        c_type = T_COMPLEX;
-    } else if( typ == T_DOUBLE ) {
-        c_type = T_DCOMPLEX;
+    if( typ == CGTY_SINGLE ) {
+        c_type = CGTY_COMPLEX;
+    } else if( typ == CGTY_DOUBLE ) {
+        c_type = CGTY_DCOMPLEX;
     } else {
-        c_type = T_XCOMPLEX;
+        c_type = CGTY_XCOMPLEX;
     }
     tmp = AllocTmp( c_type );
     CGTrash( CGAssign( TmpPtr( tmp, c_type ), real, typ ) );

@@ -254,21 +254,21 @@ static uint  dwarfAddressClassFlags( TYPE type ){
 
     ptr_type = CgTypeOutput( type );
     switch( ptr_type ) {
-    case T_HUGE_POINTER:
+    case CGTY_HUGE_POINTER:
         flags = DW_PTR_TYPE_HUGE16;
         break;
-    case T_LONG_POINTER:
-    case T_LONG_CODE_PTR:
+    case CGTY_LONG_POINTER:
+    case CGTY_LONG_CODE_PTR:
         offset_type = CgTypeOffset();
-        if( offset_type == T_UINT_4 ){
+        if( offset_type == CGTY_UINT_4 ){
             flags = DW_PTR_TYPE_FAR32;
         }else{
             flags = DW_PTR_TYPE_FAR16;
         }
         break;
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-    case T_POINTER:
+    case CGTY_NEAR_POINTER:
+    case CGTY_NEAR_CODE_PTR:
+    case CGTY_POINTER:
 #if _CPU == _AXP
         flags = DW_PTR_TYPE_DEFAULT;
 #else
@@ -276,7 +276,7 @@ static uint  dwarfAddressClassFlags( TYPE type ){
             flags = DW_PTR_TYPE_DEFAULT;
         }else{
             offset_type = CgTypeOffset();
-            if( offset_type == T_UINT_4 ){
+            if( offset_type == CGTY_UINT_4 ){
                 flags = DW_PTR_TYPE_NEAR32;
             }else{
                 flags = DW_PTR_TYPE_NEAR16;
@@ -1804,7 +1804,7 @@ static void dwarfEmitFundamentalType( void )
     type_id     id;
     dw_handle   data;
 
-    for( id = TYP_FIRST_VALID ; id < TYP_LONG_DOUBLE ; ++id ) {
+    for( id = TYP_FIRST_VALID ; id <= TYP_LAST_VALID ; ++id ) {
         data = 0;
         TypeTraverse( id, &doDwarfEmitFundamentalType, (void *)&data );
     }
@@ -2240,7 +2240,7 @@ extern void DwarfDebugNameSpaceEnclosed( SYMBOL sym ){
     ns = scope->owner.ns;
     DBObject( DwarfDebugType( ns->sym->sym_type ),
               NULL,
-              TY_DEFAULT );
+              CGTY_DEFAULT );
 }
 
 extern void DwarfDebugMemberFunc( SYMBOL func, SYMBOL this_sym ){
@@ -2248,7 +2248,7 @@ extern void DwarfDebugMemberFunc( SYMBOL func, SYMBOL this_sym ){
     this_sym = this_sym;
     DBObject( DwarfDebugType( SymClass( func ) ),
               NULL,
-              TY_DEFAULT );
+              CGTY_DEFAULT );
 }
 
 extern uint_32 DwarfDebugOffset( uint_32 handle ){

@@ -148,6 +148,8 @@ typedef struct cfloat CPP_FLOAT;
 #include "utility.h"
 #include "compflag.h"
 
+typedef SYMBOL sym_handle;
+
 #define LINE_NO_MAX  0xFFFFFFFF     // MAXIMUM LINE NO.
 #define BRINF_SYMBOL ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL
 

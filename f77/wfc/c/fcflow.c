@@ -244,12 +244,12 @@ void    FCAssign( void ) {
     if( stmt->st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
                           CGBackName( GetFmtLabel( stmt->st.address ),
-                                      T_LOCAL_POINTER ),
-                          T_LOCAL_POINTER ) );
+                                      CGTY_LOCAL_POINTER ),
+                          CGTY_LOCAL_POINTER ) );
     } else {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGInteger( stmt->st.address, T_INTEGER ),
-                          T_INTEGER ) );
+                          CGInteger( stmt->st.address, CGTY_INTEGER ),
+                          CGTY_INTEGER ) );
         RefStmtLabel( stmt );
     }
 }
@@ -321,7 +321,7 @@ void    FCAssignedGOTOList( void ) {
     }
     label = BENewLabel();
     CGSelOther( s, label );
-    CGSelect( s, CGUnary( O_POINTS, CGFEName( var, T_INTEGER ), T_INTEGER ) );
+    CGSelect( s, CGUnary( O_POINTS, CGFEName( var, CGTY_INTEGER ), CGTY_INTEGER ) );
     CGControl( O_LABEL, NULL, label );
     BEFiniLabel( label );
     FCodeSeek( curr_obj );
@@ -433,7 +433,7 @@ void    FCSFCall( void ) {
         sf_arg = GetPtr();
         if( sf_arg == NULL ) break;
         if( sf_arg->ns.typ == TY_CHAR ) {
-            value = Concat( 1, CGFEName( sf_arg, T_CHAR ) );
+            value = Concat( 1, CGFEName( sf_arg, CGTY_CHAR ) );
         } else {
             sf_type = F772CGType( sf_arg );
             if( TypeCmplx( sf_arg->ns.typ ) ) {
@@ -451,19 +451,19 @@ void    FCSFCall( void ) {
         if( arg_list == NULL ) {
             arg_list = value;
         } else {
-            arg_list = CGBinary( O_COMMA, arg_list, value, T_DEFAULT );
+            arg_list = CGBinary( O_COMMA, arg_list, value, CGTY_DEFAULT );
         }
     }
     if( sf->ns.typ == TY_CHAR ) {
         tmp = GetPtr();
-        value = CGUnary( O_POINTS, CGFEName( tmp, T_CHAR ), T_CHAR );
-        value = CGAssign( CGFEName( sf, T_CHAR ), value, T_CHAR );
+        value = CGUnary( O_POINTS, CGFEName( tmp, CGTY_CHAR ), CGTY_CHAR );
+        value = CGAssign( CGFEName( sf, CGTY_CHAR ), value, CGTY_CHAR );
         if( arg_list == NULL ) {
             arg_list = value;
         } else {
-            arg_list = CGBinary( O_COMMA, arg_list, value, T_DEFAULT );
+            arg_list = CGBinary( O_COMMA, arg_list, value, CGTY_DEFAULT );
         }
-        value = CGFEName( tmp, T_CHAR );
+        value = CGFEName( tmp, CGTY_CHAR );
     } else {
         sf_type = F772CGType( sf );
         if( !(OZOpts & OZOPT_O_INLINE) ) {

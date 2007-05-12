@@ -37,7 +37,7 @@
 //
 // 91/06/11 -- J.W.Welch        -- defined
 
-#define TY_BOOLEAN T_UINT_1
+#define CGTY_BOOL CGTY_UINT_1
 
 
 #ifndef NDEBUG

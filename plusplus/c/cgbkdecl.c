@@ -114,7 +114,7 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         sym = inlineSymbol( sym );
         if( ( TF1_PLUSPLUS & ftype->flag )
          && OMR_CLASS_REF == ObjModelArgument( sym->sym_type ) ) {
-            cgtype = T_POINTER;
+            cgtype = CGTY_POINTER;
         } else {
             cgtype = CgTypeOutput( sym->sym_type );
         }
@@ -122,9 +122,9 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & DBG_DF ){
-                DwarfSymDebugGenSymbol( sym, TRUE, cgtype == T_POINTER );
+                DwarfSymDebugGenSymbol( sym, TRUE, cgtype == CGTY_POINTER );
             }else{
-                SymbolicDebugGenSymbol( sym, TRUE, cgtype == T_POINTER );
+                SymbolicDebugGenSymbol( sym, TRUE, cgtype == CGTY_POINTER );
             }
         }
         IbpDefineSym( fctl->handle, sym );

@@ -67,12 +67,12 @@ void            FCFieldOp( void ) {
     base = XPop();
     if( ( sym->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
         // function returning a structure
-        ptr_type = T_LOCAL_POINTER;
+        ptr_type = CGTY_LOCAL_POINTER;
     } else {
         ptr_type = SymPtrType( sym );
     }
     // add offset of field
-    addr = CGBinary( O_PLUS, base, XPopValue( T_INT_4 ), ptr_type );
+    addr = CGBinary( O_PLUS, base, XPopValue( CGTY_INT_4 ), ptr_type );
     if( sym->ns.xflags & SY_VOLATILE ) {
         addr = CGVolatile( addr );
     }
@@ -86,9 +86,9 @@ cg_name FieldArrayEltSize( sym_id fd ) {
 // Return size of an array element.  Array is a field in a structure.
 
     if( fd->fd.typ == TY_STRUCTURE ) {
-        return( CGInteger( fd->fd.xt.record->size, T_INTEGER ) );
+        return( CGInteger( fd->fd.xt.record->size, CGTY_INTEGER ) );
     } else {
-        return( CGInteger( fd->fd.xt.size, T_INTEGER ) );
+        return( CGInteger( fd->fd.xt.size, CGTY_INTEGER ) );
     }
 }
 
@@ -105,8 +105,8 @@ void    FCFieldSubscript( void ) {
     size = FieldArrayEltSize( fd );
     XPush( CGBinary( O_PLUS, base,
                      CGBinary( O_TIMES, ConstArrayOffset( fd->fd.dim_ext ),
-                               size, T_INTEGER ),
-                     T_INT_4 ) );
+                               size, CGTY_INTEGER ),
+                     CGTY_INT_4 ) );
 }
 
 
@@ -130,19 +130,19 @@ void    FCFieldSubstring( void ) {
         CloneCGName( start_1, &start_1, &start_2 );
         end = XPop();
         if( end == NULL ) {
-            end = CGInteger( fd->fd.xt.size, T_INTEGER );
+            end = CGInteger( fd->fd.xt.size, CGTY_INTEGER );
         } else {
             XPush( end );
             end = XPopValue( GetType2( typ_info ) );
         }
-        XPush( CGBinary( O_PLUS, CGInteger( 1, T_INTEGER ),
-                         CGBinary( O_MINUS, end, start_2, T_INTEGER ),
-                         T_INTEGER ) );
+        XPush( CGBinary( O_PLUS, CGInteger( 1, CGTY_INTEGER ),
+                         CGBinary( O_MINUS, end, start_2, CGTY_INTEGER ),
+                         CGTY_INTEGER ) );
     } else {
-        XPush( CGInteger( len, T_INTEGER ) );
+        XPush( CGInteger( len, CGTY_INTEGER ) );
     }
     XPush( CGBinary( O_PLUS, base,
-                     CGBinary( O_MINUS, start_1, CGInteger( 1, T_INTEGER ),
-                               T_INTEGER ),
-                     T_INTEGER ) );
+                     CGBinary( O_MINUS, start_1, CGInteger( 1, CGTY_INTEGER ),
+                               CGTY_INTEGER ),
+                     CGTY_INTEGER ) );
 }

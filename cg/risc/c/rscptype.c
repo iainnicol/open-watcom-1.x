@@ -41,21 +41,21 @@ extern type_class_def MapIntReturn( cg_type type ) {
 
 */
     switch( type ) {
-    case T_INT_1:
+    case CGTY_INT_1:
         return( I1 );
-    case T_INT_2:
+    case CGTY_INT_2:
         return( I2 );
-    case T_INT_4:
+    case CGTY_INT_4:
         return( I4 );
-    case T_INT_8:
+    case CGTY_INT_8:
         return( I8 );
-    case T_UINT_1:
+    case CGTY_UINT_1:
         return( U1 );
-    case T_UINT_2:
+    case CGTY_UINT_2:
         return( U2 );
-    case T_UINT_4:
+    case CGTY_UINT_4:
         return( U4 );
-    case T_UINT_8:
+    case CGTY_UINT_8:
         return( U8 );
     default:
         _Zoiks( ZOIKS_121 );
@@ -72,11 +72,11 @@ extern type_class_def MapPointer( cg_type type ) {
 */
 
     switch( type ) {
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-    case T_HUGE_POINTER:
-    case T_LONG_POINTER:
-    case T_LONG_CODE_PTR:
+    case CGTY_NEAR_POINTER:
+    case CGTY_NEAR_CODE_PTR:
+    case CGTY_HUGE_POINTER:
+    case CGTY_LONG_POINTER:
+    case CGTY_LONG_CODE_PTR:
         return( U4 );
     default:
         _Zoiks( ZOIKS_121 );
@@ -91,7 +91,7 @@ extern  type_class_def  MapFloat( cg_type type, call_attributes attr ) {
     floating point return values as floats or structs.
 */
 
-    if( type == T_SINGLE ) return( FS );
+    if( type == CGTY_SINGLE ) return( FS );
     return( FD );
 }
 

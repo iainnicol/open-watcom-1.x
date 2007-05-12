@@ -399,36 +399,36 @@ int FEParmType(                 // ARGUMENT PROMOTION ?
     parm = parm;
     switch( type ) {
 #if _CPU == _AXP
-    case T_INT_1:
-    case T_INT_2:
-    case T_INT_4:
-    case T_INTEGER:
-    case T_POINTER:
-    case T_CODE_PTR:
-    case T_NEAR_POINTER:
-    case T_NEAR_CODE_PTR:
-        return( T_INT_8 );
-    case T_UINT_1:
-    case T_UINT_2:
-    case T_UINT_4:
-        return( T_UINT_8 );
+    case CGTY_INT_1:
+    case CGTY_INT_2:
+    case CGTY_INT_4:
+    case CGTY_INTEGER:
+    case CGTY_POINTER:
+    case CGTY_CODE_PTR:
+    case CGTY_NEAR_POINTER:
+    case CGTY_NEAR_CODE_PTR:
+        return( CGTY_INT_8 );
+    case CGTY_UINT_1:
+    case CGTY_UINT_2:
+    case CGTY_UINT_4:
+        return( CGTY_UINT_8 );
 #else
 #if _CPU == 386
-    case T_UINT_2:
-    case T_INT_2:
+    case CGTY_UINT_2:
+    case CGTY_INT_2:
 #endif
-    case T_INT_1:
-    case T_UINT_1:
+    case CGTY_INT_1:
+    case CGTY_UINT_1:
 #if _CPU == 386
         if( func != NULL ) {
             type_flag fn_flags;
             TypeModFlags( func->sym_type, &fn_flags );
             if( fn_flags & TF1_FAR16 ) {
-                return( T_INT_2 );
+                return( CGTY_INT_2 );
             }
         }
 #endif
-        type = T_INTEGER;
+        type = CGTY_INTEGER;
         break;
 #endif
     }

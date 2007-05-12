@@ -596,7 +596,7 @@ static enum sym_type PtrType( type_flag flags )
 #define ENTRY_ULONG64           SYM_INT8,
 #define ENTRY_FLOAT             SYM_FLOAT4,
 #define ENTRY_DOUBLE            SYM_FLOAT8,
-#define ENTRY_LONG_DOUBLE       SYM_FLOAT8,
+#define ENTRY_LONG_DOUBLE       SYM_FLOAT10,
 #define ENTRY_ENUM              0,
 #define ENTRY_POINTER           0,
 #define ENTRY_TYPEDEF           0,

@@ -48,7 +48,7 @@
 #define TARGET_UINT             4
 #define TARGET_FLOAT            4
 #define TARGET_DOUBLE           8
-#define TARGET_LONG_DOUBLE      8       // until CG supports long double
+#define TARGET_LONG_DOUBLE      10
 
 #define TARGET_BITS_CHAR        8
 #define TARGET_BITS             (TARGET_INT * TARGET_BITS_CHAR)

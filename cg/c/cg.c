@@ -428,7 +428,7 @@ extern  n       *CGCompare( cg_op o, n *l, n *r, cg_type t ) {
     VerNode(r);
     VerOp(o,CompareOps);
     Action( "( %s, %t, %t, %s )", Op(o), l, r, Tipe( t ) );
-    new = Binary(o,l,r,T_BOOLEAN);
+    new = Binary(o,l,r,CGTY_BOOLEAN);
     Action( " -> %t%n", new );
     return( new );
 }
@@ -446,7 +446,7 @@ extern  n       *CGFlow( cg_op o, n *l, n *r ) {
     }
     VerOp(o,FlowOps);
     Action( "( %s, %t, %t )", Op(o), l, r );
-    new = Binary(o,l,r,T_BOOLEAN);
+    new = Binary(o,l,r,CGTY_BOOLEAN);
     Action( " -> %t%n", new );
     return( new );
 }
@@ -553,7 +553,7 @@ extern  n       *CGCallback( pointer func, pointer parm ) {
     call_back* cb;
 
     Action( "CGCallback" );
-    nd = NewNode( CALLBACK, T_DEFAULT );
+    nd = NewNode( CALLBACK, CGTY_DEFAULT );
     cb = CGAlloc( sizeof( call_back ) );
     nd->l = (n*)cb;
     cb->function = func;
@@ -595,9 +595,9 @@ static  cg_type PtrTipe( pointer s ) {
         a = 0;
     }
     if( a & FE_PROC ) {
-        return( T_CODE_PTR );
+        return( CGTY_CODE_PTR );
     } else {
-        return( T_POINTER );
+        return( CGTY_POINTER );
     }
 }
 extern  n       *CGFEName( pointer sym, cg_type t ) {
@@ -921,7 +921,7 @@ extern  n       *CGWarp( n *b4, l *lb, n *af ) {
     VerNode( af );
     Action( "( %t, %s, %t )", b4, Label(lb), af );
     CRefLabel(lb);
-    r = Binary( OP_WARP,Binary( OP_JOIN,NULL,b4,T_DEFAULT ),af,af->t );
+    r = Binary( OP_WARP,Binary( OP_JOIN,NULL,b4,CGTY_DEFAULT ),af,af->t );
     r->l->l = (n*)lb;
     Action( " -> %t%n", r );
     return( r );

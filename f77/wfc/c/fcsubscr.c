@@ -67,9 +67,9 @@ cg_name GetAdv( sym_id arr ) {
     dim_ptr = arr->ns.si.va.dim_ext;
     if( dim_ptr->adv == NULL ) {
         // ADV is allocated on the stack
-        return( CGFEName( FindAdvShadow( arr ), T_ADV_ENTRY ) );
+        return( CGFEName( FindAdvShadow( arr ), CGTY_ADV_ENTRY ) );
     } else {
-        return( CGBackName( dim_ptr->adv, T_ADV_ENTRY ) );
+        return( CGBackName( dim_ptr->adv, CGTY_ADV_ENTRY ) );
     }
 }
 
@@ -86,7 +86,7 @@ cg_name ArrayEltSize( sym_id arr ) {
     if( size == 0 ) {   // character*(*) array
         elt_size = CharItemLen( arr );
     } else {
-        elt_size = CGInteger( size, T_INTEGER );
+        elt_size = CGInteger( size, CGTY_INTEGER );
     }
     return( elt_size );
 }
@@ -120,17 +120,17 @@ void    MakeSCB( sym_id scb, cg_name len ) {
 
 // Make an SCB.
 
-    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, T_CHAR ) ), len,
-                       T_INTEGER ) );
+    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, CGTY_CHAR ) ), len,
+                       CGTY_INTEGER ) );
     // assumption is that the pointer in the SCB is the first field in
     // the SCB so that when we push the cg_name returned by CGAssign()
     // it is a pointer to the SCB
-    XPush( CGLVAssign( SCBPtrAddr( CGFEName( scb, T_CHAR ) ),
-                       XPop(), T_POINTER ) );
+    XPush( CGLVAssign( SCBPtrAddr( CGFEName( scb, CGTY_CHAR ) ),
+                       XPop(), CGTY_POINTER ) );
 // Don't do it the following way:
-//    CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, T_CHAR ) ),
-//                       XPop(), T_POINTER ) );
-//    XPush( CGFEName( scb, T_CHAR ) );
+//    CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, CGTY_CHAR ) ),
+//                       XPop(), CGTY_POINTER ) );
+//    XPush( CGFEName( scb, CGTY_CHAR ) );
 }
 
 
@@ -139,9 +139,9 @@ static  cg_name HiBound( sym_id arr, int ss_offset ) {
 
 // Get hi bound from ADV.
 
-    ss_offset = BETypeLength( T_ADV_LO ) * ( ss_offset + 1 ) +
-                BETypeLength( T_ADV_HI ) * ss_offset;
-    return( CGUnary( O_POINTS, StructRef( GetAdv( arr ), ss_offset ), T_ADV_HI ) );
+    ss_offset = BETypeLength( CGTY_ADV_LO ) * ( ss_offset + 1 ) +
+                BETypeLength( CGTY_ADV_HI ) * ss_offset;
+    return( CGUnary( O_POINTS, StructRef( GetAdv( arr ), ss_offset ), CGTY_ADV_HI ) );
 
 }
 
@@ -153,10 +153,10 @@ static  cg_name Multiplier( sym_id arr, int subs_no ) {
 
     cg_name     multiplier;
 
-    multiplier = CGInteger( 1, T_INT_4 );
+    multiplier = CGInteger( 1, CGTY_INT_4 );
     while( subs_no != 0 ) {
         multiplier = CGBinary( O_TIMES, multiplier,
-                               HiBound( arr, subs_no - 1 ), T_INT_4 );
+                               HiBound( arr, subs_no - 1 ), CGTY_INT_4 );
         subs_no--;
     }
     return( multiplier );
@@ -175,7 +175,7 @@ cg_name ArrayNumElts( sym_id arr ) {
     if( _AdvRequired( dim ) ) {
         num_elts = Multiplier( arr, _DimCount( dim->dim_flags ) );
     } else {
-        num_elts = CGInteger( dim->num_elts, T_INT_4 );
+        num_elts = CGInteger( dim->num_elts, CGTY_INT_4 );
     }
     return( num_elts );
 }
@@ -186,7 +186,7 @@ cg_name FieldArrayNumElts( sym_id arr ) {
 
 // Get number of elements in an array.
 
-    return( CGInteger( arr->fd.dim_ext->num_elts, T_INT_4 ) );
+    return( CGInteger( arr->fd.dim_ext->num_elts, CGTY_INT_4 ) );
 }
 
 
@@ -204,7 +204,7 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
     dims_no = _DimCount( dims->dim_flags );
     bounds = &dims->subs_1_lo;
     multiplier = 1;
-    hi_off = CGInteger( 0, T_INT_4 );
+    hi_off = CGInteger( 0, CGTY_INT_4 );
     lo_off = 0;
     for(;;) {
         lo = *bounds;
@@ -221,15 +221,15 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
                            hi_off,
                            CGBinary( O_TIMES,
                                      GetTypedValue(),
-                                     CGInteger( multiplier, T_INT_4 ),
-                                     T_INT_4 ),
-                           T_INT_4 );
+                                     CGInteger( multiplier, CGTY_INT_4 ),
+                                     CGTY_INT_4 ),
+                           CGTY_INT_4 );
         lo_off -= lo * multiplier;
         if( --dims_no == 0 ) break;
 
         multiplier *= ( hi - lo + 1 );
     }
-    return( CGBinary( O_PLUS, CGInteger( lo_off, T_INT_4 ), hi_off, T_INT_4 ) );
+    return( CGBinary( O_PLUS, CGInteger( lo_off, CGTY_INT_4 ), hi_off, CGTY_INT_4 ) );
 }
 
 
@@ -247,7 +247,7 @@ static  void    Index( sym_id arr, cg_name offset ) {
 
 // Perform indexing operation.
 
-    offset = CGBinary( O_TIMES, offset, ArrayEltSize( arr ), T_INT_4 );
+    offset = CGBinary( O_TIMES, offset, ArrayEltSize( arr ), CGTY_INT_4 );
     XPush( SymIndex( arr, offset ) );
 }
 
@@ -263,12 +263,12 @@ static  cg_name LoBound( sym_id arr, int ss_offset ) {
     dim_ptr = arr->ns.si.va.dim_ext;
     if( _LoConstBound( dim_ptr->dim_flags, ss_offset + 1 ) ) {
         lo_bound = CGInteger( ((intstar4 *)(&dim_ptr->subs_1_lo))[2*ss_offset],
-                              T_INT_4 );
+                              CGTY_INT_4 );
     } else {
         lo_bound = CGUnary( O_POINTS,
                             StructRef( GetAdv( arr ),
-                                       ss_offset*BETypeLength( T_ADV_ENTRY ) ),
-                            T_ADV_LO );
+                                       ss_offset*BETypeLength( CGTY_ADV_ENTRY ) ),
+                            CGTY_ADV_LO );
     }
     return( lo_bound );
 }
@@ -287,8 +287,8 @@ static  void    VariableDims( sym_id arr ) {
 
     dim_ptr = arr->ns.si.va.dim_ext;
     dims_no = _DimCount( dim_ptr->dim_flags );
-    offset = CGInteger( 0, T_INT_4 );
-    c_offset = CGInteger( 0, T_INT_4 );
+    offset = CGInteger( 0, CGTY_INT_4 );
+    c_offset = CGInteger( 0, CGTY_INT_4 );
     ss_offset = 0;
     while( ss_offset < dims_no ) {
 
@@ -302,18 +302,18 @@ static  void    VariableDims( sym_id arr ) {
                            CGBinary( O_TIMES,
                                      GetTypedValue(),
                                      Multiplier( arr, ss_offset ),
-                                     T_INT_4 ),
-                           T_INT_4 );
+                                     CGTY_INT_4 ),
+                           CGTY_INT_4 );
         c_offset = CGBinary( O_MINUS,
                              c_offset,
                              CGBinary( O_TIMES,
                                        LoBound( arr, ss_offset ),
                                        Multiplier( arr, ss_offset ),
-                                       T_INT_4 ),
-                             T_INT_4 );
+                                       CGTY_INT_4 ),
+                             CGTY_INT_4 );
         ss_offset++;
     }
-    Index( arr, CGBinary( O_PLUS, c_offset, offset, T_INT_4 ) );
+    Index( arr, CGBinary( O_PLUS, c_offset, offset, CGTY_INT_4 ) );
 }
 
 
@@ -336,12 +336,12 @@ static  void    DbSubscript( sym_id arr ) {
         subscripts[ i ] = GetTypedValue();
     }
     for( i = 1; i <= dims_no; ++i ) {
-        CGAddParm( call, subscripts[ dims_no - i ], T_INT_4 );
+        CGAddParm( call, subscripts[ dims_no - i ], CGTY_INT_4 );
     }
-    CGAddParm( call, GetAdv( arr ), T_LOCAL_POINTER );
-    CGAddParm( call, CGInteger( _DimCount( dim_ptr->dim_flags ), T_INTEGER ),
-               T_INTEGER );
-    offset = CGUnary( O_POINTS, CGCall( call ), T_INT_4 );
+    CGAddParm( call, GetAdv( arr ), CGTY_LOCAL_POINTER );
+    CGAddParm( call, CGInteger( _DimCount( dim_ptr->dim_flags ), CGTY_INTEGER ),
+               CGTY_INTEGER );
+    offset = CGUnary( O_POINTS, CGCall( call ), CGTY_INT_4 );
     Index( arr, offset );
 }
 
@@ -361,8 +361,8 @@ void    FCAdvFillLo( void ) {
     adv = GetAdv( arr );
     ss = GetU16();
     lo = GetTypedValue();
-    lo_offset = (ss - 1) * BETypeLength( T_ADV_ENTRY );
-    CGDone( CGAssign( StructRef( adv, lo_offset ), lo, T_ADV_LO ) );
+    lo_offset = (ss - 1) * BETypeLength( CGTY_ADV_ENTRY );
+    CGDone( CGAssign( StructRef( adv, lo_offset ), lo, CGTY_ADV_LO ) );
 }
 
 
@@ -385,33 +385,33 @@ void    FCAdvFillHi( void ) {
     arr = GetPtr();
     dim_ptr = arr->ns.si.va.dim_ext;
     adv = GetAdv( arr );
-    hi_size = BETypeLength( T_ADV_HI );
-    lo_size = BETypeLength( T_ADV_LO );
+    hi_size = BETypeLength( CGTY_ADV_HI );
+    lo_size = BETypeLength( CGTY_ADV_LO );
     ss = GetU16();
     hi = GetTypedValue();
     if( CGOpts & CGOPT_DI_CV ) {
-        hi_offset = _DimCount( dim_ptr->dim_flags ) * BETypeLength( T_ADV_ENTRY );
+        hi_offset = _DimCount( dim_ptr->dim_flags ) * BETypeLength( CGTY_ADV_ENTRY );
         if( Options & OPT_BOUNDS ) {
-            hi_offset += BETypeLength( T_POINTER );
+            hi_offset += BETypeLength( CGTY_POINTER );
         }
-        hi_offset += (ss - 1) * (lo_size + BETypeLength( T_ADV_HI_CV )) + lo_size;
-        hi = CGAssign( StructRef( adv, hi_offset ), hi, T_ADV_HI_CV );
+        hi_offset += (ss - 1) * (lo_size + BETypeLength( CGTY_ADV_HI_CV )) + lo_size;
+        hi = CGAssign( StructRef( adv, hi_offset ), hi, CGTY_ADV_HI_CV );
         adv = GetAdv( arr );
     }
     if( Options & OPT_BOUNDS ) {
         call = InitCall( RT_ADV_FILL_HI );
-        CGAddParm( call, hi, T_INT_4 );
-        CGAddParm( call, CGInteger( ss, T_UNSIGNED ), T_UNSIGNED );
-        CGAddParm( call, adv, T_LOCAL_POINTER );
-        CGDone( CGUnary( O_POINTS, CGCall( call ), T_INT_4 ) );
+        CGAddParm( call, hi, CGTY_INT_4 );
+        CGAddParm( call, CGInteger( ss, CGTY_UNSIGNED ), CGTY_UNSIGNED );
+        CGAddParm( call, adv, CGTY_LOCAL_POINTER );
+        CGDone( CGUnary( O_POINTS, CGCall( call ), CGTY_INT_4 ) );
     } else {
         hi_offset = (ss - 1) * ( lo_size + hi_size ) + lo_size;
         num_elts = CGBinary( O_PLUS, hi,
-                             CGBinary( O_MINUS, CGInteger( 1, T_INTEGER ),
+                             CGBinary( O_MINUS, CGInteger( 1, CGTY_INTEGER ),
                                        LoBound( arr, ss - 1 ),
-                                       T_ADV_HI ),
-                             T_ADV_HI );
-        CGDone( CGAssign( StructRef( adv, hi_offset ), num_elts, T_ADV_HI ) );
+                                       CGTY_ADV_HI ),
+                             CGTY_ADV_HI );
+        CGDone( CGAssign( StructRef( adv, hi_offset ), num_elts, CGTY_ADV_HI ) );
     }
 }
 
@@ -437,24 +437,24 @@ void    FCAdvFillHiLo1( void ) {
     ss = GetU16();
 
     adv = GetAdv( arr );
-    hi_size = BETypeLength( T_ADV_HI );
-    lo_size = BETypeLength( T_ADV_LO );
+    hi_size = BETypeLength( CGTY_ADV_HI );
+    lo_size = BETypeLength( CGTY_ADV_LO );
     hi = GetTypedValue();
 
     if( Options & OPT_BOUNDS ) {
         call = InitCall( RT_ADV_FILL_HI_LO1 );
-        CGAddParm( call, hi, T_INT_4 );
-        CGAddParm( call, CGInteger( ss, T_UNSIGNED ), T_UNSIGNED );
-        CGAddParm( call, adv, T_LOCAL_POINTER );
-        CGDone( CGUnary( O_POINTS, CGCall( call ), T_INT_4 ) );
+        CGAddParm( call, hi, CGTY_INT_4 );
+        CGAddParm( call, CGInteger( ss, CGTY_UNSIGNED ), CGTY_UNSIGNED );
+        CGAddParm( call, adv, CGTY_LOCAL_POINTER );
+        CGDone( CGUnary( O_POINTS, CGCall( call ), CGTY_INT_4 ) );
     } else {
         hi_offset = (ss - 1) * ( lo_size + hi_size ) + lo_size;
-        CGDone( CGAssign( StructRef( adv, hi_offset ), hi, T_ADV_HI ) );
+        CGDone( CGAssign( StructRef( adv, hi_offset ), hi, CGTY_ADV_HI ) );
         // set lo bound of the adv
-        lo = CGInteger( 1, T_INT_4 );
-        lo_offset = (ss - 1) * BETypeLength( T_ADV_ENTRY );
+        lo = CGInteger( 1, CGTY_INT_4 );
+        lo_offset = (ss - 1) * BETypeLength( CGTY_ADV_ENTRY );
         adv = GetAdv( arr );
-        CGDone( CGAssign( StructRef( adv, lo_offset ), lo, T_ADV_LO ) );
+        CGDone( CGAssign( StructRef( adv, lo_offset ), lo, CGTY_ADV_LO ) );
     }
 }
 

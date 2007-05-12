@@ -33,33 +33,33 @@
 #include "cgdefs.h"
 
 // this will not be necessary when long doubles are implemented // UNCOMMENT_TOKEN
-#define T_LONGDOUBLE    T_DOUBLE
+#define CGTY_LONGDOUBLE    CGTY_DOUBLE
 #define T_DBG_XCOMPLEX  T_DBG_DCOMPLEX
 
 enum {
-    T_COMPLEX   = T_FIRST_FREE, // FORTRAN 77 COMPLEX*8
-    T_DCOMPLEX,                 // FORTRAN 77 COMPLEX*16
-    T_XCOMPLEX,                 // FORTRAN 77 COMPLEX*20
-    T_CHAR,                     // FORTRAN 77 CHARACTER*n
-    T_ADV_ENTRY,                // dimension entry in ADV
-    T_ADV_ENTRY_1,              // for 1-D arrays
-    T_ADV_ENTRY_2,              // for 2-D arrays
-    T_ADV_ENTRY_3,              // for 3-D arrays
-    T_ADV_ENTRY_4,              // for 4-D arrays
-    T_ADV_ENTRY_5,              // for 5-D arrays
-    T_ADV_ENTRY_6,              // for 6-D arrays
-    T_ADV_ENTRY_7,              // for 7-D arrays
-    T_ADV_LO,                   // "lo" field in dimension entry
-    T_ADV_HI,                   // "hi" field in dimension entry
-    T_LOCAL_POINTER,            // pointer to data in local data area
-    T_GLOBAL_POINTER,           // pointer to global data (single segment)
-    T_CHAR16,                   // SCB for "far16" support
-    T_CHAR_ALLOCATABLE,         // SCB for allocatable CHARACTER data
-    T_ARR_ALLOCATABLE,          // Allocatable array structure
-    T_ARR_ALLOCATABLE_EXTENDED, // Allocatable extended array structure
-    T_ADV_HI_CV,                // "hi" field in dimension entry for Codeview
-    T_ADV_ENTRY_CV,             // dimension entry in ADV for Codeview
-    T_USER_DEFINED              // first user defined type
+    CGTY_COMPLEX = CGTY_FIRST_FREE, // FORTRAN 77 COMPLEX*8
+    CGTY_DCOMPLEX,                  // FORTRAN 77 COMPLEX*16
+    CGTY_XCOMPLEX,                  // FORTRAN 77 COMPLEX*20
+    CGTY_CHAR,                      // FORTRAN 77 CHARACTER*n
+    CGTY_ADV_ENTRY,                 // dimension entry in ADV
+    CGTY_ADV_ENTRY_1,               // for 1-D arrays
+    CGTY_ADV_ENTRY_2,               // for 2-D arrays
+    CGTY_ADV_ENTRY_3,               // for 3-D arrays
+    CGTY_ADV_ENTRY_4,               // for 4-D arrays
+    CGTY_ADV_ENTRY_5,               // for 5-D arrays
+    CGTY_ADV_ENTRY_6,               // for 6-D arrays
+    CGTY_ADV_ENTRY_7,               // for 7-D arrays
+    CGTY_ADV_LO,                    // "lo" field in dimension entry
+    CGTY_ADV_HI,                    // "hi" field in dimension entry
+    CGTY_LOCAL_POINTER,             // pointer to data in local data area
+    CGTY_GLOBAL_POINTER,            // pointer to global data (single segment)
+    CGTY_CHAR16,                    // SCB for "far16" support
+    CGTY_CHAR_ALLOCATABLE,          // SCB for allocatable CHARACTER data
+    CGTY_ARR_ALLOCATABLE,           // Allocatable array structure
+    CGTY_ARR_ALLOCATABLE_EXTENDED,  // Allocatable extended array structure
+    CGTY_ADV_HI_CV,                 // "hi" field in dimension entry for Codeview
+    CGTY_ADV_ENTRY_CV,              // dimension entry in ADV for Codeview
+    CGTY_USER_DEFINED               // first user defined type
 };
 
 typedef enum {

@@ -1911,7 +1911,7 @@ TYPE AlignmentType( TYPE typ )
         case TYP_MEMBER_POINTER:
             return( GetBasicType( TYP_UINT ) );
         case TYP_LONG_DOUBLE:
-            return( GetBasicType( TYP_DOUBLE ) );
+            return( GetBasicType( TYP_LONG_DOUBLE ) );
         default:
             return( typ );
         }

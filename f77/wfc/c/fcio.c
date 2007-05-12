@@ -88,9 +88,9 @@ static  void    ChrArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts,
     call_handle call;
 
     call = InitCall( rtn );
-    CGAddParm( call, elt_size, T_INTEGER );
-    CGAddParm( call, num_elts, T_INT_4 );
-    CGAddParm( call, arr, T_POINTER );
+    CGAddParm( call, elt_size, CGTY_INTEGER );
+    CGAddParm( call, num_elts, CGTY_INT_4 );
+    CGAddParm( call, arr, CGTY_POINTER );
     CGDone( CGCall( call ) );
 }
 
@@ -102,9 +102,9 @@ static  void    NumArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts,
     call_handle call;
 
     call = InitCall( rtn );
-    CGAddParm( call, CGInteger( typ, T_INTEGER ), T_INTEGER );
-    CGAddParm( call, num_elts, T_INT_4 );
-    CGAddParm( call, arr, T_POINTER );
+    CGAddParm( call, CGInteger( typ, CGTY_INTEGER ), CGTY_INTEGER );
+    CGAddParm( call, num_elts, CGTY_INT_4 );
+    CGAddParm( call, arr, CGTY_POINTER );
     CGDone( CGCall( call ) );
 }
 
@@ -117,7 +117,7 @@ static  void    IOCall( RTCODE rtn ) {
     call_handle handle;
 
     handle = InitCall( rtn );
-    CGAddParm( handle, XPop(), T_POINTER );
+    CGAddParm( handle, XPop(), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -130,7 +130,7 @@ static  void    IOCallValue( RTCODE rtn ) {
     call_handle handle;
 
     handle = InitCall( rtn );
-    CGAddParm( handle, GetTypedValue(), T_INT_4 );
+    CGAddParm( handle, GetTypedValue(), CGTY_INT_4 );
     CGDone( CGCall( handle ) );
 }
 
@@ -142,7 +142,7 @@ static  void    ChkIOErr( cg_name io_stat ) {
 
     label_handle        eq_label;
 
-    io_stat = CGUnary( O_POINTS, io_stat, T_INTEGER );
+    io_stat = CGUnary( O_POINTS, io_stat, CGTY_INTEGER );
     if( ( EndEqLabel != 0 ) && ( ErrEqLabel != 0 ) ) {
         eq_label = BENewLabel();
         CG3WayControl( io_stat, GetLabel( EndEqLabel ), eq_label,
@@ -151,19 +151,19 @@ static  void    ChkIOErr( cg_name io_stat ) {
         BEFiniLabel( eq_label );
     } else if( EndEqLabel != 0 ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_LT, io_stat, CGInteger( 0, T_INTEGER ),
-                              T_INTEGER ),
+                   CGCompare( O_LT, io_stat, CGInteger( 0, CGTY_INTEGER ),
+                              CGTY_INTEGER ),
                    GetLabel( EndEqLabel ) );
     } else if( ErrEqLabel != 0 ) {
         CGControl( O_IF_TRUE,
-                   CGCompare( O_NE, io_stat, CGInteger( 0, T_INTEGER ),
-                              T_INTEGER ),
+                   CGCompare( O_NE, io_stat, CGInteger( 0, CGTY_INTEGER ),
+                              CGTY_INTEGER ),
                    GetLabel( ErrEqLabel ) );
     } else if( IOStatSpecified ) {
         IOSLabel = BENewLabel();
         CGControl( O_IF_TRUE,
-                   CGCompare( O_NE, io_stat, CGInteger( 0, T_INTEGER ),
-                              T_INTEGER ),
+                   CGCompare( O_NE, io_stat, CGInteger( 0, CGTY_INTEGER ),
+                              CGTY_INTEGER ),
                    IOSLabel );
     } else {
         CGDone( io_stat );
@@ -237,7 +237,7 @@ static  void    Input( RTCODE rtn ) {
     call_handle handle;
 
     handle = InitCall( rtn );
-    CGAddParm( handle, XPop(), T_POINTER );
+    CGAddParm( handle, XPop(), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -343,7 +343,7 @@ void    FCOutLOG1( void ) {
 
 // Call runtime routine to output LOGICAL*1 value.
 
-    Output( RT_OUT_LOG1, T_UINT_1 );
+    Output( RT_OUT_LOG1, CGTY_UINT_1 );
 }
 
 
@@ -352,7 +352,7 @@ void    FCOutLOG4( void ) {
 
 // Call runtime routine to output LOGICAL*4 value.
 
-    Output( RT_OUT_LOG4, T_UINT_4 );
+    Output( RT_OUT_LOG4, CGTY_UINT_4 );
 }
 
 
@@ -361,7 +361,7 @@ void    FCOutINT1( void ) {
 
 // Call runtime routine to output INTEGER*1 value.
 
-    Output( RT_OUT_INT1, T_INT_1 );
+    Output( RT_OUT_INT1, CGTY_INT_1 );
 }
 
 
@@ -370,7 +370,7 @@ void    FCOutINT2( void ) {
 
 // Call runtime routine to output INTEGER*2 value.
 
-    Output( RT_OUT_INT2, T_INT_2 );
+    Output( RT_OUT_INT2, CGTY_INT_2 );
 }
 
 
@@ -379,7 +379,7 @@ void    FCOutINT4( void ) {
 
 // Call runtime routine to output INTEGER*4 value.
 
-    Output( RT_OUT_INT4, T_INT_4 );
+    Output( RT_OUT_INT4, CGTY_INT_4 );
 }
 
 
@@ -388,7 +388,7 @@ void    FCOutREAL( void ) {
 
 // Call runtime routine to output REAL*4 value.
 
-    Output( RT_OUT_REAL, T_SINGLE );
+    Output( RT_OUT_REAL, CGTY_SINGLE );
 }
 
 
@@ -397,7 +397,7 @@ void    FCOutDBLE( void ) {
 
 // Call runtime routine to output REAL*8 value.
 
-    Output( RT_OUT_DBLE, T_DOUBLE );
+    Output( RT_OUT_DBLE, CGTY_DOUBLE );
 }
 
 
@@ -406,7 +406,7 @@ void    FCOutXTND( void ) {
 
 // Call runtime routine to output REAL*10 value.
 
-    Output( RT_OUT_XTND, T_LONGDOUBLE );
+    Output( RT_OUT_XTND, CGTY_LONGDOUBLE );
 }
 
 
@@ -432,7 +432,7 @@ void    FCOutCPLX( void ) {
 
 // Call runtime routine to output COMPLEX*8 value.
 
-    OutCplx( RT_OUT_CPLX, T_COMPLEX );
+    OutCplx( RT_OUT_CPLX, CGTY_COMPLEX );
 }
 
 
@@ -441,7 +441,7 @@ void    FCOutDBCX( void ) {
 
 // Call runtime routine to output COMPLEX*16 value.
 
-    OutCplx( RT_OUT_DBCX, T_DCOMPLEX );
+    OutCplx( RT_OUT_DBCX, CGTY_DCOMPLEX );
 }
 
 
@@ -450,7 +450,7 @@ void    FCOutXTCX( void ) {
 
 // Call runtime routine to output COMPLEX*20 value.
 
-    OutCplx( RT_OUT_XTCX, T_XCOMPLEX );
+    OutCplx( RT_OUT_XTCX, CGTY_XCOMPLEX );
 }
 
 
@@ -462,7 +462,7 @@ void    FCOutCHAR( void ) {
     call_handle handle;
 
     handle = InitCall( RT_OUT_CHAR );
-    CGAddParm( handle, XPop(), T_POINTER );
+    CGAddParm( handle, XPop(), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -473,8 +473,8 @@ static  void    IOString( RTCODE rtn ) {
     call_handle handle;
 
     handle = InitCall( rtn );
-    CGAddParm( handle, XPop(), T_INTEGER );
-    CGAddParm( handle, XPop(), T_POINTER );
+    CGAddParm( handle, XPop(), CGTY_INTEGER );
+    CGAddParm( handle, XPop(), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -662,7 +662,7 @@ void    FCOutStruct( void ) {
 // Output a structure.
 
     IORtnTable = OutRtn;
-    TmpStructPtr = MkTmp( XPop(), T_POINTER );
+    TmpStructPtr = MkTmp( XPop(), CGTY_POINTER );
     StructIO( ((sym_id)GetPtr())->sd.fl.fields );
 }
 
@@ -679,13 +679,13 @@ static  void    DoStructArrayIO( tmp_handle num_elts, struct field *fieldz ) {
     StructIO( fieldz );
     CGControl( O_IF_TRUE,
                CGCompare( O_NE,
-                          CGAssign( TmpPtr( num_elts, T_INT_4 ),
+                          CGAssign( TmpPtr( num_elts, CGTY_INT_4 ),
                                     CGBinary( O_MINUS,
-                                              TmpVal( num_elts, T_INT_4 ),
-                                              CGInteger( 1, T_INTEGER ),
-                                              T_INT_4 ),
-                                    T_INT_4 ),
-                          CGInteger( 0, T_INTEGER ), T_INT_4 ),
+                                              TmpVal( num_elts, CGTY_INT_4 ),
+                                              CGInteger( 1, CGTY_INTEGER ),
+                                              CGTY_INT_4 ),
+                                    CGTY_INT_4 ),
+                          CGInteger( 0, CGTY_INTEGER ), CGTY_INT_4 ),
                label );
     BEFiniLabel( label );
 }
@@ -698,7 +698,7 @@ static  void    StructIOArrayStruct( sym_id arr ) {
 
     tmp_handle          num_elts;
 
-    num_elts = MkTmp( FieldArrayNumElts( arr ), T_INT_4 );
+    num_elts = MkTmp( FieldArrayNumElts( arr ), CGTY_INT_4 );
     DoStructArrayIO( num_elts, arr->fd.xt.record->fl.fields );
 }
 
@@ -711,17 +711,17 @@ static  void    StructIOItem( sym_id fd ) {
     RTCODE      rtn;
 
     if( fd->fd.dim_ext == NULL ) {
-        XPush( TmpVal( TmpStructPtr, T_POINTER ) );
+        XPush( TmpVal( TmpStructPtr, CGTY_POINTER ) );
         if( fd->fd.typ == TY_CHAR ) {
-            XPush( CGInteger( fd->fd.xt.size, T_INTEGER ) );
+            XPush( CGInteger( fd->fd.xt.size, CGTY_INTEGER ) );
         }
         IORtnTable[ ParmType( fd->fd.typ, fd->fd.xt.size ) ]();
-        CGTrash( CGAssign( TmpPtr( TmpStructPtr, T_POINTER ),
+        CGTrash( CGAssign( TmpPtr( TmpStructPtr, CGTY_POINTER ),
                            CGBinary( O_PLUS,
-                                     TmpVal( TmpStructPtr, T_POINTER ),
-                                     CGInteger( fd->fd.xt.size, T_UINT_4 ),
-                                     T_POINTER ),
-                           T_POINTER ) );
+                                     TmpVal( TmpStructPtr, CGTY_POINTER ),
+                                     CGInteger( fd->fd.xt.size, CGTY_UINT_4 ),
+                                     CGTY_POINTER ),
+                           CGTY_POINTER ) );
     } else {
         if( IORtnTable == &OutRtn ) {
             rtn = RT_PRT_ARRAY;
@@ -729,22 +729,22 @@ static  void    StructIOItem( sym_id fd ) {
             rtn = RT_INP_ARRAY;
         }
         if( fd->fd.typ == TY_CHAR ) {
-            ChrArrayIO( rtn + 1, TmpVal( TmpStructPtr, T_POINTER ),
-                        CGInteger( fd->fd.dim_ext->num_elts, T_INT_4 ),
-                        CGInteger( fd->fd.xt.size, T_INTEGER ) );
+            ChrArrayIO( rtn + 1, TmpVal( TmpStructPtr, CGTY_POINTER ),
+                        CGInteger( fd->fd.dim_ext->num_elts, CGTY_INT_4 ),
+                        CGInteger( fd->fd.xt.size, CGTY_INTEGER ) );
         } else {
-            NumArrayIO( rtn, TmpVal( TmpStructPtr, T_POINTER ),
-                        CGInteger( fd->fd.dim_ext->num_elts, T_INT_4 ),
+            NumArrayIO( rtn, TmpVal( TmpStructPtr, CGTY_POINTER ),
+                        CGInteger( fd->fd.dim_ext->num_elts, CGTY_INT_4 ),
                         ParmType( fd->fd.typ, fd->fd.xt.size ) );
         }
-        CGTrash( CGAssign( TmpPtr( TmpStructPtr, T_POINTER ),
+        CGTrash( CGAssign( TmpPtr( TmpStructPtr, CGTY_POINTER ),
                            CGBinary( O_PLUS,
-                                     TmpVal( TmpStructPtr, T_POINTER ),
+                                     TmpVal( TmpStructPtr, CGTY_POINTER ),
                                      CGInteger( fd->fd.xt.size *
                                                 fd->fd.dim_ext->num_elts,
-                                                T_UINT_4 ),
-                                     T_POINTER ),
-                           T_POINTER ) );
+                                                CGTY_UINT_4 ),
+                                     CGTY_POINTER ),
+                           CGTY_POINTER ) );
     }
 }
 
@@ -758,8 +758,8 @@ static  void    StructArrayIO( void ) {
     tmp_handle          num_elts;
 
     arr = GetPtr();
-    num_elts = MkTmp( ArrayNumElts( arr ), T_INT_4 );
-    TmpStructPtr = MkTmp( SymAddr( arr ), T_POINTER );
+    num_elts = MkTmp( ArrayNumElts( arr ), CGTY_INT_4 );
+    TmpStructPtr = MkTmp( SymAddr( arr ), CGTY_POINTER );
     DoStructArrayIO( num_elts, arr->ns.xt.record->fl.fields );
 }
 
@@ -786,7 +786,7 @@ void    FCInpStruct( void ) {
 // Input a structure.
 
     IORtnTable = InpRtn;
-    TmpStructPtr = MkTmp( XPop(), T_POINTER );
+    TmpStructPtr = MkTmp( XPop(), CGTY_POINTER );
     StructIO( ((sym_id)GetPtr())->sd.fl.fields );
 }
 
@@ -818,11 +818,11 @@ void    FCSetNml( void ) {
     ReverseList( &nl->nl.group_list );
     ge = nl->nl.group_list;
     while( ge != NULL ) {
-        CGAddParm( handle, SymAddr( ge->sym ), T_POINTER );
+        CGAddParm( handle, SymAddr( ge->sym ), CGTY_POINTER );
         ge = ge->link;
     }
     ReverseList( &nl->nl.group_list );
-    CGAddParm( handle, CGBackName( nl->nl.address, T_POINTER ), T_POINTER );
+    CGAddParm( handle, CGBackName( nl->nl.address, CGTY_POINTER ), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -835,8 +835,8 @@ void    FCSetFmt( void ) {
     call_handle handle;
 
     handle = InitCall( RT_SET_FMT );
-    CGAddParm( handle, CGBackName( GetStmtLabel( GetPtr() ), T_POINTER ),
-               T_POINTER );
+    CGAddParm( handle, CGBackName( GetStmtLabel( GetPtr() ), CGTY_POINTER ),
+               CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -849,8 +849,8 @@ void    FCPassLabel( void ) {
     call_handle handle;
 
     handle = InitCall( GetU16() );
-    CGAddParm( handle, CGBackName( GetLabel( GetU16() ), T_POINTER ),
-               T_POINTER );
+    CGAddParm( handle, CGBackName( GetLabel( GetU16() ), CGTY_POINTER ),
+               CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -867,8 +867,8 @@ void    FCFmtAssign( void ) {
 
     handle = InitCall( RT_SET_FMT );
     CGAddParm( handle,
-               CGUnary( O_POINTS, SymAddr( GetPtr() ), T_POINTER ),
-               T_POINTER );
+               CGUnary( O_POINTS, SymAddr( GetPtr() ), CGTY_POINTER ),
+               CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -899,7 +899,7 @@ void    ArrayIO( RTCODE num_array, RTCODE chr_array ) {
         addr = XPop();
         num_elts = FieldArrayNumElts( field );
         if( field->fd.typ == TY_CHAR ) {
-            elt_size = CGInteger( field->fd.xt.size, T_INTEGER );
+            elt_size = CGInteger( field->fd.xt.size, CGTY_INTEGER );
             ChrArrayIO( chr_array, addr, num_elts, elt_size );
         } else {
             NumArrayIO( num_array, addr, num_elts,
@@ -936,8 +936,8 @@ void    FCFmtScan( void ) {
     call_handle handle;
 
     handle = InitCall( RT_FMT_SCAN );
-    CGAddParm( handle, CGInteger( GetU16(), T_UNSIGNED ), T_UNSIGNED );
-    CGAddParm( handle, XPop(), T_POINTER );
+    CGAddParm( handle, CGInteger( GetU16(), CGTY_UNSIGNED ), CGTY_UNSIGNED );
+    CGAddParm( handle, XPop(), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -953,10 +953,10 @@ void    FCFmtArrScan( void ) {
 
     sym = GetPtr();
     handle = InitCall( RT_FMT_ARR_SCAN );
-    CGAddParm( handle, CGInteger( GetU16(), T_UNSIGNED ), T_UNSIGNED );
-    CGAddParm( handle, ArrayEltSize( sym ), T_UNSIGNED );
-    CGAddParm( handle, ArrayNumElts( sym ), T_INT_4 );
-    CGAddParm( handle, SymAddr( sym ), T_POINTER );
+    CGAddParm( handle, CGInteger( GetU16(), CGTY_UNSIGNED ), CGTY_UNSIGNED );
+    CGAddParm( handle, ArrayEltSize( sym ), CGTY_UNSIGNED );
+    CGAddParm( handle, ArrayNumElts( sym ), CGTY_INT_4 );
+    CGAddParm( handle, SymAddr( sym ), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -972,13 +972,13 @@ void    FCIntlArrSet( void ) {
 
     sym = GetPtr();
     scb = GetPtr();
-    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, T_POINTER ) ),
-                       ArrayEltSize( sym ), T_INTEGER ) );
-    CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, T_POINTER ) ),
-                       SymAddr( sym ), T_POINTER ) );
+    CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, CGTY_POINTER ) ),
+                       ArrayEltSize( sym ), CGTY_INTEGER ) );
+    CGTrash( CGAssign( SCBPtrAddr( CGFEName( scb, CGTY_POINTER ) ),
+                       SymAddr( sym ), CGTY_POINTER ) );
     handle = InitCall( RT_SET_INTL );
-    CGAddParm( handle, ArrayNumElts( sym ), T_INT_4 );
-    CGAddParm( handle, CGFEName( scb, T_POINTER ), T_POINTER );
+    CGAddParm( handle, ArrayNumElts( sym ), CGTY_INT_4 );
+    CGAddParm( handle, CGFEName( scb, CGTY_POINTER ), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 
@@ -991,8 +991,8 @@ void    FCSetIntl( void ) {
     call_handle handle;
 
     handle = InitCall( RT_SET_INTL );
-    CGAddParm( handle, CGInteger( 1, T_INT_4 ), T_INT_4 );
-    CGAddParm( handle, XPop(), T_POINTER );
+    CGAddParm( handle, CGInteger( 1, CGTY_INT_4 ), CGTY_INT_4 );
+    CGAddParm( handle, XPop(), CGTY_POINTER );
     CGDone( CGCall( handle ) );
 }
 

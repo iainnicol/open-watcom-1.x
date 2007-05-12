@@ -946,7 +946,7 @@ dbg_type SymbolicDebugType( TYPE type, SD_CONTROL control )
                          SymbolicDebugType( base->of, control ) );
         break;
     case TYP_VOID:
-        dt = DBScalar( "", TY_DEFAULT );
+        dt = DBScalar( "", CGTY_DEFAULT );
         break;
     case TYP_MEMBER_POINTER:
     {   dbg_struct  ds;
@@ -1026,7 +1026,7 @@ static void symbolicDebugFundamentalType( void )
     dbg_type    data;
 
     symbolicDebugSegmentType();
-    for( id = TYP_FIRST_VALID ; id < TYP_LONG_DOUBLE ; ++id ) {
+    for( id = TYP_FIRST_VALID ; id <= TYP_LAST_VALID ; ++id ) {
         data = 0;
         TypeTraverse( id, &doSymbolicDebugFundamentalType, (void *)&data );
     }
@@ -1168,6 +1168,6 @@ void SymbolicDebugMemberFunc( SYMBOL func, SYMBOL this_sym )
     } else {
         DBObject( SymbolicDebugType( SymClass( func ), SD_DEFAULT ),
                   NULL,
-                  TY_DEFAULT );
+                  CGTY_DEFAULT );
     }
 }
