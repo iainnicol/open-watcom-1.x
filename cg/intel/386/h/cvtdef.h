@@ -24,15 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  386 type conversion table info
 *
 ****************************************************************************/
 
 
-typedef enum {
-#undef  pick
-#define pick(enum,CPU_addr,FPU_addr) enum,
-#include "opcoddef.h"
-        LAST
-} table_def;
+/*    enum      address */
+pick( C2TO1,	C2to1 )
+pick( C4TO1,	C4to1 )
+pick( C4TO2,	C4to2 )
+pick( C8TO2,	C8to4 )
+pick( C8TO4,	C8to4 )
+pick( S1TO2,	S1to2 )
+pick( S1TO4,	S1to4 )
+pick( S1TO8,	S1to8 )
+pick( S2TO4,	S2to4 )
+pick( S2TO8,	S2to8 )
+pick( S4TO8,	S4to8 )
+pick( Z1TO2,	Z1to2 )
+pick( Z1TO4,	Z1to4 )
+pick( Z1TO8,	Z1to8 )
+pick( Z2TO4,	Z2to4 )
+pick( Z2TO8,	Z2to8 )
+pick( Z4TO8,	Z4to8 )
+pick( EXT_PT,	ExtPT )
+pick( CHP_PT,	ChpPT )
+pick( PTTOI8,	PTtoI8 )
+pick( I8TOPT,	I8toPT )

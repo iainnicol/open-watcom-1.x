@@ -140,18 +140,10 @@ static  opcode_entry    CRtn[] = {
 };
 
 static opcode_entry     *CvtAddr[] = {
-        C2to1,
-        C4to1,
-        C4to2,
-        C8to4,
-        Ext1,
-        Ext2,
-        Ext4,
-        SExt1,
-        SExt2,
-        SExt4,
-        ExtPT
-        };
+#undef  pick
+#define pick(enum,address) address,
+#include "cvtdef.h"
+};
 
 static  rt_class         CvtTable[] = {
 /*                               from*/

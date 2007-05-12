@@ -24,15 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  i86 type conversion table info
 *
 ****************************************************************************/
 
 
-typedef enum {
-#undef  pick
-#define pick(enum,CPU_addr,FPU_addr) enum,
-#include "opcoddef.h"
-        LAST
-} table_def;
+/*    enum    address */
+pick( C2TO1,  C2to1 )
+pick( C4TO1,  C4to1 )
+pick( C4TO2,  C4to2 )
+pick( C8TO4,  C8to4 )
+pick( EXT1,   Ext1 )
+pick( EXT2,   Ext2 )
+pick( EXT4,   Ext4 )
+pick( S_EXT1, SExt1 )
+pick( S_EXT2, SExt2 )
+pick( S_EXT4, SExt4 )
+pick( EXT_PT, ExtPT )
