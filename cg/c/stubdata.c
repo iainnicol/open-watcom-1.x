@@ -45,6 +45,7 @@
 #include "cgstub.h"
 #define extern
 #include "stubdata.h"
+
 cg_type CGIntTypes[] = {
     CGTY_UINT_1,
     CGTY_INT_1,
@@ -52,6 +53,8 @@ cg_type CGIntTypes[] = {
     CGTY_INT_2,
     CGTY_UINT_4,
     CGTY_INT_4,
+    CGTY_UINT_8,
+    CGTY_INT_8,
     CGTY_LONG_POINTER,
     CGTY_HUGE_POINTER,
     CGTY_NEAR_POINTER,
@@ -63,6 +66,7 @@ cg_type CGIntTypes[] = {
     CGTY_CODE_PTR,
     CGTY_SINGLE,
     CGTY_DOUBLE,
+    CGTY_LONG_DOUBLE,
     CGTY_DEFAULT
     };
 cg_type DGIntTypes[] = {
@@ -72,6 +76,8 @@ cg_type DGIntTypes[] = {
     CGTY_INT_2,
     CGTY_UINT_4,
     CGTY_INT_4,
+    CGTY_UINT_8,
+    CGTY_INT_8,
     CGTY_LONG_POINTER,
     CGTY_HUGE_POINTER,
     CGTY_NEAR_POINTER,
@@ -86,6 +92,7 @@ cg_type DGIntTypes[] = {
 cg_type FloatTypes[] = {
     CGTY_SINGLE,
     CGTY_DOUBLE,
+    CGTY_LONG_DOUBLE,
     CGTY_DEFAULT
 };
 cg_op ControlOps[  ] = {
