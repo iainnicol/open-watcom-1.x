@@ -90,8 +90,8 @@ extern  char    *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
     int         len;
 
     len = f->len - 1;
-    if( len + 5 + I16DIGITS > maxlen ) {
-        len = maxlen - 5 - I16DIGITS;
+    if( len + 1 + 8 + 1 > maxlen ) {
+        len = maxlen - 10;
     }
     if( f->sign == -1 ) {
         *buffer++ = '-';
@@ -106,13 +106,15 @@ extern  char    *CFCnvFS( cfloat *f, char *buffer, int maxlen ) {
         *buffer++ = '-';
         len = -len;
     }
+    buffer[ 3 ] = len % 10 + '0';
+    len /= 10;
     buffer[ 2 ] = len % 10 + '0';
     len /= 10;
     buffer[ 1 ] = len % 10 + '0';
     len /= 10;
     buffer[ 0 ] = len + '0';
-    buffer[ 3 ] = NULLCHAR;
-    buffer += 3;
+    buffer[ 4 ] = NULLCHAR;
+    buffer += 4;
     return( buffer );
 }
 

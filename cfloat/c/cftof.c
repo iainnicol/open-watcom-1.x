@@ -32,7 +32,7 @@
 
 #include "cfloat.h"
 
-#define MAX_SIG_DIGITS  17
+#define MAX_SIG_DIGITS  21
 
 #include <stdlib.h>
 
@@ -47,13 +47,13 @@ extern      char    *CFCnvFS( cfloat *f, char *buffer, int maxlen );
 extern      long_double   CFToF( cfloat *f ) {
 /********************************************/
 
-    char        buff[ MAX_SIG_DIGITS+10 ];
+    char        buff[ MAX_SIG_DIGITS + 9 ];
     long_double ld;
 #ifdef _LONG_DOUBLE_
     char        *p;
 #endif
 
-    CFCnvFS( f, buff, MAX_SIG_DIGITS+10 );  /* NYI */
+    CFCnvFS( f, buff, sizeof( buff ) );
 #ifdef _LONG_DOUBLE_
     __Strtold( buff, &ld, &p );
 #else
