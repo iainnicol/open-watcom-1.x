@@ -44,11 +44,20 @@
 
 extern      char    *CFCnvFS( cfloat *f, char *buffer, int maxlen );
 
-extern      double        CFToF( cfloat *f ) {
+extern      long_double   CFToF( cfloat *f ) {
 /********************************************/
 
-    char    buff[ MAX_SIG_DIGITS+10 ];
+    char        buff[ MAX_SIG_DIGITS+10 ];
+    long_double ld;
+#ifdef _LONG_DOUBLE_
+    char        *p;
+#endif
 
     CFCnvFS( f, buff, MAX_SIG_DIGITS+10 );  /* NYI */
-    return( atof( buff ) );
+#ifdef _LONG_DOUBLE_
+    __Strtold( buff, &ld, &p );
+#else
+    ld.value = atof( buff );
+#endif
+    return( ld );
 }

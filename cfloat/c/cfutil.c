@@ -32,7 +32,7 @@
 
 #include "cfloat.h"
 
-extern  double  CFToF(cfloat*);
+extern  long_double  CFToF(cfloat*);
 
 /*
  * For now we can just cheese out - if we ever port to a non IEEE machine
@@ -41,13 +41,30 @@ extern  double  CFToF(cfloat*);
 extern  void    CFCnvTarget( cfloat *f, flt *buffer, int size ) {
 /****************************************************************/
 
+    long_double  ld;
+
+    ld = CFToF( f );
     switch( size ) {
     case 4:
-        buffer->sngl = (float)CFToF( f );
+#ifdef _LONG_DOUBLE_
+        __LDFS( (long_double _WCNEAR *)&ld, (void _WCNEAR *)&buffer->sngl );
+#else
+        buffer->sngl = (float)ld.value;
+#endif
         break;
     case 8:
+#ifdef _LONG_DOUBLE_
+        __LDFD( (long_double _WCNEAR *)&ld, (void _WCNEAR *)&buffer->dble );
+#else
+        buffer->dble = (double)ld.value;
+#endif
+        break;
     case 10:
-        buffer->dble = (double)CFToF( f );
+#ifdef _LONG_DOUBLE_
+        buffer->ldble = ld;
+#else
+        buffer->ldble = (double)ld.value;
+#endif
         break;
     }
 }

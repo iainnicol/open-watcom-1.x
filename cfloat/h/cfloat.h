@@ -30,6 +30,7 @@
 
 
 #include "watcom.h"
+#include "xfloat.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,7 +64,7 @@ typedef enum {
 typedef union flt {
         float           sngl;
         double          dble;
-        double          ldble;  // FIXME - need long double support
+        long_double     ldble;
 } flt;
 
 extern  void            CFCnvTarget( cfloat *f, flt *buffer, int class );
@@ -99,7 +100,7 @@ extern  cf_bool         CFUnSignedSize( cfloat *f, uint size );
 extern  signed_16       CFCnvF16( cfloat *f );
 extern  signed_32       CFCnvF32( cfloat *f );
 extern  signed_64       CFCnvF64( cfloat *f );
-extern  double          CFToF( cfloat *f );
+extern  long_double     CFToF( cfloat *f );
 
 extern  int             CFAccess(cfloat*,int);
 extern  void            CFDeposit(cfloat*,int,int);
