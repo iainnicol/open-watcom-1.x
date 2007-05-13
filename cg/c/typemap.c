@@ -55,7 +55,7 @@ static cg_type  Types[] = {
          CGTY_HUGE_POINTER,
          CGTY_SINGLE,
          CGTY_DOUBLE,
-         CGTY_DOUBLE,
+         CGTY_LONG_DOUBLE,
          CGTY_DEFAULT
          };
 
