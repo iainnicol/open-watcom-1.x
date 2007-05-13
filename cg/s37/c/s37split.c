@@ -51,7 +51,7 @@ extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocS32Const(signed_32);
-extern  name            *AllocConst(pointer);
+extern  name            *AllocConst(cfloat *);
 extern  cfloat          *CFCnvU32F(unsigned_32);
 extern  name            *AllocTemp(type_class_def);
 extern  name            *SAllocTemp(type_class_def,type_length);
@@ -835,10 +835,10 @@ static  name   *MemCast( name *op,  type_class_def  tipe ){
     Cast in memory op as tipe
 */
     int         offset;
-    int         tsize;
+    type_length tsize;
 
     tsize = TypeClassSize[ tipe ];
-    offset = op->n.size-tsize;
+    offset = op->n.size - tsize;
     if( offset == 0 ){
         return( op );
     }

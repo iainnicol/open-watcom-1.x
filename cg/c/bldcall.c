@@ -41,6 +41,7 @@
 #include "zoiks.h"
 #include "offset.h"
 #include "feprotos.h"
+#include "cfloat.h"
 #include "namelist.h"
 #include "bldins.h"
 #include "makeaddr.h"

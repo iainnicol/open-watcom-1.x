@@ -134,10 +134,15 @@ typedef struct var_name {
         var_usage               block_usage;
 } var_name;
 
+typedef union float_data_def {
+        unsigned_32             _32[2];
+        unsigned_16             _16[5];
+} float_data_def;
+
 typedef struct constant_defn {
         struct constant_defn    *next_defn;
         pointer                 label;          /*  back end label for static */
-        unsigned_16             value[4];       /*  in internal format */
+        union float_data_def    value;          /*  in internal format */
         type_class_def          const_class;
 } constant_defn;
 

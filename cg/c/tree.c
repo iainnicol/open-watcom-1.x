@@ -35,12 +35,12 @@
 #include "model.h"
 #include "cgdefs.h"
 #include "procdef.h"
+#include "cfloat.h"
 #include "tree.h"
 #include "hostsys.h"
 #include "zoiks.h"
 #include "opcodes.h"
 #include "freelist.h"
-#include "cfloat.h"
 #include "targsys.h"
 #include "cgaux.h"
 #define BY_CG
@@ -1041,7 +1041,7 @@ extern  tn  TGTmpLeaf( an addr )
     return( TGReLeaf( addr ) );
 }
 
-extern  tn  TGConst( pointer cons, type_def *tipe )
+extern  tn  TGConst( cfloat *cons, type_def *tipe )
 /**************************************************
     return a leaf node for "cons" (a cfloat pointer)
 */

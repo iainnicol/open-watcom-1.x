@@ -49,7 +49,7 @@ extern  tn      TGLVAssign( tn dst, tn src, type_def *tipe );
 extern  name    *TGetName( tn node );
 extern  tn      TGReLeaf( an addr );
 extern  tn      TGTmpLeaf( an addr );
-extern  tn      TGConst( pointer cons, type_def *tipe );
+extern  tn      TGConst( cfloat *cons, type_def *tipe );
 extern  tn      DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
                              tn_class class, tn_class assn_class );
 extern  tn      TGPreGets( cg_op op, tn left, tn rite, type_def *tipe );

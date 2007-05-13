@@ -89,7 +89,7 @@ extern  hw_reg_set      ReturnReg( type_class_def, bool );
 */
 #define RL_SI   RL_TEMP_INDEX
 
-rtn_info RTInfo[RT_NOP-BEG_RTNS+1] = {
+rtn_info RTInfo[] = {
 #undef  pick
 #define pick(enum,name,op,class,left,right,result) {name, op, class, left, right, result},
 #include "rtidef.h"

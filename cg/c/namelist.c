@@ -102,8 +102,8 @@ static  name    *AllocName( int class,
     return( new );
 }
 
-static  name    *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_value ) {
-/*******************************************************************************/
+static  name    *findConst64( unsigned_32 low, unsigned_32 high, cfloat *cf_value ) {
+/***********************************************************************************/
 
     name        *new_c;
     name        **last;
@@ -141,7 +141,7 @@ static void ZapXX( name *xx, type_class_def class, type_length size ) {
 }
 
 
-extern  name    *AllocConst( pointer value ) {
+extern  name    *AllocConst( cfloat *value ) {
 /********************************************/
 
     name        *new_c;
@@ -262,7 +262,7 @@ extern  name    *AllocS64Const( unsigned_32 low, unsigned_32 high ) {
 /*******************************************************************/
 
     name        *new_c;
-    pointer     cf_value = CFCnvI64F( low, high );
+    cfloat      *cf_value = CFCnvI64F( low, high );
 
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ){
@@ -282,7 +282,7 @@ extern  name    *AllocU64Const( unsigned_32 low, unsigned_32 high ) {
 /*******************************************************************/
 
     name        *new_c;
-    pointer     cf_value = CFCnvU64F( low, high );
+    cfloat      *cf_value = CFCnvU64F( low, high );
 
     new_c = findConst64( low, high, cf_value );
     if( new_c == NULL ){

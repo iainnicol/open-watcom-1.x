@@ -78,7 +78,7 @@ extern  hw_reg_set      FirstReg( reg_set_index );
  * these.
  */
 
-rtn_info RTInfo[RT_NOP-BEG_RTNS+1] = {
+rtn_info RTInfo[] = {
 #undef  pick
 #define pick(enum,name,op,class,left,right,result) {name, op, class, left, right, result},
 #include "rtidef.h"

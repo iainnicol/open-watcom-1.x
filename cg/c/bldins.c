@@ -48,7 +48,7 @@
 #include "bldins.h"
 
 extern  void            FPNotStack(name*);
-extern  an              MakeConst(pointer,type_def*);
+extern  an              MakeConst(cfloat *,type_def*);
 extern  uint            Length(char*);
 extern  an              MakeAddrName(cg_class,sym_handle,type_def*);
 extern  an              MakeTypeTempAddr(name*,type_def*);
@@ -134,7 +134,7 @@ extern  an      BGStackValue( type_def *tipe ) {
 extern  an      BGInteger( signed_32 value, type_def *tipe ) {
 /***********************************************************/
 
-    pointer     cf;
+    cfloat  *cf;
 
     if( tipe->attr & TYPE_SIGNED ) {
         cf = CFCnvI32F( value );

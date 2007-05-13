@@ -527,7 +527,7 @@ static  instruction     *ExpPush( instruction *ins, operand_types op ) {
 
     instruction         *new_ins;
     name                *sp;
-    int                 size;
+    type_length         size;
     name                *index;
 
     sp = AllocRegName( HW_SP );
@@ -535,7 +535,7 @@ static  instruction     *ExpPush( instruction *ins, operand_types op ) {
     new_ins = MakeBinary( OP_SUB, sp, AllocIntConst( size ), sp, WD );
     new_ins->u.gen_table = &RC;
     PrefixIns( ins, new_ins );
-    #if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_IAPX86
     {
         instruction         *pop_ins;
         hw_reg_set          avail_index;
@@ -587,14 +587,14 @@ static  instruction     *ExpPush( instruction *ins, operand_types op ) {
             ins = pop_ins;
         }
     }
-    #elif _TARGET & _TARG_80386
+#elif _TARGET & _TARG_80386
     {
         index = AllocIndex( sp, NULL, 0, ins->type_class );
         new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
         ReplIns( ins, new_ins );
         ins = ExpMove( new_ins, op, RES_MEM );
     }
-    #endif
+#endif
     return( ins );
 }
 

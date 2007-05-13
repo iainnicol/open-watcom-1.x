@@ -468,7 +468,7 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
 /**************************************************************/
 
     instruction *new;
-    int         size;
+    type_length size;
 
     state = state;
     offset = offset;

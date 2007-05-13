@@ -38,7 +38,7 @@
 #include "cfloat.h"
 
 extern  void            BurnTree(tn);
-extern  tn              TGConst(pointer,type_def*);
+extern  tn              TGConst(cfloat *,type_def*);
 extern  bool            NeedPtrConvert(an,type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  cfloat *        CnvCFToType( cfloat *cf, type_def *tipe );

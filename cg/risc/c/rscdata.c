@@ -207,14 +207,12 @@ extern  void    DataLabel( label_handle lbl ) {
 static constant_defn    *GetI64Const( name *cons, type_class_def class ) {
 /************************************************************************/
 
-    static constant_defn i64Defn = { NULL, NULL, { 0, 0, 0, 0 }, I8 };
+    static constant_defn i64Defn = { NULL, NULL, { 0, 0 }, I8 };
 
     i64Defn.label = NULL;
     i64Defn.const_class = class;
-    i64Defn.value[ 0 ] = cons->c.int_value & 0xffff;
-    i64Defn.value[ 1 ] = ( cons->c.int_value >> 16 ) & 0xffff;
-    i64Defn.value[ 2 ] = cons->c.int_value_2 & 0xffff;
-    i64Defn.value[ 3 ] = ( cons->c.int_value_2 >> 16 ) & 0xffff;
+    i64Defn.value._32[ 0 ] = cons->c.int_value;
+    i64Defn.value._32[ 1 ] = cons->c.int_value_2;
     return( &i64Defn );
 }
 

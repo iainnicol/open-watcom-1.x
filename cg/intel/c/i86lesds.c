@@ -60,7 +60,7 @@ static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
     name        *base_r;
     int         locn_s;
     int         locn_r;
-    int         stride;
+    type_length stride;
 
     stride = TypeClassSize[tipe];
     if( s->n.class != r->n.class ) return( FALSE );

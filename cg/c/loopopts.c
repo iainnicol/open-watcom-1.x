@@ -69,7 +69,7 @@ extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  instruction     *MakeConvert(name*,name*,type_class_def,type_class_def);
 extern  instruction     *MakeCondition(opcode_defs,name*,name*,int,int,type_class_def);
 extern  name            *AllocTemp(type_class_def);
-extern  name            *AllocConst(pointer);
+extern  name            *AllocConst(cfloat *);
 extern  name            *AllocS32Const(signed_32);
 extern  block           *NewBlock(label_handle,bool);
 extern  label_handle    AskForNewLabel(void);

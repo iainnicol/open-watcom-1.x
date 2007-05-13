@@ -68,7 +68,7 @@ extern void             SuffixIns(instruction*,instruction*);
 extern instruction      *MakeMove(name*,name*,type_class_def);
 extern instruction      *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern bool             FPIsConvert(instruction*);
-extern name             *AllocConst(pointer);
+extern name             *AllocConst(cfloat *);
 extern pointer          CnvCFToType(pointer,type_def*);
 extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);

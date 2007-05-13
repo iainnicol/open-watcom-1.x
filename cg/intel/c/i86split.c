@@ -66,13 +66,11 @@ extern  instruction     *SplitCPPush(instruction*);
 extern  instruction     *SplitCompare(instruction*);
 extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitOp(instruction*);
-extern  instruction     *SplitFDPush(instruction*);
-extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitUnary(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *AllocU64Const( unsigned_32, unsigned_32 );
-extern  name            *AllocConst(pointer);
+extern  name            *AllocConst(cfloat *);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocMemory(pointer,type_length,cg_class,type_class_def);
@@ -357,24 +355,18 @@ extern  name    *IntEquivalent( name *name ) {
 /********************************************/
 
     constant_defn       *defn;
-    unsigned_32         *value;
 
     defn = GetFloat( name, FS );
-    value = (unsigned_32 *)defn->value;
-    return( AllocConst( CFCnvU32F( _TargetBigInt( *value ) ) ) );
+    return( AllocConst( CFCnvU32F( _TargetBigInt( defn->value._32[0] ) ) ) );
 }
 
 extern  name    *Int64Equivalent( name *name ) {
 /**********************************************/
 
     constant_defn       *defn;
-    unsigned_32         *low;
-    unsigned_32         *high;
 
     defn = GetFloat( name, FD );
-    low  = (unsigned_32 *)&defn->value[ 0 ];
-    high = (unsigned_32 *)&defn->value[ 2 ];
-    return( AllocU64Const( *low, *high ) );
+    return( AllocU64Const( defn->value._32[ 0 ], defn->value._32[ 1 ] ) );
 }
 
 extern instruction      *rFSCONSCMP( instruction *ins ) {

@@ -598,7 +598,7 @@ static  void    GenCallIndirect( instruction *call ) {
 static  void    doChop( instruction *ins, type_class_def class ) {
 /****************************************************************/
 
-    unsigned    size;
+    type_length size;
     unsigned    zap_mask;
 
     zap_mask = 0x00;
@@ -623,7 +623,7 @@ static  void    doChop( instruction *ins, type_class_def class ) {
 static  void    doSignExtend( instruction *ins, type_class_def from ) {
 /*********************************************************************/
 
-    unsigned    from_size;
+    type_length from_size;
     int         res_index;
     int         src_index;
     int         shift_amt;

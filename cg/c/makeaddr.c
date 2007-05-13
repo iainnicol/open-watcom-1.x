@@ -57,7 +57,7 @@ extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
 extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  type_def        *TypeAddress(cg_type);
-extern  name            *AllocConst(pointer);
+extern  name            *AllocConst(cfloat *);
 extern  void            FreeIns(instruction*);
 extern  void            AddIns(instruction*);
 extern  name            *MakeDisplay(name*,int);
@@ -291,7 +291,7 @@ extern  an      MakeGets( an dst, an src, type_def *tipe )
 }
 
 
-extern  an      MakeConst( pointer cf, type_def *tipe )
+extern  an      MakeConst( cfloat *cf, type_def *tipe )
 /*****************************************************/
 {
     return( AddrName( AllocConst( cf ), tipe ) );

@@ -39,6 +39,7 @@
 #include "vergen.h"
 #include "system.h"
 #include "zoiks.h"
+#include "cfloat.h"
 
 extern  void            ChangeType(instruction*,type_class_def);
 extern  name            *IntEquivalent(name*);
@@ -67,7 +68,7 @@ extern  hw_reg_set      Low16Reg(hw_reg_set);
 extern  name            *AddrConst(name*,int,constant_class);
 extern  name            *AllocIntConst(int);
 extern  name            *AllocUIntConst(uint);
-extern  name            *AllocConst(pointer);
+extern  name            *AllocConst(cfloat *);
 extern  instruction     *MakeCondition(opcode_defs,name*,name*,int,int,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);

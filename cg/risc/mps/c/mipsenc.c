@@ -663,7 +663,7 @@ static  void GenCallIndirect( instruction *call )
 static  void doZero( instruction *ins, type_class_def class )
 /***********************************************************/
 {
-    unsigned    size;
+    type_length size;
 
     size = TypeClassSize[class];
     switch( size ) {
@@ -684,7 +684,7 @@ static  void doZero( instruction *ins, type_class_def class )
 static  void doSignExtend( instruction *ins, type_class_def from )
 /****************************************************************/
 {
-    unsigned    from_size;
+    type_length from_size;
     int         res_index;
     int         src_index;
     int         shift_amt;

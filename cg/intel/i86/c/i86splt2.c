@@ -75,7 +75,7 @@ extern  hw_reg_set      Low16Reg( hw_reg_set );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  name            *AllocIntConst( int );
 extern  name            *AllocUIntConst( uint );
-extern  name            *AllocConst( pointer );
+extern  name            *AllocConst( cfloat * );
 extern  instruction     *MakeCondition( opcode_defs,name *, name *, int, int, type_class_def );
 extern  void            ReplIns( instruction *, instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
@@ -104,7 +104,6 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     switch( tosplit->n.class ) {
@@ -126,9 +125,7 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[ 1 ] << 16;
-                u32 += floatval->value[ 0 ];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( floatval->value._32[ 0 ] ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new = AddrConst( tosplit->c.value,
@@ -182,7 +179,6 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     switch( tosplit->n.class ) {
@@ -204,9 +200,7 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[ 3 ] << 16;
-                u32 += floatval->value[ 2 ];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( floatval->value._32[ 1 ] ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new = AddrConst( tosplit->c.value,
@@ -384,6 +378,7 @@ extern  instruction     *rSPLIT8( instruction *ins )
     UpdateLive( first_ins, last_ins );
     return( first_ins );
 }
+
 
 extern  instruction     *rSPLIT8BIN( instruction *ins )
 /*****************************************************/
@@ -761,10 +756,10 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
             break;
         case FD:
             floatval = GetFloat( tosplit, FD );
-            out->low      = AllocIntConst( _TargetInt( floatval->value[ 0 ] ) );
-            out->mid_low  = AllocIntConst( _TargetInt( floatval->value[ 1 ] ) );
-            out->mid_high = AllocIntConst( _TargetInt( floatval->value[ 2 ] ) );
-            out->high     = AllocIntConst( _TargetInt( floatval->value[ 3 ] ) );
+            out->low      = AllocIntConst( _TargetInt( floatval->value._16[ 0 ] ) );
+            out->mid_low  = AllocIntConst( _TargetInt( floatval->value._16[ 1 ] ) );
+            out->mid_high = AllocIntConst( _TargetInt( floatval->value._16[ 2 ] ) );
+            out->high     = AllocIntConst( _TargetInt( floatval->value._16[ 3 ] ) );
             break;
         default:
             Zoiks( ZOIKS_136 );
