@@ -318,23 +318,25 @@ static  reg_set_index   ClassSets[] = {
         RL_,                    /* FS*/
         RL_8,                   /* FD*/
         RL_,                    /* FL*/
-        RL_ };                  /* XX*/
+        RL_                     /* XX*/
+};
 
 static  hw_reg_set        *ParmSets[] = {
         ByteRegs,              /* U1*/
         ByteRegs,              /* I1*/
         WordRegs,              /* U2*/
         WordRegs,              /* I2*/
-        DoubleRegs,           /* U4*/
-        DoubleRegs,           /* I4*/
+        DoubleRegs,            /* U4*/
+        DoubleRegs,            /* I4*/
         QuadReg,               /* U8*/
         QuadReg,               /* I8*/
-        DblPtrRegs,           /* CP*/
-        DblPtrRegs,           /* PT*/
-        DoubleRegs,           /* FS*/
+        DblPtrRegs,            /* CP*/
+        DblPtrRegs,            /* PT*/
+        DoubleRegs,            /* FS*/
         QuadReg,               /* FD*/
-        QuadReg,               /* FL*/
-        Empty };               /* XX*/
+        Empty,                 /* FL*/
+        Empty                  /* XX*/
+};
 
 static  hw_reg_set        *ParmSets8087[] = {
         ByteRegs,              /* U1*/
@@ -350,7 +352,8 @@ static  hw_reg_set        *ParmSets8087[] = {
         STParmReg,             /* FS*/
         STParmReg,             /* FD*/
         STParmReg,             /* FL*/
-        Empty };               /* XX*/
+        Empty                  /* XX*/
+};
 
 static  reg_set_index   IsSets[] = {
         RL_BYTE,                /* U1*/
@@ -365,8 +368,9 @@ static  reg_set_index   IsSets[] = {
         RL_DBL_OR_PTR,          /* PT*/
         RL_DOUBLE,              /* FS*/
         RL_8,                   /* FD*/
-        RL_8,                   /* FL*/
-        RL_ };                  /* XX*/
+        RL_,                    /* FL*/
+        RL_                     /* XX*/
+};
 
 static  reg_set_index   ReturnSets[] = {
         RL_AL,                  /* U1*/
@@ -381,8 +385,9 @@ static  reg_set_index   ReturnSets[] = {
         RL_DX_AX,               /* PT*/
         RL_DX_AX,               /* FS*/
         RL_8,                   /* FD*/
-        RL_8,                   /* FL*/
-        RL_ };                  /* XX*/
+        RL_,                    /* FL*/
+        RL_                     /* XX*/
+};
 
 static  reg_set_index   Return8087[] = {
         RL_AL,                  /* U1*/
@@ -398,7 +403,8 @@ static  reg_set_index   Return8087[] = {
         RL_ST0,                 /* FS*/
         RL_ST0,                 /* FD*/
         RL_ST0,                 /* FL*/
-        RL_ };                  /* XX*/
+        RL_                     /* XX*/
+};
 
 static  reg_set_index   IndexSets[] = {
         RL_,                    /* U1*/
@@ -414,7 +420,8 @@ static  reg_set_index   IndexSets[] = {
         RL_,                    /* FS*/
         RL_,                    /* FD*/
         RL_,                    /* FL*/
-        RL_ };                  /* XX*/
+        RL_                     /* XX*/
+};
 
 /*       Information for register set intersections*/
 /*       if sets are of different classes*/

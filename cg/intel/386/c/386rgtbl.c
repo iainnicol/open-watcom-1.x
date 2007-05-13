@@ -365,8 +365,9 @@ static  reg_set_index   ClassSets[] = {
         RL_,                    /* PT*/
         RL_,                    /* FS*/
         RL_8,                   /* FD*/
-        RL_8,                   /* FL*/ // FIXME - long double
-        RL_ };                  /* XX*/
+        RL_,                    /* FL*/
+        RL_                     /* XX*/
+};
 
 static  reg_list        *ParmSets[] = {
 /**************************************
@@ -385,7 +386,8 @@ static  reg_list        *ParmSets[] = {
         &DoubleParmRegs,        /* FS*/
         &QuadReg,               /* FD*/
         &Empty,                 /* FL*/
-        &Empty };               /* XX*/
+        &Empty                  /* XX*/
+};
 
 static  reg_list        *ParmSets8087[] = {
 /**************************************
@@ -405,7 +407,8 @@ static  reg_list        *ParmSets8087[] = {
         &STParmReg,             /* FS*/
         &STParmReg,             /* FD*/
         &STParmReg,             /* FL*/
-        &Empty };               /* XX*/
+        &Empty                  /* XX*/
+};
 
 static  reg_set_index   IsSets[] = {
 /***********************************
@@ -424,7 +427,8 @@ static  reg_set_index   IsSets[] = {
         RL_DOUBLE,              /* FS*/
         RL_8,                   /* FD*/
         RL_,                    /* FL*/
-        RL_ };                  /* XX*/
+        RL_                     /* XX*/
+};
 
 static  reg_set_index   ReturnSets[] = {
 /***************************************
@@ -443,7 +447,8 @@ static  reg_set_index   ReturnSets[] = {
         RL_EAX,                 /* FS*/
         RL_EDX_EAX,             /* FD*/
         RL_,                    /* FL*/
-        RL_ };                  /* XX*/
+        RL_                     /* XX*/
+};
 
 static  reg_set_index   Return8087[] = {
 /***************************************
@@ -462,7 +467,8 @@ static  reg_set_index   Return8087[] = {
         RL_ST0,                 /* FS*/
         RL_ST0,                 /* FD*/
         RL_ST0,                 /* FL*/
-        RL_ };                  /* XX*/
+        RL_                     /* XX*/
+};
 
 static  reg_set_index   IndexSets[] = {
 /**************************************
@@ -480,8 +486,9 @@ static  reg_set_index   IndexSets[] = {
         RL_LONG_INDEX,          /* PT*/
         RL_,                    /* FS*/
         RL_,                    /* FD*/
-        RL_,
-        RL_ };                  /* XX*/
+        RL_,                    /* FL*/
+        RL_                     /* XX*/
+};
 
 /*
        Information for register set intersections
