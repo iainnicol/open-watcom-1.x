@@ -968,14 +968,11 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
+    case TYPE_LONG_DOUBLE:
     case TYPE_FIMAGINARY:
     case TYPE_DIMAGINARY:
-        StoreFloat( typ->decl_type, size );
-        break;
-    case TYPE_LONG_DOUBLE:
     case TYPE_LDIMAGINARY:
-        //StoreFloat( typ->decl_type, size );
-        StoreFloat( TYPE_DOUBLE, size );
+        StoreFloat( typ->decl_type, size );
         break;
     default:
         break;
@@ -1377,8 +1374,8 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     case TYPE_ULONG64:
     case TYPE_FLOAT:
     case TYPE_DOUBLE:
-    case TYPE_POINTER:
     case TYPE_LONG_DOUBLE:
+    case TYPE_POINTER:
     case TYPE_FIMAGINARY:
     case TYPE_DIMAGINARY:
     case TYPE_LDIMAGINARY:

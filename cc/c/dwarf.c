@@ -646,7 +646,7 @@ static void dwarfEmit( void )
     int         i;
 
     dwarfInitTypes();
-    for( i = TYPE_CHAR; i <= TYPE_DOUBLE; i++ ) {
+    for( i = TYPE_CHAR; i <= TYPE_LONG_DOUBLE; i++ ) {
         dwarfType( GetType( i ), DC_DEFAULT );
     }
     WalkTypeList( EmitAType );

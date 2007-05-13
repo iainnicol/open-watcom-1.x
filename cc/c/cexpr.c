@@ -30,7 +30,6 @@
 
 
 #include "cvars.h"
-#include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"
 #include "pragdefn.h"
@@ -1938,6 +1937,7 @@ local TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
         typ = typ->object;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_DOUBLE ||
+        typ->decl_type == TYPE_LONG_DOUBLE ||
         typ->decl_type == TYPE_FLOAT ) {
         CompFlags.float_used = 1;
     }
@@ -2104,6 +2104,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
         typ = typ->object;
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_DOUBLE ||    /* 20-apr-89 */
+            typ->decl_type == TYPE_LONG_DOUBLE ||
             typ->decl_type == TYPE_FLOAT ) {
             CompFlags.float_used = 1;
         }
