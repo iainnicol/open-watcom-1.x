@@ -415,7 +415,7 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
             break;
         case T_WHITE_SPACE:
             if( prev_token == T_WHITE_SPACE )
-                --i;
+                i -= sizeof( TOKEN );
             break;
         case T_ID:
             j = FormalParm( formal_parms );
@@ -435,8 +435,10 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
             break;
         case T_BAD_CHAR:
             TokenBuf[i++] = Buffer[0];
-            if( Buffer[1] != '\0' )
-                TokenBuf[i++] = T_WHITE_SPACE;
+            if( Buffer[1] != '\0' ) {
+                *(TOKEN *)&TokenBuf[i] = T_WHITE_SPACE;
+                i += sizeof( TOKEN );
+            }
             break;
         case T_CONSTANT:
         case T_STRING:
@@ -457,7 +459,8 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
                 CErr1( ERR_MUST_BE_MACRO_PARM );
                 prev_token = *(TOKEN *)TokenBuf;
                 *(TOKEN *)TokenBuf = T_SHARP;               /* 17-jul-92 */
-                MacroCopy( TokenBuf, MacroOffset + mlen - 1, 1 );
+                MacroCopy( TokenBuf, MacroOffset + mlen - sizeof( TOKEN ),
+                           sizeof( TOKEN ) );
                 *(TOKEN *)TokenBuf = prev_token;
             }
             prev_non_ws_token = CurToken;
@@ -472,11 +475,11 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
         CErr1( ERR_MUST_BE_MACRO_PARM );
     }
     if( prev_token == T_WHITE_SPACE ) {
-        --mlen;
+        mlen -= sizeof( TOKEN );
     }
-    MacroOverflow( mlen + 1, mlen );                /* 27-apr-94 */
-    *(char *)(MacroOffset + mlen) = T_NULL;
-    ++mlen;
+    MacroOverflow( mlen + sizeof( TOKEN ), mlen );
+    *(TOKEN *)(MacroOffset + mlen) = T_NULL;
+    mlen += sizeof( TOKEN );
     if( prev_non_ws_token == T_SHARP_SHARP ) {
         CErr1( ERR_MISPLACED_SHARP_SHARP );
     }
@@ -758,6 +761,7 @@ local void CLine( void )
     FNAMEPTR        flist;
     unsigned long   src_line;
 
+    src_line = 0;
     CompFlags.pre_processing = 1;
     PPNextToken();
     if( CurToken != T_CONSTANT ) {

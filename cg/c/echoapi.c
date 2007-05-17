@@ -667,9 +667,9 @@ static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
         }
     }
     if( name == NULL ) {
-        sprintf( buffer, "%x", rtn );
+        sprintf( buffer, "%p", rtn );
     } else {
-        sprintf( buffer, "%x:%s", rtn, name );
+        sprintf( buffer, "%p:%s", rtn, name );
     }
     return buffer;
 }

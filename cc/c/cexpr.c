@@ -570,6 +570,8 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             }
         } else if( tree->op.opr == OPR_POINTS ) {
             decl_flags = tree->op.result_type->u.p.decl_flags;
+        } else {
+            decl_flags = FLAG_NONE;
         }
         tree = ExprNode( NULL, OPR_ADDROF, tree );
         tree->expr_type = PtrNode( typ, decl_flags, 0 );
@@ -777,6 +779,9 @@ static TREEPTR FarPtrCvt( SYMPTR sym, SYM_HANDLE sym_handle )
             tree->expr_type = typ;
             tree->op.result_type = PtrNode( typ->object, FLAG_FAR, 0 );
         }
+    } else {
+        assert( 0 );
+	tree = NULL;
     }
     return( tree );
 }
@@ -1731,6 +1736,9 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         FreeExprTree( tree );
         return( ErrorNode( index_expr ) );
     }
+    if( TypeOf( index_expr )->type_flags & TF2_TYPE_PLAIN_CHAR ) {
+        CWarn1( WARN_PLAIN_CHAR_SUBSCRIPT, ERR_PLAIN_CHAR_SUBSCRIPT );
+    }
     typ = tree->expr_type;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_ARRAY ) {
@@ -1743,6 +1751,7 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
         tree_flags = OpFlags( flags );
     } else {
         CErr2p( ERR_FATAL_ERROR, "Bad array index tree" );
+	tree_flags = FLAG_NONE;
     }
     typ = typ->object;
     SKIP_TYPEDEFS( typ );

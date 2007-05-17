@@ -42,7 +42,7 @@
 
 //=========================================================================
 
-extern  void            FreeChain(void **);
+extern  void            FreeChain( void * );
 
 static  tmp_handle      TmpList;
 
