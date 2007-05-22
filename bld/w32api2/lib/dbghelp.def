@@ -1,6 +1,0 @@
-LIBRARY DBGHELP.DLL
-EXPORTS
-DbgHelpCreateUserDump
-DbgHelpCreateUserDumpW
-MiniDumpReadDumpStream
-MiniDumpWriteDump
