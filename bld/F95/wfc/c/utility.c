@@ -155,15 +155,21 @@ bool TypeIs( TYPE typ ) {
 // Return TRUE if current itnode has specified variable type.
 
     switch( CITNode->typ ) {
+    case( TY_INTEGER_8 ):
     case( TY_INTEGER ):
     case( TY_INTEGER_2 ):
     case( TY_INTEGER_1 ):
-        return( ( typ == TY_INTEGER ) ||
+        return( ( typ == TY_INTEGER_8 ) ||
+                ( typ == TY_INTEGER ) ||
                 ( typ == TY_INTEGER_2 ) ||
                 ( typ == TY_INTEGER_1 ) );
+    case( TY_LOGICAL_8 ):
     case( TY_LOGICAL ):
+    case( TY_LOGICAL_2 ):
     case( TY_LOGICAL_1 ):
-        return( ( typ == TY_LOGICAL ) ||
+        return( ( typ == TY_LOGICAL_8 ) ||
+                ( typ == TY_LOGICAL ) ||
+                ( typ == TY_LOGICAL_2 ) ||
                 ( typ == TY_LOGICAL_1 ) );
     default:
         return( CITNode->typ == typ );
@@ -416,11 +422,14 @@ int    Map2BaseType( TYPE typ ) {
 // we use the equivalent function
 
     switch( typ ) {
+    case( TY_INTEGER_8 ):
     case( TY_INTEGER ):
     case( TY_INTEGER_2 ):
     case( TY_INTEGER_1 ):
         return( TY_INTEGER );
+    case( TY_LOGICAL_8 ):
     case( TY_LOGICAL ):
+    case( TY_LOGICAL_2 ):
     case( TY_LOGICAL_1 ):
         return( TY_LOGICAL );
     default:

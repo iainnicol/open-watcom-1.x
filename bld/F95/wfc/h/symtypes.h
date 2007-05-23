@@ -58,7 +58,7 @@ typedef enum {
  #define TY_INTEGER_TARG TY_INTEGER
 #endif
 
-#define _IsTypeLogical( typ )   ((typ >= TY_LOGICAL_1) && (typ <= TY_LOGICAL))
-#define _IsTypeInteger( typ )   ((typ >= TY_INTEGER_1) && (typ <= TY_INTEGER))
+#define _IsTypeLogical( typ )   ((typ >= TY_LOGICAL_1) && (typ <= TY_LOGICAL_8))
+#define _IsTypeInteger( typ )   ((typ >= TY_INTEGER_1) && (typ <= TY_INTEGER_8))
 
 #endif

@@ -156,10 +156,13 @@ uint    SymAlign( sym_id sym ) {
 
     switch( sym->ns.typ ) {
     case TY_LOGICAL_1 :
+    case TY_LOGICAL_2 :
     case TY_LOGICAL :
+    case TY_LOGICAL_8 :
     case TY_INTEGER_1 :
     case TY_INTEGER_2 :
     case TY_INTEGER :
+    case TY_INTEGER_8 :
         return( sym->ns.xt.size );
     case TY_REAL :
     case TY_COMPLEX :

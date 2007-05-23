@@ -185,6 +185,7 @@ TYPE    MapTypes( TYPE typ, uint size ) {
     }
     if( typ == TY_INTEGER ) {
         switch( size ) {
+        case( sizeof( intstar8 ) ):     return( TY_INTEGER_8 );
         case( sizeof( intstar2 ) ):     return( TY_INTEGER_2 );
         case( sizeof( intstar1 ) ):     return( TY_INTEGER_1 );
         default:        return( typ );
@@ -192,6 +193,8 @@ TYPE    MapTypes( TYPE typ, uint size ) {
     }
     if( typ == TY_LOGICAL ) {
         switch( size ) {
+        case( sizeof( logstar8 ) ):     return( TY_LOGICAL_8 );
+        case( sizeof( logstar2 ) ):     return( TY_LOGICAL_2 );
         case( sizeof( logstar1 ) ):     return( TY_LOGICAL_1 );
         default:        return( typ );
         }

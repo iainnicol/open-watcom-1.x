@@ -40,10 +40,13 @@ typedef struct adv_entry {
 #include "tddattyp.h"
 
 typedef    signed_8     logstar1;       // 8-bit logical
+typedef    signed_16    logstar2;       // 16-bit logical
 typedef    signed_32    logstar4;       // 32-bit logical
+typedef    signed_64    logstar8;       // 64-bit logical
 typedef    signed_8     intstar1;       // 8-bit integer
 typedef    signed_16    intstar2;       // 16-bit integer
 typedef    signed_32    intstar4;       // 32-bit integer
+typedef    signed_64    intstar8;       // 64-bit integer
 typedef    real         single;         // single precision
 typedef    long double  extended;       // extended precision
 
@@ -85,10 +88,13 @@ typedef     union symbol        *sym_id;
 
 typedef union ftn_type {
     logstar1            logstar1;
+    logstar2            logstar2;
     logstar4            logstar4;
+    logstar8            logstar8;
     intstar1            intstar1;
     intstar2            intstar2;
     intstar4            intstar4;
+    intstar8            intstar8;
     single              single;
     double              dble;
     extended            extended;

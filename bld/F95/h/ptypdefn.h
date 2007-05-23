@@ -45,10 +45,13 @@
 //    id              type          dbgtype       cgtype
 pick( PT_NOTYPE,      TY_NO_TYPE,   DBG_NIL_TYPE, T_USER_DEFINED  ) // type of statement #'s and subroutine return values
 pick( PT_LOG_1,       TY_LOGICAL_1, DBG_NIL_TYPE, T_UINT_1        ) // LOGICAL*1
+pick( PT_LOG_2,       TY_LOGICAL_2, DBG_NIL_TYPE, T_UINT_2        ) // LOGICAL*2
 pick( PT_LOG_4,       TY_LOGICAL,   DBG_NIL_TYPE, T_UINT_4        ) // LOGICAL*4
+pick( PT_LOG_8,       TY_LOGICAL_8, DBG_NIL_TYPE, T_UINT_8        ) // LOGICAL*8
 pick( PT_INT_1,       TY_INTEGER_1, DBG_NIL_TYPE, T_INT_1         ) // INTEGER*1
 pick( PT_INT_2,       TY_INTEGER_2, DBG_NIL_TYPE, T_INT_2         ) // INTEGER*2
 pick( PT_INT_4,       TY_INTEGER,   DBG_NIL_TYPE, T_INT_4         ) // INTEGER*4
+pick( PT_INT_8,       TY_INTEGER_8, DBG_NIL_TYPE, T_INT_8         ) // INTEGER*8
 pick( PT_REAL_4,      TY_REAL,      DBG_NIL_TYPE, T_SINGLE        ) // REAL*4
 pick( PT_REAL_8,      TY_DOUBLE,    DBG_NIL_TYPE, T_DOUBLE        ) // REAL*8
 pick( PT_REAL_16,     TY_EXTENDED,  DBG_NIL_TYPE, T_LONGDOUBLE    ) // REAL*16

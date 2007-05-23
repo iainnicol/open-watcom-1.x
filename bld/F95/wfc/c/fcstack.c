@@ -616,10 +616,13 @@ void    FCPushConst( void ) {
     case TY_INTEGER_1 :
     case TY_INTEGER_2 :
     case TY_INTEGER :
+    case TY_INTEGER_8 :
         XPush( IntegerConstant( &sym->cn.value, sym->cn.size ) );
         break;
     case TY_LOGICAL_1 :
+    case TY_LOGICAL_2 :
     case TY_LOGICAL :
+    case TY_LOGICAL_8 :
         XPush( CGInteger( sym->cn.value.logstar4, T_UINT_1 ) );
         break;
     case TY_REAL :

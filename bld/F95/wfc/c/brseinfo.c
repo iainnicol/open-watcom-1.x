@@ -566,10 +566,13 @@ static int BIMapType( TYPE typ ) {
 
     switch( typ ) {
     case( TY_LOGICAL_1 ):
-    case( TY_LOGICAL ):         return( DW_FT_BOOLEAN );
+    case( TY_LOGICAL_2 ):
+    case( TY_LOGICAL ):
+    case( TY_LOGICAL_8 ):       return( DW_FT_BOOLEAN );
     case( TY_INTEGER_1 ):
     case( TY_INTEGER_2 ):
-    case( TY_INTEGER ):         return( DW_FT_SIGNED );
+    case( TY_INTEGER ):
+    case( TY_INTEGER_8 ):       return( DW_FT_SIGNED );
     case( TY_REAL ):
     case( TY_DOUBLE ):
     case( TY_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
@@ -753,10 +756,13 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
 
     switch( typ ) {
     case( TY_LOGICAL_1 ):
+    case( TY_LOGICAL_2 ):
     case( TY_LOGICAL ):
+    case( TY_LOGICAL_8 ):    
     case( TY_INTEGER_1 ):
     case( TY_INTEGER_2 ):
     case( TY_INTEGER ):
+    case( TY_INTEGER_8 ):    
     case( TY_HEX ):
     case( TY_REAL ):
     case( TY_DOUBLE ):
