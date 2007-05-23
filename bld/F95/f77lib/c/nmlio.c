@@ -297,8 +297,14 @@ static  void    NmlOut( void ) {
             case PT_LOG_1:
                 IORslt.logstar4 = **(logstar1 PGM * PGM *)nml;
                 break;
+            case PT_LOG_2:
+                IORslt.logstar4 = **(logstar2 PGM * PGM *)nml;
+                break;
             case PT_LOG_4:
                 IORslt.logstar4 = **(logstar4 PGM * PGM *)nml;
+                break;
+            case PT_LOG_8:
+                IORslt.logstar8 = **(logstar8 PGM * PGM *)nml;
                 break;
             case PT_INT_1:
                 IORslt.intstar4 = **(intstar1 PGM * PGM *)nml;
@@ -308,6 +314,9 @@ static  void    NmlOut( void ) {
                 break;
             case PT_INT_4:
                 IORslt.intstar4 = **(intstar4 PGM * PGM *)nml;
+                break;
+            case PT_INT_8:
+                IORslt.intstar8 = **(intstar8 PGM * PGM *)nml;
                 break;
             case PT_REAL_4:
                 IORslt.single = **(single PGM * PGM *)nml;

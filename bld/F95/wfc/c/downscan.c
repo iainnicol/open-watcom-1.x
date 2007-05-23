@@ -177,6 +177,10 @@ static  void    ConstBase( uint base ) {
         CITNode->value.intstar2 = strtoul( CITNode->opnd, &end, base );
         CITNode->size = sizeof( intstar2 );
         CITNode->typ = TY_INTEGER_2;
+    } else if( CITNode->opnd_size <= 15 ) {
+        CITNode->value.intstar8 = strtoul( CITNode->opnd, &end, base );
+        CITNode->size = sizeof( intstar8 );
+        CITNode->typ = TY_INTEGER_8;
     } else {
         CITNode->value.intstar4 = strtoul( CITNode->opnd, &end, base );
         CITNode->size = sizeof( intstar4 );

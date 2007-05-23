@@ -51,8 +51,14 @@ static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
     case PT_LOG_1:
         *(logstar1 *)(dst) = *(logstar1 *)src;
         break;
+    case PT_LOG_2:
+        *(logstar2 *)(dst) = *(logstar2 *)src;
+        break;
     case PT_LOG_4:
         *(logstar4 *)(dst) = *(logstar4 *)src;
+        break;
+    case PT_LOG_8:
+        *(logstar8 *)(dst) = *(logstar8 *)src;
         break;
     case PT_INT_1:
         *(intstar1 *)(dst) = *(intstar1 *)src;
@@ -62,6 +68,9 @@ static  void    IOItemCopy( char PGM *dst, char PGM *src, PTYPE typ ) {
         break;
     case PT_INT_4:
         *(intstar4 *)(dst) = *(intstar4 *)src;
+        break;
+    case PT_INT_8:
+        *(intstar8 *)(dst) = *(intstar8 *)src;
         break;
     case PT_REAL_4:
         *(single *)(dst) = *(single *)src;
@@ -172,14 +181,23 @@ static  void    OUnBytes( char HPGM *src, unsigned long len, PTYPE item_typ ) {
         case PT_INT_1:
         case PT_CHAR:
             break;
+        case PT_LOG_2:
+            amt &= -sizeof( logstar2 );
+            break;
         case PT_INT_2:
             amt &= -sizeof( intstar2 );
             break;
         case PT_LOG_4:
             amt &= -sizeof( logstar4 );
             break;
+        case PT_LOG_8:
+            amt &= -sizeof( logstar8 );
+            break;
         case PT_INT_4:
             amt &= -sizeof( intstar4 );
+            break;
+        case PT_INT_8:
+            amt &= -sizeof( intstar8 );
             break;
         case PT_REAL_4:
             amt &= -sizeof( single );

@@ -303,6 +303,9 @@ static  void    InNumber( void ) {
             case PT_INT_4:
                 *(intstar4 PGM *)(IORslt.pgm_ptr) = intval;
                 break;
+            case PT_INT_8:
+                *(intstar8 PGM *)(IORslt.pgm_ptr) = intval;
+                break;
             default:
                 IOErr( IO_FREE_MISMATCH );
                 break;
@@ -346,8 +349,14 @@ big_break:
         case PT_LOG_1:
             *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
             break;
+        case PT_LOG_2:
+            *(logstar2 PGM *)(IORslt.pgm_ptr) = value;
+            break;
         case PT_LOG_4:
             *(logstar4 PGM *)(IORslt.pgm_ptr) = value;
+            break;
+        case PT_LOG_8:
+            *(logstar8 PGM *)(IORslt.pgm_ptr) = value;
             break;
         default:
             IOErr( IO_FREE_MISMATCH );

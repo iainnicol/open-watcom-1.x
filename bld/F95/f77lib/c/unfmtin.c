@@ -81,8 +81,14 @@ static  void    UnFmtItem( void *s ) {
     case PT_LOG_1:
         *(logstar1 PGM *)(IORslt.pgm_ptr) = *(logstar1 *)s;
         break;
+    case PT_LOG_2:
+        *(logstar2 PGM *)(IORslt.pgm_ptr) = *(logstar2 *)s;
+        break;
     case PT_LOG_4:
         *(logstar4 PGM *)(IORslt.pgm_ptr) = *(logstar4 *)s;
+        break;
+    case PT_LOG_8:
+        *(logstar8 PGM *)(IORslt.pgm_ptr) = *(logstar8 *)s;
         break;
     case PT_INT_1:
         *(intstar1 PGM *)(IORslt.pgm_ptr) = *(intstar1 *)s;
@@ -92,6 +98,9 @@ static  void    UnFmtItem( void *s ) {
         break;
     case PT_INT_4:
         *(intstar4 PGM *)(IORslt.pgm_ptr) = *(intstar4 *)s;
+        break;
+    case PT_INT_8:
+        *(intstar8 PGM *)(IORslt.pgm_ptr) = *(intstar8 *)s;
         break;
     case PT_REAL_4:
         *(single PGM *)(IORslt.pgm_ptr) = *(single *)s;

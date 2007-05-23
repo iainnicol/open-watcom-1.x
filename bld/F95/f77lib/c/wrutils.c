@@ -224,8 +224,14 @@ void    IOItemResult( char PGM *src, PTYPE typ ) {
     case PT_LOG_1:
         *(logstar4 *)(&IORslt) = *(logstar1 *)src;
         break;
+    case PT_LOG_2:
+        *(logstar4 *)(&IORslt) = *(logstar2 *)src;
+        break;
     case PT_LOG_4:
         *(logstar4 *)(&IORslt) = *(logstar4 *)src;
+        break;
+    case PT_LOG_8:
+        *(logstar8 *)(&IORslt) = *(logstar8 *)src;
         break;
     case PT_INT_1:
         *(intstar4 *)(&IORslt) = *(intstar1 *)src;
@@ -235,6 +241,9 @@ void    IOItemResult( char PGM *src, PTYPE typ ) {
         break;
     case PT_INT_4:
         *(intstar4 *)(&IORslt) = *(intstar4 *)src;
+        break;
+    case PT_INT_8:
+        *(intstar8 *)(&IORslt) = *(intstar8 *)src;
         break;
     case PT_REAL_4:
         *(single *)(&IORslt) = *(single *)src;

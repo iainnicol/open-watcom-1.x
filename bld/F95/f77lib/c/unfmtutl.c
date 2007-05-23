@@ -39,10 +39,13 @@
 const byte __FAR        SizeVars[] = {
         0,
         sizeof( logstar1 ),
+        sizeof( logstar2 ),
         sizeof( logstar4 ),
+        sizeof( logstar8 ),
         sizeof( intstar1 ),
         sizeof( intstar2 ),
         sizeof( intstar4 ),
+        sizeof( intstar8 ),
         sizeof( single ),
         sizeof( double ),
         sizeof( extended ),

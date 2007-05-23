@@ -102,11 +102,14 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
     }
     if( typ == TY_LOGICAL ) {
         if( size == sizeof( logstar1 ) ) return( TRUE );
+        if( size == sizeof( logstar2 ) ) return( TRUE );
         if( size == sizeof( logstar4 ) ) return( TRUE );
+        if( size == sizeof( logstar8 ) ) return( TRUE );
     } else if( typ == TY_INTEGER ) {
         if( size == sizeof( intstar1 ) ) return( TRUE );
         if( size == sizeof( intstar2 ) ) return( TRUE );
         if( size == sizeof( intstar4 ) ) return( TRUE );
+        if( size == sizeof( intstar8 ) ) return( TRUE );
     } else if( typ == TY_REAL ) {
         if( size == sizeof( single ) ) return( TRUE );
         if( size == sizeof( double ) ) return( TRUE );

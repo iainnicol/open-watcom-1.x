@@ -96,10 +96,13 @@ static  const bit_float __FAR   SInfinity = { 0x00,0x00,0x80,0x7f };
 static  const byte __FAR        DataSize[] = {
             0,
             sizeof( logstar1 ),
+            sizeof( logstar2 ),
             sizeof( logstar4 ),
+            sizeof( logstar8 ),
             sizeof( intstar1 ),
             sizeof( intstar2 ),
             sizeof( intstar4 ),
+            sizeof( intstar8 ),
             sizeof( single ),
             sizeof( double ),
             sizeof( extended ),
@@ -270,6 +273,10 @@ static  void    SetLogValue( logstar4 value ) {
 
     if( IOCB->typ == PT_LOG_1 ) {
         *(logstar1 PGM *)(IORslt.pgm_ptr) = value;
+    } else if( IOCB->typ == PT_LOG_2 ) {
+        *(logstar2 PGM *)(IORslt.pgm_ptr) = value;
+    } else if( IOCB->typ == PT_LOG_8 ) {
+        *(logstar8 PGM *)(IORslt.pgm_ptr) = value;
     } else {
         *(logstar4 PGM *)(IORslt.pgm_ptr) = value;
     }
@@ -765,6 +772,8 @@ void    R_FIInt( void ) {
             *(intstar1 PGM *)(IORslt.pgm_ptr) = value;
         } else if( IOCB->typ == PT_INT_2 ) {
             *(intstar2 PGM *)(IORslt.pgm_ptr) = value;
+        } else if( IOCB->typ == PT_INT_8 ) {
+            *(intstar8 PGM *)(IORslt.pgm_ptr) = value;
         } else {
             *(intstar4 PGM *)(IORslt.pgm_ptr) = value;
         }
