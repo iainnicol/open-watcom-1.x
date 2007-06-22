@@ -842,6 +842,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
         sym_name = id->sym_name;
         DbgAssert( sym_name != NULL );
 
+        name = sym_name->name;
         if( ClassTypeName( sym_name ) ) {
             PTREE right = id->u.subtree[1];
 
@@ -1035,7 +1036,7 @@ void ClassStart( void )
         CFatal( "class open is out of synch" );
     }
 #endif
-    if( !info->anonymous ) ScopeQualifyPush( scope, scope );
+    if( !info->anonymous ) ScopeQualifyPush( scope, NULL );
     else                   ScopeOpen( scope );
 }
 

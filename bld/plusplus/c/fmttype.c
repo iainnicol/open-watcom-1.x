@@ -515,6 +515,8 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
 /****************************************************************************/
     FMT_CONTROL control )
 {
+    extern void FormatTemplateParmsFromScope( VBUF *parms, SCOPE parm_scope );
+    
     TYPE        top_type;
     TYPE        class_type;
     FMT_LR      lr_state;
@@ -562,6 +564,13 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
             case TYP_VOID:
             case TYP_GENERIC:
                 VStrConcStr( pprefix, typeName[top->type->id] );
+                if( top_type->id == TYP_GENERIC && top_type->u.g.args != NULL ) {
+                    VBUF parms;
+                  
+                    FormatTemplateParmsFromScope( &parms, top_type->u.g.args );
+                    VStrConcStr( pprefix, parms.buf );
+                    VbufFree( &parms );
+                }
                 break;
             case TYP_USHORT:
                 flags = top->type->flag;

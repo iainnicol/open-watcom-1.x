@@ -396,6 +396,58 @@ static void analyseDefaultExpr( // ANALYSE A DEFAULT ARGUMENT EXPRESSION
 }
 
 
+PTREE MakeDefaultExpr( PTREE expr, TYPE type_ret, SYMBOL func ) 
+{
+    PTREE defarg_info;          // default argument info (expr and scope)
+
+    if( expr != NULL && expr->op != PT_ERROR ) {
+        ExtraRptIncrementCtr( ctr_defargs );
+    
+        expr = AnalyseRawExpr( expr );
+        if( expr->op != PT_ERROR ) {
+            expr = CastImplicit( expr, type_ret, CNV_FUNC_DARG, &diagDefarg );
+            if( expr->op != PT_ERROR ) {
+            #ifndef NDEBUG
+                if( expr != NULL && expr->op != PT_ERROR ) {
+                    int complex = 1;
+                    switch( expr->op ) {
+                    case PT_INT_CONSTANT:
+                        ExtraRptIncrementCtr( ctr_defargs_intconst );
+                        complex = 0;
+                        break;
+                    case PT_FLOATING_CONSTANT:
+                        ExtraRptIncrementCtr( ctr_defargs_fpconst );
+                        complex = 0;
+                        break;
+                    default:
+                        if( NodeIsUnaryOp( expr, CO_FETCH ) ) {
+                            PTREE sub = expr->u.subtree[0];
+                            if( sub->op == PT_SYMBOL ) {
+                                ExtraRptIncrementCtr( ctr_defargs_symbol );
+                                complex = 0;
+                            }
+                        }
+                    }
+                    if( complex ) {
+                        ExtraRptIncrementCtr( ctr_defargs_complex );
+                    }
+                }
+            #endif
+            
+                defarg_info = PTreeType( NULL );
+                if( func != NULL ) {
+                    func->u.defarg_info = storeIfDebug(defarg_info);
+                }
+                defarg_info->u.type.next  = PTreeTraversePostfix( expr, &symCheck );
+                defarg_info->u.type.scope = GetCurrScope();
+                return defarg_info;
+            }
+        }
+    }
+    return expr;
+}
+
+
 void DefineDefaultValues( DECL_INFO *dinfo )
 /******************************************/
 {

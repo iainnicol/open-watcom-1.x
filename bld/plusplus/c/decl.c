@@ -692,6 +692,7 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
     type_flag   curr_flags;
     type_flag   prev_fn_flags;
     type_flag   curr_fn_flags;
+    SCOPE       curr_scope;
     TYPE        prev_type;
     TYPE        curr_type;
     TYPE        unmod_prev_type;
@@ -705,8 +706,9 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
     if( prev_fn->id == SC_DEFAULT || curr_fn->id == SC_DEFAULT ) {
         return( prev_fn );
     }
-    prev_type = prev_fn->sym_type;
-    curr_type = curr_fn->sym_type;
+    prev_type  = prev_fn->sym_type;
+    curr_type  = curr_fn->sym_type;
+    curr_scope = SymScope( curr_fn );
     /* check modifiers */
     unmod_prev_type = TypeModFlagsBaseEC( prev_type, &prev_flags, &prev_base );
     unmod_curr_type = TypeModFlagsBaseEC( curr_type, &curr_flags, &curr_base );
@@ -757,9 +759,9 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
         }
     }
     if( SymIsClassMember( curr_fn ) &&
-        SymScope( curr_fn ) == ScopeNearestFileOrClass( GetCurrScope() ) &&
-        // allow template member function to be instatiated by more than one member
-        SymScope( curr_fn ) != ScopeNearestFileOrClass( ScopeFunctionScopeInProgress() ) ) {
+        (curr_scope == GetCurrScope() ||
+        (ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) && 
+         curr_scope == ScopeNearestFileOrClass( GetCurrScope() ))) ) {
         // see C++98 9.3 (2)
         CErr2p( ERR_CANNOT_REDECLARE_MEMBER_FUNCTION, prev_fn );
     }
@@ -934,6 +936,13 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
         BrinfDeclTypedef( sym );
         _AddSymToRing( &(sym_name->name_type), sym );
         break;
+    case SC_ADDRESS_ALIAS:
+        chk_sym = sym->u.alias;
+        if( chk_sym != NULL && chk_sym->id == SC_CLASS_TEMPLATE ) {
+            BrinfDeclTemplateClass( chk_sym );
+            _AddSymToRing( &(sym_name->name_type), sym );
+            break;
+        }
     default:
         new_sym_is_function = SymIsFunction( sym );
         chk_sym = sym_name->name_syms;

@@ -225,7 +225,7 @@ static boolean typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2,
         if( type1->u.g.index != type2->u.g.index ) {
             return( FALSE );
         }
-        break;
+        return TemplateArgsEqual( type1->u.g.args, type2->u.g.args, NULL );
     default:
 #ifndef NDEBUG
         CFatal( "unknown type being compared" );
@@ -234,6 +234,47 @@ static boolean typeCompareCurrent( TC_DATA **h, TYPE type1, TYPE type2,
 #endif
     }
     return( TRUE );
+}
+
+boolean TemplateArgsEqual( SCOPE scope1, SCOPE scope2, int *perr )
+{
+    SYMBOL a1_curr;
+    SYMBOL a1_stop;
+    SYMBOL a2_curr;
+    SYMBOL a2_stop;
+    int    i;
+    
+    if( scope1 == scope2 ) return TRUE;
+    
+    if( scope1 != NULL && scope2 != NULL ) {
+        a1_curr = NULL;
+        a2_curr = NULL;
+        a1_stop = ScopeOrderedStart( scope1 );
+        a2_stop = ScopeOrderedStart( scope2 );
+        for( i = 1;; i++ ) {
+            a1_curr = ScopeOrderedNext( a1_stop, a1_curr );
+            a2_curr = ScopeOrderedNext( a2_stop, a2_curr );
+            if( a1_curr == NULL ) break;
+            if( a2_curr == NULL ) break;
+            DbgAssert( a1_curr->id == a2_curr->id );
+            if( a1_curr->id != SC_TYPEDEF ) {
+                if( ! TemplateParmEqual( a1_curr, a2_curr ) ) {
+                    if( perr ) *perr = -i;
+                    return( FALSE );
+                }
+            } else if( ! TypesIdentical( a1_curr->sym_type, a2_curr->sym_type ) ) {
+                 if( perr ) *perr = -i;
+                 return( FALSE );
+            }
+        }
+        if( a1_curr == a2_curr ) {
+            return TRUE;
+        } else if( perr != NULL ) {
+            if( a1_curr != NULL ) *perr = ERR_TOO_FEW_TEMPLATE_PARAMETERS;
+            else                  *perr = ERR_TOO_MANY_TEMPLATE_PARAMETERS;
+        }
+    }
+    return( FALSE );
 }
 
 boolean TypeCompareExclude( TYPE type1, TYPE type2, type_exclude mask )

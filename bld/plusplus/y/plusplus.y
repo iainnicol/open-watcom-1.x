@@ -2199,6 +2199,48 @@ type-parameter-no-defarg
         $$ = DeclSpecDeclarator( dspec );
         PTypeRelease( dspec );
     }
+    | Y_TEMPLATE template-declaration-init lt-special template-parameter-list Y_GT_SPECIAL Y_CLASS Y_ID
+    {
+        DECL_SPEC *dspec;
+        
+        pushDefaultDeclSpec( state );
+        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL );
+        ClassName( $7, CLASS_GENERIC );
+        dspec = ClassRefDef();
+        dspec->partial->u.g.args = GetCurrScope();
+        GStackPop( &(state->gstack) );
+        $$ = DeclSpecDeclarator( dspec );
+        PTypeRelease( dspec );
+        GStackPop( &(state->gstack) );
+        GStackPop( &(state->gstack) );
+    }  
+    /*| Y_TYPENAME Y_SCOPED_ID
+    {
+        DECL_SPEC *dspec;
+        PTREE     id;
+
+        id = MakeScopedId( $2 ); 
+        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL);
+        ClassName( id, CLASS_GENERIC );
+        dspec = ClassRefDef();
+        GStackPop( &(state->gstack) );
+        $$ = DeclSpecDeclarator( dspec );
+        PTypeRelease( dspec );
+    }
+    | Y_TYPENAME Y_TYPE_NAME Y_SCOPED_ID
+    {
+        DECL_SPEC *dspec;
+        PTREE     id;
+
+        id = MakeScopedId( $3 ); 
+        zapTemplateClassDeclSpec( state );
+        pushClassData( state, TF1_NULL, CLINIT_NULL, NULL);
+        ClassName( id, CLASS_GENERIC );
+        dspec = ClassRefDef();
+        GStackPop( &(state->gstack) );
+        $$ = DeclSpecDeclarator( dspec );
+        PTypeRelease( dspec );
+    } */
     ;
 
 template-typename-key
@@ -2248,6 +2290,13 @@ defarg-parse-or-copy
         dinfo->has_defarg = TRUE;
         TokenLocnAssign( dinfo->init_locn, yylp[2] );
     }
+    | defarg-check Y_TEMPLATE_DEFARG_GONE_SPECIAL
+    {
+        DECL_INFO *dinfo;
+
+        dinfo = $<dinfo>0;
+        TokenLocnAssign( dinfo->init_locn, yylp[2] );
+    }
     ;
 
 type-defarg-parse-or-copy
@@ -2282,14 +2331,23 @@ defarg-check
             angle_bracket_stack *angle_state;
 
             angle_state = VstkTop( &(state->angle_stack) );
-            if( state->template_decl && ( angle_state != NULL )
-             && ( angle_state->paren_depth == 0 ) ) {
-                $$ = RewritePackageTemplateDefArg();
+            if( state->template_decl || ( angle_state != NULL 
+             && angle_state->paren_depth == 0 ) ) {
+                if( !angle_state ) {
+                    $$ = RewritePackageDefArg( NULL );
+                } else {
+                    $$ = RewritePackageTemplateDefArg();
+                }
                 t = Y_DEFARG_GONE_SPECIAL;
             } else if( ClassOKToRewrite() ) {
                 $$ = RewritePackageDefArg( NULL );
                 t = Y_DEFARG_GONE_SPECIAL;
             } else {
+                if( !angle_state && ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST ) ) {
+                    $$ = RewritePackageDefArg( NULL );
+                    RewriteFree( $$ );
+                    t = Y_TEMPLATE_DEFARG_GONE_SPECIAL;
+                }
                 $$ = NULL;
             }
         }
@@ -2869,6 +2927,11 @@ template-key
 
 template-def
     : class-template Y_SEMI_COLON
+    | simple-member-declaration-before-semicolon Y_SEMI_COLON
+    {
+        GStackPop( &(state->gstack) );
+        GStackPop( &(state->gstack) );
+    }
     | function-definition
     {
         GStackPop( &(state->gstack) );
@@ -2936,7 +2999,9 @@ template-argument-list-opt
     : /* nothing */
     { $$ = PTreeBinary( CO_LIST, NULL, NULL ); }
     | template-argument-list
-    { $$ = $1; }
+    { 
+      $$ = $1; 
+    }
     ;
 
 template-argument-list
@@ -2949,6 +3014,7 @@ template-argument-list
 template-argument
     : assignment-expression
     | type-id
+    | Y_TEMPLATE_NAME
     ;
     
 template-directive

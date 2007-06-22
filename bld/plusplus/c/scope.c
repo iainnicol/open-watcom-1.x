@@ -285,7 +285,7 @@ typedef struct access_data {
 typedef struct qualify_stack QUALIFICATION;
 struct qualify_stack {
     QUALIFICATION       *next;
-    SCOPE               end;
+    SCOPE               owner;
     SCOPE               reset;
     SCOPE               access;
 };
@@ -1748,7 +1748,7 @@ boolean ClassTypeName( SYMBOL_NAME sym_name )
         return( FALSE );
     }
     type = TypedefRemove( sym->sym_type );
-    if( type->id != TYP_CLASS ) {
+    if( type->id != TYP_CLASS && sym->id != SC_CLASS_TEMPLATE ) {
         return( FALSE );
     }
     return( TRUE );
@@ -1831,6 +1831,7 @@ static SCOPE findAccessScope( void )
     qual = ParseCurrQualification();
     if( qual != NULL ) {
         scope = qual->access;
+        if( scope == NULL ) scope = GetCurrScope();
     }
     return( scope );
 }
@@ -1872,7 +1873,7 @@ boolean ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
     }
     switch( scope_type ) {
     case SCOPE_FILE:
-        if( scope->id == SCOPE_TEMPLATE_INST ) {
+        if( scope->id == SCOPE_TEMPLATE_INST || scope->id == SCOPE_TEMPLATE_DECL ) {
             return( TRUE );
         }
         break;
@@ -2870,8 +2871,14 @@ static boolean isFriendly( SCOPE check, SCOPE friendly )
         default:
             /* friendly functions */
             if( SymIsFunction( sym ) ) {
-                if( sym == ScopeFunctionInProgress() ) {
+                SYMBOL fn_sym = ScopeFunctionInProgress();
+                if( sym == fn_sym ) {
                     return( TRUE );
+                } else if( fn_sym != NULL && SymIsFnTemplateMatchable( fn_sym ) ) {
+                    fn_sym = fn_sym->u.alias;
+                    if( fn_sym == sym ) {
+                        return( TRUE );
+                    }
                 }
             }
         }
@@ -6723,27 +6730,28 @@ void ScopeArgumentCheck( SCOPE scope )
     scope->arg_check = TRUE;
 }
 
+SCOPE ScopeEnclosing( SCOPE scope )
+{
+    QUALIFICATION *qual;
+  
+    qual = ParseCurrQualification();
+    if( qual != NULL && ScopeEnclosed( qual->owner, scope ) ) {
+        scope = qual->reset;
+        if( !ScopeType( scope, SCOPE_FILE ) || scope->enclosing != NULL ) 
+            return( scope );
+    }
+    return( NULL );
+}
+
 void ScopeQualifyPush( SCOPE scope, SCOPE access )
 /************************************************/
 {
     QUALIFICATION *qual;
-    SCOPE          s = scope, e;
-    
 
     qual = CarveAlloc( carveQUALIFICATION );
     qual->access = access;
-    access       = GetCurrScope();
-    qual->reset  = access;
-    qual->end    = 0;
-    
-    for( ; s != NULL; s = e ) {
-        e = s->enclosing;
-        if( s == access ) break;
-        if( e == NULL ) {
-            doScopeEstablish( s, access );
-            qual->end = s;
-        }
-    }
+    qual->reset  = GetCurrScope();;
+    qual->owner  = scope;
     
     SetCurrScope(scope);
     ParsePushQualification( qual );
@@ -6753,14 +6761,12 @@ SCOPE ScopeQualifyPop( void )
 /***************************/
 {
     QUALIFICATION *qual;
-    SCOPE scope_popped, end;
+    SCOPE scope_popped;
 
     scope_popped = GetCurrScope();
     qual = ParsePopQualification();
     if( qual != NULL ) {
         SetCurrScope(qual->reset);
-        end = qual->end;
-        if( end != NULL ) end->enclosing = NULL;
         CarveFree( carveQUALIFICATION, qual );
     }
     return( scope_popped );

@@ -121,6 +121,68 @@ static void fmtSymOpName( SYMBOL sym, VBUF *pvbuf )
     }
 }
 
+static boolean fmtTemplateTemplateArg( SYMBOL sym, VBUF *suffix )
+{
+    TYPE type = TemplateTemplateArgType( sym->sym_type );
+    if( type != NULL ) {  
+        VBUF parms;
+        
+        VbufInit( suffix );
+        VStrNull( suffix );
+        
+        FormatTemplateParmsFromScope( &parms, type->u.g.args );
+        VStrConcStr( suffix, parms.buf );
+        VbufFree( &parms );
+        return( TRUE );
+    }
+    return( FALSE );
+}
+
+static boolean fmtClassTemplate( SYMBOL sym, VBUF *prefix, VBUF *suffix ) 
+{
+    TYPE type;
+    
+    if( sym->id == SC_CLASS_TEMPLATE ) {
+        TEMPLATE_SPECIALIZATION *tspec;
+        
+        tspec = sym->u.tinfo->specializations;
+        type  = sym->u.tinfo->unbound_type;
+        if( tspec != NULL && type != NULL ) {
+            VBUF        parms;
+            VBUF        name_scope;
+            CLASS_INST *tinst;
+            SCOPE       scope;
+        
+            VbufInit( prefix );
+            VbufInit( suffix );
+            VStrNull( suffix );
+            
+            FormatScope( type->u.c.scope->enclosing, &name_scope, FALSE );
+            if( name_scope.buf != NULL ) {
+                VStrConcStr( suffix, name_scope.buf );
+            }
+            VbufFree( &name_scope );
+        
+            tinst = tspec->instantiations;
+            scope = NULL;
+            if( tinst != NULL ) {
+                scope = tinst->scope;
+                if( scope != NULL ) {
+                    scope = scope->enclosing;
+                }
+            }
+            if( scope == NULL ) {
+                scope = tspec->decl_scope;
+            }
+            FormatTemplateParmsFromScope( &parms, scope );
+            VStrConcStr( suffix, parms.buf );
+            VbufFree( &parms );
+            return( TRUE );
+        } 
+    } 
+    return( FALSE );
+}
+
 static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
 /****************************************************************/
     VBUF *pvbuf, FMT_CONTROL control )
@@ -226,10 +288,14 @@ static boolean fmtSymName( SYMBOL sym, char *name, VBUF *pvprefix,
             if( SymIsFunction( sym ) ) {
                 fmtSymFunction( sym, &prefix, &suffix, FormatTypeDefault | control );
             } else if( !SymIsTypedef( sym ) ) {
-                FormatType( sym->sym_type, &prefix, &suffix );
+                if( !fmtClassTemplate( sym, &prefix, &suffix ) ) {
+                    FormatType( sym->sym_type, &prefix, &suffix );
+                }
             } else {
                 VbufInit( &prefix );
-                VbufInit( &suffix );
+                if( !fmtTemplateTemplateArg( sym, &suffix ) ) {
+                    VbufInit( &suffix );
+                }
             }
             if( suffix.buf != NULL ) {
                 VStrConcStrRev( pvbuf, suffix.buf );
@@ -283,12 +349,16 @@ void FormatUnboundTemplateParms( VBUF *parms, TYPE type )
 }
 
 void FormatTemplateParms( VBUF *parms, TYPE class_type )
+{
+    FormatTemplateParmsFromScope( parms, TemplateClassParmScope( class_type ) );  
+}
+
+void FormatTemplateParmsFromScope( VBUF *parms, SCOPE parm_scope )
 /******************************************************/
 {
     SYMBOL stop;
     SYMBOL curr;
     SYMBOL sym;
-    SCOPE parm_scope;
     char *delim;
     TYPE type;
     auto VBUF sym_parm;
@@ -298,7 +368,7 @@ void FormatTemplateParms( VBUF *parms, TYPE class_type )
 
     VbufInit( parms );
     VStrNull( parms );
-    parm_scope = TemplateClassParmScope( class_type );
+    
     if( parm_scope == NULL ) {
         makeUnknownTemplate( parms );
         return;
@@ -319,13 +389,19 @@ void FormatTemplateParms( VBUF *parms, TYPE class_type )
             }
             VStrConcStr( parms, buff );
         } else if( SymIsTypedef( curr ) ) {
-            FormatType( type, &type_parm_prefix, &type_parm_suffix );
-            VStrTruncWhite( &type_parm_prefix );
-            VStrTruncWhite( &type_parm_suffix );
-            VStrConcStr( parms, type_parm_prefix.buf );
-            VStrConcStr( parms, type_parm_suffix.buf );
-            VbufFree( &type_parm_prefix );
-            VbufFree( &type_parm_suffix );
+            if( fmtTemplateTemplateArg( curr, &type_parm_suffix ) ) {
+                VStrTruncWhite( &type_parm_suffix );
+                VStrConcStr( parms, type_parm_suffix.buf );
+                VbufFree( &type_parm_suffix );
+            } else {
+                FormatType( type, &type_parm_prefix, &type_parm_suffix );
+                VStrTruncWhite( &type_parm_prefix );
+                VStrTruncWhite( &type_parm_suffix );
+                VStrConcStr( parms, type_parm_prefix.buf );
+                VStrConcStr( parms, type_parm_suffix.buf );
+                VbufFree( &type_parm_prefix );
+                VbufFree( &type_parm_suffix );
+            }
         } else {
             sym = SymAddressOf( curr );
             if( sym != NULL ) {

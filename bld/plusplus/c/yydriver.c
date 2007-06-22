@@ -408,8 +408,15 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
 
     name = id->u.id.name;
     if( control & LK_LEXICAL ) {
+        extern SCOPE ScopeEnclosing( SCOPE );
         ExtraRptIncrementCtr( lookup_lexical );
         sym_name = ScopeYYLexical( scope, name );
+        if( sym_name == NULL ) {
+            scope = ScopeEnclosing( scope );
+            if( scope != NULL ) {
+                sym_name = ScopeYYLexical( scope, name );
+            }
+        }
     } else {
         ExtraRptIncrementCtr( lookup_other );
         sym_name = ScopeYYMember( scope, name );
@@ -418,9 +425,12 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
         *psym_name = sym_name;
     }
     if( sym_name != NULL ) {
-        if( sym_name->name_syms == NULL ) {
-            sym = sym_name->name_type;
+        sym = sym_name->name_type;
+        if( sym_name->name_syms == NULL && sym != NULL ) {
             switch( sym->id ) {
+            case SC_ADDRESS_ALIAS:
+                sym = sym->u.alias;
+                if( sym->id != SC_CLASS_TEMPLATE ) break;
             case SC_CLASS_TEMPLATE:
                 ExtraRptIncrementCtr( found_template );
                 return( LK_TEMPLATE );
@@ -433,11 +443,14 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
                 class_type = StructType( type );
                 if( class_type != NULL ) {
                     if( class_type->flag & TF1_INSTANTIATION ) {
-                        /* make sure typedefs of instantiations are OK */
-                        if( class_type->u.c.info->name == name ) {
-                            ExtraRptIncrementCtr( found_template );
-                            return( LK_TEMPLATE );
-                        }
+                        ExtraRptIncrementCtr( found_template );
+                        return( LK_TEMPLATE );
+                    }
+                } else {
+                    class_type = GenericType( type );
+                    if( class_type != NULL && class_type->u.g.args != NULL ) {
+                        ExtraRptIncrementCtr( found_template );
+                        return( LK_TEMPLATE );
                     }
                 }
             }
@@ -597,7 +610,8 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id, unsigned ctrl
     SCOPE scope;
     SCOPE lexical_lookup;
     PTREE curr;
-    TYPE class_type;
+    int   sid;
+    TYPE  class_type;
 
     scope = GetCurrScope();
     if( start != NULL ) {
@@ -638,19 +652,25 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id, unsigned ctrl
             }
             yylval.tree = makeBinary( CO_STORAGE, curr, id );
             /* kludge for constructor name */
-            if( name == id->u.id.name && ScopeId( GetCurrScope() ) == SCOPE_FILE ) {
+            sid = ScopeId( GetCurrScope() );
+            if( name == id->u.id.name && ( sid == SCOPE_FILE || sid == SCOPE_TEMPLATE_DECL ) ) {
                 /* so S::S( T x ) {} works if T is a nested type */
                 return( Y_SCOPED_ID );
             }
             id_check = lexCategory( scope, id, LK_NULL,
                                     &yylval.tree->sym_name );
             
-            if( yylval.tree->sym_name == NULL ) {
-                PTreeErrorExprName( id, ERR_SYNTAX_UNDECLARED_ID, id->u.id.name );
-                return Y_IMPOSSIBLE;
-            }
             switch( id_check ) {
-            case LK_ID:
+            case LK_ID: 
+                {   // for typename T::ID
+                    angle_bracket_stack *angle_state;
+        
+                    angle_state = VstkTop( &(state->angle_stack) );
+                    if( state->template_decl && ( angle_state != NULL ) && 
+                        ( angle_state->paren_depth == 0 ) ) {
+                        return( Y_SCOPED_TYPE_NAME );
+                    }
+                }
                 return( Y_SCOPED_ID );
             case LK_TYPE:
                 return( Y_SCOPED_TYPE_NAME );
@@ -1108,6 +1128,12 @@ static DECL_SPEC *sendType( PTREE tree )
         }
     } else {
         type = tree->type;
+        /*if( type == NULL && tree->sym_name != NULL ) {
+            SYMBOL sym = tree->sym_name->name_type;
+            if( sym != NULL ) {
+                type = sym->sym_type;
+            }
+        } */
     }
     if( type == NULL ) {
         type = TypeError;
@@ -1588,6 +1614,8 @@ static void pushOperatorQualification( PTREE tree )
     class_type = StructType( scope_tree->type );
     if( class_type != NULL ) {
         ScopeQualifyPush( class_type->u.c.scope, GetCurrScope() );
+    } else {
+        ScopeQualifyPush( NULL, GetCurrScope() );
     }
 }
 

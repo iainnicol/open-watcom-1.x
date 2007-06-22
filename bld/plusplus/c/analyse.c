@@ -1949,6 +1949,16 @@ static PTREE initClass(         // INIT. A CLASS ( INIT OR RETURN )
         }
         FnovFreeDiag( &fnov_diag );
     } else {                                   // class c = expr
+        if( !dtor ) {
+            ctor = FunctionSymbol( right_comma );
+            if( ctor != NULL ) { 
+                right           = NodeBinary( CO_LIST, 0, right_comma );
+                right->type     = ctor->sym_type;
+                right->sym_name = ctor->name;
+                PTreeExtractLocn( right_comma, &right->locn );                         
+                return initClass( left, right, diagnosis, init_locn);
+            }
+        }
 #if 0
         expr = ClassDefaultCopyDiag( left, right_comma, diagnosis );
 #else
@@ -3063,6 +3073,11 @@ start_opac_string:
             if( pointed == NULL ) break;
             if( pointed->id != TYP_CLASS ) continue;
             if( pointed->u.c.info->defined ) continue;
+            if( right != NULL ) {
+                TYPE ptr = TypedefModifierRemoveOnly( right->type );
+                if( ptr != NULL && ptr->id == TYP_MEMBER_POINTER &&
+                    TypedefModifierRemoveOnly( MemberPtrClass( ptr ) ) == pointed ) continue;
+            }
             exprError( left, ERR_UNDEFED_CLASS_PTR );
           } break;
           case REQD_DEFD_CLPTR_RIGHT :
@@ -3092,6 +3107,11 @@ start_opac_string:
                 exprError( expr, ERR_NOT_CLASS );
                 break;
             } else if( ! cltype->u.c.info->defined ) {
+                if( right != NULL ) {
+                    TYPE ptr = TypedefModifierRemoveOnly( right->type );
+                    if( ptr != NULL && ptr->id == TYP_MEMBER_POINTER &&
+                        TypedefModifierRemoveOnly( MemberPtrClass( ptr ) ) == cltype ) continue;
+                }
                 exprError( expr, ERR_UNDEFINED_CLASS_OBJECT );
                 break;
             }
@@ -3666,9 +3686,9 @@ start_opac_string:
             if( TypeHasSpecialFields( type ) ) {
                 PTreeWarnExpr( expr, WARN_CLASS_HAS_SPECIAL_FIELDS );
             }
-            if( expr->flags & PTF_SIDE_EFF ) {
+            /*if( expr->flags & PTF_SIDE_EFF ) {
                 PTreeWarnExpr( expr, WARN_SIZEOF_SIDE_EFFECT );
-            }
+            } */
             temp = expr;
             expr = bld_sizeof_type( type );
             expr = PTreeCopySrcLocation( expr, temp );

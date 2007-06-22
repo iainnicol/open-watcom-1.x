@@ -1813,6 +1813,19 @@ static TOKEN_LOCN *posnForFunction( // GET SOURCE POSITION FOR FUNCTION
 }
 
 
+static boolean symIsMemberTemplate( SYMBOL sym )
+{
+    TYPE type;
+    
+    if( SymIsFnTemplateMatchable( sym ) ) {
+        type = ScopeClass( SymScope( sym ) );
+        if( type != NULL && ( type->flag & TF1_INSTANTIATION ) == 0 ) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
 {
     SYMBOL func;                // - function being compiled
@@ -1820,7 +1833,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
 
     func = dinfo->sym;
     initFunctionData( func, f );
-    if( dinfo->scope != NULL ) {
+    if( dinfo->scope != NULL && !symIsMemberTemplate( func ) ) {
         /* sets scope of inline friends to scope of the class */
         /* this is controversial but currently the letter of the law */
         ScopeJumpForward( dinfo->scope );
@@ -2113,7 +2126,8 @@ void FunctionBody( DECL_INFO *dinfo )
     handleDefnChangesToSym( func );
     previous_func = CgFrontCurrentFunction();
     enclosing_scope = GetCurrScope();
-    SetCurrScope(parsing_scope);
+    if( !symIsMemberTemplate( func ) )
+                    SetCurrScope(parsing_scope);
     initFunctionBody( dinfo, &fn_data, fn_type );
     // after initFunctionBody so .DEF files can have names in their prototypes
     MainProcSetup( func );
@@ -2381,7 +2395,7 @@ type_flag FunctionThisQualifier(// RETURN THIS QUALIFIER FLAGS
         flags = FunctionThisMemFlags( fn_sym );
     }
     flags &= TF1_THIS_MASK;
-    DbgAssert( flags == BaseTypeClassFlags( TypeThis() ) );
+    //DbgAssert( flags == BaseTypeClassFlags( TypeThis() ) );
     return( flags );
 }
 

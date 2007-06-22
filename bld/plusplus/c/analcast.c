@@ -1897,7 +1897,11 @@ static PTREE doCastResult           // DO CAST RESULT
         expr = doCastResult( ctl, DIAG_ALREADY );
         break;
       case DIAG_MPTR_NOT_DERIVED :
-        expr = diagnoseCast( ctl, ERR_MEMB_PTR_NOT_DERIVED );
+        if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
+            expr = PTreeErrorNode( ctl->expr ); 
+        } else {
+            expr = diagnoseCast( ctl, ERR_MEMB_PTR_NOT_DERIVED );
+        }
         break;
       case DIAG_TGT_VOID_STAR :
         expr = diagnoseCast( ctl, ERR_CNV_VOID_STAR );
@@ -3207,40 +3211,20 @@ boolean CastCommonClass         // CAST (IMPLICITLY) TO A COMMON CLASS
         stripOffCastOrig( &ctl_right );
         PTreeErrorNode( expr );
         retn = TRUE;
+    } else if( castCommonOk( result_right ) ) {
+        expr->type = ctl_right.tgt.orig;
+        stripOffCastOrig( &ctl_left );
+        expr->u.subtree[0] = castCommonExpr( &ctl_right, result_right );
+        retn = TRUE;
     } else if( castCommonOk( result_left ) ) {
-        if( castCommonOk( result_right ) ) {
-            if( result_right >= DIAGNOSIS_START
-             || result_left  >= DIAGNOSIS_START ) {
-                expr->u.subtree[0] = castCommonExpr( &ctl_right
-                                                   , result_right );
-                expr->u.subtree[1] = castCommonExpr( &ctl_left
-                                                   , result_left );
-                PTreeErrorNode( expr );
-            } else {
-                stripOffCastOrig( &ctl_left );
-                stripOffCastOrig( &ctl_right );
-                PTreeErrorExpr( expr, ERR_UDC_AMBIGUOUS );
-                InfSymbolAmbiguous( ctl_left.conv_fun );
-                InfSymbolAmbiguous( ctl_right.conv_fun );
-            }
-            retn = TRUE;
-        } else {
-            expr->type = ctl_left.tgt.orig;
-            stripOffCastOrig( &ctl_right );
-            expr->u.subtree[1] = castCommonExpr( &ctl_left, result_left );
-            retn = TRUE;
-        }
+        expr->type = ctl_left.tgt.orig;
+        stripOffCastOrig( &ctl_right );
+        expr->u.subtree[1] = castCommonExpr( &ctl_left, result_left );
+        retn = TRUE;
     } else {
-        if( castCommonOk( result_right ) ) {
-            expr->type = ctl_right.tgt.orig;
-            stripOffCastOrig( &ctl_left );
-            expr->u.subtree[0] = castCommonExpr( &ctl_right, result_right );
-            retn = TRUE;
-        } else {
-            stripOffCastOrig( &ctl_left );
-            stripOffCastOrig( &ctl_right );
-            retn = FALSE;
-        }
+        stripOffCastOrig( &ctl_left );
+        stripOffCastOrig( &ctl_right );
+        retn = FALSE;
     }
     *a_expr = expr;
     DbgVerify( --infinite_ctr >= 0, "Bad Implicit Conversion Unwind" );

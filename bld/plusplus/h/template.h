@@ -53,6 +53,7 @@ struct template_data {
     unsigned            defn_found : 1; // a template defn has been found
     unsigned            member_found :1;// a class template member has been found
     unsigned            defn_added : 1; // class template defn has just been added
+    unsigned            friend_decl : 1; // friend class template declaration for non template classes
 };
 
 // these structures are private to TEMPLATE.C but they are exposed
@@ -110,7 +111,8 @@ PCH_struct fn_template_defn {
     FN_TEMPLATE_DEFN    *next;          // (ring)
     SYMBOL              sym;            // template function
     REWRITE             *defn;          // always non-NULL
-    unsigned            num_args;       // number of template arguments
+    unsigned short      num_args;       // number of template arguments
+    unsigned short      num_defargs;    // number of default template arguments
     char                **arg_names;    // argument names
     TYPE                *type_list;     // template argument types (all generic)
 };
@@ -140,7 +142,7 @@ extern void TemplateDeclAddArgument( DECL_INFO *new_dinfo );
 extern void TemplateDeclFini( void );
 extern void TemplateFunctionCheck( SYMBOL, DECL_INFO * );
 extern void TemplateFunctionAttachDefn( DECL_INFO * );
-extern unsigned TemplateFunctionGenerate( SYMBOL *, arg_list *, TOKEN_LOCN *, SYMBOL *, boolean );
+extern unsigned TemplateFunctionGenerate( SYMBOL *, arg_list *, TOKEN_LOCN *, SYMBOL *, boolean, arg_list * );
 extern void TemplateClassDeclaration( PTREE, SCOPE, char * );
 extern boolean TemplateClassDefinition( PTREE, SCOPE, char * );
 extern DECL_SPEC *TemplateClassInstantiation( PTREE, PTREE, tc_instantiate );

@@ -353,6 +353,12 @@ static void typeFree( TYPE type )
 {
     DbgVerify( ! ( type->dbgflag & TF2_DBG_IN_PCH ), "type was in a pre-compiled header!" );
     switch( type->id ) {
+    case TYP_GENERIC:
+        if( type->u.g.args != NULL ) {    
+            SCOPE scope = type->u.g.args;
+            if( ! scope->keep ) ScopeBurn( scope );
+        }
+        break;
     case TYP_CLASS:
         DbgAssert( type->u.c.info->cdopt_cache == NULL );
         CarveFree( carveCLASSINFO, type->u.c.info );
@@ -833,6 +839,8 @@ DECL_INFO *MakeNewTypeId( PTREE type_id )
 
 static boolean dupCompare( TYPE test1, TYPE test2 )
 {
+    extern boolean TemplateArgsEqual( SCOPE scope1, SCOPE scope2, int* );
+    
     arg_list *args1;
     arg_list *args2;
     TYPE *p1;
@@ -926,10 +934,7 @@ static boolean dupCompare( TYPE test1, TYPE test2 )
         if( test1->u.g.index != test2->u.g.index ) {
             return( FALSE );
         }
-        if( test1->u.g.name != 0 && test2->u.g.name != 0 && test1->u.g.name != test2->u.g.name ) {
-            return( FALSE );
-        }
-        break;
+        return TemplateArgsEqual( test1->u.g.args, test2->u.g.args, NULL );
     case TYP_ERROR:
         if( test1->u.e.fmt != test2->u.e.fmt ) {
             return( FALSE );
@@ -1343,21 +1348,27 @@ static boolean cantHaveDefaultArgs( int err_msg, DECL_INFO *dinfo )
 */
 static boolean cantHaveDefaultArgGaps( DECL_INFO *dinfo )
 {
-    boolean transition_detected;
+    boolean  transition_detected;
+    unsigned i;
+    unsigned num;
     DECL_INFO *prev_init;
     DECL_INFO *curr;
 
     transition_detected = FALSE;
+    i   = 0;
+    num = 0;
     prev_init = NULL;
     RingIterBeg( dinfo, curr ) {
+        ++i;
         if( curr->has_defarg ) {
             if( prev_init == NULL ) {
                 if( transition_detected ) {
-                    CErr1( ERR_DEFAULT_ARGS_MISSING );
+                    CErr2( ERR_DEFAULT_ARGS_MISSING, num );
                     return( TRUE );
                 }
                 transition_detected = TRUE;
             }
+            num       = i;
             prev_init = curr;
         } else {
             prev_init = NULL;
@@ -1378,9 +1389,12 @@ static boolean checkForMissingDefaultArgs( DECL_INFO *dinfo )
 {
     boolean prev_defarg;
     DECL_INFO *curr;
+    unsigned  i;
 
+    i = 0;
     prev_defarg = FALSE;
     RingIterBeg( dinfo, curr ) {
+        ++i;
         if( curr->has_defarg ) {
             prev_defarg = ( curr != NULL );
         } else if( prev_defarg ) {
@@ -1388,10 +1402,10 @@ static boolean checkForMissingDefaultArgs( DECL_INFO *dinfo )
              * hasn't => error */
             if( curr->generic_sym ) {
                 SetErrLoc( &curr->generic_sym->locn->tl);
-            } else {
+            } else if( curr->sym ) {
                 SetErrLoc( &curr->sym->locn->tl);
             }
-            CErr1( ERR_DEFAULT_ARGS_MISSING );
+            CErr2( ERR_DEFAULT_ARGS_MISSING, i );
             return( TRUE );
         }
     } RingIterEnd( curr )
@@ -1405,7 +1419,7 @@ void ForceNoDefaultArgs( DECL_INFO *dinfo, int err_msg )
 
     parms = dinfo->parms;
     cantHaveDefaultArgGaps( parms );
-    if( cantHaveDefaultArgs( err_msg, parms )){
+    if( err_msg && cantHaveDefaultArgs( err_msg, parms )){
         removeDefaultArgs( parms );
     }
 }
@@ -2306,7 +2320,9 @@ static void checkType( DECL_SPEC *d1, DECL_SPEC *d2 )
         /* any types to the right of a class name remove the
            possibility of the decl-spec being a constructor name */
         d1->ctor_name = 0;
-    } else if( d2->partial != NULL ) {
+    } else if( d2->partial != NULL || 
+               ( ( d1->specifier & STY_FRIEND ) && 
+                 ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) ) {
         /* types need a lot of info to stay with the combination */
         d1->partial = d2->partial;
         d1->scope = d2->scope;
@@ -2378,6 +2394,8 @@ static SYMBOL checkPreviouslyDeclared( SYMBOL sym, char *name )
 
 static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
 {
+    extern void TemplateFriendDecl( void );
+    
     char *name;
     TYPE type;
     TYPE original_type;
@@ -2397,6 +2415,10 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
             dspec->typedef_defined = NULL;
         }
         return( dspec );
+    } else if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
+        TemplateFriendDecl();
+        dspec->specifier &= ~STY_FRIEND;
+        return dspec;
     }
     bad_friend = FALSE;
     figureOutStgClass( dspec );
@@ -4675,12 +4697,33 @@ TYPE BoolType( TYPE type )
 TYPE GenericType( TYPE type )
 /***************************/
 {
-    for( ; ; type = type->of ) {
-        if( TypeIdMasked( type, MASK_TYPE_GENERIC ) ) {
-            if( type->id == TYP_GENERIC ) break;
-        } else {
-            type = NULL;
-            break;
+    if( type != NULL ) {
+        for( ; ; type = type->of ) {
+            if( TypeIdMasked( type, MASK_TYPE_GENERIC ) ) {
+                if( type->id == TYP_GENERIC ) break;
+            } else {
+                type = NULL;
+                break;
+            }
+        }
+    }
+    return( type );
+}
+
+TYPE TemplateTemplateArgType( TYPE type )
+/***************************/
+{
+    if( type != NULL ) {
+        for( ; ; type = type->of ) {
+            if( TypeIdMasked( type, MASK_TYPE_GENERIC ) ) {
+                if( type->id == TYP_GENERIC ) {
+                    if( type->u.g.args == NULL ) type = NULL; 
+                    break;
+                }
+            } else {
+                type = NULL;
+                break;
+            }
         }
     }
     return( type );
@@ -5448,7 +5491,7 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope,
         } else {
         }
     } else {
-        if( scope_class_type->flag & TF1_UNBOUND ) {
+        if( scope_class_type->flag & TF1_UNBOUND  ) {
             /* we are parsing a class template declaration */
             *pinfo |= IDI_CLASS_TEMPLATE_MEMBER;
             return( id );
@@ -5489,6 +5532,7 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope,
         id = CutAwayQualification( id );
     } else {
         ScopeQualifyPush( qualifying_scope, qualifying_scope );
+        //ScopeQualifyPush( qualifying_scope, GetCurrScope() );
         *scope = qualifying_scope;
     }
     return( id );
@@ -5649,7 +5693,7 @@ static TYPE functionReduce( TYPE type, unsigned arg_index )
     return( replaceModifiers( mod_list, new_fn_type ) );
 }
 
-static SYMBOL tryInsertion( SCOPE scope, SYMBOL sym, char *name )
+SYMBOL TryInsertion( SCOPE scope, SYMBOL sym, char *name )
 {
     DECL_INFO *tmp_dinfo;
     SYMBOL decl_sym;
@@ -5666,7 +5710,7 @@ static SYMBOL tryInsertion( SCOPE scope, SYMBOL sym, char *name )
 SYMBOL InsertSymbol( SCOPE scope, SYMBOL sym, char *name )
 /********************************************************/
 {
-    return( tryInsertion( scope, sym, name ) );
+    return( TryInsertion( scope, sym, name ) );
 }
 
 static boolean defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
@@ -5674,7 +5718,7 @@ static boolean defaultArgCantExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
     SYMBOL decl_sym;
     SYMBOL base_sym;
 
-    decl_sym = tryInsertion( scope, sym, dinfo->name );
+    decl_sym = TryInsertion( scope, sym, dinfo->name );
     if( decl_sym != sym ) {
         /* declaration returned a previous SYMBOL! */
         if( decl_sym->id != SC_DEFAULT ) {
@@ -5703,7 +5747,7 @@ static SYMBOL defaultArgMustExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
     SYMBOL decl_sym;
     SYMBOL base_sym;
 
-    decl_sym = tryInsertion( scope, sym, dinfo->name );
+    decl_sym = TryInsertion( scope, sym, dinfo->name );
     if( decl_sym != sym ) {
         /* declaration returned a previous SYMBOL! */
         if( decl_sym->id != SC_DEFAULT ) {
@@ -5735,18 +5779,17 @@ static SYMBOL defaultArgMustExist( SCOPE scope, DECL_INFO *dinfo, SYMBOL sym )
         defaultProto    -- SC_DEFAULT sym with same name as function
         defaultValue    -- function that is { return expr; }
 */
-static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned arg_index, DECL_INFO *parm )
+SYMBOL MakeDefaultProto( SYMBOL base_sym, unsigned arg_index )
 {
     TYPE base_type;
-    SYMBOL base_sym;
     SYMBOL sym;
     TOKEN_LOCN *defarg_locn;
 
-    defarg_locn = &(parm->init_locn);
+    defarg_locn = &base_sym->locn->tl;
+    //defarg_locn = &(parm->init_locn);
     if( defarg_locn->src_file == NULL ) {
         defarg_locn = NULL;
     }
-    base_sym = dinfo->sym;
     base_type = base_sym->sym_type;
     sym = AllocSymbol();
     sym->id = SC_DEFAULT;
@@ -5754,8 +5797,13 @@ static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned arg_index, DECL_INFO 
     sym->thread = base_sym;
     sym->u.defarg_info = NULL;
     SymbolLocnDefine( defarg_locn, sym );
-    parm->proto_sym = sym;
     return( sym );
+}
+
+static SYMBOL makeDefaultProto( DECL_INFO *dinfo, unsigned arg_index, DECL_INFO *parm )
+{
+    parm->proto_sym = MakeDefaultProto( dinfo->sym, arg_index );
+    return( parm->proto_sym );
 }
 
 static unsigned declareDefaultProtos( SCOPE scope, DECL_INFO *dinfo )
@@ -6155,7 +6203,7 @@ type_flag FunctionThisMemFlags( SYMBOL sym )
 
     if( SymIsThisFuncMember( sym ) ) {
         flags = TypeArgList( sym->sym_type )->qualifier;
-        flags |= defaultDataMemFlag;
+        //flags |= defaultDataMemFlag;
     } else {
         flags = TF1_NULL;
     }
@@ -6551,11 +6599,14 @@ static SCOPE blockScopeExtern( void )
 DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
 /***************************************************************/
 {
+    boolean DeferFuncTemplateDefaultArgs( DECL_INFO *dinfo );
+    
     type_flag flags;
     type_flag explicit_flags;
     TYPE type;
     SCOPE check_scope;
     SCOPE scope;
+    SCOPE file_scope;
     SYMBOL sym;
     SYMBOL check_sym;
     SYMBOL decl_sym;
@@ -6587,7 +6638,12 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                 if( check_sym != NULL && check_sym->id == SC_DEFAULT ) {
                     CErr2p( ERR_NOT_A_MEMBER, sym );
                 }
-                if( ! ScopeEnclosed( GetCurrScope(), scope ) ) {
+                file_scope = GetCurrScope();
+                if( ScopeType( file_scope, SCOPE_TEMPLATE_DECL )
+                    || ScopeType( file_scope, SCOPE_TEMPLATE_INST ) ) {
+                    file_scope = ScopeNearestFileOrClass( file_scope );
+                }
+                if( ! ScopeEnclosed( file_scope, scope ) ) {
                     if( ScopeEnclosingId( scope, SCOPE_TEMPLATE_INST ) == NULL ) {
                         CErr1( ERR_CURRSCOPE_DOESNT_ENCLOSE );
                     }
@@ -6597,11 +6653,15 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
     } else {
         /* unadorned id style declaration */
         scope = insert_scope;
-        if( dinfo->friend_fn ) {
-            scope = dinfo->friend_scope;
-        } else if( ScopeId( scope ) == SCOPE_TEMPLATE_DECL ) {
+        if( ScopeId( scope ) == SCOPE_TEMPLATE_DECL ) {
             TemplateFunctionCheck( sym, dinfo );
-            scope = ScopeNearestFileOrClass( GetCurrScope() );
+            if( dinfo->friend_fn ) {
+                scope = dinfo->friend_scope;
+            } else {
+                scope = ScopeNearestFileOrClass( GetCurrScope() );
+            }
+        } else if( dinfo->friend_fn ) {
+            scope = dinfo->friend_scope;
         } else if( ScopeId( scope ) == SCOPE_BLOCK ||
                    ScopeId( scope ) == SCOPE_FUNCTION ) {
             /* handle promotions from local scope to file scope */
@@ -6689,6 +6749,9 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
     dinfo->sym_used = TRUE;
     if( check_sym != NULL ) {
         if( dinfo->friend_fn ) {
+            if( ScopeType( insert_scope, SCOPE_TEMPLATE_DECL ) ) { 
+                insert_scope = ScopeNearestFileOrClass( insert_scope );
+            }
             if( ScopeType( insert_scope, SCOPE_CLASS ) ) {
                 if( dinfo->scope != NULL && dinfo->fn_defn ) {
                     CErr2p( ERR_INLINE_MEMBER_FRIEND, check_sym );
@@ -6698,10 +6761,12 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                 CErr1( ERR_FRIEND_NOT_IN_CLASS );
             }
         }
-        if( is_a_function ) {
-            declareDefaultArgs( scope, dinfo );
-        } else {
+        if( !is_a_function ) {
             verifyNoDefaultArgs( dinfo );
+        } else if( sym == NULL || !SymIsFunctionTemplateModel( sym ) ) {
+            declareDefaultArgs( scope, dinfo );
+        } else if( !checkForMissingDefaultArgs( dinfo->parms ) ) {
+            DeferFuncTemplateDefaultArgs( dinfo );
         }
     }
     return( dinfo );
@@ -6956,8 +7021,10 @@ void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
             }
         }
     }
-    type = dinfo->type;
-    FreeDeclInfo( dinfo );
+    if( dinfo != NULL ) {
+        type = dinfo->type;
+        FreeDeclInfo( dinfo );
+    }
 }
 
 static SYMBOL alreadyDefined( char *name )
@@ -6987,7 +7054,7 @@ SYMBOL MakeTypeidSym( TYPE type )
     sym->id = SC_PUBLIC;
     // we don't want this symbol referenced unless we will generate it
     sym->sym_type = typeid_type;
-    sym = tryInsertion( GetFileScope(), sym, name );
+    sym = TryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -7010,7 +7077,7 @@ SYMBOL MakeVATableSym( SCOPE class_scope )
     sym->id = SC_PUBLIC;
     sym->flag |= SF_REFERENCED;
     sym->sym_type = vatable_type;
-    sym = tryInsertion( GetFileScope(), sym, name );
+    sym = TryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -7034,7 +7101,7 @@ SYMBOL MakeVBTableSym( SCOPE scope, unsigned num_vbases, target_offset_t delta )
     sym->id = SC_PUBLIC;
     sym->flag |= SF_REFERENCED;
     sym->sym_type = vbtable_type;
-    sym = tryInsertion( GetFileScope(), sym, name );
+    sym = TryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -7062,7 +7129,7 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, boolean *had_to_define )
     sym->id = SC_PUBLIC;
     sym->flag |= SF_REFERENCED;
     sym->sym_type = vmtable_type;
-    sym = tryInsertion( GetFileScope(), sym, name );
+    sym = TryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -7087,7 +7154,7 @@ SYMBOL MakeVFTableSym( SCOPE scope, unsigned num_vfns, target_offset_t delta )
     sym->id = SC_PUBLIC;
     sym->flag |= SF_REFERENCED;
     sym->sym_type = vftable_type;
-    sym = tryInsertion( GetFileScope(), sym, name );
+    sym = TryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -7426,7 +7493,7 @@ static void pushPrototypeAndArguments( type_bind_info *data, arg_list *p_args,
             } else {
                 a_type = adjustParmType( a_type );
             }
-        }
+        } 
         // if we follow the WP, this should not be here but the WP breaks
         // working code with string literals; we might want to special case
         // string literals (decay to char *) and remove this line
@@ -7579,6 +7646,9 @@ static void scanForGenerics( PSTK_CTL *stk, TYPE type )
             type = type->of;
             break;
         case TYP_GENERIC:
+            if( type->of != NULL && type->of->id == TYP_GENERIC ) {
+                type = type->of;
+            }
             type->flag |= TF1_USED;
             return;
         default:
@@ -7600,7 +7670,9 @@ boolean FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
     }
     markAllUnused( scope, NULL );
     PstkOpen( &type_stack );
+    PstkPush( &type_stack, fn_type->of );
     pushArguments( &type_stack, fn_type->u.f.args );
+    
     for(;;) {
         top = PstkPop( &type_stack );
         if( top == NULL ) break;
@@ -7612,6 +7684,33 @@ boolean FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
     return( markAllUnused( scope, diag ) );
 }
 
+static boolean clearBinding( TYPE type )
+{
+    SYMBOL curr;
+    SYMBOL stop;
+    TYPE   temp;
+    
+    type = GenericType( type );
+    if( type != NULL ) {
+        if( type->u.g.args != NULL ) {
+            curr = NULL;
+            stop = ScopeOrderedStart( type->u.g.args );
+            for(;;) {
+                curr = ScopeOrderedNext( stop, curr );
+                if( curr == NULL ) break;
+                clearBinding( curr->sym_type );
+            }
+            temp = TemplateTemplateArgType( type->of );
+            if( temp != NULL ) {
+                type = temp;
+            }
+        }
+        type->of = NULL;
+        return( TRUE );
+    }
+    return( FALSE );
+} 
+
 static void clearGenericBindings( PSTK_CTL *stk )
 {
     TYPE *top;
@@ -7622,6 +7721,7 @@ static void clearGenericBindings( PSTK_CTL *stk )
         if( top == NULL ) break;
         if( *top == NULL ) continue;
         bound_type = *top;
+        
 #ifndef NDEBUG
         switch( bound_type->id ) {
         case TYP_GENERIC:
@@ -7634,7 +7734,9 @@ static void clearGenericBindings( PSTK_CTL *stk )
             CFatal( "bound generic type corrupted" );
         }
 #endif
-        bound_type->of = NULL;
+        if( ! clearBinding( bound_type ) ) {
+            bound_type->of = NULL;
+        }
     }
 }
 
@@ -7658,10 +7760,7 @@ static void clearGenericBindings_ptree( SCOPE decl_scope, PSTK_CTL *stk )
             curr = ScopeOrderedNext( stop, curr );
             if( curr == NULL ) break;
 
-            if( ( curr->sym_type->id == TYP_TYPEDEF )
-                && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
-                curr->sym_type->of->of = NULL;
-            }
+            clearBinding( curr->sym_type );
         }
     }
 }
@@ -7684,6 +7783,54 @@ boolean TypeBasesEqual( type_flag flags, void *base1, void *base2 )
         return( FALSE );
     }
     return( TRUE );
+}
+
+static TYPE compareTemplateTemplateArg( type_bind_info *data, TYPE b_type, TYPE u_type, boolean push_ptrees, int *perr )
+{
+    SYMBOL u_curr;
+    SYMBOL u_stop;
+    SYMBOL b_curr;
+    SYMBOL b_stop;
+    SCOPE  scope1;
+    SCOPE  scope2;
+    
+    if( u_type->u.g.args != NULL ) {
+        if( b_type->id == TYP_CLASS ) {
+            scope1 = u_type->u.g.args;
+            scope2 = TemplateClassParmScope( b_type );
+            if( scope1 != NULL && scope2 != NULL ) {
+                u_curr = NULL;
+                b_curr = NULL;
+                u_stop = ScopeOrderedStart( scope1 );
+                b_stop = ScopeOrderedStart( scope2 );
+                for(;;) {
+                    u_curr = ScopeOrderedNext( u_stop, u_curr );
+                    b_curr = ScopeOrderedNext( b_stop, b_curr );
+                    if( u_curr == NULL ) break;
+                    if( b_curr == NULL ) break;
+                    
+                    if( push_ptrees ) {
+                        PstkPush( &(data->without_generic),
+                            PTreeType( b_curr->sym_type ) );
+                        PstkPush( &(data->with_generic), 
+                            PTreeType( u_curr->sym_type ) );
+                    } else {
+                        PstkPush( &(data->without_generic), b_curr->sym_type );
+                        PstkPush( &(data->with_generic), u_curr->sym_type );
+                    }
+                }
+                if( u_curr == b_curr ) {
+                    b_type = u_type->of;
+                    if( b_type != NULL && b_type->id == TYP_GENERIC ) {
+                        return b_type;
+                    }
+                    return( u_type );
+                } 
+            }
+        }
+        return( NULL );
+    }
+    return( u_type );
 }
 
 // called from typesBind and typesBind_ptree
@@ -7792,7 +7939,7 @@ static unsigned handle1stLevelPtr( type_bind_info *data, TYPE b_ptr, TYPE u_ptr 
     void *b_base;
     void *u_base;
 
-    status = TB_NULL;
+    status = TB_BINDS;
     b_type = b_ptr->of; // arg
     u_type = u_ptr->of; // prototype
     if( b_type != NULL && u_type != NULL ) {
@@ -7814,15 +7961,18 @@ static unsigned handle1stLevelPtr( type_bind_info *data, TYPE b_ptr, TYPE u_ptr 
             if( d_flags & ~TF1_CV_MASK ) {
                 PstkPush( &(data->without_generic), b_type );
                 PstkPush( &(data->with_generic), u_type );
-                return( TB_NULL );
+                return( TB_BINDS );
             }
             status |= TB_NEEDS_TRIVIAL;
             u_flags &= ~d_flags;
         }
+        if( CompFlags.overload_13332 && ( b_flags & TF1_CONST ) && !( u_flags & TF1_CONST ) ) {
+            return( TB_NULL );
+        }
         if( ! modifiersMatch( b_flags, u_flags, b_base, u_base ) ) {
             PstkPush( &(data->without_generic), b_type );
             PstkPush( &(data->with_generic), u_type );
-            return( TB_NULL );
+            return( TB_BINDS );
         }
         b_type = b_unmod_type;
         u_type = u_unmod_type;
@@ -7840,6 +7990,7 @@ static unsigned handle1stLevelPtr( type_bind_info *data, TYPE b_ptr, TYPE u_ptr 
     PstkPush( &(data->with_generic), u_type );
     return( status );
 }
+
 
 static unsigned typesBind( type_bind_info *data )
 {
@@ -7996,6 +8147,10 @@ static unsigned typesBind( type_bind_info *data )
                     g_type = MakeModifiedType( g_type, g_flags );
                 }
             }
+            u_unmod_type = compareTemplateTemplateArg( data, b_unmod_type, u_unmod_type, FALSE, NULL );
+            if( u_unmod_type == NULL ) {
+                return TB_NULL;
+            }
             match = u_unmod_type->of;
             if( match != NULL ) {
                 /* generic type was bound; check the bound type */
@@ -8066,7 +8221,11 @@ static unsigned typesBind( type_bind_info *data )
             break;
         case TYP_POINTER:
             if( flags.arg_1st_level ) {
-                status |= handle1stLevelPtr( data, b_unmod_type, u_unmod_type );
+                unsigned s = handle1stLevelPtr( data, b_unmod_type, u_unmod_type );
+                if( s == TB_NULL ) {
+                    return( TB_NULL );
+                }
+                status |= s;
             } else {
                 PstkPush( &(data->without_generic), b_unmod_type->of );
                 PstkPush( &(data->with_generic), u_unmod_type->of );
@@ -8335,6 +8494,10 @@ static unsigned typesBind_ptree( type_bind_info *data )
                     g_type = MakeModifiedType( g_type, g_flags );
                 }
             }
+            u_unmod_type = compareTemplateTemplateArg( data, b_unmod_type, u_unmod_type, TRUE, NULL );
+            if( u_unmod_type == NULL ) {
+                return TB_NULL;
+            }
             match = u_unmod_type->of;
             if( match != NULL ) {
                 /* generic type was bound; check the bound type */
@@ -8407,7 +8570,11 @@ static unsigned typesBind_ptree( type_bind_info *data )
                 return( TB_NULL );
             }
             if( flags.arg_1st_level ) {
-                status |= handle1stLevelPtr( data, b_unmod_type, u_unmod_type );
+                unsigned s = handle1stLevelPtr( data, b_unmod_type, u_unmod_type );
+                if( s == TB_NULL ) {
+                    return( TB_NULL );
+                }
+                status |= s;
             } else {
                 PstkPush( &(data->without_generic), PTreeType( b_unmod_type->of ) );
                 PstkPush( &(data->with_generic), PTreeType( u_unmod_type->of ) );
@@ -8668,6 +8835,9 @@ static boolean performBinding( VSTK_CTL *stk, TOKEN_LOCN *locn )
             break;
         case TYP_GENERIC:
             new_type = old_type->of;
+            if( new_type != NULL && new_type->id == TYP_GENERIC ) {
+                new_type = new_type->of;
+            }
             break;
         }
         DbgAssert( new_type != NULL );
@@ -8729,15 +8899,51 @@ static void binderFini_ptree( type_bind_info *data )
 PTREE BindClassGenericTypes( SCOPE decl_scope, PTREE parms, PTREE args )
 /**************************************************************************/
 {
+    struct temp_ring {
+        struct temp_ring *next;
+        TYPE type;
+        TYPE bind;
+    } *temp_list;
+    
+    struct temp_ring *temp_iter;
+    
     PTREE result;
     PTREE item;
     PTREE node;
+    TYPE  type;
+    TYPE  bind;
     SYMBOL curr, stop;
     unsigned bind_status;
     unsigned push_control;
     auto type_bind_info data;
 
-    // DbgAssert( parms->num_args == args->num_args );
+    temp_list = NULL;
+    if( decl_scope != NULL ) {
+        stop = ScopeOrderedStart( decl_scope );
+        curr = NULL;
+        for(;;) {
+            curr = ScopeOrderedNext( stop, curr );
+            if( curr == NULL ) break;
+
+            if( ( curr->sym_type->id == TYP_TYPEDEF )
+                && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
+                type = curr->sym_type->of;
+                bind = type->of;
+                if( bind != NULL ) {
+                    if( bind->id == TYP_GENERIC && bind->u.g.args != NULL ) {
+                        type = bind;
+                        bind = type->of;
+                        if( bind == NULL ) continue;
+                    }
+                    temp_iter       = RingAlloc( &temp_list, sizeof( struct temp_ring ) );
+                    temp_iter->type = type;
+                    temp_iter->bind = bind;
+                    type->of        = NULL;
+                }
+            }
+        }
+    }
+    
     binderInit( &data );
     push_control = PA_NULL;
     pushPrototypeAndArguments_ptree( &data, parms, args, push_control );
@@ -8821,29 +9027,80 @@ PTREE BindClassGenericTypes( SCOPE decl_scope, PTREE parms, PTREE args )
     clearGenericBindings_ptree( decl_scope, &data.bindings );
 
     binderFini_ptree( &data );
+    
+    if( temp_list != NULL ) {
+        RingIterBeg( temp_list, temp_iter ) {
+            type     = temp_iter->type;
+            type->of = temp_iter->bind;
+        } RingIterEnd( temp_iter )
+        RingFree( &temp_list );
+    }
     return( result );
 }
 
 TYPE BindGenericTypes( arg_list *args, SYMBOL template_fn, TOKEN_LOCN *locn,
-/**************************************************************************/
                        bgt_control *pcontrol )
 {
+    extern boolean ValidateFuncTemplateDefArgs( SYMBOL, TYPE, unsigned );
+    
     TYPE bound_type;
     TYPE sym_type;
     unsigned bind_status;
     unsigned push_control;
+    unsigned num_defargs;
+    unsigned num_args;
+    boolean  udc;
     bgt_control control;
     auto type_bind_info data;
 
-    DbgAssert( TypeHasNumArgs( template_fn->sym_type, args->num_args ) );
-    binderInit( &data );
+    if( args->num_args == 0 ) {
+        return NULL;
+    }
+    udc = SymIsUDC( template_fn );
     push_control = PA_NULL;
     if( *pcontrol == BGT_TRIVIAL ) {
         push_control |= PA_MARK_FIRST_LEVEL;
     }
-    control = BGT_EXACT;
+    control  = BGT_EXACT;
     sym_type = template_fn->sym_type;
-    pushPrototypeAndArguments( &data, TypeArgList( sym_type ), args, push_control );
+    if( !udc ) {
+        arg_list* alist = TypeArgList( sym_type );
+        num_args        = alist ? alist->num_args : 0;
+        if( args->num_args > num_args ) {
+            if( num_args == 0 ) {
+                return( NULL );
+            } else {
+                TYPE arg_type = alist->type_list[ num_args - 1 ];
+                if( arg_type->id != TYP_DOT_DOT_DOT ) {
+                    return( NULL );
+                }
+            }
+        } else if( template_fn->u.defn != NULL ) {
+            num_defargs = template_fn->u.defn->num_defargs;
+            if( args->num_args < num_args - num_defargs ) {
+                return( NULL );
+            }
+            alist->num_args = args->num_args;
+        } else if( num_args > args->num_args &&       
+                   alist->type_list[args->num_args]->id != TYP_DOT_DOT_DOT ) {
+            return( NULL );
+        }
+        binderInit( &data );
+        pushPrototypeAndArguments( &data, alist, args, push_control );
+        
+        alist->num_args = num_args;
+    } else {
+        arg_list alist;
+        alist.num_args     = 1;
+        alist.qualifier    = args->qualifier;
+        alist.type_list[0] = sym_type->of;
+        
+        if( args->num_args > 1 ) return( NULL );
+        
+        DbgAssert( TypeHasNumArgs( sym_type, args->num_args - 1 ) );
+        binderInit( &data );
+        pushPrototypeAndArguments( &data, &alist, args, push_control );
+    }
     bound_type = NULL;
     bind_status = typesBind( &data );
     if( bind_status != TB_NULL ) {
@@ -8854,6 +9111,9 @@ TYPE BindGenericTypes( arg_list *args, SYMBOL template_fn, TOKEN_LOCN *locn,
             control = BGT_DERIVED;
         }
         bound_type = createBoundType( sym_type, locn );
+        if( bound_type != NULL && ! ValidateFuncTemplateDefArgs( template_fn, bound_type, args->num_args ) ) {
+            bound_type = NULL;
+        }
     }
     *pcontrol = control;
     clearGenericBindings( &data.bindings );
@@ -8874,7 +9134,7 @@ static boolean sameBoundFunction( TYPE fn_type, SYMBOL file_sym )
     return( result == FNOV_EXACT_MATCH );
 }
 
-boolean BindFunction( SYMBOL fn_sym, SYMBOL template_fn )
+SYMBOL BindFunction( SYMBOL fn_sym, SYMBOL template_fn, unsigned proto, SYMBOL(* makeTemplateFnDefaultProto)( SYMBOL, SYMBOL, unsigned ) )
 /*******************************************************/
 {
     TYPE bound_type;
@@ -8887,24 +9147,35 @@ boolean BindFunction( SYMBOL fn_sym, SYMBOL template_fn )
     template_fn_args = SymFuncArgList( template_fn );
     if( fn_sym_args->num_args != template_fn_args->num_args ) {
         /* they both have different number of arguments */
-        return( FALSE );
+        return( NULL );
     }
     binderInit( &data );
-    pushArguments( &data.with_generic, template_fn_args );
-    pushArguments( &data.without_generic, fn_sym_args );
+    
+    if( SymIsUDC( template_fn ) ) {
+        PstkPush( &data.with_generic, template_fn->sym_type->of );
+        PstkPush( &data.without_generic, fn_sym->sym_type->of );
+    } else {
+        pushArguments( &data.with_generic, template_fn_args );
+        pushArguments( &data.without_generic, fn_sym_args );
+    }
     bind_status = typesBind( &data );
     if( bind_status != TB_NULL ) {
         bound_type = createBoundType( template_fn->sym_type, &fn_sym->locn->tl );
         if( bound_type != NULL && sameBoundFunction( bound_type, fn_sym ) ) {
-            /* will callback to clearGenericBindings */
-            TemplateFunctionInstantiate( fn_sym, template_fn, &data.bindings );
+            if( makeTemplateFnDefaultProto != NULL ) {
+                fn_sym = makeTemplateFnDefaultProto( fn_sym, template_fn, proto );
+                clearGenericBindings( &data.bindings );
+            } else {
+                /* will callback to clearGenericBindings */
+                TemplateFunctionInstantiate( fn_sym, template_fn, &data.bindings );
+            }
             binderFini( &data );
-            return( TRUE );
+            return( fn_sym );
         }
     }
     clearGenericBindings( &data.bindings );
     binderFini( &data );
-    return( FALSE );
+    return( NULL );
 }
 
 static void initBasicTypes( void )
@@ -9477,7 +9748,7 @@ static void saveType( void *e, carve_walk_base *d )
     SCOPE save_scope;
     CLASSINFO *save_info;
     TYPE save_type;
-    char *save_get, *save_put, *save_gname;
+    char *save_get, *save_put;
     void *save_base;
     AUX_INFO *save_pragma;
     arg_list *save_args;
@@ -9508,8 +9779,8 @@ static void saveType( void *e, carve_walk_base *d )
         s->u.mp.host = TypeGetIndex( save_type );
         break;
     case TYP_GENERIC:
-        save_gname  = s->u.g.name;
-        s->u.g.name = NameGetIndex( s->u.g.name );
+        save_scope  = s->u.g.args;
+        s->u.g.args = ScopeGetIndex( save_scope );
         break;
     case TYP_PROPERTY:
         save_get   = s->u.p.get;    
@@ -9551,12 +9822,12 @@ static void saveType( void *e, carve_walk_base *d )
         s->u.t.sym = save_sym;
         s->u.t.scope = save_scope;
         break;
-    case TYP_GENERIC:
-        s->u.g.name = save_gname;
-        break;
     case TYP_PROPERTY:
         s->u.p.get = save_get;
         s->u.p.put = save_put;
+        break;
+    case TYP_GENERIC:
+        s->u.g.args = save_scope;
         break;
     case TYP_CLASS:
         s->u.c.scope = save_scope;
@@ -9733,7 +10004,8 @@ static void readTypes( type_pch_walk *type_data )
             t->u.mp.host = TypeMapIndex( pch->u.mp.host );
             break;
         case TYP_GENERIC:
-            t->u.g.name = NameMapIndex( pch->u.g.name );
+            t->u.g.index = pch->u.g.index;
+            t->u.g.args  = ScopeMapIndex( pch->u.g.args );
             break;
         case TYP_PROPERTY:
             t->u.p.get = NameMapIndex( pch->u.p.get );

@@ -3293,8 +3293,8 @@ int (*p)( int, int a = 14 ) = 0;
 :eerrbad.
 
 :MSGSYM. ERR_DEFAULT_ARGS_MISSING
-:MSGTXT. missing default arguments
-:MSGJTXT. デフォルト引数がありません
+:MSGTXT. missing default argument for parameter %d
+:MSGJTXT. デフォルト引数がありません %d
 Gaps in a succession of default arguments are not allowed in the
 C++ language.
 :errbad.
@@ -8168,7 +8168,7 @@ detected during the instantiation of a class template.  The final type
 of the template class is shown as well as the location in the source
 where the instantiation was initiated.
 
-:MSGSYM. INF_TEMPLATE_FN_DEFN_TRACEBACK
+:MSGSYM. INF_TEMPLATE_DEFN_TRACEBACK
 :MSGTXT. template function instantiation for '%S' was %L
 :MSGJTXT. '%S'に対するテンプレート関数インスタンス化は%Lでした
 :INFO.
@@ -8427,7 +8427,7 @@ It is displayed when there is exactly one function template declared with
 the indicated name.
 
 :MSGSYM. INF_TEMPLATE_FN_REJECTED
-:MSGTXT. rejected function template: %F defined %L
+:MSGTXT. rejected function template: %F defined %L	
 :MSGJTXT. 除外された関数テンプレート：%Fは次で定義されています：%L
 :INFO.
 This informational message shows the overloaded function template which was
@@ -11978,3 +11978,10 @@ declaration modifier is not supported by Open Watcom C++.
 :MSGTXT. '%S' : array property accessor must be a function
 :MSGJTXT.
 
+:MSGSYM. ERR_WRONG_TYPE_TEMPLATE_TEMPLATE_ARG
+:MSGTXT. The parameter %d in the template '%F' for parameter '%F' in the template '%F' have an unmatched type
+:MSGJTXT.
+
+:MSGSYM. ERR_TOO_MANY_TEMPLATE_TEMPLATE_ARG_PARAMETERS
+:MSGTXT. The number parameters for template '%F' does not match for template parameter '%F' of the template '%F'
+:MSGJTXT.

@@ -631,7 +631,7 @@ PCH_struct type {
         } mp;
         struct {                        // TYP_GENERIC
             unsigned    index;          // keeps template args distinct
-            char       *name;
+            SCOPE       args;           // template template srguments
         } g;
         struct {                        // TYP_GENERIC
             char       *get;
@@ -1396,6 +1396,7 @@ extern TYPE ArithType( TYPE );
 extern TYPE EnumType( TYPE );
 extern TYPE BoolType( TYPE );
 extern TYPE GenericType( TYPE );
+extern TYPE TemplateTemplateArgType( TYPE );
 extern TYPE BasedType( TYPE );
 extern TYPE BasedPtrType( TYPE );
 extern TYPE IntegralType( TYPE );
@@ -1576,7 +1577,7 @@ extern boolean CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
 extern boolean FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );
 extern void ClearAllGenericBindings( void * );
-extern boolean BindFunction( SYMBOL, SYMBOL );
+extern SYMBOL BindFunction( SYMBOL, SYMBOL, unsigned, SYMBOL(*)( SYMBOL, SYMBOL, unsigned ) );
 extern type_flag ExplicitModifierFlags( TYPE );
 
 extern TYPE BindGenericTypes( arg_list *, SYMBOL, TOKEN_LOCN *, bgt_control * );
