@@ -127,7 +127,7 @@ static SYMBOL firstSymbol( SCOPE scope )
     SYMBOL first;
 
     first = ScopeOrderedFirst( scope );
-    DbgAssert( first != NULL );
+    //DbgAssert( first != NULL );
     return( first );
 }
 
@@ -188,19 +188,19 @@ static void displayActiveInstantiations( NESTED_POST_CONTEXT *blk )
         if( ctx->locn != NULL ) {
             switch( ctx->id ) {
             case TCTX_CLASS_DEFN:
-                CErr( INF_TEMPLATE_CLASS_DEFN_TRACEBACK, extractTemplateClass( ctx ), ctx->locn );
+                AddNoteMessage( INF_TEMPLATE_CLASS_DEFN_TRACEBACK, extractTemplateClass( ctx ), ctx->locn );
                 break;
             case TCTX_FN_DEFN:
-                CErr( INF_TEMPLATE_DEFN_TRACEBACK, ctx->u.sym, ctx->locn );
+                AddNoteMessage( INF_TEMPLATE_DEFN_TRACEBACK, ctx->u.sym, ctx->locn );
                 break;
             case TCTX_MEMBER_DEFN:
-                CErr( INF_TEMPLATE_MEMBER_DEFN_TRACEBACK, ctx->locn );
+                AddNoteMessage( INF_TEMPLATE_MEMBER_DEFN_TRACEBACK, ctx->locn );
                 break;
             case TCTX_FN_BIND:
-                CErr( INF_TEMPLATE_FN_BIND_TRACEBACK, ctx->u.sym, ctx->locn );
+                AddNoteMessage( INF_TEMPLATE_FN_BIND_TRACEBACK, ctx->u.sym, ctx->locn );
                 break;
             case TCTX_FN_BIND_AND_GEN:
-                CErr( INF_TEMPLATE_FN_BIND_AND_GEN_TRACEBACK, ctx->u.sym, ctx->locn );
+                AddNoteMessage( INF_TEMPLATE_FN_BIND_AND_GEN_TRACEBACK, ctx->u.sym, ctx->locn );
                 break;
             }
         }
@@ -1971,9 +1971,9 @@ static int processTemplateTemplateArg( TEMPLATE_SPECIALIZATION * tspec, int i, P
                             } else { 
                                 CErr( ERR_TOO_MANY_TEMPLATE_TEMPLATE_ARG_PARAMETERS, sym, ssym, tsym );
                             }   
-                            CErr( INF_TEMPLATE_DEFN_TRACEBACK, tsym, &tsym->locn->tl );
-                            CErr( INF_TEMPLATE_DEFN_TRACEBACK, ssym, &ssym->locn->tl );
-                            CErr( INF_TEMPLATE_DEFN_TRACEBACK, sym, &sym->locn->tl );
+                            AddNoteMessage( INF_TEMPLATE_DEFN_TRACEBACK, tsym, &tsym->locn->tl );
+                            AddNoteMessage( INF_TEMPLATE_DEFN_TRACEBACK, ssym, &ssym->locn->tl );
+                            AddNoteMessage( INF_TEMPLATE_DEFN_TRACEBACK, sym, &sym->locn->tl );
                             return -1;
                             
                         }
@@ -2055,12 +2055,12 @@ static TYPE processTemplateTemplateArgParms( SYMBOL_NAME sym_name, PTREE args )
                     if( args != NULL ) {
                         SetErrLoc( &start_locn );
                         CErr1( ERR_TOO_MANY_TEMPLATE_PARAMETERS );
-                        CErr( INF_SYMBOL_DECLARATION, sym, &sym->locn->tl );
+                        AddNoteMessage( INF_SYMBOL_DECLARATION, sym, &sym->locn->tl );
                         err = TRUE;
                     } else if( curr != NULL && curr != stop ) {
                         SetErrLoc( &start_locn );
                         CErr1( ERR_TOO_FEW_TEMPLATE_PARAMETERS );
-                        CErr( INF_SYMBOL_DECLARATION, sym, &sym->locn->tl );
+                        AddNoteMessage( INF_SYMBOL_DECLARATION, sym, &sym->locn->tl );
                         err = TRUE;
                     } 
                     
@@ -2383,7 +2383,10 @@ static TYPE checkAlreadyDone( TEMPLATE_SPECIALIZATION *tspec, PTREE parms,
     inst_scope = findInstScope( tspec, parms, inst );
     if( inst_scope != NULL ) {
         /* return previously instantiated class type */
-        return( firstSymbol( inst_scope )->sym_type );
+        SYMBOL sym = firstSymbol( inst_scope );
+        if( sym != NULL ) {
+            return sym->sym_type;
+        }
     }
     return( NULL );
 }
@@ -2683,7 +2686,7 @@ static TEMPLATE_SPECIALIZATION *findTemplateClassSpecialization( TEMPLATE_INFO *
 
         /* free instantiation parameters */
         RingIterBeg( candidate_list, candidate_iter ) {
-            CErr( INF_CANDIATE_DEFINITION, &candidate_iter->tspec->locn );
+            AddNoteMessage( INF_CANDIATE_DEFINITION, &candidate_iter->tspec->locn );
             PTreeFreeSubtrees( candidate_iter->inst_parms );
         } RingIterEnd( candidate_iter )
         RingFree( &candidate_list );
@@ -3010,6 +3013,9 @@ static TYPE classTemplateType( CLASS_INST *instance )
 
     inst_scope = instance->scope;
     class_sym = firstSymbol( inst_scope );
+    if( class_sym == NULL ) {
+        return( TypeError );
+    }
     return( class_sym->sym_type );
 }
 
