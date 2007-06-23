@@ -27,6 +27,8 @@ A A::operator++(int)
 class B {
 public:
   B();
+
+  int operator[](int i) const { return _array[i]; }
   
   __declspec(property(get=GetVal, put=SetVal))
   int value;
@@ -109,6 +111,7 @@ int main()
   if( b.aval.value != 2 ) fail(__LINE__);
   if( b.value != 7 )      fail(__LINE__);
   if( b.array[3] != 23 )  fail(__LINE__);
+  if( b[b.value] != 8 )   fail(__LINE__);
   
   _PASS;
 }

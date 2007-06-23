@@ -4522,7 +4522,7 @@ PTREE AnalyseNode(              // ANALYSE PTREE NODE FOR SEMANTICS
               case CO_ARROW :
                 ExtraRptTabIncr( ctrOps, CO_ARROW, 0 );
                 expr = AnalyseLvArrow( expr );
-                break;
+                break; 
               default :
                 expr = AnalyseOperator( expr );
                 break;

@@ -130,10 +130,18 @@ static RKD initFNOV_TYPE( FNOV_TYPE *ft, TYPE basic, PTREE* pt )
     ft->final = NULL;
     ft->refflag = TF1_NULL;
     ft->finalflag = TF1_NULL;
+    
     basic = TypeModExtract( basic
                           , &ft->leadflag
                           , &ft->leadbase
                           , TC1_NOT_ENUM_CHAR|TC1_NOT_MEM_MODEL );
+    
+    if( basic->id == TYP_PROPERTY ) {
+        basic = TypeModExtract( basic->of
+                                , &ft->leadflag
+                                , &ft->leadbase
+                                , TC1_NOT_ENUM_CHAR|TC1_NOT_MEM_MODEL );
+    }
     if( ( basic->id == TYP_POINTER )
       &&( basic->flag & TF1_REFERENCE ) ) {
         ft->reference = TRUE;
@@ -145,6 +153,12 @@ static RKD initFNOV_TYPE( FNOV_TYPE *ft, TYPE basic, PTREE* pt )
     } else {
         ft->reference = FALSE;
         ft->reftype = NULL;
+    }
+    if( basic->id == TYP_PROPERTY ) {
+        basic = TypeModExtract( basic->of
+                                , &ft->leadflag
+                                , &ft->leadbase
+                                , TC1_NOT_ENUM_CHAR|TC1_NOT_MEM_MODEL );
     }
     basic = PointerTypeForArray( basic );
     ft->basic = basic;
