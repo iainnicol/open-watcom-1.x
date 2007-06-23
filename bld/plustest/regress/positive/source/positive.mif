@@ -146,6 +146,7 @@ opt_rtti06 = -xr
 opt_rtti07 = -xr
 opt_rtti08 = -xr -xbnm
 opt_thread01 = -i$(lang_root)\h\nt
+opt_cltemp24 = -xbov1
 opt_vf18 = -za
 
 !ifneq arch i86
@@ -240,6 +241,7 @@ positive_tests = &
     cltemp21.$(ext) &
     cltemp22.$(ext) &
     cltemp23.$(ext) &
+    cltemp24.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
@@ -761,6 +763,7 @@ positive_tests = &
     rtti06.$(ext) &
     rtti07.$(ext) &
     rtti08.$(ext) &
+    scope.$(ext) &
     setjmp01.$(ext) &
     setjmp02.$(ext) &
     setjmp03.$(ext) &
