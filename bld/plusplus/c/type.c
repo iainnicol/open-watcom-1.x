@@ -6654,7 +6654,9 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
         /* unadorned id style declaration */
         scope = insert_scope;
         if( ScopeId( scope ) == SCOPE_TEMPLATE_DECL ) {
-            TemplateFunctionCheck( sym, dinfo );
+            if( ! TemplateFunctionCheck( sym, dinfo ) ) {
+                removeDefaultArgs( dinfo->parms );
+            }
             if( dinfo->friend_fn ) {
                 scope = dinfo->friend_scope;
             } else {
@@ -9042,6 +9044,7 @@ TYPE BindGenericTypes( arg_list *args, SYMBOL template_fn, TOKEN_LOCN *locn,
                        bgt_control *pcontrol )
 {
     extern boolean ValidateFuncTemplateDefArgs( SYMBOL, TYPE, unsigned );
+    extern TYPE GetBindType( TYPE type );
     
     TYPE bound_type;
     TYPE sym_type;
@@ -9103,7 +9106,7 @@ TYPE BindGenericTypes( arg_list *args, SYMBOL template_fn, TOKEN_LOCN *locn,
     }
     bound_type = NULL;
     bind_status = typesBind( &data );
-    if( bind_status != TB_NULL ) {
+    if( bind_status != TB_NULL && GetBindType( sym_type->of ) != NULL ) {
         if( bind_status & TB_NEEDS_TRIVIAL ) {
             control = BGT_TRIVIAL;
         }

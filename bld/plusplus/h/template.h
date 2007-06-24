@@ -140,7 +140,7 @@ typedef enum tc_fn_control {
 extern void TemplateDeclInit( TEMPLATE_DATA * );
 extern void TemplateDeclAddArgument( DECL_INFO *new_dinfo );
 extern void TemplateDeclFini( void );
-extern void TemplateFunctionCheck( SYMBOL, DECL_INFO * );
+extern boolean TemplateFunctionCheck( SYMBOL, DECL_INFO * );
 extern void TemplateFunctionAttachDefn( DECL_INFO * );
 extern unsigned TemplateFunctionGenerate( SYMBOL *, arg_list *, TOKEN_LOCN *, SYMBOL *, boolean, arg_list * );
 extern void TemplateClassDeclaration( PTREE, SCOPE, char * );

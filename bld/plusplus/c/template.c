@@ -1217,7 +1217,7 @@ static void diagnoseUnusedArg( SYMBOL sym )
     CErr2p( ERR_FUNCTION_TEMPLATE_MUST_USE_ALL_ARGS, sym );
 }
 
-void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
+boolean TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
 /********************************************************/
 {
     PTREE          id;
@@ -1225,7 +1225,7 @@ void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
 
     if( ! SymIsFunction( sym ) ) {
         CErr1( ERR_NO_VARIABLE_TEMPLATES );
-        return;
+        return( FALSE );
     }
     //ForceNoDefaultArgs( dinfo, ERR_FUNCTION_TEMPLATE_NO_DEFARGS );
     ForceNoDefaultArgs( dinfo, 0 );
@@ -1233,6 +1233,7 @@ void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
     id   = dinfo->id;
     if( ! data->all_generic ) {
         CErr1( ERR_FUNCTION_TEMPLATE_ONLY_GENERICS );
+        return( FALSE );
     } else if( FunctionUsesAllTypes( sym, GetCurrScope(), diagnoseUnusedArg ) ) {
         if( sym->id != SC_STATIC ) {
             sym->id = SC_FUNCTION_TEMPLATE;
@@ -1241,7 +1242,10 @@ void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
         }
         sym->u.defn = NULL;
         sym->sym_type = MakePlusPlusFunction( sym->sym_type );
+    } else {
+        return( FALSE );
     }
+    return( TRUE );
 }
 
 static FN_TEMPLATE_DEFN *buildFunctionDefn( REWRITE *r, SYMBOL sym, unsigned num_defargs )
@@ -1423,7 +1427,7 @@ static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
     return( parm );
 }
 
-static TYPE getBindType( TYPE type )
+TYPE GetBindType( TYPE type )
 {
     type = TypedefModifierRemoveOnly( type );
     if( type != NULL && type->id == TYP_GENERIC ) {
@@ -1449,7 +1453,7 @@ static void injectFunctionTemplateArgs( SYMBOL sym )
     types = defn->type_list;
     names = defn->arg_names;
     for( i = defn->num_args; i != 0; --i ) {
-        type = getBindType( *types );
+        type = GetBindType( *types );
         DbgAssert( type != NULL );
         parm_sym = templateArgTypedef( type );
         ScopeInsert( GetCurrScope(), parm_sym, *names );
