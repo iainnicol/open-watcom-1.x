@@ -283,6 +283,19 @@ typedef struct rdir_list {
     char     name[1];
 } *RDIRPTR;
 
+typedef struct ialias_list {
+    union {
+        struct ialias_list  *next;
+        int                 total_len;      /* for pre-compiled header */
+    };
+    union {
+        char                *real_name;
+        int                 alias_name_len; /* for pre-compiled header */
+    };
+    int             delimiter;
+    char            alias_name[1];
+} *IALIASPTR;
+
 typedef struct incfile {
     struct incfile  *nextfile;
     int             len;
@@ -673,6 +686,8 @@ struct comp_flags {
     unsigned use_long_double        : 1;    /* Make CC send long double types to code gen */
 
     unsigned track_includes         : 1;    /* report opens of include files */
+    unsigned ignore_fnf             : 1;    /* ignore file not found errors */
+    unsigned disable_ialias         : 1;    /* supress inclusion of _ialias.h */
 };
 
 struct global_comp_flags {  // things that live across compiles

@@ -78,6 +78,7 @@ static  int     FCB_Alloc( FILE *fp, char *filename );
 local   void    Parse( void );
 static  int     OpenPgmFile( void );
 static  void    DelDepFile( void );
+static  const char  *IncludeAlias( const char *filename, int delimiter );
 
 
 void FrontEndInit( bool reuse )
@@ -104,6 +105,7 @@ void ClearGlobals( void )
     IsStdIn = 0;
     FNames = NULL;
     RDirNames = NULL;
+    IAliasNames = NULL;
     SrcFile = NULL;
     ErrFile = NULL;
     DefFile = NULL;
@@ -263,6 +265,65 @@ void DumpDepFile( void )
     }
 }
 
+static IALIASPTR AddIAlias( const char *alias_name, const char *real_name, int delimiter )
+{
+    size_t      alias_size, alias_len;
+    IALIASPTR   alias, old_alias;
+    IALIASPTR   *lnk;
+
+    lnk = &IAliasNames;
+    while( (old_alias = *lnk) != NULL ) {
+        if( (old_alias->delimiter == delimiter) && !strcmp( alias_name, old_alias->alias_name ) ) {
+            break;
+        }
+        lnk = &old_alias->next;
+    }
+
+    alias_len  = strlen( alias_name );
+    alias_size = sizeof( struct ialias_list ) + alias_len + strlen( real_name ) + 1;
+    alias = CMemAlloc( alias_size );
+    alias->next = NULL;
+    alias->delimiter = delimiter;
+    strcpy( alias->alias_name, alias_name );
+    alias->real_name = alias->alias_name + alias_len + 1;
+    strcpy( alias->real_name, real_name );
+
+    if( old_alias ) {
+        /* Replace old alias if it exists */
+        alias->next = old_alias->next;
+        CMemFree( old_alias );
+    }
+    *lnk = alias;
+
+    return( alias );
+}
+
+static void FreeIAlias( void )
+{
+    IALIASPTR   aliaslist;
+
+    while( (aliaslist = IAliasNames) ) {
+        IAliasNames = aliaslist->next;
+        CMemFree( aliaslist );
+    }
+}
+
+static const char *IncludeAlias( const char *filename, int delimiter )
+{
+    IALIASPTR       alias;
+    const char      *real_name = filename;
+
+    alias = IAliasNames;
+    while( alias ) {
+        if( !strcmp( filename, alias->alias_name ) && (alias->delimiter == delimiter) ) {
+            real_name = alias->real_name;
+            break;
+        }
+        alias = alias->next;
+    }
+    return( real_name );
+}
+
 static void DoCCompile( char **cmdline )
 /**************************************/
 {
@@ -275,6 +336,7 @@ static void DoCCompile( char **cmdline )
         CloseFiles();
         FreeFNames();
         FreeRDir();
+        FreeIAlias();
         ErrCount = 1;
         MyExit( 1 );
     }
@@ -334,6 +396,7 @@ static void DoCCompile( char **cmdline )
     CloseFiles();
     FreeFNames();
     FreeRDir();
+    FreeIAlias();
 }
 
 
@@ -664,6 +727,9 @@ int OpenSrcFile( char *filename, int delimiter )
     int         save;
     FCB         *curr;
 
+    // See if there's an alias for this filename
+    filename = (char *)IncludeAlias( filename, delimiter );
+
     // include path here...
     _splitpath2( filename, buff, &drive, &dir, &name, &ext );
     if( drive[0] != '\0' || IS_PATH_SEP(dir[0]) ) {
@@ -722,9 +788,11 @@ cant_open_file:
         }
         CompFlags.cpp_output = 0;
     }
-    CErr2p( ERR_CANT_OPEN_FILE, filename );
+    if( !CompFlags.ignore_fnf ) {
+        CErr2p( ERR_CANT_OPEN_FILE, filename );
+    }
     CompFlags.cpp_output = save;
-    return( 0 );
+    return( CompFlags.ignore_fnf );
 }
 
 void CClose( FILE *fp )
@@ -1110,6 +1178,11 @@ void SrcFileReadOnlyFile( char const *file )
     }
 }
 
+void SrcFileIncludeAlias( const char *alias_name, const char *real_name, int delimiter )
+{
+    AddIAlias( alias_name, real_name, delimiter );
+}
+
 static int FCB_Alloc( FILE *fp, char *filename )
 {
     int         i;
@@ -1190,6 +1263,11 @@ static void ParseInit( void )
 local void Parse( void )
 {
     EmitInit();
+    CompFlags.ignore_fnf = TRUE;
+    if( !CompFlags.disable_ialias ) {
+        OpenSrcFile( "_ialias.h", '<' );
+    }
+    CompFlags.ignore_fnf = FALSE;
     // The first token in a file should be #include if a user wants to
     // use pre-compiled headers. The following call to NextToken() to
     // get the very first token of the file will load the pre-compiled

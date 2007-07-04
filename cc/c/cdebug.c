@@ -172,7 +172,7 @@ static dbug_type DBIntegralType( int decl_type )
     return( ret_val );
 }
 
-static dbug_type DoBasedPtr( TYPEPTR typ, cg_type ptype )
+static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
 {
     dbug_type       ret_val = 0;
     dbg_loc         dl;
@@ -187,15 +187,15 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type ptype )
         dl = DBLocOp( dl, DB_OP_MK_FP, 0 );
     } else {
         if( sym_handle == Sym_CS ) { /* 23-jan-92 */
-            ret_val = DBPtr( ptype, DBType( typ->object ) );
+            ret_val = DBPtr( cgtype, DBType( typ->object ) );
             have_retval = 1;
         } else if( sym_handle == Sym_SS ) { /* 13-dec-92 */
-            ret_val = DBPtr( ptype, DBType( typ->object ) );
+            ret_val = DBPtr( cgtype, DBType( typ->object ) );
             have_retval = 1;
         } else {
             SymGet( &sym, sym_handle );
             if( sym.name[0] == '.' ) {  /* if segment label 15-mar-92 */
-                ret_val = DBPtr( ptype, DBType( typ->object ) );
+                ret_val = DBPtr( cgtype, DBType( typ->object ) );
                 have_retval = 1;
             } else {
                 dl = DBLocSym( dl, sym_handle );
@@ -206,7 +206,7 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type ptype )
         }
     }
     if (!have_retval) {
-        ret_val = DBBasedPtr( ptype, DBType( typ->object ), dl );
+        ret_val = DBBasedPtr( cgtype, DBType( typ->object ), dl );
     }
     DBLocFini( dl );
     return( ret_val );
@@ -220,7 +220,7 @@ dbug_type DBType( TYPEPTR typ )
     unsigned long             size;
     SYM_ENTRY                 sym;
     struct debug_fwd_types    fwd_info, *fip;
-    cg_type                   ptype;
+    cg_type                   cgtype;
 
     if( typ->debug_type == DBG_FWD_TYPE ) {
         fip = DebugNameList;
@@ -259,11 +259,11 @@ dbug_type DBType( TYPEPTR typ )
         ret_val = DBIntArrayCG( CGenType(typ), size, DBType( typ->object ) );
         break;
     case TYPE_POINTER:
-        ptype = PtrType( typ->object, typ->u.p.decl_flags );
+        cgtype = PtrType( typ->object, typ->u.p.decl_flags );
         if( typ->u.p.decl_flags & FLAG_BASED ) {
-            ret_val = DoBasedPtr( typ, ptype );
+            ret_val = DoBasedPtr( typ, cgtype );
         } else {
-            ret_val = DBPtr( ptype, DBType( typ->object ) );
+            ret_val = DBPtr( cgtype, DBType( typ->object ) );
         }
         break;
     case TYPE_STRUCT:
@@ -283,8 +283,8 @@ dbug_type DBType( TYPEPTR typ )
         DebugNameList = fwd_info.next;
         break;
     case TYPE_FUNCTION:
-        ptype = CGTY_CODE_PTR;
-        pr = DBBegProc( ptype, DBType( typ->object ) );
+        cgtype = CGTY_CODE_PTR;
+        pr = DBBegProc( cgtype, DBType( typ->object ) );
         for( pparms = typ->u.fn.parms; pparms; pparms++ ) {
             if( (*pparms == NULL) ) break;
             if( (*pparms)->decl_type == TYPE_DOT_DOT_DOT ) break;

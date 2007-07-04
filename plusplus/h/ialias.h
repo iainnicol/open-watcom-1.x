@@ -24,29 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  The type_def typedef.
+* Description:  Declaration of include aliasing functions.
 *
 ****************************************************************************/
 
-#ifndef TYPEDEF_H
-#define TYPEDEF_H
 
-#include "cgdefs.h"
+#ifndef _IALIAS_H
+#define _IALIAS_H
 
-typedef enum {
-        TYPE_FLOAT      = 0x01,
-        TYPE_SIGNED     = 0x02,
-        TYPE_POINTER    = 0x04,
-        TYPE_CODE       = 0x08
-} type_attr;
-
-typedef struct type_def {
-        cg_type         refno;
-        type_length     length;
-        type_attr       attr;
-#if _TARGET & _TARG_RISC
-        type_length     align;
-#endif
-} type_def;
+extern void IAliasInit( void );
+extern void IAliasFini( void );
+extern const char *IAliasLookup( const char *filename, int delimiter );
+extern void IAliasAdd( const char *alias_name, const char *real_name, int delimiter );
 
 #endif
+

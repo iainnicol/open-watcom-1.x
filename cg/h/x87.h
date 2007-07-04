@@ -24,29 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  The type_def typedef.
+* Description:  Prototypes specific to x87 FPU regsiter allocation. These
+*               functions are called from generic code and must be stubbed
+*               for non-x86 platforms.
 *
 ****************************************************************************/
 
-#ifndef TYPEDEF_H
-#define TYPEDEF_H
 
-#include "cgdefs.h"
+/* i87exp.c*/
+extern  void            FPExpand( void );
+extern  bool            FPStackReg( name * );
+extern  void            InitFP( void );
 
-typedef enum {
-        TYPE_FLOAT      = 0x01,
-        TYPE_SIGNED     = 0x02,
-        TYPE_POINTER    = 0x04,
-        TYPE_CODE       = 0x08
-} type_attr;
+/* i87opt.c */
+extern  void            FPOptimize( void );
+extern  void            FPParms( void );
+extern  void            FPPushParms( pn, call_state * );
 
-typedef struct type_def {
-        cg_type         refno;
-        type_length     length;
-        type_attr       attr;
-#if _TARGET & _TARG_RISC
-        type_length     align;
-#endif
-} type_def;
+/* i87reg.c */
+extern  type_class_def  FPInsClass( instruction * );
+extern  bool            FPIsConvert( instruction * );
+extern  bool            FPIsStack( name * );
+extern  void            FPNotStack( name * );
+extern  void            FPRegAlloc( void );
+extern  void            FPSetStack( name * );
+extern  bool            FPSideEffect( instruction * );
+extern  bool            FPStackIns( instruction * );
+extern  bool            FPStackOp( name * );
 
-#endif
+/* i87sched.c */
+extern  void            FPCalcStk( instruction *, int * );
+extern  bool            FPFreeIns( instruction * );
+extern  bool            FPInsIntroduced( instruction * );
+extern  void            FPPostSched( block * );
+extern  void            FPPreSched( block * );
+extern  int             FPStackExit( block * );
+extern  int             FPStkOver( instruction *, int );

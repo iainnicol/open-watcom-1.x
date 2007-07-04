@@ -274,9 +274,9 @@ static  type_def        *UnSignedIntTipe( type_def *tipe ) {
 static  an      GenScanTable( an node, select_node *s_node, type_def *tipe){
 /**************************************************************************/
 
-    bn                  lt;
-    type_class_def      value_type;
-    type_class_def      real_type;
+    bn          lt;
+    cg_type     value_type;
+    cg_type     real_type;
 
     value_type = SelType( s_node->upper - s_node->lower );
     real_type = tipe->refno;
@@ -353,6 +353,49 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
             BGControl( O_GOTO, NULL, other );
             return;
         }
+    }
+    if( hi == mid + 1 && mid_list->next->low == mid_list->next->high ) {
+        /* a linear sequence for three different non-sequential cases where
+           c1<c2<c3, looks like:
+        if( a == c3 ) goto l3;
+        if( a == c2 ) goto l2;
+        if( a != c1 ) goto default;
+        l1: ...
+
+           a binary sequence for these three cases looks like:
+        if( a < c2 goto lt;    \
+        if( a <= c2 ) goto l2; /only one cmp ins on x86
+        if( a == c3 ) goto l3;
+        goto default;
+        lt:
+        if ( a != c1 ) goto default;
+        l1: ...
+
+        Advantage of the linear search:
+        * 3 goto's instead of 5, resulting in smaller code.
+        Advantage of the binary search:
+        * Execution time for all the cases is more balanced. which one is
+          really faster depends a lot on the CPU's branch prediction and
+          other things that are very hard to measure here.
+
+        Using a linear search here for <= 3 cases to save on code size
+        with negligible performance loss or gain.
+        */
+        mid_list = mid_list->next;
+        cmp = BGCompare( O_EQ, BGDuplicate( node ),
+                         BGInteger( mid_list->low, tipe ), NULL, tipe );
+        BGControl( O_IF_TRUE, cmp, mid_list->label );
+        /* Because we only compared for equality, it is only possible to
+           decrease the upper bound if it was already set and equal to
+           the value we are comparing to. Otherwise the incoming value
+           may still be higher, where the inner call may produce an
+           unconditional O_GOTO to a specific case label!
+        */
+        if( have_hibound && hibound == mid_list->low )
+            hibound--;
+        DoBinarySearch( node, list, tipe, lo, mid, other,
+                        lobound, hibound, have_lobound, have_hibound );
+        return;
     }
     lt = AskForNewLabel();
     if( !have_lobound || SelCompare( lobound, mid_list->low ) < 0 ) {

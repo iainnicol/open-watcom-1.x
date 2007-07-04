@@ -54,7 +54,7 @@ void AllocMoreExprNodes( void )
     node->left = NULL;
 }
 
-TREEPTR ExprNode( TREEPTR left, int opcode, TREEPTR right )
+TREEPTR ExprNode( TREEPTR left, opr_code opcode, TREEPTR right )
 {
     TREEPTR     node;
 
@@ -66,14 +66,14 @@ TREEPTR ExprNode( TREEPTR left, int opcode, TREEPTR right )
     node->left     = left;
     node->right    = right;
     node->op.opr   = opcode;
-    node->op.flags = 0;
+    node->op.flags = OPFLAG_NONE;
     node->visit    = FALSE;
     node->checked  = FALSE;
     ++NodeCount;
     return( node );
 }
 
-TREEPTR LeafNode( int opr )
+TREEPTR LeafNode( opr_code opr )
 {
     return( ExprNode( NULL, opr, NULL ) );
 }

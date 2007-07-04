@@ -140,8 +140,8 @@ extern  signed_32       ScanCost( select_node *s_node ) {
         list = list->next;
     }
     tipe = SelType( hi - lo );
-    if( ( tipe == U4 && values < MIN_LVALUES ) ||
-         ( tipe != U4 && values < MIN_SVALUES ) ) {
+    if( ( tipe == T_UINT_4 && values < MIN_LVALUES ) ||
+         ( tipe != T_UINT_4 && values < MIN_SVALUES ) ) {
         cost = MAX_COST;
     } else {
         type_length = TypeAddress( tipe )->length;
@@ -170,7 +170,7 @@ extern  signed_32       JumpCost( select_node *s_node ) {
         cost = MIN_JUMPS_SETUP + WORD_SIZE * in_range;
         /* an extra two bytes are needed to zero the high part before
            the jump */
-        if ( SelType( 0xffffffff ) == U1 )
+        if ( SelType( 0xffffffff ) == T_UINT_1 )
             cost += 2;
         cost = Balance( cost, 1 );
     }
@@ -209,17 +209,18 @@ extern  signed_32       IfCost( select_node *s_node, int entries ) {
     cost = jumpsize + CmpSize[ tipe_length ];
     /* for char-sized switches, often the two-byte "cmp al,xx" is used.
        otherwise we need three bytes */
-    if ( SelType( 0xffffffff ) != U1 && tipe_length == 1 )
+    if ( SelType( 0xffffffff ) != T_UINT_1 && tipe_length == 1 )
         cost++;
     cost *= entries;
     log_entries = 0;
     while( entries != 0 ) {
         log_entries++;
-        entries = (unsigned_32)entries >> 1;
+        entries = (unsigned_32)entries >> 2;
     }
-    /* add cost for extra jumps generated for parents */
-    cost += log_entries * jumpsize;
-    cost = Balance( cost, ( log_entries + 1 ) / 2 );
+    /* add cost for extra jumps generated for grandparents and 
+       every other child except the last one */
+    cost += (entries / 4) * 2 * jumpsize;
+    cost = Balance( cost, log_entries );
     if( cost >= MAX_COST ) {
         cost = MAX_COST - 1;
     }
