@@ -24,13 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  public enumeration for cg operators and types
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #ifndef _CG_DEFS_INCLUDED
-#define _CG_DEFS_INCLUDED
 
 /*  Start of Internal Code Generator Operators ... Must correspond to */
 /*  code generator header file <opcodes.h> */
@@ -242,17 +242,18 @@ typedef enum {
 
         T_PROC_PARM,    /*  For Pascal procedural parameters */
         T_VA_LIST,      /*  For RISC-based O_VA_START support */
-        T_FIRST_FREE,   /*  First user definable type */
+        T_FIRST_FREE    /*  First user definable type */
+} predefined_cg_types;
 
+#define T_HUGE_CODE_PTR T_LONG_CODE_PTR  /* for now */
 
 #define T_LAST_FREE     65530U
 
+typedef enum {
         T_NEAR_INTEGER = T_LAST_FREE,
         T_LONG_INTEGER,
         T_HUGE_INTEGER
-} cg_type;
-
-#define T_HUGE_CODE_PTR T_LONG_CODE_PTR  /* for now */
+} more_cg_types;
 
 #define MIN_OP          O_NOP
 #define O_FIRST_COND    O_EQ
@@ -260,4 +261,7 @@ typedef enum {
 #define O_FIRST_FLOW    O_FLOW_AND
 #define O_LAST_FLOW     O_FLOW_NOT
 
+typedef unsigned short  cg_type;
+
+#define _CG_DEFS_INCLUDED
 #endif

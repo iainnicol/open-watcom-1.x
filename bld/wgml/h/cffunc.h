@@ -26,12 +26,10 @@
 *
 * Description:  Declares structs and functions used to manipulate .COP
 *               FunctionsBlocks:
-*                   p_buffer
 *                   functions_block
 *                       code_block
-*                   get_code_blocks()
-*                   get_p_buffer()
-*                   parse_functions_block()
+*                   find_cumulative_index()
+*                   get_functions()
 *
 ****************************************************************************/
 
@@ -41,39 +39,26 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/*  Structure declarations */
+/* Structure declarations */
 
-/*  These structs are based on the discussion in the Wiki, which should be
- *  consulted for further information on how the data is structured.
+/* These structs are based on the discussion in the Wiki, which should be
+ * consulted for further information on how the data is structured.
  */
 
-/*  This holds the raw contents of one or more contiguous P-buffers. The
- *  buffer is to be interpreted as an array of count uint8_t value. The
- *  value of count should always be a multiple of 80.
- */
-
-typedef struct p_buffer_struct
-{
-    uint8_t     count;
-    uint8_t *   buffer;
-} p_buffer;
-
-/*  This is the CodeBlock discussed in the Wiki */
+/* function points to an array of block_length bytes */
 
 typedef struct code_block_struct
 {
-    uint8_t     designator;
-    uint16_t    pass;
-    uint16_t    count;
+    uint16_t    max_index;
     uint16_t    cumulative_index;
     uint8_t *   function;
 } code_block;
 
-/* This is the Variant A FunctionsBlock discussed in the Wiki */
+/* code_blocks points to an array of count code_block structs */
 
 typedef struct functions_block_struct
 {
-    uint16_t        count;
+    uint8_t         count;
     code_block *    code_blocks;
 } functions_block;
 
@@ -83,9 +68,8 @@ typedef struct functions_block_struct
 extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
-code_block *        get_code_blocks( uint8_t *, uint8_t );
-p_buffer *          get_p_buffer( FILE * );
-functions_block *   parse_functions_block( uint8_t * );
+int find_cumulative_index( functions_block *, uint16_t, uint8_t * );
+functions_block * get_functions( FILE *);
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++ */
