@@ -24,11 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Banner configuration.
+* Description:  Linux stat64() implementation.
 *
 ****************************************************************************/
 
+#include <sys/stat.h>
+#include <errno.h>
+#include "syslinux.h"
 
-#define _BANVER     1270
-#define _BANEXTRA
-#define _BANEXSHORT
+_WCRTLINK int stat64( const char *filename, struct stat64 * __buf )
+{
+    u_long res = sys_call2( SYS_stat64, (u_long)filename, (u_long)__buf );
+    __syscall_return( int, res );
+}

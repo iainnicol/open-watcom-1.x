@@ -24,11 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Banner configuration.
+* Description:  Linux lstat64() implementation.
 *
 ****************************************************************************/
 
+#include <unistd.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include "syslinux.h"
 
-#define _BANVER     1270
-#define _BANEXTRA
-#define _BANEXSHORT
+_WCRTLINK int lstat64( const char *filename, struct stat64 * __buf )
+{
+    u_long res = sys_call2( SYS_lstat64, (u_long)filename, (u_long)__buf );
+    __syscall_return( int, res );
+}

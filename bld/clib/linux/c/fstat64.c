@@ -24,11 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Banner configuration.
+* Description:  Linux fstat64() implementation.
 *
 ****************************************************************************/
 
 
-#define _BANVER     1270
-#define _BANEXTRA
-#define _BANEXSHORT
+#include <sys/stat.h>
+#include <errno.h>
+#include "syslinux.h"
+
+_WCRTLINK int fstat64( int __fildes, struct stat64 * __buf )
+{
+    u_long res = sys_call2( SYS_fstat64, __fildes, (u_long)__buf );
+    __syscall_return( int, res );
+}
