@@ -97,6 +97,11 @@ struct E
 };
 
 
+template< class T >
+void g( C< T > & )
+{ }
+
+
 int main()
 {
     char **c = 0;
@@ -153,6 +158,13 @@ int main()
 
     e2 = c;
     if( e2.val != 1 ) fail( __LINE__ );
+
+
+    C< char > cc;
+    void ( *gp1 ) ( C< char > & ) = g;
+    void ( *gp2 ) ( C< int > & ) = g;
+
+    if( reinterpret_cast< void * >( gp1 ) == reinterpret_cast< void * >( gp2 ) ) fail( __LINE__ );
 
 
     _PASS;
