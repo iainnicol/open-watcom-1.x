@@ -478,6 +478,7 @@ positive_tests = &
     inline03.$(ext) &
     inline04.$(ext) &
     inline05.$(ext) &
+    inline06.$(ext) &
     intel01.$(ext) &
     io01.$(ext) &
     io02.$(ext) &
