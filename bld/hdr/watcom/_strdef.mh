@@ -221,11 +221,15 @@ namespace std {
     friend
     bool operator<( const basic_string< CharT, Traits, Allocator > &left,
                     const CharT *right );
-
+    // String swap ambiguous if general swap (in algorithm) visible.
+    // Need partial ordering of function templates for this to work.
+    //
+    #ifdef __NEVER
     template< class CharT, class Traits, class Allocator >
     friend
     void swap( basic_string< CharT, Traits, Allocator > &left,
                basic_string< CharT, Traits, Allocator > &right );
+    #endif
 
     public:
       typedef          Traits                     traits_type;
