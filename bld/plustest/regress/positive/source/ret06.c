@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include "fail.h"
 
-#if defined( _M_IX86 )
+#if defined( M_I86 ) || defined( M_I386 )
 
 #pragma aux REVERSED parm reverse;
 #define __reversed __pragma( "REVERSED" )

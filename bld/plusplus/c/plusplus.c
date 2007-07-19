@@ -63,7 +63,6 @@
 #include "idedrv.h"
 #include "autodep.h"
 #include "swchar.h"
-#include "ialias.h"
 
 #ifndef NDEBUG
 #include <stdio.h>
@@ -153,9 +152,6 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
     boolean     retn;           // - return: TRUE ==> opened ok
     int         save;           // - saved pre-proc status
 
-    // See if there's an alias for this file name
-    filename = (char *)IAliasLookup( filename, is_lib ? '<' : 0 );
-
     if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
         PpStartFile();
         retn = TRUE;
@@ -177,11 +173,9 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
             }
             CompFlags.cpp_output = 0;
         }
-        if( !CompFlags.ignore_fnf ) {
-            CErr2p( ERR_CANT_OPEN_FILE, filename );
-        }
+        CErr2p( ERR_CANT_OPEN_FILE, filename );
         CompFlags.cpp_output = save;
-        retn = CompFlags.ignore_fnf;
+        retn = FALSE;
     }
     return retn;
 }
@@ -263,7 +257,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     Environment = env;
     if( setjmp( env ) ) {   /* if fatal error has occurred */
         exit_status |= WPP_FATAL;
-        IAliasFini();
         CtxSetContext( CTX_FINI );
     } else {
         ScanInit();
@@ -310,11 +303,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             ExitPointAcquire( cpp_preproc );
             if( CompFlags.cpp_output ) {
                 ExitPointAcquire( cpp_preproc_only );
-                CompFlags.ignore_fnf = TRUE;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", TRUE );
-                }
-                CompFlags.ignore_fnf = FALSE;
                 if( ForceInclude ) {
                     openForceIncludeFile();
                 }
@@ -329,11 +317,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                     // in the primary source file
                     CompFlags.watch_for_pcheader = TRUE;
                 }
-                CompFlags.ignore_fnf = TRUE;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", TRUE );
-                }
-                CompFlags.ignore_fnf = FALSE;
                 if( ForceInclude ) {
                     openForceIncludeFile();
                     DbgVerify( ! CompFlags.watch_for_pcheader,
@@ -386,7 +369,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     }
     exit_status = makeExitStatus( exit_status );
     CgFrontFini();
-    IAliasFini();
     CloseFiles();
     ExitPointRelease( cpp_front_end );
     return exit_status;
@@ -455,7 +437,6 @@ static int front_end(           // FRONT-END PROCESSING
         CppAtExit( &resetHandlers );
         SwitchChar = _dos_switch_char();
         PpInit();
-        IAliasInit();
         exit_status = doCCompile( argv );
         CtxSetContext( CTX_FINI );
         ExitPointRelease( cpp );

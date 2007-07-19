@@ -109,7 +109,7 @@
 !endif
 
 .extensions:
-.extensions: .exp .exe .ls1 .lst .obj .ser .err .gc .c .cc .cpp .asm .mif
+.extensions: .exp .exe .obj .sbj .2bj .3bj .ser .err .c .cc .cpp .mif
 .mif: ..;$(mif_path)
 
 !ifndef no_continue
@@ -464,7 +464,7 @@ start : .symbolic
 clean : .symbolic global
     @%null
 
-common_clean : .procedure
+common_clean : .symbolic
     @if exist *.?bj del *.?bj
     @if exist *.err del *.err
     @if exist *.lnk del *.lnk

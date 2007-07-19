@@ -368,7 +368,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         PreDefineStringMacro( "M_" MM_ARCH "FM" );
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
-        bit |= FLAT_MODEL | CHEAP_POINTER;
+        bit |= FLAT_MODEL;
         break;
 #else
     case OPT_mem_model_mh:
@@ -676,10 +676,10 @@ static void macroDefs( void )
         DefSwitchMacro( "OM" );
     }
     switch( TargetSwitches & (BIG_DATA|BIG_CODE|CHEAP_POINTER|FLAT_MODEL) ) {
-    case CHEAP_POINTER:
+    case 0:
         DefSwitchMacro( "MS" );
         break;
-    case BIG_CODE|CHEAP_POINTER:
+    case BIG_CODE:
         DefSwitchMacro( "MM" );
         break;
     case BIG_DATA|CHEAP_POINTER:
@@ -691,7 +691,7 @@ static void macroDefs( void )
     case BIG_CODE|BIG_DATA:
         DefSwitchMacro( "MH" );
         break;
-    case FLAT_MODEL|CHEAP_POINTER:
+    case FLAT_MODEL:
         DefSwitchMacro( "MF" );
         break;
     }

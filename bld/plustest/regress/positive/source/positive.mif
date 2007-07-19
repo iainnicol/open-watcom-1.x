@@ -138,8 +138,6 @@ opt_pch19 = -fhq -dAFS_CM
 opt_pch20 = -fhq -dAFS_CM
 opt_pch21 = -fhq -dAFS_CM
 opt_pp08 = -w0
-opt_prag02 = -fhq
-opt_prag03 = -fhq
 opt_rtti02 = -xr
 opt_rtti03 = -xr
 opt_rtti04 = -xr
@@ -242,6 +240,10 @@ positive_tests = &
     cltemp21.$(ext) &
     cltemp22.$(ext) &
     cltemp23.$(ext) &
+    cltemp24.$(ext) &
+    cltemp25.$(ext) &
+    cltemp26.$(ext) &
+    cltemp27.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
@@ -301,11 +303,13 @@ positive_tests = &
     defarg04.$(ext) &
     defarg05.$(ext) &
     defarg06.$(ext) &
+    defarg07.$(ext) &
     deftemp01.$(ext) &
     deftemp02.$(ext) &
     deftemp03.$(ext) &
     deftemp04.$(ext) &
     deftemp05.$(ext) &
+    deftemp06.$(ext) &
     digraph1.$(ext) &
     dtor01.$(ext) &
     dtor02.$(ext) &
@@ -414,11 +418,18 @@ positive_tests = &
     fntemp14.$(ext) &
     fntemp15.$(ext) &
     fntemp16.$(ext) &
+    fntemp17.$(ext) &
+    fntemp18.$(ext) &
+    fntemp19.$(ext) &
+    fntemp20.$(ext) &
+    fntemp21.$(ext) &
     fold01.$(ext) &
     fold02.$(ext) &
     for01.$(ext) &
     friend1.$(ext) &
     friend2.$(ext) &
+    friend3.$(ext) &
+    friend4.$(ext) &
     gpf01.$(ext) &
     hier01.$(ext) &
     hier02.$(ext) &
@@ -467,6 +478,7 @@ positive_tests = &
     inline03.$(ext) &
     inline04.$(ext) &
     inline05.$(ext) &
+    inline06.$(ext) &
     intel01.$(ext) &
     io01.$(ext) &
     io02.$(ext) &
@@ -494,6 +506,9 @@ positive_tests = &
     link14.$(ext) &
     link15.$(ext) &
     main1.$(ext) &
+    memtmp01.$(ext) &
+    memtmp02.$(ext) &
+    memtmp03.$(ext) &
     mp01.$(ext) &
     mp02.$(ext) &
     mp03.$(ext) &
@@ -569,6 +584,10 @@ positive_tests = &
     ns37.$(ext) &
     ns38.$(ext) &
     ns39.$(ext) &
+    ns40.$(ext) &
+    ns41.$(ext) &
+    ns42.$(ext) &
+    ns43.$(ext) &
     offset01.$(ext) &
     opeq01.$(ext) &
     opeq02.$(ext) &
@@ -721,8 +740,6 @@ positive_tests = &
     pp36.$(ext) &
     pp37.$(ext) &
     prag01.$(ext) &
-    prag02.$(ext) &
-    prag03.$(ext) &
     quest01.$(ext) &
     quest02.$(ext) &
     quest03.$(ext) &

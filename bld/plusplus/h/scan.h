@@ -76,6 +76,6 @@ enum {
 
 extern char CharSet[];  // character characterizations
 extern unsigned JIS2Unicode( unsigned );
-extern unsigned char TokValue[];
+extern char TokValue[];
 
 #endif // __SCAN_H__

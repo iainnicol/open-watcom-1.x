@@ -1267,7 +1267,7 @@ static void genAutoStaticInit(  // generate code to copy array into auto
     SYMBOL dst,                 // - destination auto var
     SYMBOL src )                // - source static var
 {
-    cg_type type_refno;
+    unsigned type_refno;
     cg_name d1;
     cg_name s1;
     cg_name e1;
@@ -1301,7 +1301,7 @@ static void emitProfilingData(
         len = strlen( fn_name ) + 1;
         old_seg = BESetSeg( SEG_PROF_REF );
         DbgVerify( 0 == ( 3 & DGTell() ), "P5 segment out of wack" );
-        fnh = BENewBack( 0 );
+        fnh = BENewBack( NULL );
         DGLabel( fnh );
         DGInteger( 0,   T_INTEGER );
         DGInteger( -1,  T_INTEGER );
@@ -3071,9 +3071,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           case IC_COMPCTOR_BEG :            // START COMPONENT CTOR, TEMPS
           { OBJ_INIT* init;                 // - initialization object
             init = ObjInitClass();
-            if(NULL == init){
-                CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
-            }
             if( init->defn != NULL ) {
                 if( NULL != dtor_last_reqd ) {
                     SE* se;
@@ -3102,9 +3099,6 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
           { OBJ_INIT* init;                 // - initialization object
             cg_name expr;                   // - new expr
             init = ObjInitClass();
-            if(NULL == init){
-                CFatal( "ObjInitClass returned NULL\nPossible: http://bugzilla.openwatcom.org/show_bug.cgi?id=63" );
-            }
             if( init->defn != NULL
              && init->obj_se != NULL ) {
                 expr = CgCallBackCtorDone( NULL

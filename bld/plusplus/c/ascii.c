@@ -178,7 +178,7 @@ char CharSet[LCHR_MAX]  = {                              /* ASCII */
 /*  ... LCHR_MAX no bits set for chars */
   };
 
-unsigned char TokValue[]  = {            /* ASCII */
+char TokValue[]  = {                             /* ASCII */
 
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 00 - 0F */
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 10 - 1F */

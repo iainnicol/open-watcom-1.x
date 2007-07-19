@@ -38,9 +38,8 @@ stack_axp=opt stack=16k
 # to update add test names here:
 template = &
         aaa$(ext)       &
-	algn01$(ext)    &
-	algm01$(ext)    &
-        algs01$(ext)    &
+        alg01$(ext)     &
+        alg02$(ext)     &
         bitset01$(ext)  &
         clib01$(ext)    &
         cmplx01$(ext)   &
@@ -56,6 +55,7 @@ template = &
         mmwin16$(ext)   &
         mmwindef$(ext)  &
         numer01$(ext)   &
+        random01$(ext)  &
         stack01$(ext)   &
         set01$(ext)     &
         set02$(ext)     &
@@ -78,6 +78,7 @@ ext = ._do_test_
 do_tests = $+ $(template) $-
 
 # define flags specific to tests here
+extra_cflags_random01 = -za0x
 extra_cflags_typetr01 = -za0x
 extra_cflags_mmwin16 = -i$(%WATCOM)\h\win -dmmWin16
 extra_cflags_mmwindef = -i$(%WATCOM)\h\nt

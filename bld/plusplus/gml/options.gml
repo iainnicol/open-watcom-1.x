@@ -685,11 +685,6 @@
 :usage. small memory model (small code/small data)
 :jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
 
-:option. na
-:target. any
-:usage. disable automatic inclusion of _ialias.h
-:jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
-
 :option. nc
 :target. i86 386
 :id.

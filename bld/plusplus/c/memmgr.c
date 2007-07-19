@@ -50,6 +50,8 @@
 
 
 #ifdef USE_CG_MEMMGT
+#   include "sysmacro.h"
+    extern void CGFree( void* );
 #   undef TRACKER
 #else
 #   ifdef TRACKER
@@ -97,7 +99,7 @@ static void printLine( void *dummy, const char *buf, size_t len )
 #else
 
   #ifdef USE_CG_MEMMGT
-    #define alloc_mem( size ) BEMemAlloc( size )
+    #define alloc_mem( size ) CGAlloc( size )
   #else
     #define alloc_mem( size ) malloc( size )
   #endif
@@ -171,7 +173,7 @@ void *CMemAlloc( size_t size )
     #define _doFree( p )    _trmem_free( p, _trmem_guess_who(), trackerHdl );
 #else
   #ifdef USE_CG_MEMMGT
-    #define _doFree( p )    BEMemFree( p );
+    #define _doFree( p )    CGFree( p );
   #else
     #define _doFree( p )    free( p );
   #endif
@@ -185,15 +187,15 @@ void CMemFree( void *p )
     }
 }
 
-void CMemFreePtr( void *pp )
-/**************************/
+void CMemFreePtr( void **pp )
+/***************************/
 {
     void *p;
 
-    p = *(void **)pp;
+    p = *pp;
     if( p != NULL ) {
         _doFree( p );
-        *(void **)pp = NULL;
+        *pp = NULL;
     }
 }
 

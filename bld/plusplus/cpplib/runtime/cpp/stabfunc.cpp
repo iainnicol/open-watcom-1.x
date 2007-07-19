@@ -76,7 +76,7 @@ static void init(               // PROGRAM INITIALIZATION
 
 extern "C" XI( CPPDATA( stab_init_fun ), init, INIT_PRIORITY_RUNTIME )
 
-#ifdef _M_IX86
+#ifdef M_PC_INTEL
     #pragma aux CPPDATA(stab_init_fun) "_*";
 #endif
 

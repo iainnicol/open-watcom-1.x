@@ -55,7 +55,7 @@ AXI( CPPLIB(multi_thread_init), INIT_PRIORITY_THREAD )
 
 #endif
 
-#if defined( _M_IX86 )
+#if defined( M_PC_INTEL )
 extern "C" {
 
     // Note: these have _WPRTDATA because they are used only to check
@@ -83,7 +83,7 @@ extern "C" {
     #endif
 
 };
-#elif defined( __AXP__ )
+#elif defined( M_ALPHA )
 extern "C" {
 
         _WPRTDATA int __compiled_under_generic;
