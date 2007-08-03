@@ -32,19 +32,3 @@ reference the
 .ev &pathvarup.
 environment variable which must be set to the directory in which you
 installed your software.
-.np
-The default name of the linker directive file (:FNAME.wlink.lnk:eFNAME.) can
-be overridden by the
-.ev WLINK_LNK 
-environment variable. If the specified file can't be opened, the default file
-name will be used.
-.nl
-For example, if the
-.ev WLINK_LNK
-environment variable is defined as follows
-.millust begin
-&setcmd WLINK_LNK=my.lnk
-.millust end
-then the &lnkname will attempt to use a :FNAME.my.lnk:eFNAME. directive file,
-and if that file cannot be opened, the linker will revert to using the
-default :FNAME.wlink.lnk:eFNAME. file.

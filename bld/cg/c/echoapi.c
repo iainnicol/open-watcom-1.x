@@ -38,6 +38,7 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "typedef.h"
+#include "spawn.h"
 #include "tree.h"
 #include "seldef.h"
 #include "echoapi.h"

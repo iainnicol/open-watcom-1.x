@@ -95,9 +95,10 @@ static void WriteGDT( bool twoextra )
     PadLoad( (NUM_RESERVED_SELS - 2) * sizeof( gdt_info ) );
 // write program gdt's.
     gdt.gdtaddr_hi = 0;
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
+    currgrp = Groups;
+    while( currgrp != NULL ) {
         if( currgrp->size > 0 ) {
-            gdt.gdtlen = MAKE_PARA( currgrp->size ) - 1; // para align.
+            gdt.gdtlen = ((currgrp->size + 15) & 0xFFFFFFF0) - 1; // para align.
         } else {
             gdt.gdtlen = 0;
         }
@@ -118,13 +119,14 @@ static void WriteGDT( bool twoextra )
             gdt.gdtaccess = D16M_ACC_CODE;
         }
         WriteLoad( &gdt, sizeof( gdt_info ) );
+        currgrp = currgrp->next_group;
     }
 // write out gdt[maxindex] and gdt[maxindex+1]
     gdt.gdtreserved = 0;
     gdt.gdtaddr = 0;
     if( LinkState & MAKE_RELOCS ) {
         gdt.gdtaccess = D16M_ACC_DATA;
-        gdt.gdtlen = MAKE_PARA( Root->relocs * sizeof( unsigned_16 ) ) - 1;
+        gdt.gdtlen = ((Root->relocs * sizeof( unsigned_16 ) + 15) & 0xFFF0) - 1;
         gdt.gdtreserved = ((unsigned_32)gdt.gdtlen + 1) >> 4;   // mem size in paras
     } else {
         gdt.gdtaccess = 0;
@@ -287,11 +289,13 @@ extern segment Find16MSeg( segment selector )
     segment         result;
 
     result = 0;
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
+    currgrp = Groups;
+    while( currgrp != NULL ) {
         if( currgrp->grp_addr.seg == selector ) {
             result = currgrp->u.dos_segment;
             break;
         }
+        currgrp = currgrp->next_group;
     }
     return( result );
 }
@@ -305,9 +309,11 @@ extern void CalcGrpSegs( void )
     offset          addr;
 
     addr = 0;
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-        addr = MAKE_PARA( addr );       // addr is paragraph aligned.
+    currgrp = Groups;
+    while( currgrp != NULL ) {
+        addr = (addr+15) & 0xFFFFFFF0;       // addr is paragraph aligned.
         currgrp->u.dos_segment = addr >> 4;
         addr += currgrp->totalsize;
+        currgrp = currgrp->next_group;
     }
 }

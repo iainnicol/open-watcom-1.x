@@ -73,7 +73,8 @@ static bool WriteBinSegGroup( group_entry *group )
             }
             DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
                 &group->grp_addr, sect->ovl_num, loc, finfo->fname ));
-            loc += WriteGroupLoad( group );
+            WriteGroupLoad( group );
+            loc += group->size;
             if( loc > finfo->file_loc ) {
                 finfo->file_loc = loc;
             }
@@ -101,8 +102,9 @@ void BinOutput( void )
         /* write groups */
         for( group = Groups; group != NULL; group = group->next_group ) {
             if (group->leaders->class->flags & CLASS_COPY ) {
-                size = CalcGroupSize( group->leaders->class->DupClass->segs->group );
-            } else {
+               size = CalcGroupSize( group->leaders->class->DupClass->segs->group );
+            }
+            else {
                 size = CalcGroupSize( group );
             }
             if( size ) {
@@ -110,13 +112,15 @@ void BinOutput( void )
                        - FmtData.output_offset) - PosLoad();
                 if( diff < 0 ) {
                     LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->grp_addr));
-                } else if( diff > 0 ) {
-                    PadLoad( diff );
+                }
+                else if( diff > 0 ) {
+                   PadLoad( diff );
                 }
                 WriteGroupLoad( group );
             }
         }
-    } else {
+    }
+    else {
         OrderGroups( CompareDosSegments );
         CurrSect = Root;        // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;
@@ -179,7 +183,8 @@ static void WriteHexLine( void )
             WriteLoad( str_buf, 17 );
         }
         offset = (unsigned int)(nextAddr - (seg << seg_shift));
-    } else {
+    }
+    else {
         if( nextAddr - (seg << 16) + bufOfs > 0x10000L ) {  // See if we need to output
             seg = (unsigned int)(nextAddr >> 16);           //   an extended linear record
             sprintf( str_buf, ":02000004%04x%02x\r\n", seg, (-(6 + (seg >> 8) + seg & 0xFF)) & 0xFF );
@@ -341,12 +346,13 @@ void HexOutput( void )
                     &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));
                 if( group->leaders->class->flags & CLASS_COPY ) {
                     Ring2Lookup( wrkgrp->leaders, DoHexDupLeader, &info.addr );
-                } else {
-                    Ring2Lookup( wrkgrp->leaders, DoHexLeader, &info.addr );
-                }
+               } else {
+                   Ring2Lookup( wrkgrp->leaders, DoHexLeader, &info.addr );
+               }
             }
         }
-    } else {
+    }
+    else {
         OrderGroups( CompareDosSegments );
         CurrSect = Root;    // needed for WriteInfo.
         Root->sect_addr = Groups->grp_addr;

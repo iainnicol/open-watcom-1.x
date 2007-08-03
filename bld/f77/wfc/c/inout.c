@@ -54,6 +54,7 @@
 #include <time.h>
 
 extern  void            BISetSrcFile( void );
+extern  void            Suicide(void);
 extern  void            PrtOptions(void);
 extern  lib_handle      IncSearch(char *);
 extern  int             LibRead(lib_handle);

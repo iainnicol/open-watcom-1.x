@@ -1,11 +1,7 @@
-.func unlink _unlink _wunlink
+.func unlink _wunlink
 #include <&iohdr>
 int unlink( const char *path );
 .ixfunc2 '&FileOp' &func
-.if &'length(&_func.) ne 0 .do begin
-int _unlink( const char *path );
-.ixfunc2 '&FileOp' &_func
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 int _wunlink( const wchar_t *path );
 .ixfunc2 '&FileOp' &wfunc
@@ -23,11 +19,6 @@ pointed to by
 This function is equivalent to the
 .kw remove
 function.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The &wfunc function is identical to &func except that it accepts a
@@ -95,14 +86,10 @@ The directory entry to be unlinked resides on a read-only file system.
 .exmp begin
 #include <&iohdr>
 
-void main( void )
-{
+void main()
+  {
     unlink( "vm.tmp" );
-}
+  }
 .exmp end
 .class POSIX 1003.1
-.if &'length(&_func.) ne 0 .do begin
-.np
-&_func conforms to ANSI/ISO naming conventions
-.do end
 .system

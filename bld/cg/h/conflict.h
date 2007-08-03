@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Definitions for conflict manager.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -87,12 +88,6 @@ typedef struct conflict_id {
         global_bit_set          out_of_block;
 } conflict_id;
 
-typedef struct possible_for_alias {
-        struct possible_for_alias  *next;
-        name                       *temp;
-        byte                       possible;        /*  aka reg_set_index */
-} possible_for_alias;
-
 typedef struct conflict_node {  /*  target independent */
         struct conflict_node    *next_conflict;
         struct conflict_node    *next_for_name;
@@ -107,7 +102,6 @@ typedef struct conflict_node {  /*  target independent */
         conflict_id             id;
         conflict_state          state;
         byte                    possible;            /*  aka reg_set_index */
-        possible_for_alias      *possible_for_alias_list;
 } conflict_node;
 
 #define _SetTrue( node, bit )   node->state |= bit;

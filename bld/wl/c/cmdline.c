@@ -55,7 +55,6 @@
 // #include "carve.h"
 // #include "permdata.h"
 #include "dbgall.h"
-#include "loadfile.h"
 
 #ifdef _INT_DEBUG
 unsigned int            Debug;
@@ -115,7 +114,6 @@ sysblock *      LinkCommands;
 static sysblock *       PrevCommand;
 
 #define INIT_FILE_NAME  "wlink.lnk"
-#define INIT_FILE_ENV   "WLINK_LNK"
 
 void InitCmdFile( void )
 /******************************/
@@ -162,7 +160,6 @@ void DoCmdFile( char *fname )
     f_handle    file;
     size_t      namelen;
     unsigned    extension;
-    char        *namelnk;
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
@@ -199,16 +196,17 @@ void DoCmdFile( char *fname )
         Token.where = ENDOFLINE;
         LnkMsg( INF+MSG_PRESS_CTRL_Z, NULL );
     }
-    namelnk = GetEnvString( INIT_FILE_ENV );
-    file = ( namelnk != NULL ) ? SearchPath( namelnk ) : NIL_HANDLE;
+#if _DEVELOPMENT == _ON
+    file = SearchPath( "nwlink.lnk" );
     if( file == NIL_HANDLE ) {
-        namelnk = INIT_FILE_NAME;
-        file = SearchPath( namelnk );
+        file = SearchPath( INIT_FILE_NAME );
     }
+#else
+    file = SearchPath( INIT_FILE_NAME );
+#endif
     if( file != NIL_HANDLE ) {
-        namelen = strlen( namelnk ) + 1;
-        _ChkAlloc( fname, namelen );
-        memcpy( fname, namelnk, namelen );
+        _ChkAlloc( fname, sizeof(INIT_FILE_NAME));
+        memcpy( fname, INIT_FILE_NAME, sizeof(INIT_FILE_NAME) );
         SetCommandFile( file, fname );
     }
     if( Spawn( DoCmdParse ) ) {
@@ -602,12 +600,20 @@ void Burn( void )
 // necessary to split this out from Ignite() for the workframe options
 // processor.
 {
+    outfilelist *   fnode;
+
     FreePaths();
     if( MapFName != NULL ) {
         _LnkFree( MapFName );
         MapFName = NULL;
     }
-    FreeOutFiles();
+    fnode = OutFiles;
+    while( fnode != NULL ) {
+        _LnkFree( fnode->fname );
+        OutFiles = fnode->next;
+        _LnkFree( fnode );
+        fnode = OutFiles;
+    }
     BurnUtils();
 }
 

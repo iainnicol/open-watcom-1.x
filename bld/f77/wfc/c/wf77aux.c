@@ -41,7 +41,6 @@
 #include "fmemmgr.h"
 #include "ferror.h"
 #include "inout.h"
-#include "cspawn.h"
 
 #if _INTEL_CPU
   #include "asminlin.h"
@@ -58,7 +57,9 @@
 
 extern  int             KwLookUp(char **,int,char *,int,int);
 extern  int             MkHexConst(char *,char *,int);
+extern  void            Suicide(void);
 extern  char            *SkipBlanks(char *);
+extern  int             Spawn(void (*)(void));
 extern  aux_info        *AuxLookupName(char *,int);
 extern  sym_id          SymFind(char *,uint);
 extern  void            FreeChain(void *);
@@ -818,10 +819,10 @@ void    DoPragma( char *ptr ) {
     TokEnd = ptr;
     ScanToken();
     for(;;) {
-        status = CSpawn( &Pragma );
+        status = Spawn( &Pragma );
         if( status != 0 ) {
             if( ProgSw & PS_FATAL_ERROR ) {
-                CSuicide();
+                Suicide();
             }
             AsmSymFini();
             break;
@@ -896,7 +897,7 @@ static  void    ScanToken( void ) {
                     ++ptr;
                 } else {
                     Error( PR_BAD_CONTINUATION );
-                    CSuicide();
+                    Suicide();
                 }
                 ptr = SkipBlanks( ptr );
                 TokStart = ptr;
@@ -977,7 +978,7 @@ static  void    ReqToken( char *tok ) {
     if( !RecToken( tok ) ) {
         *TokEnd = NULLCHAR;
         Error( PR_BAD_SYNTAX, tok, TokStart );
-        CSuicide();
+        Suicide();
     }
 }
 
@@ -1158,7 +1159,7 @@ static  void            SymbolId( void ) {
     ptr = TokStart;
     if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
         Error( PR_SYMBOL_NAME );
-        CSuicide();
+        Suicide();
     }
     for(;;) {
         ptr++;
@@ -1166,7 +1167,7 @@ static  void            SymbolId( void ) {
             break;
         if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
             Error( PR_SYMBOL_NAME );
-            CSuicide();
+            Suicide();
         }
     }
 }
@@ -1181,9 +1182,9 @@ static  void            ObjectName( void ) {
     if( *TokStart != '"' )
         return;
     if( TokStart == TokEnd - sizeof( char ) )
-        CSuicide();
+        Suicide();
     if( *(TokEnd - sizeof( char )) != '"' )
-        CSuicide();
+        Suicide();
     obj_len = TokEnd - TokStart - 2*sizeof( char );
     name = FMemAlloc( obj_len + sizeof( char ) );
     if( CurrAux->objname != DefaultInfo.objname ) {
@@ -1292,7 +1293,7 @@ static  void    InsertFixups( unsigned char *buff, unsigned i ) {
             }
             if( dst > &temp[ MAXIMUM_BYTESEQ ] ) {
                 Error( PR_BYTE_SEQ_LIMIT );
-                CSuicide();
+                Suicide();
             }
         }
         buff = temp;
@@ -1389,9 +1390,9 @@ static  void    GetByteSeq( void ) {
     for(;;) {
         if( *TokStart == '"' ) {
             if( TokStart == TokEnd - sizeof( char ) )
-                CSuicide();
+                Suicide();
             if( *(TokEnd - sizeof( char )) != '"' )
-                CSuicide();
+                Suicide();
             *(char *)(TokEnd - sizeof( char )) = NULLCHAR;
             AsmCodeAddress = seq_len;
             AsmCodeBuffer = buff;
@@ -1400,7 +1401,7 @@ static  void    GetByteSeq( void ) {
                 seq_len = AsmCodeAddress;
             } else {
                 Error( PR_BYTE_SEQ_LIMIT );
-                CSuicide();
+                Suicide();
             }
             ScanToken();
         } else if( RecToken( "FLOAT" ) ) {
@@ -1415,14 +1416,14 @@ static  void    GetByteSeq( void ) {
             len = MkHexConst( ptr, ptr, TokEnd - TokStart - 1 );
             if( len == 0 ) {
                 Error( PR_BAD_BYTE_SEQ );
-                CSuicide();
+                Suicide();
             }
             if( seq_len + len <= MAXIMUM_BYTESEQ ) {
                 memcpy( buff + seq_len, ptr, len );
                 seq_len += len;
             } else {
                 Error( PR_BYTE_SEQ_LIMIT );
-                CSuicide();
+                Suicide();
             }
             ScanToken();
         }
@@ -1564,7 +1565,7 @@ static  void    GetArgList( void ) {
                     pass_info |= ARG_SIZE_8;
                 } else {
                     Error( PR_BAD_PARM_SIZE );
-                    CSuicide();
+                    Suicide();
                 }
 #if ( _CPU == 8086 || _CPU == 386 )
             } else if( RecToken( "FAR" ) ) {
@@ -1614,7 +1615,7 @@ static  void    GetArgList( void ) {
 #endif
         } else {
             Error( PR_BAD_PARM_ATTR );
-            CSuicide();
+            Suicide();
         }
         arg = FMemAlloc( sizeof( pass_by ) );
         arg->link = NULL;

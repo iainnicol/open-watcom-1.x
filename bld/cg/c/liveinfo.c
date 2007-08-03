@@ -44,7 +44,6 @@ extern  void            PrefixInsRenum(instruction*,instruction*,bool);
 extern  instruction     *MakeNop(void);
 extern  void            Renumber(void);
 extern  int             NumOperands(instruction*);
-extern  bool            IsVolatile(name*);
 
 extern  block           *HeadBlock;
 extern  conflict_node   *ConfList;
@@ -298,7 +297,6 @@ static  void    FlowConflicts( instruction *first,
 
         ins->head.live.out_of_block = alive.out_of_block;
         ins->head.live.within_block = alive.within_block;
-
         ins = ins->head.prev;
         if( ins == first ) break;
 
@@ -315,22 +313,6 @@ static  void    FlowConflicts( instruction *first,
             } else {
                 conf = FindConflictNode( opnd, blk, ins );
                 NowDead( opnd, conf, &alive, blk );
-
-                /* 2007-06-28 RomanT
-                 * Force result of volatile instruction to live after it.
-                 * Otherwise we'll have a ghost which don't have conflicts but
-                 * still need a register (and can steal assigned one). (bug #439)
-                 * Note that we're attaching info to next instruction to show
-                 * that result is live _after_ current one (see comment above).
-                 */
-                i = ins->num_operands;
-                while( --i >= 0 ) {
-                    if( IsVolatile( ins->operands[ i ] ) ) {
-                        conf = FindConflictNode( ins->result, blk, ins );
-                        NowAlive( ins->result, conf, &ins->head.next->head.live, blk );
-                        break;
-                    }
-                }
             }
         }
     }
