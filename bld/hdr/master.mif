@@ -1,0 +1,474 @@
+proj_name=hdr
+
+!include cproj.mif
+
+splice = wsplice -i.. -k$(system) $(options) ../common.sp $[@ $^@
+
+# Used to build the cname headers.
+csplice = wsplice -i.. -k$(system) -kCNAME $(options) ../common.sp $[@ $^@
+
+.EXTENSIONS
+.EXTENSIONS : .h .hpp .cnv .mh .mhp
+
+common = &
+        _comdef.h &
+        assert.h &
+        complex.h &
+        conio.h &
+        crtdbg.h &
+        ctype.h &
+        env.h &
+        errno.h &
+        except.h &
+        exceptio.h &
+        excpt.h &
+        exstring.h &
+        fcntl.h &
+        fenv.h &
+        float.h &
+        fstream &
+        fstream.h &
+        function &
+        generic.h &
+        graph.h &
+        i86.h &
+        inttypes.h &
+        iomanip &
+        iomanip.h &
+        ios &
+        ios.h &
+        iosfwd &
+        iosfwd.h &
+        iostream &
+        iostream.h &
+        iso646.h &
+        istream &
+        istream.h &
+        iterator &
+        jctype.h &
+        jstring.h &
+        jtime.h &
+        limits.h &
+        locale.h &
+        malloc.h &
+        math.h &
+        mbctype.h &
+        mbstring.h &
+        mem.h &
+        memory &
+        mmintrin.h &
+        new.h &
+        ostream &
+        ostream.h &
+        pgchart.h &
+        process.h &
+        search.h &
+        setjmp.h &
+        share.h &
+        signal.h &
+        stdarg.h &
+        stdbool.h &
+        stddef.h &
+        stdexcep.h &
+        stdint.h &
+        stdio.h &
+        stdiobuf.h &
+        stdlib.h &
+        streambu &
+        streambu.h &
+        string.h &
+        string.hpp &
+        strstrea &
+        strstrea.h &
+        tchar.h &
+        time.h &
+        typeinfo.h &
+        utility &
+        varargs.h &
+        wcdefs.h &
+        wcexcept.h &
+        wchar.h &
+        wchash.h &
+        wchbase.h &
+        wchiter.h &
+        wclbase.h &
+        wclcom.h &
+        wclibase.h &
+        wclist.h &
+        wclistit.h &
+        wcqueue.h &
+        wcsbase.h &
+        wcsibase.h &
+        wcskip.h &
+        wcskipit.h &
+        wcstack.h &
+        wctype.h &
+        wcvbase.h &
+        wcvector.h &
+        sys/locking.h &
+        sys/stat.h &
+        sys/timeb.h &
+        sys/types.h &
+        cassert &
+        cctype &
+        cerrno &
+        cfloat &
+        ciso646 &
+        climits &
+        clocale &
+        cmath &
+        csetjmp &
+        csignal &
+        cstdarg &
+        cstddef &
+        cstdio &
+        cstdlib &
+        cstring &
+        ctime &
+        cwchar &
+        cwctype
+
+DOS_files = &
+      $(common) &
+        common.cnv &
+        direct.h &
+        dosfunc.h &
+        io.h &
+        bios.h &
+        bios98.h &
+        dos.h &
+        eh.h &
+        graph98.h &
+        memory.h &
+        setjmpex.h &
+        sys/utime.h &
+        wdefwin.h &
+        win/_win386.h &
+        win/win16.h &
+        win/windows.h &
+        win/win386.h &
+        wsample.h &
+        unistd.h &
+	zdos/zbios.h &
+	zdos/zdos.h &
+	zdos/zdosdrv.h &
+	zdos/zipc.h &
+	zdos/zthread.h &
+	zdos/zpktdrv.h &
+	zdos/zipv4.h &
+	zdos/zsocket.h &
+	zdos/ztrace.h &
+	zdos/zframe.h &
+	zdos/zapi.h
+
+QNX_files = &
+      $(common) &
+        cdrom.h &
+        curses.h &
+        dir.h &
+        dirent.h &
+        form.h &
+        fnmatch.h &
+        ftw.h &
+        grp.h &
+        libc.h &
+        mig.h &
+        mqueue.h &
+        pwd.h &
+        queue.h &
+        regex.h &
+        semaphor.h &
+        sgtty.h &
+        shadow.h &
+        tar.h &
+        term.h &
+        termcap.h &
+        termios.h &
+        unistd.h &
+        unix.h &
+        ustat.h &
+        utime.h &
+        utmp.h &
+        syslog.h &
+        sys/cdrom.h &
+        sys/console.h &
+        sys/con_msg.h &
+        sys/debug.h &
+        sys/dev.h &
+        sys/dev_msg.h &
+        sys/dir.h &
+        sys/disk.h &
+        sys/dumper.h &
+        sys/fd.h &
+        sys/feedback.h &
+        sys/file.h &
+        sys/fsys.h &
+        sys/fsys_msg.h &
+        sys/inline.h &
+        sys/interact.h &
+        sys/io_msg.h &
+        sys/ioctl.h &
+        sys/irqinfo.h &
+        sys/kernel.h &
+        sys/keyboard.h &
+        sys/lmf.h &
+        sys/magic.h &
+        sys/mman.h &
+        sys/mouse.h &
+        sys/mous_msg.h &
+        sys/name.h &
+        sys/osinfo.h &
+        sys/osstat.h &
+        sys/param.h &
+        sys/prfx.h &
+        sys/pci.h &
+        sys/pointer.h &
+        sys/proc_msg.h &
+        sys/proxy.h &
+        sys/psinfo.h &
+        sys/qioctl.h &
+        sys/qnxterm.h &
+        sys/qnx_glob.h &
+        sys/sched.h &
+        sys/seginfo.h &
+        sys/select.h &
+        sys/sendmx.h &
+        sys/ser_msg.h &
+        sys/sidinfo.h &
+        sys/slib16.h &
+        sys/statfs.h &
+        sys/sys_msg.h &
+        sys/termio.h &
+        sys/time.h &
+        sys/timers.h &
+        sys/times.h &
+        sys/trace.h &
+        sys/tracecod.h &
+        sys/uio.h &
+        sys/uscsi.h &
+        sys/utsname.h &
+        sys/vc.h &
+        sys/wait.h &
+        sys/fsysinfo.h &
+        sys/sigconte.h &
+        sys/sysi86.h
+
+LINUX_files = &
+      $(common) &
+        dirent.h &
+        netdb.h &
+        unistd.h &
+        utime.h &
+        termios.h &
+        sys/time.h &
+        sys/times.h &
+        sys/ioctl.h &
+        sys/mount.h &
+        sys/ptrace.h &
+        sys/wait.h &
+        sys/socket.h &
+        netinet/in.h &
+        netinet/tcp.h &
+        arpa/inet.h
+
+SNAPDRV_files = &
+        _comdef.h &
+        assert.h &
+        ctype.h &
+        errno.h &
+        fcntl.h &
+        float.h &
+        limits.h &
+        locale.h &
+        malloc.h &
+        math.h &
+        search.h &
+        setjmp.h &
+        share.h &
+        signal.h &
+        stdarg.h &
+        stddef.h &
+        stdio.h &
+        stdlib.h &
+        string.h &
+        time.h &
+        unistd.h &
+        complex.h &
+        except.h &
+        exceptio.h &
+        exstring.h &
+        fstream.h &
+        generic.h &
+        iomanip.h &
+        iostream.h &
+        new.h &
+        stdexcep.h &
+        stdiobuf.h &
+        streambu.h &
+        string.hpp &
+        strstrea.h &
+        typeinfo.h &
+        wcdefs.h &
+        wcexcept.h &
+        wchash.h &
+        wchbase.h &
+        wchiter.h &
+        wclbase.h &
+        wclcom.h &
+        wclibase.h &
+        wclist.h &
+        wclistit.h &
+        wcqueue.h &
+        wcsbase.h &
+        wcsibase.h &
+        wcskip.h &
+        wcskipit.h &
+        wcstack.h &
+        wcvbase.h &
+        wcvector.h &
+        sys/stat.h &
+        sys/types.h
+
+SNAP_files = &
+      $(SNAPDRV_files)
+
+all : $($(system)_files) .symbolic
+    @%null
+
+.mh:$(path)
+.mhp:$(path)
+
+.mhp.hpp:
+        $(splice)
+
+.mh.h:
+        $(splice)
+
+.mh.cnv:
+        $(splice)
+
+#
+# Special case for sys/time.h since there is also a time.h
+#
+!ifeq system QNX
+sys/time.h : ../quantum/sys_time.mh ../poppack.sp ../pshpackl.sp
+        $(splice)
+!endif
+!ifeq system LINUX
+sys/time.h : linux/sys_time.mh ../readonly.sp ../cpluspro.sp ../lnxkpack.sp ../poppack.sp ../cplusepi.sp
+        $(splice)
+!endif
+
+!include ../deps.mif
+
+# Handle cname style headers as special cases. Implicit rules for
+# extensionless files seem awkward (especially for Linux?). Another
+# approach would be to define a temporary extension for these files and
+# change their names when they are copied to the release tree.
+#
+cassert : $(assert_deps)
+        $(csplice)
+
+cctype  : $(ctype_deps)
+        $(csplice)
+
+cerrno  : $(errno_deps)
+        $(csplice)
+
+cfloat  : $(float_deps)
+        $(csplice)
+
+ciso646 : $(iso646_deps)
+        $(csplice)
+
+climits : $(limits_deps)
+        $(csplice)
+
+clocale : $(locale_deps)
+        $(csplice)
+
+cmath   : $(math_deps)
+        $(csplice)
+
+csetjmp : $(setjmp_deps)
+        $(csplice)
+
+csignal : $(signal_deps)
+        $(csplice)
+
+cstdarg : $(stdarg_deps)
+        $(csplice)
+
+cstddef : $(stddef_deps)
+        $(csplice)
+
+cstdio  : $(stdio_deps)
+        $(csplice)
+
+cstdlib : $(stdlib_deps)
+        $(csplice)
+
+cstring : $(string_deps)
+        $(csplice)
+
+ctime   : $(time_deps)
+        $(csplice)
+
+cwchar  : $(wchar_deps)
+        $(csplice)
+
+cwctype : $(wctype_deps)
+        $(csplice)
+
+# Standard IOStream headers.
+
+fstream  : $(fstream_deps)
+         $(csplice)
+
+iomanip  : $(iomanip_deps)
+         $(csplice)
+
+ios      : $(ios_deps)
+         $(csplice)
+
+iosfwd   : $(iosfwd_deps)
+         $(csplice)
+
+iostream : $(iostream_deps)
+         $(csplice)
+
+istream  : $(istream_deps)
+         $(csplice)
+
+ostream  : $(ostream_deps)
+         $(csplice)
+
+streambu : $(streambu_deps)
+         $(csplice)
+
+strstrea : $(strstrea_deps)
+         $(csplice)
+
+# Other headers from the C++ standard library.
+
+function : $(function_deps)
+         $(csplice)
+
+iterator : $(iterator_deps)
+         $(csplice)
+
+memory   : $(memory_deps)
+         $(csplice)
+
+utility  : $(utility_deps)
+         $(csplice)
+
+
+clean: .SYMBOLIC
+      rm -f *.h sys/*.h *.hpp common.cnv
+!ifeq system DOS
+      rm -f win/*.h
+!else ifeq system LINUX
+      rm -f arpa/*.h
+      rm -f netinet/*.h
+!endif

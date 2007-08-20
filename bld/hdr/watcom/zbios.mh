@@ -1,0 +1,418 @@
+/*
+ *  zbios.h
+ *
+:include crwat.sp
+ */
+#ifndef _ZBIOS_H_INCLUDED
+#define _ZBIOS_H_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+#pragma pack(__push,1);
+
+#define PCI_ID		   0x20494350  /* Valid signature in PCIDATA below */
+
+/* Uart setup parameter values */
+
+#define DATABITS_5         0x00
+#define DATABITS_6         0x01
+#define DATABITS_7         0x02
+#define DATABITS_8         0x03
+#define STOPBITS_1         0x00
+#define STOPBITS_2         0x04        /* 1.5 if 5 databits */
+#define PARITY_NONE        0x00
+#define PARITY_ODD         0x08
+#define PARITY_EVEN        0x18
+#define BAUDRATE_110       0x00
+#define BAUDRATE_150       0x20
+#define BAUDRATE_300       0x40
+#define BAUDRATE_600       0x60
+#define BAUDRATE_1200      0x80
+#define BAUDRATE_2400      0xa0
+#define BAUDRATE_4800      0xc0
+#define BAUDRATE_9600      0xe0
+
+/* Extended UART setup baudrate values */
+
+#define X_BAUDRATE_110     0
+#define X_BAUDRATE_150     1
+#define X_BAUDRATE_300     2
+#define X_BAUDRATE_600     3
+#define X_BAUDRATE_1200    4
+#define X_BAUDRATE_2400    5
+#define X_BAUDRATE_4800    6
+#define X_BAUDRATE_9600    7
+#define X_BAUDRATE_19200   8
+#define X_BAUDRATE_38400   9
+#define X_BAUDRATE_56000   10
+#define X_BAUDRATE_115200  11
+
+/* Extended UART setup databits values */
+
+#define X_DATABITS_5           0
+#define X_DATABITS_6           1
+#define X_DATABITS_7           2
+#define X_DATABITS_8           3
+
+/* Extended UART setup stopbits values */
+
+#define X_STOPBITS_1           0
+#define X_STOPBITS_2           1       /* 1.5 bits on 5 databits */
+
+/* Extended UART setup parity values */
+
+#define X_PARITY_NONE          0
+#define X_PARITY_ODD           1
+#define X_PARITY_EVEN          2
+#define X_PARITY_STICK_ODD     3
+#define X_PARITY_STICK_EVEN    4
+
+/* Extended UART setup break values */
+
+#define X_BREAK_OFF            0
+#define X_BREAK_ON             1
+
+/* Structures */
+
+typedef struct
+{
+   unsigned char   Column;             /* Current column position */
+   unsigned char   Row;                /* Current row position */
+   unsigned char   EndLine;            /* Cursor ending scan line */
+   unsigned char   StartLine;          /* Cursor starting scan line */
+} CURSOR;
+
+typedef struct
+{
+   unsigned char   Mode;               /* Current video mode */
+   unsigned char   Columns;            /* Number of video columns */
+   unsigned char   Rows;               /* Number of video rows */
+   unsigned char   Page;               /* Current video page */
+} VMODE;
+
+typedef struct
+{
+   unsigned short  Count;              /* Number of bytes */
+   unsigned char   Major;              /* Model byte */
+   unsigned char   Minor;              /* Submodel byte */
+   unsigned char   Revision;           /* BIOS revision level */
+   unsigned char   Feature;            /* Feature byte */
+   unsigned char   Reserved[10];       /* Reserved */
+} BIOSINFO;
+
+typedef struct
+{
+    unsigned char   Coprocessor;       /* Coprocessor type */
+    unsigned char   Family;            /* CPU family */
+    unsigned char   Stepping;          /* CPU stepping number */
+    unsigned char   Reserved;          /* For alignment */
+    unsigned int    Features;          /* CPU feature bits */
+} CPU;
+
+typedef struct
+{
+    unsigned char   MaxSector;         /* Maximum sector number */
+    unsigned char   MaxHead;           /* Maximum head number */
+    unsigned short  MaxTrack;          /* Maximum track number */
+    void            *DPT;              /* Pointer to disk parameter table (only floppy drives) */
+} DISK;
+
+typedef struct
+{
+    unsigned short  Configuration;     /* General configuration information bit map */
+    unsigned short  Cylinders;         /* Number of cylinders */
+    unsigned short  Reserved1;         /* Reserved */
+    unsigned short  Heads;             /* Number of heads */
+    unsigned short  BytesPerTrack;     /* Number of unformatted bytes/track */
+    unsigned short  BytesPerSector;    /* Number of unformatted bytes/sector */
+    unsigned short  Sectors;           /* Sectors/track */
+    unsigned short  Reserved2[3];      /* Reserved */
+    char            SerialNumber[20];  /* Serial number */
+    unsigned short  BufferType;        /* Buffer type */
+    unsigned short  BufferSize;        /* Buffer size in 512 byte sectors */
+    unsigned short  EccCount;          /* Number of ECC bytes */
+    char            Firmware[8];       /* Firmware revision in ascii format */
+    char            ModelNumber[40];   /* Model number in ascii format */
+    unsigned short  MaxMultiple;       /* Max number of sectors for multiple sector commands */
+    unsigned short  IoCapability;      /* 0 = 16-bit only, 1 = 32 I/O allowed */
+    unsigned char   Retired1;          /* Retired */
+    unsigned char   Capabilities;      /* Capabilities information bit map */
+    unsigned short  Capabilities2;     /* More capabilities */
+    unsigned char   Retired2;          /* Retired */
+    unsigned char   PioTiming;         /* PIO data transfer mode number */
+    unsigned char   Retired3;          /* Retired */
+    unsigned char   DmaTiming;         /* DMA cycle timing (retired) */
+    unsigned short  EnhancedInfo;      /* Enhanced information available flags */
+    unsigned short  UsedCylinder;      /* Current cylinder if bit 0 is set in EnhancedInfo flags above */
+    unsigned short  UsedHeads;         /* Current heads if bit 0 is set in EnhancedInfo flags above */
+    unsigned short  UsedSectors;       /* Current sectors if bit 0 is set in EnhancedInfo flags above */
+    unsigned short  UsedCapacity;      /* Current capacity if bit 0 is set in EnhancedInfo flags above */
+    unsigned char   UsedMultiple;      /* Current multiple sectors count */
+    unsigned char   MultipleActive;    /* Multiple sectors active flag */
+    unsigned int    TotalSectors;      /* Total number of sectors */
+    unsigned char   SingleModes;       /* Single word DMA transfer modes supported */
+    unsigned char   SingleTransfer;    /* Single word DMA transfer mode active */
+    unsigned char   MultiModes;        /* Multi word DMA transfer modes supported */
+    unsigned char   MultiTransfer;     /* Multi word DMA transfer mode active */
+    unsigned char   AdvancedPioMode;   /* Advanced PIO transfer mode supported if bit 1 is set in Enhanced info above */
+    unsigned char   Reserved3;         /* Reserved */
+    unsigned short  MinMultiDMA;       /* Minimum multi word DMA transfer cycle time if bit 1 is set in Enhanced info above */
+    unsigned short  OemMultiDMA;       /* Manufacturer's recommended multi word DMA transfer cycle time if bit 1 is set in Enhanced info above */
+    unsigned short  MinPioNoFlow;      /* Minimum PIO transfer cycle time without flow control if bit 1 is set in Enhanced info above */
+    unsigned short  MinPioWithFlow;    /* Minimum PIO transfer cycle time with flow control if bit 1 is set in Enhanced info above */
+    unsigned short  Reserved4[2];      /* Reserved for advanced PIO support */
+    unsigned short  OverlapTime;       /* Typical time in uS for release when processing an overlapped command */
+    unsigned short  ServiceTime;       /* Typical time in uS for release adter receiving the service command */
+    unsigned short  Major;             /* Major revision number */
+    unsigned short  Minor;             /* Minor revision number */
+    unsigned short  CommandSets[13];   /* Command sets supported */
+    unsigned short  UltraDMA;          /* ULTRA DMA support bytes */
+    unsigned short  Reserved5[39];     /* Reserved */
+    unsigned short  VendorUnique[32];  /* Vendor unique information */
+    unsigned short  Reserved6[96];     /* Reserved */
+} IDEINFO;
+
+typedef struct
+{
+    short           Length;            /* Length of buffer */
+    unsigned short  Information;       /* Information flags */
+    unsigned int    Cylinders;         /* Number of physical cylinders */
+    int             Heads;             /* Number of physical heads */
+    unsigned int    Sectors;           /* Number of physical sectors/track */
+    long long       TotalSectors;      /* Number of total sectors */
+    short           BPS;               /* Bytes/sector */
+    void            *DCB;              /* Pointer to DCB */
+} EDPT;
+
+typedef struct
+{
+    unsigned char   Hour;              /* Current hour in BCD format */
+    unsigned char   Minute;            /* Current minute in BCD format */
+    unsigned char   Second;            /* Current second in BCD format */
+    unsigned char   Daylight;          /* Daylight saving time flag (0 = standard, 1 = daylight) */
+} BIOSTIME;
+
+typedef struct
+{
+    unsigned char   Century;           /* Current century in BCD format */
+    unsigned char   Year;              /* Current year in BCD format */
+    unsigned char   Month;             /* Current month in BCD format */
+    unsigned char   Day;               /* Current day in BCD format */
+} BIOSDATE;
+
+typedef struct
+{
+    unsigned short  Hardware;          /* Hardware characteristics bits */
+    unsigned char   Major;             /* PCI interface major version number */
+    unsigned char   Minor;             /* PCI interface minor version number */
+    int             LastBus;           /* Last bus number */
+    unsigned int    Signature;         /* The string 'PCI ' */
+} PCIDATA;
+
+typedef struct
+{
+    unsigned char   Bus;               /* Bus number */
+    unsigned char   Device;            /* Device number */
+    unsigned char   Function;          /* Function number */
+    unsigned char   Reserved;          /* For alignment */
+} PCIFIND;
+
+typedef struct
+{
+    unsigned short  Z;                 /* Mouse Z position */
+    unsigned short  Y;                 /* Mouse Y position */
+    unsigned short  X;                 /* Mouse X position */
+    unsigned short  Status;            /* Mouse status */
+} MOUSE_PACKET;
+
+typedef struct
+{
+    unsigned char   Status;            /* Mouse status bits */
+    unsigned char   Resolution;        /* Mouse resolution */
+    unsigned char   Rate;              /* Mouse sample rate */
+    unsigned char   Reserved;          /* For alignment */
+} MOUSE_INFO;
+
+/* Video functions */
+
+int      BiosSetVideoMode( int mode );
+int      BiosSetCursorType( int startingline, int endingline );
+int      BiosSetCursor( int row, int column );
+int      BiosGetCursor( CURSOR *cursor );
+int      BiosScrollWindowUp( int lowerY, int lowerX, int upperY, int upperX,
+                             int rows, int blankingattr );
+int      BiosScrollWindowDown( int lowerY, int lowerX, int upperY, int upperX,
+                               int rows, int blankingattr );
+int      BiosReadCharAndAttribute( int *character, int *attribute );
+int      BiosWriteCharAndAttribute( int character, int attribute, int count );
+int      BiosWriteCharacter( int character, int count );
+int      BiosSetBorderColor( int color );
+int      BiosWriteTeletype( int character );
+int      BiosGetVideoMode( VMODE *vmode );
+int      BiosSetPalette( int index, int color );
+int      BiosSetBorder( int color );
+int      BiosSetColors( unsigned char *colorlist );
+int      BiosSetBlinkBit( int blinkbit );
+int      BiosGetPalette( int index );
+int      BiosGetBorder( void );
+int      BiosGetColors( unsigned char *colorlist );
+
+/* Misc. BIOS functions */
+
+unsigned BiosEquipment( void );
+int      BiosBaseMemorySize( void );
+int      BiosRemovableMediaEject( void );
+int      BiosDeviceOpen( int device, int process );
+int      BiosDeviceClose( int device, int process );
+int      BiosProcessTermination( int process );
+int      BiosStartEventWait( int *flag, unsigned microseconds );
+int      BiosCancelEventWait( void );
+int      BiosSystemRequest( int flag );
+int      BiosWait( unsigned microseconds );
+int      BiosExtendedMemorySize( void );
+int      BiosDeviceBusy( void );
+int      BiosDeviceReady( void );
+int      BiosSystemConfiguration( BIOSINFO **info );
+int      BiosCpuInformation( CPU *cpu );
+int      BiosEnhancedMemorySize( unsigned *isa, unsigned *aboveisa );
+void     BiosRomBasic( void );
+void     BiosBootStrap( void );
+
+/* Disk functions */
+
+int      BiosDiskReset( int drive );
+int      BiosDiskStatus( int drive );
+int      BiosReadSector( int sectors, int drive, void *buffer, int track,
+                         int sector, int head );
+int      BiosWriteSector( int sectors, int drive, void *buffer, int track,
+                          int sector, int head );
+int      BiosVerifySector( int sectors, int drive, void *buffer, int track,
+                           int sector, int head );
+int      BiosFormatTrack( int interleave, int drive, void *buffer, int track,
+                          int head );
+int      BiosDiskParameters( DISK *disk, int drive );
+int      BiosInitializeDisk( int drive );
+int      BiosReadSectorLong( int sectors, int drive, void *buffer, int track,
+                             int sector, int head );
+int      BiosWriteSectorLong( int sectors, int drive, void *buffer,
+                              int track, int sector, int head );
+int      BiosSeekDisk( int head, int drive, int track );
+int      BiosAlternateDiskReset( int drive );
+int      BiosFixedDiskStatus( int drive );
+int      BiosRecalibrateDrive( int drive );
+int      BiosDiskEmulatorPresent( int drive );
+int      BiosDiskEmulatorConnect( void **dispatchtable, int drive );
+int      BiosDiskDiagnostics( void );
+int      BiosGetDiskType( int drive, unsigned long long *sectors );
+int      BiosChangeLineStatus( int drive );
+int      BiosGetMedia( int drive );
+int      BiosSetMedia( int type, int drive );
+int      BiosSetMediaType( int drive, int maxtrack, int sectors );
+int      BiosDiskExtensions( int drive, unsigned *support );
+int      BiosDeviceType( int *numdevices, int drive );
+int      BiosReadDiskBlock( int count, int drive, void *buffer,
+                            unsigned LBA );
+int      BiosWriteDiskBlock( int count, int drive, void *buffer,
+                             unsigned LBA );
+int      BiosVerifyDiskBlock( int count, int drive, unsigned LBA );
+int      BiosDeviceInformation( IDEINFO *buffer, int drive );
+int      BiosAtapiPacketCommand( void *command, int drive, void *buffer,
+                                 int count );
+int      BiosSeekDiskBlock( unsigned LBA, int drive );
+int      BiosDeviceParameters( EDPT *buffer, int drive );
+int      BiosResetAtapiDevice( int device );
+int      BiosMediaLockStatus( int device );
+int      BiosLockMedia( int device );
+int      BiosUnlockMedia( int device );
+int      BiosEjectMedia( int device );
+
+/* Uart functions */
+
+int      BiosUartSetup( int parameter, int portnumber );
+int      BiosUartOutput( int byte, int portnumber );
+int      BiosUartInput( int portnumber );
+int      BiosUartStatus( int portnumber );
+int      BiosExtendedUartSetup( int breakflag, int portnumber, int stopbits,
+                                int baudrate, int parity, int databits );
+int      BiosGetModemControl( int portnumber );
+int      BiosSetModemControl( int control, int portnumber );
+int      BiosOpenUart( int portnumber );
+int      BiosCloseUart( int portnumber );
+int      BiosBufferedUartOutput( int count, int portnumber, void *buffer );
+int      BiosBufferedUartInput( int count, int portnumber, void *buffer );
+
+/* Keyboard functions */
+
+int      BiosKeyboardWait( void );
+int      BiosKeyboardStatus( void );
+int      BiosKeyboardFlags( void );
+int      BiosKeyboardRate( int rate, int delay );
+int      BiosKeyboardFlush( void );
+int      BiosKeyboardPutKey( int character, int scancode );
+int      BiosKeyboardCapabilities( void );
+int      BiosFullKeyboardWait( void );
+int      BiosFullKeyboardStatus( void );
+int      BiosFullKeyboardFlags( void );
+
+/* Printer functions */
+
+int      BiosPrinterOutput( int character, int printerport );
+int      BiosInitializePrinter( int printerport );
+int      BiosPrinterStatus( int printerport );
+int      BiosOpenPrinter( int printerport );
+int      BiosClosePrinter( int printerport );
+
+/* Timer functions */
+
+int      BiosGetTickCount( unsigned *tickcount );
+void     BiosSetTickCount( unsigned tickcount );
+void     BiosGetTime( BIOSTIME *time );
+void     BiosSetTime( BIOSTIME *time );
+void     BiosGetDate( BIOSDATE *date );
+void     BiosSetDate( BIOSDATE *date );
+int      BiosSetAlarm( BIOSTIME *time );
+int      BiosResetAlarm( void );
+
+/* PCI functions */
+
+int      BiosGetPciResourceSize( int bus, int device, int function,
+                                 int regindex, unsigned *value );
+int      BiosPciInformation( PCIDATA *p );
+int      BiosFindPciDevice( int index, int vendor, int device, PCIFIND *p );
+int      BiosFindPciClass( int index, int devclass, PCIFIND *p );
+int      BiosGeneratePciCycle( int bus, unsigned cycledata );
+int      BiosReadPciRegisterBYTE( int bus, int device, int function,
+                                  int regindex, unsigned char *value );
+int      BiosReadPciRegisterWORD( int bus, int device, int function,
+                                  int regindex, unsigned short *value );
+int      BiosReadPciRegisterDWORD( int bus, int device, int function,
+                                   int regindex, unsigned int *value );
+int      BiosWritePciRegisterBYTE( int bus, int device, int function,
+                                   int regindex, unsigned char value );
+int      BiosWritePciRegisterWORD( int bus, int device, int function,
+                                   int regindex, unsigned short value );
+int      BiosWritePciRegisterDWORD( int bus, int device, int function,
+                                    int regindex, unsigned int value );
+
+/* Mouse functions */
+
+int      BiosEnableMouse( void );
+int      BiosDisableMouse( void );
+int      BiosResetMouse( void );
+int      BiosSetMouseSampleRate( int rate );
+int      BiosSetMouseResolution( int resolution );
+int      BiosGetMouseID( void );
+int      BiosInitializeMouse( int packetsize );
+int      BiosMouseStatus( MOUSE_INFO *info );
+int      BiosSetMouseScalingOne( void );
+int      BiosSetMouseScalingTwo( void );
+int      BiosSetMouseHandler( void( __cdecl *handler )( MOUSE_PACKET ) );
+
+#pragma pack(__pop);
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
+#endif
