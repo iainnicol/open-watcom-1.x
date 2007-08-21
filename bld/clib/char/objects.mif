@@ -1,0 +1,54 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+#==========================================================================================================
+!inject isalnum.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isalpha.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isascii.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isblank.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject iscntrl.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject iscsym.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject iscsymf.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject isdigit.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isgraph.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject islower.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isprint.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject ispunct.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isspace.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject istable.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject isupper.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject iswctype.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject isxdigit.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject tolower.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject toupper.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 snp drv zda zdd
+!inject uisalnum.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisalpha.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisascii.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisblank.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uiscntrl.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisdigit.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisgraph.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uislower.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisprint.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uispunct.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisspace.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisupper.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject uisxdig.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject utolower.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject utoupper.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32     l32         zda zdd
+!inject wctype.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+
+!include ../../../../objlist.mif
+
+uisalpha_postopts=-os
+uisascii_postopts=-os
+uiscntrl_postopts=-os
+uisdigit_postopts=-os
+uisgraph_postopts=-os
+uislower_postopts=-os
+uisprint_postopts=-os
+uispunct_postopts=-os
+uisspace_postopts=-os
+uisupper_postopts=-os
+uisxdig_postopts =-os
+utolower_postopts=-os
+utoupper_postopts=-os
+uisalnum_postopts=-os

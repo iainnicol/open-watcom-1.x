@@ -1,0 +1,45 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOS.INC'
+		INCLUDE	'ZDOSAPI.INC'
+;
+; Assembly variant of dostime_t
+;
+STRUC		TIME
+Hour		DB	?
+Minute		DB	?
+Second		DB	?
+Hundredth	DB	?
+ENDS
+		CODESEG
+		EXTRN	C __set_EINVAL			: PROC
+		PUBLIC	_dos_settime_
+;
+; DECLARATION	unsigned _dos_settime( struct dostime_t *time );
+;
+PROC		_dos_settime_		STDCALL
+		USES	edx,ecx,ebx
+		mov	ebx,eax				; EBX points to buffer
+		mov	ch,[(TIME ebx).Hour]		; CH = hour
+		mov	cl,[(TIME ebx).Minute]		; CL = minute
+		mov	dh,[(TIME ebx).Second]		; DH = second
+		mov	dl,[(TIME ebx).Hundredth]	; DL = hundredth
+		mov	ah,DOS_SET_TIME			; AH = DOS function
+		;
+		; Call DOS services
+		;
+IFDEF __ZDOSDRV__
+		call	[DWORD DosApi]
+ELSE
+		int	DOS
+ENDIF
+		movsx	eax,al				; Sign extend return code
+		or	eax,eax				; Error ?
+		jns	SHORT @@Exit			; No, we are done
+		call	__set_EINVAL			; Yes, set _errno
+@@Exit:		ret
+ENDP
+		END

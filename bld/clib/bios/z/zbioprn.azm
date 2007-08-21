@@ -1,0 +1,27 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOSAPI.INC'
+		CODESEG
+		PUBLIC	_bios_printer_
+;
+; DECLARATION	unsigned _bios_printer( unsigned service, unsigned port,
+;		                        unsigned data );
+;
+PROC		_bios_printer_		STDCALL
+		mov	ah,al				; AH = BIOS function
+		mov	al,bl				; AL = data
+		;
+		; Call BIOS printer services
+		;
+IFDEF __ZDOSDRV__
+		call	[DWORD BiosPrinter]
+ELSE
+		int	BIOS_PRINTER
+ENDIF
+		movzx	eax,ah				; EAX = status
+		ret
+ENDP
+		END
