@@ -245,6 +245,7 @@ positive_tests = &
     cltemp26.$(ext) &
     cltemp27.$(ext) &
     cltemp28.$(ext) &
+    cltemp29.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
@@ -424,6 +425,7 @@ positive_tests = &
     fntemp19.$(ext) &
     fntemp20.$(ext) &
     fntemp21.$(ext) &
+    fntemp22.$(ext) &
     fold01.$(ext) &
     fold02.$(ext) &
     for01.$(ext) &
