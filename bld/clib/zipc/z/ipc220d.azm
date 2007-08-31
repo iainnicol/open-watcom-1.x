@@ -1,0 +1,33 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOS.INC'
+		INCLUDE	'ZDOSAPI.INC'
+		CODESEG
+		EXTRN	DosReturnZero			: PROC
+		PUBLIC	DosOpenEvent_
+;
+; DECLARATION	int DosOpenEvent( EVENT *event, unsigned value );
+;
+PROC		DosOpenEvent_		STDCALL
+IFDEF __ZDOSDRV__
+		push	ebx				; Save context
+		mov	ebx,eax				; EBX points to event
+		mov	eax,edx				; EAX = initial event value
+		call	[DWORD EventOpen]		; Open event
+		pop	ebx				; Restore context
+ELSE
+		push	ecx				; Save context
+		push	ebx
+		mov	ecx,edx				; ECX = initial event value
+		mov	ebx,eax				; EBX points to event
+		mov	ah,IPC_OPEN_EVENT		; Open event
+		int	LOCAL_IPC
+		pop	ebx				; Restore context
+		pop	ecx
+ENDIF
+		jmp	DosReturnZero			; Process return code
+ENDP
+		END

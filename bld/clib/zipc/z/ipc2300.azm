@@ -1,0 +1,23 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOS.INC'
+		INCLUDE	'ZDOSAPI.INC'
+		CODESEG
+		EXTRN	DosError			: PROC
+		PUBLIC	DosCreateGlobalMutex_
+;
+; DECLARATION	int DosCreateGlobalMutex( char *name );
+;
+PROC		DosCreateGlobalMutex_	STDCALL
+		push	edx				; Save context
+		mov	edx,eax				; EDX points to mutex name
+		mov	ah,IPC_CREATE_MUTEX		; Create mutex
+		int	GLOBAL_IPC
+		pop	edx				; Restore context
+		jc	DosError			; Success ?
+		ret					; Yes, return handle
+ENDP
+		END

@@ -1,0 +1,52 @@
+#                    zda zdd
+#===========================
+!inject ipc2201.obj  zda zdd
+!inject ipc2202.obj  zda zdd
+!inject ipc2203.obj  zda zdd
+!inject ipc2204.obj  zda zdd
+!inject ipc2205.obj  zda zdd
+!inject ipc2207.obj  zda zdd
+!inject ipc2208.obj  zda zdd
+!inject ipc2209.obj  zda zdd
+!inject ipc220a.obj  zda zdd
+!inject ipc220b.obj  zda zdd
+!inject ipc220d.obj  zda zdd
+!inject ipc220e.obj  zda zdd
+!inject ipc220f.obj  zda zdd
+!inject ipc2210.obj  zda zdd
+!inject ipc2211.obj  zda zdd
+!inject ipc2212.obj  zda zdd
+!inject ipc2214.obj  zda zdd
+!inject ipc2215.obj  zda zdd
+!inject ipc2216.obj  zda zdd
+!inject ipc2217.obj  zda zdd
+!inject ipc2218.obj  zda zdd
+!inject ipc2219.obj  zda zdd
+!inject ipc2300.obj  zda
+!inject ipc2301.obj  zda
+!inject ipc2302.obj  zda
+!inject ipc2303.obj  zda
+!inject ipc2304.obj  zda
+!inject ipc2305.obj  zda
+!inject ipc2306.obj  zda
+!inject ipc2307.obj  zda
+!inject ipc2308.obj  zda
+!inject ipc2309.obj  zda
+!inject ipc230a.obj  zda
+!inject ipc230b.obj  zda
+!inject ipc230c.obj  zda
+!inject ipc230d.obj  zda
+!inject ipc230e.obj  zda
+!inject ipc230f.obj  zda
+!inject ipc2310.obj  zda
+!inject ipc2311.obj  zda
+!inject ipc2312.obj  zda
+!inject ipc2313.obj  zda
+!inject ipc2314.obj  zda
+!inject ipc2315.obj  zda
+!inject ipc2316.obj  zda
+!inject ipc2317.obj  zda
+!inject ipc2318.obj  zda
+!inject ipc2319.obj  zda
+
+!include ../../../../objlist.mif

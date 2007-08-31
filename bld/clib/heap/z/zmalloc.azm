@@ -1,0 +1,25 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOSAPI.INC'
+		CODESEG
+		PUBLIC	malloc_
+		PUBLIC	_nmalloc_
+		PUBLIC	remalloc
+;
+; DECLARATION	void *malloc( size_t size );
+;
+PROC		malloc_			STDCALL
+LABEL		_nmalloc_		PROC
+		push	ecx				; Save context
+		mov	ecx,eax				; ECX = number of bytes to allocate
+LABEL		remalloc		PROC
+		call	[DWORD AllocateBlock]		; Allocate block
+		jnc	SHORT @@Exit			; Error ?
+		xor	eax,eax				; Yes, clear EAX
+@@Exit:		pop	ecx				; Restore context
+		ret
+ENDP
+		END

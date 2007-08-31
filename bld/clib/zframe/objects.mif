@@ -1,0 +1,17 @@
+#                    zda zdd
+#===========================
+!inject frame00.obj  zda zdd
+!inject frame01.obj  zda zdd
+!inject frame02.obj  zda zdd
+!inject frame03.obj  zda zdd
+!inject frame04.obj  zda zdd
+!inject frame05.obj  zda zdd
+!inject frame06.obj  zda zdd
+!inject frame070.obj zda zdd
+!inject frame071.obj zda zdd
+!inject frame072.obj zda zdd
+!inject frame073.obj zda zdd
+!inject frame08.obj  zda zdd
+!inject framedrv.obj     zdd
+
+!include ../../../../objlist.mif

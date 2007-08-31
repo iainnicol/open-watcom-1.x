@@ -1,0 +1,536 @@
+!inject _iaccess.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _aaccess.obj nta
+!inject _paccess.obj ntp
+!inject _maccess.obj
+!inject _iclose_.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _aclose_.obj nta
+!inject _pclose_.obj ntp
+!inject _mclose_.obj
+!inject _ichmod_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _achmod_.obj nta
+!inject _pchmod_.obj ntp
+!inject _mchmod_.obj
+!inject _ichsize.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _achsize.obj nta
+!inject _pchsize.obj ntp
+!inject _mchsize.obj
+!inject _icreat_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _acreat_.obj nta
+!inject _pcreat_.obj ntp
+!inject _mcreat_.obj
+!inject _icwait_.obj nt o16 o32
+!inject _acwait_.obj nta
+!inject _pcwait_.obj ntp
+!inject _mcwait_.obj
+!inject _idup___.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _adup___.obj nta
+!inject _pdup___.obj ntp
+!inject _mdup___.obj
+!inject _idup2__.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _adup2__.obj nta
+!inject _pdup2__.obj ntp
+!inject _mdup2__.obj
+!inject _ieof___.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aeof___.obj nta
+!inject _peof___.obj ntp
+!inject _meof___.obj
+!inject _ifdopen.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _afdopen.obj nta
+!inject _pfdopen.obj ntp
+!inject _mfdopen.obj
+!inject _ifgetch.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _afgetch.obj nta
+!inject _pfgetch.obj ntp
+!inject _mfgetch.obj
+!inject _ifgetwc.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _afgetwc.obj nta
+!inject _pfgetwc.obj ntp
+!inject _mfgetwc.obj
+!inject _iflelen.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aflelen.obj nta
+!inject _pflelen.obj ntp
+!inject _mflelen.obj
+!inject _ifputch.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _afputch.obj nta
+!inject _pfputch.obj ntp
+!inject _mfputch.obj
+!inject _ifputwc.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _afputwc.obj nta
+!inject _pfputwc.obj ntp
+!inject _mfputwc.obj
+!inject _ifstat_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _afstat_.obj nta
+!inject _pfstat_.obj ntp
+!inject _mfstat_.obj
+!inject _iftime_.obj d16 d32 nt o16 o32 q16 q21 w16 w32 osi l32         zda zdd
+!inject _aftime_.obj nta
+!inject _pftime_.obj ntp
+!inject _mftime_.obj
+!inject _igetch_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _agetch_.obj nta
+!inject _pgetch_.obj ntp
+!inject _mgetch_.obj
+!inject _igetche.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _agetche.obj nta
+!inject _pgetche.obj ntp
+!inject _mgetche.obj
+!inject _igetcwd.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _agetcwd.obj nta
+!inject _pgetcwd.obj ntp
+!inject _mgetcwd.obj
+!inject _igetws_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _agetws_.obj nta
+!inject _pgetws_.obj ntp
+!inject _mgetws_.obj
+!inject _idopen_.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 l32     zda zdd
+!inject _adopen_.obj nta
+!inject _pdopen_.obj ntp
+!inject _mdopen_.obj
+!inject _iisatty.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aisatty.obj nta
+!inject _pisatty.obj ntp
+!inject _misatty.obj
+!inject _i_isasc.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _a_isasc.obj nta
+!inject _p_isasc.obj ntp
+!inject _m_isasc.obj
+!inject _iiscsym.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _aiscsym.obj nta
+!inject _piscsym.obj ntp
+!inject _miscsym.obj
+!inject _iiscsyf.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _aiscsyf.obj nta
+!inject _piscsyf.obj ntp
+!inject _miscsyf.obj
+!inject _iismbbk.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aismbbk.obj nta
+!inject _pismbbk.obj ntp
+!inject _mismbbk.obj
+!inject _iislead.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aislead.obj nta
+!inject _pislead.obj ntp
+!inject _mislead.obj
+!inject _iitoa__.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _aitoa__.obj nta
+!inject _pitoa__.obj ntp
+!inject _mitoa__.obj
+!inject _iutoa__.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _autoa__.obj nta
+!inject _putoa__.obj ntp
+!inject _mutoa__.obj
+!inject _ilockin.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _alockin.obj nta
+!inject _plockin.obj ntp
+!inject _mlockin.obj
+!inject _ilseek_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _alseek_.obj nta
+!inject _plseek_.obj ntp
+!inject _mlseek_.obj
+!inject _iltoa__.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _altoa__.obj nta
+!inject _pltoa__.obj ntp
+!inject _mltoa__.obj
+!inject _illtoa_.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _alltoa_.obj nta
+!inject _plltoa_.obj ntp
+!inject _mlltoa_.obj
+!inject _iultoa_.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _aultoa_.obj nta
+!inject _pultoa_.obj ntp
+!inject _multoa_.obj
+!inject _iulltoa.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _aulltoa.obj nta
+!inject _pulltoa.obj ntp
+!inject _mulltoa.obj
+!inject _itccmp_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atccmp_.obj nta
+!inject _ptccmp_.obj ntp
+!inject _mtccmp_.obj
+!inject _itccpy_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atccpy_.obj nta
+!inject _ptccpy_.obj ntp
+!inject _mtccpy_.obj
+!inject _itclen_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atclen_.obj nta
+!inject _ptclen_.obj ntp
+!inject _mtclen_.obj
+!inject _itcschr.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcschr.obj nta
+!inject _ptcschr.obj ntp
+!inject _mtcschr.obj
+!inject _imbscol.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _ambscol.obj nta
+!inject _pmbscol.obj ntp
+!inject _mmbscol.obj
+!inject _itcscmp.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcscmp.obj nta
+!inject _ptcscmp.obj ntp
+!inject _mtcscmp.obj
+!inject _itcscol.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcscol.obj nta
+!inject _ptcscol.obj ntp
+!inject _mtcscol.obj
+!inject _itcscsp.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcscsp.obj nta
+!inject _ptcscsp.obj ntp
+!inject _mtcscsp.obj
+!inject _itcsdec.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsdec.obj nta
+!inject _ptcsdec.obj ntp
+!inject _mtcsdec.obj
+!inject _imbsico.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _ambsico.obj nta
+!inject _pmbsico.obj ntp
+!inject _mmbsico.obj
+!inject _itcsicm.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsicm.obj nta
+!inject _ptcsicm.obj ntp
+!inject _mtcsicm.obj
+!inject _itcsico.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsico.obj nta
+!inject _ptcsico.obj ntp
+!inject _mtcsico.obj
+!inject _itcsinc.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsinc.obj nta
+!inject _ptcsinc.obj ntp
+!inject _mtcsinc.obj
+!inject _itcscle.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcscle.obj nta
+!inject _ptcscle.obj ntp
+!inject _mtcscle.obj
+!inject _itcslwr.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcslwr.obj nta
+!inject _ptcslwr.obj ntp
+!inject _mtcslwr.obj
+!inject _itcsnbc.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnbc.obj nta
+!inject _ptcsnbc.obj ntp
+!inject _mtcsnbc.obj
+!inject _itcsnca.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnca.obj nta
+!inject _ptcsnca.obj ntp
+!inject _mtcsnca.obj
+!inject _imbsnbc.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _ambsnbc.obj nta
+!inject _pmbsnbc.obj ntp
+!inject _mmbsnbc.obj
+!inject _itcsncm.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsncm.obj nta
+!inject _ptcsncm.obj ntp
+!inject _mtcsncm.obj
+!inject _itcsnco.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnco.obj nta
+!inject _ptcsnco.obj ntp
+!inject _mtcsnco.obj
+!inject _itcsncp.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsncp.obj nta
+!inject _ptcsncp.obj ntp
+!inject _mtcsncp.obj
+!inject _itcsncc.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsncc.obj nta
+!inject _ptcsncc.obj ntp
+!inject _mtcsncc.obj
+!inject _itcnccm.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcnccm.obj nta
+!inject _ptcnccm.obj ntp
+!inject _mtcnccm.obj
+!inject _itcnccn.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcnccn.obj nta
+!inject _ptcnccn.obj ntp
+!inject _mtcnccn.obj
+!inject _imbsnco.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _ambsnco.obj nta
+!inject _pmbsnco.obj ntp
+!inject _mmbsnco.obj
+!inject _itcncco.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcncco.obj nta
+!inject _ptcncco.obj ntp
+!inject _mtcncco.obj
+!inject _itcnccp.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcnccp.obj nta
+!inject _ptcnccp.obj ntp
+!inject _mtcnccp.obj
+!inject _imbsnic.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _ambsnic.obj nta
+!inject _pmbsnic.obj ntp
+!inject _mmbsnic.obj
+!inject _itcsnci.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnci.obj nta
+!inject _ptcsnci.obj ntp
+!inject _mtcsnci.obj
+!inject _itcncic.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcncic.obj nta
+!inject _ptcncic.obj ntp
+!inject _mtcncic.obj
+!inject _itcsncs.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsncs.obj nta
+!inject _ptcsncs.obj ntp
+!inject _mtcsncs.obj
+!inject _itcsnex.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnex.obj nta
+!inject _ptcsnex.obj ntp
+!inject _mtcsnex.obj
+!inject _imbsnbi.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _ambsnbi.obj nta
+!inject _pmbsnbi.obj ntp
+!inject _mmbsnbi.obj
+!inject _itcsnic.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnic.obj nta
+!inject _ptcsnic.obj ntp
+!inject _mtcsnic.obj
+!inject _itcnico.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcnico.obj nta
+!inject _ptcnico.obj ntp
+!inject _mtcnico.obj
+!inject _itcsnin.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnin.obj nta
+!inject _ptcsnin.obj ntp
+!inject _mtcsnin.obj
+!inject _itcsnse.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsnse.obj nta
+!inject _ptcsnse.obj ntp
+!inject _mtcsnse.obj
+!inject _itcspbr.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcspbr.obj nta
+!inject _ptcspbr.obj ntp
+!inject _mtcspbr.obj
+!inject _itcsrch.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsrch.obj nta
+!inject _ptcsrch.obj ntp
+!inject _mtcsrch.obj
+!inject _itcsrev.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsrev.obj nta
+!inject _ptcsrev.obj ntp
+!inject _mtcsrev.obj
+!inject _itcsset.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsset.obj nta
+!inject _ptcsset.obj ntp
+!inject _mtcsset.obj
+!inject _itcsspn.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsspn.obj nta
+!inject _ptcsspn.obj ntp
+!inject _mtcsspn.obj
+!inject _itcspnp.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcspnp.obj nta
+!inject _ptcspnp.obj ntp
+!inject _mtcspnp.obj
+!inject _itcsstr.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsstr.obj nta
+!inject _ptcsstr.obj ntp
+!inject _mtcsstr.obj
+!inject _itcstok.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcstok.obj nta
+!inject _ptcstok.obj ntp
+!inject _mtcstok.obj
+!inject _itcsupr.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atcsupr.obj nta
+!inject _ptcsupr.obj ntp
+!inject _mtcsupr.obj
+!inject _imemicm.obj d16 d32 nt o16 o32 w16 w32 l32                     zda zdd
+!inject _amemicm.obj nta
+!inject _pmemicm.obj ntp
+!inject _mmemicm.obj
+!inject _imkdir_.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _amkdir_.obj nta
+!inject _pmkdir_.obj ntp
+!inject _mmkdir_.obj
+!inject _iopen__.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _aopen__.obj nta
+!inject _popen__.obj ntp
+!inject _mopen__.obj
+!inject _iputenv.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aputenv.obj nta
+!inject _pputenv.obj ntp
+!inject _mputenv.obj
+!inject _iputws_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aputws_.obj nta
+!inject _pputws_.obj ntp
+!inject _mputws_.obj
+!inject _iread__.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aread__.obj nta
+!inject _pread__.obj ntp
+!inject _mread__.obj
+!inject _irmdir_.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _armdir_.obj nta
+!inject _prmdir_.obj ntp
+!inject _mrmdir_.obj
+!inject _isetmod.obj d16 d32 nt nvc nvl o16 o32 w16 w32                 zda zdd
+!inject _asetmod.obj nta
+!inject _psetmod.obj ntp
+!inject _msetmod.obj
+!inject _isopen_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _asopen_.obj nta
+!inject _psopen_.obj ntp
+!inject _msopen_.obj
+!inject _istat__.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _astat__.obj nta
+!inject _pstat__.obj ntp
+!inject _mstat__.obj
+!inject _ilstat_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _alstat_.obj nta
+!inject _plstat_.obj ntp
+!inject _mlstat_.obj
+!inject _istrdup.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrdup.obj nta
+!inject _pstrdup.obj ntp
+!inject _mstrdup.obj
+!inject _icstrdu.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _acstrdu.obj nta
+!inject _pcstrdu.obj ntp lpc
+!inject _mcstrdu.obj lmp
+!inject _icwcsdu.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _acwcsdu.obj nta
+!inject _pcwcsdu.obj ntp
+!inject _mcwcsdu.obj
+!inject _istrcmp.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrcmp.obj nta
+!inject _pstrcmp.obj ntp lpc
+!inject _mstrcmp.obj lmp
+!inject _istricm.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astricm.obj nta
+!inject _pstricm.obj ntp
+!inject _mstricm.obj
+!inject _istrico.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrico.obj nta
+!inject _pstrico.obj ntp
+!inject _mstrico.obj
+!inject _istrlwr.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrlwr.obj nta
+!inject _pstrlwr.obj ntp
+!inject _mstrlwr.obj
+!inject _istrnco.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrnco.obj nta
+!inject _pstrnco.obj ntp
+!inject _mstrnco.obj
+!inject _istrnic.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrnic.obj nta
+!inject _pstrnic.obj ntp
+!inject _mstrnic.obj
+!inject _istnico.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astnico.obj nta
+!inject _pstnico.obj ntp
+!inject _mstnico.obj
+!inject _istrnse.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrnse.obj nta
+!inject _pstrnse.obj ntp
+!inject _mstrnse.obj
+!inject _istrrev.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrrev.obj nta
+!inject _pstrrev.obj ntp
+!inject _mstrrev.obj
+!inject _istrset.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrset.obj nta
+!inject _pstrset.obj ntp
+!inject _mstrset.obj
+!inject _istrspn.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrspn.obj nta
+!inject _pstrspn.obj ntp
+!inject _mstrspn.obj
+!inject _istrupr.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrupr.obj nta
+!inject _pstrupr.obj ntp
+!inject _mstrupr.obj
+!inject _istrcc_.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrcc_.obj nta
+!inject _pstrcc_.obj ntp lpc
+!inject _mstrcc_.obj lmp
+!inject _istrncc.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _astrncc.obj nta
+!inject _pstrncc.obj ntp lpc
+!inject _mstrncc.obj lmp
+!inject _itell__.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _atell__.obj nta
+!inject _ptell__.obj ntp
+!inject _mtell__.obj
+!inject _itolowe.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _atolowe.obj nta
+!inject _ptolowe.obj ntp
+!inject _mtolowe.obj
+!inject _itouppe.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _atouppe.obj nta
+!inject _ptouppe.obj ntp
+!inject _mtouppe.obj
+!inject _itzset_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 osi l32         zda zdd
+!inject _atzset_.obj nta
+!inject _ptzset_.obj ntp
+!inject _mtzset_.obj
+!inject _iumask_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aumask_.obj nta
+!inject _pumask_.obj ntp
+!inject _mumask_.obj
+!inject _iunlink.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _aunlink.obj nta
+!inject _punlink.obj ntp
+!inject _munlink.obj
+!inject _iutime_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _autime_.obj nta
+!inject _putime_.obj ntp
+!inject _mutime_.obj
+!inject _iwrite_.obj d16 d32 nt o16 o32 w16 w32 osi                     zda zdd
+!inject _awrite_.obj nta
+!inject _pwrite_.obj ntp
+!inject _mwrite_.obj
+!inject _iw_acce.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _aw_acce.obj nta
+!inject _pw_acce.obj ntp
+!inject _mw_acce.obj
+!inject _iwcscmp.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _awcscmp.obj nta
+!inject _pwcscmp.obj ntp
+!inject _mwcscmp.obj
+!inject _iwcsico.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _awcsico.obj nta
+!inject _pwcsico.obj ntp
+!inject _mwcsico.obj
+!inject _iwcsnco.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _awcsnco.obj nta
+!inject _pwcsnco.obj ntp
+!inject _mwcsnco.obj
+!inject _iwcnico.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _awcnico.obj nta
+!inject _pwcnico.obj ntp
+!inject _mwcnico.obj
+!inject _iw_fsop.obj d16 d32 nt nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+!inject _aw_fsop.obj nta
+!inject _pw_fsop.obj ntp
+!inject _mw_fsop.obj
+!inject _iw_full.obj d16 d32 nt o16 o32 w16 w32                         zda zdd
+!inject _aw_full.obj nta
+!inject _pw_full.obj ntp
+!inject _mw_full.obj
+!inject _iitow__.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aitow__.obj nta
+!inject _pitow__.obj ntp
+!inject _mitow__.obj
+!inject _iltow__.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _altow__.obj nta
+!inject _pltow__.obj ntp
+!inject _mltow__.obj
+!inject _iw_make.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aw_make.obj nta
+!inject _pw_make.obj ntp
+!inject _mw_make.obj
+!inject _iw_spli.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aw_spli.obj nta
+!inject _pw_spli.obj ntp
+!inject _mw_spli.obj
+!inject _iw_spl2.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aw_spl2.obj nta
+!inject _pw_spl2.obj ntp
+!inject _mw_spl2.obj
+!inject _iwtoi__.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _awtoi__.obj nta
+!inject _pwtoi__.obj ntp
+!inject _mwtoi__.obj
+!inject _iwtol__.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _awtol__.obj nta
+!inject _pwtol__.obj ntp
+!inject _mwtol__.obj
+!inject _iultow_.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _aultow_.obj nta
+!inject _pultow_.obj ntp
+!inject _multow_.obj
+!inject _iutow__.obj d16 d32 nt o16 o32 q16 q32 w16 w32 l32             zda zdd
+!inject _autow__.obj nta
+!inject _putow__.obj ntp
+!inject _mutow__.obj

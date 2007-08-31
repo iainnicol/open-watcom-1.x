@@ -1,0 +1,17 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOSAPI.INC'
+		CODESEG
+		EXTRN	DosReturnZero			: PROC
+		PUBLIC	DosFreePages_
+;
+; DECLARATION	int DosFreePages( void *block );
+;
+PROC		DosFreePages_		STDCALL
+		call	[DWORD ReallocatePages]		; Reallocate block
+		jmp	DosReturnZero			; Process return code
+ENDP
+		END

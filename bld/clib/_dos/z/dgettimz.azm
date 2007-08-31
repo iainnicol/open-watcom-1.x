@@ -1,0 +1,40 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOS.INC'
+		INCLUDE	'ZDOSAPI.INC'
+;
+; Assembly variant of dostime_t
+;
+STRUC		TIME
+Hour		DB	?
+Minute		DB	?
+Second		DB	?
+Hundredth	DB	?
+ENDS
+		CODESEG
+		PUBLIC	_dos_gettime_
+;
+; DECLARATION	void _dos_gettime( struct dostime_t *time );
+;
+PROC		_dos_gettime_		STDCALL
+		USES	edx,ecx,ebx
+		mov	ebx,eax				; EBX points to buffer
+		mov	ah,DOS_GET_TIME			; AH = DOS function
+		;
+		; Call DOS services
+		;
+IFDEF __ZDOSDRV__
+		call	[DWORD DosApi]
+ELSE
+		int	DOS
+ENDIF
+		mov	[(TIME ebx).Hour],ch		; Store hour
+		mov	[(TIME ebx).Minute],cl		; Store minute
+		mov	[(TIME ebx).Second],dh		; Store second
+		mov	[(TIME ebx).Hundredth],dl	; Store hundredth
+		ret
+ENDP
+		END

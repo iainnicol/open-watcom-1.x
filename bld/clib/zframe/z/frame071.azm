@@ -1,0 +1,27 @@
+;
+; Copyright (C) 2007 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOSAPI.INC'
+		INCLUDE	'FRAMEBUF.INC'
+		CODESEG
+		EXTRN	BiosReturnZero			: PROC
+		PUBLIC	DosFrameBufferDisableCursor_
+;
+; DECLARATION	int DosFrameBufferDisableCursor( void );
+;
+PROC		DosFrameBufferDisableCursor_	STDCALL
+		;
+		; Disable cursor
+		;
+		mov	eax,FRAMEBUF_CURSOR_OPERATION SHL 8 + FRAMEBUF_CURSOR_OFF
+IFDEF __ZDOSDRV__
+		call	[DWORD DosFrameBuffer]
+ELSE
+		int	FRAME_BUFFER
+ENDIF
+		mov	ebp,esp				; Restore EBP
+		jmp	BiosReturnZero			; Process return code
+ENDP
+		END

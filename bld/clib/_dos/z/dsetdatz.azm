@@ -1,0 +1,45 @@
+;
+; Copyright (C) 2005 Zebor Technology.
+;
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOS.INC'
+		INCLUDE	'ZDOSAPI.INC'
+;
+; Assembly variant of dosdate_t
+;
+STRUC		DATE
+Day		DB	?
+Month		DB	?
+Year		DW	?
+DayOfWeek	DB	?
+ENDS
+		CODESEG
+		EXTRN	C __set_EINVAL			: PROC
+		PUBLIC	_dos_setdate_
+;
+; DECLARATION	unsigned _dos_getdate( struct dosdate_t *date );
+;
+PROC		_dos_setdate_		STDCALL
+		USES	edx,ecx,ebx
+		mov	ebx,eax				; EBX points to buffer
+		mov	al,[(DATE ebx).DayOfWeek]	; AL = day of week
+		movzx	ecx,[(DATE ebx).Year]		; ECX = year
+		mov	dh,[(DATE ebx).Month]		; DL = month
+		mov	dl,[(DATE ebx).Day]		; DL = day
+		mov	ah,DOS_SET_DATE			; AH = DOS function
+		;
+		; Call DOS services
+		;
+IFDEF __ZDOSDRV__
+		call	[DWORD DosApi]
+ELSE
+		int	DOS
+ENDIF
+		movsx	eax,al				; Signextend return code
+		or	eax,eax				; Error ?
+		jns	SHORT @@Exit			; No, we are done
+		call	__set_EINVAL			; Yes, set _errno
+@@Exit:		ret
+ENDP
+		END
