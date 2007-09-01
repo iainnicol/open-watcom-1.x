@@ -19,6 +19,21 @@ namespace ns {
     };
 }
 
+struct E {
+    ~E();
+
+    struct F {
+        ~F();
+    };
+};
+
+E::~E()
+{ }
+
+E::F::~F()
+{ }
+
+
 int main() {
     ::ns::ns2::A a1;
     ns::ns2::A a2;
@@ -35,6 +50,9 @@ int main() {
 
     struct ::ns::D::D d3;
     struct ns::D::D d4;
+
+    E e;
+    E::F f;
 
 
     _PASS;

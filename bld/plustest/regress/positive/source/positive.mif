@@ -433,6 +433,7 @@ positive_tests = &
     friend2.$(ext) &
     friend3.$(ext) &
     friend4.$(ext) &
+    friend5.$(ext) &
     gpf01.$(ext) &
     hier01.$(ext) &
     hier02.$(ext) &
