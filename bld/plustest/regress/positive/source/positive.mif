@@ -246,6 +246,7 @@ positive_tests = &
     cltemp27.$(ext) &
     cltemp28.$(ext) &
     cltemp29.$(ext) &
+    cltemp30.$(ext) &
     cmdln01.$(ext) &
     cmdln02.$(ext) &
     cmdln03.$(ext) &
@@ -434,6 +435,7 @@ positive_tests = &
     friend3.$(ext) &
     friend4.$(ext) &
     friend5.$(ext) &
+    friend6.$(ext) &
     gpf01.$(ext) &
     hier01.$(ext) &
     hier02.$(ext) &
