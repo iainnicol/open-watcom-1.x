@@ -158,8 +158,12 @@ ENDP
         	EXTRN	C _osminor			: BYTE
 		EXTRN	C DriverName			: BYTE
 		PUBLIC	C environ
+		PUBLIC	C _init_387_emulator
 environ		DD	0				; Holds first pointer in environment pointer array
-ConsoleName	DB	'CON',0				; DOS console name
+ConsoleName	DB	'CON'				; DOS console name
+LABEL		_init_387_emulator	BYTE
+		DB	0				; To prevent emulator from coming in with -fpi
+
 		UDATASEG
 		EXTRN	StartOfBSS			: BYTE
 		PUBLIC	C _Envsize

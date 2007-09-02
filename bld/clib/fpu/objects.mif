@@ -15,7 +15,7 @@
 !inject fclex387.obj                     nt
 !inject fenv.obj     d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32     l32         zda zdd
 !inject fpe87.obj    d16                                            o16
-!inject fpe387.obj       d32                                                                                zda zdd
+!inject fpe387.obj       d32
 !inject fpedos4g.obj     d32
 !inject fpeint.obj   d16 d32                                                        w16 w32
 #fixme: should fpeinth.obj be in the netware library?

@@ -161,8 +161,11 @@ SEGMENT		_DATA
 		EXTRN	C _osmajor			: BYTE
         	EXTRN	C _osminor			: BYTE
 		PUBLIC	C environ
+		PUBLIC	C _init_387_emulator
 environ		DD	0				; Holds first pointer in environment pointer array
-ConsoleName	DB	'CON',0				; DOS console name
+ConsoleName	DB	'CON'				; DOS console name
+LABEL		_init_387_emulator	BYTE
+		DB	0				; To prevent emulator from coming in with -fpi
 NullCodeMessage	DB	13,10,'Null code pointer called',0
 ENDS
 
