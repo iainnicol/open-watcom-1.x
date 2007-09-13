@@ -81,9 +81,6 @@ void CPragmaInit( void ) {
     PragmaAuxInit();
 #endif
 
-/* Pragma Alias init */
-    AliasHead = NULL;
-
     SetAuxDefaultInfo();
 
 /* call target specific init */
@@ -436,20 +433,6 @@ void PragEnding( void )
         CurrInfo->use = 1;
         CurrEntry->info = CurrInfo;
     }
-    
-    /* If this pragma defines code, check to see if we already have a function body */   
-    if( CurrEntry->name && CurrEntry->info && CurrEntry->info->code ) {
-        SYM_HANDLE  sym_handle;
-        SYM_ENTRY   sym;
-            
-        if( 0 != ( sym_handle = SymLook( CalcHash( CurrEntry->name, strlen( CurrEntry->name ) ), CurrEntry->name ))) {
-            SymGet( &sym, sym_handle );
-            if( ( sym.flags & SYM_DEFINED ) && ( sym.flags & SYM_FUNCTION ) ) {
-                CErr2p( ERR_SYM_ALREADY_DEFINED, CurrEntry->name );
-            }
-        }
-    }   
-    
     CurrEntry->next = AuxList;
     AuxList = CurrEntry;
 }
@@ -1003,69 +986,6 @@ static void PragExtRef( void )
     }
 }
 
-// #pragma alias(id1/"name1", id2/"name2")
-//
-// Causes linker to replace references to id1/name1 with references
-// to id2/name2. Both the alias and the substituted symbol may be defined
-// either as a string name or an id of existing symbol.
-//
-static void PragAlias( void )
-/***************************/
-{
-    SYM_HANDLE          alias_sym;
-    SYM_HANDLE          subst_sym;
-    const char          *alias_name;
-    const char          *subst_name;
-    struct alias_list   **alias;
-    struct alias_list   *new_alias;
-
-    if( CurToken != T_LEFT_PAREN ) 
-        return;
-
-    NextToken();
-    alias_name = subst_name = NULL;
-    alias_sym  = subst_sym  = NULL;
-
-    if( CurToken == T_ID ) {
-        alias_sym = SymLook( HashValue, Buffer );
-    } else if( CurToken == T_STRING ) {
-        alias_name = CStrSave( Buffer );
-    } else {
-        return;     /* error */
-    }
-    NextToken();
-    MustRecog( T_COMMA );
-    if( CurToken == T_ID ) {
-        subst_sym = SymLook( HashValue, Buffer );
-    } else if( CurToken == T_STRING ) {
-        subst_name = CStrSave( Buffer );
-    } else {
-        return;     /* error */
-    }
-    NextToken();
-
-    /* Add a new alias record - if it's valid - to the list */
-    if( ( alias_name || alias_sym ) && ( subst_name || subst_sym ) ) {
-        for( alias = &AliasHead; *alias != NULL; alias = &(*alias)->next )
-            ; /* nothing to do */
-        new_alias = (void *)CMemAlloc( sizeof( struct alias_list ) );
-        new_alias->next = NULL;
-        if( alias_name ) {
-            new_alias->name = alias_name;
-        } else {
-            new_alias->a_sym = alias_sym;
-        }
-        if( subst_name ) {
-            new_alias->subst = subst_name;
-        } else {
-            new_alias->s_sym = subst_sym;
-        }
-        *alias = new_alias;
-    }
-
-    MustRecog( T_RIGHT_PAREN );
-}
-
 void CPragma( void )
 /******************/
 {
@@ -1126,8 +1046,6 @@ void CPragma( void )
             PragSTDC();
         } else if( PragRecog( "extref" ) ) {
             PragExtRef();
-        } else if( PragRecog( "alias" ) ) {
-            PragAlias();
         } else {
             return;                     /* don't recognize anything */
         }

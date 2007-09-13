@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  COFF output routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -36,7 +37,7 @@
 
 #define FIRST_USER_SECTION              0
 
-// must correspond to owl_cpu enums in owl.h - first entry is for PowerPC
+// must correspond to owl_cpu enums in owl.h - first entry is for POWER PC
 static uint_16 cpuTypes[] = {
     IMAGE_FILE_MACHINE_POWERPC,
     IMAGE_FILE_MACHINE_ALPHA,
@@ -642,12 +643,10 @@ static void formatOneSymbol( owl_symbol_info *symbol,
             buffer->num_aux = 1;
             aux = (coff_sym_weak *)( buffer + 1 );
             aux->tag_index = symbol->x.alt_sym->index;
-            if( symbol->flags & OWL_SYM_ALIAS ) {
-                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_ALIAS;
-            } else if( symbol->flags & OWL_SYM_LAZY ) {
-                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_LIBRARY;
-            } else {
-                aux->characteristics = IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY;
+            if( symbol->flags & OWL_SYM_LAZY ){
+                aux->characteristics = 2;
+            }else{
+                aux->characteristics = 1;
             }
         }
         break;

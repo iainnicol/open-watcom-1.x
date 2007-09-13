@@ -1,11 +1,7 @@
-.func dup2 _dup2
+.func dup2
 #include <&iohdr>
 int dup2( int &fd, int &fd.2 );
 .ixfunc2 '&OsIo' &func
-.if &'length(&_func.) ne 0 .do begin
-int _dup2( int &fd, int &fd.2 );
-.ixfunc2 '&OsIo' &_func
-.do end
 .funcend
 .desc begin
 The &func function duplicates the file &handle given by the argument
@@ -20,11 +16,6 @@ The number of the new &handle is
 .arg &fd.2.
 If a file already is opened with this &handle, the file is closed
 before the duplication is attempted.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
-.do end
 .if '&machsys' eq 'QNX' .do begin
 .pp
 The call

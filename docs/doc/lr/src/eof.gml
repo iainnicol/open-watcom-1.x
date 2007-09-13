@@ -1,11 +1,7 @@
-.func eof _eof
+.func eof
 #include <&iohdr>
 int eof( int &fd );
 .ixfunc2 '&OsIo' &func
-.if &'length(&_func.) ne 0 .do begin
-int _eof( int &fd );
-.ixfunc2 '&OsIo' &_func
-.do end
 .funcend
 .desc begin
 The &func function determines, at the operating system level, if the
@@ -15,11 +11,6 @@ given by
 Because the current file position is set following an input operation,
 the &func function may be called to detect the end of the file before
 an input operation beyond the end of the file is attempted.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
-.do end
 .desc end
 .return begin
 The &func function returns 1 if the current file position is at the
@@ -44,21 +35,21 @@ argument is not a valid file &handle..
 #include <fcntl.h>
 #include <&iohdr>
 
-void main( void )
-{
+void main()
+  {
     int &fd, len;
     char buffer[100];
 .exmp break
     &fd = open( "file", O_RDONLY );
     if( &fd != -1 ) {
-        while( ! eof( &fd ) ) {
-            len = read( &fd, buffer, sizeof(buffer) - 1 );
-            buffer[ len ] = '\0';
-            printf( "%s", buffer );
-        }
-        close( &fd );
+      while( ! eof( &fd ) ) {
+        len = read( &fd, buffer, sizeof(buffer) - 1 );
+        buffer[ len ] = '\0';
+        printf( "%s", buffer );
+      }
+      close( &fd );
     }
-}
+  }
 .exmp end
 .class WATCOM
 .system

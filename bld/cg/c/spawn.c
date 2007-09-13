@@ -30,7 +30,6 @@
 
 
 #include <setjmp.h>
-#include "spawn.h"
 
 static  jmp_buf *SpawnStack;
 

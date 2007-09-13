@@ -24,37 +24,31 @@
 *
 *  ========================================================================
 *
-* Description:  CSpawn() and CSuicide() routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
+#ifdef DEFINE_ASMOPS
 
-#include <setjmp.h>
-#include "cspawn.h"
+#if defined( _STANDALONE_ )
+#include "fullops.gh"
+#else
+#include "inlnops.gh"
+#endif
+#undef DEFINE_ASMOPS
 
-static  jmp_buf *CSpawnStack;
+#else
 
+#ifndef _ASMOPS2_H_
+#define _ASMOPS2_H_
 
-int     CSpawn( void (*fn)( void ) )
-//=================================
-{
-    jmp_buf     *save_env;
-    jmp_buf     env;
-    int         status;
+#if defined( _STANDALONE_ )
+#include "fullops.gh"
+#else
+#include "inlnops.gh"
+#endif
 
-    save_env = CSpawnStack;
-    CSpawnStack = env;
-    status = setjmp( env );
-    if( status == 0 ) {
-        (*fn)();
-    }
-    CSpawnStack = save_env;
-    return( status );
-}
+#endif
 
-
-void    CSuicide( void )
-//=====================
-{
-    longjmp( CSpawnStack, 1 );
-}
+#endif

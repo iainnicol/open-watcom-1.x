@@ -74,7 +74,7 @@
 #include "objstrip.h"
 #include "symtab.h"
 #include "omfreloc.h"
-#include "overlays.h"
+#include "ovlsupp.h"
 #include "wcomdef.h"
 #include "objomf.h"
 #include "wlink.h"

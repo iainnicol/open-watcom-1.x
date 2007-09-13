@@ -11,12 +11,10 @@ memory_model_i86 = s
 
 all : wstub.exe wstubq.exe
 
-!ifeq release 1
 extra_c_flags = -oaxs
-!endif
 
 wstub.exe : wstub.obj
-        $(linker) $(lflags) file $[@
+        $(linker) file $[@ name $^@ op map sys dos
 
 wstubq.exe : wstubq.obj
-        $(linker) $(lflags) file $[@
+        $(linker) file $[@ name $^@ op map sys dos

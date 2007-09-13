@@ -32,4 +32,5 @@
 
 extern unsigned_32      OvlTabOffset;
 
+extern void     OpenOvlFile( outfilelist * );
 extern void     FiniDOSLoadFile( void );

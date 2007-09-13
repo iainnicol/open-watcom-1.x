@@ -30,12 +30,15 @@
 
 #include "asmglob.h"
 
+#include "asmins.h"
 #include "asmeval.h"
 #include "asmexpnd.h"
+#include "asmdefs.h"
 
 #if defined( _STANDALONE_ )
 
 #include "asmalloc.h"
+#include "asmsym.h"
 #include "directiv.h"
 #include "asmlabel.h"
 #include "asminput.h"

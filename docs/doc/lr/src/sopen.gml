@@ -1,4 +1,4 @@
-.func sopen _sopen _wsopen
+.func sopen _wsopen
 #include <&iohdr>
 #include <fcntl.h>
 #include <sys&pc.stat.h>
@@ -7,11 +7,6 @@
 int sopen( const char *filename,
            int access, int share, ... );
 .ixfunc2 '&OsIo' &func
-.if &'length(&_func.) ne 0 .do begin
-int _sopen( const char *filename,
-           int access, int share, ... );
-.ixfunc2 '&OsIo' &_func
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 int _wsopen( const wchar_t *filename,
            int access, int share, ... );
@@ -40,11 +35,6 @@ The optional argument is the file permissions to be used when
 flag is on in the
 .arg access
 mode.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The &wfunc function is identical to &func except that it accepts a
@@ -109,6 +99,7 @@ When an error occurs while opening the file, &minus.1 is returned.
 .im errnoref
 .return end
 .error begin
+.if '&machsys' ne 'PP' .do begin
 .begterm 12
 .termhd1 Constant
 .termhd2 Meaning
@@ -122,6 +113,7 @@ No more &handle.s available (too many open files)
 .term ENOENT
 Path or file not found
 .endterm
+.do end
 .error end
 .see begin
 .im seeioos sopen
@@ -132,8 +124,8 @@ Path or file not found
 #include <fcntl.h>
 #include <share.h>
 
-void main( void )
-{
+void main()
+  {
     int &fd;
 .exmp break
     /* open a file for output                  */
@@ -155,7 +147,7 @@ void main( void )
                 O_WRONLY | O_CREAT | O_APPEND,
                 SH_DENYWR,
                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
-}
+  }
 .exmp end
 .class WATCOM
 .system

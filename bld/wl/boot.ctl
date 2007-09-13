@@ -10,12 +10,13 @@ set PROJDIR=<CWD>
 #==================
     echo rm -f -r <PROJDIR>/<OBJDIR>
     rm -f -r <PROJDIR>/<OBJDIR>
-    wmake -h clean
+    echo rm -f wlsystem.lnk
+    rm -f wlsystem.lnk
 
 [ BLOCK <1> boot ]
 #=================
-    echo Building the wlink bootstrap
-    wmake -h
+    echo Building the wlib bootstrap
+    wsplice -k Pwlsystem specs.sp wlsystem.lnk
     mkdir <PROJDIR>/<OBJDIR>
     cdsay <PROJDIR>/<OBJDIR>
     wmake -h -f ../bootmake

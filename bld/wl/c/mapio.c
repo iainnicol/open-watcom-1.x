@@ -185,13 +185,15 @@ void WriteGroups( void )
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_0 );
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_1 );
         WriteMapNL( 1 );
-        for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
+        currgrp = Groups;
+        while( currgrp != NULL ) {
             if( !currgrp->isautogrp ) { /* if not an autogroup */
                 WriteFormat( 0, currgrp->sym->name );
                 WriteFormat( 32, "%a", &currgrp->grp_addr );
                 WriteFormat( 53, "%h", currgrp->totalsize );
                 WriteMapNL( 1 );
             }
+            currgrp = currgrp->next_group;
         }
     }
 }
@@ -218,10 +220,11 @@ static void WriteAbsSegs( class_entry *cl )
     Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
     Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
     WriteMapNL( 1 );
-    for( ; cl != NULL; cl = cl->next_class ) {
+    while( cl != NULL ) {
         if( ( cl->flags & CLASS_DEBUG_INFO ) == 0 ) {
             RingWalk( cl->segs, WriteAbsSeg );
         }
+        cl = cl->next_class;
     }
 }
 
@@ -244,24 +247,26 @@ static void WriteNonAbsSeg( void *_seg )
     }
 }
 
-void WriteSegs( section *sect )
+void WriteSegs( class_entry *firstcl )
 /*******************************************/
 /* write segment info into mapfile */
 {
-    class_entry     *cl;
+    class_entry         *cl;
 
-    if( sect->classlist != NULL ) {
+    cl = firstcl;
+    if( cl != NULL ) {
         WriteBox( MSG_MAP_BOX_SEGMENTS );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_0 );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL( 1 );
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
+        while( cl != NULL ) {
             if( ( cl->flags & CLASS_DEBUG_INFO ) == 0 ) {
                 RingWalk( cl->segs, WriteNonAbsSeg );
             }
+            cl = cl->next_class;
         }
         if( Absolute_Seg ) {
-            WriteAbsSegs( sect->classlist );
+            WriteAbsSegs( firstcl );
         }
     }
 }

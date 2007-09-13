@@ -36,9 +36,11 @@
 
 #include "asmglob.h"
 
+#include "asmins.h"
 #include "directiv.h"
 #include "condasm.h"
 #include "asmexpnd.h"
+#include "asmdefs.h"
 #include "asmlabel.h"
 
 /* prototypes */

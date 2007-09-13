@@ -32,6 +32,8 @@
 
 #include "asmglob.h"
 
+#include "asmins.h"
+#include "asmdefs.h"
 #include "directiv.h"
 
 #include "myassert.h"

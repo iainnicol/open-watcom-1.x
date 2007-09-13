@@ -97,7 +97,6 @@ extern  void            RegInsDead(void);
 extern  instruction     *FoldIns( instruction * );
 extern  bool            IsUncacheableMemory( name * );
 extern  hw_reg_set      MustSaveRegs(void);
-extern  void            FreePossibleForAlias( conflict_node * );
 
 extern  proc_def         *CurrProc;
 extern  conflict_node    *ConfList;
@@ -201,7 +200,6 @@ static  void    AssignMoreBits( void )
 }
 
 
-#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
 static  void    InitAChoice( name *temp ) {
 /*****************************************/
 
@@ -215,7 +213,6 @@ static  void    InitAChoice( name *temp ) {
         alias = alias->t.alias;
     } while( alias != temp );
 }
-#endif
 
 
 static  void    InitChoices( void )
@@ -224,27 +221,19 @@ static  void    InitChoices( void )
     RL_NUMBER_OF_SETS meaning there are no restrictions as yet.  This
     choice gets more restricted as each instruction involving the
     conflict is expanded.
-
-    For aliased temp vars, just free list of choices (without entry,
-    other code will return RL_NUMBER_OF_SETS meaning there are no
-    restrictions as yet).
 */
 {
     conflict_node       *conf;
-#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     name                *opnd;
     block               *blk;
     instruction         *ins;
     int                 i;
-#endif
 
     conf = ConfList;
     while( conf != NULL ) {
         conf->possible = RL_NUMBER_OF_SETS;
-        FreePossibleForAlias( conf );  /* 2007-07-10 RomanT */
         conf = conf->next_conflict;
     }
-#if 0 /* 2007-07-10 RomanT -- This method is not used anymore */
     if( BlockByBlock ) {
         /* this is WAY faster for BlockByBlock */
         blk = HeadBlock;
@@ -269,7 +258,6 @@ static  void    InitChoices( void )
             opnd = opnd->n.next_name;
         }
     }
-#endif
 }
 
 

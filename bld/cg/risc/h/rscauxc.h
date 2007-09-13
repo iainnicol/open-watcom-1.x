@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Front End callback types (RISC).
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -56,8 +57,3 @@
         VIRT_FUNC_NEXT_REFERENCE,
         EXCEPTION_HANDLER,
         EXCEPTION_DATA,
-        NEXT_ALIAS,
-        ALIAS_NAME,
-        ALIAS_SYMBOL,
-        ALIAS_SUBST_NAME,
-        ALIAS_SUBST_SYMBOL,
