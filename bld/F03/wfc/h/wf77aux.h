@@ -89,7 +89,7 @@ typedef struct aux_entry {
     pass_by             *arg_info;
     byte                sym_len;
     char                sym_name[1];
-};
+}aux_entry;
 
 typedef struct default_lib {
     struct default_lib  *link;
@@ -109,4 +109,9 @@ typedef struct dep_info {
     time_t              time_stamp;
     char                fn[1];
 } dep_info;
+
+
+extern void    DoPragma( char *ptr );
+extern void    CopyAuxInfo( aux_info *dst, aux_info *src );
+
 

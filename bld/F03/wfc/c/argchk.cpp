@@ -50,9 +50,9 @@ bool    InArgList( entry_pt *entry, sym_id sym_ptr )
 	{
         if( ( args->flags & ARG_STMTNO ) == 0 )
 		{
-            if( args->id == sym_ptr ) return( TRUE );
+            if( args->id == sym_ptr ) return true;
         }
         args = args->link;
     }
-    return( FALSE );
+    return false;
 }

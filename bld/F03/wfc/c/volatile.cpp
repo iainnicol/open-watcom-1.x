@@ -49,22 +49,25 @@ extern  sym_id          LkSym(void);
 #define ERR_MASK    (SY_USAGE | SY_TYPE | SY_IN_DIMEXPR | SY_SUBSCRIPTED | \
                      SY_DATA_INIT | SY_SAVED | SY_IN_EC | SY_REFERENCED)
 
-
-void    CpVolatile() {
 //====================
-
+void    CpVolatile() 
+{
 // Compile VOLATILE statement.
 
 //     VOLATILE VAR {,VAR1} . . .
 
     sym_id      sym;
 
-    for(;;) {
-        if( ReqName( NAME_VAR_OR_ARR ) ) {
+    for(;;)
+	{
+        if( ReqName( NAME_VAR_OR_ARR ) )
+		{
             sym = LkSym();
-            if( (sym->ns.flags & ~ERR_MASK ) != SY_VARIABLE ) {
+            if( (sym->ns.flags & ~ERR_MASK ) != SY_VARIABLE )
+			{
                 IllName( sym );
-            } else {
+            } else 
+			{
                 sym->ns.xflags |= SY_VOLATILE;
             }
         }

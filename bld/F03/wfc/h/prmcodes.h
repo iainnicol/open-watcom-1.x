@@ -44,7 +44,9 @@ typedef enum PARAM_CODES {
   PC_FN_OR_SUB,         //  Subprogram name. could be function or subroutine
   PC_STATEMENT,         //  Alternate return specifier.
   PC_RESULT,            //  Expected result type of subprogram.
-  PC_PROC_FAR16 = 0x80
+  PC_PROC_FAR16 = 0x80, //  TODO: this works in C but not in C++, should be fixed
+  PC_PROCEDURE_FAR16 = (PC_PROCEDURE+PC_PROC_FAR16),
+  PC_FN_OR_SUB_FAR16 = (PC_FN_OR_SUB+PC_PROC_FAR16)
 } PARAM_CODES;
 
 

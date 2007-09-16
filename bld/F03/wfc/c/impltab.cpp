@@ -38,6 +38,7 @@
 #include "global.h"
 #include "csetinfo.h"
 #include "types.h"
+#include "impltab.h"
 
 extern  character_set   CharSetInfo;
 

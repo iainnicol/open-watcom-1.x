@@ -56,13 +56,19 @@ extern  sym_id          SymLookup(char *,int);
 extern  char            *STGetName(sym_id,char *);
 extern  sym_id          GTempString(uint);
 extern  void            FreeLabel(label_id);
-extern  int             ParmClass(itnode *);
+extern  PARAM_CODES     ParmClass(itnode *);
 extern  aux_info        *AuxLookup(sym_id);
 extern  aux_info        *AuxLookupName(char *,int);
 extern  aux_info        *AuxLookupAdd(char *,int);
 
 extern  aux_info        ProgramInfo;
 
+
+static  int     DumpArgInfo( itnode *node ); 
+static  void    SetArgAddrs(void); 
+static  void    FinishCALL( itnode *sp ); 
+
+void    GNullRetIdx(void); 
 
 void    GBegCall( itnode *itptr ) {
 //=================================
@@ -143,7 +149,7 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
 }
 
 
-void    GArg() {
+void    GArg(void) {
 //==============
 
 // Generate an argument for subprogram, subscript, or substring.
@@ -225,8 +231,13 @@ static  int     DumpArgInfo( itnode *node ) {
 #if _CPU == 386
                 if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
                     aux = AuxLookup( node->sym_ptr );
-                    if( aux->cclass & FAR16_CALL ) {
-                        parm_code |= PC_PROC_FAR16;
+                    if( (aux->cclass & FAR16_CALL) && (parm_code == PC_PROCEDURE))
+					{   
+                        parm_code = PC_PROCEDURE_FAR16;
+                    }
+                    if( (aux->cclass & FAR16_CALL) && (parm_code == PC_FN_OR_SUB))
+					{   
+                        parm_code = PC_FN_OR_SUB_FAR16;
                     }
                 }
 #endif
@@ -242,7 +253,7 @@ static  int     DumpArgInfo( itnode *node ) {
 }
 
 
-void    GSPProlog() {
+void    GSPProlog(void) {
 //===================
 
 // Generate a subprogram prologue.
@@ -254,7 +265,7 @@ void    GSPProlog() {
 }
 
 
-void    GEPProlog() {
+void    GEPProlog(void) {
 //===================
 
 // Generate an entry point prologue.
@@ -293,7 +304,7 @@ void    GEPProlog() {
 }
 
 
-static  void    SetArgAddrs() {
+static  void    SetArgAddrs(void) {
 //=============================
 
 // Assign addresses to dummy argument arguments.
@@ -313,7 +324,7 @@ static  void    SetArgAddrs() {
 }
 
 
-void    GEpilog() {
+void    GEpilog(void) {
 //=================
 
 // Generate a subprogram epilogue.
@@ -330,7 +341,7 @@ void    GEpilog() {
 }
 
 
-void    GReturn() {
+void    GReturn(void) {
 //=================
 
 // Generate a return from the program.
@@ -339,7 +350,7 @@ void    GReturn() {
 }
 
 
-void    GEndBlockData() {
+void    GEndBlockData(void) {
 //=======================
 
 // Terminate a block data subprogram.
@@ -349,7 +360,7 @@ void    GEndBlockData() {
 }
 
 
-void    GGotoEpilog() {
+void    GGotoEpilog(void) {
 //=====================
 
 // Generate a branch to the epilogue.
@@ -361,7 +372,7 @@ void    GGotoEpilog() {
 }
 
 
-void    GRetIdx() {
+void    GRetIdx(void) {
 //=================
 
 // Generate an alternate return.
@@ -372,7 +383,7 @@ void    GRetIdx() {
 }
 
 
-void    GNullRetIdx() {
+void    GNullRetIdx(void) {
 //=====================
 
 // No alternate return.
@@ -383,7 +394,7 @@ void    GNullRetIdx() {
 }
 
 
-void    GCallNoArgs() {
+void    GCallNoArgs(void) {
 //=====================
 
 // Generate a CALL with no arguments.
@@ -394,7 +405,7 @@ void    GCallNoArgs() {
 }
 
 
-void    GCallWithArgs() {
+void    GCallWithArgs(void) {
 //=======================
 
 // Generate a CALL with arguments.
