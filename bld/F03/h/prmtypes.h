@@ -55,7 +55,8 @@
 enum PARAM_TYPES {
 #include "ptypdefn.h"
 
-  VAR_LEN_CHAR = 0x80
+  VAR_LEN_CHAR = 0x80,
+  PT_VAR_LEN_CHAR = (PT_CHAR|VAR_LEN_CHAR)
 };
 
 typedef enum PARAM_TYPES PTYPE;
