@@ -247,9 +247,9 @@ void    STUnShadow( sym_id sym ) {
 
     sym_id      shadow;
 
-    sym->ns.flags &= ~SY_SPECIAL_PARM;
+    sym->ns.flags &= (unsigned_16)~SY_SPECIAL_PARM;//does ~ extend to 32 bit??
     shadow = FindShadow( sym );
-    shadow->ns.flags &= ~SY_SPECIAL_PARM;
+    shadow->ns.flags &= (unsigned_16)~SY_SPECIAL_PARM;// dito?? not needed in C
     shadow->ns.si.ms.sym = NULL;
 }
 
