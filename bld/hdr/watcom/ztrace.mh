@@ -1,0 +1,54 @@
+/*
+ *  ztrace.h
+ *
+:include crwat.sp
+ */
+#ifndef _ZTRACE_H_INCLUDED
+#define _ZTRACE_H_INCLUDED
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+#pragma pack(__push,1);
+
+/* Structures */
+
+typedef struct
+{
+	unsigned int	EDI, ESI, EBP, ErrorCode, EBX, EDX, ECX, EAX;
+	unsigned int	EIP, CS, EFLAGS, ESP, SS, ES, DS, FS, GS;
+} TCPU;
+
+typedef struct
+{
+	unsigned char FpuContext[108];
+} TFPU;
+
+typedef struct
+{
+	unsigned int	DR0, DR1, DR2, DR3, DR7;
+} TDEBUG;
+
+/* Trace functions */
+
+int	DosTraceOpenSession ( TCPU *context );
+int	DosTraceCloseSession ( void );
+int	DosTraceSingleStep ( int *event, TCPU *context );
+int	DosTraceRun ( int *event, TCPU *context );
+int	DosTraceSetBreakPoints ( int count, unsigned char *values,
+		                         void *locations );
+int	DosTraceClearBreakPoints ( int count,unsigned char *values,
+		                           void *locations );
+int	DosTraceCopyFromClient ( int count, unsigned from, void *to );
+int	DosTraceCopyToClient ( int count, void *from, unsigned to );
+int	DosTraceGetCpuContext ( TCPU *context );
+int	DosTraceSetCpuContext ( TCPU *context );
+int	DosTraceGetFpuContext ( TFPU *context );
+int	DosTraceSetFpuContext ( TFPU *context );
+int	DosTraceGetDebugContext ( TDEBUG *context );
+int	DosTraceSetDebugContext ( TDEBUG *context );
+
+#pragma pack(__pop);
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
+#endif

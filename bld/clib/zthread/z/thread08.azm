@@ -13,6 +13,7 @@
 ;
 PROC		DosGetPriority_		STDCALL
 		push	edx				; Save context
+		mov	edx,eax				; EDX = TID
 		;
 		; Get priority
 		;

@@ -1,0 +1,170 @@
+/*
+ *  zframe.h
+ *
+:include crwat.sp
+ */
+#ifndef _ZFRAME_H_INCLUDED
+#define _ZFRAME_H_INCLUDED
+
+/* Raster operations */
+
+#define ROP_ZEROS                    0
+#define ROP_SRC_AND_DST              1
+#define ROP_SRC_AND_NOT_DST          2
+#define ROP_SRC                      3
+#define ROP_NOT_SRC_AND_DST          4
+#define ROP_DST                      5
+#define ROP_SRC_XOR_DST              6
+#define ROP_SRC_OR_DST               7
+#define ROP_NOT_SCR_AND_NOT_DST      8
+#define ROP_SRC_XOR_NOT_DST          9
+#define ROP_NOT_DST                  10
+#define ROP_SRC_OR_NOT_DST           11
+#define ROP_NOT_SRC                  12
+#define ROP_NOT_SRC_OR_DST           13
+#define ROP_NOT_SRC_OR_NOT_DST       14
+#define ROP_ONES                     15
+
+/* Frame buffer image types */
+
+#define FRAME_BUFFER_IMAGE_COLOR     0
+#define FRAME_BUFFER_IMAGE_MONO      1
+#define FRAME_BUFFER_IMAGE_DITHER    2
+
+/* Frame buffer error codes */
+
+#define FRAME_BUFFER_BAD_FUNCTION    -1
+#define FRAME_BUFFER_PAGE_FAULT      -221
+#define FRAME_BUFFER_BAD_PARAMETER   -240
+#define FRAME_BUFFER_BAD_STATE       -241
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+#pragma pack(__push,1);
+
+/* Structures and unions */
+
+typedef struct
+{
+   unsigned int   BufferPointer;     /* Linear address of frame buffer */
+   unsigned int   BufferSize;        /* Frame buffer size in bytes */
+   unsigned int   ScanLineSize;      /* Scan line size in bytes */
+   unsigned int   ActivePixels;      /* Number of active pixels/scan line */
+   unsigned int   ActiveLines;       /* Number of active scan lines */
+   unsigned char  CharacterWidth;    /* Character width in pixels */
+   unsigned char  CharacterHeight;   /* Character height in scan lines */
+   unsigned char  PixelSize;         /* Bits/pixel */
+   unsigned char  ImagePages;        /* Number of image pages */
+   unsigned char  RedMask;           /* Red color bit mask length */
+   unsigned char  RedPosition;       /* Red color bit position */
+   unsigned char  GreenMask;         /* Green color bit mask length */
+   unsigned char  GreenPosition;     /* Green color bit position */
+   unsigned char  BlueMask;          /* Blue color bit mask length */
+   unsigned char  BluePosition;      /* Blue color bit position */
+   unsigned char  ReservedMask;      /* Reserved color bit mask length */
+   unsigned char  ReservedPosition;  /* Reserved color bit position */
+   unsigned char  BaseColumn;        /* Console base column */
+   unsigned char  BaseRow;           /* Console base row */
+   unsigned char  MaxColumns;        /* Maximum number of console columns */
+   unsigned char  MaxRows;           /* Maximum number of console rows */
+} FRAMEBUF_INFO;
+
+typedef struct
+{
+   unsigned int   ImageType;         /* Image type = FRAME_BUFFER_IMAGE_COLOR */
+   unsigned char  ImageData;         /* Image data starts here */
+} COLOR_IMAGE8;
+
+typedef struct
+{
+   unsigned int   ImageType;         /* Image type = FRAME_BUFFER_IMAGE_COLOR */
+   unsigned short ImageData;         /* Image data starts here */
+} COLOR_IMAGE16;
+
+typedef struct
+{
+   unsigned int   ImageType;         /* Image type = FRAME_BUFFER_IMAGE_COLOR */
+   unsigned int   ImageData;         /* Image data starts here */
+} COLOR_IMAGE32;
+
+typedef struct
+{
+   unsigned int   ImageType;         /* Image type = FRAME_BUFFER_IMAGE_MONO */
+   unsigned int   Forground;         /* Forground color */
+   unsigned int   Background;        /* Background color */
+   unsigned char  ImageData;         /* Image data starts here */
+} MONO_IMAGE;
+
+typedef struct
+{
+   unsigned int   ImageType;         /* Image type = FRAME_BUFFER_IMAGE_DITHER */
+   unsigned int   Color1;            /* First color */
+   unsigned int   Color2;            /* Second color */
+   unsigned int   Color3;            /* Third color */
+   unsigned int   Color4;            /* Fourth color */
+   unsigned char  ImageData;         /* Image data starts here */
+} DITHER_IMAGE;
+
+typedef union
+{
+   COLOR_IMAGE8   Color8;            /* Color image 8-bit */
+   COLOR_IMAGE16  Color16;           /* Color image 16-bit */
+   COLOR_IMAGE32  Color32;           /* Color image 32-bit */
+   MONO_IMAGE     Mono;              /* Mono image */
+   DITHER_IMAGE   Dither;            /* Dither image */
+} FRAMEBUF_IMAGE;
+
+/* Frame buffer functions */
+
+int DosFrameBufferInformation( FRAMEBUF_INFO *info );
+int DosFrameBufferEnableConsole( void );
+int DosFrameBufferDisableConsole( void );
+int DosFrameBufferSetConsoleWindow( int LowerY, int LowerX, int UpperY,
+                                    int UpperX );
+int DosFrameBufferFillRectangle( int rop, int color, int x, int y, int height,
+                                 int width );
+int DosFrameBufferCopyRectangle( int rop, int fromX, int fromY, int height,
+                                 int width, int toX, int toY );
+int DosFrameBufferDrawImage( int rop, int X, int Y, int height, int width,
+                             FRAMEBUF_IMAGE *image );
+int DosFrameBufferCursorOn( void );
+int DosFrameBufferCursorOff( void );
+int DosFrameBufferCursorShape( int hotspotX, int hotspotY, int color0,
+                               int color1, void *bitmap, int size );
+int DosFrameBufferCursorPosition( int X, int Y );
+int DosFrameBufferSetPalette( int index, int blue, int red, int green );
+
+/* Parameter overrides for some of the above functions */
+
+#pragma aux DosFrameBufferInformation parm [EDI];
+#pragma aux DosFrameBufferFillRectangle parm [EAX][EBX][ECX][EDX][ESI][EDI];
+#pragma aux DosFrameBufferCopyRectangle parm [EAX][ECX][EDX][ESI][EDI][EBX];
+#pragma aux DosFrameBufferDrawImage parm [EAX][ECX][EDX][ESI][EDI][EBX];
+#pragma aux DosFrameBufferCursorShape parm [EBX][EAX][ECX][EDX][ESI][EDI];
+#pragma aux DosFrameBufferCursorPosition parm [ECX][EDX];
+
+/* Frame buffer driver functions */
+
+int DosFrameBufferInstallDriver( void );
+
+/* Frame buffer driver prototypes */
+
+int FrameBufferFillRectangle( int rop, int color, int x, int y, int height,
+                              int width );
+int FrameBufferCopyRectangle( int rop, int fromX, int fromY, int height,
+                              int width, int toX, int toY );
+int FrameBufferDrawImage( int rop, int X, int Y, int height, int width,
+                          FRAMEBUF_IMAGE *image );
+int FrameBufferCursorOn( void );
+int FrameBufferCursorOff( void );
+int FrameBufferCursorShape( int hotspotX, int hotspotY, int color0,
+                            int color1, void *bitmap, int size );
+int FrameBufferCursorPosition( int X, int Y );
+int FrameBufferSetPalette( int index, int blue, int red, int green );
+
+#pragma pack(__pop);
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
+#endif

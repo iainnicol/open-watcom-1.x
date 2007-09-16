@@ -1,0 +1,304 @@
+/*
+ *  zdos.h
+ *
+:include crwat.sp
+ */
+#ifndef _ZDOS_H_INCLUDED
+#define _ZDOS_H_INCLUDED
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+#pragma pack(__push,1);
+
+/* File attributes */
+
+#ifndef _DOS_H_INCLUDED
+#define _A_NORMAL             0x00  /* Normal file */
+#define _A_RDONLY             0x01  /* Read only file */
+#define _A_HIDDEN             0x02  /* Hidden file */
+#define _A_SYSTEM             0x04  /* System file */
+#define _A_VOLID              0x08  /* Volume label */
+#define _A_SUBDIR             0x10  /* Subdirectory */
+#define _A_ARCH               0x20  /* Archive file */
+#endif
+
+/* File opening modes */
+
+#define MODE_ALLOW_READ       0x01  /* Allow reading for owner */
+#define MODE_ALLOW_WRITE      0x02  /* Allow writing for owner */
+#define MODE_DENY_READ        0x04  /* Others can't read */
+#define MODE_DENY_WRITE       0x08  /* Others can't write */
+#define MODE_LOCAL            0x80  /* File not inherited by child process */
+#define MODE_READ_ONLY        0x0d  /* Exclusive access read only file */
+#define MODE_WRITE_ONLY       0x0e  /* Exclusive access write only file */
+#define MODE_READ_AND_WRITE   0x0f  /* Exlusive access read and write file */
+
+/* Seek methods */
+
+#define SEEK_FROM_START       0     /* Absolute offset from start of file */
+#define SEEK_FROM_CURRENT     1     /* Signed offset from current position */
+#define SEEK_FROM_END         2     /* Signed offset from end of file */
+
+/* Execute process flags */
+
+#define PROCESS_FORGROUND     0     /* Run new process in forground */
+#define PROCESS_BACKGROUND    1     /* Run new process in background */
+#define PROCESS_NEW_CONSOLE   2     /* Run new process on new console */
+
+/* Execute process trace flags */
+
+#define PROCESS_TRACE_OFF     0     /* Disable process tracing */
+#define PROCESS_TRACE_ON      1     /* Enable process tracing */
+
+/* Structures */
+
+typedef struct
+{
+   int            SPC;              /* Sectors Per Cluster */
+   int            ID;               /* Media ID byte */
+   int            BPS;              /* Bytes Per Sector */
+   unsigned int   TC;               /* Total number of clusters */
+} DRVDATA;
+
+typedef struct
+{
+   unsigned char  Drive;            /* Logical drive number */
+   unsigned char  Unit;             /* Block device unit number */
+   unsigned char  Flags;            /* Flags */
+   unsigned char  CSS;              /* Cluster Size Shift count */
+   unsigned char  NFAT;             /* Number of FATs (only on FAT file system) */
+   unsigned char  MD;               /* Media descriptor */
+   unsigned char  FSID;             /* File System ID */
+   int            BPS;              /* Bytes Per Sector */
+   int            MDE;              /* Max Directory Entries (in root directory) */
+   unsigned       TC;               /* Total Clusters */
+   int            SPF;              /* Sectors Per Fat (only on FAT file systems) */
+   int            ClusterSize;      /* Cluster size in bytes */
+   int            FatSector;        /* First sector of FAT area (on FAT file systems) */
+   int            RootDirSector;    /* First sector of root directory area (on FAT file systems) */
+   int            DataSector;       /* First sector of data area (on FAT file systems) */
+   unsigned int   NextCluster;      /* Where to start searching for next free cluster */
+   unsigned int   FreeClusters;     /* Number of free clusters */
+   char           FileSystem[8];    /* File system ID string */
+} DRVINFO;
+
+typedef struct
+{
+#if defined(__ZDOSDRV__)
+   unsigned int   Flags,EDI,ESI,EBP,ESP,EBX,EDX,ECX,EAX;
+#else
+   unsigned int   GS,FS,ES,DS,EDI,ESI,EBP,ESP,EBX,EDX,ECX,EAX;
+   unsigned short Error, Exception;
+   unsigned int   EIP,CS,EFLAGS;
+#endif
+} CONTEXT;
+
+typedef struct
+{
+   int            Year;             /* 1980 - */
+   char           Month;            /* 1 - 12 */
+   char           Day;              /* 1 - 31 */
+   char           DayOfWeek;        /* 0 - 6 */
+   char           Unused;           /* For alignment */
+} DOSDATE;
+
+typedef struct
+{
+   char           Hour;             /* 0 - 23 */
+   char           Minute;           /* 0 - 59 */
+   char           Second;           /* 0 - 59 */
+   char           Hundredths;       /* 0 - 99 */
+} DOSTIME;
+
+typedef struct
+{
+   int            SPC;              /* Sectors Per Cluster */
+   unsigned int   FreeClusters;     /* Number of free clusters */
+   int            BPS;              /* Bytes Per Sector */
+   unsigned int   TC;               /* Total Clusters */
+} DRVSPACE;
+
+typedef struct
+{
+   short          DateFormat;       /* Date format type 0 - */
+   char           Currency[5];      /* Currency symbol string */
+   char           Thousands[2];     /* Thousands separator string */
+   char           Decimal[2];       /* Decimal separator string */
+   char           DateSeparator[2]; /* Date separator string */
+   char           TimeSeparator[2]; /* Time separator string */
+   unsigned char  CurrencyFormat;   /* Currency format bit field */
+   char           Decimals;         /* Number of digits after decimal in currency */
+   char           TimeFormat;       /* 12-hour or 24-hour format indicator */
+   char           DataSeparator[2]; /* Datalist separator */
+   void           (*CaseMap)(void); /* Address of case mapping routine */
+} COUNTRY;
+
+typedef struct
+{
+   char           Reserved[21];     /* Reserved for use by ZDOS */
+   char           Attribute;        /* Attribute byte */
+   unsigned int   TimeStamp;        /* Time and date of last write */
+   unsigned long  Size;             /* Length of file in bytes */
+   char           Name[13];         /* Zero terminated filename */
+   char           Unused;           /* For alignment */
+   unsigned int   Zdos;             /* Reserved for use by ZDOS */
+} FIND;
+
+/* Character I/O functions */
+
+int      DosConsoleInput( void );
+int      DosConsoleOutput( int character );
+int      DosAuxiliaryInput( void );
+int      DosAuxiliaryOutput( int character );
+int      DosPrinterOutput( int character );
+int      DosDirectConsoleInput( void );
+int      DosDirectConsoleOutput( int character );
+int      DosConsoleInputRaw( void );
+int      DosConsoleInputNoEcho( void );
+int      DosConsoleDisplayString( char *dos_message );
+int      DosConsoleBufferedInput( char * buffer );
+int      DosCheckInputStatus( void );
+int      DosFlushBeforeInput( int function, char *buffer );
+
+/* Drive management functions */
+
+int      DosDiskReset( void );
+int      DosSetCurrentDrive( int drive );
+int      DosGetCurrentDrive( void );
+int      DosGetCurrentDriveData( DRVDATA *data );
+int      DosGetDriveData( int drive, DRVDATA *data );
+int      DosGetCurrentDriveInfo( DRVINFO *info );
+int      DosGetDriveInfo( int drive, DRVINFO *info );
+int      DosGetDriveFreeSpace( DRVSPACE *drvspace, int drive );
+int      DosGetVerifyFlag( void );
+int      DosAbsoluteDiskRead(int drive, unsigned sector, void *buffer,
+                             int count );
+int      DosAbsoluteDiskWrite( int drive, unsigned sector, void *buffer,
+                               int count );
+
+/* Environment management functions */
+
+int      DosEnvVariableLength( char *name );
+int      DosGetEnvVariable( char *name, char *buffer );
+int      DosSetEnvVariable( char *string );
+int      DosEnvironmentLength( void );
+int      DosGetEnvironment( char *buffer );
+int      DosGetProcessPath( char *buffer );
+void     DosResetEnvironment( void );
+
+/* Time, date and timer functions */
+
+int      DosGetDate( DOSDATE *date );
+int      DosSetDate( DOSDATE *date );
+int      DosGetTime( DOSTIME *time );
+int      DosSetTime( DOSTIME *time );
+unsigned DosElapsedPeriodicTicks( unsigned referencetime );
+unsigned DosElapsedTimerTicks( unsigned referencetime );
+
+/* Process management functions */
+
+void     DosTerminateProcess( void );
+void     DosTerminateResident( int retcode, int memsize );
+int      DosGetCommandLine( char *buffer );
+int      DosExecuteProcess( int priority, char *path, void *env, int flags,
+                            int trace, char *cmdline );
+void     DosExitProcess( int exitcode );
+int      DosGetChildReturnCode( int PID );
+int      DosGetPID( void );
+
+/* Miscellaneous system functions */
+
+void     DosSetVector( int intnum, void ( __cdecl *handler )( CONTEXT ) );
+int      DosSetVerifyFlag( int onoff );
+int      DosGetVersion( void );
+int      DosGetBreakFlag( void );
+int      DosSetBreakFlag( int flag );
+int      DosGetAndSetBreakFlag( int flag );
+void     ( __cdecl *DosGetVector ( int vectornumber ) )( CONTEXT );
+int      DosGetSwitchCharacter( void );
+int      DosSetSwitchCharacter( int character );
+int      DosGetCountryInformation( int code, COUNTRY *data );
+int      DosSetCountryInformation( int code );
+void     DosSound( int frequency, int ticks );
+int      DosExtendedCountryInfo( int subfunction, int country, int codepage,
+                                 int length, void *buffer );
+int      DosGetDefaultCodePage( void );
+int      DosGetActiveCodePage( void );
+int      DosSetActiveCodePage( int codepage );
+void     DosIdle( void );
+void     DosConsoleFastOutput( char character );
+void     DosCommand( char *commandline );
+
+/* Directory operation functions */
+
+int      DosCreateDirectory( char *path );
+int      DosDeleteDirectory( char *path );
+int      DosSetCurrentDirectory( char *path );
+int      DosGetCurrentDirectory( int drive, char *buffer );
+
+/* File operation functions */
+
+int      DosCreateFile( int attributes, char *path );
+int      DosOpenFile( int mode, char *path );
+int      DosCloseFile( int handle );
+int      DosReadFile( int bytes, void *buffer, int handle );
+int      DosWriteFile( int bytes, void *buffer, int handle );
+int      DosDeleteFile( char *path );
+int      DosSetFilePosition( int method, unsigned offset, int handle,
+                             unsigned *position );
+int      DosGetFileAttributes( char *path );
+int      DosSetFileAttributes( int attributes, char *path );
+int      DosDuplicateHandle( int handle );
+int      DosForceDuplicateHandle( int filehandle, int redirecthandle );
+int      DosFindFirstFile( int attr, char *path, FIND *find );
+int      DosFindNextFile( FIND *find );
+int      DosRenameFile( char *currentname, char *newname );
+int      DosGetFileTimeStamp( int handle, unsigned int *timestamp );
+int      DosSetFileTimeStamp( int handle, unsigned int timestamp );
+int      DosCreateTemporaryFile( int attributes, char *path );
+int      DosCreateNewFile( int attributes, char *path );
+int      DosLockFileRegion( unsigned length, unsigned offset, int handle );
+int      DosUnlockFileRegion( unsigned length, unsigned offset, int handle );
+int      DosGetActualFileName( char *path, char *buffer );
+int      DosCreateUniqueFile( int attributes, char *path, char *buffer );
+int      DosCommitFile( int handle );
+
+/* Device operation functions */
+
+int      DosIoctlGetDeviceInfo( int handle );
+int      DosIoctlSetDeviceInfo( int handle, int deviceinfo );
+int      DosIoctlReadCharDevice( int bytes, void *buffer, int handle );
+int      DosIoctlWriteCharDevice( int bytes, void *buffer, int handle );
+int      DosIoctlReadBlockDevice( int bytes, void *buffer, int drive );
+int      DosIoctlWriteBlockDevice( int bytes, void *buffer, int drive );
+int      DosIoctlDeviceInputStatus( int handle );
+int      DosIoctlDeviceOutputStatus( int handle );
+int      DosIoctlDeviceRemovable( int drive );
+int      DosIoctlDeviceRemote( int drive );
+int      DosIoctlHandleRemote( int handle );
+int      DosIoctlSetRetryCount( int pause, int retries );
+int      DosIoctlGenericCharIO( int category, void *buffer, int handle,
+                                int function );
+int      DosIoctlGenericBlockIO( int category, void *buffer, int drive,
+                                 int function );
+int      DosIoctlGetDriveMapping( int drive );
+int      DosIoctlSetDriveMapping( int drive );
+int      DosIoctlReadTrack( void *buffer, int track, int drive, int sector,
+                            int head, int count );
+int      DosIoctlWriteTrack( void *buffer, int track, int drive, int sector,
+                             int head, int count );
+int      DosIoctlVerifyTrack( int head, int track, int drive );
+int      DosIoctlFormatTrack( int head, int track, int drive );
+
+/* Memory management functions */
+
+int      DosAllocateMemoryBlock( int pages, void **block );
+int      DosFreeMemoryBlock( void *block );
+int      DosResizeMemoryBlock( int numpages, void *block );
+
+#pragma pack(__pop);
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
+#endif
