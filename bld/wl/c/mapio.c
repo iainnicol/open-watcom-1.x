@@ -31,7 +31,6 @@
 
 
 #include <limits.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -186,13 +185,15 @@ void WriteGroups( void )
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_0 );
         Msg_Write_Map( MSG_MAP_TITLE_GROUP_1 );
         WriteMapNL( 1 );
-        for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
+        currgrp = Groups;
+        while( currgrp != NULL ) {
             if( !currgrp->isautogrp ) { /* if not an autogroup */
                 WriteFormat( 0, currgrp->sym->name );
                 WriteFormat( 32, "%a", &currgrp->grp_addr );
                 WriteFormat( 53, "%h", currgrp->totalsize );
                 WriteMapNL( 1 );
             }
+            currgrp = currgrp->next_group;
         }
     }
 }
@@ -208,6 +209,22 @@ static void WriteAbsSeg( void *_leader )
         WriteFormat( 40, "%a", &leader->seg_addr );
         WriteFormat( 60, "%h", leader->size );
         WriteMapNL( 1 );
+    }
+}
+
+static void WriteAbsSegs( class_entry *cl )
+/*****************************************/
+/* write absolute segment info into mapfile */
+{
+    WriteBox( MSG_MAP_BOX_ABS_SEG );
+    Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
+    Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
+    WriteMapNL( 1 );
+    while( cl != NULL ) {
+        if( ( cl->flags & CLASS_DEBUG_INFO ) == 0 ) {
+            RingWalk( cl->segs, WriteAbsSeg );
+        }
+        cl = cl->next_class;
     }
 }
 
@@ -230,68 +247,27 @@ static void WriteNonAbsSeg( void *_seg )
     }
 }
 
-typedef struct seg_info {
-    unsigned    idx;
-    seg_leader  *seg;
-} seg_info;
-
-static int cmp_seg( const void *a, const void *b )
-/*************************************************/
-{
-    if( ((seg_info *)a)->seg->seg_addr.seg == ((seg_info *)b)->seg->seg_addr.seg ) {
-        if( ((seg_info *)a)->seg->seg_addr.off == ((seg_info *)b)->seg->seg_addr.off )
-            return( ((seg_info *)a)->idx - ((seg_info *)b)->idx );
-        return( ((seg_info *)a)->seg->seg_addr.off - ((seg_info *)b)->seg->seg_addr.off );
-    }
-    return( ((seg_info *)a)->seg->seg_addr.seg - ((seg_info *)b)->seg->seg_addr.seg );
-}
-
-void WriteSegs( section *sect )
+void WriteSegs( class_entry *firstcl )
 /*******************************************/
 /* write segment info into mapfile */
 {
-    class_entry     *cl;
-    unsigned        count;
-    unsigned        i;
-    seg_leader      *seg;
-    seg_info        *segs;
+    class_entry         *cl;
 
-    if( sect->classlist != NULL ) {
+    cl = firstcl;
+    if( cl != NULL ) {
         WriteBox( MSG_MAP_BOX_SEGMENTS );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_0 );
         Msg_Write_Map( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL( 1 );
-        count = 0;
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
+        while( cl != NULL ) {
             if( ( cl->flags & CLASS_DEBUG_INFO ) == 0 ) {
-                count += RingCount( cl->segs );
+                RingWalk( cl->segs, WriteNonAbsSeg );
             }
-        }
-        _ChkAlloc( segs, count * sizeof( seg_info ) );
-        count = 0;
-        for( cl = sect->classlist; cl != NULL; cl = cl->next_class ) {
-            if( ( cl->flags & CLASS_DEBUG_INFO ) == 0 ) {
-                seg = NULL;
-                while( (seg = RingStep( cl->segs, seg )) != NULL ) {
-                    segs[ count ].idx = count;
-                    segs[ count++ ].seg = seg;
-                }
-            }
-        }
-        qsort( segs, count, sizeof( seg_info ), cmp_seg );
-        for( i = 0; i < count; ++i ) {
-            WriteNonAbsSeg( segs[ i ].seg );
+            cl = cl->next_class;
         }
         if( Absolute_Seg ) {
-            WriteBox( MSG_MAP_BOX_ABS_SEG );
-            Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_0 );
-            Msg_Write_Map( MSG_MAP_TITLE_ABS_SEG_1 );
-            WriteMapNL( 1 );
-            for( i = 0; i < count; ++i ) {
-                WriteAbsSeg( segs[ i ].seg );
-            }
+            WriteAbsSegs( firstcl );
         }
-        _LnkFree( segs );
     }
 }
 

@@ -32,7 +32,9 @@
 
 #include "asmglob.h"
 
+#include "asmdefs.h"
 #include "asmalloc.h"
+#include "asmins.h"
 #include "directiv.h"
 #include "asmexpnd.h"
 #include "asminput.h"

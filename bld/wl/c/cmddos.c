@@ -394,13 +394,14 @@ static void PrintOvl( void )
 
 static void PrintAreas( OVL_AREA *ovlarea )
 {
-    for( ; ovlarea != NULL; ovlarea = ovlarea->next_area ) {
+    while( ovlarea != NULL ) {
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "Begin OverLay Area" ));
         PrintSect( ovlarea->sections );
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "End OverLay Area" ));
+        ovlarea = ovlarea->next_area;
     }
 }
 
@@ -411,17 +412,20 @@ static void PrintSect( section *sect )
     file_list * list;
 
     OvlLevel++;
-    for( ; sect != NULL; sect = sect->next_sect ) {
+    while( sect != NULL ) {
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "OverLay #%d   Level %d", sect->ovl_num, OvlLevel ));
         DEBUG(( DBG_OLD, "Files:" ));
-        if( sect->files == NULL ) {
+        list = sect->files;
+        if( list == NULL ) {
             DEBUG(( DBG_OLD, "\"Non-section\"" ));
         }
-        for( list = sect->files; list != NULL; list = list->next_file ) {
+        while( list != NULL ) {
             DEBUG(( DBG_OLD, "%s", list->file->name ));
+            list = list->next_file;
         }
         PrintAreas( sect->areas );
+        sect = sect->next_sect;
     }
     OvlLevel--;
 }

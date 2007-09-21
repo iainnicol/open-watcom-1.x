@@ -82,7 +82,7 @@ static int ResClose( int handle )
     return( close( handle ) );
 }
 
-static int ResRead( int handle, void *buffer, size_t len )
+static int ResRead( int handle, void * buffer, size_t len )
 /*********************************************************/
 {
     return( QRead( handle, buffer, len, NULL ) );
@@ -118,7 +118,7 @@ void WriteInfoStdOut( char *str, unsigned level, char *sym )
     WriteNLStdOut();
 }
 
-char *GetEnvString( char *envname )
+char * GetEnvString( char *envname )
 /*****************************************/
 {
     return( getenv( envname ) );
@@ -139,7 +139,7 @@ bool IsStdOutConsole( void )
 }
 #endif
 
-void WriteNulls( f_handle file, unsigned_32 len, char *name )
+void WriteNulls( f_handle file, unsigned_32 len, char * name )
 /*******************************************************************/
 /* copy nulls for uninitialized data */
 {
@@ -170,13 +170,13 @@ void CheckStop( void )
     }
 }
 
-void LnkFatal( char *msg )
+void LnkFatal( char * msg )
 /********************************/
 {
     LnkMsg( FTL+MSG_INTERNAL, "s", msg );
 }
 
-bool TestBit( byte *array, unsigned num )
+bool TestBit( byte * array, unsigned num )
 /***********************************************/
 /* return TRUE if the specified bit is on */
 {
@@ -187,7 +187,7 @@ bool TestBit( byte *array, unsigned num )
     return( *( array + num ) & mask );
 }
 
-void ClearBit( byte *array, unsigned num )
+void ClearBit( byte * array, unsigned num )
 /************************************************/
 /* make sure a bit is turned off */
 {
@@ -199,11 +199,11 @@ void ClearBit( byte *array, unsigned num )
     *array &= ~mask;
 }
 
-char *ChkStrDup( char *str )
+char * ChkStrDup( char * str )
 /***********************************/
 {
     size_t      len;
-    char        *copy;
+    char *      copy;
 
     len = strlen( str ) + 1;
     _ChkAlloc( copy, len  );
@@ -211,10 +211,10 @@ char *ChkStrDup( char *str )
     return( copy );
 }
 
-void *ChkMemDup( void *mem, unsigned len  )
+void * ChkMemDup( void * mem, unsigned len  )
 /**************************************************/
 {
-    char        *copy;
+    char *      copy;
 
     _ChkAlloc( copy, len  );
     memcpy( copy, mem, len );
@@ -224,8 +224,9 @@ void *ChkMemDup( void *mem, unsigned len  )
 static void WalkList( node *list, void (*fn)( void * ) )
 /******************************************************/
 {
-    for( ; list != NULL; list = list->next ) {
+    while( list != NULL ) {
         fn( list );
+        list = list->next;
     }
 }
 
@@ -253,7 +254,7 @@ static void WalkClass( class_entry *class, void (*rtn)( seg_leader * ) )
 void SectWalkClass( section *sect, void *rtn )
 /***************************************************/
 {
-    class_entry         *class;
+    class_entry *       class;
 
     CurrSect = sect;
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
@@ -267,27 +268,24 @@ void WalkLeaders( void (*rtn)( seg_leader * ) )
     ParmWalkAllSects( SectWalkClass, rtn );
 }
 
-seg_leader *FindSegment( section *sect, char *name )
-/***************************************************/
-/* NOTE: this doesn't work for overlays!
- *
- * sect != NULL then it works as FindFirstSegment
- * sect == NULL then it works as FindNextSegment
- *
- */
+static bool CmpSegName( void *leader, void *name )
+/************************************************/
 {
-static seg_leader   *seg = NULL;
-static class_entry  *class = NULL;
+    return( stricmp( ((seg_leader *)leader)->segname, name ) == 0 );
+}
 
-    if( sect != NULL ) {
-        class = sect->classlist;
-        seg = NULL;
-    }
-    for( ; class != NULL; class = class->next_class ) {
-        while( (seg = RingStep( class->segs, seg )) != NULL ) {
-            if( stricmp( seg->segname, name ) == 0 ) {
-                return( seg );
-            }
+seg_leader * FindSegment( char *name )
+/*******************************************/
+/* NOTE: this doesn't work for overlays! */
+{
+    class_entry *class;
+    seg_leader * seg;
+
+    seg = NULL;
+    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+        seg = RingLookup( class->segs, CmpSegName, name );
+        if( seg != NULL ) {
+            break;
         }
     }
     return( seg );
@@ -297,7 +295,7 @@ void LinkList( void *in_head, void *newnode )
 /*******************************************/
 /* Link a new node into a linked list (new node goes at the end of the list) */
 {
-    node    **owner;
+    node **     owner;
 
     owner = in_head;
     ((node *)newnode)->next = NULL;
@@ -321,11 +319,11 @@ void FreeList( void *_curr )
     }
 }
 
-name_list *AddNameTable( char *name, unsigned len, bool is_mod,
+name_list * AddNameTable( char *name, unsigned len, bool is_mod,
                                                         name_list **owner )
 /*************************************************************************/
 {
-    name_list   *imp;
+    name_list * imp;
     unsigned_32 off;
     unsigned_16 index;
 
@@ -393,15 +391,15 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-char *RemovePath( char *name, int *len )
+char * RemovePath( char *name, int *len )
 /**********************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
  * the extension */
 {
-    char    *dotpoint;
-    char    *namestart;
-    char    *string;
+    char *  dotpoint;
+    char *  namestart;
+    char *  string;
     char    ch;
 
     dotpoint = NULL;
@@ -527,7 +525,7 @@ static void *SpawnStack;
 int Spawn( void (*fn)() )
 /******************************/
 {
-    void    *save_env;
+    void *  save_env;
     jmp_buf env;
     int     status;
 
@@ -552,7 +550,7 @@ void Suicide( void )
 f_handle SearchPath( char *name )
 /**************************************/
 {
-    char        *path;
+    char *      path;
     f_handle    file;
     char        fullpath[PATH_MAX];
 
@@ -581,10 +579,13 @@ group_entry *FindGroup( segment seg )
 {
     group_entry *group;
 
-    for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->grp_addr.seg == seg ) {
+    group = Groups;
+    for( ;; ) {
+        if( group == NULL )
             break;
-        }
+        if( group->grp_addr.seg == seg )
+            break;
+        group = group->next_group;
     }
     return( group );
 }

@@ -43,24 +43,15 @@ void OWLENTRY OWLEmitLabel( owl_section_handle section, owl_symbol_handle symbol
                             section, section->location, type, linkage );
 }
 
-void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk_sym, owl_symbol_handle alt_sym, owl_wksym_flags flags ) {
-//****************************************************************************************************************************
+void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk_sym, owl_symbol_handle alt_sym, int is_lazy ) {
+//******************************************************************************************************************
 
-    _Log(( file, "OWLWeakExt( %x, %x, %x, %x )\n", file, wk_sym, alt_sym, flags ));
+    _Log(( file, "OWLWeakExt( %x, %x, %x, %x )\n", file, wk_sym, alt_sym, is_lazy ));
     assert( alt_sym->linkage != OWL_SYM_WEAK );
     wk_sym->linkage = OWL_SYM_WEAK;
     wk_sym->x.alt_sym = alt_sym;
-    switch( flags ) {
-    case OWL_WKSYM_NORMAL:  
-        break;
-    case OWL_WKSYM_LAZY:  
+    if( is_lazy ){
         wk_sym->flags |= OWL_SYM_LAZY;
-        break;
-    case OWL_WKSYM_ALIAS:  
-        wk_sym->flags |= OWL_SYM_ALIAS;
-        break;
-    default:
-        assert( 0 );
     }
 }
 

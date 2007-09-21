@@ -79,6 +79,7 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
     asmfixup.obj        &
     asmmatch.obj        &
     asmdata.obj         &
+    insthash.obj        &
     asmjump.obj         &
     autodept.obj        &
     queues.obj          &
@@ -94,7 +95,7 @@ proj_obj += clibext.obj
 #explicit rules
 ######
 
-$(name).exe : asmops.gh asmopsd.gh $(name).res $(proj_obj) $(__MAKEFILES__)
+$(name).exe : fullops.gh $(name).res $(proj_obj)
 !ifeq  host_OS qnx
         @%make usage.u
 !endif
@@ -153,14 +154,8 @@ wmpmsg.gh : $(proj_path)/h/womp.msg
 
 ###################################################################
 
-./mkopcod1.exe: $(proj_path)/mkopcod1.c $(proj_path)/mkopcode.h $(cl_objs)
-        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+fullops.gh: $(proj_path)/fullops.tok $(proj_path)/inlnops.tok ./mkopcode.exe
+        $]@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $^@
 
-asmops.gh: ./mkopcod1.exe $(proj_path)/fullops.tok $(proj_path)/inlnops.tok
-        $[@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $@
-
-./mkopcode.exe: $(proj_path)/mkopcode.c $(proj_path)/mkopcode.h asmops.gh $(cl_objs)
-        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
-
-asmopsd.gh: ./mkopcode.exe $(proj_path)/fullops.tok $(proj_path)/inlnops.tok
-        $[@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $@
+./mkopcode.exe: $(proj_path)/mkopcode.c $(cl_objs)
+        $(bld_cl) $(inc_path) $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)

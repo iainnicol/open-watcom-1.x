@@ -34,7 +34,7 @@ extern int          NumGroups;
 /* in autogrp.c */
 
 extern void             AutoGroup( void );
-extern group_entry      *AllocGroup( char *, group_entry ** );
+extern group_entry *    AllocGroup( char *, group_entry ** );
 
 /* in salloc.c */
 
@@ -44,7 +44,7 @@ extern offset   CAlign( offset, unsigned );
 extern void     Align( byte );
 extern void     MAlign( byte );
 extern void     StartMemMap( void );
-extern void     ChkLocated( targ_addr *segadr, bool fixed);
+extern void     ChkLocated( targ_addr * segadr, bool fixed);
 extern void     NewSegment( seg_leader * );
 extern offset   GetLeaderDelta( seg_leader * );
 
@@ -55,7 +55,7 @@ extern bool     IsCodeClass( char *, unsigned );
 extern bool     IsConstClass( char *, unsigned );
 extern bool     IsStackClass( char *, unsigned );
 extern void     CalcAddresses( void );
-extern void     AllocClasses( section * );
+extern void     AllocClasses( class_entry * );
 extern void     CombineSeg( seg_leader *, signed_32 *, offset, byte, byte );
 extern void     ProcPubs( mod_entry *, section * );
 extern void     StartMapSort( void );

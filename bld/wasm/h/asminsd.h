@@ -29,19 +29,10 @@
 ****************************************************************************/
 
 
-#ifdef MKOPCODE
+#ifndef _ASMINSD_H_
+#define _ASMINSD_H_
 
-#define ins(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix) tok,
-   
-#if defined( _STANDALONE_ )
-    #define insa(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix) tok,
-#else
-    #define insa(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix)
-#endif
-
-const unsigned short AsmOpTable[] = {
-
-#else
+#include "asmins.h"
 
 #define ins(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix) \
                 {tok,prefix,byte1_info,rm_info,op3,op_dir,cpu,{op1,op2},opcode,rm_byte},
@@ -53,10 +44,8 @@ const unsigned short AsmOpTable[] = {
     #define insa(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix)
 #endif
 
+/* put the commands which begin with a dot first */
 const struct asm_ins ASMFAR AsmOpTable[] = {
-
-#endif
-
 /*   tok                op1          b1_info op2           op3   op_dir rm_info opcode     rm_byte                   cpu     prefix  */
 
 ins (T_DOT_186,         OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,      0,        OP_DIRECTIVE,             P_86,        0)
@@ -524,7 +513,7 @@ ins (T_FLDLG2,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,     
 ins (T_FLDLN2,          OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0xD9,     0xED,                     P_87,        0)
 ins (T_FLDPI,           OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0xD9,     0xEB,                     P_87,        0)
 ins (T_FLDZ,            OP_NONE,     0,      OP_NONE,       OP3_NONE,0,  0,      0xD9,     0xEE,                     P_87,        0)
-//insa(T_FLOAT,           OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,      0,        OP_DIRECTIVE,             0,           0)
+insa(T_FLOAT,           OP_SPECIAL,  0,      OP_NONE,       0,       0,  0,      0,        OP_DIRECTIVE,             0,           0)
 ins (T_FMUL,            OP_STI,      0,      OP_ST,         OP3_NONE,0,  0,      0xDC,     0xC8,                     P_87,        0)
 ins (T_FMUL,            OP_ST,       0,      OP_STI,        OP3_NONE,0,  0,      0xD8,     0xC8,                     P_87,        0)
 ins (T_FMUL,            OP_M_DW,     0,      OP_NONE,       OP3_NONE,0,  0,      0xD8,     0x08,                     P_87,        0)
@@ -1463,3 +1452,8 @@ ins (T_XOR,             OP_M,        0,      OP_I,          OP3_NONE,0,  0,     
 ins (T_XORPD,           OP_XMM,      F_660F, OP_XMM|OP_M,   OP3_NONE,1,  no_WDS, 0x57,     0x00,                     P_686|P_SSE2,0)
 ins (T_XORPS,           OP_XMM,      F_0F,   OP_XMM|OP_M,   OP3_NONE,1,  no_WDS, 0x57,     0x00,                     P_686|P_SSE, 0)
 };
+
+#define DEFINE_ASMOPS 1
+#include "asmops2.h"
+
+#endif

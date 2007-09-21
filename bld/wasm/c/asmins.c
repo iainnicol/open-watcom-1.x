@@ -41,7 +41,9 @@
 #define ALLOW_STRUCT_INIT 1
 
 #include "asmglob.h"
-#include "hash.h"
+
+#include "asminsd.h"
+#include "asmdefs.h"
 #include "asmexpnd.h"
 #include "asmfixup.h"
 #include "asmeval.h"
@@ -52,9 +54,6 @@
   #include "myassert.h"
   #include "asminput.h"
 #endif
-
-#include "asminsd.h"
-#include "asmopsd.gh"
 
 extern int              match_phase_1( void );
 extern int              ptr_operator( memtype, uint_8 );
@@ -145,20 +144,6 @@ void find_frame( struct asm_sym *sym )
     }
 }
 #endif
-
-int get_instruction_position( char *string )
-/******************************************/
-{
-    unsigned short  i;
-
-    for( i = inst_table[ hashpjw( string ) ]; i--; i = AsmOpcode[ i ].next ) {
-        if( strnicmp( string, &AsmChars[ AsmOpcode[ i ].index ], AsmOpcode[ i ].len ) == 0
-            && string[ AsmOpcode[ i ].len ] == '\0' ) {
-            return( AsmOpcode[ i ].position );
-        }
-    }
-    return( EMPTY );
-}
 
 static int comp_mem( int reg1, int reg2 )
 /***************************************/
@@ -2543,6 +2528,9 @@ static int check_size( void )
 void AsmInit( int cpu, int fpu, int use32, int extn )
 /***************************************************/
 {
+    int         pos = 0;
+    enum asm_token  token_value = 1;
+    int         size = sizeof( AsmOpTable ) / sizeof( AsmOpTable[0] );
     int         count;
 
     for( count = 0; count < MAX_TOKEN; count ++ ) {
@@ -2605,6 +2593,24 @@ void AsmInit( int cpu, int fpu, int use32, int extn )
         if( extn )
             Code->info.cpu |= P_K3D | P_MMX | P_SSE | P_SSE2 | P_SSE3;
         break;
+    }
+
+    // initialize AsmOpcode table to point to entry in AsmOpTable
+    // token has its own value, e.g. T_AAA is 0, T_ADD is 1, etc.
+
+    if( AsmOpcode[1].position == 0 ) {  // if not initialized
+        while( AsmOpcode[token_value].len != 0 ) {
+            do {
+                pos++;
+            } while ( AsmOpTable[pos].token != token_value && pos <= size );
+            if( pos > size ) {
+                AsmError( INTERNAL_ERROR_1 );
+                exit( -1 );
+            }
+            AsmOpcode[token_value].position = pos;
+            token_value++;
+        }
+        make_inst_hash_table();
     }
 }
 

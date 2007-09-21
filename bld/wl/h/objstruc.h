@@ -94,7 +94,6 @@ typedef struct outfilelist {
     unsigned long   bufpos;
     unsigned        ovlfnoff;   // offset of filename from _OVLTAB
     bool            is_exe;     // executable flag (for file permissions)
-    unsigned long   origin;
 } outfilelist;
 
 enum infile_flags {

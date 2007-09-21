@@ -146,7 +146,9 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
             };
             segrec.address = (unsigned_16)seg_addr;
             WriteGroupLoad( group );
-            NullAlign( 2 );         // segment must be even length
+            if( group->size & 0x1 ) {
+                PadLoad( 1 );       // segment must be even length
+            }
             relocsize = WriteOS2Relocs( group );
             if (relocsize != 0) {
                 segrec.info |= SEG_RELOC;
@@ -1033,6 +1035,8 @@ static unsigned DoExeName( void )
 
 #define STUB_ALIGN 8    /* for PE format */
 
+#define PARA_ALIGN( x ) (((x)+0xf) &  ~0xfUL)
+
 unsigned_32 GetStubSize( void )
 /************************************/
 /* return the size of the stub file */
@@ -1049,7 +1053,7 @@ unsigned_32 GetStubSize( void )
         return( 0 );
     }
     name = FmtData.u.os2.stub_file_name;
-    stub_len = MAKE_PARA( sizeof(DosStub) + DoExeName() );
+    stub_len = PARA_ALIGN( sizeof(DosStub) + DoExeName() );
     if( name != NULL && stricmp( name, Root->outfile->fname ) != 0 ) {
         the_file = SearchPath( name );
         if( the_file != NIL_HANDLE ) {
@@ -1063,10 +1067,10 @@ unsigned_32 GetStubSize( void )
                 code_start = dosheader.hdr_size * 16ul;
                 read_len += (dosheader.file_size - 1) * 512ul - code_start;
     // make sure reloc_size is a multiple of 16.
-                reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
+                reloc_size = (dosheader.num_relocs * 4ul + 15) & ~0xFul;
                 dosheader.hdr_size = 4 + reloc_size/16;
                 stub_len = read_len + dosheader.hdr_size * 16ul;
-                stub_len = ROUND_UP( stub_len, STUB_ALIGN );
+                stub_len = (stub_len + (STUB_ALIGN-1)) & ~(STUB_ALIGN-1);
             }
             QClose( the_file, name );
         }
@@ -1083,7 +1087,7 @@ static unsigned WriteDefStub( void )
     unsigned_32 *       stubend;
 
     msgsize = DoExeName();
-    fullsize = MAKE_PARA(msgsize + sizeof(DosStub) );
+    fullsize = PARA_ALIGN(msgsize + sizeof(DosStub) );
     stubend = (unsigned_32 *) (DosStub + 0x3c);
     *stubend = fullsize;
     WriteLoad( DosStub, sizeof(DosStub) );

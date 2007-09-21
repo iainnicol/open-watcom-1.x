@@ -110,9 +110,4 @@ void PragmaFini( void )
         HeadLibs = HeadLibs->next;
         CMemFree( junk );
     }
-    while( AliasHead != NULL ) {
-        junk = AliasHead;
-        AliasHead = AliasHead->next;
-        CMemFree( junk );
-    }
 }

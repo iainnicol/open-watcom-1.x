@@ -8,7 +8,6 @@ proj_name = w32api
 
 splice = wsplice -i$(hdr_dir) -i../include $[@ $^@
 rsplice = wsplice -i$(hdr_dir) -i../include -kRESOURCE $[@ $^@
-ws2splice = wsplice -i$(hdr_dir) -i../include -kWINSOCK2 $[@ $^@
 
 headers =            &
         accctrl.h    &
@@ -30,7 +29,6 @@ headers =            &
         dde.rh       &
         ddeml.h      &
         dhcpcsdk.h   &
-        dimm.h       &
         dlgs.h       &
         docobj.h     &
         errorrep.h   &
@@ -83,54 +81,32 @@ headers =            &
         mcx.h        &
         mgmtapi.h    &
         mlang.h      &
-        mmreg.h      &
         mmsystem.h   &
         mprapi.h     &
         mq.h         &
-        msacm.h      &
-        mshtml.h     &
-        mswsock.h    &
         msxml.h      &
         naptypes.h   &
         nb30.h       &
         ncrypt.h     &
-        nddeapi.h    &
         nldef.h      &
-        nspapi.h     &
-        ntdsapi.h    &
-        ntdsbcli.h   &
-        ntdsbmsg.h   &
-        ntldap.h     &
-        ntsecapi.h   &
-        ntsecpkg.h   &
         oaidl.h      &
         objbase.h    &
         objidl.h     &
-        objsafe.h    &
-        objsel.h     &
         ocidl.h      &
-        odbcinst.h   &
         ole.h        &
         ole2.h       &
-        ole2ver.h    &
-        oleacc.h     &
         oleauto.h    &
         olectl.h     &
-        olectlid.h   &
-        oledlg.h     &
         oleidl.h     &
         packon.h     &
         packoff.h    &
-        pbt.h        &
         poppack.h    &
-        powrprof.h   &
         propidl.h    &
         prsht.h      &
         pshpack1.h   &
         pshpack2.h   &
         pshpack4.h   &
         pshpack8.h   &
-        qos.h        &
         ras.h        &
         reason.h     &
         rpc.h        &
@@ -141,14 +117,9 @@ headers =            &
         rpcnsip.h    &
         rpcnsi.h     &
         rpcnterr.h   &
-        schedule.h   &
         servprov.h   &
         shellapi.h   &
-        shtypes.h    &
         snmp.h       &
-        sql.h        &
-        sqltypes.h   &
-        sspi.h       &
         stralign.h   &
         tcpestat.h   &
         tcpmib.h     &
@@ -175,14 +146,12 @@ headers =            &
         winscard.h   &
         winsmcrd.h   &
         winsock.h    &
-        winsock2.h   &
         winspool.h   &
         winsvc.h     &
         wintrust.h   &
         winuser.h    &
         winuser.rh   &
         winver.h     &
-        ws2def.h     &
         wtypes.h
 
 libs =               &
@@ -203,9 +172,6 @@ all : $(headers) $(libs) .SYMBOLIC
 
 .mh.rh:
     $(rsplice)
-
-winsock2.h: winsock.mh
-    $(ws2splice)
 
 largeint.lib: largeint.obj
     %create $^&.lbc

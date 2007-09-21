@@ -82,28 +82,6 @@ void far *firstmeg( unsigned segment, unsigned offset )
 }
 #endif
 
-#ifdef __386__
-void IdleInterrupt( void )
-{
-#ifdef __OSI__
-    return;     /* Can't do anything */
-#else
-    if( _IsRational() ) {
-        DPMIIdle(); /* Assume DPMI if Rational; else dunno */
-    }
-    return;
-#endif
-}
-#else
-extern void DOSIdleInterrupt( void );
-#pragma aux DOSIdleInterrupt = "int 28h";
-
-void IdleInterrupt( void )
-{
-    DOSIdleInterrupt();
-}
-#endif
-
 void intern setvideomode( unsigned mode )
 /***************************************/
 {

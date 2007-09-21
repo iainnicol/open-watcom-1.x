@@ -30,16 +30,14 @@
 ****************************************************************************/
 
 
-#ifndef _ASMOPS_H_
-#define _ASMOPS_H_
-
-#include "asmops.gh"
+#ifndef _ASMOPS1_H_
+#define _ASMOPS1_H_
 
 struct AsmCodeName {
         unsigned short  position;       // starting position in AsmOpTable
         unsigned short  len :4,         // length of command, e.g. "AX" = 2
                         index :12;      // index into AsmChars[] in asmops2.h
-        unsigned short  next;           // index to next item in hash item list
+        struct AsmCodeName *next;
 };
 
 enum asm_cpu {

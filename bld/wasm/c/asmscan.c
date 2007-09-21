@@ -33,6 +33,9 @@
 #include "asmglob.h"
 #include <ctype.h>
 
+#include "asmins.h"
+#include "asmdefs.h"
+
 char                    *CurrString; // Current Input Line
 
 extern int              get_instruction_position( char *string );

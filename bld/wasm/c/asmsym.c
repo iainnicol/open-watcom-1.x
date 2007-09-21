@@ -31,7 +31,9 @@
 
 #include "asmglob.h"
 
+#include "asmsym.h"
 #include "asmalloc.h"
+#include "asmdefs.h"
 
 #ifdef __USE_BSD
 #define stricmp strcasecmp
@@ -42,6 +44,7 @@
 #include "directiv.h"
 #include "queues.h"
 #include "hash.h"
+#include "asmops1.h"
 #include "myassert.h"
 
 static struct asm_sym   *sym_table[ HASH_TABLE_SIZE ] = { NULL };

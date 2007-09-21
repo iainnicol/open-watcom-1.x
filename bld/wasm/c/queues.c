@@ -32,6 +32,7 @@
 
 #include "asmalloc.h"
 #include "mangle.h"
+#include "asmins.h"
 #include "directiv.h"
 #include "queue.h"
 #include "queues.h"

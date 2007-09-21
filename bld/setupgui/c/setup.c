@@ -387,7 +387,6 @@ extern void GUImain( void )
 
     // initialize paths and env. vbls.
 
-    if( !SetupPreInit() ) return;
     if( !GetDirParams( argc, argv, &inf_name, &tmp_path, &arc_name ) ) return;
     if( !SetupInit() ) return;
     GUIDrainEvents();   // push things along

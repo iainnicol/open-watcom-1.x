@@ -55,8 +55,6 @@ extern void             SetOvlStartAddr( void );
 extern void             OvlPass1( void );
 extern void             EmitOvlTable( void );
 extern void             PadOvlFiles( void );
-extern void             ResetOvlSupp( void );
-extern void             SetOvlTableLoc( group_entry *, unsigned long );
 
 /* in overlays.c */
 
