@@ -41,11 +41,6 @@ extern  void            IOErr(int,...);
 extern  void            SendEOR(void);
 extern  bool            IsFixed(void);
 
-/* Forward declarations */
-static  void    OUnString( void );
-static  void    OUnArray( void );
-
-
 extern  const byte __FAR        SizeVars[];
 
 

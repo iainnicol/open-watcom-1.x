@@ -73,7 +73,7 @@
 #include "cmdline.h"
 #include "orlrtns.h"
 #include "error.h"
-#include "errnum.h"
+#include "msg.gh"
 #include "ext.h"
 #include "proclib.h"
 #include "filetab.h"

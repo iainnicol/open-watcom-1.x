@@ -58,11 +58,6 @@ extern  void            R_FOG(void);
 extern  void            R_FIFloat(void);
 extern  void            ArrayIOType(void);
 
-/* Forward declarations */
-static  void    FmtPrepOp( void );
-static  void    FmtIOType( void );
-static  void    ExecCode( void );
-
 
 static  void   R_FEH( uint dummy1 , char dummy2 ) {
 //======================

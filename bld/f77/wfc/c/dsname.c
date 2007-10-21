@@ -49,26 +49,15 @@
 #include <string.h>
 
 extern  void            BIOutSymbol( sym_id ste_ptr );
-extern  void            ScanExpr( void );
+extern  void            ScanExpr(void);
 extern  void            AdvError(int);
-extern  sym_id          LkSym( void );
+extern  sym_id          LkSym(void);
 extern  sym_id          LkField(sym_id);
 extern  sym_id          FindShadow(sym_id);
 extern  sym_id          FindStruct(char *,int);
 
-/* Forward declarations */
-static  void    CkFieldNoList( void );
-static  void    ChkStructName( void );
-static  void    CkNameNoList( void );
-static  void    SetTypeUsage( unsigned_16 type_usage );
-static  void    Function( void );
-static  void    SubProg( void );
-static  void    CkIntrinsic( void );
-void             CkTypeDeclared( void );
 
-
-
-bool    SubStrung( void ) {
+bool    SubStrung(void) {
 //===================
 
 // Determine whether name is substrung or not.
@@ -85,7 +74,7 @@ bool    SubStrung( void ) {
 }
 
 
-void    DSName( void ) {
+void    DSName(void) {
 //================
 
 // Downscan a name.
@@ -250,7 +239,7 @@ void    DSName( void ) {
 }
 
 
-static  void    ChkStructName( void ) {
+static  void    ChkStructName(void) {
 //===============================
 
     if( CITNode->typ == TY_STRUCTURE ) {
@@ -272,7 +261,7 @@ static  void    ChkStructName( void ) {
 }
 
 
-void    GetFunctionShadow( void ) {
+void    GetFunctionShadow(void) {
 //===========================
 
     sym_id      fn_shadow;
@@ -291,7 +280,7 @@ void    GetFunctionShadow( void ) {
 }
 
 
-static  void    SubProg( void ) {
+static  void    SubProg(void) {
 //=========================
 
 // Make sure subprograms are used correctly.
@@ -355,7 +344,7 @@ static  void    SubProg( void ) {
 }
 
 
-static  void    Function( void ) {
+static  void    Function(void) {
 //==========================
 
 // Must be scanning a function.
@@ -374,7 +363,7 @@ static  void    Function( void ) {
 }
 
 
-static  void    CkIntrinsic( void ) {
+static  void    CkIntrinsic(void) {
 //=============================
 
 // Check for intrinsic functions.
@@ -416,7 +405,7 @@ static  void    CkIntrinsic( void ) {
 }
 
 
-static  void    CkNameNoList( void ) {
+static  void    CkNameNoList(void) {
 //==============================
 
 // Check that array/subprogram with no list is alright.
@@ -434,7 +423,7 @@ static  void    CkNameNoList( void ) {
 }
 
 
-static  void    CkFieldNoList( void ) {
+static  void    CkFieldNoList(void) {
 //===============================
 
 // Check that array field with no list is alright.
@@ -460,7 +449,7 @@ static  void    CkFieldNoList( void ) {
 }
 
 
-static  void    SetTypeUsage( unsigned_16 type_usage ) {
+static  void    SetTypeUsage( unsigned_16 type_usage) {
 //=====================================================
 
 // Indicate that a names' use and type has been established.
@@ -472,7 +461,7 @@ static  void    SetTypeUsage( unsigned_16 type_usage ) {
 }
 
 
-void    CkTypeDeclared( void ) {
+void    CkTypeDeclared(void) {
 //========================
 
 // Make sure type has been explicitly declared.

@@ -50,40 +50,30 @@
 #include <string.h>
 #include <ctype.h>
 
-extern  sym_id  LkSym( void );
-extern  void    MakeITList( void );
-extern  STMT    RecStmtKW( void );
-extern  void    TermDo( void );
-extern  void    TermDoWhile( void );
-extern  void    DefStmtNo(unsigned_32);
-extern  void    Update(unsigned_32);
-extern  void    STResolve( void );
-extern  void    GSetDbugLine( void );
-extern  void    Prologue( void );
-extern  void    DefProg( void );
-extern  bool    SubStrung( void );
-extern  void    GSetSrcLine( void );
-extern  void    TDStmtInit( void );
-extern  void    TDStmtFini( void );
+extern  sym_id          LkSym(void);
+extern  void            MakeITList(void);
+extern  STMT            RecStmtKW(void);
+extern  void            TermDo(void);
+extern  void            TermDoWhile(void);
+extern  void            DefStmtNo(unsigned_32);
+extern  void            Update(unsigned_32);
+extern  void            STResolve(void);
+extern  void            GSetDbugLine(void);
+extern  void            Prologue(void);
+extern  void            DefProg(void);
+extern  bool            SubStrung(void);
+extern  void            GSetSrcLine(void);
+extern  void            TDStmtInit(void);
+extern  void            TDStmtFini(void);
 
-extern  char    *StmtKeywords[];
-extern  void    (* const __FAR ProcTable[])( void );
-extern  const unsigned_16   __FAR CFTable[];
+extern  char                    *StmtKeywords[];
+extern  void                    (* const __FAR ProcTable[])();
+extern  const unsigned_16       __FAR CFTable[];
 
-/* forward declarations */
-static void     SetCtrlFlgs( void );
-static void     GetStmtType( void );
-static void     CheckOrder( void );
-static void     DefStmtType( void );
-static void     RemCheck( void );
-static void     CheckDoEnd( void );
-static void     FiniDo( void );
-void            RemKeyword( itnode *itptr, int remove_len );
-void            ClearRem( void );
-void            CkDefStmtNo( void );
 
-static  void    ChkStatementSequence( void )
-{
+static  void    ChkStatementSequence(void) {
+//======================================
+
     SetCtrlFlgs();
     if( ( StmtSw & SS_HOLLERITH ) && ( StmtProc != PR_FMT ) ) {
         Extension( HO_CONST );
@@ -141,25 +131,10 @@ static  void    ProcStmt( void ) {
     ProcTable[ StmtProc ]();
 }
 
-static  void    InitStatement( void )
-{
-    TDStmtInit();
-    ChkPntLst();
-    StmtSw = SS_SCANNING;
-    CpError = FALSE;
-    MakeITList();
-    StmtSw &= ~SS_SCANNING;
-    StmtProc = 0;
-}
 
-static void FiniStatement( void )
-{
-    FreeITNodes( ITHead );
-    ITHead = NULL;
-}
+void    CompStatement( void ) {
+//=============================
 
-void    CompStatement( void )
-{
     bool        scan_error;
 
     InitStatement();
@@ -227,16 +202,18 @@ void    CompStatement( void )
 }
 
 
-void CkDefStmtNo( void )
-{
+void    CkDefStmtNo(void) {
+//=====================
+
     if( StmtNo != 0 ) {
         DefStmtNo( StmtNo );
     }
 }
 
 
-void Recurse( void )
-{
+void    Recurse(void) {
+//=================
+
 // Compile a statement after a logical IF or AT END.
 // Do not be alarmed by the name of this routine. The recursion is
 // controlled so that it may only happen once due to the fact that
@@ -266,8 +243,22 @@ void Recurse( void )
 }
 
 
-static bool CharSubStrung( void )
-{
+static  void    InitStatement(void) {
+//===============================
+
+    TDStmtInit();
+    ChkPntLst();
+    StmtSw = SS_SCANNING;
+    CpError = FALSE;
+    MakeITList();
+    StmtSw &= ~SS_SCANNING;
+    StmtProc = 0;
+}
+
+
+static  bool    CharSubStrung(void) {
+//================================
+
     bool        substrung;
     itnode      *cit;
 
@@ -278,8 +269,10 @@ static bool CharSubStrung( void )
     return( substrung );
 }
 
-static void GetStmtType( void )
-{
+
+static  void    GetStmtType(void) {
+//=============================
+
     char        *curr_opnd;
     OPR         opr;
 
@@ -327,21 +320,26 @@ static void GetStmtType( void )
 }
 
 
-static void SetCtrlFlgs( void )
-{
+static  void    SetCtrlFlgs(void) {
+//=============================
+
     CtrlFlgs = CFTable[ StmtProc ];
 }
 
-static void DefStmtType( void )
-{
+
+static  void    DefStmtType(void) {
+//=============================
+
     StmtProc = RecStmtKW();      // look up keyword, strip off if found
     if( StmtProc != 0 ) {
         RemKeyword( CITNode, strlen( StmtKeywords[ StmtProc ] ) );
     }
 }
 
-static void RemCheck( void )
-{
+
+static  void    RemCheck(void) {
+//==========================
+
 // Check for errors or warnings concerning the dependencies
 // of this statement on the last one. eg. READ before ATEND.
 
@@ -364,8 +362,10 @@ static void RemCheck( void )
     }
 }
 
-void ClearRem( void )
-{
+
+void    ClearRem(void) {
+//==================
+
 // Clear the Remember flags for a new statement.
 
     Remember.read           = FALSE;
@@ -377,8 +377,9 @@ void ClearRem( void )
 }
 
 
-static void CheckOrder( void )
-{
+static  void    CheckOrder(void) {
+//============================
+
     AError = FALSE;
     if( (StmtProc == PR_IMP) && (SgmtSw & SG_NO_MORE_IMPLICIT) ) {
         Error( ST_IMPLICIT_LATE );
@@ -416,8 +417,9 @@ static void CheckOrder( void )
 }
 
 
-void BadStmt( void )
-{
+void    BadStmt(void) {
+//=================
+
     // consider:
     //          suborutine x() ! misspelled subroutine
     //          integer z
@@ -434,8 +436,10 @@ void BadStmt( void )
     OpndErr( ST_UNKNOWN_STMT );
 }
 
-static void CheckDoEnd( void )
-{
+
+static  void    CheckDoEnd(void) {
+//============================
+
     csnode      *cs_node;
 
     for(;;) {
@@ -464,8 +468,9 @@ static void CheckDoEnd( void )
 }
 
 
-static void FiniDo( void )
-{
+static  void    FiniDo(void) {
+//========================
+
     if( ( StmtProc != 0 ) && CtrlFlgOn( CF_BAD_DO_ENDING ) ) {
         StmtErr( DO_ENDING_BAD );
     }
@@ -476,8 +481,10 @@ static void FiniDo( void )
     }
 }
 
-void RemKeyword( itnode *itptr, int remove_len )
-{
+
+void    RemKeyword( itnode *itptr, int remove_len ) {
+//===================================================
+
     char        *curr_char;
     itnode      *new_it_node;
     int         curr_size;
@@ -529,3 +536,10 @@ void RemKeyword( itnode *itptr, int remove_len )
     }
 }
 
+
+static  void    FiniStatement(void) {
+//===============================
+
+    FreeITNodes( ITHead );
+    ITHead = NULL;
+}

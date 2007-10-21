@@ -401,7 +401,7 @@ static void TestDirectory( dirqueue *head, char *makefile )
     }
 }
 
-static void SetDoneFlag( int sig_no )
+static void SetDoneFlag()
 {
     DoneFlag = 1;
 }

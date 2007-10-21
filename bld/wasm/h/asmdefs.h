@@ -32,6 +32,8 @@
 #ifndef _ASMDEFS_H_INCLUDED
 #define _ASMDEFS_H_INCLUDED
 
+#include "asmopnds.h"
+
 #define IS_CALL( inst )     ( inst == T_CALL || inst == T_CALLF )
 #define IS_JMP( inst )      ( inst >= T_JA && inst <= T_JZ )
 #define IS_BRANCH( inst )   ( IS_JMP( inst ) || IS_CALL( inst ) )
@@ -102,7 +104,7 @@
 #endif
 
 /* global variables */
-extern asm_tok          *AsmBuffer[];
+extern struct asm_tok   *AsmBuffer[];
 extern struct asm_code  *Code;
 extern int_8            Frame;
 extern uint_8           Frame_Datum;

@@ -38,7 +38,9 @@
 #include <ctype.h>
 
 #include "asmalloc.h"
+#include "asmins.h"
 #include "fatal.h"
+#include "asmdefs.h"
 #include "asmexpnd.h"
 #include "objprs.h"
 #include "genmsomf.h"
@@ -46,6 +48,7 @@
 #include "womputil.h"
 #include "swchar.h"
 #include "asminput.h"
+#include "asmerr.h"
 #include "pathgrp.h"
 
 #ifdef __OSI__
@@ -1089,8 +1092,6 @@ static int set_build_target( void )
     } else if( stricmp( Options.build_target, "QNX" ) == 0 ) {
         add_constant( "__UNIX__" );
     } else if( stricmp( Options.build_target, "LINUX" ) == 0 ) {
-        add_constant( "__UNIX__" );
-    } else if( stricmp( Options.build_target, "BSD" ) == 0 ) {
         add_constant( "__UNIX__" );
     }
     return( NOT_ERROR );

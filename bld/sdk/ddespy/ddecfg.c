@@ -159,7 +159,7 @@ static void ReadWindowInfo( WndConfigInfo *info, char *name_ext ) {
 /*
  * ReadConfig - read the configuration information
  */
-void ReadConfig( void ) {
+void ReadConfig() {
 
     char        msgfilter[ MFILTER_LAST_MSG - MFILTER_FIRST_MSG + 2 ];
     char        cbfilter[ CFILTER_LAST_MSG - CFILTER_FIRST_MSG + 2 ];
@@ -227,7 +227,7 @@ void ReadConfig( void ) {
 /*
  * SaveConfigFile - save the configuration information
  */
-void SaveConfigFile( void ) {
+void SaveConfigFile() {
 
     char        msgfilter[ MFILTER_LAST_MSG - MFILTER_FIRST_MSG + 2 ];
     char        cbfilter[ CFILTER_LAST_MSG - CFILTER_FIRST_MSG + 2 ];

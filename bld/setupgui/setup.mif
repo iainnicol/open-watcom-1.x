@@ -33,7 +33,12 @@ objs = &
 
 !ifdef patch
 objs +=             &
-    exetype.obj
+    common.obj      &
+    decode.obj      &
+    exetype.obj     &
+    io.obj          &
+    lookup.obj      &
+    qsort.obj
 !endif
 
 !ifeq host_os win
@@ -78,10 +83,6 @@ libs_win = $(guidir)/win/win$(host_cpu)/gui.lib
 
 !else
 
-# custom version of resource finder
-extra_c_flags_loadfind = -I"$(wres_dir)/h"
-objs += loadfind.obj
-
 libs_dos = &
 $(guidir)/ui/dos$(host_cpu)/gui.lib &
 $(uidir)/dos/dos$(host_cpu)/ui.lib &
@@ -96,11 +97,6 @@ $(wres_lib)
 libs_os2 = &
 $(guidir)/ui/os2$(host_cpu)/gui.lib &
 $(uidir)/os2/os2$(host_cpu)/ui.lib &
-$(wres_lib)
-
-libs_nt = &
-$(guidir)/ui/nt$(host_cpu)/gui.lib &
-$(uidir)/nt/nt$(host_cpu)/ui.lib &
 $(wres_lib)
 
 !endif
@@ -209,8 +205,6 @@ setup.exe: $(gendeps) setupui.res
 
 !else ifeq host_os nt
 
-!ifeq sys_windowed 1
-
 all : setup.exe csetup.exe f77setup.exe .SYMBOLIC
 
 setup.exe: virgin.exe setup.res
@@ -220,14 +214,6 @@ setup.exe: virgin.exe setup.res
 
 virgin.exe: $(gendeps)
     $(linker) name $^@ @setup.lnk
-
-!else
-
-setup.exe: $(gendeps) setupui.res
-    $(linker) name $^@ @setup.lnk
-    wstrip -q -a -r setup.exe . setupui.res
-
-!endif
 
 !else ifeq host_os dos
 
@@ -277,9 +263,6 @@ setup.lnk : makefile ../setup.mif
 ! endif
 !else ifeq host_os dos
     @%append setup.lnk option stack=30K
-!ifeq host_cpu 386
-    @%append setup.lnk option stub=cwstub.exe
-!endif
 !else
 !endif
 !ifdef PROJECT_LIBS

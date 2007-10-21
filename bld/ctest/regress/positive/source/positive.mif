@@ -77,7 +77,6 @@ bad_on_axp = &
 
 
 positive_tests = &
-    alias01.$(exe) &
     asm01.$(exe) &
     asm02.$(exe) &
     asm03.$(exe) &

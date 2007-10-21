@@ -36,6 +36,34 @@
 
 extern char PreProcChar;
 
+int main( int argc, char *argv[] )
+{
+    int         c;
+
+    dumpheap();
+    if( argc < 2 ) {
+        printf( "Usage: testpp filename\n" );
+        exit( 1 );
+    }
+    if( argv[2] != NULL ) {
+        PreProcChar = argv[2][0];
+    }
+    if( PP_Init( argv[1], 0, NULL ) != 0 ) {
+        printf( "Unable to open '%s'\n", argv[1] );
+        exit( 1 );
+    }
+    for( ;; ) {
+        c = PP_Char();
+        if( c == EOF )
+            break;
+        putchar( c );
+    }
+    dumpheap();
+    PP_Fini();
+    dumpheap();
+    return( 0 );
+}
+
 void dumpheap( void )
 {
 #if 0
@@ -70,32 +98,3 @@ void dumpheap( void )
     }
 #endif
 }
-
-int main( int argc, char *argv[] )
-{
-    int         c;
-
-    dumpheap();
-    if( argc < 2 ) {
-        printf( "Usage: testpp filename\n" );
-        exit( 1 );
-    }
-    if( argv[2] != NULL ) {
-        PreProcChar = argv[2][0];
-    }
-    if( PP_Init( argv[1], 0, NULL ) != 0 ) {
-        printf( "Unable to open '%s'\n", argv[1] );
-        exit( 1 );
-    }
-    for( ;; ) {
-        c = PP_Char();
-        if( c == EOF )
-            break;
-        putchar( c );
-    }
-    dumpheap();
-    PP_Fini();
-    dumpheap();
-    return( 0 );
-}
-

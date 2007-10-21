@@ -161,9 +161,6 @@ extern int cchar, cerrflag;
 extern CSTYPE cval, clval;
 static pToken savedToken;
 
-/* Forward declarations */
-int cparse( void );
-
 int cerror(char *str) {
     str = str;
     return 0;

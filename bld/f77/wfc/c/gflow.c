@@ -51,17 +51,6 @@ extern  bool            TypeCmplx(TYPE typ);
 extern  TYPE            MapTypes(TYPE,uint);
 
 
-void    GStmtAddr( sym_id stmtno ) {
-//==================================
-
-// Generate an entry in the statement table.
-
-    if( stmtno != NULL ) {
-        OutPtr( stmtno );
-    }
-}
-
-
 void    GLabel( int label ) {
 //===========================
 
@@ -221,6 +210,17 @@ void    GAsgnGoTo( bool list ) {
     } else {
         EmitOp( FC_ASSIGNED_GOTO_LIST );
         OutPtr( CITNode->sym_ptr );
+    }
+}
+
+
+void    GStmtAddr( sym_id stmtno ) {
+//==================================
+
+// Generate an entry in the statement table.
+
+    if( stmtno != NULL ) {
+        OutPtr( stmtno );
     }
 }
 

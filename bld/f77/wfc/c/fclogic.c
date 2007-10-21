@@ -50,6 +50,24 @@ extern  cg_name         GetTypedValue(void);
 extern  void            XPush(cg_name);
 
 
+void    FCEqv( void ) {
+//===============
+
+// Logical .EQV. F-Code processor.
+
+    Equivalent( O_EQ );
+}
+
+
+void    FCNEqv( void ) {
+//================
+
+// Logical .NEQV. F-Code processor.
+
+    Equivalent( O_NE );
+}
+
+
 static  void    Equivalent( cg_op op_code ) {
 //===========================================
 
@@ -77,6 +95,24 @@ static  void    Equivalent( cg_op op_code ) {
 }
 
 
+void    FCOr( void ) {
+//==============
+
+// Logical .OR. F-Code processor.
+
+    XLogic( O_FLOW_OR );
+}
+
+
+void    FCAnd( void ) {
+//===============
+
+// Logical .AND. F-Code processor.
+
+    XLogic( O_FLOW_AND );
+}
+
+
 static  void    XLogic( int op_code ) {
 //=====================================
 
@@ -97,24 +133,6 @@ static  void    XLogic( int op_code ) {
 }
 
 
-void    FCOr( void ) {
-//==============
-
-// Logical .OR. F-Code processor.
-
-    XLogic( O_FLOW_OR );
-}
-
-
-void    FCAnd( void ) {
-//===============
-
-// Logical .AND. F-Code processor.
-
-    XLogic( O_FLOW_AND );
-}
-
-
 void    FCNot( void ) {
 //===============
 
@@ -122,22 +140,3 @@ void    FCNot( void ) {
 
     XPush( CGFlow( O_FLOW_NOT, GetTypedValue(), NULL ) );
 }
-
-void    FCEqv( void ) {
-//===============
-
-// Logical .EQV. F-Code processor.
-
-    Equivalent( O_EQ );
-}
-
-
-void    FCNEqv( void ) {
-//================
-
-// Logical .NEQV. F-Code processor.
-
-    Equivalent( O_NE );
-}
-
-

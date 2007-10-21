@@ -65,7 +65,7 @@ static AnAlias *FindAlias( AliasHdl hdl, unsigned long id ) {
  *                assigned to it
  */
 
-void InitAliasHdl( AliasHdl *hdl, void (*updatefn)(unsigned long, char *, char *, void *), void *userdata ) {
+void InitAliasHdl( AliasHdl *hdl, void (*updatefn)(), void *userdata ) {
     *hdl = MemAlloc( sizeof( AliasList ) );
     (*hdl)->data = NULL;
     (*hdl)->userdata = userdata;
@@ -295,7 +295,7 @@ void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title ) {
     CurHdl = NULL;
 }
 
-void EnumAliases( AliasHdl hdl, void (*enumfn)(unsigned long, char *, void *), void *userdata ) {
+void EnumAliases( AliasHdl hdl, void (*enumfn)(), void *userdata ) {
     AnAlias     *cur;
 
     cur = hdl->data;
@@ -303,5 +303,5 @@ void EnumAliases( AliasHdl hdl, void (*enumfn)(unsigned long, char *, void *), v
         enumfn( cur->id, cur->name, userdata );
         cur = cur->next;
     }
-    enumfn( (DWORD)-1, NULL, userdata );
+    enumfn( (DWORD)-1, userdata );
 }

@@ -52,7 +52,7 @@ extern void WndSetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_ty
     line->tabstop = FALSE;
 }
 
-extern void WndGadgetInit( void )
+extern void WndGadgetInit()
 {
     GUIInitHotSpots( WndGadgetArraySize, WndGadgetArray );
 }

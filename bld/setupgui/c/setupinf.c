@@ -38,7 +38,6 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <utime.h>
 #if !defined( __UNIX__ )
     #include <direct.h>
 #else
@@ -62,7 +61,6 @@
 #include "dlggen.h"
 #include "utils.h"
 #include "setupio.h"
-#include "diskos.h"
 #if !defined( __UNIX__ )
     #include "bdiff.h"
 #endif
@@ -108,7 +106,6 @@ static struct setup_info {
 
 #ifdef PATCH
 typedef enum {
-    PATCH_NOTHING,
     PATCH_COPY_FILE,
     PATCH_DELETE_FILE,
     PATCH_FILE,
@@ -129,6 +126,8 @@ struct patch_info {
 } *PatchInfo = NULL;
 
 extern int              ExeType( char *name, char *type );
+extern int              PerformDecode( char*, char*, unsigned_32 );
+extern unsigned_32      ReadInternal( char* );
 
 #endif
 
@@ -621,10 +620,17 @@ static void EndHandle( char *source )
     int         length;
 
     length = strlen( source );
-    if( source[ length - 1 ] != SYS_DIR_SEP_CHAR ) {
-        source[ length ] = SYS_DIR_SEP_CHAR;
+#if defined( __UNIX__ )
+    if( source[ length - 1 ] != '/' ) {
+        source[ length ] = '/';
         source[ length + 1 ] = '\0';
     }
+#else
+    if( source[ length - 1 ] != '\\' ) {
+        source[ length ] = '\\';
+        source[ length + 1 ] = '\0';
+    }
+#endif
 }
 
 static void GetDestDir( int i, char *buffer )
@@ -2170,7 +2176,12 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
     if( access( buff, F_OK ) != 0 )
         return( FALSE );
 
-    strcat( buff, SYS_DIR_SEP_STR );
+#if defined( __UNIX__ )
+    strcat( buff, "/" );
+#else
+    strcat( buff, "\\" );
+#endif
+
     dir_end = buff + strlen( buff );
     found = FALSE;
     supp = TargetInfo[ DirInfo[ FileInfo[ i ].dir_index ].target ].supplimental;
@@ -2648,21 +2659,33 @@ extern void SimDirNoSlash( int i, char *buff )
     strcpy( dir, DirInfo[ i ].desc );
     if( dir[0] != '.'  &&  dir[0] != '\0' ) {
         len = strlen( buff );
-        if( len > 0 && buff[ len - 1 ] != SYS_DIR_SEP_CHAR ) {
-            buff[ len ] = SYS_DIR_SEP_CHAR;
-            buff[ len + 1 ] = '\0';
-        }
+#if defined( __UNIX__ )
+    if( len > 0 && buff[ len - 1 ] != '/' ) {
+        buff[ len ] = '/';
+        buff[ len + 1 ] = '\0';
+    }
+#else
+    if( len > 0 && buff[ len - 1 ] != '\\' ) {
+        buff[ len ] = '\\';
+        buff[ len + 1 ] = '\0';
+    }
+#endif
         strcat( buff, dir );
     }
     len = strlen( buff );
 
-    if( len > 1 && buff[ len - 1 ] == SYS_DIR_SEP_CHAR ) {
-#ifndef __UNIX__
-        if( !(len == 3 && buff[ 1 ] == ':') )
-            /* got a trailing slash that's not a root directory */
-#endif
-            buff[len-1] = '\0';
+#if defined( __UNIX__ )
+    if( len > 1 && buff[ len - 1 ] == '/' ) {
+        buff[len-1] = '\0';
     }
+#else
+    if( len > 1 && buff[ len - 1 ] == '\\' ) {
+        if( !(len == 3 && buff[ 1 ] == ':') ) {
+            /* got a trailing slash that's not a root directory */
+            buff[len-1] = '\0';
+        }
+    }
+#endif
 }
 
 extern bool SimDirUsed( int i )
@@ -2679,10 +2702,17 @@ extern void SimGetDir( int i, char *buff )
 
     SimDirNoSlash( i, buff );
     len = strlen( buff );
-    if( len > 0 && buff[ len - 1 ] != SYS_DIR_SEP_CHAR ) {
-        buff[ len ] = SYS_DIR_SEP_CHAR;
+#if defined( __UNIX__ )
+    if( len > 0 && buff[ len - 1 ] != '/' ) {
+        buff[ len ] = '/';
         buff[ len + 1 ] = '\0';
     }
+#else
+    if( len > 0 && buff[ len - 1 ] != '\\' ) {
+        buff[ len ] = '\\';
+        buff[ len + 1 ] = '\0';
+    }
+#endif
 }
 
 /*
@@ -2848,7 +2878,7 @@ extern bool SimFileUpToDate( int parm )
 /*************************************/
 {
     struct file_info    *info;
-    int                 i;
+    int         i;
 
     info = &FileInfo[ parm ];
     if( info->num_files == 0 )
@@ -3455,7 +3485,7 @@ static void GetSourcePath( int i, char *buffer )
 static bool CopyErrorDialog( int ret, int i, char *file )
 /*******************************************************/
 {
-    gui_message_return      guiret;
+    gui_message_return guiret;
 
     i = i;
     if( ret != CFE_NOERROR ) {
@@ -3476,8 +3506,7 @@ static bool CopyErrorDialog( int ret, int i, char *file )
 static bool PatchErrorDialog( int ret, int i )
 /********************************************/
 {
-    gui_message_return      guiret;
-
+    gui_message_return guiret;
     if( ret != PATCH_RET_OKAY && ret != PATCH_CANT_FIND_PATCH ) {
         if( ret != PATCH_RET_CANCEL ) {
             // error, attempt to continue patch process
@@ -3494,15 +3523,15 @@ static bool PatchErrorDialog( int ret, int i )
 }
 
 
-static bool FindStr( FILE *fp, char *fullpath, char *pattern )
-/************************************************************/
+static a_bool FindStr( FILE *fp, char *fullpath, char *pattern )
+/**************************************************************/
 {
     char            *buff;
     size_t          len;
     size_t          readsize;
     char            *p;
     size_t          i;
-    bool            found;
+    a_bool          found;
     size_t          patternlen;
 
     patternlen = strlen( pattern );
@@ -3517,7 +3546,7 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
     }
     if( readsize == 0 ) {
         free( buff );
-        return( FALSE );
+        return FALSE;
     }
     memset( buff, 0, patternlen );
     while( !found && !feof( fp ) ) {
@@ -3536,15 +3565,15 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
     if( found ) {
         fseek( fp,  -((long)len + patternlen - i), SEEK_CUR );
         free( buff );
-        return( TRUE );
+        return TRUE;
     }
     free( buff );
-    return( FALSE );
+    return FALSE;
 }
 
 
-bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
-/*************************************************************************/
+a_bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
+/***************************************************************************/
 {
     FILE            *fp;
     int             len;
@@ -3552,32 +3581,32 @@ bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
 
     if( stat( fullpath, &statbuf ) != 0 ) {
         // Cannot open file
-        return( FALSE );
+        return FALSE;
     }
     fp = fopen( fullpath, "rb" );
     if( fp == NULL ) {
-        return( FALSE );
+        return FALSE;
     }
     if( FindStr( fp, fullpath, pattern ) ) {
         len = fread( block, 1, blocklen, fp );
         if( len != blocklen ) {
             fclose( fp );
-            return( FALSE );
+            return FALSE;
         }
         if( fclose( fp ) != 0 ) {
-            return( FALSE );
+            return FALSE;
         }
-        return( TRUE );
+        return TRUE;
     }
     fclose( fp );
-    return( FALSE );
+    return FALSE;
 }
 
 
-bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
-/**************************************************************************/
+a_bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
+/****************************************************************************/
 {
-    bool            foundstr;
+    a_bool          foundstr;
     FILE            *fp;
     int             len;
     struct stat     statbuf;
@@ -3585,13 +3614,13 @@ bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
 
     if( stat( fullpath, &statbuf ) != 0 ) {
         // Cannot open file
-        return( FALSE );
+        return FALSE;
     }
     utimbuf.actime = statbuf.st_atime;
     utimbuf.modtime = statbuf.st_mtime;
     fp = fopen( fullpath, "rb+" );
     if( fp == NULL ) {
-        return( FALSE );
+        return FALSE;
     }
 
     foundstr = FALSE;
@@ -3602,25 +3631,19 @@ bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
         fflush( fp );
         if( len != blocklen ) {
             fclose( fp );
-            return( FALSE );
+            return FALSE;
         }
         foundstr = TRUE;
     }
     fclose( fp );
     utime( fullpath, &utimbuf );
 
-    return( foundstr );
+    return foundstr;
 }
 
 
-typedef struct {
-    FILE    *log_file;
-    bool    do_log;
-} log_state;
-
-
-static FILE *LogFileOpen( void )
-/******************************/
+static FILE *OpenLogFile()
+/*************************/
 {
     gui_message_return guiret;
     FILE               *logfp;
@@ -3628,17 +3651,17 @@ static FILE *LogFileOpen( void )
 
     patchlog = GetVariableStrVal( "PatchLog" );
     if( patchlog == NULL || patchlog[0] == '\0' ) {
-        return( NULL );
+        return NULL;
     }
 
     if( access( patchlog , F_OK | W_OK | R_OK ) == 0 ) {
         guiret = MsgBox ( NULL, "IDS_LOGFILE_EXISTS", GUI_YES_NO, patchlog );
         if( guiret == GUI_RET_NO ) {
-            return( NULL );
+            return NULL;
         }
     } else if( access( patchlog, F_OK ) == 0 ) {
         MsgBox ( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, patchlog );
-        return( NULL );
+        return NULL;
     }
     remove( patchlog );
     logfp = fopen( patchlog, "wt+" );
@@ -3646,45 +3669,21 @@ static FILE *LogFileOpen( void )
         MsgBox ( NULL, "IDS_CANT_OPEN_LOGFILE", GUI_OK, patchlog );
     }
 
-    return( logfp );
+    return logfp;
 }
 
 
-static void LogFileClose( log_state *ls )
-/***************************************/
+static void CloseLogFile( FILE *logfp )
+/*************************************/
 {
-    if( ls->do_log && ( fclose( ls->log_file ) != 0 ) ) {
-        MsgBox ( NULL, "IDS_CANT_WRITE_LOGFILE", GUI_OK, GetVariableStrVal( "PatchLog" ) );
+    char        *patchlog;
+
+    patchlog = GetVariableStrVal( "PatchLog" );
+
+    if( fclose( logfp ) != 0 ) {
+        MsgBox ( NULL, "IDS_CANT_WRITE_LOGFILE", GUI_OK, patchlog );
     }
     return;
-}
-
-#define GetVariableMsgVal GetVariableStrVal
-
-static void LogWriteMsg( log_state *ls, const char *msg_id )
-/**********************************************************/
-{
-    if( ls->do_log ) {
-        fprintf( ls->log_file, "%s\n", GetVariableMsgVal( msg_id ) );
-    }
-}
-
-
-static void LogWriteMsgStr( log_state *ls, const char *msg_id, const char *str )
-/******************************************************************************/
-{
-    if( ls->do_log ) {
-        fprintf( ls->log_file, GetVariableMsgVal( msg_id ), str );
-    }
-}
-
-
-static int DoPatch( char *src, char *dst, unsigned_32 flag )
-/**********************************************************/
-{
-    // TODO: Perform some useful function here
-
-    return( 0 );
 }
 
 
@@ -3703,12 +3702,15 @@ extern bool PatchFiles( void )
     char                srcfullpath[ _MAX_PATH ];
     gui_message_return  guiret;
     int                 count;  // count successful patches
+    a_bool              log;
+    FILE                *logfp;
     char                *appname;
+    char                *msg;
     int                 Index;  // used in secondary search during patch
-    bool                go_ahead;
+    unsigned_32         internal;
+    unsigned_32         embeddedinfo;
+    a_bool              go_ahead;
     char                exetype[ 3 ];
-    log_state           logstate;
-    log_state           *log;
 
 
     // note:  Up until this point, PatchInfo[ x ].destdir contains an
@@ -3720,20 +3722,18 @@ extern bool PatchFiles( void )
     //        begins.
 
     count = 0;
-    log = &logstate;
 
     if( GetVariableIntVal( "DoPatchLog" ) ) {
-        log->log_file = LogFileOpen();
-        if( log->log_file == NULL ) {
+        logfp = OpenLogFile();
+        if( logfp == NULL ) {
             MsgBox( NULL, "IDS_PATCHABORT", GUI_OK );
-            return( FALSE );
+            return FALSE;
         }
-        log->do_log = TRUE;
+        log = TRUE;
         appname = GetVariableStrVal( "AppName" );
-        fprintf( log->log_file, "%s\n\n", appname );
+        fprintf( logfp, "%s\n\n", appname );
     } else {
-        log->log_file = NULL;
-        log->do_log = FALSE;
+        log = FALSE;
     }
 
     for( i = 0; i < SetupInfo.patch_files.num; i++, Index = -1 ) {
@@ -3746,131 +3746,177 @@ extern bool PatchFiles( void )
         }
         switch( PatchInfo[ i ].command ) {
 
-        case PATCH_FILE:
-            Index = i;              // used in secondary search
-            GetSourcePath( i, srcfullpath );
+            case PATCH_FILE:
+            {
+                Index = i;              // used in secondary search
+                GetSourcePath( i, srcfullpath );
 
-            if( access( srcfullpath, R_OK ) == 0 ) {
-                GetDestDir( i, destfullpath );
-                go_ahead = SecondaryPatchSearch( PatchInfo[ i ].destfile, destfullpath, Index );
-                if( go_ahead ) {
-                    if( PatchInfo[ i ].exetype[ 0 ] != '.'
-                    && ExeType( destfullpath, exetype )
-                    && strcmp( exetype, PatchInfo[ i ].exetype ) != 0 ) {
-                        go_ahead = FALSE;
+                if( access( srcfullpath, R_OK ) == 0 ) {
+                    GetDestDir( i, destfullpath );
+                    go_ahead = SecondaryPatchSearch( PatchInfo[ i ].destfile, destfullpath, Index );
+                    if( go_ahead ) {
+                        if( PatchInfo[ i ].exetype[ 0 ] != '.'
+                        && ExeType( destfullpath, exetype )
+                        && strcmp( exetype, PatchInfo[ i ].exetype ) != 0 ) {
+                            go_ahead = FALSE;
+                        }
                     }
-                }
 
-                if( go_ahead ) {
-                    StatusLines( STAT_PATCHFILE, destfullpath );
-                    StatusShow( TRUE );
-                    LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
-                    if( DoPatch( srcfullpath, destfullpath, 0 ) == CFE_NOERROR ) {
-                        ++count;
-                        LogWriteMsg( log, "IDS_SUCCESS" );
-                        break;
-                    } else {
-                        LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                        if( !PatchErrorDialog( CFE_ERROR, i ) ) {
-                            LogWriteMsg( log, "IDS_PATCHABORT" );
-                            LogFileClose( log );
-                            return( FALSE );
+                    if( go_ahead ) {
+                        StatusLines( STAT_PATCHFILE, destfullpath );
+                        StatusShow( TRUE );
+
+                        internal = ReadInternal( srcfullpath );
+                        embeddedinfo = internal >> 16;
+
+                        if( log ) {
+                            msg = GetVariableStrVal( "IDS_UNPACKING" );
+                            fprintf( logfp, msg, destfullpath );
+                        }
+
+                        if( PerformDecode( srcfullpath, destfullpath, internal ) == CFE_NOERROR ) {
+                            ++count;
+                            if( log ) {
+                                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_SUCCESS" ) );
+                            }
+                            break;
+                        } else {
+                            if( log ) {
+                                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_FAILED_UNPACKING" ) );
+                            }
+                            if( !PatchErrorDialog( CFE_ERROR, i ) ) {
+                                if( log ) {
+                                    fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_PATCHABORT" ) );
+                                    CloseLogFile( logfp );
+                                }
+                                return FALSE;
+                            }
                         }
                     }
                 }
+                break;
             }
-            break;
+            case PATCH_COPY_FILE:
+            {
+                unsigned_32     internal;
 
-        case PATCH_COPY_FILE:
-            GetSourcePath( i, srcfullpath );
-            GetDestDir( i, destfullpath );
+                GetSourcePath( i, srcfullpath );
+                GetDestDir( i, destfullpath );
 
-            // get rid of trailing slash: OS/2 needs this for access(...) to work
-            if( destfullpath[ strlen( destfullpath ) - 1 ] == '\\' ) {
-                destfullpath[ strlen( destfullpath ) - 1 ] = '\0';
+                // get rid of trailing slash: OS2 needs this for access(...) to work
+                if( destfullpath[ strlen( destfullpath ) - 1 ] == '\\' ) {
+                    destfullpath[ strlen( destfullpath ) - 1 ] = '\0';
+                }
+
+                if( access( destfullpath, F_OK ) == 0 ) {
+                    AddFileName( i, destfullpath, 0 );
+                    StatusLines( STAT_CREATEFILE, destfullpath );
+                    StatusShow( TRUE );
+                    if( access( srcfullpath, R_OK ) == 0 ) {
+                        if( log ) {
+                            msg = GetVariableStrVal( "IDS_UNPACKING" );
+                            fprintf( logfp, msg, destfullpath );
+                        }
+                        internal = ReadInternal( srcfullpath );
+                        if( PerformDecode( srcfullpath, destfullpath, internal ) == CFE_NOERROR ) {
+                            ++count;
+                            if( log ) {
+                                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_SUCCESS" ) );
+                            }
+                            break;
+                        }
+                        if( log ) {
+                            fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_FAILED_UNPACKING" ) );
+                        }
+                        if( !CopyErrorDialog( CFE_ERROR, i, srcfullpath ) ) {
+                            if( log ) {
+                                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_PATCHABORT" ) );
+                                CloseLogFile( logfp );
+                            }
+                            return FALSE;
+                        }
+                    }
+                }
+                break;
             }
-
-            if( access( destfullpath, F_OK ) == 0 ) {
+            case PATCH_DELETE_FILE:
+            {
+                GetDestDir( i, destfullpath );
                 AddFileName( i, destfullpath, 0 );
-                StatusLines( STAT_CREATEFILE, destfullpath );
+                StatusLines( STAT_DELETEFILE, destfullpath );
                 StatusShow( TRUE );
-                if( access( srcfullpath, R_OK ) == 0 ) {
-                    LogWriteMsgStr( log, "IDS_UNPACKING", destfullpath );
-                    if( DoCopyFile( srcfullpath, destfullpath, FALSE ) == CFE_NOERROR ) {
+                if( access( destfullpath, F_OK | W_OK ) == 0 ) {
+                    if( log ) {
+                        msg = GetVariableStrVal( "IDS_DELETING" );
+                        fprintf( logfp, msg, destfullpath );
+                    }
+                    if( DoDeleteFile( destfullpath ) ) {
                         ++count;
-                        LogWriteMsg( log, "IDS_SUCCESS" );
-                        break;
-                    }
-                    LogWriteMsg( log, "IDS_FAILED_UNPACKING" );
-                    if( !CopyErrorDialog( CFE_ERROR, i, srcfullpath ) ) {
-                        LogWriteMsg( log, "IDS_PATCHABORT" );
-                        LogFileClose( log );
-                        return( FALSE );
-                    }
-                }
-            }
-            break;
-
-        case PATCH_DELETE_FILE:
-            GetDestDir( i, destfullpath );
-            AddFileName( i, destfullpath, 0 );
-            StatusLines( STAT_DELETEFILE, destfullpath );
-            StatusShow( TRUE );
-            if( access( destfullpath, F_OK | W_OK ) == 0 ) {
-                LogWriteMsgStr( log, "IDS_DELETING", destfullpath );
-                if( DoDeleteFile( destfullpath ) ) {
-                    ++count;
-                    LogWriteMsg( log, "IDS_SUCCESS" );
-                } else {
-                    LogWriteMsg( log, "IDS_FAILED_DELETING" );
-                    guiret = MsgBox( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, destfullpath );
-                    if( guiret == GUI_RET_NO ) {
-                        LogWriteMsg( log, "IDS_PATCHABORT" );
-                        LogFileClose( log );
-                        return( FALSE );
+                        if( log ) {
+                            fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_SUCCESS" ) );
+                        }
+                    } else {
+                        if( log ) {
+                            fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_FAILED_DELETING" ) );
+                        }
+                        guiret = MsgBox( NULL, "IDS_DELETEFILEERROR", GUI_YES_NO, destfullpath );
+                        if( guiret == GUI_RET_NO ) {
+                            if( log ) {
+                                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_PATCHABORT" ) );
+                                CloseLogFile( logfp );
+                            }
+                            return FALSE;
+                        }
                     }
                 }
+                break;
             }
-            break;
+            case PATCH_MAKE_DIR:
+            {
+                ReplaceVars( destfullpath, PatchInfo[ i ].destdir );
 
-        case PATCH_MAKE_DIR:
-            ReplaceVars( destfullpath, PatchInfo[ i ].destdir );
-
-            StatusLines( STAT_CREATEDIRECTORY, destfullpath );
-            StatusShow( TRUE );
-            if( access( destfullpath, F_OK ) != 0 ) {
-                LogWriteMsgStr( log, "IDS_CREATINGDIR", destfullpath );
-                if( mkdir( destfullpath ) == 0 ) {
-                    LogWriteMsg( log, "IDS_SUCCESS" );
-                } else {
-                    guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, destfullpath );
-                    if( guiret == GUI_RET_NO ) {
-                        LogWriteMsg( log, "IDS_FAILED_CREATINGDIR" );
-                        LogFileClose( log );
-                        return( FALSE );
+                StatusLines( STAT_CREATEDIRECTORY, destfullpath );
+                StatusShow( TRUE );
+                if( access( destfullpath, F_OK ) != 0 ) {
+                    if( log ) {
+                        msg = GetVariableStrVal( "IDS_CREATINGDIR" );
+                        fprintf( logfp, msg, destfullpath );
+                    }
+                    if( mkdir( destfullpath ) == 0 ) {
+                        if( log ) {
+                            fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_SUCCESS" ) );
+                        }
+                    } else {
+                        guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, destfullpath );
+                        if( guiret == GUI_RET_NO ) {
+                            if( log ) {
+                                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_FAILED_CREATINGDIR" ) );
+                                CloseLogFile( logfp );
+                            }
+                            return FALSE;
+                        }
                     }
                 }
+                break;
             }
-            break;
-
-        default:
-            /* Something went wrong, but what can we do about it now? */
-            break;
         }
-
         StatusAmount( i + 1, SetupInfo.patch_files.num );
         if( StatusCancelled() ) {
-            LogWriteMsg( log, "IDS_PATCHABORT" );
-            LogFileClose( log );
+            if( log ) {
+                fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_PATCHABORT" ) );
+                CloseLogFile( logfp );
+            }
             return( FALSE );
         }
     }
     StatusCancelled(); /* make sure display gets updated */
 
-    if( count == 0 ) {
-        LogWriteMsg( log, "IDS_NO_FILES_PATCHED" );
+    if( log ) {
+        if( count == 0 ) {
+            fprintf( logfp, "%s\n", GetVariableStrVal( "IDS_NO_FILES_PATCHED" ) );
+        }
+        CloseLogFile( logfp );
     }
-    LogFileClose( log );
 
     if( count == 0 ) {
         // no files patched successfully

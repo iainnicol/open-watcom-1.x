@@ -126,7 +126,7 @@ static void NextPrompt( int *prompt )
     }
 }
 
-static void GetNewLine( int prompt )
+static void GetNewLine( prompt )
 /******************************/
 {
     if( CmdFile->how == NONBUFFERED ) {

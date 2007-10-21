@@ -74,7 +74,7 @@
 #include "objstrip.h"
 #include "symtab.h"
 #include "omfreloc.h"
-#include "overlays.h"
+#include "ovlsupp.h"
 #include "wcomdef.h"
 #include "objomf.h"
 #include "wlink.h"
@@ -84,9 +84,6 @@ static void     PostAddrCalcFormatSpec( void );
 static void     DoDefaultSystem( void );
 static void     FindLibPaths( void );
 static void     ResetMisc( void );
-static void     ResetSubSystems( void );
-static void     DoLink( char * );
-static void     CleanSubSystems( void );
 
 // Not sure what this is for - doesn't seem to be referenced
 //extern int              __nheapblk;
@@ -104,7 +101,7 @@ int main( int argc, char ** argv )
     InitSubSystems();
     LinkMainLine( NULL );
     FiniSubSystems();
-    return( (LinkState & LINK_ERROR) ? 1 : 0 );
+    return (LinkState & LINK_ERROR) ? 1 : 0;
 }
 
 #endif
@@ -114,11 +111,11 @@ int main( int argc, char ** argv )
  *  I have temporarily left these as extern as they are internal data. On the final pass, either find
  *  a library header that defines these or create one!
  */
-extern char     *_edata;
-extern char     *_end;
+extern char *   _edata;
+extern char *   _end;
 #endif
 
-static char     *ArgSave;
+static char *   ArgSave;
 
 static void LinkMeBaby( void )
 /****************************/
@@ -159,7 +156,7 @@ void InitSubSystems( void )
     InitCmdFile();
 }
 
-static void ResetSubSystems( void )
+void ResetSubSystems( void )
 /*********************************/
 {
     ResetPermData();
@@ -189,7 +186,7 @@ static void ResetSubSystems( void )
     ResetToc();
 }
 
-static void CleanSubSystems( void )
+void CleanSubSystems( void )
 /*********************************/
 {
     if( MapFile != NIL_HANDLE ) {
@@ -223,7 +220,7 @@ void FiniSubSystems( void )
     LnkMemFini();
 }
 
-static void DoLink( char *cmdline )
+void DoLink( char * cmdline )
 /**********************************/
 // cmdline is only used when we are running under watfor.
 {
@@ -324,7 +321,7 @@ static void PostAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _QNXLOAD
-    else if( FmtData.type & MK_QNX ) {
+     else if( FmtData.type & MK_QNX ) {
         SetQNXSegFlags();
     }
 #endif

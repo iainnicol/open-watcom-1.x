@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Internal routines and data types used by setup program.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -101,7 +102,6 @@ extern gui_window       *MainWnd;
 #define WIDTH  1000
 #define HEIGHT 1100
 
-extern bool             SetupPreInit( void );
 extern bool             SetupInit( void );
 extern void             SetupFini( void );
 extern void             SetupError( char * );

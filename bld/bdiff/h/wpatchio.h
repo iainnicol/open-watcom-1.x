@@ -42,13 +42,6 @@
 #define PATCH_MAX_PATH_SIZE     250
 
 extern void PatchWrite( void *patch, int size );
-extern void PatchWriteOpen( char *name );
-extern void PatchWriteClose( void );
-extern void PatchWriteFile( short flag, char *RelPath );
-extern void PatchGetFile( char *path );
-extern void PatchReadOpen( char *name );
-extern void PatchReadClose( void );
-extern void PatchReadFile( short *Pflag, char *RelPath );
 
 extern PATCH_RET_CODE DoPatch( char *patchname,
                    int doprompt,

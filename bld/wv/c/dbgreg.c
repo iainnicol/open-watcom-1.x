@@ -740,10 +740,6 @@ void MoveStackPos( int by )
     }
 }
 
-int GetStackPos( void )
-{
-    return( StackPos );
-}
 
 void PosMachState( int rel_pos )
 {
@@ -861,6 +857,11 @@ void LastStackPos( void )
     }
 }
 
+
+int GetStackPos( void )
+{
+    return( StackPos );
+}
 
 /************************ command language stuff ***********************/
 

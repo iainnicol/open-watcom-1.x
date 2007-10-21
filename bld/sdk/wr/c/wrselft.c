@@ -331,7 +331,7 @@ BOOL WR_EXPORT WRSelectFileTypeProc( HWND hDlg, UINT message,
                 case IDM_SFTHELP:
                     sft = (WRSFT *) GetWindowLong( hDlg, DWL_USER );
                     if( sft && sft->hcb ) {
-                        (*(void(*)(void))sft->hcb)();
+                        (*sft->hcb)();
                     }
                     break;
 

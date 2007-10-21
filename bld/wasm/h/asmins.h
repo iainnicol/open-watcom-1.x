@@ -44,7 +44,8 @@
 
 #include "asmopnds.h"
 #include "asmsym.h"
-#include "asmops.h"
+#include "asmops1.h"
+#include "asmops2.h"
 
 enum prefix_reg {
     PREFIX_EMPTY = EMPTY,
@@ -162,9 +163,9 @@ struct asm_code {
    OP_R ( without extension ) should follow OP_Rx
    OP_I ( without extension ) should follow OP_Ix  */
 
-extern const struct asm_ins ASMFAR  AsmOpTable[];
-extern const struct AsmCodeName     AsmOpcode[];
-extern const char                   AsmChars[];
+extern const struct asm_ins ASMFAR AsmOpTable[];
+extern struct AsmCodeName          AsmOpcode[];
+extern char                        AsmChars[];
 
 #if defined( _STANDALONE_ )
 

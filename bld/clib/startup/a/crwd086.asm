@@ -43,26 +43,6 @@ endif
 
 _DATA   segment word public 'DATA'
 
-        public  "C",_curbrk
-        public  "C",_STACKLOW
-        public  "C",_STACKTOP
-        public  "C",_cbyte
-        public  "C",_child
-        public  __no87
-        public  "C",__FPE_handler
-ifndef __QNX__
-        public  "C",_psp
-        public  __get_ovl_stack
-        public  __restore_ovl_stack
-        public  __close_ovl_file
-        public  "C",_LpCmdLine
-        public  "C",_LpPgmName
-        public  "C",_osmajor
-        public  "C",_osminor
-        public  "C",_osmode
-        public  "C",_HShift
-endif
-
         assume  DS:DGROUP
 
 _curbrk    dw 0                 ; top of usable memory
@@ -71,11 +51,11 @@ _psp       dw 0                 ; segment addr of program segment prefix
 _osmajor   db 0                 ; major DOS version number
 _osminor   db 0                 ; minor DOS version number
 ifdef _PROT_MODE_
-_osmode    db 1                 ; 0 => DOS real mode, 1 => protect-mode
-_HShift    db 3                 ; Huge Shift amount (real-mode=12,prot-mode=3)
+__osmode   db 1                 ; 0 => DOS real mode, 1 => protect-mode
+__HShift   db 3                 ; Huge Shift amount (real-mode=12,prot-mode=3)
 else
-_osmode    db 0                 ; 0 => DOS real mode
-_HShift    db 12                ; Huge Shift amount (real-mode=12,prot-mode=3)
+__osmode   db 0                 ; 0 => DOS real mode
+__HShift   db 12                ; Huge Shift amount (real-mode=12,prot-mode=3)
 endif
 endif
 _STACKLOW  dw 0                 ; lowest address in stack
@@ -92,6 +72,26 @@ __FPE_handler dd 0              ; FPE handler
 ifndef __QNX__
 _LpCmdLine dw 0,0               ; lpCmdLine (for _argc, _argv processing)
 _LpPgmName dw 0,0               ; lpPgmName (for _argc, _argv processing)
+endif
+
+        public  "C",_curbrk
+        public  "C",_STACKLOW
+        public  "C",_STACKTOP
+        public  "C",_cbyte
+        public  "C",_child
+        public  __no87
+        public  "C",__FPE_handler
+ifndef __QNX__
+        public  "C",_psp
+        public  __get_ovl_stack
+        public  __restore_ovl_stack
+        public  __close_ovl_file
+        public  "C",_LpCmdLine
+        public  "C",_LpPgmName
+        public  "C",_osmajor
+        public  "C",_osminor
+        public  __osmode
+        public  __HShift
 endif
 
 _DATA   ends

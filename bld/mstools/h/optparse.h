@@ -24,20 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Include prototypes for generated parsing routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef OPTPARSE_H_INCLUDED
-#define OPTPARSE_H_INCLUDED
+#ifndef _OPTPARSE_H
+#define _OPTPARSE_H
 
 
 #include "optparsh.gh"
-
-void    OPT_INIT( OPT_STORAGE *data );
-void    OPT_FINI( OPT_STORAGE *data );
-int     OPT_PROCESS( OPT_STORAGE *data );
 
 
 #endif

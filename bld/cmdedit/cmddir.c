@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  DIR command processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -46,9 +47,9 @@ extern int      ReplaceAlias( char far * alias, char * word, char * endword );
 static char Prev[SIZE+1] = { 'X' };
 #endif
 
-int ExpandDirCommand( void )
-/**************************/
-{
+int ExpandDirCommand() {
+/**********************/
+
     int         i;
     int         ups;
     char        ch;
@@ -110,9 +111,23 @@ int ExpandDirCommand( void )
 }
 
 
-void    DirCmds( char *p )
-/************************/
-{
+void DoDirCommand() {
+/*******************/
+
+
+    Line[MaxCursor] = '\0';
+    DirCmds( EatWhite( Line ) + HideDirCmds );
+//    Line[ 0 ] = 'c';
+//    Line[ 1 ] = 'd';
+//    Line[ 2 ] = ' ';
+//    Line[ 3 ] = '.';
+//    Line[ 4 ] = '\0';
+    MaxCursor = Cursor = 0;
+}
+
+void    DirCmds( char *p ) {
+/*************************/
+
 #if 0
     char        far *q;
 #endif
@@ -199,18 +214,4 @@ void    DirCmds( char *p )
     Line[6] = '\\';
     DosQCurDir( drive_num, Line+7, &size );
 #endif
-}
-
-
-void DoDirCommand( void ) 
-/***********************/
-{
-    Line[MaxCursor] = '\0';
-    DirCmds( EatWhite( Line ) + HideDirCmds );
-//    Line[ 0 ] = 'c';
-//    Line[ 1 ] = 'd';
-//    Line[ 2 ] = ' ';
-//    Line[ 3 ] = '.';
-//    Line[ 4 ] = '\0';
-    MaxCursor = Cursor = 0;
 }

@@ -40,13 +40,13 @@ _BSS   segment word public 'BSS'
         public  "C",__r87
         public  "C",_osmajor
         public  "C",_osminor
-        public  "C",_HShift
+        public  __HShift
 
 __87            db      ?
 __r87           db      ?
 _osmajor        db      ?
 _osminor        db      ?
-_HShift         db      ?
+__HShift        db      ?
 _BSS   ends
 
 include xinit.inc

@@ -33,6 +33,9 @@
 #include "asmglob.h"
 #include <ctype.h>
 
+#include "asmins.h"
+#include "asmdefs.h"
+
 char                    *CurrString; // Current Input Line
 
 extern int              get_instruction_position( char *string );
@@ -67,8 +70,8 @@ typedef union {
         long    l;
 } NUMBERFL;
 
-static int get_float( asm_tok *buf, char **input, char **output )
-/***************************************************************/
+static int get_float( struct asm_tok *buf, char **input, char **output )
+/**********************************************************************/
 {
     /* valid floats look like:  (int)[.(int)][e(int)] */
 
@@ -133,8 +136,8 @@ static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsi
     }
 }
 
-static int get_string( asm_tok *buf, char **input, char **output )
-/****************************************************************/
+static int get_string( struct asm_tok *buf, char **input, char **output )
+/***********************************************************************/
 {
     char    symbol_o;
     char    symbol_c;
@@ -213,8 +216,8 @@ static int get_string( asm_tok *buf, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_number( asm_tok *buf, char **input, char **output )
-/****************************************************************/
+static int get_number( struct asm_tok *buf, char **input, char **output )
+/***********************************************************************/
 {
     char                *ptr = *input;
     char                *dig_start;
@@ -380,8 +383,8 @@ done_scan:
     return( NOT_ERROR );
 } /* get_number */
 
-static int get_id_in_backquotes( asm_tok *buf, char **input, char **output )
-/**************************************************************************/
+static int get_id_in_backquotes( struct asm_tok *buf, char **input, char **output )
+/*********************************************************************************/
 {
     buf->string_ptr = *output;
     buf->token = T_ID;
@@ -405,9 +408,9 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
 /***********************************************************************/
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
-    asm_tok     *buf;
-    char        cur_char;
-    int         count;
+    struct asm_tok  *buf;
+    char            cur_char;
+    int             count;
 
     buf = AsmBuffer[ *buf_index ];
 
@@ -500,8 +503,9 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_special_symbol( asm_tok *buf, char **input, char **output )
-/************************************************************************/
+static int get_special_symbol( struct asm_tok *buf,
+                                char **input, char **output )
+/***********************************************************/
 {
     char    symbol;
 

@@ -279,13 +279,12 @@ static void doReplace( HWND lb, WORD searchcnt, char **searchfor,
 }
 
 static void updateAlias( DWORD id, char *newalias, char *oldalias,
-                         void *_info ) {
+                         ReplaceInfo *info ) {
 
     WORD        i;
     WORD        searchcnt;
     char        *searchfor[3];
     char        *replace[3];
-    ReplaceInfo *info = _info;
 
     if( oldalias != NULL && newalias != NULL ) {
         if( !strcmp( oldalias, newalias ) ) return;
@@ -310,13 +309,13 @@ static void updateAlias( DWORD id, char *newalias, char *oldalias,
     }
 }
 
-void refreshAnAlias( DWORD id, char *text, void *info ) {
+void refreshAnAlias( DWORD id, char *text, ReplaceInfo *info ) {
 
     char        *ptr;
     WORD        prefix;
 
     if( id == -1 ) return;
-    ptr = fmtAlias( id, NULL, ((ReplaceInfo *)info)->type, &prefix );
+    ptr = fmtAlias( id, NULL, info->type, &prefix );
     if( ConfigInfo.alias ) {
         updateAlias( id, text, ptr + prefix, info );
     } else {

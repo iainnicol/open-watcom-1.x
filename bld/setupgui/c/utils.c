@@ -66,10 +66,11 @@ typedef struct def_var {
 
 extern void     BumpStatus( long );
 
+extern int      ReadInternal( char * );
+
 bool            ConfigModified = FALSE;
 static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
 
-extern int      IsPatch;
 extern bool     CancelSetup;
 extern vhandle  UnInstall;
 extern vhandle  PreviousInstall;
@@ -79,6 +80,14 @@ DEF_VAR         *ExtraVariables;
 int             Invisible;
 int             NoProgramGroups;
 int             NoStartupChange;
+
+#ifdef PATCH
+extern int      InitIO( void );
+extern int      Decode( arccmd *);
+
+static int      DecodeError;
+extern int      IsPatch;
+#endif
 
 extern bool ModifyEnvironment( bool uninstall )
 /*********************************************/
@@ -165,8 +174,7 @@ int __far critical_error_handler( unsigned deverr,
 typedef __far (HANDLER)( unsigned deverr,
                   unsigned errcode,
                   unsigned far *devhdr );
-
-static void NoHardErrors( void )
+static void NoHardErrors()
 {
 #if defined( __OS2__ )
     DosError( FERR_DISABLEHARDERR );
@@ -390,7 +398,7 @@ static void GetTmpFileNameInTarget( unsigned drive, char *buff )
     GetTmpFileName( drive, buff );
 }
 
-void ResetDriveInfo( void )
+void ResetDriveInfo()
 {
     int         i;
 
@@ -605,14 +613,14 @@ extern unsigned long long GetFreeDiskSpace( unsigned drive, bool removable )
     return( Drives[ GetDriveInfo( drive, removable ) ].free_space );
 }
 
-void ResetDiskInfo( void )
-/************************/
+void ResetDiskInfo()
+/******************/
 {
     memset( Drives, 0, sizeof( Drives ) );
 }
 
 bool IsFixedDisk( unsigned drive )
-/********************************/
+/************************************/
 {
     if( drive == 0 )
         return( FALSE );
@@ -967,8 +975,8 @@ static bool FindUpgradeFile( char *path )
     return( FALSE );
 }
 
-extern bool CheckUpgrade( void )
-/******************************/
+extern bool CheckUpgrade()
+/************************/
 {
     char                disk[_MAX_PATH];
     dlg_state           return_state;
@@ -1239,7 +1247,7 @@ typedef struct split_file {
 
 #define OVERHEAD_SIZE 10000 // removing a file is about like copying a small file
 
-static bool CreateDirectoryTree( void )
+static bool CreateDirectoryTree()
 {
     long                num_total_install;
     long                num_installed;
@@ -1273,8 +1281,8 @@ static bool CreateDirectoryTree( void )
     return( TRUE );
 }
 
-static bool RelocateFiles( void )
-/*******************************/
+static bool RelocateFiles()
+/*************************/
 {
     int                 filenum;
     int                 subfilenum, max_subfiles;
@@ -1345,7 +1353,7 @@ static file_check *FileCheck = NULL;
 static file_check *FileCheckThisPack = NULL;
 
 static void NewFileToCheck( char *name, bool is_dll )
-/***************************************************/
+/***********************************************************/
 {
     file_check  *new;
 
@@ -1358,7 +1366,7 @@ static void NewFileToCheck( char *name, bool is_dll )
 }
 
 static void UpdateCheckList( char *name, vhandle var_handle )
-/***********************************************************/
+/********************************************************/
 {
     file_check  *check;
 
@@ -1369,8 +1377,8 @@ static void UpdateCheckList( char *name, vhandle var_handle )
     }
 }
 
-static void TransferCheckList( void )
-/***********************************/
+static void TransferCheckList()
+/*****************************/
 {
     file_check  *check,*next;
 
@@ -1382,8 +1390,8 @@ static void TransferCheckList( void )
     FileCheckThisPack = NULL;
 }
 
-static bool CheckPendingFiles( void )
-/***********************************/
+static bool CheckPendingFiles()
+/*****************************/
 {
     file_check  *curr, *next;
     gui_message_return  ret;
@@ -1402,8 +1410,8 @@ static bool CheckPendingFiles( void )
     return( TRUE );
 }
 
-static void CopySetupInfFile( void )
-/**********************************/
+static void CopySetupInfFile()
+/****************************/
 {
     char                *p;
     char                dst_path[ _MAX_PATH ];
@@ -1423,33 +1431,8 @@ static void CopySetupInfFile( void )
     }
 }
 
-int UnPackHook( char *name )
-/**************************/
-{
-    char        drive[_MAX_DRIVE];
-    char        dir[ _MAX_DIR ];
-    char        fname[_MAX_FNAME];
-    char        ext[_MAX_EXT];
-
-    _splitpath( name, drive, dir, fname, ext );
-    if( stricmp( ext, ".NLM" ) == 0 ) {
-        NewFileToCheck( name, FALSE );
-        _makepath( name, drive, dir, fname, "._N_" );
-        return( 1 );
-    } else if( stricmp( ext, ".DLL" ) == 0 ) {
-        NewFileToCheck( name, TRUE );
-        if( !IsPatch ) {
-#ifdef EXTRA_CAUTIOUS_FOR_DLLS
-            _makepath( name, drive, dir, fname, "._D_" );
-#endif
-        }
-        return( 1 );
-    }
-    return( 0 );
-}
-
-static bool DoCopyFiles( void )
-/*****************************/
+static bool DoCopyFiles()
+/***********************/
 {
     int                 filenum, disk_num;
     int                 subfilenum, max_subfiles;
@@ -1662,8 +1645,8 @@ static bool DoCopyFiles( void )
 }
 
 
-static void RemoveUnusedDirs( void )
-/**********************************/
+static void RemoveUnusedDirs()
+/****************************/
 {
     char        dst_path[_MAX_PATH];
     int         i;
@@ -1676,8 +1659,8 @@ static void RemoveUnusedDirs( void )
     }
 }
 
-static void RemoveExtraFiles( void )
-/**********************************/
+static void RemoveExtraFiles()
+/****************************/
 // remove supplemental files
 {
     char                *p;
@@ -1793,8 +1776,8 @@ static bool NukePath( char *path, int stat )
 
 // *********************** Miscellaneous Function ****************************
 
-void DeleteObsoleteFiles( void )
-/******************************/
+void DeleteObsoleteFiles()
+/************************/
 {
     int         i, max_deletes;
     int         group;
@@ -1851,7 +1834,7 @@ void DeleteObsoleteFiles( void )
     }
 }
 
-extern char *GetInstallName( void )
+extern char *GetInstallName()
 {
     static char name[_MAX_FNAME];
     int         argc;
@@ -1988,6 +1971,95 @@ extern gui_message_return MsgBox( gui_window *gui, char *messageid, gui_message_
     return( result );
 }
 
+#ifdef PATCH
+// *********************** DECODE Functions **********************************
+
+static jmp_buf          PackFailed;
+
+extern int PerformDecode( char *src, char *dst, unsigned_32 internal )
+/*********************************************************************/
+{
+
+    arccmd              cmd;
+    wpackfile           files[ 1 ];
+    char                drive[ _MAX_DRIVE ];
+    char                dir[ _MAX_DIR ];
+    char                destdir[ _MAX_DIR ];
+
+     // get rid of trailing filename if it exists.
+    _splitpath( dst, drive, dir, NULL, NULL );
+    _makepath( destdir, drive, dir, NULL, NULL );
+
+    cmd.u.path = destdir;
+    files[ 0 ].filename = NULL;
+    files[ 0 ].packname = NULL;
+    cmd.files = &files;
+    cmd.arcname = src;
+    cmd.flags = PREPEND_PATH | BE_QUIET;
+    cmd.internal = internal;
+    DecodeError = CFE_NOERROR;
+    if( setjmp( PackFailed ) == 0 ) {
+        if( !Decode( &cmd ) ) {
+            DecodeError = CFE_ERROR;
+        }
+    } else {
+        // we longjmp'd to here
+    }
+    return( DecodeError );
+}
+
+void QueryCancel()
+{
+    if( StatusCancelled() ) {
+        PackExit();
+    }
+}
+
+
+// functions required for WPack Decoder
+
+static void PackExitWithCode( int code )
+/********************************/
+{
+    DecodeError = code;
+    longjmp( PackFailed, 1 );
+}
+
+
+extern void PackExit( void )
+/**************************/
+{
+    // the WPACK code can't handle this routine returning
+    PackExitWithCode( CFE_ERROR );
+}
+
+extern void Error( int code, char *msg )
+/****************************/
+{
+    dlg_state           return_state;
+
+    switch( code ) {
+    case TXT_INC_CRC:
+        PackExitWithCode( CFE_BAD_CRC );
+        break;
+    case TXT_ARC_NOT_EXIST:
+        PackExitWithCode( CFE_CANTOPENSRC );
+        break;
+    case TXT_NOT_OPEN:
+        SetVariableByName( "OpenError", msg );
+        return_state = DoDialog( "CantOpen" );
+        if( return_state == DLG_CAN || return_state == DLG_DONE ) {
+            PackExit();
+        }
+        break;
+    default:
+        MsgBox( NULL, "IDS_ERROR", GUI_OK, msg );
+        PackExit();
+        break;
+    }
+}
+#endif
+
 
 extern int PromptUser( char *name, char *dlg, char *skip,
             char *replace, int *value )
@@ -2012,6 +2084,69 @@ extern int PromptUser( char *name, char *dlg, char *skip,
     return( TRUE );
 }
 
+int UnPackHook( char *name )
+/***************************/
+{
+    char        drive[_MAX_DRIVE];
+    char        dir[ _MAX_DIR ];
+    char        fname[_MAX_FNAME];
+    char        ext[_MAX_EXT];
+
+    _splitpath( name, drive, dir, fname, ext );
+    if( stricmp( ext, ".NLM" ) == 0 ) {
+        NewFileToCheck( name, FALSE );
+#ifndef PATCH
+        _makepath( name, drive, dir, fname, "._N_" );
+#endif
+        return( 1 );
+    } else if( stricmp( ext, ".DLL" ) == 0 ) {
+        NewFileToCheck( name, TRUE );
+#ifdef PATCH
+        if( !IsPatch ) {
+#ifdef EXTRA_CAUTIOUS_FOR_DLLS
+            _makepath( name, drive, dir, fname, "._D_" );
+#endif
+        }
+#endif
+        return( 1 );
+    }
+    return( 0 );
+}
+
+
+#ifdef PATCH
+extern int OK_ToReplace( char *name )
+/***********************************/
+{
+    name=name;
+    return( FALSE ); // pre-checked.  Anything left is NOT ok
+}
+
+
+extern int OK_ReplaceRDOnly( char *name )
+/***************************************/
+{
+    name=name;
+    return( FALSE ); // pre-checked.  Anything left is NOT ok
+}
+
+
+extern void LogUnPacking( char *name )
+/************************************/
+{
+    StatusLines( STAT_COPYINGFILE, name );
+}
+
+extern void Log( char *start, ... )
+/*********************************/
+{
+    // shouldn't get called
+
+    start = start;
+}
+#endif
+
+
 static void AddDefine( char *def )
 /********************************/
 // Process command line switch to set a variable
@@ -2032,8 +2167,8 @@ static void AddDefine( char *def )
     }
 }
 
-static void DefineVars( void )
-/****************************/
+static void DefineVars()
+/**********************/
 // Create variables specified on command line
 {
     DEF_VAR             *var;
@@ -2094,6 +2229,11 @@ extern bool GetDirParams( int       argc,
                     "-s\t\tskips dialogs but shows install progress\n" \
                     "-np\t\tdoes not create Program Manager entries\n" \
                     "-ns\t\tdoes not register startup information (paths, environment)\n" ;
+
+#if 0  /* If SetupInit is called, the dialog is shown on the big blue window */
+                if( !SetupInit() ) 
+                    return FALSE;
+#endif
 
                 InitGlobalVarList();
                 SetVariableByName( "IDS_USAGE", "%s");

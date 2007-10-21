@@ -32,9 +32,7 @@
 
 #include <wlib.h>
 
-jmp_buf Env;
-
-int InitSubSystems( void )
+int InitSubSystems( )
 {
     if( !setjmp( Env ) ) {
         InitMem();
@@ -74,7 +72,7 @@ int WlibMainLine( char *argv[] )
     return( retcode );
 }
 
-void FiniSubSystems( void )
+void FiniSubSystems()
 {
     if( !setjmp( Env ) ) {
         FiniFileTab();

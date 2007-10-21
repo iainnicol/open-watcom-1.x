@@ -60,15 +60,13 @@
 #include "fileio.h"
 
 void    *TrHdl;
-
-static void         PrintAllMem( void );
 #endif
 
 static bool         CacheRelease( void );
 
 #ifdef TRMEM
 
-void PrintLine( int *bogus, const char *buff, unsigned len )
+void PrintLine( int * bogus, const char *buff, unsigned len )
 {
     bogus = bogus;      /* to avoid a warning */
     len = len;
@@ -110,7 +108,7 @@ void LnkMemFini( void )
 }
 
 #ifdef TRMEM
-void *DoLAlloc( unsigned size, void (*ra)( void ) )
+void *DoLAlloc( unsigned size, void (*ra)() )
 #else
 void *LAlloc( unsigned size )
 #endif
@@ -140,7 +138,7 @@ void *LAlloc( unsigned size )
 /**********************************/
 {
 //    extern void *DoLAlloc( unsigned, void (*)() );
-    void        (*ra)( void );
+    void        (*ra)();
 
     ra = _trmem_guess_who();
 
@@ -148,12 +146,12 @@ void *LAlloc( unsigned size )
 }
 #endif
 
-void *ChkLAlloc( unsigned size )
+void * ChkLAlloc( unsigned size )
 /**************************************/
 {
     void                *ptr;
 #ifdef TRMEM
-    void                (*ra)( void );
+    void                (*ra)();
 
     ra = _trmem_guess_who();
 
@@ -182,7 +180,7 @@ void LFree( void *p )
 #endif
 }
 
-void *LnkExpand( void *src, unsigned size )
+void * LnkExpand( void *src, unsigned size )
 /*************************************************/
 // try to expand a block of memory
 {
@@ -193,13 +191,13 @@ void *LnkExpand( void *src, unsigned size )
 #endif
 }
 
-void *LnkReAlloc( void *src, unsigned size )
+void * LnkReAlloc( void *src, unsigned size )
 /**************************************************/
 // reallocate a block of memory.
 {
-    void    *dest;
+    void *  dest;
 #ifdef TRMEM
-    void        (*ra)( void );
+    void        (*ra)();
 
     ra = _trmem_guess_who(); /* must be first thing */
 #endif
@@ -225,7 +223,7 @@ void *LnkReAlloc( void *src, unsigned size )
 int ValidateMem( void )
 /*****************************/
 {
-    return( _trmem_validate_all( TrHdl ) );
+    return _trmem_validate_all( TrHdl );
 }
 
 void PrintAllMem( void )
@@ -279,14 +277,14 @@ bool FreeUpMemory( void )
         _heapenable( 0 );
     }
 #endif
-    return( PermShrink() || CacheRelease() || SwapOutVirt() || SwapOutRelocs() );
+    return PermShrink() || CacheRelease() || SwapOutVirt() || SwapOutRelocs();
 }
 
 int __nmemneed( size_t amount )
 /************************************/
 {
     amount = amount;
-    return( FreeUpMemory() );
+    return FreeUpMemory();
 }
 
 #ifdef _M_I86
@@ -294,6 +292,6 @@ int __fmemneed( size_t amount )
 /************************************/
 {
     amount = amount;
-    return( FreeUpMemory() );
+    return FreeUpMemory();
 }
 #endif

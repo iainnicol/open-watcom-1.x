@@ -31,6 +31,7 @@
 
 #include "asmglob.h"
 
+#include "asmsym.h"
 #include "asmalloc.h"
 #include "directiv.h"
 #include "mangle.h"

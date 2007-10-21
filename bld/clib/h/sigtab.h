@@ -40,8 +40,6 @@
         #define __SIGNALTABLE   _SignalTable
         #define __XCPTHANDLER   __XcptHandler
     #endif
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
 #elif defined(__NETWARE__)
     #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
 #else

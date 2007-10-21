@@ -390,7 +390,7 @@ int FELexLevel(                 // GET LEXICAL LEVEL OF SYMBOL
 }
 
 
-cg_type FEParmType(                 // ARGUMENT PROMOTION ?
+int FEParmType(                 // ARGUMENT PROMOTION ?
     SYMBOL func,                // function being called
     SYMBOL parm,                // parameter being passed
     cg_type type )              // - original type

@@ -30,7 +30,7 @@
 
 
 typedef struct {
-    trap_version        (TRAPENTRY *init_func)( char *, char *, bool);
+    trap_version        (TRAPENTRY *init_func)( char *, char *, unsigned_8);
     unsigned            (TRAPENTRY *req_func)( unsigned, mx_entry *, unsigned, mx_entry * );
     void                (TRAPENTRY *fini_func)( void );
 } trap_requests;

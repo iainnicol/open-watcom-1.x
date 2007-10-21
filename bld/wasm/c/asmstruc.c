@@ -34,7 +34,9 @@
 #include <ctype.h>
 
 #include "asmalloc.h"
+#include "asmins.h"
 #include "directiv.h"
+#include "asmdefs.h"
 #include "asminput.h"
 
 a_definition_struct Definition = { 0, NULL, NULL };

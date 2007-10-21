@@ -71,7 +71,13 @@ char            *VariablesFile;
 //DEF_VAR         *ExtraVariables;
 int             Invisible;
 
+#ifdef PATCH
+extern int      InitIO( void );
+extern int      Decode( arccmd *);
+
+static int      DecodeError;
 extern int      IsPatch;
+#endif
 extern bool     CancelSetup;
 extern vhandle  UnInstall;
 extern vhandle  PreviousInstall;
@@ -534,9 +540,74 @@ extern bool DoDeleteFile( char *Path )
 extern COPYFILE_ERROR DoCopyFile( char *src_path, char *dst_path, int append )
 /******************************************************************************/
 {
-static char lastchance[1024];
-    int                 buffer_size = 16 * 1024;
+#if 0
+    const WORD          buffer_size = 32 * 1024;
     int                 src_files, dst_files;
+    WORD                bytes_read, date, time, style, bytes_written;
+    OFSTRUCT            src, dst;
+    char _far           *pbuff;
+    GLOBALHANDLE        mem_handle;
+
+    src_files = OpenFile( src_path, &src, OF_READ );
+    if( src_files == -1 ) return( CFE_CANTOPENSRC );
+
+    mem_handle = GlobalAlloc( GMEM_MOVEABLE, buffer_size );
+    if( mem_handle == NULL ) {
+        _lclose( src_files );
+        return( CFE_NOMEMORY );
+    }
+
+    if( append ) {
+        style = OF_READWRITE;
+    } else {
+        style = OF_CREATE | OF_WRITE;
+    }
+    dst_files = OpenFile( dst_path, &dst, style );
+    if( dst_files == -1 ) {
+        _lclose( src_files );
+        GlobalFree( mem_handle );
+        return( CFE_CANTOPENDST );
+    }
+    if( append ) {
+        _llseek( dst_files, 0, SEEK_END );
+    }
+
+    pbuff = GlobalLock( mem_handle );
+    do {
+        bytes_read = _lread( src_files, pbuff, buffer_size );
+        bytes_written = _lwrite( dst_files, pbuff, bytes_read );
+        BumpStatus( bytes_written );
+        if( bytes_written != bytes_read || StatusCancelled() ) {
+            _lclose( dst_files );
+            _lclose( src_files );
+            GlobalUnlock( mem_handle );
+            GlobalFree( mem_handle );
+            if( bytes_written == bytes_read ) {
+                // copy was aborted, delete destination file
+                DoDeleteFile( src_path );
+                return( CFE_ABORT );
+            }
+            // error writing file - probably disk full
+            SetupError( "IDS_WRITEERROR" );
+            return( CFE_ERROR );
+        }
+    } while( bytes_read == buffer_size );
+    GlobalUnlock( mem_handle );
+
+    // Make the destination file have the same time stamp as the source file.
+    _dos_getftime( src_files, (unsigned short *)&date, (unsigned short*)&time );
+    _dos_setftime( dst_files, date, time );
+    _lclose( dst_files );
+
+    GlobalFree( mem_handle );
+    _lclose( src_files );
+#else
+static char lastchance[1024];
+    int           buffer_size = 16 * 1024;
+    int                 src_files, dst_files;
+#if 0
+    int                 date, time;
+#endif
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
 
@@ -573,11 +644,15 @@ static char lastchance[1024];
         bytes_read = read( src_files, pbuff, buffer_size );
         bytes_written = write( dst_files, pbuff, bytes_read );
 
-        if( !IsPatch ) {
-            // if a patch, don't change status because denominator of status
-            // fraction is the number of operations, not a number of bytes
-            BumpStatus( bytes_written );
-        }
+        #ifdef PATCH
+            if( !IsPatch ) {
+        #endif
+                // if a patch, don't change status because denominator of status
+                // fraction is the number of operations, not a number of bytes
+                BumpStatus( bytes_written );
+        #ifdef PATCH
+            }
+        #endif
         if( bytes_written != bytes_read || StatusCancelled() ) {
             close( dst_files );
             close( src_files );
@@ -592,13 +667,46 @@ static char lastchance[1024];
             return( CFE_ERROR );
         }
     } while( bytes_read == buffer_size );
-    close( dst_files );
 
     // Make the destination file have the same time stamp as the source file.
-    SameFileDate( src_path, dst_path );
+#if 0
+  #ifdef __OS2__
+    {
+        APIRET          rc;
+        FILESTATUS3     srcinfobuff;
+        FILESTATUS3     dstinfobuff;
 
+        rc = DosQueryFileInfo( src_files, FIL_STANDARD, &srcinfobuff,
+                                sizeof(FILESTATUS3) );
+        if( rc !=0 ) {
+            MsgBox( NULL, "IDS_QUERYFILEERROR", GUI_OK, rc);
+        }
+        rc = DosQueryFileInfo( dst_files, FIL_STANDARD, &dstinfobuff,
+                                sizeof(FILESTATUS3) );
+        if( rc !=0 ) {
+            MsgBox( NULL, "IDE_QUERYFILEERROR", GUI_OK, rc);
+        }
+        dstinfobuff.fdateCreation = srcinfobuff.fdateCreation;
+        dstinfobuff.ftimeCreation = srcinfobuff.ftimeCreation;
+
+        rc = DosSetFileInfo( dst_files, FIL_STANDARD, &dstinfobuff,
+                                sizeof(FILESTATUS3) );
+        if( rc !=0 ) {
+            MsgBox( NULL, "IDE_SETFILEERROR", GUI_OK, rc);
+        }
+
+    }
+  #else
+    _dos_getftime( src_files, (unsigned short *)&date, (unsigned short *)&time );
+    _dos_setftime( dst_files, (unsigned short)date, (unsigned short)time );
+  #endif
+#endif
+    close( dst_files );
+
+    SameFileDate( src_path, dst_path );
     if( pbuff != lastchance ) GUIMemFree( pbuff );
     close( src_files );
+#endif
     return( CFE_NOERROR );
 }
 
@@ -1362,10 +1470,122 @@ extern gui_message_return MsgBox( gui_window *gui, char *messageid, gui_message_
 }
 
 
+#ifdef PATCH
+// *********************** DECODE Functions **********************************
+
+
+static jmp_buf          PackFailed;
+
+
+static int DoDecode( char *src, char *dst )
+/*****************************************/
+{
+    arccmd              cmd;
+    int                 len;
+    wpackfile           files[ 1 ];
+
+    // append trailing slash if not already there
+    len = strlen( dst );
+    if( dst[ len - 1 ] != '/' ) {
+        dst[ len ] = '/';
+        dst[ len + 1 ] = '\0';
+    }
+    cmd.u.path = dst;
+    files[ 0 ].filename = NULL;
+    files[ 0 ].packname = NULL;
+    cmd.files = files;
+    cmd.arcname = src;
+    cmd.flags = PREPEND_PATH | BE_QUIET;
+    DecodeError = CFE_NOERROR;
+    if( setjmp( PackFailed ) == 0 ) {
+        Decode( &cmd );
+    } else {
+        // we longjmp'd to here
+    }
+    return( DecodeError );
+}
+
+extern void PackExit( void );           // PackExit is defined further down in the file
+void QueryCancel()
+{
+    if( StatusCancelled() ) {
+        PackExit();
+    }
+}
+
+
+// functions required for WPack Decoder
+
+
+extern void *MemAlloc( int size )
+/*******************************/
+{
+    void                *stg;
+
+    stg = GUIMemAlloc( size );
+    if( stg == NULL ) {
+        SetupError( "IDS_NOMEMORY" );
+    }
+    return( stg );
+}
+
+
+extern void MemFree( void *mem )
+/******************************/
+{
+    GUIMemFree( mem );
+}
+
+
+static void PackExitWithCode( int code )
+/********************************/
+{
+    DecodeError = code;
+    longjmp( PackFailed, 1 );
+}
+
+
+extern void PackExit( void )
+/**************************/
+{
+    // the WPACK code can't handle this routine returning
+    PackExitWithCode( CFE_ERROR );
+}
+
+extern void Error( int code, char *msg )
+/****************************/
+{
+    dlg_state           return_state;
+
+    switch( code ) {
+    case TXT_INC_CRC:
+        PackExitWithCode( CFE_BAD_CRC );
+        break;
+    case TXT_ARC_NOT_EXIST:
+        PackExitWithCode( CFE_CANTOPENSRC );
+        break;
+    case TXT_NOT_OPEN:
+        SetVariableByName( "OpenError", msg );
+        return_state = DoDialog( "CantOpen" );
+        if( return_state == DLG_CAN || return_state == DLG_DONE ) {
+            PackExit();
+        }
+        break;
+    default:
+        MsgBox( NULL, "IDS_ERROR", GUI_OK, msg );
+        PackExit();
+        break;
+    }
+}
+#else
+
 static int DoDecode( char *src, char *dst )
 {
     return( 1 );
 }
+
+#endif
+
 
 
 int UnPackHook( char *name )
@@ -1389,6 +1609,36 @@ int UnPackHook( char *name )
         return( 1 );
     }
     return( 0 );
+}
+
+extern int OK_ToReplace( char *name )
+/***********************************/
+{
+    name=name;
+    return( FALSE ); // pre-checked.  Anything left is NOT ok
+}
+
+
+extern int OK_ReplaceRDOnly( char *name )
+/***************************************/
+{
+    name=name;
+    return( FALSE ); // pre-checked.  Anything left is NOT ok
+}
+
+
+extern void LogUnPacking( char *name )
+/************************************/
+{
+    StatusLines( STAT_COPYINGFILE, name );
+}
+
+extern void Log( char *start, ... )
+/*********************************/
+{
+    // shouldn't get called
+
+    start = start;
 }
 
 extern bool GetDirParams( int                   argc,

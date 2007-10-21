@@ -69,8 +69,10 @@ static unsigned_32 WritePharData( unsigned file_pos )
     fnode->file_loc = file_pos;
     Root->u.file_loc = file_pos;
     Root->sect_addr = Groups->grp_addr;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    group = Groups;
+    while( group != NULL ) {
         repos = WriteDOSGroup( group );
+        group = group->next_group;
         if( repos ) {
             SeekLoad( fnode->file_loc );
         }
@@ -100,11 +102,11 @@ static void WritePharSimple( unsigned_32 start )
     if( FmtData.type & MK_PHAR_REX ) {
         SeekLoad( start + sizeof(simple_header) );
         extra = start + sizeof( simple_header ) + WritePharRelocs();
-        header_size = MAKE_PARA( extra );
+        header_size = ROUND_UP( extra, 16 );
         PadLoad( header_size - extra );
     } else {
-        SeekLoad( start + MAKE_PARA( sizeof(simple_header) ) );
-        header_size = MAKE_PARA( sizeof(simple_header) );    // para align.
+        SeekLoad( start + sizeof(simple_header) + 2 );
+        header_size = sizeof(simple_header) + 2;    // + 2 for para align.
     }
     file_size = header_size + WritePharData( start + header_size );
     DBIWrite();

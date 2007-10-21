@@ -32,12 +32,14 @@
 
 #include "asmglob.h"
 
+#include "asmdefs.h"
 #include "asmalloc.h"
+#include "asmins.h"
 #include "directiv.h"
 #include "asmexpnd.h"
 #include "asminput.h"
 
-extern void             AddTokens( asm_tok **, int, int );
+extern void             AddTokens( struct asm_tok **, int, int );
 
 static const char macroname[] = "__STATIC_IRP_MACRO_";
 

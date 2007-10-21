@@ -56,9 +56,8 @@ static bool     Verbose = FALSE;
 static bool     GenIndex = TRUE;
 static bool     GenStrings = TRUE;
 
-static bool pass1( FILE *fin, char **helpstr );
-static bool pass2( FILE *fin, int fout, char **helpstr );
-static void fgetstring( char *buffer, int max, FILE *f );
+static bool     pass1();
+static bool     pass2();
 
 static int      MaxCol = 78;
 static int      MaxRow = 21;
@@ -318,7 +317,7 @@ static int line_len( char *str )
     return( len );
 }
 
-static char *find_str( char *buf )
+char *find_str( char *buf )
 {
     int     len;
     char    *str;
@@ -340,7 +339,7 @@ static char *find_str( char *buf )
     return( str );
 }
 
-static bool pass1( FILE *fin, char **helpstr )
+bool pass1( FILE *fin, char **helpstr )
 {
     char            buffer[ BUFFER_SIZE ];
     int             buflen;
@@ -516,7 +515,7 @@ void lookup_name( a_helpnode *h, char *name )
     PrintError( "Unknown help topic '%s' found in '%s'\n", name, h->name );
 }
 
-static void fgetstring( char *buffer, int max, FILE *f )
+void fgetstring( char *buffer, int max, FILE *f )
 {
     int         curr;
     int         offset;
@@ -587,7 +586,7 @@ void check_buffer( a_helpnode *h, char *buffer )
     nameBufLen = 0;
 }
 
-static bool pass2( FILE *fin, int fout, char **helpstr )
+bool pass2( FILE *fin, int fout, char **helpstr )
 {
     char            buffer[ BUFFER_SIZE ];
     a_helpnode      *h;

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Emulate _dos_allocmem()/_dos_freemem() on OS/2.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -41,7 +42,7 @@
 #if defined(__386__) || defined(__PPC__)
   typedef void                  *mem_id;
 #elif defined( _M_I86 )
-  typedef unsigned              mem_id;
+  typedef unsigned short        mem_id;
   #if defined(__BIG_DATA__)
     #define MODIFIES ds es
   #else

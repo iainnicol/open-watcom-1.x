@@ -1,11 +1,7 @@
-.func tell _tell
+.func tell
 #include <&iohdr>
 &off_t tell( int &fd );
 .ixfunc2 '&OsIo' &func
-.if &'length(&_func.) ne 0 .do begin
-off_t _tell( int &fd );
-.ixfunc2 '&OsIo' &_func
-.do end
 __int64 _telli64( int &fd );
 .ixfunc2 '&OsIo' _telli64
 .funcend
@@ -22,11 +18,6 @@ function.
 The returned value may be used in conjunction with the
 .kw lseek
 function to reset the current file position.
-.if &'length(&_func.) ne 0 .do begin
-.np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
-.do end
 .np
 The _&func.i64 function is similar to the &func function but returns a
 64-bit file position.

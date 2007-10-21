@@ -62,14 +62,6 @@ static  const OPR __FAR        LogOpr[] = { // must correspond to table in SCAN
         OPR_PHI, OPR_PHI, OPR_PHI
 };
 
-/* Forward declarations */
-static  void    GetOpnd( void );
-static  void    FlushStatement( void );
-static  void    GetOpr( void );
-static  void    SetSwitch( void );
-
-
-
 static  itnode  *NewITNode( void ) {
 //==================================
 
@@ -167,7 +159,7 @@ void    MakeITList( void ) {
 }
 
 
-static  void FlushStatement( void ) {
+static  void            FlushStatement( void ) {
 //========================================
 
     for(;;) {

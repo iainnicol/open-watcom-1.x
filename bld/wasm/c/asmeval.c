@@ -31,7 +31,9 @@
 
 #include "asmglob.h"
 
+#include "asmins.h"
 #include "asmeval.h"
+#include "asmdefs.h"
 
 #if defined( _STANDALONE_ )
 #include "myassert.h"
@@ -45,7 +47,7 @@ extern void             DefFlatGroup( void );
 static int              TakeOut[ MAX_TOKEN ];
 static int              TokCnt;
 
-static asm_tok          Store[ MAX_TOKEN ];
+static struct asm_tok   Store[ MAX_TOKEN ];
 
 static int              op_sq_bracket_level;
 static bool             error_msg;

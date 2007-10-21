@@ -1,6 +1,9 @@
-.func chdir _chdir _wchdir _uchdir
+.func chdir _wchdir _uchdir
 #include <sys&pc.types.h>
-.if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'PP' .do begin
+#include <unistd.h>
+.do end
+.el .if '&machsys' eq 'QNX' .do begin
 #include <unistd.h>
 .do end
 .el .do begin
@@ -8,10 +11,6 @@
 .do end
 int chdir( const char *path );
 .ixfunc2 '&Direct' &func
-.if &'length(&_func.) ne 0 .do begin
-int _chdir( const char *path );
-.ixfunc2 '&Direct' &_func
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 int _wchdir( const wchar_t *path );
 .ixfunc2 '&Direct' &wfunc
@@ -23,7 +22,7 @@ int _uchdir( const wchar_t *path );
 .do end
 .funcend
 .desc begin
-.if '&machsys' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' or '&machsys' eq 'PP' .do begin
 The &func function changes the current working directory to the
 specified
 .arg path.
@@ -54,11 +53,6 @@ drive.
 If you wish to change the current drive, you must use the
 .kw _dos_setdrive
 function.
-.do end
-.if &'length(&_func.) ne 0 .do begin
-.np
-The &_func function is identical to &func..
-Use &_func for ANSI/ISO naming conventions.
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 .np
@@ -120,24 +114,20 @@ is not a directory.
 #include <direct.h>
 .exmp break
 void main( int argc, char *argv[] )
-{
+  {
     if( argc != 2 ) {
-        fprintf( stderr, "Use: cd <directory>\n" );
-        exit( 1 );
+      fprintf( stderr, "Use: cd <directory>\n" );
+      exit( 1 );
     }
 .exmp break
     if( chdir( argv[1] ) == 0 ) {
-        printf( "Directory changed to %s\n", argv[1] );
-        exit( 0 );
+      printf( "Directory changed to %s\n", argv[1] );
+      exit( 0 );
     } else {
-        perror( argv[1] );
-        exit( 1 );
+      perror( argv[1] );
+      exit( 1 );
     }
-}
+  }
 .exmp end
 .class POSIX 1003.1
-.if &'length(&_func.) ne 0 .do begin
-.np
-&_func conforms to ANSI/ISO naming conventions
-.do end
 .system

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Watcom format input routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -106,8 +107,6 @@ enum {
     SPLAT_DONT_COUNT    = 0xf1
 };
 #define splatRec( ch )  ( wat->ptr[-1] = (ch) )
-
-STATIC void parseType( void );
 
 /*
     Routines to move through types buffer

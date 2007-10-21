@@ -132,7 +132,7 @@ static void symFree( sym_handle sym ) {
     MemFree( sym );
 }
 
-extern void SymInit( void ) {
+extern void SymInit() {
 //***********************
 // Init routine for Symbol Table library
 
@@ -388,7 +388,7 @@ extern bool SymRelocIsClean( bool is_clean ) {
 }
 #endif
 
-extern void SymFini( void ) {
+extern void SymFini() {
 //*********************
 // Fini routine for Symbol Table library
 
@@ -444,7 +444,7 @@ extern void DumpSymbol( sym_handle sym ) {
     }
 }
 
-extern void DumpSymbolTable( void ) {
+extern void DumpSymbolTable() {
 //*****************************
 
     int         i;

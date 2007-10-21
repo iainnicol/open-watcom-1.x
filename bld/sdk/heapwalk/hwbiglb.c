@@ -45,7 +45,7 @@ typedef struct {
     HWND        parent;
     HFONT       font;
     unsigned    itemcnt;
-    char        *(*fmt)(unsigned);
+    char        *(*fmt)();
     HMENU       id;
     WORD        extent;
     RECT        old_area;

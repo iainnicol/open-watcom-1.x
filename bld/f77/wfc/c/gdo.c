@@ -47,14 +47,7 @@
 #include "types.h"
 #include "utility.h"
 
-extern  sym_id  StaticAlloc(uint,TYPE);
-
-/* Forward declarations */
-static  void    DataDo( TYPE do_type );
-static  void    DataDoEnd( void );
-static  void    DoLoop( TYPE do_type );
-static  void    DoExpr( void );
-static  void    DoLoopEnd( void );
+extern  sym_id          StaticAlloc(uint,TYPE);
 
 
 void    GDoInit( TYPE do_type ) {

@@ -1,5 +1,5 @@
 proj_name       = zlib
-zlib_autodepends = .autodepend
+orl_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif

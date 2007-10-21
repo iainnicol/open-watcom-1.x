@@ -38,11 +38,6 @@ extern trap_version     TrapVer;
 extern unsigned         (TRAPENTRY *ReqFunc)( unsigned, mx_entry *,
                                         unsigned, mx_entry * );
 
-void KillTrap( void )
-{
-    TrapFini();
-}
-
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char        *ptr;
@@ -61,4 +56,9 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     TrapVer = *trap_ver;
     ReqFunc = TrapRequest;
     return( NULL );
+}
+
+void KillTrap()
+{
+    TrapFini();
 }

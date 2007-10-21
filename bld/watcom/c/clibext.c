@@ -62,14 +62,7 @@
 
 char **_argv;
 
-/****************************************************************************
-*
-* Description:  Shared alphabet array for conversion of integers to ASCII.
-*
-****************************************************************************/
-
-static const char __Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-
+static const char __Alphabet[];
 
 char *utoa( unsigned value, char *buffer, int radix )
 {
@@ -148,6 +141,14 @@ char *ltoa( long value, char *buffer, int radix )
     ultoa( value, p, radix );
     return( buffer );
 }
+
+/****************************************************************************
+*
+* Description:  Shared alphabet array for conversion of integers to ASCII.
+*
+****************************************************************************/
+
+static const char __Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /****************************************************************************
 *

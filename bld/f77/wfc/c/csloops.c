@@ -41,36 +41,32 @@
 #include "insert.h"
 #include "utility.h"
 
-extern  void            CkTypeDeclared( void );
+extern  void            CkTypeDeclared(void);
 extern  void            AddCSNode(byte);
-extern  void            DelCSNode( void );
-extern  void            BlockLabel( void );
-extern  void            ColonLabel( void );
-extern  void            CSNoMore( void );
-extern  void            CSExtn( void );
-extern  void            Match( void );
+extern  void            DelCSNode(void);
+extern  void            BlockLabel(void);
+extern  void            ColonLabel(void);
+extern  void            CSNoMore(void);
+extern  void            CSExtn(void);
+extern  void            Match(void);
 extern  void            CSCond(label_id);
 extern  void            GLabel(label_id);
 extern  void            GBranch(label_id);
-extern  label_id        NextLabel( void );
-extern  unsigned_32     LkUpDoTerm( void );
+extern  label_id        NextLabel(void);
+extern  unsigned_32     LkUpDoTerm(void);
 extern  sym_id          STShadow(sym_id);
 extern  void            STUnShadow(sym_id);
-extern  void            Recurse( void );
+extern  void            Recurse(void);
 extern  void            GDoInit(TYPE);
-extern  void            GDoEnd( void );
+extern  void            GDoEnd(void);
 extern  void            FreeLabel(label_id);
 extern  void            RemKeyword(itnode *,int);
 extern  void            BIOutSymbol(sym_id);
 
-/* forward declarations */
-void InitDo( signed_32 term );
-void TermDo( void );
-void TermDoWhile( void );
 
+static  void    InitLoop( int loop_type ) {
+//=========================================
 
-static void InitLoop( int loop_type )
-{
     AddCSNode( loop_type );
     CSHead->branch = NextLabel();
     CSHead->bottom = NextLabel();
@@ -78,8 +74,10 @@ static void InitLoop( int loop_type )
     GLabel( CSHead->branch );
 }
 
-static void FiniLoop( void )
-{
+
+static  void    FiniLoop(void) {
+//==========================
+
     GBranch( CSHead->branch );
     GLabel( CSHead->bottom );
     FreeLabel( CSHead->branch );
@@ -87,8 +85,10 @@ static void FiniLoop( void )
     FreeLabel( CSHead->cycle );
 }
 
-void CpLoop( void )
-{
+
+void    CpLoop(void) {
+//================
+
 // Compile a LOOP statement.
 
     CSExtn();
@@ -97,8 +97,9 @@ void CpLoop( void )
 }
 
 
-void CpEndLoop( void )
-{
+void    CpEndLoop(void) {
+//===================
+
 // Compile an ENDLOOP statment.
 
     if( CSHead->typ == CS_LOOP ) {
@@ -111,8 +112,8 @@ void CpEndLoop( void )
     CSNoMore();
 }
 
-void CpWhile( void )
-{
+
+void    CpWhile(void) {
 //=================
 
 // Compile a WHILE statement.
@@ -137,8 +138,10 @@ void CpWhile( void )
     }
 }
 
-void CpEndWhile( void )
-{
+
+void    CpEndWhile(void) {
+//====================
+
 // Compile an ENDWHILE statement.
 
     if( CSHead->typ == CS_WHILE ) {
@@ -151,8 +154,10 @@ void CpEndWhile( void )
     CSNoMore();
 }
 
-void CpUntil( void )
-{
+
+void    CpUntil(void) {
+//=================
+
 // Compile an UNTIL statement.
 
     if( ( CSHead->typ == CS_LOOP ) || ( CSHead->typ == CS_WHILE ) ) {
@@ -169,8 +174,10 @@ void CpUntil( void )
     CSNoMore();
 }
 
-static unsigned_32 DoLabel( void )
-{
+
+static  unsigned_32     DoLabel(void) {
+//=================================
+
     unsigned_32 term;
 
     if( RecNumber() ) {
@@ -185,8 +192,10 @@ static unsigned_32 DoLabel( void )
     return( term );
 }
 
-void CpDo( void )
-{
+
+void    CpDo(void) {
+//==============
+
 // Compile a DO statement.
 
     signed_32   term;
@@ -200,8 +209,10 @@ void CpDo( void )
     ColonLabel();
 }
 
-void CpDoWhile( void )
-{
+
+void    CpDoWhile(void) {
+//===================
+
 // Compile a DO WHILE statement.
 
     Extension( DO_DO_EXT );
@@ -218,16 +229,10 @@ void CpDoWhile( void )
     }
 }
 
-static void BadDoEnd( void )
-{
-    Error( DO_BAD_ENDDO );
-    FreeLabel( CSHead->branch );
-    FreeLabel( CSHead->bottom );
-    DelCSNode();
-}
 
-void CpEndDo( void )
-{
+void    CpEndDo(void) {
+//=================
+
 // Compile an ENDDO statement.
 
     if( CSHead->typ == CS_DO ) {
@@ -248,8 +253,20 @@ void CpEndDo( void )
     CSNoMore();
 }
 
-void InitDo( signed_32 term )
-{
+
+static  void    BadDoEnd(void) {
+//==========================
+
+    Error( DO_BAD_ENDDO );
+    FreeLabel( CSHead->branch );
+    FreeLabel( CSHead->bottom );
+    DelCSNode();
+}
+
+
+void    InitDo( signed_32 term ) {
+//================================
+
 // Initialize a DO or implied DO.
 // Process "do i=e1,e2,e3" where e1, e2 and e3 are numeric expressions.
 //
@@ -290,14 +307,18 @@ void InitDo( signed_32 term )
     }
 }
 
-void ImpDo( void )
-{
+
+void    ImpDo(void) {
+//===============
+
     AddCSNode( CS_DO );
     InitDo( 0 );
 }
 
-void TermDo( void )
-{
+
+void    TermDo(void) {
+//================
+
 // Terminate a DO or an implied DO.
 
     do_entry    *do_pointer;
@@ -331,15 +352,19 @@ void TermDo( void )
     DelCSNode();
 }
 
-void TermDoWhile( void )
-{
+
+void            TermDoWhile(void) {
+//=============================
+
     GLabel( CSHead->cycle );
     FiniLoop();
     DelCSNode();
 }
 
-void CpContinue( void )
-{
+
+void    CpContinue(void) {
+//====================
+
 // Compile a CONTINUE statement.
 
     CSNoMore();

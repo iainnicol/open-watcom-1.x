@@ -55,12 +55,6 @@ extern  void            UpdateRecNum(ftnfile *);
 extern  char            NormalCtrlSeq[];
 extern  character_set   CharSetInfo;
 
-/* Forward declarations */
-void    SendEOR( void );
-void    SendWSLStr( char *str );
-void    SendChar( char ch, int rep );
-void    Drop( char ch );
-
 
 void    F_SendData( char *str, uint width ) {
 //===========================================

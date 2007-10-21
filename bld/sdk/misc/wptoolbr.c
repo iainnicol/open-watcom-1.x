@@ -327,7 +327,7 @@ toolbar *ToolBarInit( HWND parent )
 
     hab = WinQueryAnchorBlock( parent );
     appInst.hab = hab;
-    appInst.mod_handle = (HMODULE)0;
+    appInst.mod_handle = NULLHANDLE;
 
     if( !toolBarClassRegistered ) {
         rc = WinRegisterClass( hab, className,

@@ -62,6 +62,7 @@ set OWLINUXBUILD=normal
 # all is ready to do everything else now
 
 [ BLOCK <1> clean ]
+    rm -rf <DEVDIR>/clib/<OBJDIR>
     rm -rf <DEVDIR>/builder/<OBJDIR>
     rm -rf <DEVDIR>/pmake/<OBJDIR>
     rm -rf <DEVDIR>/yacc/<OBJDIR>

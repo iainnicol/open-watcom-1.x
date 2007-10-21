@@ -38,17 +38,6 @@
 #include "wdestken.h"
 #include "wdedebug.h"
 
-static jmp_buf Env;
-
-void PP_OutOfMemory( void )
-{
-    if( WdePopEnv( &Env ) ) {
-        longjmp( Env, 1 );
-    } else {
-        WdeWriteTrail( "Wde PreProc: Fatal error!" );
-        exit( -1 );
-    }
-}
 
 void *PP_Malloc( unsigned size )
 {
@@ -67,3 +56,13 @@ void PP_Free( void *p )
 }
 
 
+static jmp_buf Env;
+void PP_OutOfMemory( void )
+{
+    if( WdePopEnv( &Env ) ) {
+        longjmp( Env, 1 );
+    } else {
+        WdeWriteTrail( "Wde PreProc: Fatal error!" );
+        exit( -1 );
+    }
+}

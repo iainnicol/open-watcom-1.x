@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Windows specific utility routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -256,75 +257,7 @@ signed int DecrementDLLUsageCount( char *path )
 
 #endif
 
-#if defined( __WINDOWS__ ) || defined(__NT__)
-
-bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int pos )
-{
-    FILE        *io;
-    char        buff[MAXVALUE];
-    int         app_len;
-    int         old_len;
-    int         num = 0;
-    bool        in_sect = FALSE;
-
-    /* invalidate cache copy of INI file */
-    app_len = strlen( app_name );
-    old_len = strlen( old );
-    WritePrivateProfileString( NULL, NULL, NULL, file );
-    io = fopen( hive, "r+t" );
-    if( io == NULL ) return( FALSE );
-    while( fgets( buff, sizeof( buff ), io ) ) {
-        if( buff[0] == '[' ) {
-            if( in_sect ) break;
-            if( strncmp( app_name, buff+1, app_len ) == 0 && buff[app_len+1] == ']' ) {
-                in_sect = TRUE;
-            }
-        } else if( in_sect ) {
-            if( strncmp( old, buff, old_len ) == 0 && buff[old_len] == '=' ) {
-                if( num++ == pos ) {
-                    memcpy( buff, new, old_len );
-                    fseek( io, -(int)(strlen( buff )+1), SEEK_CUR );
-                    fputs( buff, io );
-                    fclose( io );
-                    return( TRUE );
-                }
-            }
-        }
-    }
-    fclose( io );
-    WritePrivateProfileString( NULL, NULL, NULL, file );
-    return( FALSE );
-}
-
-#define DEVICE_STRING "device"
-#define ALT_DEVICE    "ecived"
-
-void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff, bool add )
-{
-    int         i;
-    char        old_name[ _MAX_FNAME ];
-    char        new_name[ _MAX_FNAME ];
-    char        old_ext[ _MAX_EXT ];
-    char        new_ext[ _MAX_EXT ];
-    bool        done = FALSE;
-
-    _splitpath( value, NULL, NULL, new_name, new_ext );
-    for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
-        GetPrivateProfileString( app_name, ALT_DEVICE, "", buff, MAXVALUE, file );
-        _splitpath( buff, NULL, NULL, old_name, old_ext );
-        if( !stricmp( old_name, new_name ) && !stricmp( old_ext, new_ext ) ) {
-            WritePrivateProfileString( app_name, ALT_DEVICE, add ? value : NULL, file );
-            done = TRUE;
-        }
-        ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
-        if( done ) break;
-    }
-    if( !done && add ) {
-        WritePrivateProfileString( app_name, ALT_DEVICE, value, file );
-        ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
-    }
-}
-
+#if defined(__WINDOWS__) || defined(__NT__)
 void WindowsWriteProfile( char *app_name, char *key_name, char *buf,
                           char *file_name, bool add, char *value, char *tmp_buff )
 {
@@ -408,6 +341,76 @@ void OS2WriteProfile( char *app_name, char *key_name,
 #endif
 
 
+#if defined( __WINDOWS__ ) || defined(__NT__)
+bool ZapKey( char *app_name, char *old, char *new, char *file, char *hive, int pos )
+{
+    FILE        *io;
+    char        buff[MAXVALUE];
+    int         app_len;
+    int         old_len;
+    int         num = 0;
+    bool        in_sect = FALSE;
+
+    /* invalidate cache copy of INI file */
+    app_len = strlen( app_name );
+    old_len = strlen( old );
+    WritePrivateProfileString( NULL, NULL, NULL, file );
+    io = fopen( hive, "r+t" );
+    if( io == NULL ) return( FALSE );
+    while( fgets( buff, sizeof( buff ), io ) ) {
+        if( buff[0] == '[' ) {
+            if( in_sect ) break;
+            if( strncmp( app_name, buff+1, app_len ) == 0 && buff[app_len+1] == ']' ) {
+                in_sect = TRUE;
+            }
+        } else if( in_sect ) {
+            if( strncmp( old, buff, old_len ) == 0 && buff[old_len] == '=' ) {
+                if( num++ == pos ) {
+                    memcpy( buff, new, old_len );
+                    fseek( io, -(int)(strlen( buff )+1), SEEK_CUR );
+                    fputs( buff, io );
+                    fclose( io );
+                    return( TRUE );
+                }
+            }
+        }
+    }
+    fclose( io );
+    WritePrivateProfileString( NULL, NULL, NULL, file );
+    return( FALSE );
+}
+
+#define DEVICE_STRING "device"
+#define ALT_DEVICE    "ecived"
+
+void AddDevice( char *app_name, char *value, char *file, char *hive, char *buff, bool add )
+{
+    int         i;
+    char        old_name[ _MAX_FNAME ];
+    char        new_name[ _MAX_FNAME ];
+    char        old_ext[ _MAX_EXT ];
+    char        new_ext[ _MAX_EXT ];
+    bool        done = FALSE;
+
+    _splitpath( value, NULL, NULL, new_name, new_ext );
+    for( i = 0; ZapKey( app_name, DEVICE_STRING, ALT_DEVICE, file, hive, i ); ++i ) {
+        GetPrivateProfileString( app_name, ALT_DEVICE, "", buff, MAXVALUE, file );
+        _splitpath( buff, NULL, NULL, old_name, old_ext );
+        if( !stricmp( old_name, new_name ) && !stricmp( old_ext, new_ext ) ) {
+            WritePrivateProfileString( app_name, ALT_DEVICE, add ? value : NULL, file );
+            done = TRUE;
+        }
+        ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
+        if( done ) break;
+    }
+    if( !done && add ) {
+        WritePrivateProfileString( app_name, ALT_DEVICE, value, file );
+        ZapKey( app_name, ALT_DEVICE, DEVICE_STRING, file, hive, 0 );
+    }
+}
+
+#endif
+
 extern void WriteProfileStrings( bool uninstall )
 /***********************************************/
 {
@@ -458,7 +461,7 @@ extern void WriteProfileStrings( bool uninstall )
     }
 }
 
-#if ( defined( __NT__ )  ||  defined( __WINDOWS__ ) ) && !defined( _UI )
+#if defined( __NT__ )  ||  defined( __WINDOWS__ )
 static bool IsWin40()
 {
 #if defined(WINNT)
@@ -482,7 +485,7 @@ static bool IsWin40()
 
 void SetDialogFont()
 {
-#if ( defined( __NT__ )  ||  defined( __WINDOWS__ ) ) && !defined( _UI )
+#if defined( __NT__ )  ||  defined( __WINDOWS__ )
 
     char            *fontstr;
     LOGFONT         lf;

@@ -3,8 +3,8 @@
 # 
 proj_name = dipdump
 
-!ifndef dipdump_autodepends
-dipdump_autodepends = .AUTODEPEND
+!ifndef wv_autodepends
+wv_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif

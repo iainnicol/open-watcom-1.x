@@ -42,12 +42,19 @@
 #include "genvbl.h"
 #include "utils.h"
 
+#ifdef PATCH
+extern void InitIO( void );          /* fns. from wpack */
+extern void FiniIO( void );          /* fns. from wpack */
+extern void SetupTextTable( void );
+#endif
 extern void DoSpawn( when_time );
 extern void SetupTitle();
 extern void DeleteObsoleteFiles();
 extern void ResetDiskInfo(void);
 
-int IsPatch = 0;
+#ifdef PATCH
+    int IsPatch = 0;
+#endif
 extern int SkipDialogs;
 extern bool CancelSetup;
 extern vhandle UnInstall;
@@ -75,14 +82,14 @@ static bool SetupOperations()
     }
 
     DoSpawn( WHEN_BEFORE );
-#ifdef PATCH
-    if( GetVariableIntVal( "Patch" ) == 1 ) {
-        IsPatch = 1;
-        if( !PatchFiles() ) {
-            return( FALSE );
+    #ifdef PATCH
+        if( GetVariableIntVal( "Patch" ) == 1 ) {
+            IsPatch = 1;
+            if( !PatchFiles() ) {
+                return( FALSE );
+            }
         }
-    }
-#endif
+    #endif
     // Copy the files
     if( GetVariableIntVal( "DoCopyFiles" ) == 1 ) {
         if( !CopyAllFiles() ) {
@@ -247,7 +254,11 @@ extern bool DoMainLoop( dlg_state * state )
     bool                ret = FALSE;
 
     SetupTitle();
-
+#ifdef PATCH
+    // initialize decompression facility
+    SetupTextTable();
+//    InitIO();
+#endif
     // display initial dialog
     diags = GetVariableStrVal( "DialogOrder" );
     if( stricmp( diags, "" ) == 0 ) diags = "Welcome";
@@ -376,11 +387,13 @@ extern void GUImain( void )
 
     // initialize paths and env. vbls.
 
-    if( !SetupPreInit() ) return;
     if( !GetDirParams( argc, argv, &inf_name, &tmp_path, &arc_name ) ) return;
     if( !SetupInit() ) return;
     GUIDrainEvents();   // push things along
     FileInit( arc_name );
+#ifdef PATCH
+    InitIO();
+#endif
     InitGlobalVarList();
     strcpy( current_dir, tmp_path );
     while( InitInfo( inf_name, tmp_path ) ) {
@@ -437,7 +450,9 @@ extern void GUImain( void )
         ConfigModified = FALSE;
     } /* while */
 
-
+#ifdef PATCH
+    FiniIO();
+#endif
     FileFini();
     FreeGlobalVarList( TRUE );
     FreeDefaultDialogs();

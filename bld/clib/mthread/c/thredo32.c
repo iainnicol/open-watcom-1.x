@@ -53,9 +53,11 @@
 #pragma aux __threadstksize "*"
 extern  unsigned        __threadstksize;
 
-extern  thread_data     **__InitThreadProcessing( void );
-extern  void            __InitMultipleThread( void );
-extern  unsigned        __threadstack( void );
+extern  thread_data     **__InitThreadProcessing(void);
+extern  void            __InitMultipleThread(void);
+extern  unsigned        __threadstack(void);
+extern  void            (*__sig_init_rtn)(void);
+extern  void            (*__sig_fini_rtn)(void);
 
 extern  void            _endthread( void );
 

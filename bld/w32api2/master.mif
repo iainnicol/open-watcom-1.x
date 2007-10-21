@@ -1,19 +1,18 @@
+proj_name = w32api
+
 .EXTENSIONS : .rh .mh
 
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
-splice = wsplice -i$(hdr_dir) -i$(include_dir) $[@ $^@
-rsplice = wsplice -i$(hdr_dir) -i$(include_dir) -kRESOURCE $[@ $^@
-ws2splice = wsplice -i$(hdr_dir) -i$(include_dir) -kWINSOCK2 $[@ $^@
+splice = wsplice -i$(hdr_dir) -i../include $[@ $^@
+rsplice = wsplice -i$(hdr_dir) -i../include -kRESOURCE $[@ $^@
 
-base_headers =       &
+headers =            &
         accctrl.h    &
         aclapi.h     &
         aclui.h      &
-        amstream.h   &
-        austream.h   &
         basetsd.h    &
         basetyps.h   &
         bcrypt.h     &
@@ -29,10 +28,7 @@ base_headers =       &
         dde.h        &
         dde.rh       &
         ddeml.h      &
-        ddraw.h      &
-        ddstream.h   &
         dhcpcsdk.h   &
-        dimm.h       &
         dlgs.h       &
         docobj.h     &
         errorrep.h   &
@@ -85,58 +81,33 @@ base_headers =       &
         mcx.h        &
         mgmtapi.h    &
         mlang.h      &
-        mmreg.h      &
-        mmstream.h   &
         mmsystem.h   &
         mprapi.h     &
         mq.h         &
-        msacm.h      &
-        mshtml.h     &
-        mswsock.h    &
         msxml.h      &
         naptypes.h   &
         nb30.h       &
         ncrypt.h     &
-        nddeapi.h    &
         nldef.h      &
-        nspapi.h     &
-        ntdsapi.h    &
-        ntdsbcli.h   &
-        ntdsbmsg.h   &
-        ntldap.h     &
-        ntsecapi.h   &
-        ntsecpkg.h   &
         oaidl.h      &
         objbase.h    &
         objidl.h     &
-        objsafe.h    &
-        objsel.h     &
         ocidl.h      &
-        odbcinst.h   &
         ole.h        &
         ole2.h       &
-        ole2ver.h    &
-        oleacc.h     &
         oleauto.h    &
         olectl.h     &
-        olectlid.h   &
-        oledlg.h     &
         oleidl.h     &
         packon.h     &
         packoff.h    &
-        pbt.h        &
         poppack.h    &
-        powrprof.h   &
         propidl.h    &
         prsht.h      &
-        psapi.h      &
         pshpack1.h   &
         pshpack2.h   &
         pshpack4.h   &
         pshpack8.h   &
-        qos.h        &
         ras.h        &
-        rasdlg.h     &
         reason.h     &
         rpc.h        &
         rpcasync.h   &
@@ -146,16 +117,10 @@ base_headers =       &
         rpcnsip.h    &
         rpcnsi.h     &
         rpcnterr.h   &
-        schedule.h   &
         servprov.h   &
         shellapi.h   &
-        shtypes.h    &
         snmp.h       &
-        sql.h        &
-        sqltypes.h   &
-        sspi.h       &
         stralign.h   &
-        strmif.h     &
         tcpestat.h   &
         tcpmib.h     &
         tvout.h      &
@@ -181,38 +146,26 @@ base_headers =       &
         winscard.h   &
         winsmcrd.h   &
         winsock.h    &
-        winsock2.h   &
         winspool.h   &
         winsvc.h     &
         wintrust.h   &
         winuser.h    &
         winuser.rh   &
         winver.h     &
-        ws2def.h     &
         wtypes.h
 
-directx_headers =    &
-        d3d.h        &
-        d3dcaps.h    &
-        d3drmdef.h   &
-        d3dtypes.h
-
-base_libs =          &
+libs =               &
         largeint.lib &
-        strmiids.lib &
         uuid.lib
-
-directx_libs =       &
-        dxguid.lib
 
 additional_cleanup = *.h *.rh
 
-all : $($(proj_name)_headers) $($(proj_name)_libs) .SYMBOLIC
+all : $(headers) $(libs) .SYMBOLIC
     @%null
 
-.mh: $(include_dir)
+.mh: ../include
 
-.c: $(lib_dir)
+.c: ../lib
 
 .mh.h:
     $(splice)
@@ -220,25 +173,12 @@ all : $($(proj_name)_headers) $($(proj_name)_libs) .SYMBOLIC
 .mh.rh:
     $(rsplice)
 
-winsock2.h: winsock.mh
-    $(ws2splice)
-
 largeint.lib: largeint.obj
     %create $^&.lbc
     @%append $^&.lbc +largeint.obj
     $(librarian) $(libflags) $@ @$^&.lbc
 
-strmiids.lib: strmiids.obj
-    %create $^&.lbc
-    @%append $^&.lbc +strmiids.obj
-    $(librarian) $(libflags) $@ @$^&.lbc
-
 uuid.lib: uuid.obj
     %create $^&.lbc
     @%append $^&.lbc +uuid.obj
-    $(librarian) $(libflags) $@ @$^&.lbc
-
-dxguid.lib: dxguid.obj
-    %create $^&.lbc
-    @%append $^&.lbc +dxguid.obj
     $(librarian) $(libflags) $@ @$^&.lbc

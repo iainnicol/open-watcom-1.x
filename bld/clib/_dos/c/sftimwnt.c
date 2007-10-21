@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _dos_setftime() for Win32.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -36,12 +37,11 @@
 #include "ntex.h"
 #include "seterrno.h"
 
-
-_WCRTLINK unsigned _dos_setftime( int hid, unsigned date, unsigned time )
+_WCRTLINK unsigned _dos_setftime( int hid, WORD date, WORD time )
 {
     int         error;
     HANDLE      h;
-    FILETIME    ctime, atime, wtime;
+    FILETIME    ctime,atime,wtime;
 
     error = 0;
     h = __getOSHandle( hid );

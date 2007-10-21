@@ -59,13 +59,6 @@ extern  ftnfile         *_InitStandardInput( void );
 
 extern  char            DefFName[];
 
-/* Forward declarations */
-void    F_Connect( void );
-void    ChkFileName( void );
-void    GetFileInfo( void );
-void    ChkLogFile( void );
-void    DiscoFile( ftnfile *old );
-
 
 static ftnfile *SearchFtnFile( int unit ) {
 //=========================================

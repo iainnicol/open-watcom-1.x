@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WASM main header file contains globals and limits
+* Description:  WASM globals and limits.
 *
 ****************************************************************************/
 
@@ -39,16 +39,7 @@
 #include <time.h>
 #include "watcom.h"
 #include "bool.h"
-
-#define ERROR                   -1
-#define NOT_ERROR               1
-#define EMPTY                   -2
-#define NOT_EMPTY               2
-#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
-
-/* these come back from the jmp() routine */
-#define SCRAP_INSTRUCTION       3
-#define INDIRECT_JUMP           4
+#include "asmerr.h"
 
 #define MAX_TOKEN               100     // there is no restriction for this number
 #define MAX_LINE_LEN            512     // there is no restriction for this number
@@ -63,9 +54,14 @@
 
 /* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
 
-#include "asmerr.h"
-#include "asmins.h"
-#include "asmdefs.h"
+#define ERROR                   -1
+#define NOT_ERROR               1
+#define EMPTY                   -2
+#define NOT_EMPTY               2
+#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
+/* these come back from the jmp() routine */
+#define SCRAP_INSTRUCTION       3
+#define INDIRECT_JUMP           4
 
 #define NULLC                   '\0'
 #define NULLS                   "\0"
@@ -201,6 +197,8 @@ typedef struct global_vars{
 } global_vars;
 
 extern global_vars Globals;
+
+typedef struct asm_tok ASM_TOK;
 
 #endif
 

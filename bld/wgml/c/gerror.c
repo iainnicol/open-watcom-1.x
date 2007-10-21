@@ -36,15 +36,15 @@
 
 
 
-void g_suicide( void )
+void GSuicide( void )
 {
-    if( environment ) {
-        longjmp( *environment, 1 );
+    if( Environment ) {
+        longjmp( *Environment, 1 );
     }
-    my_exit( 16 );
+    MyExit( 16 );
 }
 
-void out_msg( char *msg, ... )
+void OutMsg( char *msg, ... )
 /***************************/
 {
     va_list args;

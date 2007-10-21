@@ -1,5 +1,5 @@
 CC = wcc386
-CFLAGS = -zq -wx -oaxt -I"../../zlib"
+CFLAGS = -zq -wx -oaxt -I"../../zlib" -Dstrcasecmp=strcmpi
 
 .c : ../lib
 

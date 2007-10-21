@@ -109,12 +109,12 @@ BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam )
  *                 to allow it to be created on the fly
  */
 
-void InitPaintProc( void ) {
+void InitPaintProc() {
 
     PaintFP = MakeProcInstance( (FARPROC)PaintAll, Instance );
 }
 
-void FiniPaintProc( void ) {
+void FiniPaintProc() {
     FreeProcInstance( PaintFP );
 }
 
@@ -123,7 +123,7 @@ void FiniPaintProc( void ) {
  *                font has been dumped
  */
 
-void PaintAllWindows( void ) {
+void PaintAllWindows() {
 
     HTASK       task;
 

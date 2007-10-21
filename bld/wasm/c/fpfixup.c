@@ -32,7 +32,9 @@
 
 #include "asmglob.h"
 
+#include "asmins.h"
 #include "directiv.h"
+#include "asmdefs.h"
 #include "asmfixup.h"
 #include "mangle.h"
 

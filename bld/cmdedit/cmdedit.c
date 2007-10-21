@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Command line editing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -98,33 +99,6 @@ void LeftWord( void )
 /*******************/
 {
     Cursor = LocateLeftWord();
-}
-
-void Delete( void )
-/*****************/
-{
-    int i;
-
-    if ( MaxCursor != 0 ) {
-        if( Cursor != MaxCursor ) Edited = TRUE;
-        i = Cursor;
-        Line[ MaxCursor ] = ' ';
-        while( i < MaxCursor ) {
-            Line[ i ] = Line[ i + 1 ];
-            ++i;
-        }
-        --MaxCursor;
-    }
-    Draw = TRUE;
-}
-
-void BackSpace( void )
-/********************/
-{
-    if( Cursor != 0 ) {
-        Left();
-        Delete();
-    }
 }
 
 void DeleteBOW( void )
@@ -228,6 +202,15 @@ void FlipInsertMode( void )
     SetCursorType();
 }
 
+void BackSpace( void )
+/********************/
+{
+    if( Cursor != 0 ) {
+        Left();
+        Delete();
+    }
+}
+
 void ScreenCursorOff( void )
 /**************************/
 {
@@ -246,6 +229,25 @@ void EraseLine( void )
         FlipInsertMode();
     }
     ScreenCursorOff();
+    Draw = TRUE;
+}
+
+
+void Delete( void )
+/*****************/
+{
+    int i;
+
+    if ( MaxCursor != 0 ) {
+        if( Cursor != MaxCursor ) Edited = TRUE;
+        i = Cursor;
+        Line[ MaxCursor ] = ' ';
+        while( i < MaxCursor ) {
+            Line[ i ] = Line[ i + 1 ];
+            ++i;
+        }
+        --MaxCursor;
+    }
     Draw = TRUE;
 }
 

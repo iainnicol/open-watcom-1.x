@@ -41,6 +41,7 @@
 #include "yydrivr2.h"
 #include "scan2.h"
 #include "errprt.h"
+#include "rcmsg.gh"
 
 #include "os2res.h"
 

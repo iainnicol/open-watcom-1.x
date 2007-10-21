@@ -55,8 +55,6 @@ extern  char                    *RChkAlloc(int);
 
 extern  char                    NormalCtrlSeq[];
 
-/* Forward declarations */
-void    DoOpen( void );
 
 void    _AllocBuffer( ftnfile *fcb ) {
 //====================================

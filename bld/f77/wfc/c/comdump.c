@@ -51,16 +51,10 @@ extern  void            BIEndComBlock( void );
 #define CT_CHAR         1
 #define CT_NOT_CHAR     2
 
-static  int    ClassifyType( int typ )
-{
-// Classify the specified type into CHARACTER or NON-CHARACTER.
 
-    if( typ == TY_CHAR ) return( CT_CHAR );
-    return( CT_NOT_CHAR );
-}
+void    STComDump( void ) {
+//===================
 
-void    STComDump( void )
-{
 // Resolve common block offsets and check for errors.
 
     sym_id      sym;
@@ -147,3 +141,12 @@ void    STComDump( void )
     }
 }
 
+
+static  int    ClassifyType( int typ ) {
+//======================================
+
+// Classify the specified type into CHARACTER or NON-CHARACTER.
+
+    if( typ == TY_CHAR ) return( CT_CHAR );
+    return( CT_NOT_CHAR );
+}

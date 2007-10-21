@@ -42,6 +42,9 @@
 #include "signlwnt.h"
 #include "rtinit.h"
 
+_WCRTLINK extern void (*__sig_init_rtn)( void );
+_WCRTLINK extern void (*__sig_fini_rtn)( void );
+
 sigtab  _SignalTable[] = {
     { SIG_IGN, -1 },                                /* unused  */
     { SIG_DFL, -1 },                                /* SIGABRT */

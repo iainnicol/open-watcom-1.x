@@ -24,7 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  DOS memory management routines for 16-bit DOS.
+;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+;*               DESCRIBE IT HERE!
 ;*
 ;*****************************************************************************
 
@@ -40,7 +41,7 @@ include struct.inc
         defp    _dos_allocmem
         xdefp   "C",_dos_allocmem
 ;
-;       unsigned _dos_allocmem( unsigned size, unsigned *segment );
+;       unsigned _dos_allocmem( unsigned size, unsigned short *segment );
 ;
         push    BX              ; save BX
         push    DX              ; save DX
@@ -71,7 +72,7 @@ endif
         defp    _dos_freemem
         xdefp   "C",_dos_freemem
 ;
-;       unsigned _dos_freemem( unsigned segment );
+;       unsigned _dos_freemem( unsigned short segment );
 ;
         push    ES              ; save ES
         mov     ES,AX           ; get segment to be freed
@@ -86,7 +87,8 @@ endif
         xdefp   "C",_dos_setblock
 ;
 ;       unsigned _dos_setblock( unsigned size,
-;                               unsigned segment, unsigned *maxsize );
+;                               unsigned short segment,
+;                               unsigned  *maxsize );
 ;
 ;
         push    ES              ; save ES

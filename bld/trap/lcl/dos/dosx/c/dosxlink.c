@@ -68,7 +68,6 @@
     #include <i86.h>
 
     extern unsigned short MyCS( void );
-    void BackToProtMode( void );
 
     #pragma aux MyCS   = 0x8c 0xc8 value [ ax ];
 

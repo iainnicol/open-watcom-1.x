@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Determine the type of an executable.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -136,13 +137,13 @@ int ExeType( char *fname, char *exe_type )
         return( TRUE );
     }
     local_type[ 2 ] = '\0';
-    if( strcmp( local_type, "PE" ) == 0 ) {             // Windows NT
+    if( stricmp( local_type, "PE" ) == 0 ) {            // Windows NT
         strcpy( exe_type, local_type );
-    } else if( strcmp( local_type, "NE" ) == 0 ) {      // Windows or OS/2 1.x
+    } else if( stricmp( local_type, "NE" ) == 0 ) {     // Windows
         strcpy( exe_type, local_type );
-    } else if( strcmp( local_type, "LE" ) == 0 ) {      // DOS/4G
+    } else if( stricmp( local_type, "LE" ) == 0 ) {     // DOS4G
         strcpy( exe_type, local_type );
-    } else if( strcmp( local_type, "LX" ) == 0 ) {      // OS/2 2.x
+    } else if( stricmp( local_type, "LX" ) == 0 ) {     // OS2 2.0
         strcpy( exe_type, local_type );
     }
     close( fp );

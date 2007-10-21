@@ -41,25 +41,23 @@
 
 #include <limits.h>
 
-extern  void            AddCSNode( byte );
-extern  void            DelCSNode( void );
-extern  void            CSNoMore( void );
-extern  void            Match( void );
-extern  void            CSExtn( void );
-extern  void            ColonLabel( void );
-extern  label_id        NextLabel( void );
-extern  void            GLabel( label_id );
-extern  void            FiniSelect( void );
-extern  void            InitSelect( void );
-extern  void            GBranch( label_id );
-extern  void            FreeLabel( label_id );
+extern  void            AddCSNode(byte);
+extern  void            DelCSNode(void);
+extern  void            CSNoMore(void);
+extern  void            Match(void);
+extern  void            CSExtn(void);
+extern  void            ColonLabel(void);
+extern  label_id        NextLabel(void);
+extern  void            GLabel(label_id);
+extern  void            FiniSelect(void);
+extern  void            InitSelect(void);
+extern  void            GBranch(label_id);
+extern  void            FreeLabel(label_id);
 
-/* forward declarations */
-void            CpOtherwise( void );
-static void     CaseHandler( void );
 
-case_entry *NewCase( void )
-{
+case_entry      *NewCase(void) {
+//==========================
+
     case_entry  *ptr;
 
     ptr = FMemAlloc( sizeof( case_entry ) );
@@ -71,8 +69,10 @@ case_entry *NewCase( void )
     return( ptr );
 }
 
-void CpSelect( void )
-{
+
+void    CpSelect(void) {
+//==================
+
 // Compile a SELECT statement.
 
     Remember.slct = TRUE;
@@ -104,8 +104,10 @@ void CpSelect( void )
     ColonLabel();
 }
 
-void CpCase( void )
-{
+
+void    CpCase(void) {
+//================
+
 // Compile a CASE statement.
 
     if( RecKeyWord( "DEFAULT" ) ) {
@@ -125,8 +127,10 @@ void CpCase( void )
     }
 }
 
-static intstar4 MinCaseValue( TYPE typ )
-{
+
+static  intstar4        MinCaseValue( TYPE typ ) {
+//================================================
+
 // Get a value for case expression.
 
     if( _IsTypeInteger( typ ) ) {
@@ -137,8 +141,9 @@ static intstar4 MinCaseValue( TYPE typ )
 }
 
 
-static intstar4 MaxCaseValue( TYPE typ )
-{
+static  intstar4        MaxCaseValue( TYPE typ ) {
+//================================================
+
 // Get a value for case expression.
 
     if( _IsTypeInteger( typ ) ) {
@@ -149,8 +154,9 @@ static intstar4 MaxCaseValue( TYPE typ )
 }
 
 
-static intstar4 CaseValue( void )
-{
+static  intstar4        CaseValue(void) {
+//===================================
+
 // Get a value for case expression.
 
     if( _IsTypeInteger( CITNode->typ ) ) {
@@ -162,8 +168,10 @@ static intstar4 CaseValue( void )
     }
 }
 
-static void CaseHandler( void )
-{
+
+static  void    CaseHandler(void) {
+//=============================
+
     label_id    label;
     case_entry  *link;
     case_entry  *kase;
@@ -253,8 +261,10 @@ static void CaseHandler( void )
     CSHead->block = ++BlockNum;
 }
 
-void CpOtherwise( void )
-{
+
+void    CpOtherwise(void) {
+//=====================
+
 // Compile an OTHERWISE statement.
 
     if( (CSHead->typ == CS_CASE) || (CSHead->typ == CS_SELECT) ) {
@@ -272,8 +282,10 @@ void CpOtherwise( void )
     CSNoMore();
 }
 
-void CpEndSelect( void )
-{
+
+void    CpEndSelect(void) {
+//=====================
+
 // Compile an ENDSELECT statement.
 
     GBranch( CSHead->bottom );

@@ -46,7 +46,6 @@
 #include "ferror.h"
 #include "inout.h"
 #include "fctypes.h"
-#include "cspawn.h"
 
 #include "langenvd.h"
 #if _CPU == 386 || _CPU == 8086
@@ -77,6 +76,7 @@ extern  char            *SDExtn(char *,char *);
 extern  char            *SDFName(char *);
 extern  char            *STGetName(sym_id,char *);
 extern  char            *STExtractName(sym_id,char *);
+extern  void            Suicide(void);
 extern  intstar4        GetComBlkSize(sym_id);
 extern  aux_info        *AuxLookup(sym_id);
 extern  void            SendBlip(void);
@@ -136,19 +136,6 @@ extern  sym_id                  STShadow(sym_id);
 extern  sym_id                  FindShadow(sym_id);
 extern  sym_id                  FindEqSetShadow(sym_id);
 extern  uint                    SymAlign(sym_id);
-
-/* Forward declarations */
-static  void    SegBytes( unsigned_32 size );
-static  void    DefineGlobalSeg( global_seg *seg );
-static  void    DefineGlobalSegs( void );
-static  void    DefineCommonSegs( void );
-static  void    AllocGlobalSegs( void );
-static  void    AllocCommonSegs( void );
-static  void    DefCodeSeg( void );
-static  void    BldCSName( char *buff );
-static  void    AllocComBlk( sym_id cb );
-segment_id       GetGlobalSeg( unsigned_32 g_offset );
-
 
 #define _Shadow( s )    if( (s->ns.flags & SY_CLASS) == SY_VARIABLE ) { \
                             if( s->ns.flags & SY_SPECIAL_PARM ) { \
@@ -444,7 +431,7 @@ static  void    SegBytes( unsigned_32 size ) {
 }
 
 
-static  void   DefineGlobalSeg( global_seg *seg ) {
+static  void            DefineGlobalSeg( global_seg *seg ) {
 //==========================================================
 
 // Define a global segment.
@@ -1388,7 +1375,7 @@ void    FEMessage( int msg, void *x ) {
     case MSG_FATAL :
         Error( CP_FATAL_ERROR, x );
         CGFlags |= CG_FATAL;
-        CSuicide();
+        Suicide();
         break;
     case MSG_BAD_PARM_REGISTER :
         Error( CP_BAD_PARM_REGISTER, x );

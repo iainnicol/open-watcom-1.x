@@ -96,13 +96,6 @@ static const char *usageMsg[] = {
     NULL
 };
 
-/* forward declarations */
-static void DoLS( char *path, char *name );
-static int IsSpecialRoot( char * filename );
-static void PrintFile( char *drive, char *dir, DIR *file );
-static int IsX( char *file );
-
-
 /*
  * start of mainline
  */
@@ -293,7 +286,7 @@ int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
 /*
  * DoLS - perform LS on a specified directory
  */
-static void DoLS( char *path, char *name )
+void DoLS( char *path, char *name )
 {
     char                filename[_MAX_PATH];
     char                filebuff[_MAX_PATH2];
@@ -468,7 +461,7 @@ static void DoLS( char *path, char *name )
 /*
  * PrintFile - print a file entry
  */
-static void PrintFile( char *drive, char *dir, DIR *file )
+void PrintFile( char *drive, char *dir, DIR *file )
 {
     static char months[13][4] = {
         "***", "Jan", "Feb", "Mar", "Apr",
@@ -573,7 +566,7 @@ static void PrintFile( char *drive, char *dir, DIR *file )
 /*
  * IsX - check if a file has .com, .bat, or .exe at the end
  */
-static int IsX( char *file )
+int IsX( char *file )
 {
     char        *f;
 
@@ -592,7 +585,7 @@ static int IsX( char *file )
 
 } /* IsX */
 
-static int IsSpecialRoot( char * filename )
+int IsSpecialRoot( char * filename )
 /**********************************/
 // Check if 'filename' is of the form 'd:'
 {

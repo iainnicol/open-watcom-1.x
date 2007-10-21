@@ -43,7 +43,7 @@ bool GUISetIcon( gui_window * wnd, gui_resource *res )
 {
     WPI_HICON icon;
 
-    icon = (WPI_HICON)0;
+    icon = NULLHANDLE;
 
     if( res != NULL ) {
         icon = _wpi_loadicon( GUIResHInst, _wpi_makeintresource(res->res) );

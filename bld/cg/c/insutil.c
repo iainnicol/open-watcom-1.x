@@ -56,7 +56,6 @@ extern  void            FreeIns(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  name            *DeAlias(name*);
 extern  int             CountIns(block*);
-extern  instruction_id  Renumber( void );
 
 #define MAX_CONF_INFO   (2*( MAX_OPS_PER_INS+1 )+1)
 static  int             CurrInfo;

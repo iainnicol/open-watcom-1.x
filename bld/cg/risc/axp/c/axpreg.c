@@ -79,15 +79,6 @@ extern hw_reg_set SavedRegs( void )
     return( saved );
 }
 
-extern  void    UpdateReturn( call_state *state, type_def *tipe,
-                              type_class_def class, aux_handle aux ) {
-/********************************************************************/
-
-    tipe = tipe;
-    aux = aux;
-    state->return_reg = ReturnReg( class );
-}
-
 extern  type_class_def  CallState( aux_handle aux,
                                   type_def *tipe, call_state *state ) {
 /*********************************************************************/
@@ -146,6 +137,16 @@ extern  type_class_def  CallState( aux_handle aux,
     class = ReturnClass( tipe, state->attr );
     UpdateReturn( state, tipe, class, aux );
     return( class );
+}
+
+
+extern  void    UpdateReturn( call_state *state, type_def *tipe,
+                              type_class_def class, aux_handle aux ) {
+/********************************************************************/
+
+    tipe = tipe;
+    aux = aux;
+    state->return_reg = ReturnReg( class );
 }
 
 extern  hw_reg_set      RAReg( void ) {

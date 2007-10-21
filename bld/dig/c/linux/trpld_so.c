@@ -51,7 +51,7 @@ extern  int          GetSystemHandle(int);
 
 static const trap_requests   *TrapFuncs;
 static void                  *TrapFile;
-static void                  (TRAPENTRY *FiniFunc)(void);
+static void                  (TRAPENTRY *FiniFunc)();
 
 const static trap_callbacks TrapCallbacks = {
     sizeof( trap_callbacks ),

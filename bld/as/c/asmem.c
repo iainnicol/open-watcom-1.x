@@ -40,7 +40,7 @@ extern void AsmFree( void *ptr );
 #endif
 
 #ifdef _STANDALONE_
-void MemInit( void ) {
+void MemInit() {
 //**************
 
     TRMemOpen();
@@ -76,7 +76,7 @@ void MemFree( pointer p ) {
 }
 
 #ifdef _STANDALONE_
-void MemFini( void ) {
+void MemFini() {
 //**************
 
 #ifdef TRMEM

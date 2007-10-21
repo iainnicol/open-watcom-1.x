@@ -44,39 +44,32 @@
 #include "insert.h"
 #include "utility.h"
 
-extern  sym_id          LkSym( void );
-extern  void            GSLoBound( int, sym_id );
-extern  void            GSHiBound( int, sym_id );
-extern  void            GSHiBoundLo1( int, sym_id );
-extern  void            GBegAllocate( void );
-extern  void            GAllocate( sym_id );
-extern  void            GAllocateString( sym_id );
-extern  void            GSCBLength( sym_id );
-extern  void            GEndAllocate( void );
-extern  void            GBegDeAllocate( void );
-extern  void            GDeAllocate( sym_id );
-extern  void            GDeAllocateString( sym_id );
-extern  void            GEndDeAllocate( void );
-extern  void            GAllocStat( void );
-extern  void            GAllocLoc( void );
-extern  void            GAllocEOL( void );
-extern  void            CkSize4( void );
-extern  sym_id          CkAssignOk( void );
-
-/* forward declarations */
-static  void    AllocStat( void );
-static  void    AllocLoc( void );
-static  void    ChkStat( void );
-static  void    ChkLoc( void );
-static  void    DeallocStat( void );
-
+extern  sym_id          LkSym(void);
+extern  void            GSLoBound(int,sym_id);
+extern  void            GSHiBound(int,sym_id);
+extern  void            GSHiBoundLo1(int,sym_id);
+extern  void            GBegAllocate(void);
+extern  void            GAllocate(sym_id);
+extern  void            GAllocateString(sym_id);
+extern  void            GSCBLength(sym_id);
+extern  void            GEndAllocate(void);
+extern  void            GBegDeAllocate(void);
+extern  void            GDeAllocate(sym_id);
+extern  void            GDeAllocateString(sym_id);
+extern  void            GEndDeAllocate(void);
+extern  void            GAllocStat(void);
+extern  void            GAllocLoc(void);
+extern  void            GAllocEOL(void);
+extern  void            CkSize4(void);
+extern  sym_id          CkAssignOk(void);
 
 static  char            *StatKW = { "STAT" };
 static  char            *LocKW = { "LOCATION" };
 
 
-void    CpAllocate( void )
-{
+void    CpAllocate(void) {
+//====================
+
 // Process ALLOCATE statement.
 //      ALLOCATE( arr([l:]u,...),...,[STAT=istat])
 //          or
@@ -137,20 +130,23 @@ void    CpAllocate( void )
 }
 
 
-static  void    AllocStat( void )
-{
+static  void    AllocStat(void) {
+//===========================
+
     ChkStat();
 }
 
 
-static  void    AllocLoc( void )
-{
+static  void    AllocLoc(void) {
+//==========================
+
     ChkLoc();
 }
 
 
-void    DimArray( sym_id sym )
-{
+void    DimArray( sym_id sym ) {
+//==============================
+
 // Dimension an allocatable array.
 // Called by GAllocate() so that system dependent code
 // can control the order in which code gets generated.
@@ -199,8 +195,9 @@ void    DimArray( sym_id sym )
 }
 
 
-void    LoadSCB( sym_id sym )
-{
+void    LoadSCB( sym_id sym ) {
+//=============================
+
 // Dimension an allocatable character string
 // Called by GAllocateString() so that system dependent code
 // can control the order in which code gets generated.
@@ -212,8 +209,9 @@ void    LoadSCB( sym_id sym )
 }
 
 
-void    CpDeAllocate( void )
-{
+void    CpDeAllocate(void) {
+//======================
+
 // Process DEALLOCATE statement.
 //      DEALLOCATE( arr,...,[STAT=istat])
 
@@ -258,14 +256,16 @@ void    CpDeAllocate( void )
 }
 
 
-static  void    DeallocStat( void )
-{
+static  void    DeallocStat(void) {
+//=============================
+
     ChkStat();
 }
 
 
-static  void    ChkStat( void )
-{
+static  void    ChkStat(void) {
+//=========================
+
     AdvanceITPtr();
     IntSubExpr();
     if( !AError ) {
@@ -277,8 +277,9 @@ static  void    ChkStat( void )
 }
 
 
-static  void    ChkLoc( void )
-{
+static  void    ChkLoc(void) {
+//========================
+
     AdvanceITPtr();
     IntSubExpr();
     if( !AError ) {

@@ -20,5 +20,4 @@ set PROJDIR=<CWD>
     cdsay ../../rc/<OBJDIR>
     wmake -h -f ../bootmake
     <CPCMD> wrce.exe <OWROOT>/bld/build/bin/wrc
-    <CPCMD> wrce.exe <OWROOT>/bld/build/bin/bwrc
     cdsay <PROJDIR>

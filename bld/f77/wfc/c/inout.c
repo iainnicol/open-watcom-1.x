@@ -54,6 +54,7 @@
 #include <time.h>
 
 extern  void            BISetSrcFile( void );
+extern  void            Suicide(void);
 extern  void            PrtOptions(void);
 extern  lib_handle      IncSearch(char *);
 extern  int             LibRead(lib_handle);
@@ -127,19 +128,6 @@ static int            ErrCursor;      // offset into "ErrBuff"
 static char           *TermBuff;      // terminal file buffer
 static file_handle    TermFile;       // file pointer for terminal
 static int            TermCursor;     // offset into "TermBuff"
-
-/* Forward declarations */
-static  void    SendRec( void );
-static  void    SetCtrlSeq( void );
-static  void    PutLst( char *string );
-static  void    ChkErrErr( void );
-static  void    ErrOut( char *string );
-static  void    ErrNL( void );
-static  void    ChkLstErr( void );
-static  void    Erase( char *extn );
-static  void    SendBuff( char *str, char *buff, int buff_size, int *cursor,
-                          file_handle fp, void (*err_rtn)( void ) );
-
 
 //========================================================================
 //

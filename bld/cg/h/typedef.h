@@ -30,9 +30,6 @@
 
 #ifndef TYPEDEF_H
 #define TYPEDEF_H
-
-#include "cgdefs.h"
-
 typedef enum {
         TYPE_FLOAT      = 0x01,
         TYPE_SIGNED     = 0x02,
@@ -41,12 +38,11 @@ typedef enum {
 } type_attr;
 
 typedef struct type_def {
-        cg_type         refno;
+        int             refno;
         type_length     length;
         type_attr       attr;
 #if _TARGET & _TARG_RISC
         type_length     align;
 #endif
 } type_def;
-
 #endif

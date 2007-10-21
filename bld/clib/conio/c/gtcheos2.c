@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include "rtdata.h"
 
-_WCRTLINK int getche( void )
+_WCRTLINK int getche()
     {
         unsigned        c;
         unsigned        stashed;

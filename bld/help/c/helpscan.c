@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "uidef.h"
-#include "help.h"
 #include "helpscan.h"
 #include "helpchar.h"
 #include "helpmem.h"
@@ -167,7 +166,7 @@ void freeHyperlinkInfo( TextInfoBlock *cur )
     }
 }
 
-bool ScanLine( char *line, void (*cb)(TokenType, void *, ScanInfo *), void *info )
+bool ScanLine( char *line, void (*cb)(), void *info )
 {
     char                *cur;
     TextInfo            textinfo;

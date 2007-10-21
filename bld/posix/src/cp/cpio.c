@@ -48,11 +48,6 @@
 #endif
 #include "cp.h"
 
-/* forward declarations */
-static int readABuffer( void );
-static void freeCB( ctrl_block *cb, int freecb );
-
-
 /*
  * GrabFile - read in a specified file, dump it to destination
  */
@@ -66,11 +61,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, char srcattr )
     int                 handle;
     int                 okay=TRUE;
     timedate            td;
-#if __WATCOMC__ >= 1280
-    unsigned            t,d;
-#else
     unsigned short      t,d;
-#endif
 
     /*
      * file handle

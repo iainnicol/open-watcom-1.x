@@ -371,7 +371,7 @@ BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM l
 static void GetNewRegValue( HWND hwnd )
 {
     HWND            owner;
-    DLGPROC         fp;
+    FARPROC         fp;
     int             reg_modified;
     RegModifyData   modify_data;
     char            *discript;
@@ -404,12 +404,12 @@ static void GetNewRegValue( HWND hwnd )
         reg_modified = 1;
         break;
     case 1:
-        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
+        fp = MakeProcInstance( ChangeRegisterDialog, Instance );
         reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, fp, (LPARAM)( &modify_data ) );
         FreeProcInstance( fp );
         break;
     default:
-        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
+        fp = MakeProcInstance( ChangeRegisterDialog, Instance );
         reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, fp, (LPARAM)( &modify_data ) );
         FreeProcInstance( fp );
     }

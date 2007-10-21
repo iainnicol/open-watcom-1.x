@@ -1083,7 +1083,7 @@ typedef struct {
 
 typedef struct {
     blk_wlk_com         com;
-    int                 (*comp)(const void *, const void *, unsigned);
+    int                 (*comp)();
     lookup_item         *li;
     search_result       sr;
     char                *buff;

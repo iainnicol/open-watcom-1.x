@@ -74,13 +74,6 @@ extern  unsigned_8      CGFlags;
 static  obj_ptr         WarpReturn;
 
 
-/* Forward declarations */
-static  void    RBReferenced( sym_id rb );
-static  void    RefStmtFunc( sym_id sf );
-void    RefStmtLabel( sym_id sn );
-void    DoneLabel( label_id label );
-
-
 void    InitLabels( void ) {
 //====================
 
