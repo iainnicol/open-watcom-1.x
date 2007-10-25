@@ -715,17 +715,28 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     }
     if( ovret == FNOV_AMBIGUOUS && CompFlags.overload_13332 ) {
         FNOV_LIST* amb_list;    // - ambiguity list
-        SYMBOL next;            // - next symbol
-        boolean have_user_defined = FALSE;
-        for( amb_list = NULL; ; ) {
+        FNOV_LIST* clist;   
+        SYMBOL     next;            // - next symbol
+        boolean    have_user_defined = FALSE;
+        clist                     = fnov_diag.diag_ambig;
+        for( amb_list = NULL; ; clist = amb_list ) {
             next = FnovGetAmbiguousEntry( &fnov_diag, &amb_list );
             if( next == NULL ) break;
             if( next->name != NULL ) {
                 have_user_defined = TRUE;
-                break;
+            }
+            if( next->id == SC_MEMBER && olinf->expr->cgop == CO_EQUAL && SymIsAssign( next ) ) {
+                if( fun != NULL ) {
+                    fun = 0;
+                    break;
+                } else if( clist->thisrank.rank == OV_RANK_EXACT && 
+                           clist->rankvector->rank <= OV_RANK_SAME) {
+                    fun = next;
+                } 
             }
         }
-        if( have_user_defined ) {
+        if( fun != NULL ) ovret = FNOV_NONAMBIGUOUS;
+        else if( have_user_defined ) {
             FnovFreeDiag( &fnov_diag );
             ovret = OpOverloadedLimitDiag( &fun
                                 , olinf->result_mem

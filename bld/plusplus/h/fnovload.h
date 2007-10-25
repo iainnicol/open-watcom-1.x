@@ -50,22 +50,23 @@ typedef enum                    // overload coarse ranks
 } FNOV_COARSE_RANK;
 
 typedef enum
-{   FNC_EXCLUDE_ELLIPSIS    = 0x0001,       // don't consider ellipsis
-    FNC_EXCLUDE_UDCONV      = 0x0002,       // don't consider u-d conversions
-    FNC_RANK_RETURN         = 0x0004,       // rank by return value
-    FNC_DISTINCT_CHECK      = 0x0008,       // distinct function checking
-    FNC_MEMBER              = 0x0010,       // member function ranking
-    FNC_EXCLUDE_DEFARG      = 0x0020,       // don't consider fns with def args
-    FNC_ONLY_SYM            = 0x0040,       // use only sym, not all of ring
-    FNC_TEMPLATE            = 0x0080,       // ring contains function template
-    FNC_STDOPS              = 0x0100,       // check for & on first arg
-    FNC_EXCLUDE_CONV        = 0x0200,       // no conversions allowed
-    FNC_RANKING_CTORS       = 0x0400,       // the functions being overloaded are ctors
-    FNC_8_5_3_ANSI          = 0x0800,
-    FNC_STDOP_CV_VOID       = 0x1000,       // check cv-qual adjustments on stdop void
-    FNC_NO_DEALIAS          = 0x2000,       // don't dealias syms before overload
-    FNC_USE_WP13332         = 0x4000,       // abide by wp13332 rules
-    FNC_DEFAULT             = 0x0000        // default behaviour
+{   FNC_EXCLUDE_ELLIPSIS     = 0x0001,       // don't consider ellipsis
+    FNC_EXCLUDE_UDCONV       = 0x0002,       // don't consider u-d conversions
+    FNC_RANK_RETURN          = 0x0004,       // rank by return value
+    FNC_DISTINCT_CHECK       = 0x0008,       // distinct function checking
+    FNC_MEMBER               = 0x0010,       // member function ranking
+    FNC_EXCLUDE_DEFARG       = 0x0020,       // don't consider fns with def args
+    FNC_ONLY_SYM             = 0x0040,       // use only sym, not all of ring
+    FNC_TEMPLATE             = 0x0080,       // ring contains function template
+    FNC_STDOPS               = 0x0100,       // check for & on first arg
+    FNC_EXCLUDE_CONV         = 0x0200,       // no conversions allowed
+    FNC_RANKING_CTORS        = 0x0400,       // the functions being overloaded are ctors
+    FNC_8_5_3_ANSI           = 0x0800,
+    FNC_STDOP_CV_VOID        = 0x1000,       // check cv-qual adjustments on stdop void
+    FNC_NO_DEALIAS           = 0x2000,       // don't dealias syms before overload
+    FNC_USE_WP13332          = 0x4000,       // abide by wp13332 rules
+    FNC_EXCLUDE_UDCTPL       = 0x8000,
+    FNC_DEFAULT              = 0x0000        // default behaviour
 } FNOV_CONTROL;
 
 typedef enum

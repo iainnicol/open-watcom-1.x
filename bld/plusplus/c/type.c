@@ -38,6 +38,7 @@ TYPE: C++ type system
 #include <stddef.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "memmgr.h"
 #include "errdefns.h"
@@ -2309,8 +2310,15 @@ static void checkType( DECL_SPEC *d1, DECL_SPEC *d2 )
     if( combined != STM_NULL ) {
         /* e.g., long T x; */
         if( d1->partial != NULL || d2->partial != NULL ) {
-            CErr1( ERR_TOO_MANY_TYPES_IN_DSPEC );
-            d1->scalar = STM_NULL;
+            TYPE type = d1->partial;
+            TypeStripTdMod( type );
+            if( type->id != TYP_PROPERTY || ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
+                CErr1( ERR_TOO_MANY_TYPES_IN_DSPEC );
+                d1->scalar = STM_NULL;
+            } else {
+                d1->ms_declspec_fnmod = MakeType( TYP_PROPERTY );
+                d1->partial = NULL;
+            }
         }
     }
     if( d1->partial != NULL ) {
@@ -2543,6 +2551,9 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
         spec->ms_declspec = STS_DLLEXPORT;
     } else if( strcmp( name, "thread" ) == 0 ) {
         spec->ms_declspec = STS_THREAD;
+    } else if( strcmp( name, "property" ) == 0 ) {
+        spec->ms_declspec_fnmod = MakeType( TYP_PROPERTY );
+        spec->ms_declspec       = STS_MODIFIER;
     } else if( strcmp( name, "naked" ) == 0 ) {
         spec->ms_declspec = STS_NAKED;
     } else {
@@ -3811,7 +3822,11 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         id = id_tree->u.id.name;
     }
     fnmod_type = dspec->ms_declspec_fnmod;
-    prop       = fnmod_type != 0 && fnmod_type->id == TYP_PROPERTY; 
+    if( fnmod_type == NULL || fnmod_type->id != TYP_PROPERTY || ! ScopeType( GetCurrScope(), SCOPE_CLASS) ) {
+        prop = 0; 
+    } else {
+        prop = 1; 
+    }  
     figureOutDSpec( dspec );
     checkForUnnamedStruct( dspec, id );
     curr_type = dinfo->list;
@@ -7686,6 +7701,65 @@ boolean FunctionUsesAllTypes( SYMBOL sym, SCOPE scope, void (*diag)( SYMBOL ) )
     return( markAllUnused( scope, diag ) );
 }
 
+static boolean findGenerics( PSTK_CTL *stk, TYPE type )
+{
+    for( ;; ) {
+        switch( type->id ) {
+        case TYP_POINTER:
+        case TYP_TYPEDEF:
+        case TYP_ARRAY:
+        case TYP_MODIFIER:
+        case TYP_PROPERTY :
+            type = type->of;
+            break;
+        case TYP_CLASS:
+            if( (type->flag & ( TF1_UNBOUND | TF1_INSTANTIATION )) == 0 ) {
+                return( FALSE );
+            }
+            checkTemplateClass( stk, type );
+            return( FALSE );
+        case TYP_FUNCTION:
+            pushArguments( stk, type->u.f.args );
+            type = type->of;
+            break;
+        case TYP_MEMBER_POINTER:
+            PstkPush( stk, type->u.mp.host );
+            type = type->of;
+            break;
+        case TYP_GENERIC:
+            type = type->of;
+            if( type && type->id == TYP_GENERIC ) {
+                type = type->of;
+            }
+            if( !type ) {
+                return( TRUE );
+            }
+        default:
+            return( FALSE );
+        }
+    }
+}
+
+static boolean checkForGenericTypes( TYPE type )
+{
+    TYPE    *top;
+    PSTK_CTL stk;
+
+    PstkOpen( &stk );
+    PstkPush( &stk, type );
+    
+    for( ;; ) {
+        top = PstkPop( &stk );
+        if( top == NULL ) break;
+        if( *top != NULL && findGenerics( &stk, *top ) ) {
+            PstkClose( &stk );
+            return( TRUE );
+        }
+    }
+    PstkClose( &stk );
+    return( FALSE );
+}
+
 static boolean clearBinding( TYPE type )
 {
     SYMBOL curr;
@@ -8077,6 +8151,10 @@ static unsigned typesBind( type_bind_info *data )
         }
         if( b_unmod_type->id != u_unmod_type->id ) {
             if( u_unmod_type->id != TYP_GENERIC ) {
+                /*if( flags.arg_1st_level && b_unmod_type->id == TYP_CLASS && 
+                    ! checkForGenericTypes( u_unmod_type ) ) {
+                    continue;
+                }*/
                 return( TB_NULL );
             }
 #if 0       // screws up STL binding (explicit binding of refs!)
@@ -8184,7 +8262,7 @@ static unsigned typesBind( type_bind_info *data )
             u_unmod_type->of = g_type;
             PstkPush( &(data->bindings), u_unmod_type );
             continue;
-        }
+        } 
         if( flags.arg_1st_level ) {
             // allow trivial conversion
             d_flags = u_flags ^ ( b_flags & u_flags );
@@ -8202,6 +8280,10 @@ static unsigned typesBind( type_bind_info *data )
         }
         switch( b_unmod_type->id ) {
         case TYP_CLASS:
+            if( flags.arg_1st_level && !( u_unmod_type->flag & TF1_UNBOUND ) && 
+                TypeDerived( b_unmod_type, u_unmod_type ) ) {
+                break;
+            }
             if( compareClassTypes( b_unmod_type, u_unmod_type, data, FALSE ) ) {
                 if( flags.arg_1st_level && u_unmod_type->flag & TF1_UNBOUND ) {
                     b_unmod_type = ScopeFindBoundBase( b_unmod_type, u_unmod_type );
@@ -8250,26 +8332,28 @@ static unsigned typesBind( type_bind_info *data )
             if( b_unmod_type->u.f.pragma != u_unmod_type->u.f.pragma ) {
                 return( TB_NULL );
             }
-            b_args = b_unmod_type->u.f.args;
-            u_args = u_unmod_type->u.f.args;
-            if( b_args != u_args ) {
-                if( b_args->num_args != u_args->num_args ) {
-                    return( TB_NULL );
+            if( checkForGenericTypes( u_unmod_type ) ) {
+                b_args = b_unmod_type->u.f.args;
+                u_args = u_unmod_type->u.f.args;
+                if( b_args != u_args ) {
+                    if( b_args->num_args != u_args->num_args ) {
+                        return( TB_NULL );
+                    }
+                    if( b_args->qualifier != u_args->qualifier ) {
+                        return( TB_NULL );
+                    }
+                    pb = b_args->type_list;
+                    pu = u_args->type_list;
+                    for( i = b_args->num_args; i != 0; --i ) {
+                        PstkPush( &(data->without_generic), *pb );
+                        PstkPush( &(data->with_generic), *pu );
+                        ++pb;
+                        ++pu;
+                    }
                 }
-                if( b_args->qualifier != u_args->qualifier ) {
-                    return( TB_NULL );
-                }
-                pb = b_args->type_list;
-                pu = u_args->type_list;
-                for( i = b_args->num_args; i != 0; --i ) {
-                    PstkPush( &(data->without_generic), *pb );
-                    PstkPush( &(data->with_generic), *pu );
-                    ++pb;
-                    ++pu;
-                }
+                PstkPush( &(data->without_generic), b_unmod_type->of );
+                PstkPush( &(data->with_generic), u_unmod_type->of );
             }
-            PstkPush( &(data->without_generic), b_unmod_type->of );
-            PstkPush( &(data->with_generic), u_unmod_type->of );
             break;
         default:
             if( ! TypesIdentical( b_unmod_type, u_unmod_type ) ) {
@@ -8430,6 +8514,10 @@ static unsigned typesBind_ptree( type_bind_info *data )
         if( ( b_unmod_type->id != u_unmod_type->id )
          || ( u_unmod_type->id == TYP_GENERIC) ) {
             if( u_unmod_type->id != TYP_GENERIC ) {
+                /*if( flags.arg_1st_level && b_unmod_type->id == TYP_CLASS && 
+                    ! checkForGenericTypes( u_unmod_type ) ) {
+                    continue;
+                } */
                 return( TB_NULL );
             }
             /* we don't want any extra mem-model flags */
@@ -8549,6 +8637,10 @@ static unsigned typesBind_ptree( type_bind_info *data )
         }
         switch( b_unmod_type->id ) {
         case TYP_CLASS:
+            if( flags.arg_1st_level && !( u_unmod_type->flag & TF1_UNBOUND ) && 
+                TypeDerived( b_unmod_type, u_unmod_type ) ) {
+                break;
+            }
             if( compareClassTypes( b_unmod_type, u_unmod_type, data, TRUE ) ) {
                 if( flags.arg_1st_level && u_unmod_type->flag & TF1_UNBOUND ) {
                     b_unmod_type = ScopeFindBoundBase( b_unmod_type, u_unmod_type );
@@ -8898,6 +8990,34 @@ static void binderFini_ptree( type_bind_info *data )
     PstkClose( &(data->bindings) );
 }
 
+static TYPE findBinding( TYPE type, SYMBOL sym )
+{
+    SCOPE  scope;
+    SYMBOL curr, stop;
+
+    type = TypedefModifierRemoveOnly( type );
+    if( type != NULL && type->id == TYP_CLASS ) {
+        scope = TemplateClassParmScope( type );
+        if( scope != NULL ) {
+            stop = ScopeOrderedStart( scope );
+            curr = NULL;
+            for(;;) {
+                curr = ScopeOrderedNext( stop, curr );
+                if( curr == NULL ) break;
+    
+                type = curr->sym_type;
+                if( curr->name->name == sym->name->name ) {
+                  if( type != 0 ) return( type );
+                } else if( type->id == TYP_CLASS ) {
+                  type = findBinding( type, sym );
+                  if( type != NULL ) return type;
+                }
+            }
+        }
+    }
+    return( NULL );
+}
+
 PTREE BindClassGenericTypes( SCOPE decl_scope, PTREE parms, PTREE args )
 /**************************************************************************/
 {
@@ -8963,9 +9083,23 @@ PTREE BindClassGenericTypes( SCOPE decl_scope, PTREE parms, PTREE args )
 
                 if( ( curr->sym_type->id == TYP_TYPEDEF )
                  && ( curr->sym_type->of->id == TYP_GENERIC ) ) {
-                    node = node->u.subtree[0] =
-                        PTreeBinary( CO_LIST, NULL,
-                                     PTreeType( curr->sym_type->of->of ) );
+                    type = curr->sym_type->of->of;
+                    if( !type ) {
+                        PTREE pp = args;
+                        for( ; pp != NULL; pp = pp->u.subtree[0] ) {
+                            PTREE p = pp->u.subtree[1];
+                            if( p->op == PT_TYPE ) {
+                                type = findBinding( p->type, curr );
+                                if( type != NULL ) break;
+                            }
+                        }
+                    }
+                    if( type ) {
+                        node = node->u.subtree[0] = PTreeBinary( CO_LIST, NULL, PTreeType( type ) );
+                    } else {
+                        bind_status = TB_NULL;
+                        break;
+                    }
                 } else {
                     PSTK_ITER iter;
 
@@ -9130,7 +9264,12 @@ static boolean sameBoundFunction( TYPE fn_type, SYMBOL file_sym )
     SYMBOL test_sym;
 
     test_sym = AllocSymbol();
-    test_sym->id = SC_EXTERN;
+    if( !SymIsClassMember( file_sym ) ) {
+        test_sym->id = SC_EXTERN;
+    } else {
+        test_sym->id   = file_sym->id;
+        test_sym->name = file_sym->name;
+    }
     test_sym->sym_type = fn_type;
     result = AreFunctionsDistinct( &file_sym, test_sym, file_sym->name->name );
     FreeSymbol( test_sym );

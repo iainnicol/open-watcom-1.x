@@ -4340,14 +4340,22 @@ static PTREE convertProperty( PTREE expr, PTREE rval, boolean cnv )
                     
                     if( !rval ) {
                         expr = analyseOperator( expr );
-                        if( expr->type != ret ) { 
+                        type = TypedefModifierRemoveOnly( expr->type );
+                        ret  = TypedefModifierRemoveOnly( ret );
+                        if( type != ret ) {
+                            if( type->id == TYP_POINTER && ( type->flag & TF1_REFERENCE ) ) {
+                                type = type->of;
+                            }
                             if( ret->id == TYP_POINTER && ( ret->flag & TF1_REFERENCE ) ) {
                                 ret = ret->of;
-                                if( ret == expr->type ) return expr;
                             }
-                            PTreeSetErrLoc( expr );
-                            CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
-                            PTreeErrorNode( expr );
+                            type = TypedefModifierRemoveOnly( type );
+                            ret  = TypedefModifierRemoveOnly( ret );
+                            if( ret != type ) {
+                                PTreeSetErrLoc( expr );
+                                CErr( ERR_PROP_TYPE_MISMATCH, sym, fsym->sym_type );
+                                PTreeErrorNode( expr );
+                            }
                         }
                         expr = NodeForceLvalue( expr );
                     }
@@ -4379,9 +4387,22 @@ PTREE AnalyseOperator( PTREE expr )
     opsok = TRUE;
     code  = expr->cgop;
     flags = PTreeOpFlags( expr );
-    if( (flags & PTS_OPERATOR) && code != CO_INDEX && code != CO_LIST ) {
+    if( (flags & PTS_OPERATOR) && /*code != CO_INDEX && */code != CO_LIST ) {
         left  = expr->u.subtree[0];
         right = expr->u.subtree[1];
+        if( code == CO_INDEX ) {
+          if( ! ( right->flags & PTF_LV_CHECKED ) ) {
+              opsok = AnalyseLvalue( &expr->u.subtree[1] );
+          }
+          if( ! opsok ) {
+              PTreeErrorNode( expr );
+              return expr;
+          } else {
+            right = convertProperty( expr->u.subtree[1], NULL, TRUE );
+            if( right ) expr->u.subtree[1] = right;
+            return analyseOperator( expr );
+          }
+        }
         if( flags & PTO_UNARY ) {
             if( expr->cgop == CO_ADDR_OF || expr->cgop == CO_INDIRECT ) {
                 if( ! ( left->flags & PTF_LV_CHECKED ) ) 

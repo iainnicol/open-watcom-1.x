@@ -2061,6 +2061,7 @@ static void ctorPrologueMember( // GENERATE PROLOGUE FOR MEMBER
         return;
     }
     if( SymIsThisDataMember( sym ) ) {
+        if( sym->sym_type->id == TYP_PROPERTY ) return;
         data->comp_type = sym->sym_type;
         data->comp_offset = sym->u.offset;
         data->comp_expr = extractMemberInit( data, sym->name->name );

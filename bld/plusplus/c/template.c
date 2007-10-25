@@ -1514,18 +1514,29 @@ boolean DeferFuncTemplateDefaultArgs( DECL_INFO *dinfo )
     return( TRUE );
 }
 
-static int compareAmbigFunction( TYPE f1, TYPE f2, arg_list* alist ) 
+static int compareAmbigFunction( TYPE f1, TYPE f2, arg_list* alist, boolean udc ) 
 {
+  
     TYPE      tt;
     TYPE      t1;
     TYPE      t2;
     TYPE      m;
+    arg_list  al1;
+    arg_list  al2;
+    
     unsigned  i  = 0;
     unsigned  n  = alist->num_args;
-    arg_list* a1 = f1->u.f.args;
-    arg_list* a2 = f2->u.f.args;
     int       c1 = 0;
     int       c2 = 0;
+    arg_list* a1 = f1->u.f.args;
+    arg_list* a2 = f2->u.f.args;
+    
+    if( udc ) {
+      a1               = &al1;
+      a2               = &al2;
+      al1.type_list[0] = f1->of;
+      al2.type_list[0] = f2->of;
+    } 
     
     for( ; i < n; ++i ) {
         m  = TypedefModifierRemoveOnly( alist->type_list[i] );
@@ -1851,7 +1862,7 @@ unsigned TemplateFunctionGenerate( SYMBOL *psym, arg_list *sargs, TOKEN_LOCN *lo
                         int cmp = CompFlags.overload_13332 ? 
                                       compareAmbigFunction( sym->sym_type, 
                                                             fn_templates[BGT_EXACT][1]->sym_type, 
-                                                            args ) : 0;
+                                                            args, SymIsUDC(sym) ) : 0;
                         if( !cmp ) {
                             /* two exact matches! */
                             if( ambigs != NULL ) {
@@ -2097,8 +2108,6 @@ static TYPE processTemplateTemplateArgParms( SYMBOL_NAME sym_name, PTREE args )
 
 static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms )
 {
-    extern int BindTemplateTemplateArg( TYPE tta, PTREE arg, TOKEN_LOCN* );
-    
     SCOPE save_scope;
     SCOPE parm_scope;
     PTREE list;

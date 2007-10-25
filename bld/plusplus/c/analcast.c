@@ -1759,7 +1759,11 @@ static PTREE doCastResult           // DO CAST RESULT
       case DIAG_CTOR_IMPOSSIBLE :
       case DIAG_UDCF_IMPOSSIBLE :
       case DIAG_CAST_ILLEGAL :
-        expr = diagnoseCast( ctl, getDiagnosis( ctl )->msg_impossible );
+        if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
+            expr = PTreeErrorNode( ctl->expr );
+        } else {    
+            expr = diagnoseCast( ctl, getDiagnosis( ctl )->msg_impossible );
+        }
         break;
       case DIAG_CAST_PRIVATE :
         expr = diagnoseCast( ctl, getDiagnosis( ctl )->msg_private );

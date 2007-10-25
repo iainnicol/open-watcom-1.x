@@ -245,6 +245,7 @@ FNOV_UDC_CONTROL control, FNOV_INTRNL_CONTROL ictl, PTREE *src_ptree )
             if( ictl & FNOV_INTRNL_STDOP_CV_VOID ) {
                 curr_control |= FNC_STDOP_CV_VOID;
             }
+            curr_control |= FNC_EXCLUDE_UDCTPL;
             addRankVector( curr, curr_control );
             
             FnovArgRank( src, inter, src_ptree, curr->rankvector );
@@ -297,6 +298,7 @@ static SYMBOL udcRankUDCF( FNOV_LIST *list, TYPE src, TYPE tgt,
     if( ictl & FNOV_INTRNL_STDOP_CV_VOID ) {
         control |= FNC_STDOP_CV_VOID;
     }
+    control |= FNC_EXCLUDE_UDCTPL;
     RingIterBeg( list, curr ) {
       
         addRankVector( curr, control );
@@ -689,14 +691,16 @@ static boolean myTypesSame( TYPE first_type, TYPE second_type )
                               , &flag
                               , &refbase
                               , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+        if( !first_type ) return FALSE;
         second_type = TypeModExtract( second_type->of
                               , &flag
                               , &refbase
                               , TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
+        if( !second_type ) return FALSE;
     }
     same = TypesSameExclude( first_type, second_type,
                              TC1_NOT_ENUM_CHAR| TC1_FUN_LINKAGE  );
-    if( !same ) {
+    if( !same && first_type != NULL && second_type != NULL ) {
         if( first_type->flag & TF1_STDOP || second_type->flag & TF1_STDOP ) {
             same = TRUE;
         }
@@ -1106,7 +1110,7 @@ static boolean isRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
     return( retn );
 }
 
-static boolean isExact( FNOV_LIST *entry )
+/*static boolean isExact( FNOV_LIST *entry )
 {
     int                 index;
     FNOV_RANK           *rank;
@@ -1123,7 +1127,7 @@ static boolean isExact( FNOV_LIST *entry )
         rank++;
     }
     return( retn );
-}
+} */
 
 static void setRank( FNOV_LIST *entry, FNOV_COARSE_RANK level )
 /*************************************************************/
@@ -1307,6 +1311,26 @@ static boolean genUDCTemplateFunction( FNOV_LIST **match, boolean* ambiguous, TY
     } 
     return( FALSE );
 }
+
+/*static boolean isGeneric( TYPE type )
+{
+    TYPE ref = TypeReference( type );
+    if( ref != NULL ) {
+        type = TypedefModifierRemoveOnly( ref );
+        if( type->id == TYP_CLASS ) {
+            if( (type->flag & TF1_INSTANTIATION) && !type->u.c.info->defined ) {
+                return( TRUE );
+            }
+            return( FALSE );
+        }
+    }
+    for( ; type != 0; type = type->of ) {
+        if( type->id == TYP_GENERIC ) {  
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+} */
  
 FNOV_COARSE_RANK RankandResolveUDCsDiag( FNOV_LIST **ctorList,
 /***********************************************************************/
@@ -1332,6 +1356,8 @@ PTREE *src_ptree, FNOV_RANK *rank, FNOV_DIAG *fnov_diag)
     rejects   = NULL;
     ambiguous = FALSE;
     
+    if( locn && !locn->src_file ) locn = NULL;
+    
     resolveOneList( ctorList, &match, &rejects, &ambiguous, TRUE );
     between_match = match;
     
@@ -1343,7 +1369,8 @@ PTREE *src_ptree, FNOV_RANK *rank, FNOV_DIAG *fnov_diag)
     
     resolveOneList( udcfList, &match, &rejects, &ambiguous, FALSE );
     
-    if( ( control & FNOV_UDC_UDCF ) && match == NULL && udc_sym != NULL ) {
+    if( ( control & FNOV_UDC_UDCF ) && match == NULL && udc_sym != NULL &&
+        ( !rank || !(rank->control & (FNC_TEMPLATE|FNC_EXCLUDE_UDCTPL|FNC_STDOPS) ) ) ) {
         genUDCTemplateFunction( &match, &ambiguous, tgt, udc_sym, locn );
     }
     
@@ -1524,7 +1551,7 @@ static boolean computeFunctionRank( FNOV_INFO* info )
                 return( FALSE );
             }
         }
-        if( templ && !isExact( func ) ) {
+        if( templ && ! isRank( func, OV_RANK_TRIVIAL ) ) {
             type = *tgt;
             if( type->id == TYP_POINTER ) type = type->of;
             type = FunctionDeclarationType( type );
@@ -1705,7 +1732,7 @@ static FNOV_RESULT doOverload( FNOV_INFO* info, boolean operator )
     if( *info->pcandidates != NULL ) {
         result = resolveOverload( info );
         if( result != FNOV_NONAMBIGUOUS
-         || ! isExact( *info->pmatch ) ) {
+         || ! isRank( *info->pmatch, OV_RANK_TRIVIAL ) ) {
             if( ( info->control & ( FNC_TEMPLATE | FNC_DISTINCT_CHECK ) )
                 == FNC_TEMPLATE ) {
                 SYMBOL      sym;

@@ -2859,7 +2859,7 @@ static boolean isFriendly( SCOPE check, SCOPE friendly )
         case SC_CLASS_TEMPLATE:
             /* friendly class templates */
             type = ScopeClass( check );
-            if( type != NULL ) {
+            if( type != NULL && sym->name != NULL ) {
                 if( type->flag & TF1_INSTANTIATION ) {
                     if( type->u.c.info->name == sym->name->name ) {
                         /* class scope must be instantiated from class template */

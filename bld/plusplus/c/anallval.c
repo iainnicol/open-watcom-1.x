@@ -299,10 +299,12 @@ static boolean checkIdLookup(   // CHECK RESULT OF ID LOOKUP
                 msg = ERR_UNDECLARED_MEMBER;
             }
         }
-        if( msg == ERR_UNDECLARED_SYM ) {
-            PTreeErrorExprName( id, msg, name );
-        } else {
-            PTreeErrorExprNameType( id, msg, name, ScopeClass( scope ) );
+        if( !ScopeType( scope, SCOPE_TEMPLATE_DECL ) ) { 
+            if( msg == ERR_UNDECLARED_SYM ) {
+                PTreeErrorExprName( id, msg, name );
+            } else {
+                PTreeErrorExprNameType( id, msg, name, ScopeClass( scope ) );
+            }
         }
         PTreeErrorNode( expr );
         retn = FALSE;
