@@ -485,6 +485,7 @@ positive_tests = &
     init24.$(ext) &
     init25.$(ext) &
     init27.$(ext) &
+    init28.$(ext) &
     inline01.$(ext) &
     inline02.$(ext) &
     inline03.$(ext) &
