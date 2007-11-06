@@ -356,6 +356,7 @@ positive_tests = &
     enum03.$(ext) &
     enum04.$(ext) &
     enum05.$(ext) &
+    enum06.$(ext) &
     exc01.$(ext) &
     except01.$(ext) &
     except02.$(ext) &
@@ -486,6 +487,7 @@ positive_tests = &
     init25.$(ext) &
     init27.$(ext) &
     init28.$(ext) &
+    init29.$(ext) &
     inline01.$(ext) &
     inline02.$(ext) &
     inline03.$(ext) &
