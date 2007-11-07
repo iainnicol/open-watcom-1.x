@@ -73,6 +73,7 @@ EH_except42 = yes
 EH_exc01a = yes
 EH_exc01b = yes
 EH_gpf01 = yes
+EH_init28 = yes
 EH_link6a = yes
 EH_link6b = yes
 EH_link8a = yes
