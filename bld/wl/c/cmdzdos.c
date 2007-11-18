@@ -51,32 +51,40 @@
 extern bool ProcZdos( void )
 /*************************/
 {
-	FmtData.base = 0x1000;							// assume user application
-    LinkState |= MAKE_RELOCS + FMT_DECIDED;	        // make relocations;
-    ProcOne( ZdosOptions, SEP_NO, FALSE );
-    return( TRUE );
+   FmtData.base = 0x1000;                    // assume user application
+   LinkState |= MAKE_RELOCS + FMT_DECIDED;   // make relocations;
+   ProcOne( ZdosOptions, SEP_NO, FALSE );
+   if( FmtData.osname == NULL )
+      FmtData.osname = "ZDOS User Application";
+   return( TRUE );
 }
 
 extern bool ProcZdosSYS( void )
 {
 /*************************/
-    FmtData.base = 0;								// it's a driver, so reset base
-    Extension = E_SYS;
-    return( TRUE );
+   FmtData.base = 0;                         // it's a driver, so reset base
+   Extension = E_SYS;
+   if( FmtData.osname == NULL )
+      FmtData.osname = "ZDOS Device Driver";
+   return( TRUE );
 }
 
 extern bool ProcZdosHWD( void )
 {
 /*************************/
-	FmtData.base = 0;								// it's a driver, so reset base
-    Extension = E_HWD;
-    return( TRUE );
+   FmtData.base = 0;                         // it's a driver, so reset base
+   Extension = E_HWD;
+   if( FmtData.osname == NULL )
+      FmtData.osname = "ZDOS Hardware Driver";
+   return( TRUE );
 }
 
 extern bool ProcZdosFSD( void )
 {
 /*************************/
-	FmtData.base = 0;								// it's a driver, so reset base
-    Extension = E_FSD;
-    return( TRUE );
+   FmtData.base = 0;                         // it's a driver, so reset base
+   Extension = E_FSD;
+   if( FmtData.osname == NULL )
+      FmtData.osname = "ZDOS File System Driver";
+   return( TRUE );
 }
