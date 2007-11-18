@@ -19,6 +19,23 @@ struct B
     operator bool() const {
         return false;
     }
+
+    bool f() const {
+        return !*this;
+    }
+
+    bool g() const {
+        void *ptr = 0;
+        return h( ptr );
+    }
+
+    bool h( void * ) {
+        return false;
+    }
+
+    bool h( const void * ) const {
+        return true;
+    }
 };
 
 bool operator -( B &, int ) {
@@ -110,6 +127,9 @@ int main()
     if( b2 != false ) fail( __LINE__ );
     if( b() != true ) fail( __LINE__ );
     if( B() != true ) fail( __LINE__ );
+
+    if( b2.f() != true ) fail( __LINE__ );
+    if( b2.g() != true ) fail( __LINE__ );
 
 
     _PASS;
