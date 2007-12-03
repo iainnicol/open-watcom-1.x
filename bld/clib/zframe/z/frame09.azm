@@ -7,15 +7,15 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferDisableCursor_
+		PUBLIC	DosFrameBufferWaitEngine2D_
 ;
-; DECLARATION	int DosFrameBufferDisableCursor( void );
+; DECLARATION	int DosFrameBufferWaitEngine2D( void );
 ;
-PROC		DosFrameBufferDisableCursor_	STDCALL
+PROC		DosFrameBufferWaitEngine2D_	STDCALL
 		;
-		; Disable cursor
+		; Set palette register
 		;
-		mov	eax,FRAMEBUF_CURSOR_OPERATION SHL 8 + FRAMEBUF_CURSOR_OFF
+		mov	ah,FRAMEBUF_WAIT_ENGINE_2D
 IFDEF __ZDOSDRV__
 		call	[DWORD DosFrameBuffer]
 ELSE

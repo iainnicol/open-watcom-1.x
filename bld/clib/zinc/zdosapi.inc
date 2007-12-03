@@ -70,7 +70,8 @@ CursorOff	=	KERNEL_BASE + 4 * 84h
 CursorShape	=	KERNEL_BASE + 4 * 85h
 CursorPosition	=	KERNEL_BASE + 4 * 86h
 SetPalette	=	KERNEL_BASE + 4 * 87h
-MpegAccelerator	=	KERNEL_BASE + 4 * 88h
+WaitEngine2D	=	KERNEL_BASE + 4 * 88h
+MpegAccelerator	=	KERNEL_BASE + 4 * 89h
 		;
 		; Memory functions for use by drivers
 		;

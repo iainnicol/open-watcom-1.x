@@ -10,42 +10,90 @@ extern "C" {
 #endif /* __cplusplus */
 #pragma pack(__push,1);
 
+/* Events */
+
+enum
+{
+   TRACE_DIVIDE_FAULT,
+   TRACE_DEBUG_TRAP,
+   TRACE_NMI_TRAP,
+   TRACE_BREAKPOINT_TRAP,
+   TRACE_OVERFLOW_TRAP,
+   TRACE_BOUND_FAULT,
+   TRACE_OPCODE_FAULT,
+   TRACE_NO_FPU_FAULT,
+   TRACE_DOUBLE_FAULT,
+   TRACE_OVERRUN_FAULT,
+   TRACE_TSS_FAULT,
+   TRACE_SEGMENT_FAULT,
+   TRACE_STACK_FAULT,
+   TRACE_GENERAL_FAULT,
+   TRACE_PAGE_FAULT,
+   TRACE_EXCEPTION_0F,
+   TRACE_FPU_FAULT,
+   TRACE_ALIGNMENT_FAULT,
+   TRACE_MACHINE_TRAP,
+   TRACE_EXCEPTION_13,
+   TRACE_EXCEPTION_14,
+   TRACE_EXCEPTION_15,
+   TRACE_EXCEPTION_16,
+   TRACE_EXCEPTION_17,
+   TRACE_EXCEPTION_18,
+   TRACE_EXCEPTION_19,
+   TRACE_EXCEPTION_1A,
+   TRACE_EXCEPTION_1B,
+   TRACE_EXCEPTION_1C,
+   TRACE_EXCEPTION_1D,
+   TRACE_EXCEPTION_1E,
+   TRACE_EXCEPTION_1F,
+   TRACE_BREAKPOINT0,
+   TRACE_BREAKPOINT1,
+   TRACE_BREAKPOINT2,
+   TRACE_BREAKPOINT3,
+   TRACE_ENTER,
+   TRACE_EXIT,
+   TRACE_THREAD_STARTED,
+   TRACE_THREAD_TERMINATED,
+   TRACE_OK,
+   TRACE_ERROR
+}
+
 /* Structures */
 
 typedef struct
 {
-	unsigned int	EDI, ESI, EBP, ErrorCode, EBX, EDX, ECX, EAX;
-	unsigned int	EIP, CS, EFLAGS, ESP, SS, ES, DS, FS, GS;
+   unsigned int	EDI, ESI, EBP, ErrorCode, EBX, EDX, ECX, EAX;
+   unsigned int	EIP, CS, EFLAGS, ESP, SS, ES, DS, FS, GS;
 } TCPU;
 
 typedef struct
 {
-	unsigned char FpuContext[108];
+   unsigned char FpuContext[108];
 } TFPU;
 
 typedef struct
 {
-	unsigned int	DR0, DR1, DR2, DR3, DR7;
+   unsigned int DR0, DR1, DR2, DR3, DR7;
 } TDEBUG;
 
 /* Trace functions */
 
-int	DosTraceOpenSession ( TCPU *context );
-int	DosTraceCloseSession ( void );
-int	DosTraceSingleStep ( int *event, TCPU *context );
-int	DosTraceRun ( int *event, TCPU *context );
-int	DosTraceSetBreakPoints ( int count, unsigned char *values,
-		                         void *locations );
-int	DosTraceClearBreakPoints ( int count,unsigned char *values,
-		                           void *locations );
-int	DosTraceCopyFromClient ( int count, unsigned from, void *to );
-int	DosTraceCopyToClient ( int count, void *from, unsigned to );
-int	DosTraceGetCpuContext ( TCPU *context );
-int	DosTraceSetCpuContext ( TCPU *context );
-int	DosTraceGetFpuContext ( TFPU *context );
-int	DosTraceSetFpuContext ( TFPU *context );
-int	DosTraceGetDebugContext ( TDEBUG *context );
-int	DosTraceSetDebugContext ( TDEBUG *context );
+int DosTraceOpenSession( TCPU *context );
+int DosTraceCloseSession( void );
+int DosTraceSingleStep( int *event, TCPU *context );
+int DosTraceRun( int *event, TCPU *context );
+int DosTraceSetBreakPoints( int count, unsigned char *values,
+                            void *locations );
+int DosTraceClearBreakPoints( int count,unsigned char *values,
+                              void *locations );
+int DosTraceCopyFromClient( int count, unsigned from, void *to );
+int DosTraceCopyToClient( int count, void *from, unsigned to );
+int DosTraceGetCpuContext( TCPU *context );
+int DosTraceSetCpuContext( TCPU *context );
+int DosTraceGetFpuContext( TFPU *context );
+int DosTraceSetFpuContext( TFPU *context );
+int DosTraceGetDebugContext( TDEBUG *context );
+int DosTraceSetDebugContext( TDEBUG *context );
 
 #pragma pack(__pop);
 #ifdef __cplusplus

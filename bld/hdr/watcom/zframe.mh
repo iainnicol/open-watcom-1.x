@@ -134,6 +134,7 @@ int DosFrameBufferCursorShape( int hotspotX, int hotspotY, int color0,
                                int color1, void *bitmap, int size );
 int DosFrameBufferCursorPosition( int X, int Y );
 int DosFrameBufferSetPalette( int index, int blue, int red, int green );
+int DosFrameBufferWaitEngine2D( void );
 
 /* Parameter overrides for some of the above functions */
 
@@ -162,6 +163,7 @@ int FrameBufferCursorShape( int hotspotX, int hotspotY, int color0,
                             int color1, void *bitmap, int size );
 int FrameBufferCursorPosition( int X, int Y );
 int FrameBufferSetPalette( int index, int blue, int red, int green );
+int FrameBufferWaitEngine2D( void );
 
 #pragma pack(__pop);
 #ifdef __cplusplus

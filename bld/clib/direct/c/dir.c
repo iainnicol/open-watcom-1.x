@@ -181,12 +181,22 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *name, unsign
             return( NULL );
     }
 #else
+   #if !defined(__ZDOS__)
     TinySetDTA( &(tmp.d_dta) );
+   #endif
     if( !is_directory( name ) ) {
 #ifdef __WIDECHAR__
+   #if defined(__ZDOS__)
+        rc = TinyFindFirstDTA( mbcsName, attr, &parent->d_dta );
+   #else
         rc = TinyFindFirst( mbcsName, attr );
+   #endif
 #else
+   #if defined(__ZDOS__)
+        rc = TinyFindFirstDTA( name, attr, &parent->d_dta );
+   #else
         rc = TinyFindFirst( name, attr );
+   #endif
 #endif
         if( TINY_ERROR( rc ) ) {
             __set_errno_dos( TINY_INFO( rc ) );
@@ -221,7 +231,11 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *name, unsign
 #ifdef __WATCOM_LFN__
                 rc = _dos_findfirst( pathname, attr, &lfntemp );
 #else
+   #if defined(__ZDOS__)
+                rc = TinyFindFirstDTA( name, attr, &parent->d_dta );
+   #else
                 rc = TinyFindFirst( pathname, attr );
+   #endif
 #endif
 #else
                 wcscpy( &pathname[i], L"*.*" );
@@ -230,7 +244,11 @@ _WCRTLINK DIR_TYPE *__F_NAME(_opendir,_w_opendir)( const CHAR_TYPE *name, unsign
 #ifdef __WATCOM_LFN__
                 rc = _dos_findfirst( mbcsName, attr, &lfntemp );
 #else
+   #if defined(__ZDOS__)
+                rc = TinyFindFirstDTA( mbcsName, attr, &parent->d_dta );
+   #else
                 rc = TinyFindFirst( mbcsName, attr );
+   #endif
 #endif
 #endif
 #ifdef __WATCOM_LFN__
@@ -307,8 +325,12 @@ _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *parent )
     }
     copy_lfn_dirent( parent, &lfntemp );
 #else
+   #if defined(__ZDOS__)
+    rc = TinyFindNextDTA( &parent->d_dta );
+   #else
     TinySetDTA( &(parent->d_dta) );
     rc = TinyFindNext();
+   #endif
     if( TINY_ERROR( rc ) ) {
         if( TINY_INFO( rc ) != E_nomore )
             __set_errno_dos( TINY_INFO( rc ) );
@@ -337,7 +359,10 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
         return( 1 );
     }
 #endif
-    dirp->d_first = _DIR_CLOSED;
+    #if defined(__ZDOS__)
+        TinyFindCloseDTA( &dirp->d_dta );
+    #endif
+   dirp->d_first = _DIR_CLOSED;
     if( dirp->d_openpath != NULL )
         free( dirp->d_openpath );
     lib_free( dirp );

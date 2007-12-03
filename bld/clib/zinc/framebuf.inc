@@ -10,6 +10,7 @@ FRAMEBUF_COPY_RECTANGLE		=	05h		; Copy Rectangle
 FRAMEBUF_DRAW_IMAGE		=	06h		; Draw Image
 FRAMEBUF_CURSOR_OPERATION	=	07h		; Cursor Operation
 FRAMEBUF_SET_PALETTE		=	08h		; Set Palette Register
+FRAMEBUF_WAIT_ENGINE_2D		=	09h		; Wait on 2D Engine
 ;
 ; Frame buffer cursor operations
 ;

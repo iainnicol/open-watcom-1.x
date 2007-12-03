@@ -12,6 +12,7 @@
 !inject frame072.obj zda zdd
 !inject frame073.obj zda zdd
 !inject frame08.obj  zda zdd
+!inject frame09.obj  zda zdd
 !inject framedrv.obj     zdd
 
 !include ../../../../objlist.mif

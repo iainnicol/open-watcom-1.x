@@ -11,6 +11,7 @@
 		EXTRN	FrameBufferCursorShape_		: PROC
 		EXTRN	FrameBufferCursorPosition_	: PROC
 		EXTRN	FrameBufferSetPalette_		: PROC
+		EXTRN	FrameBufferWaitEngine2D_	: PROC
 		PUBLIC	DosFrameBufferInstallDriver_
 ;
 ; DECLARATION	int DosFrameBufferInstallDriver( void );
@@ -40,6 +41,9 @@ PROC		DosFrameBufferInstallDriver_	STDCALL
 		mov	eax,[Palette]			; EAX = pointer to set palette function
 		xchg	eax,[DWORD SetPalette]		; Replace handler and get pointer to default handler
 		mov	[Palette],eax			; Save pointer to default handler
+		mov	eax,[Engine2D]			; EAX = pointer to wait 2D engine function
+		xchg	eax,[DWORD WaitEngine2D]	; Replace handler and get pointer to default handler
+		mov	[Engine2D],eax			; Save pointer to default handler
 		xor	eax,eax				; Clear EAX
 		ret
 ENDP
@@ -291,7 +295,32 @@ PROC		FrameBufferSetPalette
 		cmp	eax,-1				; Function supported ?
 		jnz	SHORT @@Error			; Yes, error
 		popad					; No, restore context
-		jmp	[Position]			; Use default function
+		jmp	[Palette]			; Use default function
+@@Error:	neg	eax				; EAX = error code
+		mov	[BYTE (REGS esp + 1).EAX],al	; Update callers AH
+		stc					; Set carry flag
+@@Exit:		popad					; Restore context
+		ret
+ENDP
+;
+; PROCEDURE	FrameBufferWaitEngine2D
+;
+; INPUT		NONE
+;
+; OUTPUT	CF = 0: 2D engine ready
+;		CF = 1: AH = error code
+;
+; DESCRIPTION	Waits for 2D engine to go ready.
+;
+PROC		FrameBufferWaitEngine2D
+		pushad					; Save context
+		call	FrameBufferWaitEngine2D_	; Invoke function handler
+		or	eax,eax				; Success ?
+		jz	SHORT @@Exit			; Yes, we are done
+		cmp	eax,-1				; Function supported ?
+		jnz	SHORT @@Error			; Yes, error
+		popad					; No, restore context
+		jmp	[Engine2D]			; Use default function
 @@Error:	neg	eax				; EAX = error code
 		mov	[BYTE (REGS esp + 1).EAX],al	; Update callers AH
 		stc					; Set carry flag
@@ -307,4 +336,5 @@ Disable		DD	FrameBufferCursorOff
 Shape		DD	FrameBufferCursorShape
 Position	DD	FrameBufferCursorPosition
 Palette		DD	FrameBufferSetPalette
+Engine2D	DD	FrameBufferWaitEngine2D
 		END
