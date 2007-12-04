@@ -81,6 +81,23 @@ ENUM PKTDRV_RCV_MODES	{
 			MATCH_ALL_PACKETS
 			}
 ;
+; Packet capture function numbers
+;
+ENUM PKTDRV_FUNCTIONS	{
+			PKTDRV_OPEN_CAPTURE
+			PKTDRV_CLOSE_CAPTURE
+			PKTDRV_WAIT_PACKET
+			}
+;
+; Supported packet driver interface types (in network order)
+;
+ETHERNET_IP	=	0008h
+ETHERNET_ARP	=	0608h
+ETHERNET_RARP	=	3508h
+ETHERNET_LENGTH	=	2
+CAPTURE_TYPE	=	0ffffh
+CAPTURE_LENGTH	=	0
+;
 ; Packet driver information
 ;
 STRUC		PKTDRV_INFO

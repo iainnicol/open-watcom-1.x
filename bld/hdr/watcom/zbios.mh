@@ -74,7 +74,39 @@ extern "C" {
 #define X_BREAK_OFF            0
 #define X_BREAK_ON             1
 
+/* Color attributes */
+
+enum
+{
+   BLACK, BLUE, GREEN, CYAN, RED, PURPLE, BROWN, LIGHT_GRAY,
+   DARK_GRAY, LIGHT_BLUE, LIGHT_GREEN, LIGHT_CYAN, LIGHT_RED,
+   LIGHT_PURPLE, YELLOW, WHITE
+};
+
+/* Blink/intensity bit selection */
+
+enum { BLINK_OFF, BLINK_ON };
+
 /* Structures */
+
+typedef struct
+{
+   unsigned int   Forground : 4;       /* Forground color */
+   unsigned int   Background : 4;      /* Background color */
+} BOLD;
+
+typedef struct
+{
+   unsigned int   Forground : 4;       /* Forground color */
+   unsigned int   Background : 3;      /* Background color */
+   unsigned int   Blink : 1;           /* Blink bit */
+} BLINK;
+
+typedef union
+{
+   BOLD           Bold;                /* When blink is off */
+   BLINK          Blink;               /* When blink is on */
+} ATTRIBUTE;
 
 typedef struct
 {

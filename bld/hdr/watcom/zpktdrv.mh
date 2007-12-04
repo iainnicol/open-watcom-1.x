@@ -54,11 +54,21 @@
 #define MATCH_ALL_MULTICAST     3
 #define MATCH_ALL_PACKETS       4
 
+/* Supported packet driver interface types (in network order) */
+
+#define ETHERNET_IP             0x0008
+#define ETHERNET_ARP            0x0608
+#define ETHERNET_RARP           0x3508
+#define ETHERNET_LENGTH         2
+#define CAPTURE_TYPE            0xffff
+#define CAPTURE_LENGTH          0
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 #pragma pack(__push,1);
+
+#if defined(__ZDOSDRV__)
 
 /* Packet driver parameters */
 
@@ -144,6 +154,14 @@ int PktDrvGetMulticastList( int InterfaceNumber, void *Buffer );
 int PktDrvSetMulticastList( int NumberOfEntries, void *Buffer, int InterfaceNumber );
 int PktDrvGetParameters( int InterfaceNumber, PKTDRV_PARAM **Buffer );
 int PktDrvGetStatistics( int InterfaceNumber, PKTDRV_STATS *Buffer );
+
+#else
+
+int DosPktDrvOpenCapture( int InterfaceNumber );
+int DosPktDrvCloseCapture( int Handle );
+int DosPktDrvWaitPacket( int Handle, void *Buffer );
+
+#endif
 
 #pragma pack(__pop);
 #ifdef __cplusplus

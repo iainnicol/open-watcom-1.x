@@ -15,5 +15,8 @@
 !inject pktdrv80.obj      zdd
 !inject pktdrv81.obj      zdd
 !inject pktdrv82.obj      zdd
+!inject pktcap00.obj  zda
+!inject pktcap01.obj  zda
+!inject pktcap02.obj  zda
 
 !include ../../../../objlist.mif
