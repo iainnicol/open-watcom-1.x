@@ -1,0 +1,19 @@
+		P486
+		MODEL	USE32 SMALL
+		INCLUDE	'ZDOSAPI.INC'
+		INCLUDE	'ZPKTDRV.INC'
+		CODESEG
+		EXTRN	DosError			: PROC
+		PUBLIC	DosPktDrvCloseCapture_
+;
+; DECLARATION	int DosPktDrvCloseCapture( int Handle );
+;
+PROC		DosPktDrvCloseCapture_	STDCALL
+		push	ebx				; Save context
+		lea	ebx,[eax + eax]			; EBX = handle
+		mov	ah,PKTDRV_CLOSE_CAPTURE		; Close capture session
+		int	PKTDRV_CAPTURE
+		pop	ebx				; Restore context
+		jmp	DosError			; Process return code
+ENDP
+		END
