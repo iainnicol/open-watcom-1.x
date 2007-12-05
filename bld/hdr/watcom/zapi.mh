@@ -100,7 +100,8 @@ extern "C" {
 #define FRAME_BUFFER_CURSOR_SHAPE     0x85      /* Cursor shape hook */
 #define FRAME_BUFFER_CURSOR_POSITION  0x86      /* Cursor position hook */
 #define FRAME_BUFFER_SET_PALETTE      0x87      /* Set palette hook */
-#define FRAME_BUFFER_MPEG_ACCELERATOR 0x88      /* MPEG accelerator sevices */
+#define FRAME_BUFFER_WAIT_ENGINE_2D   0x88      /* Wait on 2D engine to go idle */
+#define FRAME_BUFFER_MPEG_ACCELERATOR 0x89      /* MPEG accelerator sevices */
 
 #define DOS_ALLOCATE_HEAP_BLOCK       0xa0      /* Allocate block function */
 #define DOS_ALLOCATE_HEAP_BLOCKS      0xa1      /* Allocate blocks function */
