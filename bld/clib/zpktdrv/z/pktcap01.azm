@@ -3,7 +3,7 @@
 		INCLUDE	'ZDOSAPI.INC'
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
-		EXTRN	DosError			: PROC
+		EXTRN	DosReturnZero			: PROC
 		PUBLIC	DosPktDrvCloseCapture_
 ;
 ; DECLARATION	int DosPktDrvCloseCapture( int Handle );
@@ -14,6 +14,6 @@ PROC		DosPktDrvCloseCapture_	STDCALL
 		mov	ah,PKTDRV_CLOSE_CAPTURE		; Close capture session
 		int	PKTDRV_CAPTURE
 		pop	ebx				; Restore context
-		jmp	DosError			; Process return code
+		jmp	DosReturnZero			; Process return code
 ENDP
 		END

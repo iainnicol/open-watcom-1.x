@@ -14,6 +14,7 @@ PROC		DosPktDrvWaitPacket_	STDCALL
 		mov	ah,PKTDRV_WAIT_PACKET		; Wait for a packet
 		int	PKTDRV_CAPTURE
 		pop	ebx				; Restore context
-		jmp	DosError			; Process return code
+		jc	DosError			; Success ?
+		ret					; Yes, return packet size
 ENDP
 		END
