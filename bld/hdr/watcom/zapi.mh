@@ -1,0 +1,209 @@
+/*
+ *  zapi.h
+ *
+ :include crwat.sp
+ */
+#ifndef _ZAPI_H_INCLUDED
+#define _ZAPI_H_INCLUDED
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+#pragma pack(__push,1);
+
+/* API vectors */
+
+#if defined(__ZDOSDRV__)
+#define BIOS_PRINT_SCREEN             0x05      /* Print screen handler */
+#define KERNEL_TASK_DELETE_HOOK       0x06      /* Task deletion hook */
+#define KERNEL_TASK_IDLE_HOOK         0x07      /* Task idle hook */
+#define KERNEL_RESET_HOOK             0x08      /* Reset hook */
+#define KERNEL_KEYBOARD_HOOK          0x09      /* Keyboard translator hook */
+#define KERNEL_MICRO_SECOND_WAIT      0x0a      /* Microsecond wait function */
+#define KERNEL_ELAPSED_TIME           0x0b      /* Elapsed time function */
+#define KERNEL_ELAPSED_TICKS          0x0c      /* Elapsed ticks function */
+#endif
+
+#define BIOS_VIDEO                    0x10      /* BIOS video services */
+#define BIOS_EQUIPMENT                0x11      /* BIOS equipment flags func.*/
+#define BIOS_BASE_MEMORY              0x12      /* BIOS base memory function*/
+#define BIOS_DISK                     0x13      /* BIOS disk services */
+#define BIOS_COM                      0x14      /* BIOS serial com. services */
+#define BIOS_MISC                     0x15      /* BIOS misc. functions */
+#define BIOS_KEYBOARD                 0x16      /* BIOS keyboard services */
+#define BIOS_PRINTER                  0x17      /* BIOS printer services */
+#define BIOS_ROM_BASIC                0x18      /* BIOS ROM basic function */
+#define BIOS_BOOT_STRAP               0x19      /* BIOS boot strap function */
+#define BIOS_TIMER                    0x1a      /* BIOS timer/pci services */
+#define BIOS_PCI                      0x1a      /* BIOS timer/pci services */
+
+#if defined(__ZDOSDRV__)
+#define BIOS_BREAK                    0x1b      /* BIOS control break vector */
+#define BIOS_TICK                     0x1c      /* BIOS timer tick vector */
+
+#define DOS_EXCEPTION                 0x20      /* DOS exception handler */
+#endif
+
+#define DOS_API                       0x21      /* DOS main services */
+
+#if defined(__ZDOSDRV__)
+#define DOS_TERMINATE                 0x22      /* DOS terminate vector */
+#define DOS_CONTROL_BREAK             0x23      /* DOS control break vector */
+#define DOS_CRITICAL                  0x24      /* DOS critical error vector */
+#else
+#define DOS_LOCAL_IPC                 0x22      /* DOS local IPC services */
+#define DOS_GLOBAL_IPC                0x23      /* DOS global PIC services */
+#define DOS_THREAD                    0x24      /* DOS thread services */
+#endif
+
+#define DOS_ABSOLUTE_DISK_READ        0x25      /* DOS abs. disk read func. */
+#define DOS_ABSOLUTE_DISK_WRITE       0x26      /* DOS abs. disk write func. */
+
+#if defined(__ZDOSDRV__)
+#define DOS_FILE_SYSTEM               0x27      /* DOS file system services */
+#else
+#define DOS_TRACE                     0x27      /* DOS trace services */
+#endif
+
+#define DOS_IDLE                      0x28      /* DOS idle function */
+#define DOS_FAST_OUTPUT               0x29      /* DOS fast output function */
+
+#if defined(__ZDOSDRV__)
+#define DOS_VIDEO                     0x2a      /* Console video services */
+#define DOS_KEYBOARD                  0x2b      /* Console keyboard services */
+#define DOS_CONSOLE                   0x2c      /* Console manager services */
+#define DOS_PACKET_DRIVER             0x2d      /* Packet driver services */
+#else
+#define DOS_PKTDRV_CAPTURE            0x2d      /* Packet driver capture services */
+#endif
+
+#define DOS_COMMAND                   0x2e      /* DOS command function */
+
+#if defined(__ZDOSDRV__)
+#define DOS_MULTIPLEX                 0x2f      /* DOS multiplex services */
+#endif
+
+#define DOS_SOCKET                    0x30      /* TCP/IP socket services */
+#define DOS_FRAME_BUFFER              0x31      /* Frame buffer services */
+
+#if defined(__ZDOSDRV__)
+#define DOS_EOI                       0x32      /* End of interrupt function */
+#define DOS_SET_IRQ_MASK              0x33      /* Set IRQ mask function */
+#define BIOS_SECOND_TICK              0x49      /* BIOS second tick vector */
+#define BIOS_ALARM                    0x4a      /* BIOS alarm vector */
+#define BIOS_FAST_TICK                0x4b      /* BIOS fast tick vector */
+
+#define FRAME_BUFFER_FILL_RECTANGLE   0x80      /* Fill rectangle hook */
+#define FRAME_BUFFER_COPY_RECTANGLE   0x81      /* Copy rectangle hook */
+#define FRAME_BUFFER_DRAW_IMAGE       0x82      /* Draw image hook */
+#define FRAME_BUFFER_CURSOR_ON        0x83      /* Cursor on hook */
+#define FRAME_BUFFER_CURSOR_OFF       0x84      /* Cursor off hook */
+#define FRAME_BUFFER_CURSOR_SHAPE     0x85      /* Cursor shape hook */
+#define FRAME_BUFFER_CURSOR_POSITION  0x86      /* Cursor position hook */
+#define FRAME_BUFFER_SET_PALETTE      0x87      /* Set palette hook */
+#define FRAME_BUFFER_MPEG_ACCELERATOR 0x88      /* MPEG accelerator sevices */
+
+#define DOS_ALLOCATE_HEAP_BLOCK       0xa0      /* Allocate block function */
+#define DOS_ALLOCATE_HEAP_BLOCKS      0xa1      /* Allocate blocks function */
+#define DOS_FREE_HEAP_BLOCK           0xa2      /* Free block function */
+#define DOS_REALLOCATE_HEAP_BLOCK     0xa3      /* Reallocate block function */
+#define DOS_ALLOCATE_PAGES            0xa4      /* Allocate pages function */
+#define DOS_FREE_PAGES                0xa5      /* Free pages function */
+#define DOS_REALLOCATE_PAGES          0xa6      /* Reallocate pages function */
+#define DOS_VALIDATE_USER_BLOCK       0xa7      /* Validate block function */
+#define DOS_ALLOCATE_PCI_DMA_BLOCK    0xa8      /* Allocate PCI block func. */
+#define DOS_FREE_PCI_DMA_BLOCK        0xa9      /* Free PCI block function */
+#define DOS_PHYSICAL_ADDRESS          0xaa      /* Linear to physical func. */
+#define DOS_COPY_BYTES                0xab      /* Copy bytes function */
+#define DOS_COPY_WORDS                0xac      /* Copy words function */
+
+#define DOS_HOOK_ISA_PORTS            0xb0      /* Hook ISA ports function */
+#define DOS_UNHOOK_ISA_PORTS          0xb1      /* Unhook ISA ports function */
+#define DOS_HOOK_PCI_PORTS            0xb2      /* Hook PCI port function */
+#define DOS_UNHOOK_PCI_PORTS          0xb3      /* Unhook PCI port function */
+#define DOS_GET_KERNEL_VECTOR         0xb4      /* Get kernel vector func. */
+#define DOS_SET_KERNEL_VECTOR         0xb5      /* Set kernel vector func. */
+#define DOS_GET_USER_VECTOR           0xb6      /* Get user vector function */
+#define DOS_SET_USER_VECTOR           0xb7      /* Set user vector function */
+#define DOS_GET_V86_VECTOR            0xb8      /* Get V86 vector function */
+#define DOS_SET_V86_VECTOR            0xb9      /* Set V86 vector function */
+#define DOS_ALLOCATE_V86_FAR_CALLBACK 0xba      /* Allocate V86 CALL FAR
+                                                   callback function */
+#define DOS_ALLOCATE_V86_INT_CALLBACK 0xbb      /* Allocate V86 INT callback
+                                                   function */
+#define DOS_FREE_V86_CALLBACK         0xbc      /* Free V86 callback func. */
+#define DOS_ALLOCATE_USER_CALLBACK    0xbd      /* Allocate user CALL
+                                                   callback function */
+#define DOS_FREE_USER_CALLBACK        0xbe      /* Free user callback func. */
+#define DOS_TRAP_PAGE_FAULT           0xbf      /* Hook page fault function */
+
+#define DMA_ALLOCATE_BUFFER           0xc0      /* Allocate DMA buffer func. */
+#define DMA_FREE_BUFFER               0xc1      /* Free DMA buffer function */
+#define DMA_LOCK_BUFFER               0xc2      /* Lock DMA buffer function */
+#define DMA_OPEN_CHANNEL              0xc3      /* Open DMA channel function */
+#define DMA_CLOSE_CHANNEL             0xc4      /* Close DMA channel func. */
+#define DMA_START_TRANSFER            0xc5      /* Start DMA transfer func. */
+#define DMA_FINISH_TRANSFER           0xc6      /* Finish DMA transfer func. */
+
+#define DOS_MAP_DEVICE                0xc7      /* Map device memory func. */
+#define DOS_UNMAP_DEVICE              0xc8      /* Unmap device memory func. */
+#define DOS_ALLOCATE_IRQ              0xc9      /* Allocate IRQ channel func.*/
+#define DOS_FREE_IRQ                  0xca      /* Free IRQ channel function */
+#define DOS_SHARE_IRQ                 0xcb      /* Share IRQ channel func.*/
+#define DOS_LOCK_DEVICE               0xcc      /* Lock device function */
+#define DOS_UNLOCK_DEVICE             0xcd      /* Unlock device function */
+#define DOS_CONSOLE_MESSAGE           0xce      /* Console message function */
+#define DOS_CONSOLE_PRINT             0xcf      /* Consoel print function */
+
+#define DOS_OPEN_MUTEX                0xd0      /* Open mutex function */
+#define DOS_CLOSE_MUTEX               0xd1      /* Close mutex function */
+#define DOS_WAIT_MUTEX                0xd2      /* Wait mutex function */
+#define DOS_WAIT_MUTEX_TO             0xd3      /* Wait mutex with timeout
+                                                   funcion */
+#define DOS_SIGNAL_MUTEX              0xd4      /* Signal mutex function */
+#define DOS_OPEN_SEMAPHORE            0xd5      /* Open semaphore function */
+#define DOS_CLOSE_SEMAPHORE           0xd6      /* Close semaphore function */
+#define DOS_WAIT_SEMAPHORE            0xd7      /* Wait semaphore function */
+#define DOS_WAIT_SEMAPHORE_TO         0xd8      /* Wait semaphore with timeout
+                                                   function */
+#define DOS_SIGNAL_SEMAPHORE          0xd9      /* Signal semaphore function */
+#define DOS_OPEN_EVENT                0xda      /* Open event function */
+#define DOS_CLOSE_EVENT               0xdb      /* Close event function */
+#define DOS_SET_EVENT                 0xdc      /* Set event function */
+#define DOS_CLEAR_EVENT               0xdd      /* Clear event function */
+#define DOS_WAIT_EVENT                0xde      /* Wait event function */
+#define DOS_WAIT_EVENT_TO             0xdf      /* Wait event with timeout
+                                                   function */
+#define DOS_OPEN_PIPE                 0xe0      /* Open pipe function */
+#define DOS_CLOSE_PIPE                0xe1      /* Close pipe function */
+#define DOS_READ_PIPE                 0xe2      /* Read pipe function */
+#define DOS_READ_PIPE_TO              0xe3      /* Read pipe with timaout
+                                                   function */
+#define DOS_WRITE_PIPE                0xe4      /* Write pipe function */
+#define DOS_WRITE_PIPE_TO             0xe5      /* Write pipe with timeout
+                                                   function */
+#define DOS_LOCK_CPU                  0xe6      /* Lock CPU function */
+#define DOS_UNLOCK_CPU                0xe7      /* Unlock CPU function */
+
+#define DOS_THREAD_CREATE             0xf0      /* Create thread function */
+#define DOS_THREAD_DELETE             0xf1      /* Delete threed function */
+#define DOS_THREAD_ID                 0xf2      /* Get thread ID function */
+#define DOS_THREAD_SLEEP              0xf3      /* Sleep threed function */
+#define DOS_THREAD_WAKEUP             0xf4      /* Wake up thread function */
+#define DOS_THREAD_DELAY_TICK         0xf5      /* Delay thread in periodic
+                                                   ticks function */
+#define DOS_THREAD_DELAY_MICROSECONDS 0xf6      /* Delay thread in micro
+                                                   seconds function */
+#define DOS_THREAD_DELAY_TIME         0xf7      /* Delay thread in time
+                                                   function */
+#define DOS_THREAD_GET_PRIORITY       0xf8      /* Get thread priority func. */
+#define DOS_THREAD_SET_PRIORITY       0xf9      /* Set thread priority func. */
+#define DOS_THREAD_CLONE              0xfa      /* Clone thread function */
+#define DOS_THREAD_WAIT               0xfb      /* Wait thread term. func. */
+#endif
+
+#pragma pack(__pop);
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
+#endif
