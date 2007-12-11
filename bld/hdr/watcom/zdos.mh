@@ -50,6 +50,58 @@ extern "C" {
 #define PROCESS_TRACE_OFF     0     /* Disable process tracing */
 #define PROCESS_TRACE_ON      1     /* Enable process tracing */
 
+/* Category codes for generic IOCTL */
+
+#define IOCTL_DISK_IO         0x08  /* IOCTL disk I/O category code */
+
+/* Generic IOCTL commands */
+
+#define IOCTL_SET             0x40  /* Set device parameters command */
+#define IOCTL_WRITE           0x41  /* Write track */
+#define IOCTL_FORMAT          0x42  /* Format track */
+#define IOCTL_SET_MEDIA       0x46  /* Set media ID */
+#define IOCTL_SET_ACCESS_FLAG 0x47  /* Set access flag */
+#define IOCTL_GET             0x60  /* Get device parameters command */
+#define IOCTL_READ            0x61  /* Read track */
+#define IOCTL_VERIFY          0x62  /* Verify track */
+#define IOCTL_GET_MEDIA       0x66  /* Get media ID */
+#define IOCTL_GET_ACCESS_FLAG 0x67  /* Get access flag */
+#define IOCTL_SENSE_MEDIA     0x68  /* Sense media type */
+
+/* Device parameter attributes for IOCTL GET and SET commands */
+
+#define DEVICE_FIXED          0x01  /* Non removable media device */
+#define DEVICE_CHANGE_LINE    0x02  /* Change line supported in hardware */
+
+/* Generic IOCTL special function flags */
+
+#define FLAGS_KEEP_BPB        0x01  /* Keep current BPB (SET on HDD) */
+#define FLAGS_KEEP_UNLOCKED   0x01  /* Keep media unlocked (SET on FDD) */
+#define FLAGS_DEFAULT_MEDIA   0x01  /* Media is the default (SENSE_MEDIA) */
+
+/* Media types */
+
+enum
+{
+   MEDIA_NONE,                      /* 0 = no media in drive */
+   MEDIA_360K,                      /* 1 = 360K media in 360K drive */
+   MEDIA_360K_IN_1200K,             /* 2 = 360K media in 1.2M drive */
+   MEDIA_1200K,                     /* 3 = 1.2M media in 1.2M drive */
+   MEDIA_720K,                      /* 4 = 720K media in 720K drive */
+   MEDIA_720K_IN_1440K,             /* 5 = 720K media in 1.44M drive */
+   MEDIA_1440K,                     /* 6 = 1.44M media in 1.44M drive */
+   MEDIA_720K_IN_2880K,             /* 7 = 720K media in 2.88M drive */
+   MEDIA_1440K_IN_2880K,            /* 8 = 1.44M media in 2.88M drive */
+   MEDIA_2880K                      /* 9 = 2.88M media in 2.88M drive */
+} MEDIA_TYPES;
+
+/* File system IDs */
+
+enum
+{
+   FAT12, FAT16, FAT32;
+} FILE_SYSTEM;
+
 /* Structures */
 
 typedef struct
@@ -143,6 +195,57 @@ typedef struct
    char           Unused;           /* For alignment */
    unsigned int   Zdos;             /* Reserved for use by ZDOS */
 } FIND;
+
+typedef struct
+{
+   unsigned char  SPC;              /* Sectors Per Cluster */
+   unsigned char  NFAT;             /* Number of FATs */
+   unsigned char  MD;               /* Media Descriptor */
+   unsigned char  FSID;             /* File System ID */
+   unsigned int   BPS;              /* Bytes Per Sector */
+   unsigned int   RS;               /* Reserved Sectors */
+   unsigned int   MDE;              /* Max Directory Entries */
+   unsigned int   SPF;              /* Sectors Per Fat */
+   unsigned int   SPT;              /* Sectors Per Track */
+   unsigned int   NH;               /* Number of Heads */
+   unsigned int   HS;               /* Hidden Sectors */
+   unsigned int   TS;               /* Total Sectors */
+} BPB;
+
+typedef struct
+{
+   unsigned char  Flags;            /* Special function flags */
+   unsigned char  MediaType;        /* Media type */
+   unsigned char  Attributes;       /* Device attributes */
+   unsigned char  Multiple;         /* Multiple media types supported */
+   unsigned int   Cylinders;        /* Number of cylinders (logical) */
+   BPB            Bpb;              /* BIOS parameter block */
+} DEVPAR;                           /* IOCTL GET and SET */
+
+typedef struct
+{
+   unsigned char  Flags;            /* Special function flags */
+   unsigned char  Head;             /* Head number of transfer */
+   unsigned char  Sector;           /* First sector of transfer */
+   unsigned char  Count;            /* Number of sectors to transfer */
+   unsigned int   Cylinder;         /* Cylinder number of transfer (logical) */
+   void           *Buffer;          /* Pointer to buffer */
+} DEVIO;                            /* IOCTL READ, WRITE, VERIFY and FORMAT */
+
+typedef struct
+{
+   unsigned int   SerialNumber;     /* Serial number */
+   char           VolumeLabel[11];  /* Volume label */
+   char           FileSystem[8];    /* File system */
+} MEDIA;                            /* IOCTL GET_MEDIA and SET_MEDIA */
+
+typedef struct
+{
+   unsigned char  Flags;            /* Special function flags */
+   unsigned char  MediaType;        /* Media type */
+   short          Foo;              /* For alignment */
+} SENSE;                            /* IOCTL SENSE_MEDIA */
+
 
 /* Character I/O functions */
 
