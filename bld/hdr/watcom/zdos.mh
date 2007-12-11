@@ -99,7 +99,7 @@ enum
 
 enum
 {
-   FAT12, FAT16, FAT32;
+   FAT12, FAT16, FAT32
 } FILE_SYSTEM;
 
 /* Structures */
@@ -245,7 +245,6 @@ typedef struct
    unsigned char  MediaType;        /* Media type */
    short          Foo;              /* For alignment */
 } SENSE;                            /* IOCTL SENSE_MEDIA */
-
 
 /* Character I/O functions */
 

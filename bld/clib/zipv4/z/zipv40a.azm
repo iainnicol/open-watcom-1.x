@@ -7,7 +7,7 @@
 		INCLUDE	'ZDOSAPI.INC'
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
-		EXTRN	DosError			: PROC
+		EXTRN	DosReturnZero			: PROC
 		PUBLIC	DosSocketSendTo_
 ;
 ; DECLARATION	int DosSocketSendTo( int flags, void *buffer,
@@ -31,8 +31,7 @@ ELSE
 ENDIF
 		pop	esi				; Restore context
 		pop	edi
-		jc	DosError			; Success ?
-		xor	eax,eax				; Clear EAX
+		call	DosReturnZero			; Process return code
 		ret
 ENDP
 		END

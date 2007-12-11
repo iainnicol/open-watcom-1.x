@@ -47,7 +47,7 @@ int DosSocketListen( unsigned handle );
 int DosSocketShutdown( int how, unsigned handle );
 int DosSocketReceive( int flags, void *buffer, unsigned handle, int length );
 int DosSocketReceiveFrom( int flags, void *buffer, unsigned handle,
-                          int length,unsigned *ip, int *port );
+                          int length, unsigned *ip, int *port );
 int DosSocketSend( int flags, void *buffer, unsigned handle, int length );
 int DosSocketSendTo( int flags, void *buffer, unsigned handle, int length,
                      unsigned ip, int port );

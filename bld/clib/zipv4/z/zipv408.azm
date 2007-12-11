@@ -25,12 +25,14 @@ IFDEF __ZDOSDRV__
 ELSE
 		int	SOCKET
 ENDIF
-		jc	DosError			; Success ?
+		jc	SHORT @@Exit			; Success ?
 		mov	eax,[ip]			; Yes, EAX points to ip variable
 		mov	[eax],edx			; Store ip address in variable
 		mov	eax,[port]			; EAX points to port variable
 		mov	[eax],ecx			; Store port number in variable
 		xor	eax,eax				; Clear EAX
+		ret
+@@Exit:		call    DosError			; Process return code
 		ret
 ENDP
 		END
