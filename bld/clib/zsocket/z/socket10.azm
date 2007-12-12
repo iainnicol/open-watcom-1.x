@@ -16,7 +16,7 @@ PROC		socket_			STDCALL
 		cmp	al,AF_INET			; Valid family ?
 		jnz	SHORT @@BadValue		; No, error
 		dec	dl				; Yes, convert to our type
-		cmp	dl,SOCKET_RAW + 1		; Valid type ?
+		cmp	dl,SOCKET_RAW			; Valid type ?
 		ja	SHORT @@BadValue		; No, error
 		mov	al,dl				; Yes, AL = socket type
 		mov	ah,SOCKET_OPEN			; AH = function number
