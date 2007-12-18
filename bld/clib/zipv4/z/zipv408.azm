@@ -26,11 +26,10 @@ ELSE
 		int	SOCKET
 ENDIF
 		jc	SHORT @@Exit			; Success ?
-		mov	eax,[ip]			; Yes, EAX points to ip variable
-		mov	[eax],edx			; Store ip address in variable
-		mov	eax,[port]			; EAX points to port variable
-		mov	[eax],ecx			; Store port number in variable
-		xor	eax,eax				; Clear EAX
+		mov	ebx,[ip]			; Yes, EBX points to ip variable
+		mov	[ebx],edx			; Store ip address in variable
+		mov	ebx,[port]			; EBX points to port variable
+		mov	[ebx],ecx			; Store port number in variable
 		ret
 @@Exit:		call    DosError			; Process return code
 		ret
