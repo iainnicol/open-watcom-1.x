@@ -93,14 +93,14 @@ enum
    MEDIA_720K_IN_2880K,             /* 7 = 720K media in 2.88M drive */
    MEDIA_1440K_IN_2880K,            /* 8 = 1.44M media in 2.88M drive */
    MEDIA_2880K                      /* 9 = 2.88M media in 2.88M drive */
-} MEDIA_TYPES;
+};
 
 /* File system IDs */
 
 enum
 {
    FAT12, FAT16, FAT32
-} FILE_SYSTEM;
+};
 
 /* Structures */
 
