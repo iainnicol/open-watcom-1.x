@@ -102,6 +102,17 @@ enum
    FAT12, FAT16, FAT32
 };
 
+/* Standard file handles */
+
+enum
+{
+   STDIN,
+   STDOUT,
+   STDERR,
+   STDAUX,
+   STDPRN
+};
+
 /* Structures */
 
 typedef struct
