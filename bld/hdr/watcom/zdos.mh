@@ -207,6 +207,7 @@ typedef struct
    unsigned int   Zdos;             /* Reserved for use by ZDOS */
 } FIND;
 
+#ifndef _ZDOSDRV_H_INCLUDED
 typedef struct
 {
    unsigned char  SPC;              /* Sectors Per Cluster */
@@ -222,6 +223,7 @@ typedef struct
    unsigned int   HS;               /* Hidden Sectors */
    unsigned int   TS;               /* Total Sectors */
 } BPB;
+#endif
 
 typedef struct
 {

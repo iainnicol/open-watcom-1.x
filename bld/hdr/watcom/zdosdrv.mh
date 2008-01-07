@@ -85,6 +85,7 @@ typedef struct
    int            Size;             /* Size of buffer in bytes */
 } DMABUF;
 
+#ifndef _ZDOS_H_INCLUDED
 typedef struct
 {
    unsigned char  SPC;              /* Sectors Per Cluster */
@@ -100,6 +101,7 @@ typedef struct
    unsigned int   HS;               /* Hidden Sectors */
    unsigned int   TS;               /* Total Sectors */
 } BPB;
+#endif
 
 typedef struct
 {
