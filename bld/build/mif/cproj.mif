@@ -214,8 +214,8 @@ def_fpu_flags_nov_386   = -fpc
   # I ignore Novell seting
   # I think Novell doesn't use any OSI objects
 def_fpu_flags_osi_386   = -fpi
-  # ZDOS doesn't have emulator support, but OW has it
-def_fpu_flags_zdos_386   = -fpi
+  # ZDOS doesn't have emulator support
+def_fpu_flags_zdos_386   = -fpi87
   ######
 
 !ifdef fpu_flags_$(host_os)_$(host_cpu)
