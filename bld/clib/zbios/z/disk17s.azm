@@ -6,7 +6,7 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	BiosReturnAL			: PROC
+		EXTRN	BiosReturnZero			: PROC
 		PUBLIC	BiosSetMedia_
 ;
 ; DECLARATION	int BiosSetMedia( int type, int drive );
@@ -23,6 +23,6 @@ ELSE
 		int	BIOS_DISK
 ENDIF
 		pop	edx				; Restore context
-		jmp	BiosReturnAL			; Process return code
+		jmp	BiosReturnZero			; Process return code
 ENDP
 		END
