@@ -28,7 +28,6 @@
 *
 ****************************************************************************/
 
-
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -47,6 +46,7 @@
 #include "cmdphar.h"
 #include "cmddos.h"
 #include "cmdzdos.h"
+#include "cmdbin.h"
 #include "cmdline.h"
 #include "overlays.h"
 #include "fileio.h"
@@ -78,6 +78,7 @@ static bool             ProcWindowsHelp( void );
 static bool             ProcWinVxdHelp( void );
 static bool             ProcNTHelp( void );
 static bool             ProcZdosHelp( void );
+static bool             ProcBinHelp( void );
 static void             WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt );
 
 static  parse_entry   FormatHelp[] = {
@@ -105,6 +106,9 @@ static  parse_entry   FormatHelp[] = {
 #endif
 #ifdef _ZDOS
     "ZDOS",         ProcZdosHelp,           MK_ALL,     0,
+#endif
+#ifdef _BIN
+    "BIN",          ProcBinHelp,            MK_ALL,     0,
 #endif
     NULL
 };
@@ -448,6 +452,9 @@ static void DisplayOptions( void )
 #ifdef _ZDOS
     WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, isout );
 #endif
+#ifdef _BIN
+    WriteHelp( MSG_BIN_HELP_0, MSG_BIN_HELP_15, isout );
+#endif
 }
 
 #ifdef _EXE
@@ -548,6 +555,16 @@ static bool ProcZdosHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
+    return( TRUE );
+}
+#endif
+
+#ifdef _BIN
+static bool ProcBinHelp( void )
+/*****************************/
+{
+    WriteGenHelp();
+    WriteHelp( MSG_BIN_HELP_0, MSG_BIN_HELP_15, CmdFlags & CF_TO_STDOUT );
     return( TRUE );
 }
 #endif
@@ -1041,7 +1058,7 @@ bool ProcHeapSize( void )
 }
 
 #ifndef APP
-#if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2)
+#if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2) || defined(_BIN)
 bool ProcOffset( void )
 /****************************/
 {

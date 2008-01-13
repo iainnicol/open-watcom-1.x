@@ -54,6 +54,7 @@
 #include "loadnov.h"
 #include "loadelf.h"
 #include "loadzdos.h"
+#include "loadbin.h"
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
