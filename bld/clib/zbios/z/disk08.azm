@@ -6,7 +6,7 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	BiosReturnZero			: PROC
+		EXTRN	BiosReturnAL			: PROC
 		PUBLIC	BiosDiskParameters_
 ;
 ; DECLARATION	int BiosDiskParameters( DISK *disk, int drive );
@@ -41,6 +41,6 @@ ENDIF
 		pop	esi
 		pop	edi
 		cmp	dl,ah				; Set or clear carry flag
-		jmp	BiosReturnZero			; Process return code
+		jmp	BiosReturnAL			; Process return code
 ENDP
 		END
