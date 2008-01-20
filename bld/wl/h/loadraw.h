@@ -24,43 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  LOADBIN : routines for creating BIN load files.
+* Description:  header for loadraw.c -- processes hex and bin formats
 *
 ****************************************************************************/
 
-#include <string.h>
-#include "linkstd.h"
-#include "alloc.h"
-#include "msg.h"
-#include "reloc.h"
-#include "wlnkmsg.h"
-#include "proc386.h"
-#include "virtmem.h"
-#include "objcalc.h"
-#include "dbgall.h"
-#include "fileio.h"
-#include "loadfile.h"
-
-extern void FiniBinLoadFile( void )
-/*************************************/
-{
-    group_entry         *group;
-    outfilelist *       fnode;
-    bool                repos;
-
-    DEBUG(( DBG_BASE, "Writing data" ));
-    OrderGroups( CompareOffsets );
-    CurrSect = Root;        // needed for WriteInfo.
-    fnode = Root->outfile;
-    fnode->file_loc = 0;
-    Root->u.file_loc = 0;
-    Root->sect_addr = Groups->grp_addr;
-    group = Groups;
-    while( group != NULL ) {
-        repos = WriteDOSGroup( group );
-        group = group->next_group;
-        if( repos ) {
-            SeekLoad( fnode->file_loc );
-        }
-    }
-}
+extern void FiniRawLoadFile( void );
+extern void HexOutput( void );
+extern void BinOutput( void );

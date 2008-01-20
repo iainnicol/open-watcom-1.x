@@ -35,7 +35,7 @@ common_objs = &
     cmdos2.obj &
     cmdphar.obj &
     cmdzdos.obj &
-    cmdbin.obj &
+    cmdraw.obj &
     cmdtable.obj &
     cmdutils.obj &
     cmdqnx.obj &
@@ -53,7 +53,6 @@ common_objs = &
     linkutil.obj &
     load16m.obj &
     loaddos.obj &
-    loadbin.obj &
     loadelf.obj &
     loadelf2.obj &
     loadfile.obj &

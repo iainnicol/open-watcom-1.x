@@ -59,7 +59,6 @@
 #include "loadqnx.h"
 #include "loadelf.h"
 #include "loadzdos.h"
-#include "loadbin.h"
 #include "loadraw.h"
 #include "loadfile.h"
 #include "objstrip.h"
@@ -165,9 +164,9 @@ void FiniLoadFile( void )
     } else if( FmtData.type & MK_ZDOS ) {
         FiniZdosLoadFile();
 #endif
-#ifdef _BIN
-    } else if( FmtData.type & MK_BIN ) {
-        FiniBinLoadFile();
+#ifdef _RAW
+    } else if( FmtData.type & MK_RAW ) {
+        FiniRawLoadFile();
 #endif
     }
     MapSizes();

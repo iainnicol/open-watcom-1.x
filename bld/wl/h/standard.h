@@ -119,5 +119,5 @@ typedef unsigned        f_handle;
     #define _DOS16M    5
     #define _ELF       6
     #define _ZDOS      7
-    #define _BIN       8
+    #define _RAW       8
 #endif

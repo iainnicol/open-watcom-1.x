@@ -643,18 +643,18 @@ pick(	 MSG_ZDOS_HELP_3,	"form      ::= \"ZDos\" [\"SYS\" | \"HWD\" | \"FSD\"]" ,
 pick(	 MSG_ZDOS_HELP_4,	" " ,
 				" " )
 /*
- *  Bin help screen: max 16 lines (from 0 to 15).
+ *  Raw help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
  */
-pick(	 MSG_BIN_HELP_0,	" " ,
+pick(	 MSG_RAW_HELP_0,	" " ,
 				" " )
-pick(	 MSG_BIN_HELP_1,	"commands valid for the BIN executable formats only:" ,
-				"BIN 実行可能形式に対してのみ有効なオプション:" )
-pick(	 MSG_BIN_HELP_2,	" " ,
+pick(	 MSG_RAW_HELP_1,	"commands valid for the RAW executable formats only:" ,
+				"RAW 実行可能形式に対してのみ有効なオプション:" )
+pick(	 MSG_RAW_HELP_2,	" " ,
 				" " )
-pick(	 MSG_BIN_HELP_3,	"form      ::= \"BIN\"" ,
-                                "form      ::= \"BIN\"" )
-pick(    MSG_BIN_HELP_4,	"option    ::= \"OFFset=\"n" ,
+pick(	 MSG_RAW_HELP_3,	"form      ::= \"Raw\" (\"BIN\" | \"HEX\")" ,
+                                "form      ::= \"Raw\" (\"SYS\" | \"HEX\")" )
+pick(    MSG_RAW_HELP_4,	"option    ::= \"OFFset=\"n" ,
                            	"option    ::= \"OFFset=\"n" )
-pick(	 MSG_BIN_HELP_5,	" " ,
+pick(	 MSG_RAW_HELP_5,	" " ,
 				" " )

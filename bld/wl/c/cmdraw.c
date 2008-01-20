@@ -30,4 +30,49 @@
 ****************************************************************************/
 
 
-extern bool     ProcBin( void );
+/*
+ *  CMDRAW : command line parsing for the RAW load file format.
+ *
+*/
+
+#include <string.h>
+#include "linkstd.h"
+#include "alloc.h"
+#include "command.h"
+#include "msg.h"
+#include "wlnkmsg.h"
+#include "dbgall.h"
+#include "cmdall.h"
+#include "overlays.h"
+#include "objcalc.h"
+#include "cmdline.h"
+#include "cmdraw.h"
+
+extern bool ProcRaw( void )
+/*************************/
+{
+   FmtData.base = 0;                         // Default offset
+   LinkState |= MAKE_RELOCS + FMT_DECIDED;   // Make relocations;
+   ProcOne( RawOptions, SEP_NO, TRUE );
+   return( TRUE );
+}
+
+extern bool ProcRawBIN( void )
+{
+/*************************/
+   Extension = E_BIN;
+   FmtData.raw_hex_output = 0;
+   if( FmtData.osname == NULL )
+      FmtData.osname = "RAW Binary Image";
+   return( TRUE );
+}
+
+extern bool ProcRawHEX( void )
+{
+/*************************/
+   Extension = E_HEX;
+   FmtData.raw_hex_output = 1;
+   if( FmtData.osname == NULL )
+      FmtData.osname = "RAW Intel Hex Image";
+   return( TRUE );
+}
