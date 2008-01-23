@@ -69,6 +69,21 @@ usr="utime.h"
 usr="varargs.h"
 usr="wdefwin.h"
 usr="wsample.h"
+#
+# Headers for ZDOS only
+#
+[ DEFAULT type="s" dir="h/zdos" where="c" ]
+usr="zapi.h"
+usr="zipc.h"
+usr="zipv4.h"
+usr="zpktdrv.h"
+usr="zsocket.h"
+usr="zthread.h"
+usr="ztrace.h"
+usr="zbios.h"
+usr="zframe.h"
+usr="zdos.h"
+usr="zdosdrv.h"
 
 [ DEFAULT type="s" dir="h" where="c jc f77 jf77 ac" cond="cplusplus" ]
 #
