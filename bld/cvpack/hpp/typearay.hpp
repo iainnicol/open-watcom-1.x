@@ -83,7 +83,10 @@ class GlobalHashContainer : public GlobalTypeContainer {
                   _entries(0) { }
 
         virtual ~GlobalHashContainer() {
+			if (_buckets) {
             delete [] _buckets;
+            	_buckets=NULL;
+			}
         }
 
         virtual WCPtrSList<LFTypeRecord>& Find( LFTypeRecord* t ) {

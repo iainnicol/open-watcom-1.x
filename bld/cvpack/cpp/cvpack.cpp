@@ -48,7 +48,7 @@
 #include "banner.h"
 
 static const char* CVpackHeader =
-    banner1w( "CV4 Symbolic Debugging Information Compactor", BAN_VER_STR ) "\n" \
+    banner1w( "CV4 Symbolic Debugging Information Compactor (Geo++ Version)", BAN_VER_STR ) "\n" \
     banner2( "1995" ) "\n" \
     banner3 "\n" \
     banner3a;
@@ -119,6 +119,7 @@ void CVpack::DoExeCode()
         delete [] buffer;
     }
     _lfaBase = length;
+    _ddeBase = _aRetriever.TellDDEBase();
 }
 
 uint CVpack::DoSstModule()
@@ -140,7 +141,8 @@ uint CVpack::DoSstModule()
 void CVpack::DumpSig()
 /********************/
 {
-    _eMaker.DumpToExe( NB09, LONG_WORD );
+    //_eMaker.DumpToExe( NB09, LONG_WORD );
+    _eMaker.DumpToExe( NB11, LONG_WORD );
 }
 
 uint CVpack::DoSrcModule( const uint module )
@@ -207,13 +209,19 @@ void CVpack::DoDirectory()
 /************************/
 {
     streampos dirOffset = OFBase();
+    unsigned_32 cvSize;
     _newDir.Put(_eMaker);
+
     DumpSig();
     // compute lfoBase and dump it out.
-    _eMaker.DumpToExe((unsigned_32)(_eMaker.TellPos()+LONG_WORD-_lfaBase));
+    cvSize = (unsigned_32)(_eMaker.TellPos()+LONG_WORD-_lfaBase);
+    _eMaker.DumpToExe(cvSize);
 
     _eMaker.SeekTo(_lfaBase+LONG_WORD);
     _eMaker.DumpToExe((unsigned_32)dirOffset);
+
+    _eMaker.SeekTo(_ddeBase+0x10);  // offset of debug_size field entry
+    _eMaker.DumpToExe(cvSize);  // write new segment size to PE debug dir entry
 }
 
 void CVpack::DoPublics( const uint segNum,
@@ -236,14 +244,31 @@ void CVpack::DoPublics( const uint segNum,
         while ( ptr < end ) {
             index = * (unsigned_16 *)(ptr + WORD);
             if ( index == S_PUB16 ) {
-                globalPub.Insert(CSPub16::Construct(ptr));
+                if (!globalPub.Insert(CSPub16::Construct(ptr))) {
+					cerr << "Error: Failed : globalPub.Insert(CSPub16::Construct(ptr))\n";
+					cerr.flush();
+				}
             } else if ( index == S_PUB32 ) {
-                globalPub.Insert(CSPub32::Construct(ptr));
+                if (!globalPub.Insert(CSPub32::Construct(ptr))) {
+					cerr << "Error: Failed :globalPub.Insert(CSPub32::Construct(ptr))\n";
+					cerr.flush();
+				}
+            } else if ( index == S_PUB32_NEW ) {
+                if (!globalPub.Insert(CSPub32_new::Construct(ptr))) {
+					cerr << "Error: Failed :globalPub.Insert(CSPub32_new::Construct(ptr))\n";
+					cerr.flush();
+				}
             }
             ptr += * (unsigned_16 *) ptr + WORD;
         }
     }
     unsigned_32 oldOffset = OFBase();
+    /*
+    cerr << "writing publics for segment ";
+    cerr << segNum;
+    cerr << " now\n";
+    cerr.flush();
+	*/
     globalPub.Put(_eMaker,segNum);
     unsigned_32 secLen = OFBase() - oldOffset;
     if ( secLen != 0 ) {
@@ -305,12 +330,25 @@ void CVpack::CreatePackExe()
     }
     uint cSeg = DoSegMap();
     DoPublics(cSeg,moduleNum);
+    //cerr << "finished DoPublics.\n"; cerr.flush();
+
     DoGlobalSym(globalSym,cSeg);
+    //cerr << "finished DoGlobalSym.\n"; cerr.flush();
+
     DoLibraries();
+    //cerr << "finished DoLibraries.\n"; cerr.flush();
+
     DoGlobalTypes(globalType);
+    //cerr << "finished DoGlobalTypes.\n"; cerr.flush();
+
     DoStaticSym(staticSym,cSeg);
+    //cerr << "finished DoStaticSym.\n"; cerr.flush();
+
     DoDirectory();
+    //cerr << "finished DoDirectory.\n"; cerr.flush();
+
     _eMaker.Close();
+    //cerr << "finished CreatePackExe()\n"; cerr.flush();
 }
 
 
@@ -342,7 +380,14 @@ int main(int argc, char* argv[])
         }
         tmpnam(tmpFile);
         CVpack packMaker(fd,tmpFile);
+        //cerr << "calling packMaker.CreatePackExe()\n";
+        //cerr.flush();
+
         packMaker.CreatePackExe();
+
+        cout << "cvpack, packMaker.CreatePackExe() OK\n";
+        cout.flush();
+
         fd.close();
         if ( remove(fName) ) {
             throw MiscError(strerror(errno));
