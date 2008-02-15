@@ -300,6 +300,7 @@ typedef struct {
 #define DEBUG_TYPE_UNKNOWN    0
 #define DEBUG_TYPE_COFF       1
 #define DEBUG_TYPE_CODEVIEW   2
+#define DEBUG_TYPE_MISC       4
 typedef struct {
    unsigned_32          flags;
    unsigned_32          time_stamp;

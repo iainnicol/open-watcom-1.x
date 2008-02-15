@@ -120,6 +120,7 @@ static virt_mem SectAddrs[NUM_CV_SECTS];
 
 static virt_mem         CVBase;
        unsigned_32      CVSize; // external linkage since NT wants to know.
+       unsigned_32      CVDebugDirEntryPos=0; // external linkage, HACK , NMNMNM
 
 static unsigned         TempIndex;
 static cvlineinfo       LineInfo;
@@ -226,6 +227,7 @@ void CVP1ModuleFinished( mod_entry *obj )
 {
     byte        namelen;
     unsigned_32 temp;
+    unsigned_32 size;
 
     if( MOD_NOT_DEBUGGABLE( obj ) )
         return;
@@ -237,8 +239,11 @@ void CVP1ModuleFinished( mod_entry *obj )
     }
     Ring2Walk( obj->publist, DBIModGlobal );
     namelen = strlen( obj->name );
-    SectAddrs[CVSECT_MODULE] += sizeof( cv_sst_module ) + namelen + 1
-                                - sizeof( cv_seginfo );
+    // NMNMNM
+    size = sizeof( cv_sst_module ) + namelen + 1 - sizeof( cv_seginfo );
+	size = ROUND_UP( size, 4 );
+    SectAddrs[CVSECT_MODULE] += size;
+    // NMNMNM
     AddSubSection( TRUE );
     if( obj->d.cv->pubsize > 0 ) {
         AddSubSection( FALSE );
@@ -274,6 +279,9 @@ void CVAddModule( mod_entry *obj, section *sect )
     namelen = strlen( obj->name );
     size = sizeof( cv_sst_module ) + namelen + 1
                 + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
+    // NMNMNM
+    size = ROUND_UP( size, 4 );
+    // NMNMNM
     GenSubSection( sstModule, size );
     mod.ovlNumber = 0;
     mod.iLib = 0;
@@ -392,12 +400,17 @@ void CVAddLocal( unsigned_16 info, offset length )
 // called during pass 1 final segment processing.
 {
     if( length > 0xFFFF ) {
-        LnkMsg( WRN+LOC+MSG_DEBUG_TOO_LARGE, "s", "Codeview" );
-    }
-    if( info != NOT_DEBUGGING_INFO ) {
-        AddSubSection( FALSE );
+		if (info != NOT_DEBUGGING_INFO ) {
+            LnkMsg( WRN+LOC+MSG_DEBUG_TOO_LARGE, "s", "Codeview" );
+        }
+    } else {
+        if( info != NOT_DEBUGGING_INFO ) {
+            AddSubSection( FALSE );
+        }
     }
 }
+
+#define NEWCV_SYMBOLS   // NMNMNM
 
 void CVAddGlobal( symbol *sym )
 /************************************/
@@ -409,7 +422,11 @@ void CVAddGlobal( symbol *sym )
         if( ( sym->p.seg == NULL )
             || IS_SYM_IMPORTED( sym )
             || sym->p.seg->is32bit ) {
+#ifdef NEWCV_SYMBOLS
+            size = sizeof( s_pub32_new );
+#else
             size = sizeof( s_pub32 );
+#endif
         } else {
             size = sizeof( s_pub16 );
         }
@@ -425,7 +442,11 @@ void CVGenGlobal( symbol * sym, section *sect )
 // also called by loadpe between passes
 {
     s_pub16     pub16;
+#ifdef NEWCV_SYMBOLS
+    s_pub32_new pub32;
+#else
     s_pub32     pub32;
+#endif
     unsigned    size;
     unsigned    pad;
     unsigned_32 buf;
@@ -436,6 +457,21 @@ void CVGenGlobal( symbol * sym, section *sect )
         return;
     namelen = strlen( sym->name );
     size = namelen + 1;
+
+#ifdef NEWCV_SYMBOLS
+    if( ( sym->p.seg == NULL )
+        || IS_SYM_IMPORTED( sym )
+        || sym->p.seg->is32bit ) {
+        size += sizeof( s_pub32_new );
+        pub32.common.length = ROUND_UP( size, 4 );
+        pad = pub32.common.length - size;
+        pub32.common.length -= 2;
+        pub32.common.code = S_PUB32_NEW;
+        pub32.f.offset = sym->addr.off;
+        pub32.f.segment = GetCVSegment( sym->p.seg->u.leader );
+        pub32.f.type = 0;
+        DumpInfo( CVSECT_MISC, &pub32, sizeof( s_pub32_new ) );
+#else
     if( ( sym->p.seg == NULL )
         || IS_SYM_IMPORTED( sym )
         || sym->p.seg->is32bit ) {
@@ -448,6 +484,7 @@ void CVGenGlobal( symbol * sym, section *sect )
         pub32.f.segment = GetCVSegment( sym->p.seg->u.leader );
         pub32.f.type = 0;
         DumpInfo( CVSECT_MISC, &pub32, sizeof( s_pub32 ) );
+#endif
     } else {
         size += sizeof( s_pub16 );
         pub16.common.length = ROUND_UP( size, 4 );
@@ -643,7 +680,7 @@ static bool DefLeader( void *_leader, void *group )
 /*************************************************/
 {
     seg_leader *leader = _leader;
-        
+
     leader->group = group;
     RingWalk( leader->pieces, DefLocal );
     return( FALSE );
@@ -744,5 +781,27 @@ void CVWrite( void )
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {
+    #pragma pack (push,1)
+    struct {
+        unsigned long  DataType; // == 1
+        unsigned long  Length;   // == 256
+        unsigned long  Unicode;  // LSB is unicode flag, rest is reserved
+        char exe_name[256-16];
+        unsigned long  DebugDirOffs;  // HACK !!! , will be used by cvpack,
+                                      // absolute PEfile offset off Debug Directory entry:
+                                      // DEBUG_TYPE_CODEVIEW
+    } dbg_exename;
+    #pragma pack (pop)
+
+    memset( &dbg_exename, 0, sizeof(dbg_exename) );
+    dbg_exename.DataType = 1;
+    dbg_exename.Length = sizeof(dbg_exename);
+    dbg_exename.Unicode = 0x00000000;
+    if ( (Root->outfile)&&(Root->outfile->fname) ) {
+        memcpy( dbg_exename.exe_name, Root->outfile->fname, strlen(Root->outfile->fname) );
+    }
+    dbg_exename.DebugDirOffs = CVDebugDirEntryPos;
+    WriteInfo( (virt_mem)&dbg_exename, sizeof(dbg_exename) );
+
     WriteInfo( CVBase, CVSize );
 }
