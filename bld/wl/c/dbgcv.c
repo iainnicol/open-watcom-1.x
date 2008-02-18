@@ -31,10 +31,12 @@
 
 #include <string.h>
 #include "linkstd.h"
+#include "exepe.h"
 #include "alloc.h"
 #include "cv4w.h"
 #include "virtmem.h"
 #include "objnode.h"
+#include "loadfile.h"
 #include "objcalc.h"
 #include "dbgcomm.h"
 #include "loadqnx.h"    // for ToQNXIndex
@@ -43,6 +45,8 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "specials.h"
+
+//#define USE_CV5_SYMBOLS
 
 typedef struct cvmodinfo {
     unsigned_32 pubsize;
@@ -119,8 +123,8 @@ static virt_mem SectAddrs[NUM_CV_SECTS];
 // of it, and the length of it
 
 static virt_mem         CVBase;
-       unsigned_32      CVSize; // external linkage since NT wants to know.
-       unsigned_32      CVDebugDirEntryPos=0; // external linkage, HACK , NMNMNM
+unsigned_32             CVSize; // external linkage since NT wants to know.
+unsigned_32             CVDebugDirEntryPos = 0;
 
 static unsigned         TempIndex;
 static cvlineinfo       LineInfo;
@@ -239,11 +243,11 @@ void CVP1ModuleFinished( mod_entry *obj )
     }
     Ring2Walk( obj->publist, DBIModGlobal );
     namelen = strlen( obj->name );
-    // NMNMNM
+    //  begin padding required ???
     size = sizeof( cv_sst_module ) + namelen + 1 - sizeof( cv_seginfo );
-	size = ROUND_UP( size, 4 );
+    size = ROUND_UP( size, 4 );
     SectAddrs[CVSECT_MODULE] += size;
-    // NMNMNM
+    //  end padding required ???
     AddSubSection( TRUE );
     if( obj->d.cv->pubsize > 0 ) {
         AddSubSection( FALSE );
@@ -279,9 +283,9 @@ void CVAddModule( mod_entry *obj, section *sect )
     namelen = strlen( obj->name );
     size = sizeof( cv_sst_module ) + namelen + 1
                 + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
-    // NMNMNM
+    //  begin padding required ???
     size = ROUND_UP( size, 4 );
-    // NMNMNM
+    //  end padding required ???
     GenSubSection( sstModule, size );
     mod.ovlNumber = 0;
     mod.iLib = 0;
@@ -400,7 +404,7 @@ void CVAddLocal( unsigned_16 info, offset length )
 // called during pass 1 final segment processing.
 {
     if( length > 0xFFFF ) {
-		if (info != NOT_DEBUGGING_INFO ) {
+        if (info != NOT_DEBUGGING_INFO ) {
             LnkMsg( WRN+LOC+MSG_DEBUG_TOO_LARGE, "s", "Codeview" );
         }
     } else {
@@ -409,8 +413,6 @@ void CVAddLocal( unsigned_16 info, offset length )
         }
     }
 }
-
-#define NEWCV_SYMBOLS   // NMNMNM
 
 void CVAddGlobal( symbol *sym )
 /************************************/
@@ -422,7 +424,7 @@ void CVAddGlobal( symbol *sym )
         if( ( sym->p.seg == NULL )
             || IS_SYM_IMPORTED( sym )
             || sym->p.seg->is32bit ) {
-#ifdef NEWCV_SYMBOLS
+#ifdef USE_CV5_SYMBOLS
             size = sizeof( s_pub32_new );
 #else
             size = sizeof( s_pub32 );
@@ -442,7 +444,7 @@ void CVGenGlobal( symbol * sym, section *sect )
 // also called by loadpe between passes
 {
     s_pub16     pub16;
-#ifdef NEWCV_SYMBOLS
+#ifdef USE_CV5_SYMBOLS
     s_pub32_new pub32;
 #else
     s_pub32     pub32;
@@ -458,7 +460,7 @@ void CVGenGlobal( symbol * sym, section *sect )
     namelen = strlen( sym->name );
     size = namelen + 1;
 
-#ifdef NEWCV_SYMBOLS
+#ifdef USE_CV5_SYMBOLS
     if( ( sym->p.seg == NULL )
         || IS_SYM_IMPORTED( sym )
         || sym->p.seg->is32bit ) {
@@ -776,32 +778,38 @@ void CVFini( section *sect )
     }
 }
 
+void CVWriteDebugTypeMisc( char *filename )
+/****************************/
+// called during load file generation.  It is assumed that the loadfile is
+// positioned to the right spot.
+{
+    int namelen;
+    int bufspace;
+    debug_misc_dbgdata  dbg_exename;
+
+    memset( &dbg_exename, 0, sizeof( dbg_exename ) );
+    dbg_exename.data_type = 1;
+    dbg_exename.length = sizeof( dbg_exename );
+    dbg_exename.unicode = 0;
+
+    if ( filename ) {
+        namelen = strlen( filename ) +1;
+        bufspace = sizeof( dbg_exename.data ) - 4;
+        if ( bufspace >= namelen ) {
+            memcpy( dbg_exename.data, filename, namelen );
+        } else {
+            LnkMsg( WRN+LOC+MSG_INTERNAL, "s", "filename too long in CVWriteDebugTypeMisc()" );
+        }
+    }
+    dbg_exename.special_purpose = CVDebugDirEntryPos;
+    WriteLoad( &dbg_exename, sizeof( dbg_exename ) );
+}
+
 void CVWrite( void )
 /****************************/
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {
-    #pragma pack (push,1)
-    struct {
-        unsigned long  DataType; // == 1
-        unsigned long  Length;   // == 256
-        unsigned long  Unicode;  // LSB is unicode flag, rest is reserved
-        char exe_name[256-16];
-        unsigned long  DebugDirOffs;  // HACK !!! , will be used by cvpack,
-                                      // absolute PEfile offset off Debug Directory entry:
-                                      // DEBUG_TYPE_CODEVIEW
-    } dbg_exename;
-    #pragma pack (pop)
-
-    memset( &dbg_exename, 0, sizeof(dbg_exename) );
-    dbg_exename.DataType = 1;
-    dbg_exename.Length = sizeof(dbg_exename);
-    dbg_exename.Unicode = 0x00000000;
-    if ( (Root->outfile)&&(Root->outfile->fname) ) {
-        memcpy( dbg_exename.exe_name, Root->outfile->fname, strlen(Root->outfile->fname) );
-    }
-    dbg_exename.DebugDirOffs = CVDebugDirEntryPos;
-    WriteInfo( (virt_mem)&dbg_exename, sizeof(dbg_exename) );
-
+    // write DEBUG_TYPE_CODEVIEW data: CodeView NB05 data
     WriteInfo( CVBase, CVSize );
 }

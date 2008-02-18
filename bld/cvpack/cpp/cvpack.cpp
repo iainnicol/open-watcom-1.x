@@ -48,7 +48,7 @@
 #include "banner.h"
 
 static const char* CVpackHeader =
-    banner1w( "CV4 Symbolic Debugging Information Compactor (Geo++ Version)", BAN_VER_STR ) "\n" \
+    banner1w( "CV4 Symbolic Debugging Information Compactor", BAN_VER_STR ) "\n" \
     banner2( "1995" ) "\n" \
     banner3 "\n" \
     banner3a;
@@ -141,8 +141,8 @@ uint CVpack::DoSstModule()
 void CVpack::DumpSig()
 /********************/
 {
-    //_eMaker.DumpToExe( NB09, LONG_WORD );
-    _eMaker.DumpToExe( NB11, LONG_WORD );
+    _eMaker.DumpToExe( NB09, LONG_WORD );
+    //_eMaker.DumpToExe( NB11, LONG_WORD );
 }
 
 uint CVpack::DoSrcModule( const uint module )
@@ -220,8 +220,10 @@ void CVpack::DoDirectory()
     _eMaker.SeekTo(_lfaBase+LONG_WORD);
     _eMaker.DumpToExe((unsigned_32)dirOffset);
 
-    _eMaker.SeekTo(_ddeBase+0x10);  // offset of debug_size field entry
-    _eMaker.DumpToExe(cvSize);  // write new segment size to PE debug dir entry
+    if (_ddeBase) {
+        _eMaker.SeekTo(_ddeBase+0x10);  // offset of debug_size field entry
+        _eMaker.DumpToExe(cvSize);      // write new segment size to PE debug dir entry
+    }
 }
 
 void CVpack::DoPublics( const uint segNum,
@@ -245,19 +247,19 @@ void CVpack::DoPublics( const uint segNum,
             index = * (unsigned_16 *)(ptr + WORD);
             if ( index == S_PUB16 ) {
                 if (!globalPub.Insert(CSPub16::Construct(ptr))) {
-					cerr << "Error: Failed : globalPub.Insert(CSPub16::Construct(ptr))\n";
-					cerr.flush();
-				}
+                    cerr << "Error: Failed : globalPub.Insert(CSPub16::Construct(ptr))\n";
+                    cerr.flush();
+                }
             } else if ( index == S_PUB32 ) {
                 if (!globalPub.Insert(CSPub32::Construct(ptr))) {
-					cerr << "Error: Failed :globalPub.Insert(CSPub32::Construct(ptr))\n";
-					cerr.flush();
-				}
+                    cerr << "Error: Failed :globalPub.Insert(CSPub32::Construct(ptr))\n";
+                    cerr.flush();
+                }
             } else if ( index == S_PUB32_NEW ) {
                 if (!globalPub.Insert(CSPub32_new::Construct(ptr))) {
-					cerr << "Error: Failed :globalPub.Insert(CSPub32_new::Construct(ptr))\n";
-					cerr.flush();
-				}
+                    cerr << "Error: Failed :globalPub.Insert(CSPub32_new::Construct(ptr))\n";
+                    cerr.flush();
+                }
             }
             ptr += * (unsigned_16 *) ptr + WORD;
         }
@@ -268,7 +270,7 @@ void CVpack::DoPublics( const uint segNum,
     cerr << segNum;
     cerr << " now\n";
     cerr.flush();
-	*/
+    */
     globalPub.Put(_eMaker,segNum);
     unsigned_32 secLen = OFBase() - oldOffset;
     if ( secLen != 0 ) {
@@ -384,9 +386,8 @@ int main(int argc, char* argv[])
         //cerr.flush();
 
         packMaker.CreatePackExe();
-
-        cout << "cvpack, packMaker.CreatePackExe() OK\n";
-        cout.flush();
+        //cout << "cvpack, packMaker.CreatePackExe() OK\n";
+        //cout.flush();
 
         fd.close();
         if ( remove(fName) ) {

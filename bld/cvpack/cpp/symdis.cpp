@@ -69,7 +69,6 @@ PCFN SymbolDistributor::_symConstructorTable[] = {
     CSLData32::Construct,
     CSGData32::Construct,
     CSPub32::Construct,
-    CSPub32_new::Construct,
     CSLProc32::Construct,
     CSGProc32::Construct,
     CSThunk32::Construct,
@@ -127,17 +126,17 @@ void SymbolDistributor::Build( const char*  ptr,
             int rc;
             rc=_globalSym.Insert(symPtr);
             if (!rc) {
-				cerr << "Error: failed to insert symbol to _globalSym";
-				cerr.flush();
-			}
+                cerr << "Error: failed to insert symbol to _globalSym";
+                cerr.flush();
+            }
             return;
         }
         int rc;
         rc=alignSym.Insert(symPtr);
         if (!rc) {
-			cerr << "Error: failed to insert symbol to alignSym";
-			cerr.flush();
-		}
+            cerr << "Error: failed to insert symbol to alignSym";
+            cerr.flush();
+        }
     }
 }
 

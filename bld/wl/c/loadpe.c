@@ -837,68 +837,49 @@ static void WritePEResources( pe_header *header, pe_object *object )
     header->image_size += ROUND_UP(object->physical_size, header->object_align);
 }
 
-#if 0
-static void WriteDebugTable_orig( pe_header *header, pe_object *object )
+static void WriteDebugTable( pe_header *header, pe_object *object, char *symfilename )
 /*****************************************************************/
 {
-    debug_directory     dir;
+    int num_entries = 2;
+    debug_directory  dir;
 
+    if ( symfilename != NULL ) num_entries--;
     strncpy( object->name, ".rdata", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( header->file_align );
     object->rva = header->image_size;
     object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
-    object->physical_size = ROUND_UP(sizeof(debug_directory),header->file_align);
-    dir.flags = 0;
-    dir.time_stamp = 0;
-    dir.major = 4;      // arbitrary for now.
-    dir.minor = 0;
-    dir.debug_type = DEBUG_TYPE_CODEVIEW;
-    dir.debug_size = CVSize;
-    dir.data_rva = object->rva;
-    dir.data_seek = object->physical_offset + object->physical_size;
-    WriteLoad( &dir, sizeof(debug_directory) );
-    header->table[PE_TBL_DEBUG].size = sizeof(debug_directory);
-    header->table[PE_TBL_DEBUG].rva = object->rva;
-    header->image_size += ROUND_UP(sizeof(debug_directory),header->object_align);
-}
-#endif
+    object->physical_size = ROUND_UP( num_entries * sizeof( debug_directory ), header->file_align);
 
-static void WriteDebugTable( pe_header *header, pe_object *object )
-/*****************************************************************/
-{
-    debug_directory     dir;
-
-	printf("INFO: using modified version of WriteDebugTable()\n");
-    strncpy( object->name, ".rdata", PE_OBJ_NAME_LEN );
-    object->physical_offset = NullAlign( header->file_align );
-    object->rva = header->image_size;
-    object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
-    object->physical_size = ROUND_UP(2*sizeof(debug_directory),header->file_align);
-
-    dir.flags = 0;
-	dir.time_stamp = header->time_stamp;
-	dir.major = 0;      // arbitrary for now.
-	dir.minor = 0;
-	dir.debug_type = DEBUG_TYPE_MISC;
-	dir.debug_size = 0x0100;
-	dir.data_rva = 0;
-	dir.data_seek = object->physical_offset + object->physical_size;
-	WriteLoad( &dir, sizeof(debug_directory) );
-
+    /* write debug dir entry for DEBUG_TYPE_MISC */
     dir.flags = 0;
     dir.time_stamp = header->time_stamp;
     dir.major = 0;
     dir.minor = 0;
-    dir.debug_type = DEBUG_TYPE_CODEVIEW;
-    dir.debug_size = CVSize;
+    dir.debug_type = DEBUG_TYPE_MISC;
+    dir.debug_size = sizeof( debug_misc_dbgdata );
     dir.data_rva = 0;
-    dir.data_seek = object->physical_offset + object->physical_size + 0x0100;
-    CVDebugDirEntryPos = PosLoad();  // NMNMNM
-    WriteLoad( &dir, sizeof(debug_directory) );
+    dir.data_seek = object->physical_offset + object->physical_size;
+    WriteLoad( &dir, sizeof( debug_directory ) );
 
-    header->table[PE_TBL_DEBUG].size = 2*sizeof(debug_directory);
+    /* remind current file offset of this directory entry for later use */
+    CVDebugDirEntryPos = PosLoad();
+
+    if ( symfilename == NULL ) {
+        /* write debug dir entry for DEBUG_TYPE_CODEVIEW */
+        dir.flags = 0;
+        dir.time_stamp = header->time_stamp;
+        dir.major = 0;
+        dir.minor = 0;
+        dir.debug_type = DEBUG_TYPE_CODEVIEW;
+        dir.debug_size = CVSize;
+        dir.data_rva = 0;
+        dir.data_seek = object->physical_offset + object->physical_size + sizeof( debug_misc_dbgdata );
+        WriteLoad( &dir, sizeof( debug_directory ) );
+    }
+
+    header->table[PE_TBL_DEBUG].size = num_entries * sizeof( debug_directory );
     header->table[PE_TBL_DEBUG].rva = object->rva;
-    header->image_size += ROUND_UP(2*sizeof(debug_directory),header->object_align);
+    header->image_size += ROUND_UP( num_entries * sizeof( debug_directory ), header->object_align );
 }
 
 static void CheckNumRelocs( void )
@@ -1181,8 +1162,8 @@ void FiniPELoadFile( void )
         WritePEResources( &exe_head, tbl_obj );
         ++tbl_obj;
     }
-    if( LinkFlags & CV_DBI_FLAG ) {     // NMNMNM: must be last !
-        WriteDebugTable( &exe_head, tbl_obj );
+    if( LinkFlags & CV_DBI_FLAG ) {
+        WriteDebugTable( &exe_head, tbl_obj, SymFileName );
         ++tbl_obj;
     }
     NullAlign( exe_head.file_align ); /* pad out last page */

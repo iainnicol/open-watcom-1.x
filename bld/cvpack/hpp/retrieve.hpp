@@ -160,8 +160,8 @@ class Retriever {
         streampos GetBasePos();
 
         // Function called by the constructor to locate the base address of
-        // out PE debug dir entry
-		streampos GetPEDebugDirCVEntryPos(); // NMNMNM
+        // the PE debug dir entry
+        streampos GetPEDebugDirCVEntryPos();
 
         // Function called by the constructor to locate the address of the
         // subsection directory.

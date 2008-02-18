@@ -138,9 +138,9 @@ bool SstGlobalTypes::LoadTypes( Retriever& retriever, const module mod )
         /*
         if (_localTypingInfo[i]) {
         delete _localTypingInfo[i];
-        	_localTypingInfo[i]=NULL;
-		}
-		*/
+            _localTypingInfo[i]=NULL;
+        }
+        */
     }
     _localTypingInfo.Clear();
     return TRUE;
@@ -210,8 +210,8 @@ int SstAlignSym::InsertOneRecord( SymbolStruct* sym )
     uint pad = SymbolSubsection::PadCount(sym->Length(),_currentOffset);
     if ( pad > 0 ) {
         if (!_symbolInfo.append( new CSPageAlign(pad) )) {
-			return 0;
-	}
+            return 0;
+    }
         _currentOffset += pad + LONG_WORD;
     }
     sym -> SetOffset( _currentOffset );
@@ -228,17 +228,17 @@ int SstAlignSym::Insert( SymbolStruct* sym )
             SymbolStruct* newSSym = new CSStartSearch(seg);
             _lastStartSym[seg] = newSSym;
             if (!_symbolInfo.insert(newSSym)) {
-				cerr << "Failed to insert in SstAlignSym::Insert(), A\n";
-				cerr.flush();
-				return 0;
-			}
+                cerr << "Failed to insert in SstAlignSym::Insert(), A\n";
+                cerr.flush();
+                return 0;
+            }
         }
     }
     if (!InsertOneRecord( sym )) {
-		cerr << "Failed to insert in SstAlignSym::Insert(), B\n";
-		cerr.flush();
-		return 0;
-	}
+        cerr << "Failed to insert in SstAlignSym::Insert(), B\n";
+        cerr.flush();
+        return 0;
+    }
     if ( sym -> IsStartSym() ) {
         if ( ! symStack.isEmpty() ) {
             sym -> SetParent( symStack.top() -> Offset() );
@@ -249,10 +249,10 @@ int SstAlignSym::Insert( SymbolStruct* sym )
             _lastStartSym[seg] = sym;
         }
         if (!symStack.push(sym)) {
-			cerr << "Failed to push sym to symStack\n";
-			cerr.flush();
-			return 0;
-		}
+            cerr << "Failed to push sym to symStack\n";
+            cerr.flush();
+            return 0;
+        }
         return 1;
     }
     if ( sym -> IsEndSym() ) {
@@ -317,12 +317,12 @@ void SstGlobalSym::Put( ExeMaker& eMaker, const uint cSeg )
     */
     //while ( ++iter ) {
     while ( cnt++ < mcnt) {
-		/*
-		cerr << "global Symbol count: ";
-		cerr << cnt;
-		cerr << "\n";
-		cerr.flush();
-		*/
+        /*
+        cerr << "global Symbol count: ";
+        cerr << cnt;
+        cerr << "\n";
+        cerr.flush();
+        */
         //currentPtr = iter.current();
         currentPtr = _symbolInfo.get(cnt);
 
@@ -468,12 +468,12 @@ void AddrHashTable::Put( ExeMaker& eMaker ) const
     offset_table** tempTable;
     WCPtrConstSListIter<offset_table> iter;
     for ( i = 0; i < _cSeg; i++ ) {
-		/*
-		cerr << "AddrHashTable::Put(), _cSeg ";
-		cerr << i;
-		cerr << "\n";
-		cerr.flush();
-		*/
+        /*
+        cerr << "AddrHashTable::Put(), _cSeg ";
+        cerr << i;
+        cerr << "\n";
+        cerr.flush();
+        */
         tempTable = new offset_table* [_oTab[i].entries()];
         iter.reset(_oTab[i]);
         for ( j = 0; ++iter; j++ ) {
@@ -481,11 +481,11 @@ void AddrHashTable::Put( ExeMaker& eMaker ) const
         }
         qsort(tempTable,_oTab[i].entries(),sizeof(offset_table*),AddrHashTable::Compare);
         /*
-		cerr << "AddrHashTable has ";
-		cerr << _oTab[i].entries();
-		cerr << " entries\n";
-		cerr.flush();
-		*/
+        cerr << "AddrHashTable has ";
+        cerr << _oTab[i].entries();
+        cerr << " entries\n";
+        cerr.flush();
+        */
 
         for ( j = 0; j < _oTab[i].entries(); j++ ) {
             eMaker.DumpToExe(tempTable[j] -> _fileOffset);
