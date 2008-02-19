@@ -317,7 +317,7 @@ typedef struct {
    unsigned_32  data_type;          /* 1 == filename of debug info file */
    unsigned_32  length;             /* size of this data block */
    unsigned_32  unicode;            /* LSB is unicode flag, rest is reserved */
-   unsigned_8   data[256-16];       /* name + path of debug info file, null terminated */
+   char         data[256-16];       /* name + path of debug info file, null terminated */
    unsigned_32  special_purpose;    /* used to pass file offset to cvpack utility */
 } debug_misc_dbgdata;
 
