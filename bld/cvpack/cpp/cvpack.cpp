@@ -314,12 +314,21 @@ void CVpack::CreatePackExe()
     SstAlignSym*   alignSym;
     SstGlobalSym   globalSym;
     SstStaticSym   staticSym;
-    bool           gottype;
+    bool           gottype, gotsrcmod;
+    unsigned_32    length;
+    char           *buffer, *buffer2;
+
     SymbolDistributor symDis(_aRetriever, globalSym, staticSym);
     for ( uint module = 1; ; module++ ) {
         if( _aRetriever.IsAtSubsection( sstSegMap ) ) break;
         gottype = globalType.LoadTypes(_aRetriever,module);
-        moduleSeg = DoSrcModule(module);
+        gotsrcmod = FALSE;
+        if ( _aRetriever.ReadSubsection(buffer,length,sstSrcModule,module) ) {
+            moduleSeg = ( * (unsigned_16 *) (buffer + WORD) );
+            gotsrcmod = TRUE;
+            buffer2 = new char [length];
+            memcpy( buffer2, buffer, length );
+        }
         if( gottype ) {
             alignSym = new SstAlignSym(moduleSeg);
             if ( ! symDis.Distribute(module, *alignSym) ) {
@@ -329,6 +338,13 @@ void CVpack::CreatePackExe()
             DoAlignSym(alignSym, module);
             delete alignSym;
         }
+        if (gotsrcmod) {
+            _newDir.Insert(sstSrcModule,module,OFBase(),length);
+            _eMaker.DumpToExe(buffer2,length);
+            delete buffer2;
+            buffer2 = 0;
+        }
+
     }
     uint cSeg = DoSegMap();
     DoPublics(cSeg,moduleNum);
