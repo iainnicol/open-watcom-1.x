@@ -404,7 +404,7 @@ void CVAddLocal( unsigned_16 info, offset length )
 // called during pass 1 final segment processing.
 {
     if( length > 0xFFFF ) {
-        if (info != NOT_DEBUGGING_INFO ) {
+        if( info != NOT_DEBUGGING_INFO ) {
             LnkMsg( WRN+LOC+MSG_DEBUG_TOO_LARGE, "s", "Codeview" );
         }
     } else {
@@ -778,24 +778,24 @@ void CVFini( section *sect )
     }
 }
 
-void CVWriteDebugTypeMisc( char *filename )
-/****************************/
+void CVWriteDebugTypeMisc( const char *filename )
+/***********************************************/
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {
-    int namelen;
-    int bufspace;
-    debug_misc_dbgdata  dbg_exename;
+    int                     namelen;
+    int                     bufspace;
+    debug_misc_dbgdata      dbg_exename;
 
     memset( &dbg_exename, 0, sizeof( dbg_exename ) );
     dbg_exename.data_type = 1;
     dbg_exename.length = sizeof( dbg_exename );
     dbg_exename.unicode = 0;
 
-    if ( filename ) {
+    if( filename ) {
         namelen = strlen( filename ) +1;
         bufspace = sizeof( dbg_exename.data ) - 4;
-        if ( bufspace >= namelen ) {
+        if( bufspace >= namelen ) {
             memcpy( dbg_exename.data, filename, namelen );
         } else {
             LnkMsg( WRN+LOC+MSG_INTERNAL, "s", "filename too long in CVWriteDebugTypeMisc()" );

@@ -837,13 +837,14 @@ static void WritePEResources( pe_header *header, pe_object *object )
     header->image_size += ROUND_UP(object->physical_size, header->object_align);
 }
 
-static void WriteDebugTable( pe_header *header, pe_object *object, char *symfilename )
-/*****************************************************************/
+static void WriteDebugTable( pe_header *header, pe_object *object, const char *symfilename )
+/******************************************************************************************/
 {
-    int num_entries = 2;
-    debug_directory  dir;
+    int                 num_entries = 2;
+    debug_directory     dir;
 
-    if ( symfilename != NULL ) num_entries--;
+    if( symfilename != NULL )
+        num_entries--;
     strncpy( object->name, ".rdata", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( header->file_align );
     object->rva = header->image_size;
@@ -861,10 +862,10 @@ static void WriteDebugTable( pe_header *header, pe_object *object, char *symfile
     dir.data_seek = object->physical_offset + object->physical_size;
     WriteLoad( &dir, sizeof( debug_directory ) );
 
-    /* remind current file offset of this directory entry for later use */
+    /* remember current file offset of this directory entry for later use */
     CVDebugDirEntryPos = PosLoad();
 
-    if ( symfilename == NULL ) {
+    if( symfilename == NULL ) {
         /* write debug dir entry for DEBUG_TYPE_CODEVIEW */
         dir.flags = 0;
         dir.time_stamp = header->time_stamp;
