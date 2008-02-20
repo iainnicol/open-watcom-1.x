@@ -46,8 +46,6 @@
 #include "wlnkmsg.h"
 #include "specials.h"
 
-//#define USE_CV5_SYMBOLS
-
 typedef struct cvmodinfo {
     unsigned_32 pubsize;
     virt_mem    segloc;
@@ -243,11 +241,11 @@ void CVP1ModuleFinished( mod_entry *obj )
     }
     Ring2Walk( obj->publist, DBIModGlobal );
     namelen = strlen( obj->name );
-    //  begin padding required ???
+    //  required alignment ???
     size = sizeof( cv_sst_module ) + namelen + 1 - sizeof( cv_seginfo );
     size = ROUND_UP( size, 4 );
     SectAddrs[CVSECT_MODULE] += size;
-    //  end padding required ???
+    //  required alignment ???
     AddSubSection( TRUE );
     if( obj->d.cv->pubsize > 0 ) {
         AddSubSection( FALSE );
@@ -424,11 +422,7 @@ void CVAddGlobal( symbol *sym )
         if( ( sym->p.seg == NULL )
             || IS_SYM_IMPORTED( sym )
             || sym->p.seg->is32bit ) {
-#ifdef USE_CV5_SYMBOLS
-            size = sizeof( s_pub32_new );
-#else
             size = sizeof( s_pub32 );
-#endif
         } else {
             size = sizeof( s_pub16 );
         }
@@ -444,11 +438,7 @@ void CVGenGlobal( symbol * sym, section *sect )
 // also called by loadpe between passes
 {
     s_pub16     pub16;
-#ifdef USE_CV5_SYMBOLS
-    s_pub32_new pub32;
-#else
     s_pub32     pub32;
-#endif
     unsigned    size;
     unsigned    pad;
     unsigned_32 buf;
@@ -460,20 +450,6 @@ void CVGenGlobal( symbol * sym, section *sect )
     namelen = strlen( sym->name );
     size = namelen + 1;
 
-#ifdef USE_CV5_SYMBOLS
-    if( ( sym->p.seg == NULL )
-        || IS_SYM_IMPORTED( sym )
-        || sym->p.seg->is32bit ) {
-        size += sizeof( s_pub32_new );
-        pub32.common.length = ROUND_UP( size, 4 );
-        pad = pub32.common.length - size;
-        pub32.common.length -= 2;
-        pub32.common.code = S_PUB32_NEW;
-        pub32.f.offset = sym->addr.off;
-        pub32.f.segment = GetCVSegment( sym->p.seg->u.leader );
-        pub32.f.type = 0;
-        DumpInfo( CVSECT_MISC, &pub32, sizeof( s_pub32_new ) );
-#else
     if( ( sym->p.seg == NULL )
         || IS_SYM_IMPORTED( sym )
         || sym->p.seg->is32bit ) {
@@ -486,7 +462,6 @@ void CVGenGlobal( symbol * sym, section *sect )
         pub32.f.segment = GetCVSegment( sym->p.seg->u.leader );
         pub32.f.type = 0;
         DumpInfo( CVSECT_MISC, &pub32, sizeof( s_pub32 ) );
-#endif
     } else {
         size += sizeof( s_pub16 );
         pub16.common.length = ROUND_UP( size, 4 );
