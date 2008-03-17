@@ -67,7 +67,7 @@ typedef enum exe_format {       // there is a corresp. table in MSG.C
 /* MK_OS2_LE, MK_OS2_LX, MK_WIN_VXD and MK_PE are not treated as FLAT internally */
 #define MK_FLAT      (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_ZDOS | MK_RAW)
 #define MK_ALLOW_32  (MK_PHAR_LAP | MK_OS2_LE | MK_OS2_LX | MK_NOVELL | MK_QNX | MK_PE | MK_ELF | MK_WIN_VXD | MK_ZDOS | MK_RAW)
-#define MK_ALLOW_16  (MK_286 | MK_PHAR_FLAT | MK_OS2 | MK_QNX | MK_PE | MK_WIN_VXD)
+#define MK_ALLOW_16  (MK_286 | MK_PHAR_FLAT | MK_OS2 | MK_QNX | MK_PE | MK_WIN_VXD | MK_RAW)
 #define MK_ID_SPLIT  (MK_NOVELL)
 #define MK_REAL_MODE (MK_DOS)
 #define MK_PROT_MODE (~MK_REAL_MODE)
