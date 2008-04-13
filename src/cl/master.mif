@@ -1,0 +1,58 @@
+proj_name = wcl
+
+!ifndef wcl_autodepends
+wcl_autodepends = .AUTODEPEND
+!endif
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+inc_dirs = -I. -I"../h"
+
+objs = wcl.obj clcommon.obj cmdlhelp.obj
+!ifeq host_os dos
+objs += swchar.obj
+!endif
+
+extra_c_flags = -s
+
+!ifeq target_cpu i86
+name = wcl.exe
+extra_c_flags += -DWCLI86
+!else ifeq target_cpu 386
+name = wcl386.exe
+extra_c_flags += -DWCL386
+!else ifeq target_cpu axp
+name = wclaxp.exe
+extra_c_flags += -DWCLAXP
+!else ifeq target_cpu ppc
+name = wclppc.exe
+extra_c_flags += -DWCLPPC
+!else ifeq target_cpu mps
+name = wclmps.exe
+extra_c_flags += -DWCLMPS
+!else
+extra_deps = owcchelp.gh
+objs = owcc.obj clcommon.obj cmdlhelp.obj getopt.obj quit.obj
+!ifeq host_os linux
+name = owcc.elf
+!else
+name = owcc.exe
+!endif
+!endif
+extra_c_flags_swchar = -I"../../h;../../dos386.i86" -I"$(comp_cfg_dir)/h"
+extra_c_flags_owcc   = -I"$(posix_dir)/h"
+extra_c_flags_getopt = -I"$(posix_dir)/h"
+extra_c_flags_quit   = -I"$(posix_dir)/h"
+
+extra_l_flags = op map
+
+.c: ../c;../../c;$(posix_dir)/misc;$(watcom_dir)/c
+
+$(name) : $(extra_deps) $(objs) $(cl_objs)
+        $(cl) $(clflags) $(objs) $(cl_objs) $(cl_libs)
+#        $(linker) $(lflags) name $^@ file {$(objs)}
+
+owcchelp.gh: ../owcchelp.sp
+        wsplice "-f\"%s\"," $< $@

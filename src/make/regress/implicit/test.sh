@@ -27,8 +27,8 @@ fi
 
 LOGFILE=$2
 
-wtouch hello.obj
-wtouch hello.cpp
+touch hello.obj
+touch hello.cpp
 
 echo \# ===========================
 echo \# Implicit Rules Test

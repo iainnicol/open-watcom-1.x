@@ -11,9 +11,10 @@ fi
 
 rm -f error.out
 
-# Make sure the utilities exist
+# Make sure the utilities exist, create wtouch symlink
 cd cmds
-$1 -h bootstrap=1
+$1 -h
+ln -s `which touch` wtouch
 cd ..
 
 # ===========================

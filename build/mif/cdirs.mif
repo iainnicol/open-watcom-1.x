@@ -128,6 +128,12 @@ wasmtest_dir    = $(dev_dir)/wasm/test
 !ifndef hdr_dir
 hdr_dir         = $(dev_dir)/hdr
 !endif
+!ifndef os2api_dir
+os2api_dir      = $(dev_dir)/os2api
+!endif
+!ifndef w32api_dir
+w32api_dir      = $(dev_dir)/w32api
+!endif
 !ifndef plustest_dir
 plustest_dir    = $(dev_dir)/plustest
 !endif
@@ -145,6 +151,12 @@ ftest_dir       = $(dev_dir)/f77/regress
 !endif
 !ifndef clib_dir
 clib_dir        = $(dev_dir)/clib
+!endif
+!ifndef emu387_dir
+emu387_dir      = $(dev_dir)/emu387
+!endif
+!ifndef emu87_dir
+emu87_dir       = $(dev_dir)/emu87
 !endif
 !ifndef mathlib_dir
 mathlib_dir     = $(dev_dir)/mathlib

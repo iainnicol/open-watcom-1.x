@@ -7,7 +7,11 @@ DIR = dyr
 !   error failed
 !endif
 
-!if [false] != 255
+!if [false] == 0
+!    error failed
+!endif
+
+!if [true] != 0
 !    error failed
 !endif
 

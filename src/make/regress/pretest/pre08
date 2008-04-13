@@ -4,6 +4,12 @@
 
 .silent
 
+!ifdef __UNIX__
+touch = touch
+!else
+touch = wtouch
+!endif
+
 tests = pre08.001 pre08.002 pre08.003 pre08.004 pre08.005 pre08.006     &
         pre08.007 pre08.008 pre08.009 pre08.010 pre08.011
 
@@ -28,20 +34,20 @@ pre08.002: .symbolic
 
 
 pre08.003: .symbolic
-    wtouch pre08.003
+    $(touch) pre08.003
     if not exist pre08.003 $(mkerr)
     rm pre08.003
     if exist pre08.003 $(mkerr)
 
 
 pre08.004: .symbolic
-    wtouch pre08.003
+    $(touch) pre08.003
     if not exist pre*.003 $(mkerr)
     rm pre08.003
 
 
 pre08.005:
-    if a == a if a== a if a ==a if a==a wtouch pre08.005
+    if a == a if a== a if a ==a if a==a $(touch) pre08.005
 
 
 pre08.006: .symbolic
@@ -59,11 +65,11 @@ pre08.006: .symbolic
 
 # this is an oddball case - try if a b == a echo hi under DOS
 pre08.007:
-    if a b == a wtouch pre08.007
+    if a b == a $(touch) pre08.007
 
 
 pre08.008:
-    if a        ==      a       wtouch pre08.008
+    if a        ==      a       $(touch) pre08.008
 
 
 pre08.009: .symbolic

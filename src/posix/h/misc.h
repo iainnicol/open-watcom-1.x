@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Miscellaneous utility routines for POSIX utilities.
 *
 ****************************************************************************/
 
@@ -35,7 +34,7 @@
 
 void    Quit( const char *usage_msg[], const char *msg, ... );
 void    Die( const char *str, ... );
-#ifndef __ALPHA__
+#ifdef __WATCOMC__
 #pragma aux Quit aborts;
 #pragma aux Die aborts;
 #endif

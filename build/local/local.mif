@@ -69,6 +69,11 @@ wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w4 -fo=.obj -fe=$^@
 wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w4 -fe=$^@
 !endif
 
+#common UNIXy stuff
+# TODO: get rid of bld_cl/cc and replace with host_cl/cc?
+host_cl = cc
+host_cl_opts = -o $^@ 
+
 #common bootstrap definitions for Linux
 !ifdef __LINUX__
 !ifdef bootstrap

@@ -66,7 +66,7 @@ enum {
     _USAGE_BRIEF
 };
 
-#ifndef __ALPHA__
+#ifdef __WATCOMC__
 #pragma aux ExitWithUsage aborts;
 #endif
 extern void     ExitWithUsage( const char *__usage[], int __type );

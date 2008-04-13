@@ -78,8 +78,8 @@ orl_return DoSymTable( orl_sec_handle orl_sec_hnd )
     return( ORL_OKAY );
 }
 
-static void * objRead( void *hdl, unsigned int len )
-/**************************************************/
+static void * objRead( void *hdl, size_t len )
+/********************************************/
 {
     buff_list   ptr;
 

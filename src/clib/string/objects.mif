@@ -1,0 +1,191 @@
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+#==================================================================================================
+!inject bits.obj     d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject bprintf.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject cmp386.obj       d32             nt         nvc nvl     o32     q32     w32 osi l32
+!inject fsetbits.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject fstrcat.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrchr.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrcmp.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrcpy.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrcspn.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrdup.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstricmp.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrlen.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrlwr.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrncat.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrncmp.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrncpy.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrnicm.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrnset.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrpbrk.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32     l32
+!inject fstrrchr.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrrev.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrset.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrspn.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrspnp.obj d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrstr.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject fstrtok.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32     l32
+!inject fstrupr.obj  d16 d32             nt                 o16 o32 q16 q32 w16 w32 osi l32
+!inject rstrdata.obj                        nta ntp
+!inject rstrcat.obj                         nta ntp
+!inject rstrchr.obj                         nta ntp
+!inject rstrcmp.obj                         nta ntp
+!inject rstrcpy.obj                         nta ntp
+!inject rstricmp.obj                        nta ntp
+!inject rstrlen.obj                         nta ntp
+!inject rstrlwr.obj                         nta ntp
+!inject rstrncat.obj                        nta ntp
+!inject rstrncmp.obj                        nta ntp
+!inject rstrncpy.obj                        nta ntp
+!inject rstrnicm.obj                        nta ntp
+!inject rstrnset.obj                        nta ntp
+!inject rstrpbrk.obj                        nta ntp
+!inject rstrrchr.obj                        nta ntp
+!inject rstrset.obj                         nta ntp
+!inject rstrstr.obj                         nta ntp
+!inject rstrupr.obj                         nta ntp
+!inject selptr.obj   d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi
+!inject sneptr.obj   d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi
+!inject snprintf.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject snprtf_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject sprintf.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject sprntf_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject sscanf.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject sscanf_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strcat.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strchr.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strcmp.obj   d16                    nta ntp         o16     q16     w16             lpc lmp
+!inject strcoll.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strcpy.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strcspn.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strdup.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strerror.obj d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi l32 lpc lmp
+!inject stricmp.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strlcat.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strlcpy.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strlen.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strlwr.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strncat.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strncmp.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strncpy.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strnicmp.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strnset.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strpbrk.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strrchr.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strrev.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strset.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strspnp.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strspn.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strstr.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strtok.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strupr.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strxfrm.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject stncat_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject stncpy_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strcat_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strcpy_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject streln_s.obj d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi l32 lpc lmp
+!inject strerr_s.obj d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi l32 lpc lmp
+!inject strnln_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject strtok_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject u_stprtf.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject ubprintf.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject urstrdat.obj                        nta ntp
+!inject urstrcat.obj                        nta ntp
+!inject urstrchr.obj                        nta ntp
+!inject urstrcmp.obj                        nta ntp
+!inject urstrcpy.obj                        nta ntp
+!inject urstricm.obj                        nta ntp
+!inject urstrlen.obj                        nta ntp
+!inject urstrlwr.obj                        nta ntp
+!inject urstrnca.obj                        nta ntp
+!inject urstrncm.obj                        nta ntp
+!inject urstrncp.obj                        nta ntp
+!inject urstrnic.obj                        nta ntp
+!inject urstrnse.obj                        nta ntp
+!inject urstrpbr.obj                        nta ntp
+!inject urstrrch.obj                        nta ntp
+!inject urstrset.obj                        nta ntp
+!inject urstrstr.obj                        nta ntp
+!inject urstrupr.obj                        nta ntp
+!inject usnprt_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject usprintf.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject usprtf_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject usscanf.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject usscnf_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrcat.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrchr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrcmp.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrcoll.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrcpy.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrcspn.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrdup.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrerro.obj d16 d32             nt nta ntp         o16 o32         w16 w32     l32 lpc lmp
+!inject ustricmp.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrlcat.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrlcpy.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrlen.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrlwr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrncat.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrncmp.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrncpy.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrnicm.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrnset.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrpbrk.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrrchr.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrrev.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrset.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrspn.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrspnp.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrstr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrtok.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrupr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrxfrm.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject uvsnpr_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject uvsprint.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject uvsprt_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject uvsscn_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustcat_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustncp_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustnct_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustnln_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrcp_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject ustrel_s.obj d16 d32             nt nta ntp         o16 o32         w16 w32     l32 lpc lmp
+!inject ustrer_s.obj d16 d32             nt nta ntp         o16 o32         w16 w32     l32 lpc lmp
+!inject ustrtk_s.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject vsnprt_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject vsprintf.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject vsprtf_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject vsscnf_s.obj d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+
+!include ../../../../objlist.mif
+
+usprintf_postopts=-os
+usscanf_postopts =-os
+ustrcat_postopts =-os
+ustrchr_postopts =-os
+ustrcpy_postopts =-os
+ustrcspn_postopts=-os
+ustrdup_postopts =-os
+ustricmp_postopts=-os
+ustrlcat_postopts=-os
+ustrlcpy_postopts=-os
+ustrlen_postopts =-os
+ustrlwr_postopts =-os
+ustrncat_postopts=-os
+ustrncmp_postopts=-os
+ustrncpy_postopts=-os
+ustrnicm_postopts=-os
+ustrnset_postopts=-os
+ustrpbrk_postopts=-os
+ustrrchr_postopts=-os
+ustrrev_postopts =-os
+ustrset_postopts =-os
+ustrspn_postopts =-os
+ustrstr_postopts =-os
+ustrtok_postopts =-os
+ustrcmp_postopts =-os
+ustrupr_postopts =-os
+uvsprint_postopts=-os
+ubprintf_postopts=-os

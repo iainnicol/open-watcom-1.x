@@ -5,14 +5,8 @@
     rm -f ../objs.mif ../a/*.asm
     $]@ aliases.lst ../a/ ../objs.mif
 
-src = $(lib_misc_dir)/c/aliasgen.c
-
-./aliasgen.exe : $(src)
-!ifdef bootstrapmode
-    gcc $< -o $@
-!else
-    $(bld_cl) $(wcl_util_opts) $<
-!endif
+./aliasgen.exe : $(lib_misc_dir)/c/aliasgen.c
+    $(host_cl) $(host_cl_opts) $<
 
 clean : .symbolic
     rm -f aliasgen.exe *.?bj *.err ../a/*.asm ../objs.mif
@@ -25,4 +19,3 @@ realclean : .symbolic clean
 #
 project : .symbolic
     pexist lib_misc
-
