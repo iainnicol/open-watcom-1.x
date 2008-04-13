@@ -540,6 +540,9 @@ unsigned RunIt( char *cmd )
         res = ProcSet( SkipBlanks( cmd + sizeof( "SET" ) ) );
     } else if( BUILTIN( "ECHO" ) ) {
         Log( Quiet, "%s\n", SkipBlanks( cmd + sizeof( "ECHO" ) ) );
+    } else if( BUILTIN( "ERROR" ) ) {
+        Log( Quiet, "%s\n", SkipBlanks( cmd + sizeof( "ERROR" ) ) );
+        res = 1;
     } else if( BUILTIN( "COPY" ) ) {
         res = ProcCopy( SkipBlanks( cmd + sizeof( "COPY" ) ), FALSE, FALSE );
     } else if( BUILTIN( "ACOPY" ) ) {

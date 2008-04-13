@@ -4,7 +4,7 @@
 # Build libraries in place, do not copy any files around.
 
 [ BLOCK .<PROJNAME> . ]
-    echo PROJNAME must be set!
+    error PROJNAME must be set!
 
 [ BLOCK <1> build rel2 ]
 #=======================

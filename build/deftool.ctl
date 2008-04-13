@@ -8,7 +8,7 @@
 # NB: PROJNAME must be the tool's base name.
 
 [ BLOCK .<PROJNAME> . ]
-    echo PROJNAME must be set!
+    error PROJNAME must be set!
 
 [ BLOCK <1> build rel2 ]
 #=======================

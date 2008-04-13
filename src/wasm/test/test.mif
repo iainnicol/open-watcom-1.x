@@ -12,9 +12,9 @@ tmp_file = tmp.tmp
     @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dis $^&.esm
     $(%ESM_CHECK)
     @dmpobj -q -l -rec=FIXUPP $[@
-    @bvi -d -q -s ../fixlst1.vi -k "ZZ" $^&.lst
+    @sed -f ../fixlst.sed $^&.lst > $^&.lsf
     @set EMP_CHECK=@%null
-    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
+    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lsf $^&.emp
     $(%EMP_CHECK)
     @%append $(%ERROR_FILE) PASS decoding $[@
 
@@ -41,7 +41,7 @@ finish_test : .symbolic ./chk_exec.exe
     %append $(log_file) PASS $(%__CWD__)
 
 ./chk_exec.exe : ../c/chk_exec.c
-    $(bld_cl) $< $(wcl_util_opts)
+    $(cl) $(clflags) $< $(cl_libs)
 
 start_test : .symbolic
     @%create exec.out

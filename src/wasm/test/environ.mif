@@ -470,4 +470,4 @@ clean : .symbolic global
 
 common_clean : .procedure
     rm -f *.?bj *.err *.lnk *.exe *.out *.sym
-    rm -f *.dmp *.map *.lst *.log *.dis *.tmp
+    rm -f *.dmp *.map *.lst *.lsf *.log *.dis *.tmp

@@ -136,7 +136,7 @@ orl_return PrintSymbolInfo( orl_symbol_handle symbol )
     }
     sec = ORLSymbolGetSecHandle( symbol );
     if( sec ) {
-        printf( " (in '%s')", ORLSecGetName( sec ), sec );
+        printf( " (in '%s')", ORLSecGetName( sec ) );
     }
     printf( "\n" );
     return( ORL_OKAY );

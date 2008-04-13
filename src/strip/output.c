@@ -119,7 +119,7 @@ void Fatal( int reason, char *insert )
 }
 
 
-static long res_seek( WResFileID handle, off_t position, int where )
+static off_t res_seek( WResFileID handle, off_t position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
 {

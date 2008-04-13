@@ -14,4 +14,4 @@ mkdir ../builder/$OBJDIR
 cd ../builder/$OBJDIR
 wmake -h -f ../bootmake builder.exe
 cd ../..
-builder -s boot 
+builder boot 

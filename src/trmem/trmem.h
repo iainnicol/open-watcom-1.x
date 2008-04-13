@@ -188,7 +188,7 @@ int _trmem_prt_use_seg_num( _trmem_hdl, int use_set_num );
 _trmem_who  _trmem_guess_who( void );
 _trmem_who  _trmem_whoami( void );
 
-#if defined( __386__ )
+#if defined( __386__ ) && defined( __WATCOMC__ )
     #pragma aux _trmem_guess_who = \
         0x8b 0x45 0x04      /*      mov     eax,+4[ebp]         */ \
         parm caller         [] \
