@@ -389,7 +389,7 @@ inc_dirs_lang   = -I$(lang_root)/h
 !endif
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I$(watcom_dir)/h
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 !else
 
@@ -416,7 +416,7 @@ inc_dirs_lang   = -I$(lang_root)\h
 !endif
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
-inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I$(watcom_dir)\h
+inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)\h"
 
 !endif
 

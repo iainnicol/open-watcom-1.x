@@ -45,14 +45,14 @@ cpp_386         += $(bld_incs)
 !endif
 
 !ifdef __LOADDLL__
-!loaddll wcc    $(nlang_dll)\wccd.dll
-!loaddll wcc386 $(nlang_dll)\wccd386.dll
-!loaddll wccaxp $(nlang_dll)\wccdaxp.dll
-!loaddll wlib   $(nlang_dll)\wlibd.dll
-!loaddll wlink  $(nlang_dll)\wlink.dll
-!loaddll wpp    $(nlang_dll)\wppdi86.dll
-!loaddll wpp386 $(nlang_dll)\wppd386.dll
-!loaddll wppaxp $(nlang_dll)\wppdaxp.dll
+!loaddll wcc    $(lang_dll)\wccd.dll
+!loaddll wcc386 $(lang_dll)\wccd386.dll
+!loaddll wccaxp $(lang_dll)\wccdaxp.dll
+!loaddll wlib   $(lang_dll)\wlibd.dll
+!loaddll wlink  $(lang_dll)\wlink.dll
+!loaddll wpp    $(lang_dll)\wppdi86.dll
+!loaddll wpp386 $(lang_dll)\wppd386.dll
+!loaddll wppaxp $(lang_dll)\wppdaxp.dll
 !endif
 
 !ifeq proj_name cc
