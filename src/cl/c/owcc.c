@@ -231,17 +231,33 @@ OW options that might be useful to add:
 #define P_WAIT 0
 int spawnlp( int mode, const char *path, const char *cmd, ... )
 {
+    pid_t       pid;
     va_list     ap;
     const char  *arg;
+    char        *args[8];
+    int         i;
+    int         status;
 
-    printf( "would have run '%s", cmd );
     va_start( ap, cmd );
+    args[0] = (char *)cmd;
+    i = 1;
     while( arg = va_arg( ap, const char * ) ) {
-        printf( " %s", arg ); 
+        args[i++] = (char *)arg;
     }
-    printf( "'\n" );
+    args[i] = NULL;
     va_end( ap );
-    return( 0 );
+
+    pid = fork();
+    if( pid == -1 )
+        return( -1 );
+    if( pid == 0 ) {
+        execvp( cmd, args );
+        _exit( 127 );
+    }
+    if( waitpid( pid, &status, 0 ) == -1 ) {
+        status = -1;
+    }
+    return( status );
 }
 #endif
 

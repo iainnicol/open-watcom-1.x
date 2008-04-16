@@ -24,10 +24,6 @@ extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 std_defines = -DNDEBUG
 !endif
 
-!ifdef %CGEXTRAOPTS
-opt_standard += $(%CGEXTRAOPTS)
-!endif
-
 inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 
 .c: $(src_path);$(trmem_dir)
@@ -35,15 +31,7 @@ inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 .asm: $(asm_path)
 
 libfile: .PROCEDURE
-        rm -f $^&.lbc
-!ifdef bootstrap
-# to be fixed: wlib -fa now produces a library that gnu ld can't read
-# can be a bug in wlib or in gnu ld, I don't know right now...
-        ar crs $^. $<
-!else
-        @for %i in ($<) do @%append $^&.lbc +%i
-        $(librarian) $(libflags) $^. @$^&.lbc
-!endif
+        $(librarian) $(libflags) $<
 
 !ifdef bootstrap
 bitset_opts = -o $@ -g

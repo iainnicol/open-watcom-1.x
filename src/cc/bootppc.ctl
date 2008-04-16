@@ -3,20 +3,22 @@
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ BLOCK <1> clean ]
-#==================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f -r <PROJDIR>/<OBJDIR>.ppc
+    rm -f -r <PROJDIR>/<OBJDIR>.ppc
+    echo rm -f <OWBINDIR>/wccppc<CMDEXT>
+    rm -f <OWBINDIR>/wccppc<CMDEXT>
 
 [ BLOCK <1> boot ]
 #=================
     echo Building the wccppc bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
+    mkdir <PROJDIR>/<OBJDIR>.ppc
+    cdsay <PROJDIR>/<OBJDIR>.ppc
     cp -f ../linux386.ppc/target.h .
     wmake -h -f ../makeppc
-    <CPCMD> wccppc <DEVDIR>/build/bin/wccppc
+    <CPCMD> wccppc <OWBINDIR>/wccppc<CMDEXT>
     cdsay <PROJDIR>

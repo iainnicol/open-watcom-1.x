@@ -1,6 +1,5 @@
 Build system todo/ideas:
 
-- Implement 'error' function for builder.
 - Remove as many environment variables as possible.
 - Remove the vestiges of old build system(s).
 - Remove unused macros.
