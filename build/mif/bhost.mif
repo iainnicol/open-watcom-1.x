@@ -61,10 +61,14 @@ bcl             = *wclppc
 !else ifdef __LINUXMIPS__
 bcl             = *wclmps
 !else
-bcl             = *bwcl386
+bcl             = *wcl386
 !endif
 
+# TODO: kill off bld_xxx, replace with host_xxx?
 bld_cl          = $(bcl) -l=$(bld_sys) $(bld_incs)
+
+host_cl         = $(bcl)
+host_cl_opts    = -l=$(bld_sys) $(bld_incs)
 
 bld_link        = *wlink sys $(bld_sys)
 

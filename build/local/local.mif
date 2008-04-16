@@ -69,10 +69,12 @@ wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w4 -fo=.obj -fe=$^@
 wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w4 -fe=$^@
 !endif
 
+!ifdef __UNIX__
 #common UNIXy stuff
 # TODO: get rid of bld_cl/cc and replace with host_cl/cc?
 host_cl = cc
 host_cl_opts = -o $^@ 
+!endif
 
 #common bootstrap definitions for Linux
 !ifdef __LINUX__
@@ -86,7 +88,7 @@ bld_cl = gcc $(bld_incs)
 bld_cc = gcc $(bld_incs)
 bld_link = gcc
 librarian = ar
-libflags = crs
+libflags = crs $^@
 
 cppflags_386  = -D_M_IX86 -D__386__
 cppflags_ppc  = -D__PPC__
@@ -158,6 +160,30 @@ wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@ $(defines
 clflags = -o $@
 cl_objs = clibext.obj
 .c : $(watcom_dir)/c
+
+!endif
+!endif
+
+!ifdef __NT__
+!ifdef bootstrap
+
+# MSVC
+cc = cl
+cpp = cl
+cl = $(cc)
+bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
+bld_cl = cl $(bld_incs)
+bld_cc = cl $(bld_incs)
+bld_link = cl
+librarian = lib
+libflags = -nologo -out:$^@
+
+cppflags_386 = -D_M_IX86 -D__386__
+cppflags = $(defines) -DNDEBUG -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
+cflags = -c -nologo $(extra_c_flags) $(cppflags) -Fo$@
+
+host_cl = cl
+host_cl_opts = -nologo -Fe$^@
 
 !endif
 !endif
