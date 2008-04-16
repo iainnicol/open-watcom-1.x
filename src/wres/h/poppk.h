@@ -24,16 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Include this file to restore default structure packing.
 *
 ****************************************************************************/
 
 
-/* Include this file to restore the default structure packing setting. */
-
 #if defined( __WATCOMC__ )
-    #pragma pack(__pop);
+    #pragma pack(__pop)
 #elif defined( __ALPHA__ ) || defined( _CFE )
     #pragma pack();
 #elif defined( __MWERKS__ )

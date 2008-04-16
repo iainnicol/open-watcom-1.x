@@ -178,9 +178,14 @@ bld_link = cl
 librarian = lib
 libflags = -nologo -out:$^@
 
-cppflags_386 = -D_M_IX86 -D__386__
+cppflags_386 = -D_M_IX86 -D__386__ -D__NT__
 cppflags = $(defines) -DNDEBUG -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
 cflags = -c -nologo $(extra_c_flags) $(cppflags) -Fo$@
+
+# options for linking via cl
+clflags = -nologo -Fe$@
+cl_objs = clibext.obj
+.c : $(watcom_dir)/c
 
 host_cl = cl
 host_cl_opts = -nologo -Fe$^@

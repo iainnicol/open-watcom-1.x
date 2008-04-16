@@ -24,16 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Include this file to force 2-byte structure packing.
 *
 ****************************************************************************/
 
 
-/* Include this file to cause 2-byte structure packing. */
-
 #if defined( __WATCOMC__ )
-    #pragma pack(__push,2);
+    #pragma pack(__push,2)
 #elif defined( __ALPHA__ ) || defined( _CFE ) // SGI's C preprocessor
     #if !defined( _NO_PRAGMA_PUSH_PACK )
         #define _NO_PRAGMA_PUSH_PACK

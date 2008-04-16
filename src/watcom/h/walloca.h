@@ -32,7 +32,7 @@
 #ifndef WALLOCA_H_INCLUDED
 #define WALLOCA_H_INCLUDED
 
-#ifdef __WATCOMC__
+#if defined(__WATCOMC__) || defined(_MSC_VER)
     #include <malloc.h>
 #else
     #include <stdlib.h>
