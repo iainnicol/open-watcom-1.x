@@ -24,6 +24,7 @@ sys_os2   = sys.obj sysos2.obj sysdoscd.obj
 sys_nt    = sys.obj sysnt.obj  sysdoscd.obj
 sys_linux = sys.obj sysposix.obj
 sys_osx   = sys.obj sysposix.obj
+sys_sol   = sys.obj sysposix.obj
 
 extra_c_flags = -D__OS_$(host_os)__ -DSTANDALONE_RX
 

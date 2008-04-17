@@ -34,6 +34,8 @@
 
 #if defined(__WATCOMC__) || defined(_MSC_VER)
     #include <malloc.h>
+#elif defined(__SUNPRO_C)
+    #include <alloca.h>
 #else
     #include <stdlib.h>
 #endif

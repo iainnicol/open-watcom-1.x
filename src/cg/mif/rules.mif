@@ -33,19 +33,17 @@ inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 libfile: .PROCEDURE
         $(librarian) $(libflags) $<
 
+# TODO: use common preprocessing rules/macros
 !ifdef bootstrap
-bitset_opts = -o $@ -g
 protos_opts = -E -traditional -o $@
 !else ifdef __UNIX__
-bitset_opts = -fo=.obj -fe=$@ -d2
 protos_opts = -p -fo=$@
 !else
-bitset_opts = -fe=$@ -d2
 protos_opts = -p -fo=$@
 !endif
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
-    $(bld_cl) $(bitset_opts) $[@
+    $(host_cl) $(host_cl_opts) $[@
 
 gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(gbit_size) _GBit global_bit_set $@

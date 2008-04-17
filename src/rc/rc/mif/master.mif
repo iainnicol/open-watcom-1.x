@@ -178,7 +178,7 @@ ytab2.c ytab2.gh : rcos2.y $(wrc_dir)/y/yydrivr2.c rcmem.h
         @rm -f ytab.h
 
 ./findhash.exe: $(fe_misc_dir)/c/findhash.c
-        $(bld_cl) $(wcl_util_opts) $<
+        $(host_cl) $(host_cl_opts) $<
 
 weights.gh keywords.gh : ./findhash.exe ../hash/rc.key
         $[@ -q -m ../hash/rc.key
@@ -207,7 +207,7 @@ version.res: version.rc
         $(rc) $(rc_flags) $(inc_path) -r $[@ -fo=$^@
 
 ./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-        $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
+        $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $[@
 
 !ifndef patch_level
 patch_level=0

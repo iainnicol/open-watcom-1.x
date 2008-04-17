@@ -90,7 +90,7 @@ typedef struct a_prec {
     char                prec;
 } a_prec;
 
-#if defined( SUN ) || defined( SGI )
+#if defined( SUN ) || defined( __sun ) || defined( SGI )
     #include <sys/types.h>
 #else
     typedef unsigned short index_t;

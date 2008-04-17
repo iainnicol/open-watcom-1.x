@@ -96,6 +96,10 @@ const char FAR *BuiltIns = {
     "__QNX__=\n"
     "__UNIX__=\n"
 
+#elif defined( __SunOS )
+    "__SOLARIS__=\n"
+    "__UNIX__=\n"
+
 #elif defined( __LINUX__ ) || defined( __linux__ )
     "__LINUX__=\n"
     "__UNIX__=\n"

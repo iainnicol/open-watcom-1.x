@@ -31,11 +31,11 @@
 
 #if defined( __WATCOMC__ )
     #pragma pack(__push,2)
-#elif defined( __ALPHA__ ) || defined( _CFE ) // SGI's C preprocessor
+#elif defined( __ALPHA__ ) || defined( _CFE ) || defined( __SUNPRO_C )
     #if !defined( _NO_PRAGMA_PUSH_PACK )
         #define _NO_PRAGMA_PUSH_PACK
     #endif
-    #pragma pack(2);
+    #pragma pack(2)
 #elif defined( MAC )
     #if defined( __MWERKS__ )
         #pragma options align= mac68k

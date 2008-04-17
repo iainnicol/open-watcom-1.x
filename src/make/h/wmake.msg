@@ -321,7 +321,7 @@ pick( SYS_ERR_15,                "Resource deadlock would occur",
                                 "リソース・デッド・ロックが起こります" )
 
 /* common signals that cause abnormal termination (cf. sys_siglist) */
-#if defined( __LINUX__ )
+#if defined( __UNIX__ )
 pick( SIG_ERR_0,                 "Abnormal termination by signal %d", "" )
 pick( SIG_ERR_1,                 "Hangup detected", "" )
 pick( SIG_ERR_2,                 "Keyboard interrupt", "" )
