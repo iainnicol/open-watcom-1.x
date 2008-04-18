@@ -8,10 +8,7 @@ as         += -q
 rc         += -q
 rcaui      += -q
 
-bld_cl     += -zq
 bcl        += -zq
-bld_cc     += -zq
-bld_link   += op q
 bas        += -q
 blib       += -q -zld
 brc        += -q
@@ -62,26 +59,23 @@ extra_l_flags_nt = lib $(watcom_dir)/lib/ld.lib
 def_targ        = wcc$(target_cpu)c.exe
 !endif
 
-# options for single source utility compilations
-!ifdef __UNIX__
-wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w4 -fo=.obj -fe=$^@
-!else
-wcl_util_opts = $(def_fpu_flags_$(host_os)_$(host_cpu)) -ox -w4 -fe=$^@
-!endif
+# TODO: atomize this file and create separate files for various host
+# platforms/compilers
 
 !ifdef __UNIX__
 #common UNIXy stuff
-# TODO: get rid of bld_cl/cc and replace with host_cl/cc?
 host_cl = cc
-host_cl_opts = -I$(watcom_dir)/h -o $^@ 
-
-librarian = ar
-libflags = crs $^@
+host_cl_opts = -D__UNIX__ -I$(watcom_dir)/h $(inc_dirs) -o $^@ 
 
 # options for linking via cc
 clflags = -o $@
 cl_objs = clibext.obj
 .c : $(watcom_dir)/c
+
+!ifdef bootstrap
+librarian = ar
+libflags = crs $^@
+!endif
 
 !endif
 
@@ -93,9 +87,6 @@ cc = gcc
 cpp = gcc
 cl = $(cc)
 bld_incs = $(bld_extra_incs) -I$(watcom_dir)/h
-bld_cl = gcc $(bld_incs)
-bld_cc = gcc $(bld_incs)
-bld_link = gcc
 
 cppflags_386  = -D_M_IX86 -D__386__
 cppflags_ppc  = -D__PPC__
@@ -112,12 +103,27 @@ cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SMALL__ -DUNIX -D__FLAT__ -DBOOTST
 $(cppflags_$(host_cpu)) -D_WCUNALIGNED="__attribute__((packed))" &
 -funsigned-char -fno-asm -fno-common
 
-#cppflages += -D__LINUX__ -DLINUX
+#cppflags += -D__LINUX__ -DLINUX
 
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
-# options for single source utility compilations
-wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@ $(defines)
+!endif
+!endif
+
+#common definitions for building on OS X (using GCC)
+!ifdef __OSX__
+!ifdef bootstrap
+
+cc = cc
+cpp = cc
+cl = $(cc)
+
+cppflags_386  = -D_M_IX86 -D__386__
+
+cflags_wng =
+cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__OSX__ -DBOOTSTRAP &
+$(cppflags_$(host_cpu)) -funsigned-char -fno-common
+cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -O -o $@
 
 !endif
 !endif
@@ -152,9 +158,6 @@ cpp = qcc
 cl = $(cc)
 !ifdef __QNX__
 bld_incs = $(bld_extra_incs) -I$(watcom_dir)/h
-bld_cl = $(cc) $(bld_incs)
-bld_cc = $(cc) $(bld_incs)
-bld_link = $(cc)
 !endif
 librarian += -fa
 
@@ -174,11 +177,6 @@ cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ &
 -D_WCUNALIGNED="__attribute__((packed))" -funsigned-char -fno-asm -fno-common
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
-!ifdef __QNX__
-# options for single source utility compilations
-wcl_util_opts = $(cflags_wng) $(cppflags) $(inc_dirs) $(ldflags) -o $@ $(defines)
-!endif
-
 # options for linking via cc
 clflags = -o $@
 cl_objs = clibext.obj
@@ -195,9 +193,6 @@ cc = cl
 cpp = cl
 cl = $(cc)
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
-bld_cl = cl $(bld_incs)
-bld_cc = cl $(bld_incs)
-bld_link = cl
 librarian = lib
 libflags = -nologo -out:$^@
 

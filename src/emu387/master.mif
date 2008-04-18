@@ -23,7 +23,7 @@ INCS = &
 .c : ../c;../../emu86/c
 .asm : ../asm
 
-extra_a_flags = -fpc -I"$(mathlib_dir)/h" -I"$(emu386)/inc"
+extra_a_flags = -fpc -I"$(mathlib_dir)/h" -I"$(emu387_dir)/inc"
 extra_a_flags_dos = -ms -D_OS=_PLDT -DSEGMENTED
 extra_a_flags_qnx = -ms -D_OS=_QNX -DSEGMENTED
 extra_a_flags_win = -mf -D_OS=_PLDT -D__WIN387__

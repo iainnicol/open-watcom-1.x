@@ -13,9 +13,3 @@ clean : .symbolic
 
 realclean : .symbolic clean
     rm -f ../objs.mif ../a/*.asm
-
-#
-# list of projects required to build the alias sub-component
-#
-project : .symbolic
-    pexist lib_misc

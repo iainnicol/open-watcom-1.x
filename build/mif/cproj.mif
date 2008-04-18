@@ -1,13 +1,6 @@
 # todo: do we really need this? doubt it...
 #!include preclude.mif
 
-!ifndef host_os
-!error host_os macro must be defined!
-!endif
-!ifndef host_cpu
-!error host_cpu macro must be defined!
-!endif
-
 !ifndef lang_root
 lang_root       = $(lang_root_$(host_cpu))
 !endif

@@ -199,7 +199,7 @@ msg.gh : ./mkstrid.exe
         $[@ $^@
 
 ./mkstrid.exe : mkstrid.c as.msg
-        $(bld_cl) $(wcl_util_opts) $(as_extra_defines) $(dbg_extra_defines) $(as_incs) $[@
+        $(host_cl) $(host_cl_opts) $(as_extra_defines) $(dbg_extra_defines) $(as_incs) $[@
 
 $(yacc_in) : $(yacc_src) $(as_dir)/y/yydriver.c
         wsplice $(splice_opts) $[@ $^@

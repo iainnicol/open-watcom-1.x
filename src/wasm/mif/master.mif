@@ -153,14 +153,14 @@ wmpmsg.gh : $(proj_path)/h/womp.msg
 
 ###################################################################
 
-./mkopcod1.exe: $(proj_path)/mkopcod1.c $(proj_path)/mkopcode.h $(cl_objs)
-        $(host_cl) -I"$(watcom_dir)/h" $(inc_dirs) $(host_cl_opts) -D_STANDALONE_ $[@ $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+./mkopcod1.exe: $(proj_path)/mkopcod1.c $(proj_path)/mkopcode.h
+        $(host_cl) $(inc_dirs) $(host_cl_opts) -D_STANDALONE_ $[@
 
 asmops.gh: ./mkopcod1.exe $(proj_path)/fullops.tok $(proj_path)/inlnops.tok
         $[@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $@
 
-./mkopcode.exe: $(proj_path)/mkopcode.c $(proj_path)/mkopcode.h asmops.gh $(cl_objs)
-        $(host_cl) -I"$(watcom_dir)/h" $(inc_dirs) $(host_cl_opts) -D_STANDALONE_ $[@ $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+./mkopcode.exe: $(proj_path)/mkopcode.c $(proj_path)/mkopcode.h asmops.gh
+        $(host_cl) $(inc_dirs) $(host_cl_opts) -D_STANDALONE_ $[@
 
 asmopsd.gh: ./mkopcode.exe $(proj_path)/fullops.tok $(proj_path)/inlnops.tok
         $[@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $@

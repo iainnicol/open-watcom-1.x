@@ -27,9 +27,9 @@ extra_c_flags = -DNDIS_$(target_cpu)
 .c: $(dis_srcs);$(disasm_dir)/test/c
 .h: $(dis_hdirs)
 
-inc_dirs = $(dis_includes)
+inc_dirs = -I. $(dis_includes)
 
 test_objs = main.obj $(dis_objs)
 
-$(name).exe : distbls.gh $(test_objs)
-        $(bld_link) debug all name $@ option quiet, map file { $(test_objs) }
+$(name).exe : distbls.gh $(test_objs) $(cl_objs)
+        $(host_cl) $(host_cl_opts) $(test_objs) $(cl_objs)

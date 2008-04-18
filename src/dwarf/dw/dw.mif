@@ -38,7 +38,7 @@ dw.lib : dwabenum.gh $(objs)
     $(librarian) $(libflags) $(objs) 
 
 ./dwmakeab.exe : dwmakeab.c
-    $(bld_cl) $(wcl_util_opts) $[@
+    $(host_cl) $(host_cl_opts) $[@
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     $[@

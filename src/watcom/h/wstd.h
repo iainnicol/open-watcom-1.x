@@ -39,7 +39,7 @@
 
 #include "watcom.h"
 
-#if !defined( UNIX )  &&  !defined( _MSC_VER )
+#if !defined( __UNIX__ )  &&  !defined( _MSC_VER )
     #if !(defined(__cplusplus) && (__WATCOMC__ >= 1070))
         typedef unsigned char   bool;
     #endif
@@ -260,7 +260,7 @@ typedef unsigned_8      sbit;
 #define SEGMENTED_CODE          0
 #define SEGMENTED_DATA          0
 
-#if defined( UNIX )             \
+#if defined( __UNIX__ )         \
 ||  defined( THINK_C )          \
 ||  defined( __SC__ )           \
 ||  defined( __MWERKS__ )       \
@@ -357,7 +357,7 @@ typedef unsigned_8      sbit;
 ||    PR_SH3    \
 ||    PR_SH4    \
 ||    PR_ARM    \
-||    defined( UNIX )
+||    defined( __UNIX__ )
     #undef  CS_ASCII_PLUS
     #undef  CS_ASCII
     #define CS_ASCII_PLUS       1

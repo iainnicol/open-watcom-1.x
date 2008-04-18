@@ -47,14 +47,11 @@ nulldevice      = /dev/null
 !else ifdef __SOLARIS__
 bld_sys         = sol
 nulldevice      = /dev/null
+!else ifdef __OSX__
+bld_sys         = osx
+nulldevice      = /dev/null
 !else
 !error Running on unsupported host OS!
-!endif
-
-!ifdef __NTAXP__
-bld_cc          = *wccaxp $(bld_incs)
-!else
-bld_cc          = *wcc386 $(bld_incs)
 !endif
 
 !ifdef __NTAXP__
@@ -67,13 +64,8 @@ bcl             = *wclmps
 bcl             = *wcl386
 !endif
 
-# TODO: kill off bld_xxx, replace with host_xxx?
-bld_cl          = $(bcl) -l=$(bld_sys) $(bld_incs)
-
 host_cl         = $(bcl)
 host_cl_opts    = -l=$(bld_sys) $(bld_incs)
-
-bld_link        = *wlink sys $(bld_sys)
 
 !ifeq host_cpu axp
 bas             = $(as)

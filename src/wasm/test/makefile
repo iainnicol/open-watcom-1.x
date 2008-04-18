@@ -22,7 +22,7 @@ $(all_tests) : .symbolic
     cd ..
 
 ./chktest.exe : $(watcom_dir)/c/chktest.c
-    $(bld_cl) $< $(wcl_util_opts)
+    $(host_cl) $(host_cl_opts) $<
 
 finish_test : .symbolic ./chktest.exe
     @cdsay >> $(log_file)

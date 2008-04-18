@@ -70,7 +70,7 @@ extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !endif
 !endif
 extra_c_flags_idedll   = -bd
-!ifdef __LINUX__
+!ifdef __UNIX__
 extra_c_flags_intlload = -D__header=\"fesupp.h\"
 !else
 extra_c_flags_intlload = -D__header="fesupp.h"

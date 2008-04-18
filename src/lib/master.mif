@@ -250,7 +250,7 @@ dll.lnk : $(__MAKEFILES__)
     @for %i in ($(xlibs)) do @%append $@ lib %i
 
 ./mkstr.exe : ../mkstr.c ../wlib.msg
-    $(bld_cl) $(wcl_util_opts) -I.. $[@
+    $(host_cl) $(host_cl_opts) -I.. $[@
 
 msg.gh : ./mkstr.exe
     *$< $@
@@ -262,7 +262,7 @@ version.res: version.rc
     $(rc) $(rc_flags) -r $(inc_path) $[@ -fo=$^@
 
 ./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-    $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
+    $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $[@
 
 !ifndef patch_level
 patch_level=0
