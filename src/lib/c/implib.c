@@ -742,8 +742,8 @@ int ElfImportSize( import_sym *import )
     len = ELFBASEIMPORTSIZE + strlen( import->DLLName ) + 1;
     switch( import->type ) {
     case ELF:
-        len += import->numsyms * 0x21;
-        for( temp = import->symlist; temp != NULL; temp = temp->next ) {
+        len += import->u.elf.numsyms * 0x21;
+        for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
             len += temp->len;
         }
         if( len & 1 ) {
@@ -751,7 +751,7 @@ int ElfImportSize( import_sym *import )
         }
         break;
     case ELFRENAMED:
-        len += 0x22 + import->symlist->len + import->symlist->next->len;
+        len += 0x22 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
         if( len & 1 ) {
             len++;
         }
@@ -898,7 +898,7 @@ void ElfWriteImport( libfile io, sym_file *file )
 
     import = file->import;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp=import->symlist; temp != NULL; temp = temp->next ) {
+    for( temp=import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         strtabsize += temp->len + 1;
     }
     parity = strtabsize & 1;
@@ -911,7 +911,7 @@ void ElfWriteImport( libfile io, sym_file *file )
     fillInLong( strtabsize + 0x118, &(ElfBase[0xc0]) );
     switch( import->type ) {
     case ELF:
-        numsyms = import->numsyms;
+        numsyms = import->u.elf.numsyms;
         break;
     case ELFRENAMED:
         numsyms = 1;
@@ -924,7 +924,7 @@ void ElfWriteImport( libfile io, sym_file *file )
     fillInLong( 0x10 * numsyms, &(ElfBase[0xec]) );
     LibWrite( io, &ElfBase, ElfBase_SIZE );
     LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
-    for( temp = import->symlist; temp != NULL; temp = temp->next ) {
+    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         LibWrite( io, temp->name, temp->len + 1 );
     }
     if( parity ) {
@@ -934,7 +934,7 @@ void ElfWriteImport( libfile io, sym_file *file )
 
     offset = 0;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp = import->symlist; temp != NULL; temp = temp->next ) {
+    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         LibWrite( io, &strtabsize, 4 );
         LibWrite( io, &offset, 4 );
         more = 0x10;
@@ -955,7 +955,7 @@ void ElfWriteImport( libfile io, sym_file *file )
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
     switch( import->type ) {
     case ELF:
-        for( temp = import->symlist; temp != NULL; temp = temp->next ) {
+        for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
             LibWrite( io, &temp->ordinal, 4 );
             LibWrite( io, &strtabsize, 4 );
             more = 0x01000022;
@@ -966,7 +966,7 @@ void ElfWriteImport( libfile io, sym_file *file )
         }
         break;
     case ELFRENAMED:
-        temp = import->symlist;
+        temp = import->u.elf.symlist;
         strtabsize += temp->len + 1;
         temp = temp->next;
         LibWrite( io, &(temp->ordinal), 4 );

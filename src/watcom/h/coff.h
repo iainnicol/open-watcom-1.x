@@ -137,7 +137,7 @@ typedef struct {
     union {
         uint_32         symbol_table_index;
         uint_32         RVA;
-    };
+    } ir;
     uint_16             line_number;
 } coff_line_num;
 
@@ -563,7 +563,7 @@ typedef struct {
     union {
         uint_16 ordinal;                // if grf & IMPORT_OBJECT_ORDINAL
         uint_16 hint;
-    };
+    } oh;
 
     uint_16 object_type : 2;            // import_object_type
     uint_16 name_type : 3;              // import_name_type

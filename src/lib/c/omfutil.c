@@ -298,7 +298,7 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
 
     for( ; file != NULL; file = file->next ){
         if( file->import ) {
-            fname = file->import->symName;
+            fname = file->import->u.sym.symName;
         } else {
             fname = MakeFName( file->full_name);
         }
@@ -461,11 +461,11 @@ void WriteOmfFile( sym_file *file )
         unsigned    i;
 
         omfRec->basic.type = CMD_THEADR;
-        sym_len = strlen( file->import->symName );
+        sym_len = strlen( file->import->u.sym.symName );
         omfRec->basic.len = sym_len + 2;
         omfRec->basic.contents[0] = sym_len;
         charCount += ( sym_len + 1 ) | 1;
-        strcpy( (char *)omfRec->basic.contents + 1, file->import->symName );
+        strcpy( (char *)omfRec->basic.contents + 1, file->import->u.sym.symName );
         sum = 0;
         for( i = 0; i < sym_len + 4; ++i ) {
             sum += omfRec->chkcalc[i];
@@ -484,16 +484,16 @@ void WriteOmfFile( sym_file *file )
             omfRec->basic.contents[3] = 0;
         }
         omfRec->basic.contents[4] = sym_len;
-        strcpy( (char *)omfRec->basic.contents + 5, file->import->symName );
+        strcpy( (char *)omfRec->basic.contents + 5, file->import->u.sym.symName );
         omfRec->basic.contents[5 + sym_len] = file_len;
         strcpy( (char *)omfRec->basic.contents + 6 + sym_len, file->import->DLLName );
         if( file->import->type == ORDINAL ) {
-           *( (unsigned_16 *)&( omfRec->basic.contents[6 + sym_len + file_len ] ) ) = (unsigned_16)file->import->ordinal;
+           *( (unsigned_16 *)&( omfRec->basic.contents[6 + sym_len + file_len ] ) ) = (unsigned_16)file->import->u.sym.ordinal;
         } else {
-            if( file->import->exportedName ) {
-                i = strlen( file->import->exportedName );
+            if( file->import->u.sym.exportedName ) {
+                i = strlen( file->import->u.sym.exportedName );
                 omfRec->basic.contents[ 6 + sym_len + file_len ] = i ;
-                memcpy( omfRec->basic.contents + 7 + sym_len + file_len, file->import->exportedName, i + 1 ) ;
+                memcpy( omfRec->basic.contents + 7 + sym_len + file_len, file->import->u.sym.exportedName, i + 1 ) ;
                 sym_len += i + 1;
                 omfRec->basic.len += i + 1;
             } else {

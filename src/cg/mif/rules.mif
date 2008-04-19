@@ -35,6 +35,7 @@ libfile: .PROCEDURE
 
 # TODO: use common preprocessing rules/macros
 !ifdef bootstrap
+# TODO: get rid of the requirement for -traditional - highly non-portable!
 protos_opts = -E -traditional -o $@
 !else ifdef __UNIX__
 protos_opts = -p -fo=$@
@@ -55,7 +56,15 @@ dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(dbit_size) _DBit dom_bit_set $@
 
 cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
+!ifdef bootstrap
+    gcc $(protos_opts) $[@ -I"$(cg_dir)/h"
+!else
     $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h"
+!endif
 
 feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
+!ifdef bootstrap
+    gcc $(protos_opts) $[@ -I"$(cg_dir)/h"
+!else
     $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h"
+!endif

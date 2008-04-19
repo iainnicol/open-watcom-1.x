@@ -40,16 +40,15 @@ typedef struct line_num_info {
 } line_num_info;
 
 extern void     AddPublicData( dir_node *data );
+extern void     AddPublicProc( dir_node *data );
 extern void     AddLnameData( dir_node *data );
-extern void     AddGlobalData( dir_node *data );
 extern void     AddAliasData( char *data );
 extern void     AddLinnumData( struct line_num_info *data );
 
 extern bool     GetLnameData( obj_rec * );
 extern char     *GetAliasData( bool );
-extern uint     GetPublicData( uint *, uint *, char *, char ***, struct pubdef_data **, bool *, bool );
+extern bool     GetPublicData( void );
 extern int      GetLinnumData( struct linnum_data **ldata, bool *need32 );
-extern void     GetGlobalData( void );
 
 extern void     FreeAllQueues( void );
 

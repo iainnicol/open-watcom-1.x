@@ -41,7 +41,7 @@ finish_test : .symbolic ./chk_exec.exe
     %append $(log_file) PASS $(%__CWD__)
 
 ./chk_exec.exe : ../c/chk_exec.c
-    $(cl) $(clflags) $< $(cl_libs)
+    $(host_cl) $(host_cl_opts) $< $(cl_libs)
 
 start_test : .symbolic
     @%create exec.out

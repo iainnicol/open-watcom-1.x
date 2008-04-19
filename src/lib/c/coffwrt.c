@@ -259,12 +259,12 @@ void CoffWriteImport( libfile io, sym_file *file )
         dll_name_len = strlen( dllName);
     }
     sym_name_len = 0;
-    symName = file->import->symName;
+    symName = file->import->u.sym.symName;
     if( symName != NULL ) {
         sym_name_len = strlen( symName );
     }
     exported_name_len = 0;
-    exportedName = file->import->exportedName;
+    exportedName = file->import->u.sym.exportedName;
     if( exportedName == NULL ) {
         exportedName = symName; // use this instead
     }
@@ -458,7 +458,7 @@ void CoffWriteImport( libfile io, sym_file *file )
             break;
         }
         memset( buffer, 0, 4 );
-        ordinal = file->import->ordinal;
+        ordinal = file->import->u.sym.ordinal;
         LibWrite( io, &ordinal, 2 );
         type = 0x8000;
         LibWrite( io, &type, 2 );
@@ -579,7 +579,7 @@ void CoffWriteImport( libfile io, sym_file *file )
         WriteCoffReloc( io, 0, sym_idx, type );
         LibWrite( io, buffer, 4 );
         WriteCoffReloc( io, 0, sym_idx, type );
-        ordinal = file->import->ordinal;
+        ordinal = file->import->u.sym.ordinal;
         LibWrite( io, &ordinal, sizeof( ordinal ) );
         LibWrite( io, symName, sym_name_len + 1 );
         if( !( sym_name_len & 1 ) ) {

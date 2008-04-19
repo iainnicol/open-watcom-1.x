@@ -38,6 +38,7 @@
 #if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "asmstruc.h"
+  #include "queues.h"
 #endif
 
 #ifndef min
@@ -439,7 +440,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
 
 #if defined( _STANDALONE_ )
-            if( store_fixup( 0 ) == ERROR )
+            if( store_fixup( OPND1 ) == ERROR )
                 return( ERROR );
 #endif
             /* now actually output the data */
@@ -562,7 +563,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                             data += fixup->offset;
                         }
 #if defined( _STANDALONE_ )
-                        if( store_fixup( 0 ) == ERROR )
+                        if( store_fixup( OPND1 ) == ERROR )
                             return( ERROR );
 #endif
                         break;
@@ -857,7 +858,13 @@ int data_init( int sym_loc, int initializer_loc )
         }
 
         if( Parse_Pass == PASS_1 ) {
-            if( sym->state != SYM_UNDEFINED ) {
+            if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
+                dir_to_sym( (dir_node *)sym );
+                AddPublicData( (dir_node *)sym );
+                if( sym->mem_type != mem_type ) {
+                    AsmErr( SYMBOL_TYPE_DIFF, sym->name );
+                }
+            } else if( sym->state != SYM_UNDEFINED ) {
                 // redefine label
                 AsmError( SYMBOL_ALREADY_DEFINED );
                 return( ERROR );

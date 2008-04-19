@@ -67,9 +67,9 @@ void FiniSymFile( sym_file *file )
         switch( file->import->type ) {
         case ELF:
         case ELFRENAMED:
-            for( temp = file->import->symlist; temp != NULL;
-                         temp=file->import->symlist ) {
-                file->import->symlist = temp->next;
+            for( temp = file->import->u.elf.symlist; temp != NULL;
+                         temp=file->import->u.elf.symlist ) {
+                file->import->u.elf.symlist = temp->next;
                 MemFreeGlobal( temp->name );
                 MemFreeGlobal( temp );
             }
@@ -77,8 +77,8 @@ void FiniSymFile( sym_file *file )
             break;
         default:
             MemFreeGlobal( file->import->DLLName );
-            MemFreeGlobal( file->import->symName );
-            MemFreeGlobal( file->import->exportedName );
+            MemFreeGlobal( file->import->u.sym.symName );
+            MemFreeGlobal( file->import->u.sym.exportedName );
             break;
         }
         MemFreeGlobal( file->import );
@@ -784,16 +784,16 @@ void OmfMKImport( arch_header *arch, long ordinal, char *dll_name,
     NewSymFile( arch );
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->DLLName = DupStrGlobal( dll_name );
-    CurrFile->import->ordinal = ordinal;
+    CurrFile->import->u.sym.ordinal = ordinal;
     if( sym_name != NULL ) {
-        CurrFile->import->symName = DupStrGlobal( sym_name );
+        CurrFile->import->u.sym.symName = DupStrGlobal( sym_name );
     } else {
-        CurrFile->import->symName = NULL;
+        CurrFile->import->u.sym.symName = NULL;
     }
     if( exportedName != NULL ) {
-        CurrFile->import->exportedName = DupStrGlobal( exportedName );
+        CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
     } else {
-        CurrFile->import->exportedName = NULL;
+        CurrFile->import->u.sym.exportedName = NULL;
     }
     CurrFile->import->type = type;
     CurrFile->import->processor = WL_PROC_X86;  // set default JBS 99/12/21
@@ -812,17 +812,17 @@ void CoffMKImport( arch_header *arch, importType type,
 
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
-    CurrFile->import->ordinal = ordinal;
+    CurrFile->import->u.sym.ordinal = ordinal;
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
     if( symName != NULL ) {
-        CurrFile->import->symName = DupStrGlobal( symName );
+        CurrFile->import->u.sym.symName = DupStrGlobal( symName );
     } else {
-        CurrFile->import->symName = NULL;
+        CurrFile->import->u.sym.symName = NULL;
     }
     if( exportedName != NULL ) {
-        CurrFile->import->exportedName = DupStrGlobal( exportedName );
+        CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
     } else {
-        CurrFile->import->exportedName = NULL;
+        CurrFile->import->u.sym.exportedName = NULL;
     }
     CurrFile->import->processor = processor;
     CurrFile->arch.size = CoffImportSize( type, DLLname, symName, exportedName, processor );
@@ -847,8 +847,8 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
     CurrFile->import->type = type;
     CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    CurrFile->import->numsyms = 0;
-    temp = &(CurrFile->import->symlist);
+    CurrFile->import->u.elf.numsyms = 0;
+    temp = &(CurrFile->import->u.elf.symlist);
 
     for( i=0; i<export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
@@ -861,7 +861,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
                 AddSym( (*temp)->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
 
-            CurrFile->import->numsyms ++;
+            CurrFile->import->u.elf.numsyms ++;
 
             temp = &((*temp)->next);
         }

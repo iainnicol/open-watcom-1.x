@@ -425,6 +425,8 @@ host_cpu = $(arch)
 !  define host_os
 !else ifdef __LINUX__
 !  define host_os linux
+!else ifdef __OSX__
+!  define host_os
 !else
 !  error unknown OS
 !endif

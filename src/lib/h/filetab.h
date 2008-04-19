@@ -70,18 +70,18 @@ struct import_sym_struct{
             long        ordinal;
             char        *symName;
             char        *exportedName;
-        };
+        } sym;
         struct {
             elf_import_sym      *symlist;
             long                numsyms;
-        };
-    };
+        } elf;
+    } u;
 };
 
 struct sym_file_struct {
-    sym_file *  next;
-    sym_entry * first;
-    sym_entry **add_to;
+    sym_file    *next;
+    sym_entry   *first;
+    sym_entry   **add_to;
     input_lib   *inlib;
     file_offset inlib_offset;
     file_offset new_offset;

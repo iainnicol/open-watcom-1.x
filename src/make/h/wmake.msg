@@ -111,8 +111,8 @@ pick( TMP_PATH_TOO_LONG,        "TMP Path/File Too Long",
                                 "TMP パス/ファイル名が長すぎます" )
 pick( UNEXPECTED_EOF,           "Unexpected End of File",
                                 "ファイルが途中で終わっています" )
-pick( NOKEEP_ONLY,              "Only NO\(KEEP\) allowed here",
-                                "ここでは NO\(KEEP\) だけができます")
+pick( NOKEEP_ONLY,              "Only NO(KEEP) allowed here",
+                                "ここでは NO(KEEP) だけができます")
 pick( NON_MATCHING_QUOTE,       "Non-matching \"",
                                 "一致しません \"")
 pick( INVALID_STRING_SUBSTITUTE,"Invalid String Macro Substitution",
