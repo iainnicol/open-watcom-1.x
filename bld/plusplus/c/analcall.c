@@ -141,7 +141,9 @@ PTREE NodeReverseArgs(          // REVERSE CALL ARGUMENTS
          , last = arg
          , arg = right
        );
-    *arg_count = count;
+    if( arg_count != NULL ) {
+        *arg_count = count;
+    }
     return( last );
 }
 
@@ -157,7 +159,22 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
     alist->num_args = count;
     aptr = alist->type_list;
     for( ; count > 0; --count ) {
-        *aptr++ = NodeType( arg );
+        arg->type = BindTemplateClass( arg->type, &arg->locn, TRUE );
+        if( ( arg->flags & PTF_LVALUE )
+         && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
+            // temporaries may only be bound to const references
+            if( NULL == TypeReference( arg->type ) ) {
+                *aptr = MakeConstReferenceTo( arg->type );
+            } else {
+                *aptr = arg->type;
+            }
+            aptr++;
+        } else {
+            *aptr++ = NodeType( arg );
+        }
+        arg->u.subtree[1]->type = BindTemplateClass( arg->u.subtree[1]->type,
+                                                     &arg->u.subtree[1]->locn,
+                                                     TRUE );
         *ptlist++ = arg->u.subtree[1];
         arg = arg->u.subtree[0];
     }
@@ -836,6 +853,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     PTREE deref_args;           // - member pointer dereference args
     PTREE last_arg;             // - last argument
     PTREE static_fn_this;       // - "this" for a static member
+    PTREE templ_args;           // - explicit template arguments
     SYMBOL sym;                 // - function symbol
     SYMBOL caller_sym;          // - function that is doing the call
     TYPE type;                  // - temporary type
@@ -900,6 +918,21 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     } else {
         alist->qualifier = BaseTypeClassFlags( NodeType( this_node ) );
     }
+
+    if( NodeIsBinaryOp( left, CO_TEMPLATE ) ) {
+        DbgAssert( left->u.subtree[0]->op == PT_SYMBOL );
+
+        templ_args = left->u.subtree[1];
+
+        left->u.subtree[1] = NULL;
+        left = NodePruneTop( left );
+        *r_func = left;
+        r_func = PTreeRefLeft( expr );
+        left = *r_func;
+    } else {
+        templ_args = NULL;
+    }
+
     if( left->op == PT_SYMBOL ) {
         FNOV_RESULT ovret;
         SYMBOL orig;        // - original symbol
@@ -918,8 +951,10 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                                    , sym
                                    , alist
                                    , ptlist
+                                   , templ_args
                                    , &fnov_diag );
         }
+
         switch( ovret ) {
           case FNOV_AMBIGUOUS :
             CallDiagAmbiguous( expr, diagnostic->msg_ambiguous, &fnov_diag );

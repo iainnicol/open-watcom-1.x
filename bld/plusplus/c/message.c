@@ -62,6 +62,7 @@
 static unsigned reserveSize;
 static void *reserveMem;
 static unsigned reserveDepth;
+static unsigned suppressCount;
 
 static FILE *err_file;              // ERROR FILE
 static TOKEN_LOCN err_locn;         // error location
@@ -642,7 +643,13 @@ static msg_status_t doError(    // ISSUE ERROR
     if( ! errLimitExceeded ) {
         flag.too_many = TRUE;
         flag.print_err = okToPrintMsg( msgnum, &level );
-        if( ErrLimit == -1 ) {
+        if( suppressCount > 0 ) {
+            /* suppressed message */
+            if( flag.print_err && ( level == 0 ) ) {
+                ErrCount++;
+            }
+            return MS_NULL;
+        } else if( ErrLimit == -1 ) {
             /* unlimited messages */
             flag.too_many = FALSE;
         } else if( ErrCount < ErrLimit ) {
@@ -750,6 +757,23 @@ void InfMsgInt(                 // INFORMATION MESSAGE, INT ARG.
     CErr( msgnum, p1 );
 }
 
+
+void CErrSuppress(
+    void )
+{
+    suppressCount++;
+}
+
+boolean CErrSuppressedOccurred(
+    error_state_t *previous_state )
+{
+    suppressCount--;
+    if( *previous_state != ErrCount ) {
+        ErrCount = *previous_state;
+        return( TRUE );
+    }
+    return( FALSE );
+}
 
 void CErrCheckpoint(
     error_state_t *save )

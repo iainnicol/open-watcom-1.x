@@ -116,7 +116,8 @@ void RtnGenerate( void )
 {
     RTN_GEN *c;
 
-    ClassDefineRefdDefaults();
+    // ClassDefineRefdDefaults has been moved to TemplateProcessInstantiations
+
     ScopeEmitIndexMappings();
     while( useSYMBOL != NULL ) {
         c = useSYMBOL;
