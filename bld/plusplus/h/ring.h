@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Definitions for ring support. See comments in ring.c for
-*               a list of implicit assumptions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,12 +33,18 @@
 #ifndef __RING_H__
 #define __RING_H__
 
+// RING.H -- definitions for ring support
+//
+// See comments in ring.c for a description of assumptions.
+//
+// 91/06/05 -- J.W.Welch        -- defined
+
 #include "ringfns.h"
 #include "ringcarv.h"
 
 void * StackCarveAlloc(         // CARVER ALLOC AND PUSH STACK
     carve_t carver,             // - carving control
-    void *stack_hdr )           // - addr[ stack hdr ]
+    void **stack_hdr )          // - addr[ stack hdr ]
 ;
 
 #endif

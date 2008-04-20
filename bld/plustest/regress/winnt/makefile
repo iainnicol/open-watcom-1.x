@@ -3,58 +3,50 @@ plustest_name = winnt
 
 !ifdef test1
 test_cflags = -oxa-d1
-alt_error=01
 !else ifdef test2
 test_cflags = -oxa-d1 -br
-alt_error=02
 !else ifdef test3
 test_cflags = -d2 -br
-alt_error=03
 !else
 test_cflags = -d2
-alt_error=00
 !endif
 
-test_cflags += -w0-zq -I"$(%watcom)/h/nt"
+test_cflags += -w0-zq -i$(%watcom)\h\nt
 
 .c.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) -fo=.obj
-
-test : .symbolic start_test tomexe.exe tomdll.dll
+    $(wpp_$(arch)) $[@ $(test_cflags)
+    
+test : .symbolic tomexe.exe tomdll.dll
+    if exist exec.out del exec.out
+    $(run) tomexe
     diff exec.out exec.chk
-    @%make global
+    %make global
     %append $(log_file) PASS $(%__CWD__)
 
-tomexe.exe : tomexe.obj tomdll.dll tomexe.lnk
-    $(linker) @$]@ NAME $@
-    $(run) $(exec_prefix)$@
-
-start_test : .symbolic
-    %create exec.out
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+tomexe.exe : tomexe.obj tomexe.lnk
+    $(linker) @$]@
 
 tomdll.dll : tomdll.obj tomdll.lnk
-    $(linker) @$]@ NAME $@
-
+    $(linker) @$]@
+    
 tomdll.obj : tomdll.c
     $(wpp_$(arch)) $[@ $(test_cflags) -bd
-
+    
 tomexe.lnk : $(__MAKEFILES__)
     %create $^@
+    @%append $^@ NAME $^*
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
     @%append $^@ OPTION map, caseexact, stack=128k, quiet
     @%append $^@ FILE tomexe
-
+    
 tomdll.lnk : $(__MAKEFILES__)
     %create $^@
+    @%append $^@ NAME $^*
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
     @%append $^@ OPTION map, caseexact, stack=128k, quiet
     @%append $^@ FILE tomdll
-
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
-
+    
 global : .symbolic
     @%make common_clean

@@ -5,12 +5,10 @@ plustest_name = bits64
 test_cflags_386 = -d2-3r
 test_cflags_i86 = -d2
 test_cflags_axp = -d2
-alt_error=01
 !else
 test_cflags_386 = -ox-d1-3s
 test_cflags_i86 = -ox-d1
 test_cflags_axp = -ox-d1
-alt_error=00
 !endif
 
 test_cflags_386 += -zq-mf
@@ -21,33 +19,28 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-.cpp: ../bits
+.cpp: ..\bits
 .cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -d_USE_INT64 -fo=.obj
+    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -d_USE_INT64
 
 objs = tbits.obj
     
-test : .symbolic start_test tbits.$(exe)
-    diff tbits.out ../bits/tbits.chk
-    @%make global
+test : .symbolic tbits.$(exe)
+    $(run) tbits >tbits.out
+    diff tbits.out ..\bits\tbits.chk
+    %make global
     %append $(log_file) PASS $(%__CWD__)
 
 tbits.$(exe) : $(objs) tbits.lnk
-    $(linker) @$]@ name $@ file {$(objs)}
-    $(run) $(exec_prefix)$@ >>tbits.out
-
-start_test : .symbolic
-    %create tbits.out
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    $(linker) @$]@
 
 tbits.lnk : makefile
     %create $^@
+    @%append $^@ NAME $^*
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
     @%append $^@ $(stack_$(arch))
+    @for %i in ( $(objs) ) do @%append $^@ FILE %i
     
-save : .symbolic
-    @if exist tbits.out cp tbits.out s$(arch)_$(alt_error).sav
-
-global : .procedure
+global : .SYMBOLIC
     @%make common_clean

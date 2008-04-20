@@ -47,7 +47,7 @@ extern "C" {
 // in case there are stacked exceptions or function state tables.
 //
 static void
-#ifdef _M_IX86
+#ifdef M_PC_INTEL
 __pragma( "__arg_convention" )
 #endif
 longjmpDtoring                  // longjmp INTERFACE

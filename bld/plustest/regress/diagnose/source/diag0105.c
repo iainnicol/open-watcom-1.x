@@ -5,9 +5,7 @@
 #error <assert.h>
 #include <assert.h>
 #error <bios.h>
-#if !defined( __UNIX__ )
-  #include <bios.h>
-#endif
+#include <bios.h>
 #error <complex.h>
 #include <complex.h>
 #error <conio.h>
@@ -15,17 +13,11 @@
 #error <ctype.h>
 #include <ctype.h>
 #error <direct.h>
-#if !defined( __UNIX__ )
-  #include <direct.h>
-#endif
+#include <direct.h>
 #error <dos.h>
-#if !defined( __UNIX__ )
-  #include <dos.h>
-#endif
+#include <dos.h>
 #error <dosfunc.h>
-#if !defined( __UNIX__ )
-  #include <dosfunc.h>
-#endif
+#include <dosfunc.h>
 #error <env.h>
 #include <env.h>
 #error <errno.h>
@@ -43,15 +35,11 @@
 #error <graph.h>
 #include <graph.h>
 #error <graph98.h>
-#if !defined( __UNIX__ )
-  #include <graph98.h>
-#endif
+#include <graph98.h>
 #error <i86.h>
 #include <i86.h>
 #error <io.h>
-#if !defined( __UNIX__ )
-  #include <io.h>
-#endif
+#include <io.h>
 #error <iomanip.h>
 #include <iomanip.h>
 #error <iostream.h>
@@ -98,12 +86,8 @@
 #include <time.h>
 #error <unistd.h>
 #include <unistd.h>
-#error <utime.h>
-#include <utime.h>
 #error <windows.h>
-#if !defined( __UNIX__ )
-  #include <windows.h>
-#endif
+#include <windows.h>
 #error <wsample.h>
 #include <wsample.h>
 #error <sys/locking.h>
@@ -115,9 +99,7 @@
 #error <sys/types.h>
 #include <sys/types.h>
 #error <sys/utime.h>
-#if !defined( __UNIX__ )
-  #include <sys/utime.h>
-#endif
+#include <sys/utime.h>
 #error <custcntl.h>
 
 #error <dde.h>

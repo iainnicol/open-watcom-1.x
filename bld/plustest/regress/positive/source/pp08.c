@@ -1,10 +1,8 @@
 ??=include "fail.h"
 #include <stdio.h>
 ??=include <string.h>
-#include <sys/stat.h>
-#if !defined( __UNIX__ )
-??=include <sys??/types.h>
-#endif
+#include <sys\stat.h>
+??=include <sys??/utime.h>
 
 typedef struct S {
     char *with;

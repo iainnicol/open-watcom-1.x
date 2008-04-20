@@ -39,17 +39,9 @@ ext=.exe
 comp_out = $+ $(files_comp) $-
 
 
-test : .symbolic start_test $(comp_out) $(err_out)
-    diff mscompat.out mscompat.chk
-    @%make global
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic $(comp_out) $(err_out)
+   	diff mscompat.out mscompat.chk
+        %append $(log_file) PASS $(%__CWD__)
 
-start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-save : .symbolic
-    @if exist mscompat.out cp mscompat.out s$(arch)_$(alt_error).sav
-
-global : .symbolic
-    @if exist *.merr rm *.merr
-    @%make common_clean
+global : .symbolic common_clean
+    @if exist *.merr del *.merr

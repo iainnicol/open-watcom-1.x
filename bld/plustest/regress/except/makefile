@@ -5,12 +5,6 @@ plustest_name = except
 
 !include ../environ.mif
 
-!ifndef __UNIX__
-!ifndef __DOS__
-br_opt = -br
-!endif
-!endif
-
 files = &
     excok.$(ext) &
     excfancy.$(ext) &
@@ -27,8 +21,8 @@ files = &
     excrt_09.$(ext) &
     excrt_10.$(ext) &
     excrt_11.$(ext)
-
-ext = $(exe)
+    
+ext = $(exe)    
 exes = $+ $(files) $-
 
 !ifdef BATCH_TEST
@@ -43,23 +37,19 @@ batch_lnk = except.fcl
 
 batch_sym = batch_build
 !endif
-
-test_cflags += -I"../positive/source"
-
+    
+test_cflags += -i..\positive\source
+    
 !ifdef test1
 test_cflags += -d2-xst
-alt_error=01
 !else ifdef test2
 test_cflags += -d2-xss
-add_br_ = $(br_opt)
-alt_error=02
+add_br_ = -br
 !else ifdef test3
 test_cflags += -ox-d1-xss
-alt_error=03
 !else
 test_cflags += -ox-d1-xst
-add_br_ = $(br_opt)
-alt_error=00
+add_br_ = -br
 !endif
 
 !ifdef %plustest_bad_br
@@ -78,31 +68,21 @@ stack_386=opt stack=32k
 stack_i86=opt stack=8k
 stack_axp=opt stack=32k
 
-fatal_error_check_i86=
-fatal_error_check_386=| diff - fatalerr.chk
-fatal_error_check_axp=| diff - fatalerr.chk
-
 .c.obj:
-    $(wpp_$(arch)) $[* $(test_cflags_$(arch)) -zq -fo=.obj
-
+    $(wpp_$(arch)) $[* $(test_cflags_$(arch)) -zq
+    
 .obj.$(exe):
-    $(linker) @test.lnk name $@ file $[@
-    @%append exec.out --------$^*--------
-!ifneq fatal_error_check_$(arch)
-    -$(run) $(exec_prefix)$@ >>exec.out 2>&1
-!else
-    -$(run) $(exec_prefix)$@ >>exec.out
-!endif
-
-test : .symbolic start_test $(batch_sym) test.lnk $(exes)
-    diff exec.out except.chk $(fatal_error_check_$(arch))
-    @%make global
+    $(linker) @test file $[@
+    
+test : .symbolic $(batch_sym) run_test
+    %make global
     %append $(log_file) PASS $(%__CWD__)
-
-start_test : .symbolic
-    %create exec.out
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
+    
+run_test : .symbolic $(batch_sym) test.lnk $(exes)
+    %create except.out
+    @for %i in ( $(exes) ) do -$(run) %i >>except.out
+    diff except.out except.chk
+    
 !ifdef BATCH_TEST
 $(batch_lnk) : $(__MAKEFILES__)
     %create $(batch_lnk)
@@ -116,25 +96,22 @@ batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
     $(wpp_$(arch)) -fc=$(batch_cmp) $(test_cflags_$(arch)) 
     $(linker) @$(batch_lnk)
 !endif
-
-
+    
+    
 test.lnk : $(__MAKEFILES__)
     %create $^@
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
     @%append $^@ $(stack_$(arch))
     @%append $^@ OPTION undefsok
-
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
-
-global : .procedure
+    
+global : .symbolic
     @%make common_clean
 !ifdef BATCH_TEST
-    @if exist *.fcb rm *.fcb
-    @if exist *.fcl rm *.fcl
+    @if exist *.fcb del *.fcb
+    @if exist *.fcl del *.fcl
 !endif
-
+    
 !ifdef BATCH_TEST
 .before
     @echo test_cflags=$(test_cflags_$(arch))

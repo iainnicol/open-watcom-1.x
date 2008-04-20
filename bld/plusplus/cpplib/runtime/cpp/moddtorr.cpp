@@ -35,6 +35,6 @@
 
 extern "C" YI( CPPDATA(module_dtor_ref), CPPLIB(module_dtor), DTOR_PRIORITY );
 
-#ifdef _M_IX86
+#ifdef M_PC_INTEL
     #pragma aux CPPDATA(module_dtor_ref) "_*";
 #endif

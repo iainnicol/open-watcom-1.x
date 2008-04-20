@@ -479,7 +479,6 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
             MustRecog( T_COMMA );
         }
     } else {
-        parm_end = 0;
         parm_cnt = -1;          /* -1 ==> no () following */
     }
     /* grab replacement tokens */

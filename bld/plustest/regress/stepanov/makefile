@@ -1,5 +1,5 @@
 plustest_name = stepanov
-!include ../environ.mif
+!include ..\environ.mif
 
 
 oopacks = &
@@ -31,39 +31,26 @@ stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
 .c.obj:
-    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
-
-# Note: Fast machines may need larger iteration counts, otherwise the code could run
-# "too fast" and finish at "zero" execution time.
+    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*)
 
 .obj.$(exe):
-    $(linker) @stepanov.lnk NAME $@ FILE $[@
-    $(run) $(exec_prefix)$@ 2500 >>stepanov.out
-
-oop_v1p5.$(exe) : oop_v1p5.obj
-    $(linker) @stepanov.lnk NAME $@ FILE $[@
-    $(run) $(exec_prefix)$@ Max=5000 18 Matrix=100 15 Complex=6000 50 Iterator=15000 14 >>stepanov.out
-
-oop_v1p6.$(exe) : oop_v1p6.obj
-    $(linker) @stepanov.lnk NAME $@ FILE $[@
-    $(run) $(exec_prefix)$@ Max=5000 49 Matrix=100 13 Complex=6000 52 Iterator=15000 18 >>stepanov.out
-
-oop_v1p7.$(exe) : oop_v1p7.obj
-    $(linker) @stepanov.lnk NAME $@ FILE $[@
-    $(run) $(exec_prefix)$@ Max=5000 14 Matrix=100 14 Complex=6000 83 Iterator=15000 19 >>stepanov.out
+    wlink @stepanov FILE $[@
 
 !ifeq arch i86
-test : .symbolic start_test
+test : .symbolic
 !else
-test : .symbolic start_test stepanov.lnk $(exes)
+test : .symbolic stepanov.lnk $(exes)
+    %create stepanov.out
+# Note: Fast machines may need larger iteration counts, otherwise the code could run
+# "too fast" and finish at "zero" execution time.
+    $(run) oop_v1p5 Max=5000 18 Matrix=50 15 Complex=4000 50 Iterator=15000 14 >>stepanov.out
+    $(run) oop_v1p6 Max=5000 49 Matrix=50 13 Complex=4000 52 Iterator=15000 18 >>stepanov.out
+    $(run) oop_v1p7 Max=5000 14 Matrix=50 14 Complex=4000 83 Iterator=15000 19 >>stepanov.out
+    @for %i in ( $(stepanovs) ) do $(run) %i 2500 >>stepanov.out
     diff stepanov.out stepanov.chk
 !endif
-    @%make global
+    %make global
     %append $(log_file) PASS $(%__CWD__)
-
-start_test : .symbolic
-    %create stepanov.out
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
 
 stepanov.lnk : $(__MAKEFILES__)
     %create $^@
@@ -72,7 +59,8 @@ stepanov.lnk : $(__MAKEFILES__)
     @%append $^@ $(stack_$(arch))
 
 save : .symbolic
-    @if exist stepanov.out cp stepanov.out s$(arch)_$(alt_error).sav
+    if exist s$(arch)_$(alt_error).sav erase s$(arch)_$(alt_error).sav
+    if exist stepanov.out copy stepanov.out s$(arch)_$(alt_error).sav
 
 global : .SYMBOLIC
     @%make common_clean

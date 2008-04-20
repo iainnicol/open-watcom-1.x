@@ -62,7 +62,6 @@
 #include "typesig.h"
 #include "brinfo.h"
 #include "conpool.h"
-#include "fmtsym.h"
 
 #define _ScopeMask( i )         ( 1 << (i) )
 
@@ -1301,14 +1300,9 @@ static void handleFileSyms( SYMBOL sym )
         if( SymIsFunction( sym ) ) {
             if( sym->flag & SF_REFERENCED ) {
                 if( ! SymIsInitialized( sym ) ) {
-                    /* Check to see if we have a matching aux entry with code attached */
-                    struct aux_entry * paux = NULL;
-                    paux = AuxLookup( sym->name->name );
-                    if( !paux || !paux->info || !paux->info->code ) {
-                        if( sym != ModuleInitFuncSym() ) {
-                            CErr2p( ERR_FUNCTION_NOT_DEFINED, sym );
-                            sym->id = SC_EXTERN;
-                        }
+                    if( sym != ModuleInitFuncSym() ) {
+                        CErr2p( ERR_FUNCTION_NOT_DEFINED, sym );
+                        sym->id = SC_EXTERN;
                     }
                 }
             }
@@ -1959,7 +1953,7 @@ unsigned ScopeIndex( SCOPE scope )
 {
     unsigned scope_index;
 
-    scope_index = 0;
+    scope_index = NULL;
     if( _IsBlockScope( scope ) ) {
         scope_index = scope->owner.index;
     }
@@ -7083,15 +7077,6 @@ void ScopeAuxName( char *id, AUX_INFO *aux_info )
         syms = sym_name->name_type;
     }
     RingIterBeg( syms, sym ) {
-
-        /*
-         *  Check to see if we are defining code and we already have a symbol 
-         *  defined that has code attached ( a function body )
-         */ 
-        if( aux_info && aux_info->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ){
-            CErr2p( ERR_FUNCTION_REDEFINITION, sym );   //ERR_SYM_ALREADY_DEFINED, sym );
-        }
-        
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type == NULL ) {
             changeNonFunction( sym, aux_info );

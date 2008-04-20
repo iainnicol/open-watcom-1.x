@@ -862,7 +862,6 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
     this_node = NULL;
     intr_map = NULL;
     static_fn_this = NULL;
-    virtual_call = FALSE;
     switch( left->cgop ) {
       case CO_DOT:
       case CO_ARROW:

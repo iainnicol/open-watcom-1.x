@@ -39,11 +39,10 @@ struct stack {
     STACK       *next;
 };
 
-void *StackPush( void *hdr, void *elt )
-/*************************************/
+void *StackPush( void **header, void *elt )
+/*****************************************/
 {
-    void    **header = hdr;
-    STACK   *e;
+    STACK *e;
 
     e = elt;
     e->next = *header;
@@ -51,11 +50,10 @@ void *StackPush( void *hdr, void *elt )
     return( e );
 }
 
-void *StackPop( void *hdr )
-/*************************/
+void *StackPop( void **header )
+/*****************************/
 {
-    void    **header = hdr;
-    STACK   *e;
+    STACK *e;
 
     e = *header;
     if( e == NULL ) {

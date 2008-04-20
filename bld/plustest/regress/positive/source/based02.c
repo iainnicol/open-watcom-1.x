@@ -1,5 +1,6 @@
 #include "fail.h"
-#if !defined( _M_IX86 ) || defined(__386__) && !defined(__OS2__)
+#if ( ! defined( M_I86 ) && ! defined( M_I386 ) ) \
+  ||( defined(__386__) && ! defined(__OS2__) )
 
 ALWAYS_PASS
 

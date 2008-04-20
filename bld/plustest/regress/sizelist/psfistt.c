@@ -1,7 +1,7 @@
 #include <iostream.h>
 #include <string.h>
 #include <iostream.h>
-#include "psf1.h"
+#include "psf1.H"
 
 class Student : public psfist<Student> {
     int : 0;
@@ -28,7 +28,7 @@ friend ostream& operator<<(ostream& o, Student* s)
    }
 };
 
-#include "psf2.h"
+#include "psf2.H"
 typedef psfist_Imp<24u> dummy;
 
 
