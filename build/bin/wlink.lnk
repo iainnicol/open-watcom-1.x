@@ -23,6 +23,53 @@ system begin dos4g
     format os2 le
 end
 
+system begin os2
+    option osname='OS/2 16-bit'
+    library os2.lib
+    libpath %OWROOT%/src/clib/library/os2.286/ms
+    libpath %OWROOT%/src/clib/library/os2.286/mc
+    libpath %OWROOT%/src/clib/library/os2.286/mm
+    libpath %OWROOT%/src/clib/library/os2.286/ml
+    libpath %OWROOT%/src/mathlib/library/msdos.287/ms
+    libpath %OWROOT%/src/mathlib/library/msdos.287/mc
+    libpath %OWROOT%/src/mathlib/library/msdos.287/mm
+    libpath %OWROOT%/src/mathlib/library/msdos.287/ml
+    libpath %OWROOT%/src/emu87/os2i86
+    libpath %OWROOT%/src/os2api/os2286/lib
+    format os2 ^
+end
+
+system begin os2v2
+    option osname='OS/2 32-bit'
+    libpath %OWROOT%/src/clib/library/os2.386/mf_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/emu387/stub386
+    libpath %OWROOT%/src/os2api/os2386/lib
+    format os2 lx ^
+end
+
+system begin nt
+    option osname='Windows NT character-mode'
+    libpath %OWROOT%/src/clib/library/winnt.386/mf_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/emu387/stub386
+    libpath %OWROOT%/src/w32api/nt386
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+
+system begin nt_dll
+    option osname='Windows NT'
+    libpath %OWROOT%/src/clib/library/winnt.386/mf_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/emu387/stub386
+    libpath %OWROOT%/src/w32api/nt386
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt dll ^
+    runtime console=4.0
+end
+
 system begin linux
     option osname='Linux x86'
     libpath %OWROOT%/src/clib/library/linux.386/mf_r

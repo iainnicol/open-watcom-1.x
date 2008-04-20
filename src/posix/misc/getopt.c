@@ -24,9 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  GetOpt() - function to process traditional command line options
+* Description:  GetOpt() - process traditional command line options.
 *
 ****************************************************************************/
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -130,7 +131,11 @@ int GetOpt( int *argc, char *argv[], char *optstr, const char *usage[] )
                 eatArg( argc, argv, 1 );
                 return( -1 );  // "--" PoSIX end of options delimiter.
             }
-            if( ch == '?' ) {
+            if( ch == '?' 
+#ifndef __ISVI__
+                && usage != NULL
+#endif
+            ) {
                 Quit( usage, NULL );
             }
             if( optstr[0] == '#' && isdigit( ch ) ) {

@@ -7,8 +7,6 @@ set PROJNAME=wasm
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel2 cprel2 ]

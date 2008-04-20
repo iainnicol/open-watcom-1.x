@@ -42,10 +42,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#include "clibext.h"
+#ifndef __WATCOMC__
+  #include "clibext.h"
+#endif
 #include "getopt.h"
-#ifdef __UNIX__
-#else
+#ifdef __WATCOMC__
   #include <process.h>
 #endif
 
@@ -101,7 +102,7 @@ static  char    cpp_keep_comments;  /* flag: keep comments in output?     */
 static  char    cpp_encrypt_names;  /* flag: encrypt C++ names?           */
 static  char    *cpp_linewrap;      /* line length for cpp output         */
 
-
+extern  void    Quit( const char *usage_msg[], const char *msg, ... );
 
 /*
  *  Static function prototypes
@@ -352,14 +353,10 @@ static  void AddDirective( char *directive )
     }
 }
 
-static  int  ConsultSpecsFile( const char *target )
-/*************************************************/
+static  FILE *OpenSpecsFile( void )
+/*********************************/
 {
     FILE    *specs;
-    char    line[MAX_CMD];
-    char    start_line[MAX_CMD] = "system begin ";
-    int     in_target = FALSE;
-    char    *p, *blank;
 
     FindPath( "specs.owc", PathBuffer );
     specs = fopen( PathBuffer, "r" );
@@ -368,6 +365,44 @@ static  int  ConsultSpecsFile( const char *target )
                  PathBuffer );
         exit( EXIT_FAILURE );
     }
+    return( specs );
+}
+
+static  int  ListSpecsFile( void )
+/********************************/
+{
+    FILE    *specs;
+    char    line[MAX_CMD];
+    int     begin_len;
+    char    *p;
+
+    specs = OpenSpecsFile();
+    begin_len = strlen( "system begin " );
+    while( fgets( line, MAX_CMD, specs ) ) {
+        p = strchr( line, '\n' );
+        if( p ) {
+            *p = '\0';
+        }
+        if( !strncmp( line, "system begin ", begin_len ) ) {
+            printf( "%s\n", line + begin_len);
+        }
+    }
+
+    fclose( specs );
+    return( 0 );
+}
+
+static  int  ConsultSpecsFile( const char *target )
+/*************************************************/
+{
+    FILE    *specs;
+    char    line[MAX_CMD];
+    char    start_line[MAX_CMD] = "system begin ";
+    int     in_target = FALSE;
+    char    *p, *blank;
+    int     rc = 0;
+
+    specs = OpenSpecsFile();
 
     /* search for a block whose first line is "system begin <target>" ... */
     strcat( start_line, target );
@@ -404,12 +439,12 @@ static  int  ConsultSpecsFile( const char *target )
                 *blank = ' ';
                 strcat( CC_Opts, blank );
             }
-            fclose( specs );
-            return( 1 );
+            rc = 1;
+            break;
         }
     }
     fclose( specs );
-    return( 0 );
+    return( rc );
 }
 
 static  int  Parse( int argc, char **argv )
@@ -448,8 +483,8 @@ static  int  Parse( int argc, char **argv )
     while( (c = GetOpt( &argc, argv,
                         "b:Cc::D:Ef:g::"
                         "HI:i::k:L:l:M::m:"
-                        "O::o:P::QSs::U:vW::wx:yz::",
-                        EnglishHelp )) != -1 ) {
+                        "O::o:P::QSs::U:vW::wx:yz::?",
+                        NULL )) != -1 ) {
 
         char    *Word = "";
         int     i;
@@ -498,6 +533,15 @@ static  int  Parse( int argc, char **argv )
         wcc_option = 1;
 
         switch( c ) {
+        case '?':
+            if( argv[OptInd] && !strcmp( argv[OptInd], "systems" ) ) {
+                printf( "List of supported target systems:\n\n" );
+                ListSpecsFile();
+                exit( EXIT_SUCCESS );
+            } else {
+                Quit( EnglishHelp, NULL );
+            }
+            break;
         case 'f':
             if( !strcmp( Word, "syntax-only" ) ) {
                 c = 'z';
@@ -587,7 +631,7 @@ static  int  Parse( int argc, char **argv )
                 Word[1] = '\0';
                 break;
             }
-            if( !strncmp("regparm=", Word, 8 ) ) {
+            if( !strncmp( "regparm=", Word, 8 ) ) {
                 if( !strcmp( Word + 8, "0" ) )
                     Conventions[0] =  's';
                 else
@@ -595,7 +639,7 @@ static  int  Parse( int argc, char **argv )
                 wcc_option = 0;
                 break;
             }
-            if( !strncmp("tune=i", Word, 6 ) ) {
+            if( !strncmp( "tune=i", Word, 6 ) ) {
                 switch( Word[6] ) {
                 case '0':
                 case '1':
@@ -723,7 +767,7 @@ static  int  Parse( int argc, char **argv )
             Flags.link_for_sys = TRUE;
             SystemName = strdup( Word );
             /* if Word found in specs.owc, add options from there: */
-            if( ConsultSpecsFile( Word ) ) {
+            if( ConsultSpecsFile( Word) ) {
                 /* all set */
                 wcc_option = 0;
             } else {

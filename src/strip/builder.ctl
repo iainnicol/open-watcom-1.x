@@ -25,5 +25,4 @@ set BOOTCLEAN=rm -f <OWBINDIR>/wstrip<CMDEXT>
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

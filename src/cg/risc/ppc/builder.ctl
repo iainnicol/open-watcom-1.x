@@ -1,13 +1,11 @@
-# DWARF Builder Control file
-# ==========================
+# ppc cg Builder Control file
+# ===========================
 
 set PROJDIR=<CWD>
-set PROJNAME=DWARF
+set PROJNAME=PowerPC cg
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
-
-set BOOTSUBDIR=dw/
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 

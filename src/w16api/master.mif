@@ -59,10 +59,10 @@ all : $(headers) $(libs) .SYMBOLIC
 .mh: ../include
 
 .def.lbc:
-        $(vi) -s ../def16lbc.vi -p"$*" ../lib/$[.
+        $(awk) -f ../def16lbc.awk $[@ > $@
 
 .lbc.lib:
-        $(librarian) $(libflags) $@ @$<
+        $(librarian) $(libflags) @$<
 
 .mh.h:
 	$(splice)
@@ -74,7 +74,7 @@ windows.lbc : $(winlibs)
         @for %i in ($(winlibs)) do @%append $^@ @ %i
 
 windows.lib: windows.lbc profc.obj
-        $(librarian) $(libflags) $@ @$<
+        $(librarian) $(libflags) @$<
 
 clean : .SYMBOLIC
 	rm -f *.h

@@ -24,8 +24,9 @@ cdsay .
 # Continue with the linker
 [ INCLUDE <SRCDIR>/dwarf/builder.ctl ]
 [ INCLUDE <SRCDIR>/link/builder.ctl ]
-# Now we also have everything to build wasm
+# Now we also have everything to build wasm and owcc
 [ INCLUDE <SRCDIR>/wasm/builder.ctl ]
+[ INCLUDE <SRCDIR>/cl/builder.ctl ]
 # Build the 16-bit and 32-bit x86 compilers
 [ INCLUDE <SRCDIR>/cfloat/builder.ctl ]
 [ INCLUDE <SRCDIR>/cg/intel/386/builder.ctl ]
@@ -35,9 +36,7 @@ cdsay .
 # Build RISC assemblers
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]
 [ INCLUDE <SRCDIR>/re2c/builder.ctl ]
-[ INCLUDE <SRCDIR>/as/alpha/builder.ctl ]
-[ INCLUDE <SRCDIR>/as/mips/builder.ctl ]
-[ INCLUDE <SRCDIR>/as/ppc/builder.ctl ]
+[ INCLUDE <SRCDIR>/as/builder.ctl ]
 
 # Now do our vi editor
 [ INCLUDE <SRCDIR>/ncurses/builder.ctl ]

@@ -2,21 +2,31 @@
 # ========================
 
 set PROJDIR=<CWD>
+set PROJNAME=owcc
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
+[ BLOCK <1> boot build rel2 ]
+#============================
+    echo wsplice -k Pspecs <OWROOT>/src/link/specs.sp specs.owc
+    wsplice -k Pspecs <OWROOT>/src/link/specs.sp specs.owc
+
 [ BLOCK <1> build rel2 ]
 #=======================
-    echo wsplice -k Pspecs <OWROOT>/bld/wl/specs.sp specs.owc
-    wsplice -k Pspecs <OWROOT>/bld/wl/specs.sp specs.owc
     pmake -d buildwcl <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <1> rel2 ]
+[ BLOCK <1> boot ]
 #=================
-    cdsay <PROJDIR>
+    <CPCMD> specs.owc <OWBINDIR>/specs.owc
+
+[ BLOCK . . ]
+#============
+
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
+
 
 [ BLOCK <1> rel2 cprel2 acprel2 ]
 #================================
@@ -63,6 +73,11 @@ cdsay .
 #==================
     rm  -f specs.owc
     pmake -d buildwcl <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/specs.owc
+    rm -f <OWBINDIR>/specs.owc
 
 [ BLOCK . . ]
 #============

@@ -3335,7 +3335,7 @@ int Comment( int what_to_do, int i )
             return( ERROR );
         }
         delim_char = *(AsmBuffer[i]->string_ptr+strspn(AsmBuffer[i]->string_ptr," \t") );
-        if( ( delim_char == NULL )
+        if( ( delim_char == '\0' )
             || ( strchr( AsmBuffer[i]->string_ptr, delim_char ) == NULL ) ) {
             AsmError( COMMENT_DELIMITER_EXPECTED );
             return( ERROR );

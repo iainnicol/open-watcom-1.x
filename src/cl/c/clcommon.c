@@ -40,7 +40,9 @@
 #else
 #include <dirent.h>
 #endif
+#ifndef __WATCOMC__
 #include "clibext.h"
+#endif
 
 #include "cmdlhelp.h"
 #include "clcommon.h"

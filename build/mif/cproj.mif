@@ -15,12 +15,6 @@ cc_axp          = *wccaxp
 cc_ppc          = *wccppc
 cc_mps          = *wccmps
 
-cl_386          = *wcl386
-cl_i86          = *wcl
-cl_axp          = *wclaxp
-cl_ppc          = *wclppc
-cl_mps          = *wclmps
-
 cpp_386         = *wpp386
 cpp_i86         = *wpp
 cpp_axp         = *wppaxp
@@ -76,7 +70,7 @@ cldebug_fmt = -hw
 !else
 #cdebug_fmt  = -hd              # default format
 ldebug_fmt  = debug dwarf
-cldebug_fmt = -hd
+#cldebug_fmt = -hd
 !endif
 
 mode_libflags =
@@ -97,11 +91,7 @@ mode_clflags  = $(cldebug_fmt)
 
 !ifndef $(proj_name)_nosymfile
 mode_lflags    += option symfile
-!ifdef __UNIX__
-mode_clflags   += -\"option symfile\"
-!else
-mode_clflags   += -"option symfile"
-!endif
+mode_clflags   += -Wl,option -Wl,symfile
 !endif
 
 !ifndef memory_model_i86
@@ -124,6 +114,8 @@ default_memory_model_386_      = f
 memory_model_386 = $(default_memory_model_386_$(host_os))
 !endif
 model_switch_386 = -m$(memory_model_386)
+
+cl_model_switch  = -mcmodel=$(memory_model_$(host_cpu))
 
 !ifdef __UNIX__
 cflags_all      =-w4 -we $(mode_cflags) -fo=.obj
@@ -221,34 +213,34 @@ fpu_flags = $(fpu_flags_$(host_os)_$(host_cpu))
 fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 !endif
 
-clflags_nt_386     = -l=nt
-clflags_nt_axp     = -l=ntaxp
-clflags_win_i86    = -l=windows -DSTRICT
-clflags_win_386    = -l=windows -DSTRICT
-clflags_os2_i86    = -l=os2
-clflags_os2_386    = -l=os2v2
-clflags_qnx_i86    = -l=qnx
-clflags_qnx_386    = -l=qnx
-clflags_osi_386    = -l=osi
-clflags_dos_i86    = -l=dos
-clflags_dos_386    = -l=dos4g
-clflags_nov_386    = -l=netware
-clflags_linux_386  = -l=linux
-clflags_linux_ppc  = -l=linuxppc
-clflags_linux_mps  = -l=linuxmips
+clflags_nt_386     = -b nt
+clflags_nt_axp     = -b ntaxp
+clflags_win_i86    = -b windows -DSTRICT
+clflags_win_386    = -b windows -DSTRICT
+clflags_os2_i86    = -b os2
+clflags_os2_386    = -b os2v2
+clflags_qnx_i86    = -b qnx
+clflags_qnx_386    = -b qnx
+clflags_osi_386    = -b osi
+clflags_dos_i86    = -b dos
+clflags_dos_386    = -b dos4g
+clflags_nov_386    = -b netware
+clflags_linux_386  = -b linux
+clflags_linux_ppc  = -b linuxppc
+clflags_linux_mps  = -b linuxmips
 
-clflags_exe_osi_386 = -fe=$^&.rex
+clflags_exe_osi_386 = -o $^&.rex
 !ifdef clflags_exe_$(host_os)_$(host_cpu)
-clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu))
+clflags_exe = $(clflags_exe_$(host_os)_$(host_cpu)) -fm
 !else
-clflags_exe = -fe=$@
+clflags_exe = -o $@ -fm
 !endif
 
 proj_c_flags     = $(extra_c_flags) $(extra_c_flags_$(host_cpu)) $(extra_c_flags_$(host_os))
 cflags           = $(cflags_all) $(fpu_flags) $(cflags_$(host_cpu)) $(cflags_$(host_os)) $(cflags_$(host_os)_$(host_cpu)) $(proj_c_flags)
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os))
 cppflags         = $(cppflags_all) $(proj_cpp_flags)
-clflags          = $(mode_clflags) $(clflags_$(host_os)_$(host_cpu)) $(model_switch_$(host_cpu)) $(extra_cl_flags) $(clflags_exe) -fm
+clflags          = $(mode_clflags) $(clflags_$(host_os)_$(host_cpu)) $(cl_model_switch) $(extra_cl_flags) $(clflags_exe)
 
 aflags_all      =
 
@@ -334,12 +326,12 @@ rc_flags_axp    = -D__AXP__
 rc_flags        = $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 
-!ifdef bootstrapmode
+!ifndef bootstrapmode
 
-inc_dirs_sys_os2_386 = -I"$(dev_dir)/os2api/incl32"
-inc_dirs_sys_os2_i86 = -I"$(dev_dir)/os2api/incl16"
-inc_dirs_sys_nt    = -I"$(dev_dir)/w32api/include"
-inc_dirs_sys_win   = -I"$(dev_dir)/w16api/include"
+inc_dirs_sys_os2_386 = -I"$(dev_dir)/os2api/os2386/include"
+inc_dirs_sys_os2_i86 = -I"$(dev_dir)/os2api/os2286/include"
+inc_dirs_sys_nt    = -I"$(dev_dir)/w32api/nt"
+inc_dirs_sys_win   = -I"$(dev_dir)/w16api/wini86"
 inc_dirs_sys_os2   = $(inc_dirs_sys_os2_$(host_cpu))
 inc_dirs_sys_dos   =
 inc_dirs_sys_nov   =
@@ -385,6 +377,11 @@ inc_dirs_lang   = -I"$(lang_root)/h"
 
 !endif
 
+# TODO: This is stupid!
+!ifdef bootstrap
+inc_dirs_lang =
+!endif
+
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
@@ -408,7 +405,7 @@ rtdll_libpath = &
     $(rtdll_cpplib_$(host_os)_$(host_cpu))
 
 cc              = $(cc_$(host_cpu))
-cl              = $(cl_$(host_cpu))
+cl              = *owcc
 cpp             = $(cpp_$(host_cpu))
 linker          = $(linker_$(host_cpu))
 librarian       = $(librarian_$(host_cpu))

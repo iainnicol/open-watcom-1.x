@@ -1,13 +1,11 @@
-# DWARF Builder Control file
-# ==========================
+# mps cg Builder Control file
+# ===========================
 
 set PROJDIR=<CWD>
-set PROJNAME=DWARF
+set PROJNAME=MIPS cg
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
-
-set BOOTSUBDIR=dw/
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 

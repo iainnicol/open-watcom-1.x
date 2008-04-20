@@ -1,9 +1,9 @@
-# windows 16-bit API Builder Control file
-# ===========================
+# Windows 16-bit API Builder Control file
+# =======================================
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/bat/master.ctl ]
+[ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
@@ -18,11 +18,9 @@ cdsay .
 
 [ BLOCK <1> rel2 cprel2 acprel2 ]
 #================================
-  [ IFDEF (os_win "") <2*> ]
     <CPCMD> wini86/*.lib                <RELROOT>/lib286/win/
-  [ ENDIF ]
     <CPCMD> wini86/*.h                  <RELROOT>/h/win/
-    <CPCMD> <DEVDIR>/sdk/misc/ctl3d.h   <RELROOT>/h/win/
+#    <CPCMD> <DEVDIR>/sdk/misc/ctl3d.h   <RELROOT>/h/win/
 
 [ BLOCK <1> clean ]
 #==================
@@ -30,5 +28,4 @@ cdsay .
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

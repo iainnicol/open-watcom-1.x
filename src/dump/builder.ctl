@@ -7,8 +7,6 @@ set PROJNAME=wdump
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel2 cprel2 ]
@@ -22,5 +20,4 @@ cdsay .
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>

@@ -1,15 +1,26 @@
 # Master Languages Builder Control File
 # =====================================
 
-[ BLOCK . . ]
+# Validate the environment
+[ BLOCK .<OWROOT> . ]
+#====================
+    error OWROOT must be set!
 
-#default to bld.log
+# Set default output directory
+[ BLOCK .<RELROOT> . ]
+#=====================
+    set RELROOT=<OWROOT>/rel
+
+[ BLOCK . . ]
+#============
+
+# Default to bld.log
 set LOGFNAME=bld
 set LOGEXT=log
 set CPCMD=acopy
 set CCCMD=accopy
 
-# set up directories
+# Set up directories
 set SRCDIR=<OWROOT>/src
 
 [ BLOCK .<1> . ]

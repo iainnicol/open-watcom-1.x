@@ -7,8 +7,6 @@ set PROJNAME=ui library
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
 set BOOTSUBDIR=unix/
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
@@ -20,5 +18,4 @@ set BOOTSUBDIR=unix/
 
 [ BLOCK . . ]
 #============
-
 cdsay <PROJDIR>
