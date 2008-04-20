@@ -1,4 +1,4 @@
-#include "pcfist.h"
+#include "pcfist.H"
 #include <string.h>
 #include <stdlib.h>
 #include <iostream.h>

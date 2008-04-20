@@ -1,4 +1,4 @@
-#if defined( _M_I86 )
+#if defined( M_I86 ) || defined( MI386 )
 
 #include "fail.h"
 

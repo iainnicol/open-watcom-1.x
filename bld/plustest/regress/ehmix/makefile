@@ -1,30 +1,18 @@
 plustest_name = ehmix
-!include ../environ.mif
-
-!ifndef __UNIX__
-!ifndef __DOS__
-br_opt = -br
-!endif
-!endif
+!include ..\environ.mif
 
 !ifdef test1
-comp_flags = -d2-xs-hd $(br_opt)
-alt_error=01
+comp_flags = -d2-xs-hd -br
 !else ifdef test2
 comp_flags = -d2-xss-hd
-alt_error=02
 !else ifdef test3
 comp_flags = -d2-xst-hd
-alt_error=03
 !else ifdef test4
 comp_flags = -ox-d1-xst
-alt_error=04
 !else ifdef test5
 comp_flags = -ox-d1-xss
-alt_error=05
 !else
-comp_flags = -ox-d1-xs $(br_opt)
-alt_error=00
+comp_flags = -ox-d1-xs -br
 !endif
 
 comp_flags += -zq -xr
@@ -34,37 +22,32 @@ stack_i86=opt stack=16k
 stack_axp=opt stack=64k
 
 .cpp.obj:
-    $(wpp_$(arch)) $[@ $(comp_flags) -fo=.obj
-
+    $(wpp_$(arch)) $[@ $(comp_flags)
+    
 .obj.exe:
-    $(linker) @ehmix.lnk name $@ file $[@ 
-    $(run) $(exec_prefix)$@ >>exec.out
+    wlink @ehmix file $[@ 
 
 # not posible to compile it for 16-bit due to 
 # ehmix.c requires more than 64kB memory for code
 #
 !ifeq arch i86
-test : .symbolic start_test
+test : .symbolic
 !else
-test : .symbolic start_test ehmix.lnk ehmix.exe
-    diff exec.out exec.chk
+test : .symbolic exec.out
+    -diff exec.out exec.chk >diff.out
 !endif
-    @%make global
+    %make global
     %append $(log_file) PASS $(%__CWD__)
-
+    
+exec.out : ehmix.lnk ehmix.exe
+    ehmix.exe >exec.out
+    
 ehmix.lnk : $(__MAKEFILES__)
     %create $^@
-    @%append $^@ name $^*
+    @%append $^@ NAME $^*
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
     @%append $^@ $(stack_$(arch))
-
-start_test : .symbolic
-    %create exec.out
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
-
+    
 global : .SYMBOLIC
-    @%make common_clean
+    %make common_clean

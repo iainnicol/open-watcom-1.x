@@ -2571,6 +2571,12 @@ SYMBOL TemplateFunctionTranslate( SYMBOL sym, SCOPE *parse_scope )
     sym_scope = SymScope( sym );
     replace_sym = templateData.translate_fn;
     if( replace_sym != NULL ) {
+        if( replace_sym->sym_type->of == TypeError ){
+            // fudge - typeerror is probably inapropriate but it currenly means there was a 
+            // template dependant return type - we know what it is now so fix it
+            // not sure if this is the appropriate way or place to do this
+            replace_sym->sym_type->of = sym->sym_type->of;
+        }
         /* so any inline functions that are parsed during this function are OK */
         templateData.translate_fn = NULL;
         sym = replace_sym;

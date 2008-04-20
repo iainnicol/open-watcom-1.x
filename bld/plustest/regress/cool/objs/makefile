@@ -13,42 +13,32 @@ objs = &
 
 !ifdef test1
 test_cflags = -ot-op-d1
-alt_error=01
 !else ifdef test2
 test_cflags = -ot-op-d1-xds
-alt_error=02
 !else ifdef test3
 test_cflags = -op-d2-xds
-alt_error=03
 !else
 test_cflags = -op-d2
-alt_error=00
 !endif
 
 test_cflags += -zq -I../.. -w0
-!ifdef __UNIX__
-test_cflags += -fi=../__ialias.h
-!endif
 
 test_cflags_i86 = -ml -zm -s
-
+   
 .c: ..
 .c.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags) $(test_cflags_$(arch)) -fo=.obj
-
+    $(wpp_$(arch)) $[@ $(test_cflags) $(test_cflags_$(arch))
+    
 test : .symbolic ../cool.lib
-    @%make global
+    %make global
     %append $(log_file) PASS $(%__CWD__)
-
-../cool.lib : $(objs) cool.lbc
-    $(librarian_$(arch)) -q-n-b-p=512 $^@ @cool.lbc
-
+    
+..\cool.lib : $(objs) cool.lbc
+    $(librarian_$(arch)) -n -q -b -p=512 $^@ @cool.lbc
+    
 cool.lbc : makefile
     %create $^@
     @for %i in ($(objs)) do @%append $^@ +%i
-
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
-
-global : .procedure
-    @%make common_clean
+    
+global : .symbolic
+    %make common_clean

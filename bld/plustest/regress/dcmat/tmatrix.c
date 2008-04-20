@@ -1,4 +1,4 @@
-#include "compmat.h"
+#include "compMat.h"
 #define matrix complexMatrix
 
 int main() {

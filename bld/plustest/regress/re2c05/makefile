@@ -3,10 +3,8 @@ plustest_name = re2c05
 
 !ifdef test1
 test_cflags = -d2
-alt_error=01
 !else
 test_cflags = -ox-d1
-alt_error=00
 !endif
 
 test_cflags += -zq
@@ -20,7 +18,7 @@ stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
 .cpp.obj:
-    $(wpp_$(arch)) $[@ $(test_cflags_$(arch)) -fo=.obj
+    $(wpp_$(arch)) $[@ $(test_cflags_$(arch))
 
 objs = &
 code.obj &
@@ -33,29 +31,23 @@ substr.obj &
 translat.obj &
 actions.obj
 
-test : .symbolic start_test re2c.$(exe)
-    diff debug.out debug.chk | wc >wc.out
-    diff -b wc.out wc.chk
-    @%make global
+test : .symbolic re2c.$(exe)
+    $(run) re2c.$(exe) -b scanner.re >debug.out
+    diff debug.out debug.chk | wc -l >line.out
+    diff line.out line.chk
+    %make global
     %append $(log_file) PASS $(%__CWD__)
 
 re2c.$(exe) : $(objs) re2c.lnk
-    $(linker) @$]@ NAME $@
-    $(run) $(exec_prefix)$@ -b scanner.re >>debug.out
-
-start_test : .symbolic
-    %create debug.out
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    $(linker) @$]@
 
 re2c.lnk : makefile
     %create $^@
+    @%append $^@ NAME $^*
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_$(arch))
     @%append $^@ $(stack_$(arch))
     @for %i in ( $(objs) ) do @%append $^@ FILE %i
-
-save : .symbolic
-    @if exist debug.out cp debug.out s$(arch)_$(alt_error).sav
 
 global : .SYMBOLIC
     @%make common_clean
