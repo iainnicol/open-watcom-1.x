@@ -1,0 +1,39 @@
+/*
+ *  stress.h    Stress-testing functions
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef	_INC_STRESS
+#define	_INC_STRESS
+
+:include readonly.sp
+#ifndef	_INC_WINDOWS
+#include <windows.h>
+#endif
+
+:include cpluspro.sp
+
+#pragma pack(push,1)
+
+#define	EDS_WIN	1
+#define	EDS_CUR	2
+#define	EDS_TEMP	3
+
+BOOL	WINAPI	AllocMem(DWORD);
+void	WINAPI	FreeAllMem(void);
+int	WINAPI	AllocFileHandles(int);
+void	WINAPI	UnAllocFileHandles(void);
+int	WINAPI	GetFreeFileHandles(void);
+int	WINAPI	AllocDiskSpace(long,UINT);
+void	WINAPI	UnAllocDiskSpace(UINT);
+BOOL	WINAPI	AllocUserMem(UINT);
+void	WINAPI	FreeAllUserMem(void);
+BOOL	WINAPI	AllocGDIMem(UINT);
+void	WINAPI	FreeAllGDIMem(void);
+
+#pragma pack(pop)
+
+:include cplusepi.sp
+
+#endif
