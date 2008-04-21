@@ -1992,14 +1992,16 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms,
                         }
                     } else {
                         parm = processIndividualParm( arg_type, parm );
-
                         if( parm->op == PT_ERROR ) {
                             something_went_wrong = TRUE;
                         }
                     }
                 } else {
                     /* non-type parameter supplied for type argument */
-                    PTreeErrorExpr( parm, ERR_NON_TYPE_PROVIDED_FOR_TYPE );
+                    parm = AnalyseRawExpr( parm );
+                    if( parm->op != PT_ERROR ) {
+                        PTreeErrorExpr( parm, ERR_NON_TYPE_PROVIDED_FOR_TYPE );
+                    }
                     something_went_wrong = TRUE;
                 }
             } else {
@@ -2597,13 +2599,14 @@ void TemplateClassDirective( TYPE type, TOKEN_LOCN *locn,
 
     type = BindTemplateClass( type, locn, FALSE );
     inst = TypeClassInstantiation( type );
-    DbgAssert( inst != NULL );
 
-    if( tcd_control & TCD_INSTANTIATE ) {
-        inst->must_process = 1;
-    }
-    if( tcd_control & TCD_EXTERN ) {
-        inst->dont_process = 1;
+    if( inst != NULL ) {
+        if( tcd_control & TCD_INSTANTIATE ) {
+            inst->must_process = 1;
+        }
+        if( tcd_control & TCD_EXTERN ) {
+            inst->dont_process = 1;
+        }
     }
 }
 
