@@ -99,7 +99,7 @@ typedef struct {
             unsigned    v       : 1;
 #endif
         }       sign;
-#if defined(__WATCOM_INT64__) || defined(__GNUC__)
+#if defined(__WATCOM_INT64__) || defined(__GNUC__) || defined( __SUNPRO_C )
         unsigned long long   _64[1];
 #endif
     } u;
