@@ -298,13 +298,13 @@ typedef int (*old_rtn)( void );
 typedef int (*alias_rtn)( void *, void * );
 
 typedef union command_rtn {
+    void        *ptr;   /* Must go first to avoid type mismatches */
     insert_rtn  ins;
     move_rtn    move;
     op_rtn      op;
     misc_rtn    misc;
     old_rtn     old;
     alias_rtn   alias;
-    void        *ptr;
 } command_rtn;
 
 typedef struct {
