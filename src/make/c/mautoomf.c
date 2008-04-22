@@ -52,7 +52,7 @@ typedef struct {
 static omf_info fileHandle;
 static char     nameBuffer[_MAX_PATH2 + 1];
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 typedef struct {
     uint_8  bits;
     uint_8  type;
@@ -60,7 +60,7 @@ typedef struct {
     uint_16 dos_date;
     uint_8  name_len;
 }           obj_comment;
-#pragma pack( pop )
+#include "poppck.h"
 
 static BOOLEAN verifyObjFile( int fh )
 /************************************/

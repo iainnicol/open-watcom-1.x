@@ -32,7 +32,9 @@
 /*
  * Structs
  */
-#pragma pack (1)
+
+#include "pushpck1.h"
+
 typedef struct {
     unsigned_8  type;
     unsigned_16 len;
@@ -73,7 +75,8 @@ typedef struct{
     unsigned_8  fflag;
     unsigned_8  name[ BLOCK_NAME_LEN ];
 } OmfLibBlock;
-#pragma pack()
+
+#include "poppck.h"
 
 void InitOmfUtil( void );
 void PadOmf( bool force );

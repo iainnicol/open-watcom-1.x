@@ -121,7 +121,7 @@ pick( MAX_FILE_LENGTH_EXCEED,   "File Name Length Exceeded",
                                 "ファイル名の長さが制限を越えました")
 pick( DOT_DEFAULT_REDEFINITION, "Redefinition of .DEFAULT Command List",
                                 ".DEFAULT コマンド･･リストの再定義です")
-pick( NON_MATCHING_CURL_PAREN,  "Non-matching \{ In Implicit Rule",
+pick( NON_MATCHING_CURL_PAREN,  "Non-matching { In Implicit Rule",
                                 "暗黙のルールの中の \{ が一致しません")
 pick( INVALID_SUFSUF,           "Invalid Implicit Rule Definition",
                                 "不適切な暗黙のルール定義です")

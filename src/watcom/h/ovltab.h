@@ -24,12 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Overlay manager shared data structures definition
-*               they are used by linker and overlay loader library.
+* Description:  Overlay manager data structure definitions
+*               shared between linker and overlay loader library.
 *
 ****************************************************************************/
 
-//   !!!!!!!!!   must correspond to declaration in ovltab.inc  !!!!!!!!!
+
+//   !!!!!!!!!   must correspond to declarations in ovltab.inc  !!!!!!!!!
 
 #ifndef _OVLTAB_H_
 #define _OVLTAB_H_
@@ -48,7 +49,7 @@
 #define near
 #endif
 
-#pragma pack( push, 1 )             /* make sure no structures are padded. */
+#include "pushpck1.h"               /* make sure no structures are padded. */
 
 typedef struct dos_addr {
     unsigned_16     off;
@@ -143,6 +144,6 @@ typedef struct lvector {            /* long overlay vector */
 
 typedef lvector far * lvector_ptr;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #endif

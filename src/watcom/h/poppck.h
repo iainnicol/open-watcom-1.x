@@ -24,71 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  Librarian DLL version mainline.
+* Description:  Include this file to restore default structure packing.
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
-#ifdef __WATCOMC__
-#include <process.h>
+#if defined( __WATCOMC__ )
+    #pragma pack(__pop)
+#elif defined( __ALPHA__ ) || defined( _CFE ) || defined( __SUNPRO_C )
+    #pragma pack()
+#elif defined( __MWERKS__ )
+    #pragma options align= reset
 #else
-#include "clibext.h"
-#endif
-#ifdef IDE_PGM
-#include <stdlib.h>
-#include <limits.h>
-char *ImageName;
-#endif
-#include "idedrv.h"
-
-#define DLL_NAME "wlibd.dll"
-#define AR_MODE_ENV "WLIB$AR"
-
-static IDEDRV info =
-{   DLL_NAME
-};
-
-int main                        // MAIN-LINE FOR DLL DRIVER
-    ( int count                 // - # args
-    , char *args[] )            // - arguments
-{
-    int retcode;                // - return code
-#ifndef __UNIX__
-    int len;
-    char *cmd_line;
+    #pragma pack(pop)
 #endif
 
-#ifndef __WATCOMC__
-    _argv = args;
+#if defined ( _NO_PRAGMA_PUSH_PACK )
+    #if defined( _PUSH_PACK )
+        #undef _PUSH_PACK
+    #else
+        #error Tried to pop a pack without a successful push
+    #endif
 #endif
-#ifdef IDE_PGM
-#ifdef __UNIX__
-    static char buffer[PATH_MAX];
-    _cmdname( buffer );
-    ImageName = buffer;
-#else
-    ImageName = args[0];
-#endif
-#endif
-#ifndef __UNIX__
-    count = count;
-    args = args;
-    len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( len );
-    _bgetcmd( cmd_line, len );
-    /* Turn on 'ar' mode by setting WLIB$AR env var */
-    if( stricmp( strrchr( args[0], '\\' ) + 1, "ar.exe" ) == 0 ) {
-        putenv( AR_MODE_ENV "=ON" );
-    }
-    retcode = IdeDrvExecDLL( &info, cmd_line );
-    free( cmd_line );
-#else
-    retcode = IdeDrvExecDLLArgv( &info, count, args );
-#endif
-    if( retcode != IDEDRV_ERR_INIT_EXEC ) {
-        IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL
-    }
-    return retcode;
-}

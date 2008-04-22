@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Import library management routines.
 *
 ****************************************************************************/
 
@@ -82,7 +81,7 @@ extern char ElfOSInfo[];
 #define ElfBase_SIZE            0x122
 #define ElfOSInfo_SIZE          0x28
 
-#pragma pack (push, 1)
+#include "pushpck1.h"
 
 typedef struct {
     unsigned_32         flags;
@@ -106,4 +105,4 @@ typedef unsigned_16 Coff32_EOrd;
 #define ELF_IMPORT_SYM_INFO             0x10
 #define ELF_IMPORT_NAMED_SYM_INFO       0x15
 
-#pragma pack (pop)
+#include "poppck.h"

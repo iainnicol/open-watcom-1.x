@@ -79,8 +79,6 @@ typedef struct {
     uint_32     time_date_stamp;
 } import_sym;
 
-#pragma pack ( push, 1 )
-
 //IMPORT_DESCRIPT optional header
 
 static unsigned_8 CoffImportAxpText[] = {
@@ -568,7 +566,5 @@ int convert_import_library(coff_file_handle coff_file_hnd)
     sym.ordinal = i_hdr->oh.ordinal;
     return( CoffCreateImport( coff_file_hnd, &sym ) );
 }
-
-#pragma pack ( pop )
 
 orl_funcs ImportLibData = {ImportLibRead, ImportLibSeek, NULL, NULL};
