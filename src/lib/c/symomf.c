@@ -32,7 +32,7 @@
 #include <wlib.h>
 #include "symomf.h"
 
-static unsigned short   CurrSegRef = 0;
+static unsigned_16      CurrSegRef = 0;
 static char             Rec32Bit;
 
 struct lname {
@@ -44,7 +44,7 @@ struct lname {
 
 typedef struct COMMON_BLK {
     struct COMMON_BLK       *next;
-    unsigned short          segindex;
+    unsigned_16             segindex;
 }   common_blk;
 
 
@@ -57,12 +57,12 @@ typedef enum {
 
 static struct lname     *LName_Head;
 static struct lname     **LName_Owner;
-static char             Typ;
-static unsigned short   Len, MaxLen;
-static char             *CurrRec;
-static char             *RecPtr;
+static unsigned_8       Typ;
+static unsigned_16      Len, MaxLen;
+static unsigned_8       *CurrRec;
+static unsigned_8       *RecPtr;
 static common_blk       *CurrCommonBlk;
-static unsigned short   SegDefCount;
+static unsigned_16      SegDefCount;
 static bool             EasyOMF;
 static char             NameBuff[257];
 

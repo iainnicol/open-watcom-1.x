@@ -155,7 +155,7 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
         }
     } else if( AddImport( &arch, io ) ) {
         LibClose( io );
-    } else if( buff[0] == LIB_HEADER_REC && buff[ 1 ] != 0x01 ) {
+    } else if( (unsigned_8)buff[0] == LIB_HEADER_REC && buff[ 1 ] != 0x01 ) {
         /*
           The buff[ 1 ] != 1 bit above is a bad hack to get around
           the fact that the coff cpu_type for PPC object files is

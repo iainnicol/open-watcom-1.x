@@ -11,12 +11,11 @@ set PROJNAME=dmpobj
 
 [ BLOCK <1> rel2 cprel2 ]
 #========================
-    <CCCMD> dosi86/dmpobj.exe    <RELROOT>/binw/dmpobj.exe
-    <CCCMD> os2386/dmpobj.exe    <RELROOT>/binp/dmpobj.exe
-    <CCCMD> nt386/dmpobj.exe     <RELROOT>/binnt/dmpobj.exe
-    <CCCMD> ntaxp/dmpobj.exe     <RELROOT>/axpnt/dmpobj.exe
-    <CCCMD> qnx386/dmpobj.exe    <RELROOT>/qnx/dmpobj
-    <CCCMD> linux386/dmpobj.exe  <RELROOT>/binl/dmpobj
+    <CCCMD> <PROJDIR>/dosi86/dmpobj.exe    <RELROOT>/binw/dmpobj.exe
+    <CCCMD> <PROJDIR>/os2386/dmpobj.exe    <RELROOT>/binp/dmpobj.exe
+    <CCCMD> <PROJDIR>/nt386/dmpobj.exe     <RELROOT>/binnt/dmpobj.exe
+    <CCCMD> <PROJDIR>/linux386/dmpobj.exe  <RELROOT>/binl/dmpobj
+    <CCCMD> <PROJDIR>/ntaxp/dmpobj.exe     <RELROOT>/axpnt/dmpobj.exe
 
 [ BLOCK . . ]
 #============
