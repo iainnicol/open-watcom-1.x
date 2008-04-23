@@ -768,10 +768,6 @@ static void injectClassName( char *name, TYPE type, TOKEN_LOCN *locn )
     sym_name->name_type = sym;
 
     HashInsert( scope->names, sym_name, name );
-    ClassMember( scope, sym );
-    DeclDefaultStorageClass( scope, sym );
-
-    sym->flag &= ~SF_ACCESS;
 }
 
 static void newClassSym( CLASS_DATA *data, CLASS_DECL declaration, PTREE id )
