@@ -164,10 +164,9 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
          && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
             // temporaries may only be bound to const references
             if( NULL == TypeReference( arg->type ) ) {
-                *aptr = MakeConstReferenceTo( arg->type );
-            } else {
-                *aptr = arg->type;
+                arg->type = MakeConstReferenceTo( arg->type );
             }
+            *aptr = arg->type;
             aptr++;
         } else {
             *aptr++ = NodeType( arg );
