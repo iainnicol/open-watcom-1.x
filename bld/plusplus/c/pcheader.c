@@ -37,7 +37,9 @@
 #include <fcntl.h>
 #include <setjmp.h>
 #include <limits.h>
+#ifdef __WATCOMC__
 #include <share.h>
+#endif
 
 #include "errdefns.h"
 #include "memmgr.h"
@@ -480,7 +482,11 @@ void PCHeaderCreate( char *include_file )
         return;
     }
     pch_fname = PCHFileName();
+#ifdef __WATCOMC__
     pchFile = sopen( pch_fname, O_RDWR|O_BINARY|O_CREAT|O_TRUNC, SH_DENYRW, S_IREAD|S_IWRITE );
+#else
+    pchFile = open( pch_fname, O_RDWR|O_BINARY|O_CREAT|O_TRUNC, S_IREAD|S_IWRITE );
+#endif
     if( pchFile == -1 ) {
         CErr2p( ERR_PCH_CREATE_ERROR, pch_fname );
         return;

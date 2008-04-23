@@ -31,7 +31,6 @@
 
 #include "plusplus.h"
 
-#include <malloc.h>
 #include <limits.h>
 
 #include "codegen.h"

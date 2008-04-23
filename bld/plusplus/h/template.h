@@ -68,7 +68,10 @@ PCH_struct member_inst {
     unsigned            is_inline : 1;
 };
 
+#ifndef CLASS_INST_DEFINED
+#define CLASS_INST_DEFINED
 typedef struct class_inst CLASS_INST;   // class template instantiation
+#endif
 PCH_struct class_inst {
     CLASS_INST          *next;          // (ring)
     TYPE                unbound_type;   // unbound class type
@@ -138,7 +141,10 @@ PCH_struct fn_template_inst {
     unsigned            processed : 1;  // already processed instantiation
 };
 
+#ifndef FN_TEMPLATE_DEFINED
+#define FN_TEMPLATE_DEFINED
 typedef struct fn_template FN_TEMPLATE; // function template
+#endif
 PCH_struct fn_template {
     FN_TEMPLATE         *next;          // (ring)
     FN_TEMPLATE_INST    *instantiations;// list of instantiations

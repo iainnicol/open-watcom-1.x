@@ -88,7 +88,6 @@ static carve_t carveSTATE_STACK;
 static carve_t carveLOCATION_STACK;
 
 typedef struct restart_parse RESTART_PARSE;
-typedef struct parse_stack PARSE_STACK;
 struct restart_parse {
     RESTART_PARSE       *next;
     PARSE_STACK         *state;

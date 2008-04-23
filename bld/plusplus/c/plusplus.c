@@ -31,13 +31,10 @@
 #include "plusplus.h"
 
 #include <signal.h>
-#include <process.h>
 #include <ctype.h>
 #include <setjmp.h>
 #include <unistd.h>
 #include <limits.h>
-#include <fcntl.h>
-#include <malloc.h>
 
 #include "scan.h"
 #include "memmgr.h"
@@ -519,6 +516,24 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
 }
 
 
+static void reallocTokens( void )   // ALLOCATE STORAGE FOR TOKENS
+{                                   // - tokens need to be writable
+#ifndef __WATCOMC__
+    int i;
+
+    /* Quick hack: The tokens need to be writable, but string literals
+     * often aren't. For Watcom we use -zc switch, otherwise allocate
+     * writable storage manually.
+     * NB: We might want to only copy the tokens that actually need
+     * to be writable.
+     */
+    for( i = 0; i < T_LAST_TOKEN; ++i ) {
+	Tokens[i] = strdup( Tokens[i] );
+    }
+#endif
+}
+
+
 #ifndef NDEBUG
 #define ZAP_NUM 20
 #define ZAP_SIZE 1024
@@ -563,6 +578,7 @@ int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
     DbgHeapInit();
+    reallocTokens();
     if( dll_data->cmd_line != NULL ) {
         char* vect[4];
         unsigned i = 1;
@@ -584,7 +600,7 @@ int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
         if( input[0] == '\0' && output[0] == '\0' ) {
             new_argv = &(dll_data->argv[1]);
         } else {
-            new_argv = _alloca(( dll_data->argc + 2 ) * sizeof( char * ));
+            new_argv = alloca(( dll_data->argc + 2 ) * sizeof( char * ));
             if( new_argv != NULL ) {
                 char **s = &(dll_data->argv[1]);
                 char **d = new_argv;

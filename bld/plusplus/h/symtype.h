@@ -58,10 +58,19 @@ typedef struct parse_tree_node *PTREE;          // defined in PTREE.H
 typedef struct rewrite_package REWRITE;         // defined in REWRITE.H
 typedef struct template_specialization TEMPLATE_SPECIALIZATION; // defined in TEMPLATE.H
 typedef struct template_info TEMPLATE_INFO;     // defined in TEMPLATE.H
+#ifndef CLASS_INST_DEFINED
+#define CLASS_INST_DEFINED
 typedef struct class_inst CLASS_INST;           // defined in TEMPLATE.H
+#endif
+#ifndef FN_TEMPLATE_DEFINED
+#define FN_TEMPLATE_DEFINED
 typedef struct fn_template FN_TEMPLATE;         // defined in TEMPLATE.H
-typedef struct func_list FNOV_LIST;             // defined in FNOVLOAD.H
+#endif
 typedef struct pool_con POOL_CON;               // defined in CONPOOL.H
+#ifndef FNOV_LIST_DEFINED
+#define FNOV_LIST_DEFINED
+typedef struct func_list FNOV_LIST;             // defined in FNOVLOAD.H
+#endif
 
 #include "linkage.h"
 #include "toknlocn.h"

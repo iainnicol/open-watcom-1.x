@@ -114,7 +114,10 @@ typedef struct {
     unsigned                userdef : 1;    // use of user-defined conversion
 } FNOV_RANK;
 
+#ifndef FNOV_LIST_DEFINED
+#define FNOV_LIST_DEFINED
 typedef struct func_list FNOV_LIST;
+#endif
 struct func_list {
     FNOV_LIST               *next;          // next entry
     SYMBOL                  sym;            // associated symbol

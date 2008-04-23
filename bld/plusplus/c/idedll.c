@@ -33,8 +33,6 @@
 #include "plusplus.h"
 
 #include <ctype.h>
-#include <process.h>
-#include <malloc.h>
 
 #include "memmgr.h"
 #include "idedll.h"
@@ -302,7 +300,9 @@ void IDEDLL_EXPORT IDEStopRunning( void )
 
 void IDEDLL_EXPORT IDEFreeHeap( void )
 {
+#ifdef __WATCOMC__
     _heapmin();
+#endif
 }
 
 // HELP Interface

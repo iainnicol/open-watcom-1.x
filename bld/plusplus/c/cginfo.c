@@ -35,7 +35,6 @@
 #include "compcfg.h"
 #include "tgtenv.h"
 
-#include <process.h>
 #include <limits.h>
 
 #include "preproc.h"
