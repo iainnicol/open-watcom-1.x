@@ -366,8 +366,9 @@ static boolean doFnbodyRewrite( void )
 {
     switch( ScopeId( GetCurrScope() ) ) {
     case SCOPE_CLASS:
-    case SCOPE_TEMPLATE_DECL:
         return( TRUE );
+    case SCOPE_TEMPLATE_DECL:
+        return( GetCurrScope()->ordered != NULL );
     case SCOPE_TEMPLATE_INST:
         return( GetCurrScope()->owner.inst != NULL );
     }
