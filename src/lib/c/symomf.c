@@ -68,25 +68,28 @@ static char             NameBuff[257];
 
 static bool GetLen( libfile io )
 {
-    char        ch1, ch2;
+    unsigned_8      ch1, ch2;
 
     if( LibRead( io, &ch1, sizeof( ch1 ) ) != sizeof( ch1 ) ) return( FALSE );
     if( LibRead( io, &ch2, sizeof( ch2 ) ) != sizeof( ch1 ) ) return( FALSE );
-    Len = ( ( unsigned ) ch2 << 8 ) + ch1;
+    Len = ( ch2 << 8 ) + ch1;
     return( TRUE );
 }
 
 bool GetRec( libfile io )
 /***********************/
 {
-    if( LibRead( io, &Typ, sizeof( Typ ) ) != sizeof( Typ ) ) return( FALSE );
-    if( !GetLen( io ) ) return( FALSE );
+    if( LibRead( io, &Typ, sizeof( Typ ) ) != sizeof( Typ ) )
+        return( FALSE );
+    if( !GetLen( io ) )
+        return( FALSE );
     if( Len > MaxLen ) {
         MemFree( CurrRec );
         CurrRec = MemAlloc( Len );
         MaxLen = Len;
     }
-    if( LibRead( io, CurrRec, Len ) != Len ) return( FALSE );
+    if( LibRead( io, CurrRec, Len ) != Len )
+        return( FALSE );
     RecPtr = CurrRec;
     /* check to see if this is an Easy OMF-386 object file */
     /* Only need to check the first comment record */
@@ -100,7 +103,7 @@ bool GetRec( libfile io )
 static unsigned short GetIndex( void )
 /************************************/
 {
-    unsigned short index;
+    unsigned_16     index;
 
     index = *RecPtr++;
     if( index > 0x7F ) {
@@ -125,7 +128,7 @@ static void GetOffset( void )
 static void GetIdx( void )
 /************************/
 {
-    unsigned short      grp;
+    unsigned_16     grp;
 
     grp = GetIndex();
     CurrSegRef = GetIndex();

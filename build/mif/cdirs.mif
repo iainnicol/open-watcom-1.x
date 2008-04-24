@@ -194,6 +194,9 @@ wres_dir        = $(dev_dir)/wres
 !ifndef dip_dir
 dip_dir         = $(dev_dir)/dip
 !endif
+!ifndef dig_dir
+dig_dir         = $(dev_dir)/dig
+!endif
 !ifndef mad_dir
 mad_dir         = $(dev_dir)/mad
 !endif
@@ -218,17 +221,14 @@ editdll_dir     = $(dev_dir)/editdll
 !ifndef ui_dir
 ui_dir          = $(dev_dir)/ui
 !endif
-!ifndef help_dir
-help_dir        = $(dev_dir)/help
+!ifndef hlpview_dir
+hlpview_dir     = $(dev_dir)/hlpview
 !endif
-!ifndef wv_dir
-wv_dir          = $(dev_dir)/wv
+!ifndef dbg_dir
+dbg_dir         = $(dev_dir)/dbg
 !endif
 !ifndef pil_dir
 pil_dir         = $(dev_dir)/pil
-!endif
-!ifndef debugger_dir
-debugger_dir    = $(dev_dir)/debugger
 !endif
 !ifndef re2c_dir
 re2c_dir        = $(dev_dir)/re2c
