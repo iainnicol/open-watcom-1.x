@@ -100,11 +100,15 @@ static unsigned ProcSet( char *cmd )
         return( 1 );
     *rep++ = '\0';
     if( *rep == '\0' ) {
-        rep = NULL;             // get rid of the variable! Needed by Optima!
+        rep = NULL;     /* Delete the environment variable! */
     }
 #ifdef __WATCOMC__
-    // We don't have unsetenv(), but our setenv() is extended vs. POSIX 
-    return( setenv( var, rep, 1 ) );
+    /* We don't have unsetenv(), but our setenv() is extended vs. POSIX */
+    if( rep == NULL ) {
+	setenv( var, NULL, 1 );
+	return( 0 );
+    } else
+        return( setenv( var, rep, 1 ) );
 #else
     if( rep == NULL ) {
         unsetenv( var );

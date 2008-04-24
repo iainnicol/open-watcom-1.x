@@ -28,11 +28,12 @@ objs =               &
 
 dependants = msg.gh $(objs) $(res) $(wres_lib)
 
-$(proj_name).exe : $(dependants) $(cl_objs)
+./$(proj_name).exe : $(dependants) $(cl_objs)
 !ifdef bootstrap
         $(cl) $(clflags) $(objs) $(cl_objs) $(wres_lib)
-        ./$@ -q -a -r $^@ strip2.exe $(res) > /dev/null; true
-        mv strip2.exe $@
+        $@ -q -a -r $^@ strip2.exe $(res) > $(nulldevice)
+        cp strip2.exe $@
+	rm -f strip2.exe
 !else
         $(linker) option quiet $(lflags) name $^. file { $(objs) } lib $(wres_lib)
         wstrip -q -a -r $^@ . $(res)

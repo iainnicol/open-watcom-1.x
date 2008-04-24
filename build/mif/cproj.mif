@@ -413,6 +413,7 @@ as              = $(as_$(host_cpu))
 vi              = vi -q -d -i
 sed             = sed
 awk             = awk
+yacc            = yacc
 rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
 
 !include bhost.mif

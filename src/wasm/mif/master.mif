@@ -100,7 +100,7 @@ $(name).exe : asmops.gh asmopsd.gh $(name).res $(proj_obj) $(__MAKEFILES__)
 !endif
 !ifdef bootstrap
         @%make usage.u
-        $(cl) -o $@ $(proj_obj) $(libs)
+        $(cl) $(clflags) $(proj_obj) $(libs)
 !else
         @%write  $^&.lnk $(lflags)
         @%append $^&.lnk file { $(proj_obj) }

@@ -15,7 +15,9 @@ objs = wcl.obj clcommon.obj cmdlhelp.obj
 objs += swchar.obj
 !endif
 
+!ifndef bootstrap
 extra_c_flags = -s
+!endif
 
 !ifeq target_cpu i86
 name = wcl.exe

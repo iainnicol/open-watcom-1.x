@@ -42,6 +42,9 @@
     #else
         #error "Need a push/pack for this Mac compiler"
     #endif
+#elif defined( _MSC_VER )
+    #pragma warning(disable:4103)
+    #pragma pack(push,1)
 #else
     #pragma pack(push,1)
 #endif

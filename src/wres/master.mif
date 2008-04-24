@@ -24,15 +24,15 @@ objs = $(wres_core_objs) $(wres_more_objs)
 
 # options to use
 !ifdef IS_GUI
-extra_c_flags = -DMICROSOFT -s -DWIN_GUI
+extra_c_flags = -DMICROSOFT -DWIN_GUI
 !else
-extra_c_flags = -DMICROSOFT -s
+extra_c_flags = -DMICROSOFT
 !endif
 
 !ifeq convention stack
-extra_c_flags_386 = -3s
+extra_c_flags_386 = -3s -s
 !else
-extra_c_flags_386 = -3r
+extra_c_flags_386 = -3r -s
 !endif
 
 !ifeq host_os os2

@@ -42,6 +42,9 @@
     #else
         #error "Need a pshpk2.h for this Mac compiler"
     #endif
+#elif defined( _MSC_VER )
+    #pragma warning(disable:4103)
+    #pragma pack(push,2)
 #else
     #pragma pack(push,2)
 #endif

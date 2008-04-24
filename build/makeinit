@@ -7,6 +7,8 @@
 !endif
 #todo: do we always need $WATCOM ? if so, check!
 
+.ERASE # don't want silly prompts
+
 bld_ver      = $(%BLD_VER)
 patch_level  = 0
 lang_root    = $(%WATCOM)

@@ -35,6 +35,9 @@
     #pragma pack()
 #elif defined( __MWERKS__ )
     #pragma options align= reset
+#elif defined( _MSC_VER )
+    #pragma warning(disable:4103)
+    #pragma pack(pop)
 #else
     #pragma pack(pop)
 #endif

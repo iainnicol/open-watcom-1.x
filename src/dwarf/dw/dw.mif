@@ -32,7 +32,9 @@ dwutils.obj
 
 inc_dirs = -I. -I"../h"
 
+!ifndef bootstrap
 extra_c_flags = -s
+!endif
 
 dw.lib : dwabenum.gh $(objs)
     $(librarian) $(libflags) $(objs) 
