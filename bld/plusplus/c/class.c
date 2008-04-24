@@ -33,6 +33,7 @@
 
 #include <limits.h>
 
+#include "walloca.h"
 #include "codegen.h"
 #include "cgfront.h"
 #include "errdefns.h"

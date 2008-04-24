@@ -216,7 +216,7 @@ common_objs += ytab.obj
 
 !ifndef bootstrap
 # assumes Watcom math library
-common_objs += matherr.obj
+common_objs += cmatherr.obj
 !endif
 
 # watcom files

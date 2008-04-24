@@ -84,7 +84,7 @@ static boolean Wait_for_return( char const *page_text )
         p = stpcpy( p, page_text );
         output( buff );
         fflush( stdout );
-        c = getch();
+        c = getchar();
         return c == 'q' || c == 'Q';
     }
 #endif

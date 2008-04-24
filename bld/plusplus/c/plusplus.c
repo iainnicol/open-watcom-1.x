@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <limits.h>
 
+#include "walloca.h"
 #include "scan.h"
 #include "memmgr.h"
 #include "stats.h"

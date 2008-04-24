@@ -40,6 +40,10 @@
 #include "cgmisc.h"
 #include "fmtsym.h"
 
+#ifdef __WATCOMC__
+#include <malloc.h>     /* For _heapmin() */
+#endif
+
 #ifndef NDEBUG
 #include "errdefns.h"
 // #undef DbgVerify
