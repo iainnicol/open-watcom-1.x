@@ -101,10 +101,26 @@ typedef struct {
         }       sign;
 #if defined(__WATCOM_INT64__) || defined(__GNUC__) || defined( __SUNPRO_C )
         unsigned long long   _64[1];
+#elif defined(_MSC_VER)
+        unsigned __int64     _64[1];
 #endif
     } u;
 } unsigned_64;
 typedef unsigned_64     signed_64;
+
+/* The [u]int_64 type needs to be a scalar. */
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+typedef unsigned __int64        uint_64;
+typedef __int64                 int_64;
+#else
+typedef unsigned long long      uint_64;
+typedef long long               int_64;
+#endif
+
+/* Define here instead of on command line */
+#ifdef _MSC_VER
+    #define _WCUNALIGNED
+#endif
 
 /* Macros for low/high end access on little and big endian machines */
 

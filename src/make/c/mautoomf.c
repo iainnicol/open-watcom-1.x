@@ -38,7 +38,6 @@
 #include "mautodep.h"
 #include "autodept.h"
 
-#include <unistd.h>
 #include <fcntl.h>
 
 #include "pcobj.h"

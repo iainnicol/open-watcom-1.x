@@ -34,7 +34,11 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
+#ifdef _MSC_VER
+  #include <io.h>        /* io.h was a really dumb idea */
+#else
+  #include <unistd.h>
+#endif
 
 #ifndef __WATCOMC__
     #include "clibext.h"
@@ -149,9 +153,9 @@ enum {
 
 #if defined( __NT__ )
 #include <stdio.h>
-#define STDIN   (stdin->_handle)
-#define STDOUT  (stdout->_handle)
-#define STDERR  (stderr->_handle)
+#define STDIN   _fileno( stdin )
+#define STDOUT  _fileno( stdout )
+#define STDERR  _fileno( stderr )
 #else
 #define STDIN   STDIN_FILENO    /* the standard Posix i/o file handles      */
 #define STDOUT  STDOUT_FILENO

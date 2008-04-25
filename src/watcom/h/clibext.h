@@ -21,17 +21,37 @@
 #define __UNIX__
 #endif
 
+#ifndef F_OK
+#define F_OK 00
+#endif
+#ifndef S_IRUSR
+#define S_IRUSR _S_IREAD
+#endif
+#ifndef S_IWUSR
+#define S_IWUSR _S_IWRITE
+#endif
+#ifndef S_IRGRP
+#define S_IRGRP _S_IREAD
+#endif
+#ifndef S_IWGRP
+#define S_IWGRP _S_IWRITE
+#endif
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
 #ifndef O_TEXT
 #define O_TEXT 0
 #endif
+#ifndef _A_VOLID
+#define _A_VOLID 0
+#endif
+#if !defined(__WATCOMC__) && !defined(_MSC_VER)
 #define stricmp strcasecmp
 #define strcmpi strcasecmp
 #define strnicmp strncasecmp
 #ifndef getch
 #define getch getchar
+#endif
 #endif
 #define _vbprintf vsnprintf
 #define __near
@@ -41,9 +61,11 @@
 #define _vsnprintf vsnprintf
 #define  __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
+#ifndef _MSC_VER
 #define SOPEN_DEFINED
 #define sopen(x,y,z) open((x),(y))
 #define _fsopen(x,y,z) fopen(x,y)
+#endif
 #define _fmemcpy memcpy
 #ifndef PATH_MAX
 /* PATH_MAX is not standard, just common. FILENAME_MAX is ISO C. */
@@ -77,14 +99,21 @@
 #ifndef min
 #define min(x,y) (((x)<(y))?(x):(y))
 #endif
+#ifndef _WCRTLINK
 #define _WCRTLINK
+#endif
+#ifndef _WCI86FAR
 #define _WCI86FAR
+#endif
+#ifndef _WCNEAR
 #define _WCNEAR
+#endif
+#ifndef _MSC_VER
 #define __int64 long long
-
 #define _HEAPOK 0
 #define _heapchk(x) _HEAPOK
 #define _expand(x,y) (NULL)
+#endif
 
 char *itoa( int value, char *buf, int radix );
 char *utoa( unsigned int value, char *buf, int radix );

@@ -28,8 +28,14 @@
 *
 ****************************************************************************/
 
+
+#ifdef __WATCOMC__
+    /* We don't need any of this stuff, but being able to build this
+     * module simplifies makefiles.
+     */
+#else
+
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -38,19 +44,22 @@
 #include <ctype.h>
 
 #if defined(__UNIX__)
+    #include <unistd.h>
     #include <dirent.h>
     #include <sys/stat.h>
     #include <fcntl.h>
-#if defined(__QNX__)
+  #if defined(__QNX__)
     #include <sys/io_msg.h>
-#endif
+  #endif
 #else
+    #include <io.h>
     #include <direct.h>
-    #if defined(__OS2__)
-        #include <wos2.h>
-    #elif defined(__NT__)
-        #include <windows.h>
-    #endif
+  #if defined(__OS2__)
+    #include <wos2.h>
+  #elif defined(__NT__)
+    #include <windows.h>
+    #include <mbstring.h>
+  #endif
 #endif
 
 #include "clibext.h"
@@ -658,7 +667,7 @@ void _makepath( char *path, const char *drive,
         if( *dir != '\0' ) {
             do {
                     ch = pickup( _mbsnextc(dir), &first_pc );
-                    _mbvtop( ch, path );
+                    *path = ch; //_mbvtop( ch, path );
                     path[_mbclen(path)] = '\0';
                     path = _mbsinc( path );
                     dir = _mbsinc( dir );
@@ -684,7 +693,7 @@ void _makepath( char *path, const char *drive,
         {
         //do {
                 ch = pickup( _mbsnextc(fname), &first_pc );
-                _mbvtop( ch, path );
+                *path = ch; //_mbvtop( ch, path );
                 path[_mbclen(path)] = '\0';
                 path = _mbsinc( path );
                 fname = _mbsinc( fname );
@@ -756,12 +765,12 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
 {
 
 #if defined(__NT__)
-    char *         filepart;
-    DWORD               rc;
+    char        *filepart;
+    DWORD       rc;
 
-    if( stricmp( path, __F_NAME("con",L"con") ) == 0 ) {
+    if( stricmp( path, "con" ) == 0 ) {
         _WILL_FIT( 3 );
-        return( strcpy( buff, __F_NAME("con",L"con") ) );
+        return( strcpy( buff, "con" ) );
     }
 
     /*** Get the full pathname ***/
@@ -771,7 +780,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     // If the function fails, the return value is zero. To get extended error
     // information, call GetLastError.
     if( (rc == 0) || (rc > size) ) {
-        __set_errno_nt();
+//        __set_errno_nt();
         return( NULL );
     }
 
@@ -1525,4 +1534,6 @@ size_t strlcat( char *dst, const char *t, size_t n )
     }
     return( n );
 }
+#endif
+
 #endif

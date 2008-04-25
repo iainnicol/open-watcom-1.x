@@ -33,10 +33,11 @@
 #if !defined( __UNIX__ )
     #include <direct.h>
     #include <dos.h>
+#else
+    #include <unistd.h>
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
