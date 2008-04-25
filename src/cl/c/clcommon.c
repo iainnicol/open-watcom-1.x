@@ -141,8 +141,8 @@ void BuildLinkFile( void )
 }
 
 
-void  *MemAlloc( int size )
-/*************************/
+void  *MemAlloc( unsigned size )
+/******************************/
 {
     void        *ptr;
 

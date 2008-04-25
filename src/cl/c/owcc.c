@@ -46,6 +46,7 @@
   #include "clibext.h"
 #endif
 #include "getopt.h"
+#include "misc.h"
 #ifdef __WATCOMC__
   #include <process.h>
 #endif
@@ -102,7 +103,6 @@ static  char    cpp_keep_comments;  /* flag: keep comments in output?     */
 static  char    cpp_encrypt_names;  /* flag: encrypt C++ names?           */
 static  char    *cpp_linewrap;      /* line length for cpp output         */
 
-extern  void    Quit( const char *usage_msg[], const char *msg, ... );
 
 /*
  *  Static function prototypes

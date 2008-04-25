@@ -101,7 +101,7 @@ void    FindPath( char *name, char *buf );
 void    BuildLinkFile( void );
 void    AddName( char *, FILE * );
 void    Fputnl( char *, FILE * );
-void    *MemAlloc( int );
+void    *MemAlloc( unsigned );
 char    *MakePath( char * );
 char    *GetName( char * );
 char    *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
