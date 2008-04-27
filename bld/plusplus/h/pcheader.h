@@ -191,8 +191,8 @@ typedef enum {
 
 #define PCHReadLocSize( tgt, src, size )        \
 {   void* cursor = CompInfo.pch_buff_cursor;    \
-    void* last = (char*)cursor + _pch_align_size(size);  \
-    if( last <= CompInfo.pch_buff_end ) {       \
+    void* last = (char *)cursor + _pch_align_size(size);\
+    if( last <= (void *)CompInfo.pch_buff_end ) {       \
         PCHTrashAlreadyRead();                  \
         tgt = cursor;                           \
         CompInfo.pch_buff_cursor = last;        \
@@ -211,7 +211,7 @@ typedef enum {
     void* end;                                  \
     buff_ptr = CompInfo.pch_buff_cursor;        \
     end = (char*)buff_ptr + sizeof( cv_index ); \
-    if( end <= CompInfo.pch_buff_end ) {        \
+    if( end <= (void *)CompInfo.pch_buff_end ) {\
         PCHTrashAlreadyRead();                  \
         p_value = (cv_index*)buff_ptr;          \
         CompInfo.pch_buff_cursor = end;         \

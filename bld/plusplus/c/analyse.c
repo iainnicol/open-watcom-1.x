@@ -2939,7 +2939,7 @@ start_opac_string:
           case REQD_ZERO_RIGHT :
             if( ( NodeIsBinaryOp( expr, CO_EQUAL ) ||
                   NodeIsBinaryOp( expr, CO_INIT  ) )
-              &&( NULL != TypeIsBasedPtr( type ) ) ) {
+              &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
             if( ! NodeIsZeroConstant( right ) ) {
