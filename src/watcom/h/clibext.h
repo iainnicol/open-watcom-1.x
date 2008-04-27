@@ -42,7 +42,7 @@
 #ifndef O_TEXT
 #define O_TEXT 0
 #endif
-#ifndef _A_VOLID
+#ifdef _MSC_VER
 #define _A_VOLID 0
 #endif
 #if !defined(__WATCOMC__) && !defined(_MSC_VER)

@@ -342,7 +342,7 @@ inc_dirs_sys_nto   =
 inc_dirs_lang_osi     = -I"$(hdr_dir)/dos"
 inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
 inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
-inc_dirs_lang_netware = -I"$(ow_nwoss_root)/common/h"
+inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
 
 !ifdef inc_dirs_lang_$(host_os)
@@ -366,7 +366,7 @@ inc_dirs_sys_nto   =
 
 inc_dirs_lang_qnx     = -I"$(lang_root)/qh"
 inc_dirs_lang_linux   = -I"$(lang_root)/lh"
-inc_dirs_lang_netware = -I"$(ow_nwoss_root)/common/h"
+inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 inc_dirs_lang_nto     = -I"$(lang_root)/nto"
 
 !ifdef inc_dirs_lang_$(host_os)

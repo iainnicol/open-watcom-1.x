@@ -128,7 +128,7 @@ inc_dirs_lang_osi =
 
 cflags_wng =
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__OSX__ -DBOOTSTRAP &
-$(cppflags_$(host_cpu)) -funsigned-char -fno-common
+$(cppflags_$(host_cpu)) -fno-common #-funsigned-char
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -O2 -o $@
 
 !endif

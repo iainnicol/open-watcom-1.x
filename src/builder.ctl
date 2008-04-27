@@ -38,7 +38,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/re2c/builder.ctl ]
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
 
-# Now do our vi editor
+# The following tools are not required during build
+# Build our vi editor and the libs it requires
 [ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/builder.ctl ]
@@ -48,6 +49,22 @@ cdsay .
 [ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
+[ INCLUDE <SRCDIR>/hlpview/builder.ctl ]
+
+[ BLOCK <1> build rel ]
+#======================
+# NB: Again, the order is significant.
+# At the beginning, assume to have compilers/assemblers/librarian/linker
+# running on the host platform, but not necessarily anything else.
+# Start with language and API headers
+[ INCLUDE <SRCDIR>/hdr/builder.ctl ]
+[ INCLUDE <SRCDIR>/os2api/builder.ctl ]
+[ INCLUDE <SRCDIR>/w16api/builder.ctl ]
+[ INCLUDE <SRCDIR>/w32api/builder.ctl ]
+# Continue with runtime libraries.
+[ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
+[ INCLUDE <SRCDIR>/clib/builder.ctl ]
+[ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
 
 [ BLOCK . . ]
 #============

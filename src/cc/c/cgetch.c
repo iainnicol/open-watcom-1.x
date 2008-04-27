@@ -107,7 +107,7 @@ int GetNextChar( void )
     int c;
 
 //    c = *SrcFile->src_ptr++;
-    c = *ScanCharPtr++;
+    c = *(unsigned char *)ScanCharPtr++;
     if(( CharSet[c] & C_EX ) == 0 ) {
 //      SrcFile->column++;
         CurrChar = c;
@@ -162,7 +162,7 @@ static int getTestCharFromFile( void )
     int c;
 
     for(;;) {
-        c = *ScanCharPtr++;
+        c = *(unsigned char *)ScanCharPtr++;
         if( c != '\0' ) break;
         /* check to make sure the NUL character we just found is at the
            end of the buffer, and not an embedded NUL character in the

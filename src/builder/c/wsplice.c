@@ -71,7 +71,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <sys/stat.h>
-#include <sys/utime.h>
+#include <utime.h>
 #include "watcom.h"
 
 //#define local static
