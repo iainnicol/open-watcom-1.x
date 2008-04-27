@@ -1188,23 +1188,12 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     }
     ScopeAdjustUsing( GetCurrScope(), save_scope );
     SetCurrScope( save_scope );
-    if( ( data->tflag & TF1_INSTANTIATION ) &&
-      ! ( data->tflag & TF1_SPECIFIC ) ) {
-        DbgAssert( ScopeType( save_scope, SCOPE_TEMPLATE_INST ) );
-        DbgAssert( save_scope->owner.inst->inlines == NULL );
-
-        save_scope->owner.inst->inlines = data->inlines;
-        save_scope->owner.inst->inlines_scope = save_scope;
-        save_scope->owner.inst->inlines_enclosing = save_scope->enclosing;
-        data->inlines = NULL;
-    } else {
-        // process inline functions
-        for(;;) {
-            curr = RingPop( &(data->inlines) );
-            if( curr == NULL ) break;
-            ClassProcessFunction( curr, TRUE );
-            FreeDeclInfo( curr );
-        }
+    // process inline functions
+    for(;;) {
+        curr = RingPop( &(data->inlines) );
+        if( curr == NULL ) break;
+        ClassProcessFunction( curr, TRUE );
+        FreeDeclInfo( curr );
     }
     SrcFileResetTokenLocn( &locn );
     CurToken = T_RIGHT_BRACE;

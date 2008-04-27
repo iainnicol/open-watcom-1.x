@@ -76,9 +76,6 @@ PCH_struct class_inst {
     CLASS_INST          *next;          // (ring)
     TYPE                unbound_type;   // unbound class type
     SCOPE               scope;          // scope containing instantiation
-    SCOPE               inlines_scope;  // scope for instantiating inline functions
-    SCOPE               inlines_enclosing; // scope for instantiating inline functions
-    DECL_INFO           *inlines;       // ring of pending inline functions
     MEMBER_INST         *members;       // ring of pending member functions
     TOKEN_LOCN          locn;           // location of first instantiation
     unsigned            must_process :1;// must be post-processed
@@ -178,7 +175,7 @@ extern void TemplateClassDeclaration( PTREE, SCOPE, char * );
 extern boolean TemplateClassDefinition( PTREE, SCOPE, char * );
 extern TYPE TemplateClassReference( PTREE, PTREE );
 extern void TemplateHandleClassMember( DECL_INFO * );
-extern void TemplateMemberAttachDefn( DECL_INFO * );
+extern void TemplateMemberAttachDefn( DECL_INFO *, boolean );
 extern void TemplateProcessInstantiations( void );
 extern boolean TemplateMemberCanBeIgnored( void );
 extern boolean TemplateVerifyDecl( SYMBOL );

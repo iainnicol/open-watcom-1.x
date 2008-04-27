@@ -2242,11 +2242,13 @@ function-definition
             if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_DECL ) ) {
                 TemplateFunctionAttachDefn( $1 );
             } else if( ( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST )
-                      || ( ScopeType( GetCurrScope(), SCOPE_CLASS )
+                    && ! $1->friend_fn ) ) {
+                TemplateMemberAttachDefn( $1, FALSE );
+            } else if( ( ( ScopeType( GetCurrScope(), SCOPE_CLASS )
                         && ScopeType( GetCurrScope()->enclosing,
                                       SCOPE_TEMPLATE_INST ) )
                     && ! $1->friend_fn ) ) {
-                TemplateMemberAttachDefn( $1 );
+                TemplateMemberAttachDefn( $1, TRUE );
             } else {
                 ClassStoreInlineFunc( $1 );
             }

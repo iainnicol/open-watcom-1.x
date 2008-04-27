@@ -2189,9 +2189,6 @@ static CLASS_INST *newClassInstantiation( TEMPLATE_SPECIALIZATION *tspec,
     scope->owner.inst = new_inst;
     new_inst->unbound_type = unbound_type;
     new_inst->scope = scope;
-    new_inst->inlines_scope = NULL;
-    new_inst->inlines_enclosing = NULL;
-    new_inst->inlines = NULL;
     new_inst->members = NULL;
     new_inst->locn.src_file = NULL;
     new_inst->must_process = FALSE;
@@ -2811,15 +2808,16 @@ void TemplateHandleClassMember( DECL_INFO *dinfo )
     FreeDeclInfo( dinfo );
 }
 
-void TemplateMemberAttachDefn( DECL_INFO *dinfo )
+void TemplateMemberAttachDefn( DECL_INFO *dinfo, boolean is_inline )
+/******************************************************************/
 {
     CLASS_INST *instance;
     MEMBER_INST *member;
     SCOPE member_scope;
 
-    if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST ) ) {
+    if( ! is_inline && ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST ) ) {
         member_scope = GetCurrScope();
-    } else if( ScopeType( GetCurrScope(), SCOPE_CLASS )
+    } else if( is_inline && ScopeType( GetCurrScope(), SCOPE_CLASS )
             && ScopeType( GetCurrScope()->enclosing, SCOPE_TEMPLATE_INST ) ) {
         member_scope = GetCurrScope()->enclosing;
     } else {
@@ -2835,6 +2833,7 @@ void TemplateMemberAttachDefn( DECL_INFO *dinfo )
     member->scope = member_scope;
     member->class_parm_scope = instance->scope->enclosing;
     member->class_parm_enclosing = member->class_parm_scope->enclosing;
+    member->is_inline = is_inline;
 }
 
 static boolean sameParmArgNames( SCOPE parm_scope, char **arg_names )
@@ -3096,7 +3095,6 @@ static void freeDefns( void )
     TEMPLATE_MEMBER *member;
     CLASS_INST *curr_instance;
     MEMBER_INST *curr_member;
-    DECL_INFO *curr_inline;
     FN_TEMPLATE *curr_fn;
 
     RingIterBeg( allClassTemplates, tinfo ) {
@@ -3116,12 +3114,6 @@ static void freeDefns( void )
 
             RingIterBeg( tspec->instantiations, curr_instance ) {
                 for(;;) {
-                    curr_inline = RingPop( &(curr_instance->inlines) );
-                    if( curr_inline == NULL ) break;
-                    FreeDeclInfo( curr_inline );
-                }
-
-                for(;;) {
                     curr_member = RingPop( &(curr_instance->members) );
                     if( curr_member == NULL ) break;
                     FreeDeclInfo( curr_member->dinfo );
@@ -3134,65 +3126,6 @@ static void freeDefns( void )
         curr_fn->defn = NULL;
         RewriteFree( r );
     } RingIterEnd( curr_fn )
-}
-
-static void processInstantiationInlines( CLASS_INST *instance )
-{
-    DECL_INFO *curr_inline;
-    DECL_INFO *prev_inline;
-    SCOPE save_scope;
-    SCOPE save_enclosing;
-    SYMBOL sym;
-
-    save_scope = GetCurrScope();
-    save_enclosing = NULL;
-    if( instance->inlines_scope != NULL ) {
-        // set up the scopes for instantiating inline member function
-        save_enclosing = instance->inlines_scope->enclosing;
-        ScopeAdjustUsing( save_scope, NULL );
-        instance->inlines_scope->enclosing = instance->inlines_enclosing;
-        SetCurrScope( instance->inlines_scope );
-        ScopeAdjustUsing( NULL, instance->inlines_scope );
-    }
-    prev_inline = NULL;
-
-    RingIterBegSafe( instance->inlines, curr_inline ) {
-
-        sym = SymDefArgBase( curr_inline->sym );
-
-        if( instance->must_process
-         || ( sym->flag & SF_REFERENCED )
-         || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
-
-#ifndef NDEBUG
-            if( PragDbgToggle.member_inst ) {
-                printf( "instantiating inline template member: %s\n",
-                        DbgSymNameFull( sym ) );
-            }
-#endif
-
-            templateData.fn_control = TCF_NULL;
-            if( instance->must_process ) {
-                templateData.fn_control |= TCF_GEN_FUNCTION;
-            }
-
-            ClassProcessFunction( curr_inline, TRUE );
-            RingPruneWithPrev( &instance->inlines,
-                               curr_inline,
-                               prev_inline );
-            FreeDeclInfo( curr_inline );
-            templateData.keep_going = TRUE;
-        } else {
-            prev_inline = curr_inline;
-        }
-    } RingIterEndSafe( curr_inline )
-
-    if( instance->inlines_scope != NULL ) {
-        ScopeAdjustUsing( instance->inlines_scope, NULL );
-        instance->inlines_scope->enclosing = save_enclosing;
-        ScopeAdjustUsing( NULL, save_scope );
-    }
-    SetCurrScope( save_scope );
 }
 
 static void processInstantiationMembers( CLASS_INST *instance )
@@ -3220,7 +3153,8 @@ static void processInstantiationMembers( CLASS_INST *instance )
 
 #ifndef NDEBUG
             if( PragDbgToggle.member_inst ) {
-                printf( "instantiating template member: %s\n",
+                printf( "instantiating %stemplate member: %s\n",
+                        curr_member->is_inline ? "inline " : "",
                         DbgSymNameFull( sym ) );
             }
 #endif
@@ -3238,7 +3172,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
             }
 
             ScopeAdjustUsing( NULL, GetCurrScope() );
-            ClassProcessFunction( dinfo, FALSE );
+            ClassProcessFunction( dinfo, curr_member->is_inline );
             ScopeAdjustUsing( GetCurrScope(), NULL );
 
             RingPruneWithPrev( &instance->members,
@@ -3310,7 +3244,6 @@ void TemplateProcessInstantiations( void )
                     }
                     pushInstContext( &context, TCTX_MEMBER_DEFN, locn, NULL );
 
-                    processInstantiationInlines( curr_instance );
                     processInstantiationMembers( curr_instance );
 
                     popInstContext();
@@ -3715,9 +3648,6 @@ static void saveClassInst( void *p, carve_walk_base *d )
     CLASS_INST *s = p;
     CLASS_INST *save_next;
     SCOPE save_scope;
-    SCOPE save_inlines_scope;
-    SCOPE save_inlines_enclosing;
-    DECL_INFO *save_inlines;
     MEMBER_INST *save_members;
     MEMBER_INST *member;
     SRCFILE save_locn_src_file;
@@ -3729,12 +3659,6 @@ static void saveClassInst( void *p, carve_walk_base *d )
     s->next = CarveGetIndex( carveCLASS_INST, save_next );
     save_scope = s->scope;
     s->scope = ScopeGetIndex( save_scope );
-    save_inlines_scope = s->inlines_scope;
-    s->inlines_scope = ScopeGetIndex( save_inlines_scope );
-    save_inlines_enclosing = s->inlines_enclosing;
-    s->inlines_enclosing = ScopeGetIndex( save_inlines_enclosing );
-    save_inlines = s->inlines;
-    s->inlines = (void *) ( s->inlines != NULL );
     save_members = s->members;
     s->members = (MEMBER_INST *) ( s->members != NULL );
     save_locn_src_file = s->locn.src_file;
@@ -3745,15 +3669,8 @@ static void saveClassInst( void *p, carve_walk_base *d )
 
     s->next = save_next;
     s->scope = save_scope;
-    s->inlines_scope = save_inlines_scope;
-    s->inlines_enclosing = save_inlines_enclosing;
-    s->inlines = save_inlines;
     s->members = save_members;
     s->locn.src_file = save_locn_src_file;
-
-    if( s->inlines != NULL ) {
-        PCHWriteDeclInfo( s->inlines );
-    }
 
     RingIterBeg( s->members, member ) {
         saveMemberInst( member, s->members );
@@ -3881,12 +3798,7 @@ pch_status PCHReadTemplates( void )
         PCHRead( ci, sizeof( *ci ) );
         ci->next = CarveMapIndex( carveCLASS_INST, ci->next );
         ci->scope = ScopeMapIndex( ci->scope );
-        ci->inlines_scope = ScopeMapIndex( ci->inlines_scope );
-        ci->inlines_enclosing = ScopeMapIndex( ci->inlines_enclosing );
         ci->locn.src_file = SrcFileMapIndex( ci->locn.src_file );
-        if( ci->inlines != NULL ) {
-            ci->inlines = PCHReadDeclInfo();
-        }
 
         cont = ci->members != NULL;
         ci->members = NULL;

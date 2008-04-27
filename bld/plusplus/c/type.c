@@ -2708,7 +2708,7 @@ TYPE MakeThunkFunction( TYPE type )
 TYPE MakeThunkPragmaFunction( TYPE type )
 /***************************************/
 {
-    return makeThunkType( type, MTT_COPY_PRAGMA );
+    return makeThunkType( type, MTT_INLINE | MTT_COPY_PRAGMA );
 }
 
 TYPE RemoveFunctionPragma( TYPE type )

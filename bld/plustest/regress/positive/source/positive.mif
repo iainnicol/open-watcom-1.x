@@ -848,6 +848,7 @@ positive_tests = &
     vf18.$(ext) &
     vf19.$(ext) &
     vf20.$(ext) &
+    vf21.$(ext) &
 
 
 
