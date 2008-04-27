@@ -56,11 +56,21 @@ typedef struct reloc_list RELOC_LIST;
 
 typedef struct parse_tree_node *PTREE;          // defined in PTREE.H
 typedef struct rewrite_package REWRITE;         // defined in REWRITE.H
-typedef struct template_info TEMPLATE_INFO;     // defined in TEMPLATE.H
 typedef struct template_specialization TEMPLATE_SPECIALIZATION; // defined in TEMPLATE.H
-typedef struct fn_template_defn FN_TEMPLATE_DEFN;//defined in TEMPLATE.H
-typedef struct func_list FNOV_LIST;             // defined in FNOVLOAD.H
+typedef struct template_info TEMPLATE_INFO;     // defined in TEMPLATE.H
+#ifndef CLASS_INST_DEFINED
+#define CLASS_INST_DEFINED
+typedef struct class_inst CLASS_INST;           // defined in TEMPLATE.H
+#endif
+#ifndef FN_TEMPLATE_DEFINED
+#define FN_TEMPLATE_DEFINED
+typedef struct fn_template FN_TEMPLATE;         // defined in TEMPLATE.H
+#endif
 typedef struct pool_con POOL_CON;               // defined in CONPOOL.H
+#ifndef FNOV_LIST_DEFINED
+#define FNOV_LIST_DEFINED
+typedef struct func_list FNOV_LIST;             // defined in FNOVLOAD.H
+#endif
 
 #include "linkage.h"
 #include "toknlocn.h"
@@ -115,6 +125,7 @@ typedef enum {
     STM_SEGMENT         = 0x0200,
     STM_BOOL            = 0x0400,
     STM_INT64           = 0x0800,
+    STM_WCHAR           = 0x1000,
     STM_NULL            = 0x0000
 } scalar_t;
 
@@ -222,7 +233,8 @@ typedef enum {
     TYP_MODIFIER        = 0x1a,
     TYP_MEMBER_POINTER  = 0x1b,
     TYP_GENERIC         = 0x1c,
-    TYP_FREE            = 0x1d,
+    TYP_TYPENAME        = 0x1d,
+    TYP_FREE            = 0x1e,
     TYP_MAX,
 
     TYP_FIRST_VALID     = TYP_BOOL,
@@ -283,6 +295,7 @@ typedef enum {
     TF1_UNBOUND         = 0x00000004,               // unbound class template
     TF1_INSTANTIATION   = 0x00000008,               // class is an instance of a class template
     TF1_SPECIFIC        = 0x00000010,               // class is a specific instantiation
+    TF1_GENERIC         = 0x00000020,               // generic unbound class template
     TF1_VISITED         = 0x80000000,               // used temporarily in traversals
     TF1_STDOP           = 0x00000001,               // TYP_VOID for Std Ops
     TF1_STDOP_ARITH     = 0x00000002,               // TYP_VOID for arith Std Ops
@@ -437,8 +450,17 @@ typedef enum {
 
 PCH_struct friend_list {
     FRIEND              *next;          // - next in ring
-    SYMBOL              sym;            // - friendly symbol
+    union {
+        SYMBOL          sym;            // - friendly symbol
+        TYPE            type;           // - friendly type
+        unsigned int    is_type : 1;    // - flag: 0=symbol, 1=type
+    } u;
 };
+
+#define FriendIsType( friend )          ( (friend)->u.is_type )
+#define FriendIsSymbol( friend )        ( ! (friend)->u.is_type )
+#define FriendGetSymbol( friend )       ( (friend)->u.sym )
+#define FriendGetType( friend )         ( (TYPE) (((unsigned long) (friend)->u.type) & ~1) )
 
 struct reloc_list {
     RELOC_LIST *next;
@@ -634,6 +656,9 @@ PCH_struct type {
         struct {                        // TYP_GENERIC
             unsigned    index;          // keeps template args distinct
         } g;
+        struct {                        // TYP_TYPENAME
+            char       *name;           // typename string
+        } n;
     } u;
     dbg_info            dbg;            // FOR D2 AND DWARF
     type_flag           flag;
@@ -785,7 +810,7 @@ PCH_struct symbol {                     // SYMBOL in symbol table
         POOL_CON*       pval;           // - SC_ENUM, const int: - pool value
         target_offset_t offset;         // - SC_MEMBER -- data offset
         TEMPLATE_INFO   *tinfo;         // - SC_CLASS_TEMPLATE -- info for it
-        FN_TEMPLATE_DEFN *defn;         // - SC_FUNCTION_TEMPLATE -- defn for it
+        FN_TEMPLATE     *defn;          // - SC_FUNCTION_TEMPLATE -- defn for it
         PTREE           defarg_info;    // - SC_DEFAULT -- defarg info
                                         //   use op=PT_TYPE,
                                         //     next is defarg expr
@@ -828,7 +853,6 @@ PCH_struct sym_region {                 // list of symbols from same SYMBOL_NAME
 PCH_struct name_space {
     SYMBOL              sym;            // - sym of namespace
     SCOPE               scope;          // - scope of namespace
-    SYMBOL              last_sym;       // - scope's last sym (see TEMPLATE.C)
     NAME_SPACE          *all;           // - link together all namespaces
     union {
         unsigned flags;
@@ -879,7 +903,8 @@ PCH_struct scope {
         TYPE            type;           // -- class owning SCOPE_CLASS
         unsigned        index;          // -- index for SCOPE_BLOCK
         TEMPLATE_INFO   *tinfo;         // -- SCOPE_TEMPLATE_PARM (classes)
-        FN_TEMPLATE_DEFN *defn;         // -- SCOPE_TEMPLATE_PARM (functions)
+        FN_TEMPLATE     *defn;          // -- SCOPE_TEMPLATE_PARM (functions)
+        CLASS_INST      *inst;          // -- SCOPE_TEMPLATE_INST
     } owner;
     union {
         unsigned        flags;
@@ -1188,7 +1213,8 @@ extern SCOPE ScopeEnd( scope_type_t );
 extern void ScopeEndFileScope( void );
 extern SCOPE ScopeCreate( scope_type_t );
 extern void ScopeOpen( SCOPE );
-extern void ScopeRestoreUsing( SCOPE );
+extern void ScopeRestoreUsing( SCOPE, boolean );
+extern void ScopeAdjustUsing( SCOPE, SCOPE );
 extern void ScopeEstablish( SCOPE );
 extern SCOPE ScopeOpenNameSpace( char *, SYMBOL );
 extern SCOPE ScopeSetEnclosing( SCOPE, SCOPE );
@@ -1244,6 +1270,7 @@ extern SYMBOL ScopeOrderedNext( SYMBOL, SYMBOL );
 extern SYMBOL ScopeOrderedFirst( SCOPE );
 extern SYMBOL ScopeOrderedLast( SCOPE );
 extern SCOPE ScopeEnclosingId( SCOPE, scope_type_t );
+extern SCOPE ScopeNearestNonTemplate( SCOPE );
 extern SCOPE ScopeNearestNonClass( SCOPE );
 extern SCOPE ScopeNearestFile( SCOPE );
 extern SCOPE ScopeNearestFileOrClass( SCOPE );
@@ -1259,7 +1286,7 @@ extern void ScopeEmitIndexMappings( void );
 extern void ScopeClear( SCOPE );
 extern boolean ScopeDebugable( SCOPE );
 extern void ScopeSetParmClass( SCOPE, TEMPLATE_INFO * );
-extern void ScopeSetParmFn( SCOPE, FN_TEMPLATE_DEFN * );
+extern void ScopeSetParmFn( SCOPE, FN_TEMPLATE * );
 extern void ScopeSetParmCopy( SCOPE, SCOPE );
 
 typedef enum {
@@ -1282,8 +1309,10 @@ extern SYMBOL ScopeInsert( SCOPE, SYMBOL, char * );
 extern boolean ScopeCarefulInsert( SCOPE, SYMBOL *, char * );
 extern SYMBOL ScopePromoteSymbol( SCOPE, SYMBOL, char * );
 extern void ScopeInsertErrorSym( SCOPE, PTREE );
-extern void ScopeRawAddFriend( CLASSINFO *, SYMBOL );
-extern void ScopeAddFriend( SCOPE, SYMBOL );
+extern void ScopeRawAddFriendSym( CLASSINFO *, SYMBOL );
+extern void ScopeRawAddFriendType( CLASSINFO *, TYPE );
+extern void ScopeAddFriendSym( SCOPE, SYMBOL );
+extern void ScopeAddFriendType( SCOPE, TYPE );
 extern SYMBOL AllocSymbol( void );
 extern SYMBOL AllocTypedSymbol( TYPE );
 extern SYMBOL_NAME AllocSymbolName( char *, SCOPE );
@@ -1426,6 +1455,7 @@ extern boolean TypeParmSize( TYPE, target_size_t * );
 extern boolean TypeBasesEqual( type_flag, void *, void * );
 
 extern SCOPE TypeScope( TYPE );
+extern CLASS_INST *TypeClassInstantiation( TYPE );
 extern char *SimpleTypeName( TYPE );
 extern char *AnonymousEnumExtraName( TYPE );
 
@@ -1529,7 +1559,7 @@ extern DECL_INFO *AddArgument( DECL_INFO *, DECL_INFO * );
 extern DECL_INFO *AddEllipseArg( DECL_INFO * );
 extern void FreeDeclInfo( DECL_INFO * );
 extern void FreeArgs( DECL_INFO * );
-extern void FreeArgsDefaultsOK( DECL_INFO * );
+extern void FreeTemplateArgs( DECL_INFO * );
 extern DECL_INFO *InsertDeclInfo( SCOPE, DECL_INFO * );
 extern void ProcessDefArgs( DECL_INFO * );
 extern SYMBOL InsertSymbol( SCOPE, SYMBOL, char *name );
@@ -1571,11 +1601,14 @@ extern TYPE MakeIndexPragma( unsigned );
 extern boolean CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
 extern boolean FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );
-extern void ClearAllGenericBindings( void * );
-extern boolean BindFunction( SYMBOL, SYMBOL );
 extern type_flag ExplicitModifierFlags( TYPE );
 
-extern TYPE BindGenericTypes( arg_list *, SYMBOL, TOKEN_LOCN *, bgt_control * );
+extern TYPE CreateBoundType( TYPE unbound_type, TOKEN_LOCN *locn );
+extern int BindExplicitTemplateArguments( SCOPE param_scope,
+                                          PTREE templ_args );
+extern boolean BindGenericTypes( SCOPE param_scope, PTREE parms, PTREE args,
+                                 boolean is_function,
+                                 unsigned int explicit_args );
 
 arg_list* ArgListTempAlloc(     // ALLOCATE TEMPORARY ARG LIST
     TEMP_ARG_LIST* default_args,// - default args
@@ -1702,6 +1735,14 @@ TYPE TypePointerDiff(           // GET TYPE FOR DIFFERENCE OF POINTERS
 TYPE TypeReference(             // GET REFERENCE TYPE
     TYPE type )                 // - the type
 ;
+void VerifySpecialFunction(     // VERIFY SPECIAL FUNCTION
+    SCOPE scope,                // - scope
+    DECL_INFO *dinfo )          // - decl-info
+;
+void DeclareDefaultArgs(        // DECLARE DEFAULT ARGUMENTS
+    SCOPE scope,                // - scope
+    DECL_INFO *dinfo )          // - decl-info
+;
 
 // type cache support
 typedef enum typc_index {
@@ -1727,9 +1768,15 @@ extern TYPE TypeCache[];
 #define TypePtrVoidFunOfCDtorArg() TypeGetCache( TYPC_PTR_VOID_FUN_OF_CDTOR_ARG )
 #define TypeVoidHandlerFunOfVoid() TypeGetCache( TYPC_VOID_HANDLER_FUN_OF_VOID )
 
+// defined in template.c
+extern TYPE BoundTemplateClass( TYPE );
+extern TYPE BindTemplateClass( TYPE , TOKEN_LOCN *, boolean );
+
 // pre-compiled header support
 TYPE TypeGetIndex( TYPE );
 TYPE TypeMapIndex( TYPE );
+void PCHWriteDeclInfo( DECL_INFO * );
+DECL_INFO *PCHReadDeclInfo();
 CLASSINFO *ClassInfoGetIndex( CLASSINFO * );
 CLASSINFO *ClassInfoMapIndex( CLASSINFO * );
 SYMBOL_NAME SymbolNameGetIndex( SYMBOL_NAME );
