@@ -2307,8 +2307,8 @@ float f = 1.2e-78965;
 :eerrbad.
 
 :MSGSYM. ERR_CANT_OVERLOAD_CLASS_TEMPLATES
-:MSGTXT. class template '%S' cannot be overloaded
-:MSGJTXT. クラス・テンプレート'%S'はオーバーロードできません
+:MSGTXT. class template '%M' cannot be overloaded
+:MSGJTXT. クラス・テンプレート'%M'はオーバーロードできません
 A class template name must be unique across the entire C++ program.
 Furthermore, a class template cannot coexist with another
 class template of the same name.
@@ -2367,8 +2367,8 @@ A member function of a template class cannot be defined outside
 the class declaration unless all template arguments have been named.
 
 :MSGSYM. ERR_CANT_REDEFINE_CLASS_TEMPLATES
-:MSGTXT. class template '%S' is already defined
-:MSGJTXT. クラス・テンプレート'%S'は既に定義されています
+:MSGTXT. class template '%M' is already defined
+:MSGJTXT. クラス・テンプレート'%M'は既に定義されています
 A class template cannot have its definition repeated regardless of whether
 it is identical to the previous definition.
 
@@ -2855,14 +2855,14 @@ void fn2( void, void, void )    // Error!
 :eerrbad.
 
 :MSGSYM. ERR_TOO_FEW_TEMPLATE_PARAMETERS
-:MSGTXT. class template requires more parameters for instantiation
-:MSGJTXT. クラス・テンプレートのインスタンス化のためのパラメータが不足しています
+:MSGTXT. class template '%M' requires more parameters for instantiation
+:MSGJTXT.
 The class template instantiation has too few parameters supplied
 so the class cannot be instantiated properly.
 
 :MSGSYM. ERR_TOO_MANY_TEMPLATE_PARAMETERS
-:MSGTXT. class template requires fewer parameters for instantiation
-:MSGJTXT. クラス・テンプレートのインスタンス化のためのパラメータが多すぎます
+:MSGTXT. class template '%M' requires fewer parameters for instantiation
+:MSGJTXT.
 The class template instantiation has too many parameters supplied
 so the class cannot be instantiated properly.
 
@@ -11946,3 +11946,144 @@ template MyTemplate< int >;
 :errgood.
 template class MyTemplate< int >;
 :eerrgood.
+
+:MSGSYM. ERR_DTOR_TYPE_VOID
+:MSGTXT. destructor for type void cannot be called
+:MSGJTXT.
+Since the
+.kw void
+type has no size and there are no values of
+.kw void
+type, one cannot destruct an instance of
+.kw void.
+
+:MSGSYM. ERR_TYPENAME_OUTSIDE_TEMPLATE
+:MSGTXT. 'typename' keyword used outside template
+:MSGJTXT.
+The
+.kw typename
+keyword is only allowed inside templates.
+
+:MSGSYM. ERR_DECL_DEFAULT_INT
+:MSGTXT. declaration of '%N' with no type
+:MSGJTXT.
+:errbad.
+auto T;
+:eerrbad.
+
+:MSGSYM. ERR_FUNCTION_BAD_RETURN
+:MSGTXT. '%N' does not have a return type specified
+:MSGJTXT.
+In C++, functions must have an explicit return type specified,
+default int type is no longer assumed.
+:errbad.
+f ();
+:eerrbad.
+
+:MSGSYM. ANSI_MAIN_MUST_RETURN_INT
+:MSGTXT. 'main' must return 'int'
+:MSGJTXT.
+:ANSI. 1
+The "main" function shall have a return type of type int.
+:errbad.
+void main()
+{ }
+:eerrbad.
+
+:MSGSYM. ERR_OUT_OF_CLASS_EXPLICIT
+:MSGTXT. explicit may only be used within class definition
+:MSGJTXT.
+The explicit specifier shall be used only in the declaration of a
+constructor within its class definition.
+:errbad.
+struct A {
+    explicit A();
+};
+
+explicit A::A()
+{ }
+:eerrbad.
+
+:MSGSYM. ERR_OUT_OF_CLASS_VIRTUAL
+:MSGTXT. virtual may only be used within class definition
+:MSGJTXT.
+The virtual specifier shall be used only in the initial declaration of a
+class member function.
+:errbad.
+struct A {
+    virtual void f();
+};
+
+virtual void A::f()
+{ }
+:eerrbad.
+
+:MSGSYM. ERR_DEFAULT_TEMPLATE_ARG_REDEFINED
+:MSGTXT. cannot redefine default template argument '%N'
+:MSGJTXT.
+A template-parameter shall not be given default arguments by two
+different declarations in the same scope.
+:errbad.
+template< class T = int >
+class X;
+
+template< class T = int >
+class X {
+};
+:eerrbad.
+
+:MSGSYM. ERR_DEFAULT_ARG_IN_PARTIAL_SPEC
+:MSGTXT. cannot have default template arguments in partial specializations
+:MSGJTXT.
+A partial specialization cannot have default template arguments.
+:errbad.
+template< class T >
+class X {
+};
+
+template< class T = int >
+class X< T * > {
+};
+:eerrbad.
+
+:MSGSYM. WARN_DLT_PTR_TO_VOID
+:MSGTXT. delete of a pointer to void
+:MSGJTXT.
+:WARNING. 1
+If the dynamic type of the object to be deleted differs from its
+static type, the behavior is undefined. This implies that an object
+cannot be deleted using a pointer of type void* because there are no
+objects of type void.
+:errbad.
+void fn( void *p, void *q ) {
+    delete p;
+    delete [] q;
+}
+:eerrbad.
+
+:MSGSYM. WARN_LONG_CHAR_DEPRECATED
+:MSGTXT. 'long char' is deprecated, use wchar_t instead
+:MSGJTXT.
+:WARNING. 1
+The standard C++ 'wchar_t' type specifier should be used instead of the Open
+Watcom specific 'long char' type specifier.
+:errbad.
+void fn( ) {
+    long char c;
+}
+:eerrbad.
+
+:MSGSYM. ERR_NAMESPACE_NOT_ALLOWED_IN_USING_DECL
+:MSGTXT. namespace '%I' not allowed in using-declaration
+:MSGJTXT.
+Specifying a namespace-name is not allowed in a using-declaration, a
+using-directive must be used instead.
+:errbad.
+namespace ns { }
+using ns;
+:eerrbad.
+
+:MSGSYM. INF_CANDIDATE_TEMPLATE_DEFINITION
+:MSGTXT. candidate %C defined %L
+:MSGJTXT.
+:INFO.

@@ -32,7 +32,6 @@
 
 #include "plusplus.h"
 
-#include <conio.h>
 #include <unistd.h>
 
 #include "cusage.h"
@@ -40,7 +39,7 @@
 
 #define NUM_ROWS        20
 
-#if defined(__QNX__)
+#ifdef __QNX__
 
 extern char     **_argv;
 
@@ -75,6 +74,7 @@ static boolean Wait_for_return( char const *page_text )
 /*****************************************************/
 // return TRUE if we should stop printing
 {
+#ifndef __UNIX__        /* No homebrew paging on UNIX */
     if( CompFlags.ide_console_output ) {
         int   c;
         char *p;
@@ -84,9 +84,10 @@ static boolean Wait_for_return( char const *page_text )
         p = stpcpy( p, page_text );
         output( buff );
         fflush( stdout );
-        c = getch();
+        c = getchar();
         return c == 'q' || c == 'Q';
     }
+#endif
     return FALSE;
 }
 

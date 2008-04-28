@@ -50,8 +50,8 @@ stack_axp=opt stack=16k
 # to update add test names here:
 template = &
         aaa$(ext)       &
-	algn01$(ext)    &
-	algm01$(ext)    &
+        algn01$(ext)    &
+        algm01$(ext)    &
         algs01$(ext)    &
         bitset01$(ext)  &
         clib01$(ext)    &
@@ -73,13 +73,14 @@ template = &
         set01$(ext)     &
         set02$(ext)     &
         slist01$(ext)   &
+        smtptr01$(ext)  &
         string01$(ext)  &
         string02$(ext)  &
         typetr01$(ext)  &
         unoset01$(ext)  &
         util01$(ext)    &
         vector01$(ext)  &
-        smtptr01$(ext)
+
 
 # the list of .exe targets
 ext = .$(exe)
