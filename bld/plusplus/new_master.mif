@@ -101,11 +101,13 @@ extra_c_flags = -DIDE_PGM -D__stdcall=
 !endif
  
 extra_c_flags_carve    = -Dheader=$(fesupp_hdr) -Dheader2=$(carvecpp_hdr)
+!ifndef bootstrap
 !ifneq host_os linux
 # Using -os generates ENTER/LEAVE and Linux is too brain damaged
 # to handle ENTER instructions properly. Since GCC doesn't generate
 # ENTER, this is supposed to be a "feature".
 extra_c_flags_cmdlnany = -os
+!endif
 !endif
 extra_c_flags_cscan_386 = -4r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
@@ -122,13 +124,17 @@ extra_c_flags_memmgr_ppc = -DTRACKER
 extra_c_flags_memmgr_386 = -of+ -DTRACKER
 extra_c_flags_memmgr   = $(extra_c_flags_memmgr_$(host_cpu))
 !endif
+!ifndef bootstrap
 !ifeq release 1
 extra_c_flags_pcheader_386 = -oi
 extra_c_flags_pcheader = $(extra_c_flags_pcheader_$(host_cpu))
 !endif
+!endif
 extra_c_flags_pstk     = -Dheader=$(fesupp_hdr)
 extra_c_flags_ringfns  = -Dheader=$(fesupp_hdr)
+!ifndef bootstrap
 extra_c_flags_srcfile_386 = -4r
+!endif
 extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
 extra_c_flags_vbuf     = -Dheader=$(fesupp_hdr)
 extra_c_flags_vstk     = -Dheader=$(fesupp_hdr)
@@ -361,8 +367,8 @@ ytab.c ytab.gh : ../y/plusplus.y ../c/yydriver.c
 # The -p and -s switches are v. useful when debugging parser but gen large file!
     $(byacc) -b -d -f -t -u -p -s $[@ $]@ >y.out
 !endif
-# For some reason yacc delivers slightly different results on Linux?
-!ifdef __LINUX__
+# For some reason yacc delivers slightly different results on UNIX?
+!ifdef __UNIX__
 !else
     # comment out the next line during testing of grammar changes
 !ifneq release 0   # debug yacc output may not match stored output
