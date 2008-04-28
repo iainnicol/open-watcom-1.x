@@ -31,7 +31,7 @@
 
 #if defined( __WATCOMC__ )
     #pragma pack(__push,2)
-#elif defined( __ALPHA__ ) || defined( _CFE ) || defined( __SUNPRO_C )
+#elif defined( _CFE ) || defined( __SUNPRO_C ) || defined( __sun )
     #if !defined( _NO_PRAGMA_PUSH_PACK )
         #define _NO_PRAGMA_PUSH_PACK
     #endif

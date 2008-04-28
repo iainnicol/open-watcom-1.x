@@ -1274,6 +1274,13 @@ char *_cmdname( char *name )
         /* try another way for BSD */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
     }
+    if( result == -1 ) {
+        char    path[64];
+
+        /* try yet another way for Solaris */
+        sprintf( path, "/proc/%d/path/a.out", getpid() );
+        result = readlink( path, name, PATH_MAX );
+    }
     errno = save_errno;
 
     /* fall back to argv[0] if readlink doesn't work */

@@ -81,6 +81,6 @@ bvi             = bvi -q -d -i
 blib            = *wlib
 bre2c           = re2c
 w32bind         = w32bind
-byacc           = byacc
+byacc           = yacc
 brc             = *wrc
 os2ldr          = $(%OWBINDIR)/os2ldr.exe

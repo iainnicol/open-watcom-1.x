@@ -31,7 +31,7 @@
 
 #if defined( __WATCOMC__ )
     #pragma pack(__pop)
-#elif defined( __ALPHA__ ) || defined( _CFE ) || defined( __SUNPRO_C )
+#elif defined( _CFE ) || defined( __SUNPRO_C ) || defined( __sun )
     #pragma pack()
 #elif defined( __MWERKS__ )
     #pragma options align= reset
