@@ -7591,7 +7591,7 @@ static boolean modifiersMatch( type_flag b_flags, type_flag u_flags,
     return( TRUE );
 }
 
-static unsigned typesBind( type_bind_info *data )
+static unsigned typesBind( type_bind_info *data, boolean is_function )
 {
     type_flag t_flags;
     type_flag b_flags;
@@ -7775,7 +7775,7 @@ static unsigned typesBind( type_bind_info *data )
         if( ( b_unmod_type->id != u_unmod_type->id )
          || ( u_unmod_type->id == TYP_GENERIC) ) {
             if( u_unmod_type->id != TYP_GENERIC ) {
-                if( flags.arg_1st_level ) {
+                if( is_function ) {
                     continue;
                 }
                 return( TB_NULL );
@@ -7893,18 +7893,8 @@ static unsigned typesBind( type_bind_info *data )
         }
         switch( b_unmod_type->id ) {
         case TYP_CLASS:
-            if( flags.arg_1st_level
-             && !( u_unmod_type->flag & TF1_UNBOUND ) ) {
-                if( TypeDerived( b_unmod_type, u_unmod_type ) ) {
-                    // If P is a class and P has the form
-                    // simple-template-id, then the transformed A can
-                    // be a derived class of the deduced A. Likewise,
-                    // if P is a pointer to a class of the form
-                    // simple-template-id, the transformed A can be a
-                    // pointer to a derived class pointed to by the
-                    // deduced A.
-                    break;
-                }
+            if( is_function && !( u_unmod_type->flag & TF1_UNBOUND ) ) {
+                break;
             }
 
             if( compareClassTypes( b_unmod_type, u_unmod_type, data ) ) {
@@ -8200,7 +8190,7 @@ boolean BindGenericTypes( SCOPE parm_scope, PTREE parms, PTREE args,
     pushPrototypeAndArguments( &data, parms, args,
                                is_function ? PA_FUNCTION : PA_NULL );
     result = FALSE;
-    bind_status = typesBind( &data );
+    bind_status = typesBind( &data, is_function );
     if( bind_status != TB_NULL ) {
         result = TRUE;
 

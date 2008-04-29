@@ -437,6 +437,7 @@ positive_tests = &
 #    fntemp23.$(ext) &
     fntemp24.$(ext) &
     fntemp25.$(ext) &
+    fntemp26.$(ext) &
     fold01.$(ext) &
     fold02.$(ext) &
     for01.$(ext) &
