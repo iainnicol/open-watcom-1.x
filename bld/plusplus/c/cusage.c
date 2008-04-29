@@ -55,9 +55,11 @@ static const char * const Usage[] = {
 #include "cmdlnusg.gh"
 NULL };
 
+#ifndef __UNIX__
 static const char PressReturn[] = {
 "\n    "
 };
+#endif
 
  #ifdef __OSI__
    extern       char    *_Copyright;
