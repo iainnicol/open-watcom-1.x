@@ -29,6 +29,7 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 #include "namspace.h"
 #include "memmgr.h"
 #include "cgfront.h"
+#include "rtngen.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #include "dbg.h"
@@ -2457,7 +2458,7 @@ DECL_INFO *ParseException( void )
 static void parseEpilogue( void )
 {
     /* current token state is end-of-file */
-    TemplateProcessInstantiations();
+    RtnGenerate();
     CompFlags.parsing_finished = 1;
 }
 

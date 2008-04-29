@@ -3085,7 +3085,8 @@ static void processFunctionTemplateInstantiations( void )
     } RingIterEnd( curr_defn )
 }
 
-static void freeDefns( void )
+void TemplateFreeDefns( void )
+/****************************/
 {
     unsigned i;
     REWRITE *r;
@@ -3192,8 +3193,8 @@ static void processInstantiationMembers( CLASS_INST *instance )
     ScopeAdjustUsing( NULL, GetCurrScope() );
 }
 
-void TemplateProcessInstantiations( void )
-/****************************************/
+boolean TemplateProcessInstantiations( void )
+/*******************************************/
 {
     TEMPLATE_INFO *curr_tinfo;
     CLASS_INST *curr_instance;
@@ -3202,60 +3203,55 @@ void TemplateProcessInstantiations( void )
     TOKEN_LOCN *locn;
     auto TEMPLATE_CONTEXT context;
 
-    for(;;) {
-        verifyOKToProceed( NULL );
+    templateData.keep_going = FALSE;
+    verifyOKToProceed( NULL );
 
-        CtxSetContext( CTX_FUNC_GEN );
-        templateData.keep_going = ClassDefineRefdDefaults();
-        CtxSetContext( CTX_SOURCE );
+    // instantiate any template functions
+    processFunctionTemplateInstantiations();
 
-        // instantiate any template functions
-        processFunctionTemplateInstantiations();
+    // instantiate extra class members
+    templateData.extra_members = TRUE;
+    RingIterBeg( allClassTemplates, curr_tinfo ) {
+        RingIterBeg( curr_tinfo->specializations, tspec ) {
+            RingIterBeg( tspec->instantiations, curr_instance ) {
 
-        // instantiate extra class members
-        templateData.extra_members = TRUE;
-        RingIterBeg( allClassTemplates, curr_tinfo ) {
-            RingIterBeg( curr_tinfo->specializations, tspec ) {
-                RingIterBeg( tspec->instantiations, curr_instance ) {
+                if( curr_instance->specific
+                 || curr_instance->dont_process ) {
+                    continue;
+                }
+                if( ! classTemplateWasDefined( curr_instance ) ) {
+                    continue;
+                }
+                templateData.extra_member_class =
+                    classTemplateType( curr_instance );
 
-                    if( curr_instance->specific
-                     || curr_instance->dont_process ) {
-                        continue;
-                    }
-                    if( ! classTemplateWasDefined( curr_instance ) ) {
-                        continue;
-                    }
-                    templateData.extra_member_class =
-                        classTemplateType( curr_instance );
+                if( ! curr_instance->processed ) {
+                    curr_instance->processed = TRUE;
+                    RingIterBeg( tspec->member_defns, curr_member ) {
+                        // loop nesting is critical because extra members cannot be
+                        // generated if a class has not been instantiated
+                        instantiateMember( curr_tinfo, tspec,
+                                           curr_instance, curr_member );
+                    } RingIterEnd( curr_member )
+                }
 
-                    if( ! curr_instance->processed ) {
-                        curr_instance->processed = TRUE;
-                        RingIterBeg( tspec->member_defns, curr_member ) {
-                            // loop nesting is critical because extra members cannot be
-                            // generated if a class has not been instantiated
-                            instantiateMember( curr_tinfo, tspec,
-                                               curr_instance, curr_member );
-                        } RingIterEnd( curr_member )
-                    }
+                locn = NULL;
+                if( curr_instance->locn_set ) {
+                    locn = &(curr_instance->locn);
+                }
+                pushInstContext( &context, TCTX_MEMBER_DEFN, locn, NULL );
 
-                    locn = NULL;
-                    if( curr_instance->locn_set ) {
-                        locn = &(curr_instance->locn);
-                    }
-                    pushInstContext( &context, TCTX_MEMBER_DEFN, locn, NULL );
+                processInstantiationMembers( curr_instance );
 
-                    processInstantiationMembers( curr_instance );
+                popInstContext();
 
-                    popInstContext();
+            } RingIterEnd( curr_instance )
+        } RingIterEnd( tspec )
+    } RingIterEnd( curr_tinfo )
 
-                } RingIterEnd( curr_instance )
-            } RingIterEnd( tspec )
-        } RingIterEnd( curr_tinfo )
-        templateData.extra_members = FALSE;
-        if( ! templateData.keep_going ) break;
-    }
     templateData.extra_members = FALSE;
-    freeDefns();
+
+    return templateData.keep_going;
 }
 
 boolean TemplateMemberCanBeIgnored( void )

@@ -341,8 +341,6 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CompFlags.watch_for_pcheader = FALSE;
                 CompFlags.external_defn_found = 0;
                 ParseDecls();
-                CtxSetContext( CTX_FUNC_GEN );
-                RtnGenerate();
                 CtxSetContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
