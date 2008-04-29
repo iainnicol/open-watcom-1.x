@@ -333,6 +333,7 @@ typedef enum {
                           | TF1_STACK_CHECK
                           ),
     TF1_MPTR_REMOVE     = ( TF1_MUTABLE         // flags to remove when creating
+                          | TF1_DLLIMPORT
                           | TF1_DLLEXPORT
                           ),                    // the base type of a member ptr
     TF1_FN_MEMBER       = ( TF1_SAVEREGS        // allowable fn-modifiers for
