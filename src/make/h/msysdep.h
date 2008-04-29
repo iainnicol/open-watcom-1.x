@@ -44,6 +44,10 @@
     #include "clibext.h"
 #endif
 
+#ifdef unix
+    #undef unix /* Clean up old junk */
+#endif
+
 #include "mtypes.h"
 
 //

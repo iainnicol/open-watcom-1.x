@@ -1416,6 +1416,7 @@ STATIC RET_T handleFor( char *line )
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_FOR] );
 #endif
 
+    cmd = var = set = NULL;     /* Just to shut up gcc */
     if( getForArgs( line, &var, &set, &cmd ) != RET_SUCCESS ) {
         busy = FALSE;
         return( RET_ERROR );

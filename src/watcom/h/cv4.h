@@ -140,7 +140,7 @@ typedef struct {
     unsigned_32 cbSeg;
 } cv_seginfo;
 
-#define CV_DEBUG_STYLE 'VC'
+#define CV_DEBUG_STYLE ('V' << 8 | 'C')
 
 typedef struct {
     unsigned_16 ovlNumber;
