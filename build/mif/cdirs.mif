@@ -200,6 +200,9 @@ dig_dir         = $(dev_dir)/dig
 !ifndef mad_dir
 mad_dir         = $(dev_dir)/mad
 !endif
+!ifndef dbg_dir
+dbg_dir         = $(dev_dir)/dbg
+!endif
 !ifndef wdisasm_dir
 wdisasm_dir     = $(dev_dir)/wdisasm
 !endif

@@ -9,8 +9,8 @@ set PROJNAME=wdis
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     <CCCMD> <PROJDIR>/dos386/wdis.exe   <RELROOT>/binw/
     <CCCMD> <PROJDIR>/dos386/wdis.sym   <RELROOT>/binw/
     <CCCMD> <PROJDIR>/os2386/wdis.exe   <RELROOT>/binp/

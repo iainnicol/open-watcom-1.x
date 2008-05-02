@@ -14,8 +14,8 @@ set BOOTCLEAN=rm -f <OWBINDIR>/wlink<CMDEXT>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
 
   [ IFDEF (os_dos "") <2*> ]
     <CPCMD> <PROJDIR>/dos386/wl.exe                     <RELROOT>/binw/wlink.exe

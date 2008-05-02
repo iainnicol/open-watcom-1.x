@@ -56,8 +56,8 @@ level directory. This master file contains information about which files
 are to be generated and provides implicit rule definitions. The actual
 dependency lists (for example which .sp header fragment files are used
 in each .mh source file) are defined in deps.mif. In addition there is a
-builder lang.ctl file in the top level directory that oversees the build
-process and provides commands to copy the generated headers to the rel2
+builder.ctl file in the top level directory that oversees the build
+process and provides commands to copy the generated headers to the release
 tree when appropriate.
 
 C/C++ LIBRARY HEADERS
@@ -82,7 +82,7 @@ wsplice twice on the source files for the headers above. In addition to
 a default execution that generates the "name.h" form of the header,
 wsplice is executed with the CNAME macro defined to generate the cname
 form of the header. Both name.h and cname forms are mentioned in
-master.mif with rules to copy both forms to the rel2 tree in lang.ctl.
+master.mif with rules to copy both forms to the release tree in builder.ctl.
 Since both name.h and cname forms of a header have the same
 dependencies, wmake macros are defined in deps.mif, one for each .mh
 file, that are subsequently used to define dependencies for both header

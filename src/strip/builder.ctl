@@ -14,14 +14,14 @@ set BOOTCLEAN=rm -f <OWBINDIR>/wstrip<CMDEXT>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
-    <CCCMD> <DEVDIR>/wstrip/dosi86/strip.exe    <RELROOT>/binw/wstrip.exe
-    <CCCMD> <DEVDIR>/wstrip/os2386/strip.exe    <RELROOT>/binp/wstrip.exe
-    <CCCMD> <DEVDIR>/wstrip/nt386/strip.exe     <RELROOT>/binnt/wstrip.exe
-    <CCCMD> <DEVDIR>/wstrip/linux386/strip.exe  <RELROOT>/binl/wstrip
-    <CCCMD> <DEVDIR>/wstrip/ntaxp/strip.exe     <RELROOT>/axpnt/wstrip.exe
-    <CCCMD> <DEVDIR>/wstrip/qnx386/strip.exe    <RELROOT>/qnx/binq/wstrip.
+[ BLOCK <1> rel cprel ]
+#======================
+    <CCCMD> <PROJDIR>/dosi86/strip.exe    <RELROOT>/binw/wstrip.exe
+    <CCCMD> <PROJDIR>/os2386/strip.exe    <RELROOT>/binp/wstrip.exe
+    <CCCMD> <PROJDIR>/nt386/strip.exe     <RELROOT>/binnt/wstrip.exe
+    <CCCMD> <PROJDIR>/linux386/strip.exe  <RELROOT>/binl/wstrip
+    <CCCMD> <PROJDIR>/ntaxp/strip.exe     <RELROOT>/axpnt/wstrip.exe
+    <CCCMD> <PROJDIR>/qnx386/strip.exe    <RELROOT>/qnx/binq/wstrip.
 
 [ BLOCK . . ]
 #============

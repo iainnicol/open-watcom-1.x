@@ -11,8 +11,8 @@ cdsay .
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     <CCCMD> dos386/wlib.exe    <RELROOT>/binw/
     <CCCMD> dos386/wlib.sym    <RELROOT>/binw/
     <CCCMD> os2386/wlib.exe    <RELROOT>/binp/

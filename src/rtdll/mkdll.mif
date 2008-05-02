@@ -13,7 +13,7 @@ patch_level=0
 $(libdllname).lib : $(dllname).imp $(static_objs)
     $(librarian) $(lib_flags) $(lib_flags_new) -p=16 -irn $^@ @$(dllname).imp $(static_objs)
 
-$(dllname).imp : $(dllname).lbc $(rtdll_dir)/trimlbc.awk $(rtdll_dir)/add_br.vi
+$(dllname).imp : $(dllname).lbc $(rtdll_dir)/trimlbc.awk $(rtdll_dir)/add_br.sed
 !ifeq system os2
     $(awk) -f $(rtdll_dir)/trimlbc.awk $(dllname).lbc > $(dllname).ymp
 !else

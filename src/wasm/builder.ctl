@@ -9,8 +9,8 @@ set PROJNAME=wasm
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     <CCCMD> dos386/wasm.exe     <RELROOT>/binw/wasm.exe
     <CCCMD> dos386/wasm.sym     <RELROOT>/binw/wasm.sym
     <CCCMD> dosi86/wasm.exe     <RELROOT>/binw/wasmr.exe

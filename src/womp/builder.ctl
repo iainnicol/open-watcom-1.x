@@ -9,8 +9,8 @@ set PROJNAME=womp
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
     <CCCMD> <PROJDIR>/dosi86/womp.exe   <RELROOT>/binw/
     <CCCMD> <PROJDIR>/dosi86/womp.sym   <RELROOT>/binw/
     <CCCMD> <PROJDIR>/os2386/womp.exe   <RELROOT>/binp/

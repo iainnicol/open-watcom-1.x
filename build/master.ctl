@@ -6,6 +6,10 @@
 #====================
     error OWROOT must be set!
 
+[ BLOCK .<OBJDIR> . ]
+#====================
+    error OBJDIR must be set!
+
 # Set default output directory
 [ BLOCK .<RELROOT> . ]
 #=====================
@@ -33,11 +37,11 @@ set SRCDIR=<OWROOT>/src
     # default rule
     set 1=build
 
-[ BLOCK <1> cprel2 ]
-#===================
-    echo **** CPREL2 rule
-    set LOGFNAME=cprel2
-    # with 'cprel2', we want to force the copy to occur
+[ BLOCK <1> cprel ]
+#==================
+    echo **** CPREL rule
+    set LOGFNAME=cprel
+    # with 'cprel', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
 
@@ -46,9 +50,9 @@ set SRCDIR=<OWROOT>/src
     echo **** BUILD rule
     set LOGFNAME=bld
 
-[ BLOCK <1> rel2 ]
-#==================
-    echo **** REL2 rule
+[ BLOCK <1> rel ]
+#================
+    echo **** REL rule
     set LOGFNAME=bld
 
 [ BLOCK <1> clean ]
@@ -66,15 +70,15 @@ set SRCDIR=<OWROOT>/src
 
 [ BLOCK <1> pass1 ]
 #==================
-    echo **** REL2 rule
+    echo **** REL rule
     set LOGFNAME=pass1
-    set 1=rel2
+    set 1=rel
 
 [ BLOCK <1> pass2 ]
 #==================
-    echo **** REL2 rule
+    echo **** REL rule
     set LOGFNAME=pass2
-    set 1=rel2
+    set 1=rel
 
 # Configure executable extension: DOS, OS/2 and Windows use .exe, others nothing
 

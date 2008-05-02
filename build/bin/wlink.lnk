@@ -14,12 +14,38 @@ system begin dos
     format dos ^
 end
 
+system begin windows
+    option osname='Windows 16-bit'
+    libpath %OWROOT%/src/clib/library/windows.086/ml
+    libpath %OWROOT%/src/plusplus/cpplib/windows.086/ml
+    libpath %OWROOT%/src/mathlib/library/windows.287/ml
+    libpath %OWROOT%/src/emu87/wini86
+    libpath %OWROOT%/src/w16api/wini86
+    library windows
+    option stack=8k, heapsize=1k
+    format windows ^
+end
+
+system begin windows_dll
+    option osname='Windows 16-bit'
+    libpath %OWROOT%/src/clib/library/windows.086/ml
+    libpath %OWROOT%/src/plusplus/cpplib/windows.086/ml
+    libpath %OWROOT%/src/mathlib/library/windows.287/ml
+    libpath %OWROOT%/src/emu87/wini86
+    libpath %OWROOT%/src/w16api/wini86
+    library windows
+    option stack=8k, heapsize=1k
+    libfile %OWROOT%/src/clib/startup/library/windows.086/ml/libentry.obj
+    format windows dll ^
+end
+
 system begin dos4g
     option osname='DOS/4G'
     libpath %OWROOT%/src/clib/library/msdos.386/ms_r
+    libpath %OWROOT%/src/plusplus/cpplib/generic.386/ms_r
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/dos386
-    op stub=wstub.exe
+    op stub=%OWROOT%/src/wstub/wstub.exe
     format os2 le
 end
 
@@ -43,9 +69,20 @@ system begin os2v2
     option osname='OS/2 32-bit'
     libpath %OWROOT%/src/clib/library/os2.386/mf_r
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/plusplus/cpplib/os2.386/mf_rmt
     libpath %OWROOT%/src/emu387/stub386
     libpath %OWROOT%/src/os2api/os2386/lib
     format os2 lx ^
+end
+
+system begin os2v2_pm
+    option osname='OS/2 32-bit Presentation Manager'
+    libpath %OWROOT%/src/clib/library/os2.386/mf_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/plusplus/cpplib/os2.386/mf_rmt
+    libpath %OWROOT%/src/emu387/stub386
+    libpath %OWROOT%/src/os2api/os2386/lib
+    format os2 lx pm ^
 end
 
 system begin nt
@@ -59,10 +96,23 @@ system begin nt
     runtime console=4.0
 end
 
+system begin nt_win
+    option osname='Windows NT windowed'
+    libpath %OWROOT%/src/clib/library/winnt.386/mf_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/emu387/stub386
+    libpath %OWROOT%/src/w32api/nt386
+    library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime windows=4.0
+end
+
 system begin nt_dll
     option osname='Windows NT'
     libpath %OWROOT%/src/clib/library/winnt.386/mf_r
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/plusplus/cpplib/winnt.386/mf_rmt
+    libpath %OWROOT%/src/rtdll/clib/winnt.386/mf_r
     libpath %OWROOT%/src/emu387/stub386
     libpath %OWROOT%/src/w32api/nt386
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32

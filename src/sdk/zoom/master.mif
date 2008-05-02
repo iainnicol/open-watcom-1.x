@@ -1,0 +1,46 @@
+proj_name = wzoom
+name = wzoom
+
+!ifndef wzoom_autodepends
+wzoom_autodepends = .AUTODEPEND
+!endif
+
+sys_windowed = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj &
+        mem.obj about.obj ldstr.obj inipath.obj
+
+extra_c_flags_mem = -DNO_WPI
+
+extra_l_flags     = option map
+extra_l_flags_nt  = op stack=64k
+extra_l_flags_win = op stack=7k, heapsize=2k
+
+inc_dirs = -I.. -I"$(sdk_dir)/misc"
+
+.c: ..;$(sdk_dir)/misc
+.h: ..;$(sdk_dir)/misc
+
+$(name).exe : rcstr.gh $(objs) $(name).res
+        $(linker) $(lflags) name $(name).exe file { $(objs) }
+        $(rc) -k $(name).res $^@
+
+$(name)j.exe : $(name).exe $(name)j.res
+        cp $(name).exe $(name)j.exe
+        $(rc) -k $(name)j.res $^@
+
+rcstr.gh : rcstrmsg.gh
+        $(vi) -s ../../misc/msgtoh.vi -p"$^@" $[@
+
+rcstrmsg.gh : ../wzoom.msg $(sdk_dir)/misc/about.msg
+        $(cc) $(inc_path) -zk0 -p $[@ -fo=$^@
+
+$(name).res : ../wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -r -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
+
+$(name)j.res : ../wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -r -ad -zk0 -I"../res/kanji" $(inc_path) -D_JAPANESE_ $[@ -fo=$^@

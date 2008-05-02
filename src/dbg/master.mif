@@ -1,13 +1,13 @@
 #
 # Open Watcom Debugger makefile
 #
-proj_name = wv
+proj_name = dbg
 
-!ifndef wv_autodepends
+!ifndef dbg_autodepends
 wv_autodepends = .AUTODEPEND
 !endif
 
-wv_trmem = 1
+dbg_trmem = 1
 
 # The dot_machine macro is used to work around the fact that on DOSish
 # filesystems, trailing dot is not significant, but on Unix it is
@@ -278,7 +278,7 @@ extra_c_flags_regexp = -fi=wndregx.h
 inc_dirs = -I. -I"$(dbg_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
 !ifndef dll
 inc_dirs += -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(ui_dir)/h" -I"$(posix_dir)/h"
-inc_dirs += -I"$(posix_dir)/h" -I"$(gui_dir)/ui/h" -I"$(help_dir)/h"
+inc_dirs += -I"$(posix_dir)/h" -I"$(gui_dir)/ui/h" -I"$(hlpview_dir)/h"
 !endif
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
 inc_dirs += -I"$(ncurses_dir)/h"
@@ -342,7 +342,7 @@ extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
 extra_l_flags_os2_i86 = op stack=16k, newfile
 !endif
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
-extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000, resource=..\wvqnx.u
+extra_l_flags_qnx_386 = opt stack = 0x8000, offset=0x9000, resource=../wvqnx.u
 extra_l_flags_qnx = $(extra_l_flags_qnx_$(host_cpu))
 ############
 
@@ -379,7 +379,7 @@ $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk)
 !if 0
 !ifdef ovl_dos
         copy $^&.map $(lnk2)
-        vi -d -q -s ..\mapfix.vi $(lnk2)
+        vi -d -q -s ../mapfix.vi $(lnk2)
         $(linker) $(lflags) name $^@ @$(lnk) @$(lnk2) $(endsect)
 !endif
 !endif

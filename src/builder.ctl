@@ -33,6 +33,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/cg/intel/i86/builder.ctl ]
 [ INCLUDE <SRCDIR>/cc/boot386.ctl ]
 [ INCLUDE <SRCDIR>/cc/booti86.ctl ]
+[ INCLUDE <SRCDIR>/plusplus/boot386.ctl ]
+[ INCLUDE <SRCDIR>/plusplus/booti86.ctl ]
 # Build RISC assemblers
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]
 [ INCLUDE <SRCDIR>/re2c/builder.ctl ]
@@ -62,6 +64,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/w16api/builder.ctl ]
 [ INCLUDE <SRCDIR>/w32api/builder.ctl ]
 # Continue with runtime libraries.
+[ INCLUDE <SRCDIR>/emu87/builder.ctl ]
+[ INCLUDE <SRCDIR>/emu387/builder.ctl ]
 [ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]
 [ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
