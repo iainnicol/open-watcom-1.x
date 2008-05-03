@@ -28,6 +28,7 @@ end
 
 system begin windows_dll
     option osname='Windows 16-bit'
+    libpath %OWROOT%/src/clib/library/windows.086/mc
     libpath %OWROOT%/src/clib/library/windows.086/ml
     libpath %OWROOT%/src/plusplus/cpplib/windows.086/ml
     libpath %OWROOT%/src/mathlib/library/windows.287/ml

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Define an array of messages to spy on.
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@
 #define NT_MSGS
 #endif
 
-#define msgpick( a, b, c, d, e, f )     { a, b, c, d, e, f }
+#define msgpick( a, b, c, d, e, f )     { { a, b }, c, d, e, f }
 
 message near MessageArray[] =  {
     #include "spyarray.h"

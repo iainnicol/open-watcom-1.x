@@ -19,8 +19,8 @@ all: $(name).exe .SYMBOLIC
 
 extra_c_flags_i86   = -s-zu-zW
 
-extra_c_flags_ldstr    = -dSPECIAL_STRING_LOADING
-extra_c_flags_mem      = -dNO_WPI
+extra_c_flags_ldstr    = -DSPECIAL_STRING_LOADING
+extra_c_flags_mem      = -DNO_WPI
 extra_c_flags_heapwalk = -3
 extra_c_flags_segmem2  = -3
 
@@ -51,7 +51,7 @@ $(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(name).res
         $(rc) -k $(name).res $^@
 
 rcstr.gh : rcstrmsg.gh
-        $(vi) -s ../../misc/msgtoh.vi -p"$^@" $[@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : ../heapwalk.msg $(msgfiles)
         $(cc) -zk0 -p -I"$(sdk_dir)/misc" $(inc_path) $[@ -fo=$^@

@@ -1,6 +1,8 @@
 #pmake: build os_nt cpu_386
-host_OS = nt
-host_CPU = 386
-extra_c_flags_about = -dNOUSE3D
-extra_c_flags_zoom = -dNOUSE3D
+
+host_os  = nt
+host_cpu = 386
+
+extra_c_flags = -DNOUSE3D
+
 !include ../master.mif

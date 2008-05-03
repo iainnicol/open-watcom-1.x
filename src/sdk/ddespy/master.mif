@@ -35,17 +35,11 @@ msgfiles  = $(sdk_dir)/misc/about.msg $(sdk_dir)/misc/log.msg &
             $(sdk_dir)/misc/savelbox.msg $(sdk_dir)/misc/alias.msg
 
 $(name).exe : rcstr.gh $(objs) $(name).res
-        $(LINKER) $(lflags) name $^@ file { $(objs) }
-!ifeq host_CPU axp
-!ifeq release 0
-        cvpack $(name).exe
-        wstrip $(name).exe $(name).exe $(name).sym
-!endif
-!endif
+        $(linker) $(lflags) name $^@ file { $(objs) }
         $(rc) -k $(name).res $^@
 
 rcstr.gh : rcstrmsg.gh
-        $(vi) -s ../../misc/msgtoh.vi -p"$^@" $[@
+        $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh : $(wddespy_dir)/ddespy.msg $(msgfiles)
         $(cc) -zk0 -p -I"$(sdk_dir)/misc" $(inc_path) $[@ -fo=$^@

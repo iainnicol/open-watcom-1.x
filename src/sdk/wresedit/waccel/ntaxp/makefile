@@ -1,5 +1,6 @@
 #pmake: os_nt cpu_axp
-host_OS = nt
-host_CPU = axp
 
-!include ../mif/waccel.mif
+host_os  = nt
+host_cpu = axp
+
+!include ../waccel.mif

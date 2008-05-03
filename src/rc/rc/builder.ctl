@@ -9,9 +9,6 @@ set PROJNAME=wrc
 
 cdsay .
 
-set BOOTCOPY=<CPCMD> wrce.exe <OWBINDIR>/wrc<CMDEXT>
-set BOOTCLEAN=rm -f <OWBINDIR>/wrc<CMDEXT>
-
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel cprel ]
@@ -29,6 +26,16 @@ set BOOTCLEAN=rm -f <OWBINDIR>/wrc<CMDEXT>
     <CCCMD> <PROJDIR>/ntaxp/wrce.exe         <RELROOT>/axpnt/wrc.exe
     <CCCMD> <PROJDIR>/linux386/wrce.exe      <RELROOT>/binl/wrc
     <CCCMD> <PROJDIR>/linux386/wrce.sym      <RELROOT>/binl/wrc.sym
+
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <PROJDIR>/<OBJDIR>/wrce.exe <OWBINDIR>/wrc<CMDEXT>
+    <CPCMD> <PROJDIR>/kanji.uni <OWBINDIR>/
+
+[ BLOCK <1> bootclean ]
+#======================
+    rm -f <OWBINDIR>/wrc<CMDEXT>
+    rm -f <OWBINDIR>/kanji.uni
 
 [ BLOCK . . ]
 #============

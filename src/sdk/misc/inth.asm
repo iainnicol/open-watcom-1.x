@@ -42,7 +42,7 @@ NO_UAE_BOX      EQU     1
 
 
 extrn _FaultHandler:FAR
-extrn TerminateApp:FAR
+extrn TERMINATEAPP:FAR
 
 DGROUP group _DATA
 _DATA segment word public 'DATA' use16
@@ -74,8 +74,8 @@ assume cs:_TEXT
 ;***                                                                    ***
 ;**************************************************************************
 
-PUBLIC IntHandler
-IntHandler PROC FAR
+PUBLIC INTHANDLER
+INTHANDLER PROC FAR
         nop
         nop
         nop
@@ -157,11 +157,10 @@ KillApp:
         add     sp,10                   ; Point to IRET frame
         push    0
         push    NO_UAE_BOX
-        call    TerminateApp
+        call    TERMINATEAPP
         iret
-IntHandler ENDP
+INTHANDLER ENDP
 
 
 _TEXT ends
         end
-

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build a message selection dialog template.
 *
 ****************************************************************************/
 
@@ -34,7 +33,7 @@
 #include <stdlib.h>
 //#include "spy.h"
 
-#define msgpick( a, b, c, d, e, f )     { d }
+#define msgpick( a, b, c, d, e, f )     d
 
 char *MessageArray[] =  {
     #include "spyarray.h"
@@ -64,8 +63,8 @@ unsigned MessageArraySize = sizeof( MessageArray ) / sizeof( char * );
 #define DIALOG_HITE             ( ( no_rows * ITEM_HITE ) + 2 * Y_ORIGIN +\
                                   BUTTON_HITE + BUTTON_SPACE )
 
-void main( int argc, char *argv[] ) {
-
+int main( int argc, char *argv[] )
+{
     FILE        *dlgfile;
     FILE        *hfile;
     unsigned    i, j, k;
@@ -75,18 +74,18 @@ void main( int argc, char *argv[] ) {
     unsigned    no_rows;
 
     if( argc != 3 ) {
-        printf( "mkdlg [ .dlg filename] [ .h filename ]\n\n" );
-        exit( 0 );
+        printf( "mkdlg [ .dlg filename] [ .h filename ]\n" );
+        return( EXIT_SUCCESS );
     }
     dlgfile = fopen( argv[1], "wt" );
     if( dlgfile == NULL ) {
         printf( "Unable to open .dlg file\n" );
-        exit( 1 );
+        return( EXIT_FAILURE );
     }
     hfile = fopen( argv[2], "wt" );
     if( hfile == NULL ) {
         printf( "Unable to open .h file\n" );
-        exit( 1 );
+        return( EXIT_FAILURE );
     }
     no_rows = MessageArraySize / ( NO_COLS * NO_DIALOGS );
     if( MessageArraySize % ( NO_COLS * NO_DIALOGS ) != 0 ) no_rows++;
@@ -170,5 +169,5 @@ void main( int argc, char *argv[] ) {
     fprintf( hfile, "#define DLGMSG_SETALL       4801\n" );
     fprintf( hfile, "#define DLGMSG_NEXT         4082\n" );
     fprintf( hfile, "#define DLGMSG_PREV         4803\n" );
-    exit( 0 );
+    return( EXIT_SUCCESS );
 }
