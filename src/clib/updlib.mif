@@ -92,7 +92,7 @@ libpath_linux_ppc       =libppc/linux
 libpath_linux_mps       =libmps/linux
 updlibpath =$(libpath_$(system)_$(processor))
 
-update : .symbolic $(libname).lib
-    if exist $(%watcom)/$(updlibpath)/$(updlibname) cp $(libname).lib $(%watcom)/$(updlibpath)/$(updlibname)
+update : $(libname).lib .symbolic
+    if exist $(%WATCOM)/$(updlibpath)/$(updlibname) cp $(libname).lib $(%WATCOM)/$(updlibpath)/$(updlibname)
 
 !endif

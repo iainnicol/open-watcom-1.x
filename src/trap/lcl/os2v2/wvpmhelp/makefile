@@ -17,8 +17,7 @@ extra_c_flags = -s -fpc
 
 inc_dirs = -I"$(trap_dir)/h"
 
-w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
-        @%null
+w d : wdpmhook.dll wdpmhelp.exe
 
 tmplnk = tmp.lnk
 
@@ -27,7 +26,7 @@ wdpmhook.dll: pmhook.obj
     @%append $(tmplnk) debug all op symf
     @%append $(tmplnk) option map
     @%append $(tmplnk) file pmhook.obj
-    @%append $(tmplnk) library $(os2386)
+    @%append $(tmplnk) library os2386
     @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
     $(linker) @$(tmplnk)
 
@@ -56,7 +55,7 @@ _jerr.gh : ./jmkstr.exe
         $[@ $^@
 
 ./mkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(wcl_util_opts) -I"$(trap_dir)/h"
+        $(host_cl) $(host_cl_opts) $[@
 
 ./jmkstr.exe : $(trap_dir)/c/mkstr.c $(trap_dir)/h/trap.msg
-        $(bld_cl) $[@ $(wcl_util_opts) -DJAPANESE_MESSAGES -I"$(trap_dir)/h"
+        $(host_cl) $(host_cl_opts) -DJAPANESE_MESSAGES $[@

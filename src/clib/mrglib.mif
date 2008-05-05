@@ -32,8 +32,7 @@ lib_flags    +=-p=16
 !endif
 !endif
 
-all : $(libname).lib .symbolic
-    @%null
+all : $(libname).lib
 
 $(libname).lib : $(libs)
     @%write tmp.mak !include ../../objects.mif
@@ -53,4 +52,3 @@ $(libname).lib : $(libs)
 
 !include $(clib_dir)/clean.mif
 !include $(clib_dir)/updlib.mif
-!include $(clib_dir)/project.mif

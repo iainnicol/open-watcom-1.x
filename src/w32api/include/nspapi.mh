@@ -219,6 +219,7 @@ typedef struct _SERVICE_ADDRESS {
     DWORD   dwAddressLength;
     DWORD   dwPrincipalLength;
     BYTE    *lpAddress;
+    BYTE    *lpPrincipal;
 } SERVICE_ADDRESS;
 typedef SERVICE_ADDRESS *PSERVICE_ADDRESS;
 typedef SERVICE_ADDRESS *LPSERVICE_ADDRESS;

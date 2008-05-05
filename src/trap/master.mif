@@ -103,11 +103,7 @@ extra_a_flags_misc7386 = -fpi87
 libs_x86_os2            = clibc
 libs_x86_os2v2          = clib3r
 libs_x86_qnx            = $(lang_root)/lib386/qnx/clib3r
-!ifdef __LINUX__
 libs_x86_linux          = $(clib_dir)/library/linux.386/mf_r/clib3r
-!else
-libs_x86_linux          = $(lang_root)/lib386/linux/clib3r
-!endif
 libs_x86_win            = clibc
 !ifeq memory_model_i86 l
 libs_x86_dos            = clibl
@@ -173,8 +169,7 @@ default_targ    = d
 default_targ    = w
 !endif
 
-first : $(default_targ) .SYMBOLIC
-        @%null
+first : $(default_targ)
 
 save_name =$+$(name)$-
 name = $(name_debug)$(save_name)
@@ -210,7 +205,7 @@ d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
 ./mkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" $[@
+        $(host_cl) $(host_cl_opts) $[@
 
 !ifeq host_os nov
 
@@ -218,14 +213,14 @@ $(nversion_tmp): ./mknver.exe
     $[@ $^@
 
 ./mknver.exe: $(mknver_c) .AUTODEPEND
-        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" -I"$(watcom_dir)/h" $[@
+        $(host_cl) $(host_cl_opts) $[@
 !endif
 
 $(trperr_h) : ./mkstr.exe
         $[@ $^@
 
 ./jmkstr.exe: $(mkstr_c) $(trap_msg)
-        $(bld_cl) $(wcl_util_opts) -I"$(trap_dir)/h" -DJAPANESE_MESSAGES $[@
+        $(host_cl) $(host_cl_opts) -DJAPANESE_MESSAGES $[@
 
 $(jtrperr_h) : ./jmkstr.exe
         $[@ $^@
@@ -261,13 +256,13 @@ $(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__
 !endif
 
 dbgstr.lib : dbgstr.obj
-        $(librarian) $(libflags) $^@ +$[@
+        $(librarian) $(libflags) +$[@
 
 inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)" 
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
 !ifeq host_os nov
-inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/h" 
-inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/src" -I"$(ow_nwoss_root)/common/h"
+inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/h" 
+inc_dirs += -I"$(nwoss_dir)/nw$(nlm_ver)/src" -I"$(nwoss_dir)/common/h"
 !endif
 
 .c: ../c;../../c;$(trap_dir)/common/$(os);$(trap_dir)/common;$(trap_dir)/c;$(extra_srcs)

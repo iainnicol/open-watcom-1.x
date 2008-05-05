@@ -1,14 +1,10 @@
-.before
-    @set include=
-
 !ifdef profile
 lib_flags    +=-p=32
 !else
 lib_flags    +=-p=16
 !endif
 
-all : $(objfiles) $(libname).lib .symbolic
-    @%null
+all : $(objfiles) $(libname).lib
 
 $(libname).lib : $(objs)
     $(librarian) $(lib_flags) $^@ $(objs)
@@ -43,4 +39,3 @@ $(libname).lib : $(objs)
 !endif
 
 !include $(clib_dir)/clean.mif
-!include $(clib_dir)/project.mif
