@@ -66,7 +66,7 @@ rcfiles = &
 
 rcinclude= -I. -I"../h" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gui_dir)/h" -I"$(brinfo_dir)/merge/res"
 
-inc_dirs = -I"../h" -I"$(wsample_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(trmem_dir)" -I"$(dig_dir)/h"
+inc_dirs = -I"../h" -I"$(sampler_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(trmem_dir)" -I"$(dig_dir)/h"
 
 # explicit rules
 #################
@@ -107,13 +107,13 @@ wprofui.res : ../h/wprofui.rc .AUTODEPEND
         $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
 ./auimkstr.exe : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-        $(bld_cl) -I"$(aui_dir)/h" $(wcl_util_opts) $]@
+        $(host_cl) $(host_cl_opts) $]@
 
 auistr.gh : $(aui_dir)/h/aui.msg ./auimkstr.exe
         $]@ $^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+        $(host_cl) $(host_cl_opts) $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)

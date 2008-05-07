@@ -1,5 +1,5 @@
-# wprof Builder Control file
-# ==========================
+# wsample Builder Control file
+# ============================
 
 set PROJDIR=<CWD>
 
@@ -13,9 +13,9 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> boot ]
 #=================
-    echo Building the wprof bootstrap
+    echo Building the wsample bootstrap
     mkdir <PROJDIR>/<OBJDIR>
     cdsay <PROJDIR>/<OBJDIR>
     wmake -h -f ../bootmake
-    <CPCMD> wprof.exe <DEVDIR>/build/bin/wprof
+    <CPCMD> wsample.exe <DEVDIR>/build/bin/wsample
     cdsay <PROJDIR>

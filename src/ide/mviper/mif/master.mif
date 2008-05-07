@@ -42,12 +42,7 @@ extra_c_flags_i86       = -zc -zm
 
 inc_dirs = $(wclass_inc_dirs)
 
-.before:
-        @set include=$(inc_path)
-
 .cpp : ..
 
 $(name).lib : $(objects)
-        @%create $^&.lbc
-        @for %f in ($(objects)) do @%append $^&.lbc +%f
-        $(librarian) $(libflags) $^@ @$^&.lbc
+        $(librarian) $(libflags) $(objects)

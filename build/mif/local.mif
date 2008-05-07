@@ -9,7 +9,7 @@ rcaui      += -q
 
 bcl        += -zq
 bas        += -q
-blib       += -q -zld
+blib       += -q
 brc        += -q
 
 # redirect standard tools to pre-build versions
@@ -118,13 +118,9 @@ cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 cc = cc
 cpp = cc
 cl = $(cc)
+clpp = g++
 
 cppflags_386  = -D_M_IX86 -D__386__
-
-# TODO: Scrap this stupid scheme and come up with something better!
-# $(inc_dirs_lang_$(host_os)) must be defined to override default OW headers
-inc_dirs_lang_osx =
-inc_dirs_lang_osi =
 
 cflags_wng =
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__OSX__ -DBOOTSTRAP &

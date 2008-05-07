@@ -131,6 +131,9 @@ os2api_dir      = $(dev_dir)/os2api
 !ifndef w32api_dir
 w32api_dir      = $(dev_dir)/w32api
 !endif
+!ifndef w16api_dir
+w16api_dir      = $(dev_dir)/w16api
+!endif
 !ifndef nwoss_dir
 nwoss_dir       = $(dev_dir)/os_supp/novell
 !endif
@@ -215,8 +218,8 @@ whpcvt_dir      = $(dev_dir)/whpcvt
 !ifndef aui_dir
 aui_dir         = $(dev_dir)/aui
 !endif
-!ifndef wsample_dir
-wsample_dir     = $(dev_dir)/wsample
+!ifndef sampler_dir
+sampler_dir     = $(dev_dir)/sampler
 !endif
 !ifndef editdll_dir
 editdll_dir     = $(dev_dir)/editdll
