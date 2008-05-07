@@ -1,5 +1,10 @@
-# todo: do we really need this? doubt it...
-#!include preclude.mif
+# Perform basic sanity checks
+!ifeq host_os #nothing
+!error The host_os macro must be defined!
+!endif
+!ifeq host_cpu #nothing
+!error The host_cpu macro must be defined!
+!endif
 
 !ifndef lang_root
 lang_root       = $(lang_root_$(host_cpu))

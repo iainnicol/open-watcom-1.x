@@ -74,13 +74,10 @@ objfiles = &
 !inject uiutil.obj    dos
 !inject uivirt.obj                        qnx  unix
 
-# This check is partial! A full check is tedious. W.Briscoe 2004-11-26
-# extra_files must be set in including makefile as mapping of other data is not 1 to 1.
 !ifndef extra_files
 !error $$(extra_files) unset. Must be $$(dos), $$(nlm), $$(nt), $$(os2), $$(qnx), $$(unix) or $$(win)
 !endif
 
-# $(trmem_objs) appended to objfiles = ... is ineffective W.Briscoe 2004-11-25
 objfiles += $(trmem_objs) $(extra_files)
 
 !ifeq release 1

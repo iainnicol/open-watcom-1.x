@@ -1,3 +1,6 @@
+# TODO: Enable trmem for non-bootstrap builds
+!ifndef bootstrap
+
 trmem_cflag_i86 = -of+
 trmem_cflag_386 = -of+
 
@@ -7,5 +10,6 @@ trmem_cover_cflags = -s -I"$(trmem_dir)"
 !ifeq release 0
 trmem_cover_cflags += -DTRMEM $(trmem_cflag_$(host_cpu))
 trmem_objs = trmem.obj
+!endif
 !endif
 !endif

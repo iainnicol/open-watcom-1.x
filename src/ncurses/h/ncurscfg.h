@@ -141,4 +141,10 @@
 #endif
 #endif
 
+/* Post-fixes for various hosts... */
+#ifdef __SOLARIS__
+#undef TERMINFO_DIRS
+#define TERMINFO_DIRS "/usr/share/lib/terminfo"
+#endif
+
 #endif /* NC_CONFIG_H */
