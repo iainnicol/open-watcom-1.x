@@ -185,12 +185,18 @@ public:
     void sort() { sort( std::less< T >() ); }
     void reverse();
     
-    friend bool operator==( slist const & a, slist const & b );
-    friend bool operator!=( slist const & a, slist const & b );
-    friend bool operator<=( slist const & a, slist const & b );
-    friend bool operator>=( slist const & a, slist const & b );
-    friend bool operator<( slist const & a, slist const & b );
-    friend bool operator>( slist const & a, slist const & b );
+    template< class U, class V >
+    friend bool operator==( slist<U,V> const & a, slist<U,V> const & b );
+    template< class U, class V >
+    friend bool operator!=( slist<U,V> const & a, slist<U,V> const & b );
+    template< class U, class V >
+    friend bool operator<=( slist<U,V> const & a, slist<U,V> const & b );
+    template< class U, class V >
+    friend bool operator>=( slist<U,V> const & a, slist<U,V> const & b );
+    template< class U, class V >
+    friend bool operator<( slist<U,V> const & a, slist<U,V> const & b );
+    template< class U, class V >
+    friend bool operator>( slist<U,V> const & a, slist<U,V> const & b );
     
     //OW special
     bool _Sane();
