@@ -1806,14 +1806,12 @@ char *ptr;
 char __based( void ) __based( ptr ) *a;
 :eerrbad.
 
-:MSGSYM. ANSI_BAD_ENUM_ASSIGNMENT
+:MSGSYM. ERR_BAD_ENUM_ASSIGNMENT
 :MSGTXT. enumeration variable is not assigned a constant from its enumeration
 :MSGJTXT. —ñ‹“•Ï”‚É‚»‚Ì—ñ‹“‚Ì’è”‚ª‘ã“ü‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ
-:ANSI. 1
 In C++ (as opposed to C), enums represent values of distinct types.
 Thus, the compiler will not automatically convert an integer value
-to an enum type if you are compiling your source in strict ISO/ANSI C++ mode.
-If you have extensions enabled, this message is treated as a warning.
+to an enum type.
 :errbad.
 enum Days { sun, mod, tues, wed, thur, fri, sat };
 enum Days day = 2;

@@ -2815,7 +2815,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             result = implicitArithToPtr( & ctl );
             break;
           case  7 : // arith -> enum
-            if( ConvCtlWarning( &ctl, ANSI_BAD_ENUM_ASSIGNMENT ) ) {
+            if( ConvCtlWarning( &ctl, ERR_BAD_ENUM_ASSIGNMENT ) ) {
                 result = DIAG_ALREADY;
             } else {
                 result = CAST_DO_CGCONV;
@@ -2833,7 +2833,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             break;
           case 12 : // enum -> enum
             if( EnumType( ctl.tgt.unmod ) != EnumType( ctl.src.unmod ) ) {
-                PTreeErrorExpr( expr, ANSI_BAD_ENUM_ASSIGNMENT );
+                PTreeErrorExpr( expr, ERR_BAD_ENUM_ASSIGNMENT );
                 if( ! okSoFar( &ctl ) ) {
                     result = DIAG_ALREADY;
                     break;

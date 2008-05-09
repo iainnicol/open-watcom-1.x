@@ -2874,7 +2874,7 @@ start_opac_string:
             break;
           case REQD_NOT_ENUM_LEFT :
             if( EnumType( left->type ) == NULL ) continue;
-            operandError( expr, ANSI_BAD_ENUM_ASSIGNMENT );
+            operandError( expr, ERR_BAD_ENUM_ASSIGNMENT );
             if( expr->op != PT_ERROR ) continue;
             break;
 #if 0
@@ -2888,7 +2888,7 @@ start_opac_string:
             type_l = EnumType( left->type );
             if( type_l == NULL ) continue;
             if( type_l == EnumType( right->type ) ) continue;
-            operandError( expr, ANSI_BAD_ENUM_ASSIGNMENT );
+            operandError( expr, ERR_BAD_ENUM_ASSIGNMENT );
             if( expr->op != PT_ERROR ) continue;
           } break;
           case REQD_ZERO_LEFT :
