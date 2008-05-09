@@ -12097,3 +12097,14 @@ namespace ns {
 struct ns::A {
 };
 :eerrbad.
+
+:MSGSYM. ERR_EXPECTED_CLASS_TYPE
+:MSGTXT. expected class type, but got '%T'
+:MSGJTXT.
+:errbad.
+template< class T >
+struct A : public T {
+};
+
+A< int > a;
+:eerrbad.

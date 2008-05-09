@@ -1255,6 +1255,7 @@ static DECL_SPEC *sendClass( PTREE tree )
 
     dspec = sendType( tree );
     if( StructType( dspec->partial ) == NULL ) {
+        CErr2p( ERR_EXPECTED_CLASS_TYPE, dspec->partial );
         PTypeRelease( dspec );
         dspec = NULL;
     }
