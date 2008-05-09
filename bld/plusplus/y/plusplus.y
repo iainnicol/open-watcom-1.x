@@ -652,6 +652,13 @@ access-declaration
     { ClassAccessDeclaration( $1, &yylocation ); }
     | qualified-type-specifier
     { ClassAccessTypeDeclaration( $1, &yylocation ); }
+    | Y_SCOPED_UNKNOWN_ID
+    { ClassAccessDeclaration( MakeScopedId( $1 ), &yylocation ); }
+    | nested-name-specifier Y_TEMPLATE_SCOPED_UNKNOWN_ID
+    {
+        PTreeFreeSubtrees( $1 );
+        ClassAccessDeclaration( MakeScopedId( $2 ), &yylocation );
+    }
     ;
 
 
@@ -1944,7 +1951,7 @@ declarator-id
     | Y_SCOPED_UNKNOWN_ID
     { $$ = MakeScopedId( $1 ); }
     | nested-name-specifier Y_TEMPLATE_SCOPED_UNKNOWN_ID
-    { $$ = MakeScopedId( $2 ); }
+    { PTreeFreeSubtrees( $1 ); $$ = MakeScopedId( $2 ); }
     /*
      * these Y_TEMPLATE_SCOPED_ cases are needed because of the odd way
      * template class constructors are parsed. Essentially, a constructor
