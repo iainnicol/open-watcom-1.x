@@ -11964,13 +11964,6 @@ The
 .kw typename
 keyword is only allowed inside templates.
 
-:MSGSYM. ERR_DECL_DEFAULT_INT
-:MSGTXT. declaration of '%N' with no type
-:MSGJTXT.
-:errbad.
-auto T;
-:eerrbad.
-
 :MSGSYM. ERR_FUNCTION_BAD_RETURN
 :MSGTXT. '%N' does not have a return type specified
 :MSGJTXT.

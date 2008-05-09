@@ -973,11 +973,6 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
                 } else if( DefaultIntType( FunctionDeclarationType( sym->sym_type )->of ) ) {
                     CErr2p( ERR_FUNCTION_BAD_RETURN, sym_name->name );
                 }
-            } else {
-                if( DefaultIntType( sym->sym_type )
-                 && ( sym_name->name != CppSpecialName( SPECIAL_RETURN_VALUE ) ) ) {
-                    CErr2p( ERR_DECL_DEFAULT_INT, sym_name->name );
-                }
             }
         } else {
             if( SymIsFunction( chk_sym ) ) {
