@@ -877,6 +877,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
 /********************************************************/
 {
     boolean scoped_id;
+    boolean something_went_wrong;
     char *name;
     CLASS_DATA *data;
     CLASS_DATA *enclosing_data;
@@ -896,11 +897,15 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
         return( CLNAME_NULL );
     }
 
+    something_went_wrong = FALSE;
     scoped_id = FALSE;
     scope = GetCurrScope();
 
     if( id->op == PT_ID ) {
         name = id->u.id.name;
+    } else if( id->op == PT_ERROR ) {
+        something_went_wrong = TRUE;
+        name = NameDummy();
     } else {
         sym_name = id->sym_name;
         DbgAssert( sym_name != NULL );
@@ -912,6 +917,10 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
             name = right->u.id.name;
 
             scope = sym_name->containing;
+        } else {
+            CErr2p( ERR_QUALIFIED_NAME_NOT_CLASS, id );
+            something_went_wrong = TRUE;
+            name = NameDummy();
         }
     }
 

@@ -12087,3 +12087,13 @@ using ns;
 :MSGTXT. candidate %C defined %L
 :MSGJTXT.
 :INFO.
+
+:MSGSYM. ERR_QUALIFIED_NAME_NOT_CLASS
+:MSGTXT. qualified name '%I' does not name a class
+:MSGJTXT.
+:errbad.
+namespace ns {
+}
+struct ns::A {
+};
+:eerrbad.

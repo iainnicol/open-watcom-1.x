@@ -474,6 +474,7 @@ Modified        By              Reason
 %type <tree> new-placement
 %type <tree> make-id
 %type <tree> class-name-id
+%type <tree> invalid-class-name-id
 %type <tree> enumerator
 %type <tree> elaborated-type-name
 %type <tree> literal
@@ -2339,6 +2340,11 @@ start-class
     }
     ;
 
+invalid-class-name-id
+    : Y_GLOBAL_UNKNOWN_ID
+    | Y_SCOPED_UNKNOWN_ID
+    ;
+
 class-name-id
     : Y_ID
     | Y_UNKNOWN_ID
@@ -2347,11 +2353,14 @@ class-name-id
     | Y_TEMPLATE_NAME
     | Y_NAMESPACE_NAME
     | Y_GLOBAL_ID
-    | Y_GLOBAL_TEMPLATE_ID
     | Y_GLOBAL_TYPE_NAME
     | Y_SCOPED_ID
-    | Y_SCOPED_TEMPLATE_ID
     | Y_SCOPED_TYPE_NAME
+    | invalid-class-name-id
+    {
+        CErr2p( ERR_QUALIFIED_NAME_NOT_CLASS, $1 );
+        $$ = PTreeErrorNode( $1 );
+    }
     ;
 
 class-name
