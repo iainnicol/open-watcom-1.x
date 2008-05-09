@@ -3070,11 +3070,22 @@ template-argument-list
     : template-argument
     { $$ = PTreeBinary( CO_LIST, NULL, $1 ); }
     | template-argument-list Y_COMMA template-argument
-    { $$ = setLocation( PTreeBinary( CO_LIST,   $1, $3 ), &yylp[2] ); }
+    { $$ = setLocation( PTreeBinary( CO_LIST, $1, $3 ), &yylp[2] ); }
     ;
 
 template-argument
     : assignment-expression
+    {
+        $1 = AnalyseRawExpr( $1 );
+        if( $1->op == PT_SYMBOL ) {
+            SYMBOL sym = $1->u.symcg.symbol;
+            if( SymIsConstantInt( sym ) ) {
+                PTreeFreeSubtrees( $1 );
+                $1 = PTreeIntConstant( sym->u.sval, TYP_SINT );
+            }
+        }
+        $$ = $1;
+    }
     | type-id
     ;
 

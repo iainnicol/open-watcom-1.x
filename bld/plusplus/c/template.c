@@ -688,6 +688,7 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
         curr_arg = curr_list->u.subtree[1];
 
         if( ( curr_arg == NULL )
+         || ( curr_arg->op == PT_ERROR )
          || ( i >= tprimary->num_args ) ) {
             /* number of parameters don't match */
             /* error message: wrong number of template arguments */
@@ -708,12 +709,6 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
         }
 
         if( arg_type != NULL ) {
-            curr_arg = AnalyseRawExpr( curr_arg );
-            if( curr_arg->op == PT_ERROR ) {
-                something_went_wrong = TRUE;
-                break;
-            }
-
             if( curr_arg->op == PT_SYMBOL ) {
                 if( curr_arg->u.symcg.symbol != curr ) {
                     is_primary = FALSE;
@@ -1983,13 +1978,11 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms,
                 break;
             }
 
-            if( parm->op != PT_TYPE ) {
+            if( parm->op == PT_ERROR ) {
+                something_went_wrong = TRUE;
+            } else if( parm->op != PT_TYPE ) {
                 if( arg_type != NULL ) {
                     if( inside_decl_scope && ! currentTemplate->all_generic ) {
-                        parm = AnalyseRawExpr( parm );
-                        if( parm->op == PT_ERROR ) {
-                            something_went_wrong = TRUE;
-                        }
                     } else {
                         parm = processIndividualParm( arg_type, parm );
                         if( parm->op == PT_ERROR ) {
@@ -1998,7 +1991,6 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms,
                     }
                 } else {
                     /* non-type parameter supplied for type argument */
-                    parm = AnalyseRawExpr( parm );
                     if( parm->op != PT_ERROR ) {
                         PTreeErrorExpr( parm, ERR_NON_TYPE_PROVIDED_FOR_TYPE );
                     }
