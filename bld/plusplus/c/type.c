@@ -5237,7 +5237,10 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope,
     if( name_tree == id ) {
         return( name_tree );
     }
-    if( id->cgop == CO_STORAGE ) {
+    DbgAssert( id->cgop == CO_COLON_COLON );
+    /* we have a scope qualified id */
+    scope_tree = id->u.subtree[0];
+    if( scope_tree == NULL ) {
         /* we have ::<id> */
         if( dspec->specifier & STY_FRIEND ) {
             if( ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
@@ -5246,12 +5249,6 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope,
             }
         }
         CErr1( ERR_CANNOT_USE_QUALIFIED_DECLARATOR );
-        return( CutAwayQualification( id ) );
-    }
-    /* we have a scope qualified id */
-    scope_tree = id->u.subtree[0];
-    if( scope_tree == NULL ) {
-        /* error occurred finding C in C::id */
         return( CutAwayQualification( id ) );
     }
     flag.strip_qualification = FALSE;
@@ -5274,7 +5271,6 @@ static PTREE verifyQualifiedId( DECL_SPEC *dspec, PTREE id, SCOPE *scope,
                 CErr1( ERR_CANNOT_USE_NAMESPACE_QUALIFIED_DECLARATOR );
                 return( CutAwayQualification( id ) );
             }
-        } else {
         }
     } else {
         if( scope_class_type->flag & TF1_UNBOUND ) {
