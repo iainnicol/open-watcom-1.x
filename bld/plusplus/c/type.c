@@ -7666,7 +7666,7 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
                 SYMBOL sym = ScopeYYMember( data->parm_scope,
                                             ( *u_top )->u.id.name )->name_syms;
 
-                if( sym->id == SC_NULL ) {
+                if( ( sym->id == SC_NULL ) && ( sym->u.sval == 0 ) ) {
                     sym->id = SC_STATIC;
                     DgStoreConstScalar( *b_top, ( *b_top )->type, sym );
                 }

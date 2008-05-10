@@ -2256,7 +2256,11 @@ function-definition
                         && ScopeType( GetCurrScope()->enclosing,
                                       SCOPE_TEMPLATE_INST ) )
                     && ! $1->friend_fn ) ) {
-                TemplateMemberAttachDefn( $1, TRUE );
+                if( GetCurrScope()->owner.type->flag & TF1_SPECIFIC ) {
+                    ClassStoreInlineFunc( $1 );
+                } else {
+                    TemplateMemberAttachDefn( $1, TRUE );
+                }
             } else {
                 ClassStoreInlineFunc( $1 );
             }
