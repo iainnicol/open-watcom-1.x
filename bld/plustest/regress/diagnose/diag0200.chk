@@ -37,78 +37,28 @@ File: source\diag0202.c
   definition: 'S v' in 'void f( void )'
 (54,2): Error! E080: at least one error
 File: source\diag0203.c
-(44,22): Error! E400: cannot convert right expression for initialization
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<2>::<enum>'
-  target conversion type is 'D<2>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<3>::<enum>'
-  target conversion type is 'D<3>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<5>::<enum>'
-  target conversion type is 'D<5>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<7>::<enum>'
-  target conversion type is 'D<7>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<11>::<enum>'
-  target conversion type is 'D<11>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<13>::<enum>'
-  target conversion type is 'D<13>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<17>::<enum>'
-  target conversion type is 'D<17>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<19>::<enum>'
-  target conversion type is 'D<19>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<23>::<enum>'
-  target conversion type is 'D<23>'
-(25,26): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Prime_print<30>' was at: (50,16)
-  'D' defined at: (6,12)
-  source conversion type is 'Prime_print<29>::<enum>'
-  target conversion type is 'D<29>'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<29>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<23>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<19>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<17>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<13>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<11>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<7>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<5>::Prime( void )'
+(30,24): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<3>::Prime( void )'
+(50,5): Error! E148: access to private member 'Prime::Prime' is not allowed
+  definition: 'Prime<2>::Prime( void )'
 File: source\diag0204.c
-(18,19): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Acker<1,2>' was at: (29,10)
-  source conversion type is 'Acker_is<0,1,2> (lvalue)'
-  target conversion type is 'int'
-(18,19): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Acker<1,2>' was at: (29,10)
-  source conversion type is 'Acker_is<1,0,2> (lvalue)'
-  target conversion type is 'int'
-(18,19): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Acker<1,2>' was at: (29,10)
-  source conversion type is 'Acker_is<0,2,3> (lvalue)'
-  target conversion type is 'int'
-(18,19): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Acker<1,2>' was at: (29,10)
-  source conversion type is 'Acker_is<1,1,3> (lvalue)'
-  target conversion type is 'int'
-(18,19): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Acker<1,2>' was at: (29,10)
-  source conversion type is 'Acker_is<0,3,4> (lvalue)'
-  target conversion type is 'int'
-(18,19): Error! E400: cannot convert right expression for initialization
-  template class instantiation for 'Acker<1,2>' was at: (29,10)
+(15,19): Error! E400: cannot convert right expression for initialization
   source conversion type is 'Acker_is<1,2,4> (lvalue)'
   target conversion type is 'int'
 File: source\diag0205.h

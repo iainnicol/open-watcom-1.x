@@ -93,11 +93,11 @@ File: source\diag0308.c
 (27,9): Error! E006: syntax error; probable cause: missing ';'
 (36,2): Error! E903: specialization arguments for 'E' match primary template
   definition: '<class template> E'
-(40,13): Error! E904: partial template specialization for 'A' ambiguous
+(40,16): Error! E904: partial template specialization for 'A' ambiguous
   definition: '<class template> A'
-  candidate defined at: (6,8)
-  candidate defined at: (10,8)
-(43,1): Warning! W014: no reference to symbol 'a'
+  candidate A<1, int > defined at: (6,8)
+  candidate A<int , int > defined at: (10,8)
+(40,16): Warning! W014: no reference to symbol 'a'
   definition: 'A<1,1> a' in 'int main( void )'
 File: source\diag0309.c
 (15,2): Error! E181: class template 'X<?1 >' is already defined
