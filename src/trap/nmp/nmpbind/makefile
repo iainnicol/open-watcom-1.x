@@ -26,9 +26,9 @@ default_targ    = w
 
 first : $(default_targ)
 
-w : nmpbind.exe
+w : nmpbind.exe .symbolic
 
-d : dnmpbind.exe
+d : dnmpbind.exe .symbolic
 
 nmpbind.exe : _err.gh _jerr.gh $(objs)
     $(linker) $(lflags) file { $objs } name $^@

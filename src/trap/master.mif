@@ -124,6 +124,10 @@ libs_ppc_nt             = clib
 extra_libs += dbgstr.lib
 !endif
 
+!ifeq host_os os2
+os2386 = $(os2api_dir)/os2386/lib/os2386.lib
+!endif
+
 !ifeq host_os nov
 mknver_c = $(trap_dir)/c/mknver.c
 !endif
