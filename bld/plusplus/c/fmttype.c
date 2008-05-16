@@ -765,7 +765,9 @@ static PTREE traverse_FormatPTreeId( PTREE curr )
             VStrConcStr( vbuf_FormatPTreeId, "::" );
         }
     } else if( curr->op == PT_ID ) {
-        VStrConcStr( vbuf_FormatPTreeId, curr->u.id.name );
+        if( curr->u.id.name != NULL ) {
+            VStrConcStr( vbuf_FormatPTreeId, curr->u.id.name );
+        }
     }
 
     return curr;

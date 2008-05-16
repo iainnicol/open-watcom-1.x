@@ -62,6 +62,7 @@
 static unsigned reserveSize;
 static void *reserveMem;
 static unsigned reserveDepth;
+static unsigned internalErrCount;
 static unsigned suppressCount;
 
 static FILE *err_file;              // ERROR FILE
@@ -646,7 +647,7 @@ static msg_status_t doError(    // ISSUE ERROR
         if( suppressCount > 0 ) {
             /* suppressed message */
             if( flag.print_err && ( level == 0 ) ) {
-                ErrCount++;
+                internalErrCount++;
             }
             return MS_NULL;
         } else if( ErrLimit == -1 ) {
@@ -764,12 +765,26 @@ void CErrSuppress(
     suppressCount++;
 }
 
+void CErrSuppressRestore(
+    unsigned count )
+{
+    suppressCount += count;
+}
+
+unsigned CErrUnsuppress(
+    void )
+{
+    unsigned val = suppressCount;
+    suppressCount = 0;
+    return val;
+}
+
 boolean CErrSuppressedOccurred(
     error_state_t *previous_state )
 {
     suppressCount--;
-    if( *previous_state != ErrCount ) {
-        ErrCount = *previous_state;
+    if( *previous_state != internalErrCount ) {
+        internalErrCount = *previous_state;
         return( TRUE );
     }
     return( FALSE );

@@ -2539,6 +2539,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     REWRITE *save_token;
     PTREE save_tree;
     int save_yytoken;
+    unsigned suppressState;
     void (*last_source)( void );
     auto error_state_t check;
     auto TOKEN_LOCN locn;
@@ -2547,6 +2548,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
         return( NULL );
     }
     CErrCheckpoint( &check );
+    suppressState = CErrUnsuppress();
 
     save_token = RewritePackageToken();
     save_yytoken = currToken;
@@ -2604,6 +2606,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     currToken = save_yytoken;
     yylval.tree = save_tree;
 
+    CErrSuppressRestore( suppressState );
     if( new_type != NULL ) {
         if( CErrOccurred( &check ) ) {
             PTypeRelease( new_type );

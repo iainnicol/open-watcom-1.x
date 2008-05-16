@@ -95,6 +95,12 @@ msg_status_t CErr2p(            // ISSUE ERROR (ptr PARAMETER)
 void CErrSuppress(
     void )
 ;
+void CErrSuppressRestore(
+    unsigned count )
+;
+unsigned CErrUnsuppress(
+    void )
+;
 boolean CErrSuppressedOccurred(
     error_state_t *saved_save )
 ;
