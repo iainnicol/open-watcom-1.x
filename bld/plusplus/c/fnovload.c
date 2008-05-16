@@ -1960,7 +1960,6 @@ static SYMBOL findNonDefargSym( FNOV_LIST *match)
             return( curr->sym );
         }
     } RingIterEnd( curr )
-    DbgAssert( FALSE );         // should never get here
     return match->sym;
 }
 
