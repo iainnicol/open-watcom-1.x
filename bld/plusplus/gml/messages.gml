@@ -12099,3 +12099,16 @@ struct A : public T {
 
 A< int > a;
 :eerrbad.
+
+:MSGSYM. ERR_SYNTAX_SCOPED_ID
+:MSGTXT. syntax error near '%s'; probable cause: incorrectly spelled type name
+:MSGJTXT.
+The identifier in the error message has not been declared as a type name
+in any scope at this point in the code.  This may be the cause of the
+syntax error.
+
+:MSGSYM. ERR_SYNTAX_UNDECLARED_SCOPED_ID
+:MSGTXT. syntax error: '%s' has not been declared as a member
+:MSGJTXT.
+The identifier in the error message has not been declared as member.  This
+may be the cause of the syntax error.

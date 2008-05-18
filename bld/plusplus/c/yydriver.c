@@ -2171,7 +2171,7 @@ static void makeStable( int end_token )
         alt_token = end_token;
     }
 
-    ParseFlush();
+    PTreeFreeSubtrees( getMultiToken() );
     token_absorbed = FALSE;     /* infinite loop protection */
     depth = 0;
     for(;;) {
@@ -2249,14 +2249,19 @@ static void syntaxError( void )
     } else {
         switch( currToken ) {
         case Y_ID:
+        case Y_TEMPLATE_ID:
         case Y_UNKNOWN_ID:
             genIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID );
             break;
         case Y_GLOBAL_ID:
-        case Y_GLOBAL_UNKNOWN_ID:
+        case Y_GLOBAL_TEMPLATE_ID:
         case Y_SCOPED_ID:
+        case Y_SCOPED_TEMPLATE_ID:
+            genScopedIdSyntaxError( ERR_SYNTAX_SCOPED_ID );
+            break;
+        case Y_GLOBAL_UNKNOWN_ID:
         case Y_SCOPED_UNKNOWN_ID:
-            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID );
+            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_SCOPED_ID );
             break;
         case Y_TYPE_NAME:
             genIdSyntaxError( ERR_SYNTAX_TYPE_NAME );
