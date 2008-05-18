@@ -26,7 +26,7 @@ File: source\diag0102.c
 (11,16): Warning! W297: class friend declaration needs 'class' or 'struct' keyword
 (23,10): Error! E148: access to private member 'XX::bad' is not allowed
   definition: 'int XX::bad'
-  template class member instantiation was at: (18,1)
+  template class member instantiation was at: (18,9)
 File: source\diag0103.c
 (2,6): Error! E457: 'A' was previously declared as a typedef
   definition: 'A'
@@ -58,6 +58,7 @@ File: source\diag0103.c
   definition: 'int FN2( int )'
 File: source\diag0104.c
 (3,5): Error! E456: 'main' cannot be a function template
+(3,5): Warning! W914: 'main' must return 'int'
 File: source\diag0105.c
 (2,6): Error! E080: system dependent test for 386
 File: source\diag0106.c
@@ -81,21 +82,25 @@ File: source\diag0106.c
   definition: 'X32 x38'
   'X32' contains the following pure virtual functions
   pure virtual function 'X32::~X32( void )' defined at: (34,13)
+(45,1): Error! E916: virtual may only be used within class definition
 (45,1): Error! E632: redeclaration of 'X40::foo' has different attributes
   definition: 'void X40::foo( void )'
-(51,1): Error! E371: constructor is required for a class with a reference member
+(54,11): Error! E400: cannot convert right expression for initialization
+  'U48' defined at: (48,7)
+  source conversion type is 'int (lvalue)'
+  target conversion type is 'U48'
 File: source\diag0107.c
 (9,14): Error! E042: symbol 'XX::a' already defined
   definition: 'int XX<int>::a'
-  template class instantiation for 'XX<int>' was at: (10,6)
+  template class instantiation for 'XX<int>' was at: (16,16)
 (10,5): Warning! W011: all members are private
-  template class instantiation for 'XX<int>' was at: (10,6)
+  template class instantiation for 'XX<int>' was at: (16,16)
 File: source\diag0108.c
 (6,14): Error! E042: symbol 'XX::a' already defined
   definition: 'int XX<int>::a'
-  template class instantiation for 'XX<int>' was at: (9,1)
+  template class instantiation for 'XX<int>' was at: (16,16)
 (7,5): Warning! W011: all members are private
-  template class instantiation for 'XX<int>' was at: (9,1)
+  template class instantiation for 'XX<int>' was at: (16,16)
 File: source\diag0109.c
 (4,14): Error! E042: symbol 'XX::a' already defined
   definition: 'int XX<int * (*)( int * )>::a'
@@ -114,6 +119,9 @@ File: source\diag0110.c
   template function 'void foo( ? )' defined at: (2,10)
   operand type is 'int (lvalue)'
 File: source\diag0111.c
+(14,5): Error! E003: missing return value
+  template function instantiation for 'foo' was at: (19,1)
+  definition: 'S<int> foo( int, int * )'
 (7,20): Error! E324: conversion of return value is impossible
   template class instantiation for 'S<int>' was at: (18,10)
   function template binding for 'foo' was at: (18,10)
@@ -128,12 +136,12 @@ File: source\diag0111.c
 File: source\diag0112.c
 (6,5): Error! E385: attempt to overload function 'S::foo' with a different return type
   definition: 'int S<int>::foo( int )'
-  template class member instantiation was at: (15,1)
+  template class member instantiation was at: (17,16)
 (6,5): Error! E254: 'S::foo' has not been declared as a member
   definition: 'void S<int>::foo( int )'
-  template class member instantiation was at: (15,1)
+  template class member instantiation was at: (17,16)
 (7,10): Error! E040: expression for '.' must be a class, struct or union
-  template class member instantiation was at: (15,1)
+  template class member instantiation was at: (17,16)
   operand type is 'int (lvalue)'
 File: source\diag0113.c
 (9,12): Warning! W732: class should have a name since it inherits a class
@@ -148,14 +156,7 @@ File: source\diag0113.c
 (40,6): Error! E516: class for object is not defined
   'U2' defined at: (36,8)
   'U2' defined at: (36,8)
-File: source\diag0114.c
-(4,16): Error! E326: defining 'S1::x' is not possible because its type has unknown size
-  definition: 'S2<double> S1<double>::x'
-  template class instantiation for 'S1<double>' was at: (10,19)
-  template class instantiation for 'S2<double>' was at: (16,1)
-(12,14): Error! E041: expression for '->' must be pointer to class, struct or union
-  template class instantiation for 'S2<double>' was at: (16,1)
-  operand type is '<error> *'
+I did not generate errors for diag0114
 File: source\diag0115.c
 (16,14): Error! E436: cannot construct an abstract class
   'A' defined at: (12,8)
@@ -189,10 +190,6 @@ File: source\diag0118.c
 (6,13): Error! E112: cannot inherit an undefined base class 'U'
 (6,16): Error! E641: cannot inherit a partially defined base class 'S'
 (11,18): Error! E641: cannot inherit a partially defined base class 'Q'
-(19,23): Error! E641: cannot inherit a partially defined base class 'S3<int>'
-  template class instantiation for 'S1<int>' was at: (23,17)
-  template class instantiation for 'S2<int>' was at: (28,9)
-  template class instantiation for 'S3<int>' was at: (31,1)
 File: source\diag0119.c
 (3,8): Error! E647: cannot #undef '__LINE__'
 (4,8): Error! E647: cannot #undef '__FILE__'
@@ -210,7 +207,7 @@ File: source\diag0120.c
 (19,32): Error! E058: expression must be a constant
 (21,33): Error! E058: expression must be a constant
 (21,50): Error! E058: expression must be a constant
-(22,11): Error! E545: cannot create an undefined type with 'operator new'
+(22,15): Error! E545: cannot create an undefined type with 'operator new'
 (38,5): Warning! W201: declaration statement follows an if statement
 (39,9): Warning! W128: initializer for variable 'dummy' cannot be bypassed
   definition: 'int dummy' in 'void f33( int )'
@@ -227,7 +224,7 @@ File: source\diag0121.c
 (5,55): Error! E488: 'operator delete' cannot be overloaded
 File: source\diag0122.c
 (12,8): Error! E651: cannot instantiate foo
-  template function 'void foo( xyz<?,-1>, int (* )( ? const &, ? const & ))' defined at: (9,10)
+  template function 'void foo( xyz<?1,-1>, int (* )( ?1 const &, ?1 const & ))' defined at: (9,10)
 File: source\diag0123.c
 (19,24): Warning! W367: conditional expression in if statement is always true
 (20,30): Warning! W367: conditional expression in if statement is always true
@@ -252,9 +249,6 @@ File: source\diag0124.c
 (11,35): Error! E012: template argument cannot be type 'void (<member pointer>::* )( void )'
 (23,6): Error! E336: declaration specifiers are required to declare 'FooCB'
 (23,6): Error! E121: syntax error
-(34,36): Error! E641: cannot inherit a partially defined base class 'Vector<int>'
-  template class instantiation for 'Envelope<Vector<int>>' was at: (30,24)
-  template class instantiation for 'Vector<int>' was at: (36,9)
 File: source\diag0125.c
 (10,10): Error! E121: syntax error
 (11,67): Error! E121: syntax error
@@ -454,6 +448,7 @@ File: source\diag0145.c
   definition: 'int i'
 (6,22): Error! E619: linkage specification is different than previous declaration 'foo'
   definition: 'void foo( void )'
+(10,1): Warning! W914: 'main' must return 'int'
 (16,11): Error! E121: syntax error
 (17,14): Error! E121: syntax error
 (18,15): Error! E121: syntax error
@@ -481,6 +476,7 @@ File: source\diag0146.c
   'C' defined at: (26,8)
   source conversion type is 'T (lvalue)'
   target conversion type is 'C (lvalue)'
+(58,1): Error! E916: virtual may only be used within class definition
 (58,1): Error! E632: redeclaration of 'X59::foo' has different attributes
   definition: 'void X59::foo( void )'
 (68,1): Error! E028: expecting ';' but found 'X27'
@@ -589,10 +585,10 @@ File: source\diag0150.c
 (26,1): Warning! W014: no reference to symbol 'y'
   definition: 'int y' in 'void foo( void )'
 (9,9): Error! E038: expression must have pointer type
-  template class member instantiation was at: (14,1)
+  template class member instantiation was at: (14,8)
   operand type is 'int (lvalue)'
 (9,9): Error! E038: expression must have pointer type
-  template class member instantiation was at: (25,9)
+  template class member instantiation was at: (18,10)
   operand type is 'char (lvalue)'
 File: source\diag0151.c
 (8,3): Error! E445: function definition for 'x8' must be declared with an explicit argument list
@@ -1019,14 +1015,14 @@ File: source\diag0159.c
 (44,14): Error! E378: private base class accessed to convert argument expression
   source conversion type is 'X24 *'
   target conversion type is 'X23 *'
-(62,9): Error! E228: declared 'operator new' is ambiguous for arguments used
+(62,12): Error! E228: declared 'operator new' is ambiguous for arguments used
   ambiguous function: void * X48::operator new( unsigned, signed char ) defined at: (51,11)
   ambiguous function: void * X48::operator new( unsigned, unsigned char ) defined at: (54,11)
-(73,9): Error! E341: number of arguments for function 'X66::operator new' is incorrect
+(73,13): Error! E341: number of arguments for function 'X66::operator new' is incorrect
   definition: 'void * X66::operator new( unsigned, char, char )'
 (74,1): Warning! W014: no reference to symbol 'a'
   definition: 'X66 * a' in 'void x70( void )'
-(79,9): Error! E341: number of arguments for function 'X66::operator new' is incorrect
+(79,13): Error! E341: number of arguments for function 'X66::operator new' is incorrect
   definition: 'void * X66::operator new( unsigned, char, char )'
 (80,1): Warning! W014: no reference to symbol 'a'
   definition: 'X66 * a' in 'void x70( int )'
@@ -1035,9 +1031,9 @@ File: source\diag0159.c
 File: source\diag0160.c
 (6,17): Error! E351: type parameter supplied for a non-type argument
 (13,25): Error! E221: cannot define a reference to another reference
-  template class instantiation for 'StrangeCollection<int &>' was at: (17,1)
+  template class instantiation for 'StrangeCollection<int &>' was at: (17,25)
 (14,19): Error! E222: cannot define a pointer to a reference
-  template class instantiation for 'StrangeCollection<int &>' was at: (17,1)
+  template class instantiation for 'StrangeCollection<int &>' was at: (17,25)
 (24,9): Warning! W013: unreachable code
 (21,11): Warning! W893: switch statement has no case labels
 (37,5): Warning! W726: no reference to formal parameter 'deltaT'
@@ -1054,7 +1050,7 @@ File: source\diag0162.c
 (25,16): Error! E350: non-type parameter supplied for a type argument
 (25,25): Error! E241: class or namespace 'def' has not been declared
 (9,9): Error! E151: operand is neither a pointer nor an arithmetic type
-  template function instantiation for 'foo' was at: (14,10)
+  template function instantiation for 'foo' was at: (15,1)
   definition: 'void foo( S<int> )'
   function template binding of 'foo' was at: (14,10)
   template function 'void foo( S<?> )' defined at: (7,10)
@@ -1163,6 +1159,7 @@ File: source\diag0165.c
 File: source\diag0166.c
 (2,6): Error! E080: system dependent test for 386
 File: source\diag0167.c
+(15,1): Warning! W914: 'main' must return 'int'
 (26,12): Error! E324: conversion of return value is impossible
   'T' defined at: (21,8)
   source conversion type is 'S (lvalue)'
@@ -1186,6 +1183,8 @@ File: source\diag0167.c
 File: source\diag0168.c
 (2,6): Error! E080: system dependent test for 386
 File: source\diag0169.c
+(22,12): Error! E913: 'S3' does not have a return type specified
+(27,12): Error! E913: 'S3' does not have a return type specified
 (51,2): Error! E080: this is the only error
 File: source\diag0170.c
 (18,8): Error! E303: constructor is ambiguous for operands used
@@ -1253,6 +1252,8 @@ File: source\diag0175.c
 (12,12): Warning! W888: trigraph expansion produced '['
 (12,17): Warning! W888: trigraph expansion produced ']'
 File: source\diag0176.c
+(4,22): Error! E913: 'foo' does not have a return type specified
+(9,13): Error! E913: 'foo' does not have a return type specified
 (20,7): Error! E684: cannot catch abstract class object
   'C' defined at: (2,7)
   'C' contains the following pure virtual functions
@@ -1267,6 +1268,7 @@ File: source\diag0177.c
   source conversion type is 'void (* )( char * )'
   target conversion type is 'void (S::* )( char * )'
 (19,20): Error! E030: left expression must be a function or a function pointer
+(24,3): Warning! W914: 'main' must return 'int'
 File: source\diag0178.c
 (11,16): Error! E210: returning reference to function argument or to auto or register variable
   'S' defined at: (3,8)
