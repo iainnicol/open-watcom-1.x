@@ -6183,7 +6183,8 @@ void VerifySpecialFunction( SCOPE scope, DECL_INFO *dinfo )
         if( is_a_member && name == scope_name ) {
             /* a constructor! */
             changeName( dinfo, CppConstructorName() );
-            if( DefaultIntType( fn_type->of ) == NULL ) {
+            if( ( DefaultIntType( fn_type->of ) == NULL ) 
+             || ( fn_type->of->id == TYP_MODIFIER ) ) {
                 CErr1( ERR_CTOR_RETURNS_NOTHING );
             }
             if( ! non_static_member ) {
@@ -6809,20 +6810,6 @@ boolean VerifyPureFunction( DECL_INFO *dinfo )
 void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
 /*************************************************************/
 {
-    SYMBOL sym;
-    TYPE type;
-
-    if( dspec->is_default ) {
-        if( dinfo != NULL ) {
-            sym = dinfo->sym;
-            if( sym != NULL ) {
-                type = FunctionDeclarationType( sym->sym_type );
-                if( type == NULL ) {
-                    CErr2p( ERR_MISSING_DECL_SPECS, sym->name->name );
-                }
-            }
-        }
-    }
     FreeDeclInfo( dinfo );
 }
 

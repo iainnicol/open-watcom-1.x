@@ -962,6 +962,28 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             PtListFree( ptlist, count );
             return( expr );
           case FNOV_NO_MATCH :
+            if( this_node == NULL ) {
+                if( SymIsThisFuncMember( orig ) ) {
+                    this_node = NodeThisCopyLocation( left );
+                }
+            }
+            if( this_node != NULL ) {
+                if( ( ! SymIsCtor( orig ) )
+                  &&( ! SymIsDtor( orig ) )
+                  &&( CNV_OK != AnalysePtrCV
+                                ( this_node
+                                , TypeThisSymbol( orig
+                                                , this_node->flags & PTF_LVALUE )
+                                , NodeType( this_node )
+                                , CNV_FUNC_THIS ) ) ) {
+                    PTreeErrorNode( expr );
+                    InfSymbolDeclaration( orig );
+                    NodeFreeDupedExpr( this_node );
+                    ArgListTempFree( alist, count );
+                    PtListFree( ptlist, count );
+                    return( expr );
+                }
+            }
             CallDiagNoMatch( expr
                            , diagnostic->msg_no_match_one
                            , diagnostic->msg_no_match_many
@@ -1032,22 +1054,6 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         }
         if( this_node != NULL ) {
             TYPE pted;
-            if( ( ! SymIsCtor( sym ) )
-              &&( ! SymIsDtor( sym ) )
-              &&( CNV_OK != AnalysePtrCV
-                            ( this_node
-                            , TypeThisSymbol( sym
-                                            , this_node->flags & PTF_LVALUE )
-                            , NodeType( this_node )
-                            , CNV_FUNC_THIS ) ) ) {
-                PTreeErrorNode( expr );
-                InfSymbolDeclaration( sym );
-                NodeFreeDupedExpr( this_node );
-                ArgListTempFree( alist, count );
-                PtListFree( ptlist, count );
-                NodeFreeDupedExpr( static_fn_this );
-                return( expr );
-            }
             pted = TypePointedAtModified( this_node->type );
             if( pted == NULL ) {
                 pted = this_node->type;

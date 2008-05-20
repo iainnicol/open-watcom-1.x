@@ -973,6 +973,9 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
                 } else if( DefaultIntType( FunctionDeclarationType( sym->sym_type )->of ) ) {
                     CErr2p( ERR_FUNCTION_BAD_RETURN, sym_name->name );
                 }
+            } else if ( ( sym_name->name != CppSpecialName( SPECIAL_RETURN_VALUE ) )
+                     && DefaultIntType( sym->sym_type ) ) {
+                CErr2p( ERR_MISSING_DECL_SPECS, sym_name->name );
             }
         } else {
             if( SymIsFunction( chk_sym ) ) {
@@ -1041,9 +1044,7 @@ DECL_INFO *DeclFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
     }
     sym = dinfo->sym;
     if( ! SymIsFunction( sym ) ) {
-        if( dspec == NULL ) {
-            CErr2p( ERR_MISSING_DECL_SPECS, dinfo->name );
-        } else {
+        if( dspec != NULL ) {
             CErr2p( ERR_INCORRECT_FUNCTION_DECL, dinfo->name );
         }
         return( dinfo );

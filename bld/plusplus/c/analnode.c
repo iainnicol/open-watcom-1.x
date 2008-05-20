@@ -1758,6 +1758,7 @@ TYPE NodeType(                  // GET TYPE FOR A NODE
 
     type = node->type;
     if( ( node->flags & PTF_LVALUE )
+      &&( NULL != type )
       &&( NULL == TypeReference( type ) ) ) {
         type = MakeReferenceTo( type );
     }

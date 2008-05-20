@@ -833,15 +833,20 @@ postfix-expression-before-dot
             TYPE cls;
 
             cls = TypedefModifierRemoveOnly( $1->type );
-            if( ( cls->id == TYP_POINTER ) && ( cls->flag & TF1_REFERENCE ) ) {
+            if( ( cls != NULL )
+             && ( cls->id == TYP_POINTER )
+             && ( cls->flag & TF1_REFERENCE ) ) {
                 cls = cls->of;
             }
-            cls = BindTemplateClass( cls, &$1->locn, FALSE );
-            $1->type = BoundTemplateClass( $1->type );
-            cls = TypedefModifierRemoveOnly( cls );
 
-            if( cls->id == TYP_CLASS ) {
-                setTypeMember( state, cls->u.c.scope );
+            if( cls != NULL ) {
+                cls = BindTemplateClass( cls, &$1->locn, FALSE );
+                $1->type = BoundTemplateClass( $1->type );
+                cls = TypedefModifierRemoveOnly( cls );
+
+                if( cls->id == TYP_CLASS ) {
+                    setTypeMember( state, cls->u.c.scope );
+                }
             }
         }
         $$ = PTreeBinary( CO_DOT, $1, NULL );
@@ -868,12 +873,13 @@ postfix-expression-before-arrow
             TYPE cls;
 
             cls = TypedefModifierRemoveOnly( $$->u.subtree[0]->type );
-            if( ( cls->id == TYP_POINTER )
+            if( ( cls != NULL )
+             && ( cls->id == TYP_POINTER )
              && ( cls->flag & TF1_REFERENCE ) ) {
                 cls = TypedefModifierRemoveOnly( cls->of );
             }
 
-            if( cls->id == TYP_POINTER ) {
+            if( ( cls != NULL ) && cls->id == TYP_POINTER ) {
                 cls = BindTemplateClass( cls->of, &$1->locn, FALSE );
                 $1->type = BoundTemplateClass( $1->type );
                 cls = TypedefModifierRemoveOnly( cls );

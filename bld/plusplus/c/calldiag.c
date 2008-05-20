@@ -209,21 +209,6 @@ void CallDiagNoMatch(           // DIAGNOSE NO MATCHES FOR CALL
         if( SymIsFunctionTemplateModel( orig ) ) {
             PTreeErrorExprSym( expr, ERR_TEMPLATE_FN_MISMATCH, orig );
         } else {
-            if( this_node != NULL ) {
-                if( ( ! SymIsCtor( orig ) )
-                  &&( ! SymIsDtor( orig ) )
-                  &&( CNV_OK != AnalysePtrCV
-                                ( this_node
-                                , TypeThisSymbol( orig
-                                                , this_node->flags & PTF_LVALUE )
-                                , NodeType( this_node )
-                                , CNV_FUNC_THIS ) ) ) {
-                    PTreeErrorNode( expr );
-                    InfSymbolDeclaration( orig );
-                    break;
-                }
-            }
-
             bad_parm = FnovRejectParm( fnov_diag );
             if( bad_parm == -1 ) {
                 diag.bad_parm = 0;
