@@ -2792,8 +2792,7 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
      * because an error should only result in the candidate function
      * to be ignored.
      */
-    CErrCheckpoint( &check );
-    CErrSuppress();
+    CErrSuppress( &check );
     declOnlyReset();
 
     save_token = RewritePackageToken();

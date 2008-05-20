@@ -760,9 +760,10 @@ void InfMsgInt(                 // INFORMATION MESSAGE, INT ARG.
 
 
 void CErrSuppress(
-    void )
+    error_state_t *save )
 {
     suppressCount++;
+    *save = internalErrCount;
 }
 
 void CErrSuppressRestore(

@@ -93,7 +93,7 @@ msg_status_t CErr2p(            // ISSUE ERROR (ptr PARAMETER)
     void const *p1 )            // - parameter
 ;
 void CErrSuppress(
-    void )
+    error_state_t *saved_save )
 ;
 void CErrSuppressRestore(
     unsigned count )
