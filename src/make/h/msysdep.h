@@ -50,6 +50,7 @@
 
 #include "mtypes.h"
 
+#ifndef BOOTSTRAP
 //
 // DLL's implemented only for:
 //      Intel 386 (OS/2,NT)
@@ -62,6 +63,7 @@
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
     #include <malloc.h>
+#endif
 #endif
 
 // For debug versions, always use scarce memory manager - memory
