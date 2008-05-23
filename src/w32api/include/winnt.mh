@@ -14,6 +14,7 @@
 #define _WINNT_
 
 :include readonly.sp
+#include <ctype.h>
 #include <string.h>
 #include <basetsd.h>
 #include <guiddef.h>
@@ -686,6 +687,11 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define LANG_CHINESE_SIMPLIFIED     0x0004
 #define LANG_CHINESE_TRADITIONAL    0x7C04
 #define LANG_SERBIAN_NEUTRAL        0x7C1A
+
+/* Unreferenced parameter macros */
+#define UNREFERENCED_PARAMETER( x )             (x)
+#define DBG_UNREFERENCED_PARAMETER( x )         (x)
+#define DBG_UNREFERENCED_LOCAL_VARIABLE( x )    (x)
 
 /* Status codes */
 #define STATUS_WAIT_0                   0x00000000L
@@ -3220,6 +3226,9 @@ typedef struct _SECURITY_DESCRIPTOR {
 } SECURITY_DESCRIPTOR;
 typedef SECURITY_DESCRIPTOR *PISECURITY_DESCRIPTOR;
 
+/* Security descriptor minimum length */
+#define SECURITY_DESCRIPTOR_MIN_LENGTH  sizeof( SECURITY_DESCRIPTOR )
+
 /* Object type list */
 typedef struct _OBJECT_TYPE_LIST {
     WORD    Level;
@@ -3976,7 +3985,7 @@ typedef struct _PO_WAKE_SOURCE_HISTORY {
 typedef PO_WAKE_SOURCE_HISTORY  *PPO_WAKE_SOURCE_HISTORY;
 
 /* Battery reporting scale */
-#if (NTDDI_VERSION >= 0x05010000)
+#if (NTDDI_VERSION >= 0x05010000) || !defined( _BATCLASS_ )
 typedef struct {
     DWORD   Granularity;
     DWORD   Capacity;

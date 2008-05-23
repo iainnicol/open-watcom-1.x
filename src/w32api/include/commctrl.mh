@@ -2054,6 +2054,7 @@ typedef DWORD   *LPMONTHDAYSTATE;
     #define LVM_FINDITEM                    LVM_FINDITEMA
     #define LVM_EDITLABEL                   LVM_EDITLABELA
     #define LVM_GETCOLUMN                   LVM_GETCOLUMNA
+    #define LVM_SETCOLUMN                   LVM_SETCOLUMNA
     #define LVM_INSERTCOLUMN                LVM_INSERTCOLUMNA
     #define LVM_GETITEMTEXT                 LVM_GETITEMTEXTA
     #define LVM_SETITEMTEXT                 LVM_SETITEMTEXTA
@@ -2124,7 +2125,7 @@ typedef DWORD   *LPMONTHDAYSTATE;
 #ifdef UNICODE
     #define LPSTR_TEXTCALLBACK  LPSTR_TEXTCALLBACKW
 #else
-    #define LPWSTR_TEXTCALLBACK LPSTR_TEXTCALLBACKA
+    #define LPSTR_TEXTCALLBACK  LPSTR_TEXTCALLBACKA
 #endif
 
 /* LVM_GETNEXTITEM flags */
@@ -2164,7 +2165,7 @@ typedef DWORD   *LPMONTHDAYSTATE;
 #define LVHT_ONITEMLABEL            0x00000004
 #define LVHT_ONITEMSTATEICON        0x00000008
 #define LVHT_ONITEM \
-    (LVHT_ONITEMICON | LVHT_ONITEMLABEL | LVHR_ONITEMSTATEICON)
+    (LVHT_ONITEMICON | LVHT_ONITEMLABEL | LVHT_ONITEMSTATEICON)
 #define LVHT_ABOVE                  0x00000008
 #define LVHT_BELOW                  0x00000010
 #define LVHT_TORIGHT                0x00000020
@@ -2610,10 +2611,10 @@ typedef DWORD   *LPMONTHDAYSTATE;
 #endif
 
 /* Tree view item handle special values */
-#define TVI_ROOT    0x00010000
-#define TVI_FIRST   0x0000FFFF
-#define TVI_LAST    0x0000FFFE
-#define TVI_SORT    0x0000FFFD
+#define TVI_ROOT    ((HTREEITEM)(ULONG_PTR)0x00010000)
+#define TVI_FIRST   ((HTREEITEM)(ULONG_PTR)0x0000FFFF)
+#define TVI_LAST    ((HTREEITEM)(ULONG_PTR)0x0000FFFE)
+#define TVI_SORT    ((HTREEITEM)(ULONG_PTR)0x0000FFFD)
 
 /* Tree view messages */
 #define TVM_INSERTITEMA             (TV_FIRST + 0)
@@ -2997,6 +2998,10 @@ typedef DWORD   *LPMONTHDAYSTATE;
 #define TCM_SETITEMA                (TCM_FIRST + 6)
 #define TCM_INSERTITEMA             (TCM_FIRST + 7)
 #define TCM_DELETEITEM              (TCM_FIRST + 8)
+#define TCM_DELETEALLITEMS          (TCM_FIRST + 9)
+#define TCM_GETITEMRECT             (TCM_FIRST + 10)
+#define TCM_GETCURSEL               (TCM_FIRST + 11)
+#define TCM_SETCURSEL               (TCM_FIRST + 12)
 #define TCM_HITTEST                 (TCM_FIRST + 13)
 #define TCM_SETITEMEXTRA            (TCM_FIRST + 14)
 #define TCM_ADJUSTRECT              (TCM_FIRST + 40)
@@ -3027,9 +3032,11 @@ typedef DWORD   *LPMONTHDAYSTATE;
 #ifdef UNICODE
     #define TCM_GETITEM             TCM_GETITEMW
     #define TCM_SETITEM             TCM_SETITEMW
+    #define TCM_INSERTITEM          TCM_INSERTITEMW
 #else
     #define TCM_GETITEM             TCM_GETITEMA
     #define TCM_SETITEM             TCM_SETITEMA
+    #define TCM_INSERTITEM          TCM_INSERTITEMA
 #endif
 
 /* Tab control item masks */
@@ -4641,6 +4648,8 @@ typedef LVITEMA     LVITEM;
 typedef LPLVITEMA   LPLVITEM;
 #endif
 typedef LVITEM      LV_ITEM;
+typedef LVITEMA     LV_ITEMA;
+typedef LVITEMW     LV_ITEMW;
 
 /* LVM_FINDITEM parameters */
 typedef struct tagLVFINDINFOA {
@@ -4683,6 +4692,7 @@ typedef struct tagLVHITTESTINFO {
 #endif
 } LVHITTESTINFO;
 typedef LVHITTESTINFO   *LPLVHITTESTINFO;
+typedef LVHITTESTINFO   LV_HITTESTINFO;
 
 /* List view column */
 typedef struct tagLVCOLUMNA {
@@ -4976,9 +4986,9 @@ typedef struct tagNMLVCACHEHINT {
     int     iTo;
 } NMLVCACHEHINT;
 typedef NMLVCACHEHINT   *LPNMLVCACHEHINT;
-typedef NMLVCACHEHINT   NM_LVCACHEHINT;
-typedef LPNMLVCACHEHINT PNM_LVCACHEHINT;
-typedef LPNMLVCACHEHINT LPNM_LVCACHEHINT;
+typedef NMLVCACHEHINT   NM_CACHEHINT;
+typedef LPNMLVCACHEHINT PNM_CACHEHINT;
+typedef LPNMLVCACHEHINT LPNM_CACHEHINT;
 #endif
 
 /* LVN_ODFINDITEM parameters */
@@ -5048,6 +5058,7 @@ typedef LPNMLVDISPINFOA LPNMLVDISPINFO;
 #endif
 typedef NMLVDISPINFOA   LV_DISPINFOA;
 typedef NMLVDISPINFOW   LV_DISPINFOW;
+typedef NMLVDISPINFO    LV_DISPINFO;
 
 /* LVN_KEYDOWN parameters */
 #include <pshpack1.h>
@@ -6498,8 +6509,9 @@ WINCOMMCTRLAPI HRESULT WINAPI       LoadIconWithScaleDown( HINSTANCE, PCWSTR, in
     #define ListView_GetExtendedListViewStyle( x ) \
         (DWORD)SNDMSG( x, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0L )
     #define ListView_GetSubItemRect( x, p1, p2, p3, p4 ) \
-        (BOOL)SNDMSG( x, LVM_GETSUBITEMRECT, (WPARAM)(p1), (LPARAM)((p4) ? \
-        ((((LPRECT)(p4))->top = p2), (((LPRECT)(p4)->left = p3), (p4)) : NULL )
+        (BOOL)SNDMSG( x, LVM_GETSUBITEMRECT, (WPARAM)(int)(p1), ((p4) ? \
+        ((((LPRECT)(p4))->top = (p2)), (((LPRECT)(p4))->left = (p3)), (LPARAM)(p4)) : \
+        (LPARAM)(LPRECT)NULL) )
     #define ListView_SubItemHitTest( x, p ) \
         (int)SNDMSG( x, LVM_SUBITEMHITTEST, 0, (LPARAM)(LPLVHITTESTINFO)(p) )
     #define ListView_SubItemHitTestEx( x, p ) \
@@ -6755,7 +6767,7 @@ WINCOMMCTRLAPI HRESULT WINAPI       LoadIconWithScaleDown( HINSTANCE, PCWSTR, in
     (BOOL)SNDMSG( x, TVM_ENSUREVISIBLE, 0, (LPARAM)(HTREEITEM)(p) )
 #define TreeView_SortChildrenCB( x, p1, p2 ) \
     (BOOL)SNDMSG( x, TVM_SORTCHILDRENCB, (WPARAM)(p2), (LPARAM)(LPTV_SORTCB)(p2) )
-#define TreeView_EndLabelEditNow( x, p ) \
+#define TreeView_EndEditLabelNow( x, p ) \
     (BOOL)SNDMSG( x, TVM_ENDLABELEDITNOW, (WPARAM)(p), 0L )
 #define TreeView_GetISearchString( x, p ) \
     (BOOL)SNDMSG( x, TVM_GETISEARCHSTRING, 0, (LPARAM)(LPTSTR)(p) )

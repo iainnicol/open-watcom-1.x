@@ -58,7 +58,7 @@ typedef USHORT  COLOR16;
 #define GetGValue( x )              LOBYTE( ((WORD)(x)) >> 8 )
 #define GetBValue( x )              LOBYTE( (x) >> 16 )
 #define RGB( p1, p2, p3 ) \
-    ((COLORREF)(((BYTE)(p1) | ((WORD)((BYTE)(p2)) << 8)) || \
+    ((COLORREF)(((BYTE)(p1) | ((WORD)((BYTE)(p2)) << 8)) | \
     (((DWORD)(BYTE)(p3)) << 16)))
 #define PALETTERGB( p1, p2, p3 )    (0x02000000L | RGB( p1, p2, p3 ))
 #define PALETTEINDEX( x )           ((COLORREF)(0x01000000L | (DWORD)(WORD)(x)))
@@ -103,7 +103,7 @@ typedef USHORT  COLOR16;
 
 /* GDI error return values */
 #define GDI_ERROR   0xFFFFFFFFL
-#define HGDI_ERROR  0xFFFFFFFFL
+#define HGDI_ERROR  ((HANDLE)0xFFFFFFFFL)
 
 /* Return values for region functions */
 #define ERROR           0
@@ -1145,7 +1145,7 @@ typedef USHORT  COLOR16;
 #define DMPAPER_ENV_10                              20
 #define DMPAPER_ENV_11                              21
 #define DMPAPER_ENV_12                              22
-#define DMPAPER_ENV_13                              23
+#define DMPAPER_ENV_14                              23
 #define DMPAPER_CSHEET                              24
 #define DMPAPER_DSHEET                              25
 #define DMPAPER_ESHEET                              26
@@ -1177,7 +1177,7 @@ typedef USHORT  COLOR16;
     #define DMPAPER_A4_EXTRA                        53
     #define DMPAPER_LETTER_TRANSVERSE               54
     #define DMPAPER_A4_TRANSVERSE                   55
-    #define DMPAPER_LETTER_EXTRA_TRANVERSE          56
+    #define DMPAPER_LETTER_EXTRA_TRANSVERSE         56
     #define DMPAPER_A_PLUS                          57
     #define DMPAPER_B_PLUS                          58
     #define DMPAPER_LETTER_PLUS                     59

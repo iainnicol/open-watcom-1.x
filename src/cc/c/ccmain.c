@@ -348,8 +348,8 @@ static void DoCCompile( char **cmdline )
             return;
         }
         DelErrFile();               /* delete old error file */
-        OpenErrFile();              /* open error file just in case */
         OpenDepFile();
+        OpenErrFile();              /* open error file just in case */
         MergeInclude();             /* merge INCLUDE= with HFileList */
         CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
