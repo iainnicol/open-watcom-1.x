@@ -155,7 +155,8 @@ File: source\diag0015.c
 (2,25): Error! E243: default arguments are not part of a function's type
 (5,39): Error! E244: missing default arguments
 (5,39): Error! E243: default arguments are not part of a function's type
-(6,33): Error! E244: missing default arguments
+(6,33): Error! E250: missing default argument for 'sam'
+  definition: 'int sam( int, int [, int ])'
 (10,27): Error! E245: overloaded operator cannot have default arguments
 (10,27): Error! E913: 'operator +' does not have a return type specified
 (15,38): Warning! W248: using default arguments would be overload ambiguous with 'fn2'
@@ -1352,7 +1353,7 @@ File: source\diag0067.c
   definition: 'S::T::~T( void )'
 (35,16): Error! E148: access to private member 'T::~T' is not allowed
   definition: 'S::T::~T( void )'
-(36,16): Error! E148: access to private member 'T::~T' is not allowed
+(36,15): Error! E148: access to private member 'T::~T' is not allowed
   definition: 'S::T::~T( void )'
 (38,12): Error! E148: access to private member 'N::~N' is not allowed
   definition: 'S::N::~N( void )'
@@ -1734,7 +1735,6 @@ File: source\diag0082.c
 File: source\diag0083.c
 (6,17): Warning! W066: 'delete' expression size is not allowed
 (10,24): Error! E016: template argument list cannot be empty
-(11,40): Error! E084: function templates can only have type arguments
 (16,9): Error! E012: template argument cannot be type 'double'
 (18,9): Error! E012: template argument cannot be type 'int X::*'
 (22,1): Error! E012: template argument cannot be type 'int <member pointer>::*'
@@ -1754,13 +1754,13 @@ File: source\diag0084.c
   definition: 'int TC5'
 (13,29): Error! E176: 'TC6' cannot be in the same scope as a class template
   definition: 'int TC6( int )'
-(19,35): Error! E174: class template 'TC8' cannot be overloaded
+(19,35): Error! E174: class template 'TC8<?1 >' cannot be overloaded
   definition: '<class template> TC8'
-(21,35): Error! E174: class template 'TC9' cannot be overloaded
+(21,35): Error! E174: class template 'TC9<?1 , unsigned >' cannot be overloaded
   definition: '<class template> TC9'
-(31,2): Error! E181: class template 'TC11' is already defined
+(31,2): Error! E181: class template 'TC11<?1 >' is already defined
   definition: '<class template> TC11'
-(37,2): Error! E181: class template 'TC12' is already defined
+(37,2): Error! E181: class template 'TC12<?1 >' is already defined
   definition: '<class template> TC12'
 File: source\diag0085.c
 (43,10): Error! E473: function argument(s) do not match those in prototype
@@ -1819,8 +1819,10 @@ File: source\diag0086.c
   source conversion type is 'int const volatile (lvalue)'
   target conversion type is 'int (lvalue)'
 File: source\diag0087.c
-(6,6): Error! E213: class template requires more parameters for instantiation
-(7,14): Error! E214: class template requires fewer parameters for instantiation
+(6,6): Error! E213: class template 'X<?1 , int , int * , int (* )( void )>' requires more parameters for instantiation
+  definition: '<class template> X'
+(7,14): Error! E214: class template 'X<?1 , int , int * , int (* )( void )>' requires fewer parameters for instantiation
+  definition: '<class template> X'
 (8,3): Error! E350: non-type parameter supplied for a type argument
 (9,9): Error! E494: template argument is not an external linkage symbol
 (10,11): Error! E494: template argument is not an external linkage symbol
@@ -1853,40 +1855,32 @@ File: source\diag0089.c
 (3,1): Warning! W011: all members are private
   template class instantiation for 'S<signed char>' was at: (20,7)
 File: source\diag0090.c
-(2,21): Error! E409: template argument 'T' is not used in the function argument list
-  definition: 'T'
-(4,19): Error! E409: template argument 'T' is not used in the function argument list
-  definition: 'T'
 (8,11): Error! E408: function templates can only name functions
 (10,11): Error! E407: class templates must be named
 (11,6): Error! E308: an anonymous class without a declarator is useless
-(23,27): Error! E409: template argument 'W' is not used in the function argument list
-  definition: 'W'
-(29,27): Error! E409: template argument 'W' is not used in the function argument list
-  definition: 'W'
-(38,25): Error! E409: template argument 'T' is not used in the function argument list
-  definition: 'T'
-(41,23): Error! E409: template argument 'W' is not used in the function argument list
-  definition: 'W'
 (60,1): Error! E454: function template 'f9' already has a definition
-  template function 'void f9( ? *, ? *, ? *, ? * )' defined at: (56,10)
+  template function 'void f9( ?1 *, ?2 *, ?3 *, ?3 * )' defined at: (56,10)
 File: source\diag0091.c
 (5,7): Error! E028: expecting ';' but found 'fn'
 (5,7): Error! E165: syntax error: class template cannot be processed
   class template definition started at: (3,13)
 File: source\diag0092.c
-(2,27): Error! E084: function templates can only have type arguments
-(5,5): Error! E084: function templates can only have type arguments
 (22,1): Error! E454: function template 'f2' already has a definition
-  template function 'void f2( ? *, ? *, ? *, ? * )' defined at: (17,10)
+  template function 'void f2( ?1 *, ?2 *, ?3 *, ?3 * )' defined at: (17,10)
 File: source\diag0093.c
-(4,5): Error! E455: function templates cannot have default arguments
-(11,5): Error! E455: function templates cannot have default arguments
-(16,7): Error! E651: cannot instantiate f2
-  template function 'void f2( void (* )( ?, ? ), ? )' defined at: (10,10)
+(11,5): Warning! W249: using default arguments would be overload ambiguous with 'f2' using default arguments
+  definition: 'void f2( [?1 * ])'
+(11,5): Error! E250: missing default argument for 'f2'
+  definition: 'void f2( void (* )( ?1, ?1 )[, ?1 ])'
+(16,7): Error! E341: number of arguments for function 'f2' is incorrect
+  definition: 'void f2( void (* )( ?1, ?1 )[, ?1 ])'
+(8,5): Warning! W726: no reference to formal parameter 'p'
+  definition: 'int * p' in 'void f2( int * )'
+  template function instantiation for 'f2' was at: (19,1)
+  definition: 'void f2( int * )'
 File: source\diag0094.c
 (4,12): Error! E186: attempt to modify a constant value
-  template function instantiation for 'zap' was at: (11,10)
+  template function instantiation for 'zap' was at: (12,1)
   definition: 'void zap( char const __based( __segment s ) volatile *, char const __based( __segment s ) volatile * )'
   function template binding of 'zap' was at: (11,10)
   template function 'void zap( ? volatile *, ? volatile * )' defined at: (2,10)
@@ -1896,6 +1890,7 @@ File: source\diag0095.c
 (2,11): Error! E006: syntax error; probable cause: missing ';'
 (33,6): Error! E336: declaration specifiers are required to declare 'Stack'
 (33,6): Error! E121: syntax error
+(36,1): Warning! W914: 'main' must return 'int'
 (37,6): Error! E029: symbol 's' has not been declared
 File: source\diag0096.c
 (1,18): Error! E415: type cannot be defined in return type
@@ -1953,7 +1948,7 @@ File: source\diag0097.c
   constant expression in comparison has value 0
 (26,16): Warning! W355: pointer expression is never < 0
 (32,5): Warning! W011: all members are private
-  template class instantiation for 'S<int,4294967295,int aa>' was at: (35,1)
+  template class instantiation for 'S<int,4294967295,int aa>' was at: (35,15)
 (36,16): Error! E042: symbol 'x' already defined
   definition: 'S<int,4294967295,int aa> x'
 (40,6): Error! E148: access to private member 'S::a' is not allowed
