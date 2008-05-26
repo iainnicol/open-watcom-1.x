@@ -2373,7 +2373,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, boolean decl_done )
             }
 
             if( type != NULL ) {
-                ScopeAddFriendType( GetCurrScope(), type );
+                ScopeAddFriendType( GetCurrScope(), type, sym );
             }
         }
         /* make sure we don't need a declarator for this declaration */

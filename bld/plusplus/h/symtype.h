@@ -1313,7 +1313,7 @@ extern void ScopeInsertErrorSym( SCOPE, PTREE );
 extern void ScopeRawAddFriendSym( CLASSINFO *, SYMBOL );
 extern void ScopeRawAddFriendType( CLASSINFO *, TYPE );
 extern void ScopeAddFriendSym( SCOPE, SYMBOL );
-extern void ScopeAddFriendType( SCOPE, TYPE );
+extern void ScopeAddFriendType( SCOPE, TYPE, SYMBOL );
 extern SYMBOL AllocSymbol( void );
 extern SYMBOL AllocTypedSymbol( TYPE );
 extern SYMBOL_NAME AllocSymbolName( char *, SCOPE );

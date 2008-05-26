@@ -2263,17 +2263,31 @@ void ScopeAddFriendSym( SCOPE scope, SYMBOL sym )
     ScopeRawAddFriendSym( scopes_class_type->u.c.info, sym );
 }
 
-void ScopeAddFriendType( SCOPE scope, TYPE type )
-/***********************************************/
+void ScopeAddFriendType( SCOPE scope, TYPE type, SYMBOL sym )
+/***********************************************************/
 {
+    SCOPE sym_scope;
     TYPE friendly_type;
     TYPE scopes_class_type;
     TYPE class_type;
     FRIEND *a_friend;
+    boolean OK_for_friend;
 
     class_type = StructType( type );
     if( ScopeLocalClass( scope ) ) {
-        /* TODO: local classes have restrictions on friends */
+        /* local classes have restrictions on friends */
+        OK_for_friend = TRUE;
+        if( TypeDefined( class_type ) ) {
+            OK_for_friend = FALSE;
+        } else if( sym != NULL ) {
+            sym_scope = SymScope( sym );
+            if( findBlockScope( sym_scope ) != findBlockScope( scope ) ) {
+                OK_for_friend = FALSE;
+            }
+        }
+        if( ! OK_for_friend ) {
+            CErr2p( ERR_LOCAL_CLASS_FRIEND_CLASS, sym );
+        }
     }
     RingIterBeg( ScopeFriends( scope ), a_friend ) {
         if( FriendIsType( a_friend ) ) {
