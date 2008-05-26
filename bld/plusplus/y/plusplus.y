@@ -711,6 +711,8 @@ unqualified-id
     | conversion-function-id
     | Y_TILDE Y_TYPE_NAME /* ~ class-name */
     { $$ = setLocation( MakeDestructorId( $2 ), &yylp[1] ); }
+    | Y_TILDE Y_UNKNOWN_ID /* ~ id (non-stanard, diagnostics only) */
+    { $$ = setLocation( MakeDestructorId( $2 ), &yylp[1] ); }
     | Y_TILDE template-type /* ~ class-name */
     { $$ = setLocation( MakeDestructorIdFromType( PTypeClassInstantiation( state->class_colon, $2 ) ), &yylp[1] ); }
     | template-id
@@ -727,21 +729,10 @@ qualified-id
     { $$ = MakeScopedId( $1 ); }
     | Y_SCOPED_TEMPLATE_ID
     { $$ = MakeScopedId( $1 ); }
-    | Y_SCOPED_TILDE Y_ID /* nested-name-specifier :: ~ class-name */
-    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
-    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_ID /* nested-name-specifier :: ~ class-name */ /* TODO */
-    {
-        PTreeFreeSubtrees( $1 );
-        $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[2] );
-    }
-    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_TEMPLATE_NAME /* nested-name-specifier :: ~ class-name */ /* TODO */
-    {
-        PTreeFreeSubtrees( $1 );
-        $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[2] );
-    }
     | scoped-operator-function-id
     | scoped-conversion-function-id
     | scoped-template-id
+    | pseudo-destructor-name
     ;
 
 /* differs from standard */
@@ -792,10 +783,10 @@ postfix-expression
     { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
     | postfix-expression-before-arrow Y_ARROW id-expression
     { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
+/* id-expression includes pseudo-destructor-name
     | postfix-expression-before-dot Y_DOT pseudo-destructor-name
-    { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
     | postfix-expression-before-arrow Y_ARROW pseudo-destructor-name
-    { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
+*/
     | postfix-expression Y_PLUS_PLUS
     { $$ = setLocation( PTreeUnary( CO_POST_PLUS_PLUS, $1 ), &yylp[2] ); }
     | postfix-expression Y_MINUS_MINUS
@@ -904,12 +895,25 @@ expression-list
     { $$ = setLocation( PTreeBinary( CO_LIST,   $1, $3 ), &yylp[2] ); }
     ;
 
-/* TODO */
 pseudo-destructor-name
-    : nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME
-    { $$ = setLocation( MakeDestructorId( $3 ), &yylp[1] ); }
-    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE template-type
-    { $$ = setLocation( MakeDestructorIdFromType( PTypeClassInstantiation( state->class_colon, $3 ) ), &yylp[1] ); }
+    : Y_SCOPED_TILDE Y_ID
+    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
+    | Y_SCOPED_TILDE Y_UNKNOWN_ID
+    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
+    | Y_SCOPED_TILDE Y_TYPE_NAME
+    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
+    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_ID
+    {
+        PTreeFreeSubtrees( $1 );
+        $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[2] );
+    }
+    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_TEMPLATE_NAME
+    {
+        PTreeFreeSubtrees( $1 );
+        $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[2] );
+    }
+    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME
+    { $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[1] ); }
     ;
 
 unary-expression
