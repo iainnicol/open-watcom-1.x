@@ -579,7 +579,7 @@ static TYPE findGenericType( SCOPE scope, char *name )
     return( generic_type );
 }
 
-static SCOPE checkColonColon( SCOPE scope, PTREE id, SCOPE not_nested,
+static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
                               boolean special_typename )
 {
     char *name;
@@ -594,10 +594,16 @@ static SCOPE checkColonColon( SCOPE scope, PTREE id, SCOPE not_nested,
     scope_type = NULL;
     id_scope = NULL;
     name = id->u.id.name;
+    result = NULL;
     if( not_nested != NULL ) {
-        result = ScopeFindLexicalColonColon( scope, name );
+        result = ScopeFindLexicalColonColon( not_nested, name );
+    }
+    if( result == NULL ) {
+        if( scope != NULL ) {
+            result = ScopeFindMemberColonColon( scope, name );
+        }
     } else {
-        result = ScopeFindMemberColonColon( scope, name );
+        scope = not_nested;
     }
     if( result == NULL ) {
         if( special_typename ) {
@@ -652,6 +658,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
     char *name;
     SCOPE scope;
     SCOPE lexical_lookup;
+    SCOPE member_lookup;
     PTREE curr;
     TYPE class_type;
     boolean undefined_scope;
@@ -665,8 +672,10 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             class_type = start->u.subtree[1]->type;
             if( class_type != NULL ) {
                 scope = class_type->u.c.scope;
+                member_lookup = scope;
                 lexical_lookup = NULL;
             } else {
+                member_lookup = NULL;
                 lexical_lookup = scope;
                 undefined_scope = TRUE;
                 if( special_typename ) {
@@ -674,9 +683,15 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
                 }
             }
         } else {
+            member_lookup = NULL;
             lexical_lookup = scope;
         }
+    } else if( state->scope_member != NULL ) {
+        scope = state->scope_member;
+        member_lookup = scope;
+        lexical_lookup = scope;
     } else {
+        member_lookup = NULL;
         lexical_lookup = scope;
     }
     id->u.id.scope = scope;
@@ -694,7 +709,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             special_template = FALSE;
         }
         if( ! undefined_scope ) {
-            scope = checkColonColon( scope, id, lexical_lookup,
+            scope = checkColonColon( id, member_lookup, lexical_lookup,
                                      special_typename );
             if( scope == NULL ) {
                 undefined_scope = TRUE;
@@ -702,6 +717,7 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
         }
         name = id->u.id.name;
         lexical_lookup = NULL;
+        member_lookup = scope;
         switch( CurToken ) {
         case T_ID:
             LookPastName();
