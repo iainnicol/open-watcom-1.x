@@ -1850,7 +1850,13 @@ static boolean suitableForAddressParm( PTREE parm )
 
 static PTREE processIndividualParm( TYPE arg_type, PTREE parm )
 {
+    auto error_state_t check;
+
+    CErrSuppress( &check );
     parm = AnalyseRawExpr( parm );
+    if( CErrSuppressedOccurred( &check ) ) {
+        PTreeErrorExpr( parm, ERR_INVALID_TEMPLATE_PARM );
+    }
     if( parm->op == PT_ERROR ) {
         return( parm );
     }
