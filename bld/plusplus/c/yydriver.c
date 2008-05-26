@@ -601,6 +601,8 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
     if( result == NULL ) {
         if( scope != NULL ) {
             result = ScopeFindMemberColonColon( scope, name );
+        } else {
+            scope = not_nested;
         }
     } else {
         scope = not_nested;
