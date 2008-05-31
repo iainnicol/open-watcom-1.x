@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  A fstat helper for interfacing with C++ runtime.
 *
 ****************************************************************************/
 
@@ -34,11 +33,21 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
-#if defined(__NT__)
-#include <windows.h>
-#endif
 #include "iomode.h"
 #include "handleio.h"
+
+/* Workaround for conflicting macros in sal.h. The idiots at Microsoft
+ * clearly don't understand the concept of "implementation defined"
+ * identifiers.
+ */
+#ifdef __NT__
+  #ifdef __in
+    #undef __in
+  #endif
+  #ifdef __out
+    #undef __out
+  #endif
+#endif
 
 // these must be the same as is defined in iostream.h
 
