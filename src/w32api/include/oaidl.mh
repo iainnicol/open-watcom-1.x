@@ -4,6 +4,13 @@
 :include crwatcnt.sp
  */
 
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
 #ifndef __oaidl_h__
 #define __oaidl_h__
 
@@ -477,8 +484,8 @@ typedef struct tagTLIBATTR {
     GUID    guid;
     LCID    lcid;
     SYSKIND syskind;
-    WORD    wMajorVernum;
-    WORD    wMinorVernum;
+    WORD    wMajorVerNum;
+    WORD    wMinorVerNum;
     WORD    wLibFlags;
 } TLIBATTR;
 typedef TLIBATTR    *LPTLIBATTR;
@@ -802,7 +809,7 @@ DECLARE_INTERFACE_( ITypeLib, IUnknown ) {
     STDMETHOD( GetTypeInfo )( THIS_ UINT, ITypeInfo ** ) PURE;
     STDMETHOD( GetTypeInfoType )( THIS_ UINT, TYPEKIND * ) PURE;
     STDMETHOD( GetTypeInfoOfGuid )( THIS_ REFGUID, ITypeInfo ** ) PURE;
-    STDMETHOD( GetLibAttr )( THIS_ TLIBATTR * ) PURE;
+    STDMETHOD( GetLibAttr )( THIS_ TLIBATTR ** ) PURE;
     STDMETHOD( GetTypeComp )( THIS_ ITypeComp ** ) PURE;
     STDMETHOD( GetDocumentation )( THIS_ INT, BSTR *, BSTR *, DWORD *, BSTR * ) PURE;
     STDMETHOD( IsName )( THIS_ LPOLESTR, ULONG, BOOL * ) PURE;

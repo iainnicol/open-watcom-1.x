@@ -2897,16 +2897,16 @@ typedef struct _SCHANNEL_ALG {
 } SCHANNEL_ALG;
 typedef SCHANNEL_ALG    *PSCHANNEL_ALG;
 
-/* Provider enumeration arguments */
-typedef struct _PROV_ENUMARGS {
+/* Provider algorithm enumeration arguments */
+typedef struct _PROV_ENUMALGS {
     ALG_ID  aiAlgid;
     DWORD   dwBitLen;
     DWORD   dwNameLen;
     CHAR    szName[20];
-} PROV_ENUMARGS;
+} PROV_ENUMALGS;
 
-/* Provider enumeration arguments (extended version) */
-typedef struct _PROV_ENUMARGS_EX {
+/* Provider algorithm enumeration arguments (extended version) */
+typedef struct _PROV_ENUMALGS_EX {
     ALG_ID  aiAlgid;
     DWORD   dwDefaultLen;
     DWORD   dwMinLen;
@@ -2916,7 +2916,7 @@ typedef struct _PROV_ENUMARGS_EX {
     CHAR    szName[20];
     DWORD   dwLongNameLen;
     CHAR    szLongName[20];
-} PROV_ENUMARGS_EX;
+} PROV_ENUMALGS_EX;
 
 /* Public key structure */
 typedef struct _PUBLICKEYSTRUC {
@@ -5409,9 +5409,9 @@ WINADVAPI BOOL WINAPI   CryptGenKey( HCRYPTPROV, ALG_ID, DWORD, HCRYPTKEY * );
 WINADVAPI BOOL WINAPI   CryptGenRandom( HCRYPTPROV, DWORD, BYTE * );
 WINADVAPI BOOL WINAPI   CryptGetDefaultProviderA( DWORD, DWORD *, DWORD, LPSTR, DWORD * );
 WINADVAPI BOOL WINAPI   CryptGetDefaultProviderW( DWORD, DWORD *, DWORD, LPWSTR, DWORD * );
-WINADVAPI BOOL WINAPI   CryptGetHashParam( HCRYPTHASH, DWORD, BYTE *, DWORD, DWORD );
-WINADVAPI BOOL WINAPI   CryptGetKeyParam( HCRYPTKEY, DWORD, BYTE *, DWORD, DWORD );
-WINADVAPI BOOL WINAPI   CryptGetProvParam( HCRYPTPROV, DWORD, BYTE *, DWORD, DWORD );
+WINADVAPI BOOL WINAPI   CryptGetHashParam( HCRYPTHASH, DWORD, BYTE *, DWORD *, DWORD );
+WINADVAPI BOOL WINAPI   CryptGetKeyParam( HCRYPTKEY, DWORD, BYTE *, DWORD *, DWORD );
+WINADVAPI BOOL WINAPI   CryptGetProvParam( HCRYPTPROV, DWORD, BYTE *, DWORD *, DWORD );
 WINADVAPI BOOL WINAPI   CryptGetUserKey( HCRYPTPROV, DWORD, HCRYPTKEY * );
 WINADVAPI BOOL WINAPI   CryptHashData( HCRYPTHASH, CONST BYTE *, DWORD, DWORD );
 WINADVAPI BOOL WINAPI   CryptHashSessionKey( HCRYPTHASH, HCRYPTKEY, DWORD );

@@ -4,6 +4,13 @@
 :include crwatcnt.sp
  */
 
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
 #ifndef __propsys_h__
 #define __propsys_h__
 
@@ -12,8 +19,10 @@
 #include <oleidl.h>
 #include <ocidl.h>
 #include <shtypes.h>
-#include <structuredquery.h>
-#include <propkeydef.h>
+#ifndef RC_INVOKED
+    #include <structuredquery.h>
+    #include <propkeydef.h>
+#endif
 
 :include cpluspro.sp
 

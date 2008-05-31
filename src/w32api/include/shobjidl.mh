@@ -4,6 +4,13 @@
 :include crwatcnt.sp
  */
 
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
 #ifndef __shobjidl_h__
 #define __shobjidl_h__
 
@@ -2828,7 +2835,7 @@ DECLARE_INTERFACE_( IInputObject, IUnknown ) {
     /* IInputObject methods */
     STDMETHOD( UIActivateIO )( THIS_ BOOL, MSG * ) PURE;
     STDMETHOD( HasFocusIO )( THIS ) PURE;
-    STDMETHOD( TranslateAccelerator )( THIS_ MSG * ) PURE;
+    STDMETHOD( TranslateAcceleratorIO )( THIS_ MSG * ) PURE;
 };
 
 /* IInputObject2 interface */
@@ -4836,7 +4843,7 @@ DECLARE_INTERFACE_( IKnownFolder, IUnknown ) {
     STDMETHOD( GetIDList )( THIS_ DWORD, PIDLIST_ABSOLUTE * ) PURE;
     STDMETHOD( GetFolderType )( THIS_ FOLDERTYPEID * ) PURE;
     STDMETHOD( GetRedirectionCapabilities )( THIS_ KF_REDIRECTION_CAPABILITIES * ) PURE;
-    STDMETHOD( GetFolderCapabilities )( THIS_ KNOWNFOLDER_DEFINITION * ) PURE;
+    STDMETHOD( GetFolderDefinition )( THIS_ KNOWNFOLDER_DEFINITION * ) PURE;
 };
 #endif
 
@@ -8643,6 +8650,23 @@ SHSTDAPI    SHGetPropertyStoreFromParsingName( PCWSTR, IBindCtx *, GETPROPERTYST
 SHSTDAPI    SHGetTemporaryPropertyForItem( IShellItem *, REFPROPERTYKEY, PROPVARIANT * );
 SHSTDAPI    SHSetTemporaryPropertyForItem( IShellItem *, REFPROPERTYKEY, REFPROPVARIANT );
 #endif
+
+#if (NTDDI_VERSION >= 0x06000000)
+
+__inline void FreeKnownFolderDefinitionFields( KNOWNFOLDER_DEFINITION *x )
+/************************************************************************/
+{
+    CoTaskMemFree( x->pszName );
+    CoTaskMemFree( x->pszDescription );
+    CoTaskMemFree( x->pszRelativePath );
+    CoTaskMemFree( x->pszParsingName );
+    CoTaskMemFree( x->pszTooltip );
+    CoTaskMemFree( x->pszLocalizedName );
+    CoTaskMemFree( x->pszIcon );
+    CoTaskMemFree( x->pszSecurity );
+}
+
+#endif /* (NTDDI_VERSION >= 0x06000000) */
 
 :include cplusepi.sp
 

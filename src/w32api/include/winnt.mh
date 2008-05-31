@@ -18,6 +18,7 @@
 #include <string.h>
 #include <basetsd.h>
 #include <guiddef.h>
+#include <specstrings.h>
 
 :include cpluspro.sp
 
@@ -170,10 +171,13 @@ typedef CONST WCHAR UNALIGNED   *PCUWSTR;
 
 /* Neutral string data types */
 #ifdef UNICODE
+#ifndef _TCHAR_DEFINED
+#define _TCHAR_DEFINED
 typedef WCHAR           TCHAR;
 typedef WCHAR           *PTCHAR;
 typedef WCHAR           TBYTE;
 typedef WCHAR           *PTBYTE;
+#endif
 typedef LPWCH           LPTCH;
 typedef LPWCH           PTCH;
 typedef LPWSTR          LPTSTR;
@@ -185,10 +189,13 @@ typedef LPUWSTR         PUTSTR;
 typedef LPCUWSTR        LPCUTSTR;
 typedef LPCUWSTR        PCUTSTR;
 #else
+#ifndef _TCHAR_DEFINED
+#define _TCHAR_DEFINED
 typedef char            TCHAR;
 typedef char            *PTCHAR;
 typedef unsigned char   TBYTE;
 typedef unsigned char   *PTBYTE;
+#endif
 typedef LPCH            LPTCH;
 typedef LPCH            PTCH;
 typedef LPSTR           LPTSTR;
@@ -235,6 +242,10 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define ERROR_SEVERITY_WARNING          0x80000000
 #define ERROR_SEVERITY_ERROR            0xC0000000
 
+/* Null values */
+#define ANSI_NULL       ((CHAR)0)
+#define UNICODE_NULL    ((WCHAR)0)
+
 /* Limits of primitive data types */
 #define MINCHAR     0x80
 #define MAXCHAR     0x7F
@@ -245,6 +256,13 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define MAXBYTE     0xFF
 #define MAXWORD     0xFFFF
 #define MAXDWORD    0xFFFFFFFF
+
+/* Macro to calculate the size of an array */
+#define ARRAYSIZE( x )  (sizeof( x ) / sizeof( (x)[0] ))
+
+/* Macro to find the containing record */
+#define CONTAINING_RECORD( p1, p2, p3 ) \
+    ((p2 *)((PCHAR)(p1) - (ULONG_PTR)(&((p2 *)0)->p3)))
 
 /* Suite types */
 #define VER_SUITE_SMALLBUSINESS             0x00000001
@@ -826,6 +844,10 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 
 /* Current SID revision */
 #define SID_REVISION    1
+
+/* Maximum and recommended numbers of subauthorities */
+#define SID_MAX_SUB_AUTHORITIES         15
+#define SID_RECOMMENDED_SUB_AUTHORITIES 1
 
 /* SID hash size */
 #define SID_HASH_SIZE   32
@@ -2893,6 +2915,10 @@ typedef struct _SID {
 } SID;
 typedef SID *PISID;
 
+/* Maximum SID size */
+#define SECURITY_MAX_SID_SIZE \
+    (sizeof( SID ) + ((SID_MAX_SUB_AUTHORITIES - 1) * sizeof( DWORD )))
+
 /* SID types */
 typedef enum _SID_NAME_USE {
     SidTypeUser             = 1,
@@ -3028,7 +3054,7 @@ typedef struct _ACCESS_ALLOWED_ACE {
     ACCESS_MASK Mask;
     DWORD       SidStart;
 } ACCESS_ALLOWED_ACE;
-typedef ACCESS_ALLOWED_ACE  *PACCESS_ALLLOWED_ACE;
+typedef ACCESS_ALLOWED_ACE  *PACCESS_ALLOWED_ACE;
 
 /* Access denied ACE */
 typedef struct _ACCESS_DENIED_ACE {

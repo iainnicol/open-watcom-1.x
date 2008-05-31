@@ -53,8 +53,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
 [ INCLUDE <SRCDIR>/hlpview/builder.ctl ]
 
-[ BLOCK <1> build rel ]
-#======================
+[ BLOCK <1> build rel clean ]
+#============================
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
 # running on the host platform, but not necessarily anything else.

@@ -4,6 +4,13 @@
 :include crwatcnt.sp
  */
 
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
 #ifndef __propidl_h__
 #define __propidl_h__
 
@@ -82,7 +89,7 @@ TYPEDEF_CA( CLSID, CACLSID );
 #define PIDSI_COMMENTS      0x00000006L
 #define PIDSI_TEMPLATE      0x00000007L
 #define PIDSI_LASTAUTHOR    0x00000008L
-#define PIDSI_REVAUTHOR     0x00000009L
+#define PIDSI_REVNUMBER     0x00000009L
 #define PIDSI_EDITTIME      0x0000000AL
 #define PIDSI_LASTPRINTED   0x0000000BL
 #define PIDSI_CREATE_DTM    0x0000000CL

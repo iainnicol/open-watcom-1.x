@@ -198,6 +198,7 @@ base_headers =       &
         rpcnterr.h   &
         rpcproxy.h   &
         rtutils.h    &
+        sal.h        &
         schannel.h   &
         schedule.h   &
         schemdef.h   &
@@ -218,6 +219,7 @@ base_headers =       &
         shtypes.h    &
         snmp.h       &
         spapidef.h   &
+        specstr.h    &
         sql.h        &
         sqlext.h     &
         sqltypes.h   &
@@ -300,6 +302,7 @@ base_headers =       &
 ddk_headers =        &
         bugcodes.h   &
         ddrawint.h   &
+        drvspecs.h   &
         mce.h        &
         ndis.h       &
         netevent.h   &
@@ -310,7 +313,8 @@ ddk_headers =        &
         ntnls.h      &
         ntstatus.h   &
         wdm.h        &
-        winddi.h
+        winddi.h     &
+        xfilter.h
 
 directx_headers =    &
         d3d.h        &
@@ -355,6 +359,7 @@ base_libs =          &
         largeint.lib &
         lz32.lib     &
         mapi32.lib   &
+        mfuuid.lib   &
         mgmtapi.lib  &
         mpr.lib      &
         mprapi.lib   &
@@ -445,7 +450,7 @@ vfw32_lbcs =         &
 
 extra_lib_flags = -p=16
 
-extra_lib_flags_386 = -io -ii
+extra_lib_flags_386 = -ic -ii
 extra_lib_flags_axp = -ic -ia
 
 additional_cleanup = *.h *.rh
@@ -477,6 +482,11 @@ winsock2.h: winsock.mh
 largeint.lib: largeint.obj
     %create $^&.lbc
     @%append $^&.lbc +largeint.obj
+    $(librarian) $(libflags) @$^&.lbc
+
+mfuuid.lib: mfuuid.obj
+    %create $^&.lbc
+    @%append $^&.lbc +mfuuid.obj
     $(librarian) $(libflags) @$^&.lbc
 
 strmiids.lib: strmiids.obj

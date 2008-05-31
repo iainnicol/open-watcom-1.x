@@ -8,7 +8,14 @@
 #define _WINDEF_
 
 :include readonly.sp
+#include <_w32ials.h>
+
 :include cpluspro.sp
+
+/* Define default Windows version number. */
+#ifndef WINVER
+    #define WINVER  0x0500
+#endif
 
 /* Override default compiler behavior for these keywords. */
 #define far
@@ -16,6 +23,9 @@
 #define pascal  __stdcall
 
 /* Calling conventions */
+#ifndef CDECL
+    #define CDECL   __cdecl
+#endif
 #define CALLBACK    __stdcall
 #define WINAPI      __stdcall
 #define WINAPIV     __cdecl

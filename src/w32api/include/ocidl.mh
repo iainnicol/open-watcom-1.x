@@ -4,6 +4,13 @@
 :include crwatcnt.sp
  */
 
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
 #ifndef __ocidl_h__
 #define __ocidl_h__
 
@@ -21,7 +28,7 @@ typedef interface IPropertyPageSite         IPropertyPageSite;
 typedef interface IPropertyBag              IPropertyBag;
 typedef interface IOleUndoManager           IOleUndoManager;
 typedef interface IAdviseSinkEx             IAdviseSinkEx;
-typedef interface IPropertySinkNotify       IPropertySinkNotify;
+typedef interface IPropertyNotifySink       IPropertyNotifySink;
 typedef interface IFont                     IFont;
 typedef interface IOleControlSite           IOleControlSite;
 
@@ -266,7 +273,7 @@ typedef struct tagQACONTAINER {
     ULONG               cbSize;
     IOleClientSite      *pClientSite;
     IAdviseSinkEx       *pAdviseSink;
-    IPropertySinkNotify *pPropertySinkNotify;
+    IPropertyNotifySink *pPropertyNotifySink;
     IUnknown            *pUnkEventSink;
     DWORD               dwAmbientFlags;
     OLE_COLOR           colorFore;
@@ -941,8 +948,8 @@ DECLARE_INTERFACE_( IViewObjectEx, IViewObject2 ) {
     STDMETHOD_( ULONG, Release )( THIS ) PURE;
     
     /* IViewObject methods */
-    STDMETHOD( Draw )( THIS_ DWORD, LONG, void *, DVTARGETDEVICE *, HDC, HDC, LPCRECTL, LPCRECTL, BOOL (*)( ULONG_PTR ), ULONG_PTR ) PURE;
-    STDMETHOD( GetColorSet )( THIS_ DWORD, LONG, void *, DVTARGETDEVICE *, HDC, LOGPALETTE * ) PURE;
+    STDMETHOD( Draw )( THIS_ DWORD, LONG, void *, DVTARGETDEVICE *, HDC, HDC, LPCRECTL, LPCRECTL, BOOL (CALLBACK *)( ULONG_PTR ), ULONG_PTR ) PURE;
+    STDMETHOD( GetColorSet )( THIS_ DWORD, LONG, void *, DVTARGETDEVICE *, HDC, LOGPALETTE ** ) PURE;
     STDMETHOD( Freeze )( THIS_ DWORD, LONG, void *, DWORD * ) PURE;
     STDMETHOD( Unfreeze )( THIS_ DWORD ) PURE;
     STDMETHOD( SetAdvise )( THIS_ DWORD, DWORD, IAdviseSink * ) PURE;
@@ -954,7 +961,7 @@ DECLARE_INTERFACE_( IViewObjectEx, IViewObject2 ) {
     /* IViewObjectEx methods */
     STDMETHOD( GetRect )( THIS_ DWORD, LPRECTL ) PURE;
     STDMETHOD( GetViewStatus )( THIS_ DWORD * ) PURE;
-    STDMETHOD( QueryHitPoint )( THIS_ DWORD, LPCRECT, POINTL, LONG, DWORD * ) PURE;
+    STDMETHOD( QueryHitPoint )( THIS_ DWORD, LPCRECT, POINT, LONG, DWORD * ) PURE;
     STDMETHOD( QueryHitRect )( THIS_ DWORD, LPCRECT, LPCRECT, LONG, DWORD * ) PURE;
     STDMETHOD( GetNaturalExtent )( THIS_ DWORD, LONG, DVTARGETDEVICE *, HDC, DVEXTENTINFO *, LPSIZEL ) PURE;
 };
@@ -1086,7 +1093,7 @@ DECLARE_INTERFACE_( IPerPropertyBrowsing, IUnknown ) {
     /* IPerPropertyBrowsing methods */
     STDMETHOD( GetDisplayString )( THIS_ DISPID, BSTR * ) PURE;
     STDMETHOD( MapPropertyToPage )( THIS_ DISPID, CLSID * ) PURE;
-    STDMETHOD( GetPredefinedString )( THIS_ DISPID, CALPOLESTR *, CADWORD * ) PURE;
+    STDMETHOD( GetPredefinedStrings )( THIS_ DISPID, CALPOLESTR *, CADWORD * ) PURE;
     STDMETHOD( GetPredefinedValue )( THIS_ DISPID, DWORD, VARIANT * ) PURE;
 };
 typedef IPerPropertyBrowsing    *LPPERPROPERTYBROWSING;

@@ -217,7 +217,7 @@ typedef USHORT  COLOR16;
 #define META_OFFSETWINDOWORG        0x020F
 #define META_SCALEWINDOWEXT         0x0410
 #define META_OFFSETVIEWPORTORG      0x0211
-#define META_SCALEVIEWPORTORG       0x0412
+#define META_SCALEVIEWPORTEXT       0x0412
 #define META_LINETO                 0x0213
 #define META_MOVETO                 0x0214
 #define META_EXCLUDECLIPRECT        0x0415
@@ -573,7 +573,7 @@ typedef USHORT  COLOR16;
 #define CLIP_CHARACTER_PRECIS   0x01
 #define CLIP_STROKE_PRECIS      0x02
 #define CLIP_MASK               0x0F
-#define CLIP_LH_ANGLE           0x10
+#define CLIP_LH_ANGLES          0x10
 #define CLIP_TT_ALWAYS          0x20
 #if (_WIN32_WINNT >= 0x0600)
     #define CLIP_DFA_DISABLE    0x40
@@ -930,8 +930,8 @@ typedef USHORT  COLOR16;
 #define PHYSICALHEIGHT      111
 #define PHYSICALOFFSETX     112
 #define PHYSICALOFFSETY     113
-#define SCALINGOFFSETX      114
-#define SCALINGOFFSETY      115
+#define SCALINGFACTORX      114
+#define SCALINGFACTORY      115
 #define VREFRESH            116
 #define DESKTOPVERTRES      117
 #define DESKTOPHORZRES      118
@@ -2125,7 +2125,7 @@ typedef BITMAPINFO  *LPBITMAPINFO;
 /* Bitmap core information */
 typedef struct tagBITMAPCOREINFO {
     BITMAPCOREHEADER    bmciHeader;
-    RGBQUAD             bmciColors[1];
+    RGBTRIPLE           bmciColors[1];
 } BITMAPCOREINFO;
 typedef BITMAPCOREINFO  *PBITMAPCOREINFO;
 typedef BITMAPCOREINFO  *LPBITMAPCOREINFO;
@@ -2867,10 +2867,10 @@ typedef struct _OUTLINETEXTMETRICA {
     int         otmsStrikeoutPosition;
     int         otmsUnderscoreSize;
     int         otmsUnderscorePosition;
-    PSTR        omtpFamilyName;
-    PSTR        omtpFaceName;
-    PSTR        omtpStyleName;
-    PSTR        omtpFullName;
+    PSTR        otmpFamilyName;
+    PSTR        otmpFaceName;
+    PSTR        otmpStyleName;
+    PSTR        otmpFullName;
 } OUTLINETEXTMETRICA;
 typedef OUTLINETEXTMETRICA      *POUTLINETEXTMETRICA;
 typedef OUTLINETEXTMETRICA      *NPOUTLINETEXTMETRICA;

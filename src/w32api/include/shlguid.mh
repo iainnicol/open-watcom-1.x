@@ -8,7 +8,9 @@
 #include <isguids.h>
 #include <exdisp.h>
 #include <shldisp.h>
-#include <knownfolders.h>
+#ifndef RC_INVOKED
+    #include <knownfolders.h>
+#endif
 
 :include cpluspro.sp
 
@@ -53,7 +55,7 @@ EXTERN_C const IID      IID_IPersistFolder;
 EXTERN_C const IID      IID_IExtractIconA;
 EXTERN_C const IID      IID_IShellDetails;
 EXTERN_C const IID      IID_IShellLinkA;
-EXTERN_C const IID      IID_ICopyHook;
+EXTERN_C const IID      IID_ICopyHookA;
 EXTERN_C const IID      IID_IFileViewerA;
 EXTERN_C const IID      IID_ICommDlgBrowser;
 EXTERN_C const IID      IID_IEnumIDList;
@@ -178,7 +180,7 @@ EXTERN_C const FMTID    FMTID_Volume;
 EXTERN_C const FMTID    FMTID_Query;
 EXTERN_C const IID      IID_IEnumExtraSearch;
 EXTERN_C const CLSID    CLSID_HWShellExecute;
-EXTERN_C const CLSID    CLSID_DragDropHandler;
+EXTERN_C const CLSID    CLSID_DragDropHelper;
 EXTERN_C const CLSID    CLSID_CAnchorBrowsePropertyPage;
 EXTERN_C const CLSID    CLSID_CImageBrowsePropertyPage;
 EXTERN_C const CLSID    CLSID_CDocBrowsePropertyPage;

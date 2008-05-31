@@ -4,6 +4,13 @@
 :include crwatcnt.sp
  */
 
+#include <rpc.h>
+#include <rpcndr.h>
+#ifndef COM_NO_WINDOWS_H
+    #include <windows.h>
+    #include <ole2.h>
+#endif
+
 #ifndef __comcat_h__
 #define __comcat_h__
 
@@ -26,10 +33,28 @@ typedef struct tagCATEGORYINFO {
 typedef CATEGORYINFO    *LPCATEGORYINFO;
 
 /* GUIDs */
-EXTERN_C const IID  IID_IEnumGUID;
-EXTERN_C const IID  IID_IEnumCATEGORYINFO;
-EXTERN_C const IID  IID_ICatRegister;
-EXTERN_C const IID  IID_ICatInformation;
+EXTERN_C const IID      IID_IEnumGUID;
+EXTERN_C const IID      IID_IEnumCATEGORYINFO;
+EXTERN_C const IID      IID_ICatRegister;
+EXTERN_C const IID      IID_ICatInformation;
+EXTERN_C const CLSID    CLSID_StdComponentCategoriesMgr;
+EXTERN_C const CATID    CATID_Insertable;
+EXTERN_C const CATID    CATID_Control;
+EXTERN_C const CATID    CATID_Programmable;
+EXTERN_C const CATID    CATID_IsShortcut;
+EXTERN_C const CATID    CATID_NeverShowExt;
+EXTERN_C const CATID    CATID_DocObject;
+EXTERN_C const CATID    CATID_Printable;
+EXTERN_C const CATID    CATID_RequiresDataPathHost;
+EXTERN_C const CATID    CATID_PersistsToMoniker;
+EXTERN_C const CATID    CATID_PersistsToStorage;
+EXTERN_C const CATID    CATID_PersistsToStreamInit;
+EXTERN_C const CATID    CATID_PersistsToStream;
+EXTERN_C const CATID    CATID_PersistsToMemory;
+EXTERN_C const CATID    CATID_PersistsToFile;
+EXTERN_C const CATID    CATID_PersistsToPropertyBag;
+EXTERN_C const CATID    CATID_InternetAware;
+EXTERN_C const CATID    CATID_DesignTimeUIActivatableControl;
 #define IID_IEnumCLSID  IID_IEnumGUID
 #define IID_IEnumCATID  IID_IEnumGUID
 

@@ -860,7 +860,7 @@ typedef struct tagRASENTRYA {
 #endif
 #if (WINVER >= 0x0500)
     DWORD       dwType;
-    DWORD       dwEncryptiontype;
+    DWORD       dwEncryptionType;
     DWORD       dwCustomAuthKey;
     GUID        guidId;
     CHAR        szCustomDialDll[MAX_PATH];
@@ -1127,9 +1127,9 @@ typedef struct tagRASCUSTOMSCRIPTEXTENSIONS {
 #if (WINVER >= 0x0500)
 typedef struct _RAS_STATS {
     DWORD   dwSize;
-    DWORD   dwBytesXmitted;
+    DWORD   dwBytesXmited;
     DWORD   dwBytesRcved;
-    DWORD   dwFramesXmitted;
+    DWORD   dwFramesXmited;
     DWORD   dwFramesRcved;
     DWORD   dwCrcErr;
     DWORD   dwTimeoutErr;
