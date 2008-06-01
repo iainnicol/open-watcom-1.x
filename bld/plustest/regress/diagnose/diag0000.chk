@@ -196,6 +196,7 @@ File: source\diag0017.c
 File: source\diag0018.c
 (1,3): Error! E252: class declaration has not been seen for '~Q'
 (2,1): Error! E265: destructor must be a non-static member function
+(2,1): Error! E913: 'destructor' does not have a return type specified
 (6,1): Error! E264: user-defined conversion must be a non-static member function
 (11,1): Error! E913: 'operator --' does not have a return type specified
 (11,1): Error! E269: 'operator --' must have either one argument or two arguments
@@ -262,8 +263,10 @@ File: source\diag0021.c
 (3,22): Error! E286: static member 'S1' cannot be declared in this class
 (6,23): Error! E284: nested type 'S2' cannot be declared in this class
 (9,19): Error! E285: enumerator 'S3' cannot be declared in this class
-(13,6): Error! E282: anonymous struct/union member 'T' cannot be declared in this class
+(13,6): Error! E316: anonymous struct/union member 'T' is not distinct in enclosing scope
 File: source\diag0022.c
+(5,6): Error! E498: syntax error before 'S1'; probable cause: incorrectly spelled type name
+(6,2): Error! E121: syntax error
 (19,13): Error! E287: constructor cannot have a return type
 (20,17): Error! E287: constructor cannot have a return type
 (25,13): Error! E289: invalid copy constructor argument list (causes infinite recursion)
@@ -744,7 +747,7 @@ File: source\diag0044.c
 (71,8): Error! E460: protected base class accessed to convert assignment expression
   source conversion type is 'OM *'
   target conversion type is 'V *'
-I did not generate errors for diag0045 
+I did not generate errors for diag0045
 File: source\diag0046.c
 (10,34): Error! E256: default argument expression cannot use local variable 'a'
   definition: 'int a' in 'void sam( void )'
@@ -805,6 +808,8 @@ File: source\diag0049.c
 (51,19): Error! E336: declaration specifiers are required to declare 'not_a_function'
 File: source\diag0050.c
 (15,35): Error! E420: memory initializer list may only appear in a constructor definition
+(19,16): Error! E336: declaration specifiers are required to declare 'c_bad'
+(20,15): Error! E336: declaration specifiers are required to declare 'c_OK'
 (13,12): Error! E426: 'd' cannot be initialized because it is a static member
 (13,12): Error! E423: 'S' is not a direct base class
 (13,12): Error! E425: 'f' cannot be initialized because it is a member function
@@ -1736,8 +1741,6 @@ File: source\diag0083.c
 (6,17): Warning! W066: 'delete' expression size is not allowed
 (10,24): Error! E016: template argument list cannot be empty
 (16,9): Error! E012: template argument cannot be type 'double'
-(18,9): Error! E012: template argument cannot be type 'int X::*'
-(22,1): Error! E012: template argument cannot be type 'int <member pointer>::*'
 (24,27): Error! E176: 'S' cannot be in the same scope as a class template
   definition: 'S'
 (33,1): Warning! W011: all members are private
@@ -1848,12 +1851,12 @@ File: source\diag0089.c
 (13,22): Error! E320: specific versions of template classes can only be defined in file scope
 (16,1): Warning! W014: no reference to symbol 'S::x'
   definition: 'double S::x' in 'void foo( void )'
-(3,1): Warning! W011: all members are private
-  template class instantiation for 'S<unsigned char>' was at: (19,7)
 (19,30): Error! E296: friend declarations may only be declared in a class
 (19,30): Error! E118: nameless declaration is not allowed
 (3,1): Warning! W011: all members are private
-  template class instantiation for 'S<signed char>' was at: (20,7)
+  template class instantiation for 'S<unsigned char>' was at: (22,16)
+(3,1): Warning! W011: all members are private
+  template class instantiation for 'S<signed char>' was at: (23,16)
 File: source\diag0090.c
 (8,11): Error! E408: function templates can only name functions
 (10,11): Error! E407: class templates must be named

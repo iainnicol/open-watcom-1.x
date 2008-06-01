@@ -173,19 +173,12 @@ File: source\diag0116.c
 (5,47): Error! E197: type cannot be defined in this context
 (6,52): Error! E197: type cannot be defined in this context
 (8,24): Error! E639: form is '#pragma template_depth level' where 'level' is a non-zero number
-(18,14): Error! E640: possible non-terminating template instantiation (use "#pragma template_depth 26" to increase depth)
-  template function instantiation for 'foo' was at: (18,14)
+(11,10): Error! E640: possible non-terminating template instantiation (use "#pragma template_depth 26" to increase depth)
+  template function instantiation for 'foo' was at: (19,5)
   definition: 'void foo( D & )'
   function template binding of 'foo' was at: (18,14)
   template function 'void foo( ? & )' defined at: (11,10)
-File: source\diag0117.c
-(3,16): Error! E326: defining 'S1::x' is not possible because its type has unknown size
-  definition: 'S2<double> S1<double>::x'
-  template class instantiation for 'S1<double>' was at: (9,19)
-  template class instantiation for 'S2<double>' was at: (15,1)
-(11,14): Error! E041: expression for '->' must be pointer to class, struct or union
-  template class instantiation for 'S2<double>' was at: (15,1)
-  operand type is '<error> *'
+I did not generate errors for diag0117
 File: source\diag0118.c
 (6,13): Error! E112: cannot inherit an undefined base class 'U'
 (6,16): Error! E641: cannot inherit a partially defined base class 'S'
@@ -246,7 +239,6 @@ File: source\diag0123.c
 (100,0): Error! E199: premature end-of-file encountered during compilation
 File: source\diag0124.c
 (9,22): Error! E390: cannot generate default constructor to initialize 'Range<int,1,10>' since constructors were declared
-(11,35): Error! E012: template argument cannot be type 'void (<member pointer>::* )( void )'
 (23,6): Error! E336: declaration specifiers are required to declare 'FooCB'
 (23,6): Error! E121: syntax error
 File: source\diag0125.c
@@ -304,11 +296,11 @@ File: source\diag0139.h
 (2,2): Error! E080: should print twice
 File: source\diag0140.c
 (30,8): Error! E227: overloaded function is ambiguous for arguments used in call
-  ambiguous function template: void foo( ? ) defined at: (15,10)
-  ambiguous function template: char foo( SS<?> ) defined at: (18,10)
+  ambiguous function template: void foo( SS<int> ) defined at: (15,10)
+  ambiguous function template: char foo( SS<int> ) defined at: (18,10)
 (31,8): Error! E227: overloaded function is ambiguous for arguments used in call
-  ambiguous function template: char bar( SS<?> ) defined at: (21,10)
-  ambiguous function template: void bar( ? ) defined at: (24,10)
+  ambiguous function template: char bar( SS<int> ) defined at: (21,10)
+  ambiguous function template: void bar( SS<int> ) defined at: (24,10)
 (36,20): Warning! W480: variable/function has the same name as the class/enum 'same_as_struct'
   definition: 'same_as_struct'
 (37,18): Warning! W480: variable/function has the same name as the class/enum 'same_as_enum'
@@ -362,11 +354,7 @@ File: source\diag0142.c
 (2,11): Error! E289: invalid copy constructor argument list (causes infinite recursion)
 (5,23): Error! E289: invalid copy constructor argument list (causes infinite recursion)
 (10,29): Error! E289: invalid copy constructor argument list (causes infinite recursion)
-(10,30): Warning! W726: no reference to formal parameter 's'
-  definition: 'Y7 & s' in 'Y7::Y7( Y7 &, Y7 )'
 (15,39): Error! E289: invalid copy constructor argument list (causes infinite recursion)
-(15,40): Warning! W726: no reference to formal parameter 's'
-  definition: 'Y13 const & s' in 'Y13::Y13( Y13 const &, Y13 )'
 (32,26): Error! E541: pointers to class members reference different object types
   source conversion type is 'void (Z1::* )( void ) const'
   target conversion type is 'void (Z1::* )( void )'
@@ -1047,8 +1035,7 @@ Warning! W014: no reference to symbol 'x34'
 File: source\diag0161.c
 (31,2): Error! E080: at least one error
 File: source\diag0162.c
-(25,16): Error! E350: non-type parameter supplied for a type argument
-(25,25): Error! E241: class or namespace 'def' has not been declared
+(25,16): Error! E029: symbol 'T' has not been declared
 (9,9): Error! E151: operand is neither a pointer nor an arithmetic type
   template function instantiation for 'foo' was at: (15,1)
   definition: 'void foo( S<int> )'
@@ -1533,11 +1520,8 @@ File: source\diag0187.c
 (44,1): Error! E678: invalid octal constant
 (44,1): Error! E121: syntax error
 File: source\diag0188.c
-(9,24): Error! E409: template argument 'T' is not used in the function argument list
-  definition: 'T'
-(15,16): Error! E408: function templates can only name functions
-(15,18): Error! E087: initialization of 'qq' must be in file scope
-  definition: '<error> qq'
+(15,13): Error! E691: expecting a member of 'S<int>' to be defined in this context
+  template class member instantiation was at: (17,8)
 File: source\diag0189.c
 (18,1): Error! E692: cannot throw an abstract class
   'X1B' defined at: (3,8)
@@ -4285,6 +4269,7 @@ File: source\diag0198.c
   definition: 'int c'
 (75,13): Error! E042: symbol 'c' already defined
   definition: 'int c'
+(77,9): Error! E336: declaration specifiers are required to declare 'd'
 (78,13): Error! E328: storage class of 'd' conflicts with previous declaration
   definition: 'int d'
 (78,13): Error! E042: symbol 'd' already defined

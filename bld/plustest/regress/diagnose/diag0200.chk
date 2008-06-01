@@ -213,6 +213,7 @@ File: source\diag0212.c
 (70,1): Warning! W726: no reference to formal parameter 'y'
   definition: 'int y' in 'void (mutable bar)( int )'
 (73,21): Error! E117: too many storage class specifiers
+(73,21): Error! E336: declaration specifiers are required to declare 'q'
 (75,26): Error! E712: 'mutable' member cannot also be const
 (76,28): Error! E712: 'mutable' member cannot also be const
 (87,5): Error! E714: operand cannot be of type bool
@@ -622,6 +623,7 @@ File: source\diag0223.c
 (61,16): Error! E118: nameless declaration is not allowed
 (61,16): Error! E006: syntax error; probable cause: missing ';'
 (62,26): Error! E177: invalid storage class in file scope
+(64,15): Error! E336: declaration specifiers are required to declare 'r'
 (64,15): Error! E177: invalid storage class in file scope
 (65,12): Error! E336: declaration specifiers are required to declare 'array'
 (65,12): Error! E121: syntax error
@@ -701,6 +703,7 @@ File: source\diag0223.c
 (307,24): Error! E046: bit-field width is too large
 (309,16): Error! E046: bit-field width is too large
 (311,14): Error! E046: bit-field width is too large
+(340,18): Error! E913: 'g' does not have a return type specified
 (348,33): Error! E385: attempt to overload function 'inner::f2' with a different return type
   definition: 'int enclose::inner::f2( int )'
 (348,33): Error! E254: 'inner::f2' has not been declared as a member
@@ -730,6 +733,8 @@ File: source\diag0223.c
 (369,24): Warning! W013: unreachable code
 (369,13): Error! E148: access to private member 'enclose::private_si' is not allowed
   definition: 'int enclose::private_si'
+(380,12): Error! E336: declaration specifiers are required to declare 'y'
+(383,16): Error! E336: declaration specifiers are required to declare 'b'
 (386,8): Error! E258: cannot declare both a function and variable of the same name ('f')
 (399,5): Error! E029: symbol 'a' has not been declared
 (400,5): Error! E029: symbol 'b' has not been declared
@@ -741,6 +746,7 @@ File: source\diag0223.c
 (418,3): Error! E498: syntax error before 'b'; probable cause: incorrectly spelled type name
 (419,6): Error! E336: declaration specifiers are required to declare 'S23'
 (419,5): Error! E498: syntax error before 'c'; probable cause: incorrectly spelled type name
+(448,1): Warning! W914: 'main' must return 'int'
 (460,8): Error! E006: syntax error; probable cause: missing ';'
 (467,11): Error! E041: expression for '->' must be pointer to class, struct or union
   operand type is 'int'
@@ -824,6 +830,7 @@ File: source\diag0224.c
   definition: 'int i3'
 (39,14): Error! E042: symbol 'i3' already defined
   definition: 'int i3'
+(41,10): Error! E336: declaration specifiers are required to declare 'i4'
 (42,14): Error! E328: storage class of 'i4' conflicts with previous declaration
   definition: 'int i4'
 (42,14): Error! E042: symbol 'i4' already defined
@@ -838,6 +845,7 @@ File: source\diag0224.c
   'S1' defined at: (44,8)
 (55,15): Error! E117: too many storage class specifiers
 (57,15): Error! E117: too many storage class specifiers
+(57,22): Error! E336: declaration specifiers are required to declare 'i6'
 (57,22): Error! E177: invalid storage class in file scope
 (58,17): Error! E117: too many storage class specifiers
 (62,14): Error! E135: 'friend', 'virtual' or 'inline' modifiers may only be used on functions
@@ -1429,6 +1437,7 @@ File: source\diag0228.c
 (21,38): Error! E357: virtual function may only be declared in a class
 (21,17): Warning! W750: function prototype in block scope missing 'extern'
   function prototype is 'int ( void )'
+(25,14): Error! E336: declaration specifiers are required to declare 'ci'
 (25,21): Warning! W836: symbol has different type than previous symbol in same declaration
   companion definition is 'ci'
   definition: 'int const ci' in 'void main( void )'
@@ -2157,6 +2166,7 @@ File: source\diag0240.c
 (122,12): Warning! W752: class 'x114::C' contains a zero size array
 (122,12): Warning! W752: class 'x114::C' contains a zero size array
 (127,1): Warning! W011: all members are private
+(130,26): Error! E336: declaration specifiers are required to declare 'shortlastshift'
 (130,28): Error! E029: symbol 'bioskey' has not been declared
 (131,1): Error! E003: missing return value
 (179,26): Warning! W549: 'sizeof' operand contains compiler generated information
@@ -2716,10 +2726,10 @@ File: source\diag0250.c
 (15,22): Error! E029: symbol 'goo' has not been declared
 (16,2): Error! E080: last line
 File: source\diag0251.c
+(20,12): Error! E913: 'extra' does not have a return type specified
 (15,12): Error! E227: overloaded function is ambiguous for arguments used in call
   ambiguous function: int S::goo( int (S::* )( int )) defined at: (11,9)
   ambiguous function: int S::goo( int (* )( double )) defined at: (12,9)
-(20,12): Error! E913: 'extra' does not have a return type specified
 (26,23): Error! E898: in-class initialization is only allowed for const static integral members
 (26,25): Error! E058: expression must be a constant
 (26,32): Error! E537: operand is not a valid pointer to class member
@@ -3111,6 +3121,7 @@ File: source\diag0267.c
   source conversion type is 'S'
   target conversion type is 'T'
 File: source\diag0268.c
+(16,1): Warning! W914: 'main' must return 'int'
 (19,8): Error! E473: function argument(s) do not match those in prototype
   definition: 'void foo( T )'
   cannot convert argument 1 defined at: (19,9)
