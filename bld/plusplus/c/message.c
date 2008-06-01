@@ -917,7 +917,7 @@ void InfSymbolDeclaration(      // GENERATE SYMBOL-DECLARATION NOTE
 void InfSymbolAmbiguous(        // GENERATE SYMBOL-AMBIGUITY NOTE
     SYMBOL sym )                // - a symbol
 {
-    CErr( SymIsFunctionTemplateModel( sym )
+    CErr( SymIsFnTemplateMatchable( sym )
             ? INF_TEMPLATE_FN_AMBIGUOUS : INF_FUNC_AMBIGUOUS
         , sym
         , &sym->locn->tl );
