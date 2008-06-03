@@ -3002,9 +3002,15 @@ static inherit_flag verifyAccess( access_data *data )
     }
     located = data->located;
     class_scope = data->member;
-    if( class_scope == located ) {
-        /* accessing your own members is always OK */
-        return( IN_PUBLIC );
+    while( class_scope != NULL ) {
+        /* see 11.8 Nested classes [class.access.nest]: A nested class
+         * is a member and as such has the same access rights as any
+         * other member. */
+        if( _IsClassScope( class_scope ) && ( class_scope == located ) ) {
+            /* accessing your own members is always OK */
+            return( IN_PUBLIC );
+        }
+        class_scope = class_scope->enclosing;
     }
     access = data->access;
     if( isScopeFriend( access, located ) ) {
