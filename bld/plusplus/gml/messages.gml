@@ -12112,3 +12112,21 @@ syntax error.
 :MSGJTXT.
 The identifier in the error message has not been declared as member.  This
 may be the cause of the syntax error.
+:errbad.
+struct A { };
+
+void fn() {
+    A::undeclared = 0;
+}
+:eerrbad.
+
+:MSGSYM. ERR_SYNTAX_UNDECLARED_GLOBAL_ID
+:MSGTXT. syntax error: '%s' has not been declared
+:MSGJTXT.
+The identifier in the error message has not been declared.  This may be the
+cause of the syntax error.
+:errbad.
+void fn() {
+    ::undeclared = 0;
+}
+:eerrbad.

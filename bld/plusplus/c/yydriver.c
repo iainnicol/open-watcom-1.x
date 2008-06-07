@@ -2278,6 +2278,8 @@ static void syntaxError( void )
             genScopedIdSyntaxError( ERR_SYNTAX_SCOPED_ID );
             break;
         case Y_GLOBAL_UNKNOWN_ID:
+            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_GLOBAL_ID );
+            break;
         case Y_SCOPED_UNKNOWN_ID:
             genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_SCOPED_ID );
             break;
