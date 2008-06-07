@@ -352,6 +352,7 @@ positive_tests = &
     dtor30.$(ext) &
     dtor31.$(ext) &
     dtor32.$(ext) &
+    dtor33.$(ext) &
     dwarf01.$(ext) &
     dwarf02.$(ext) &
     dwarf03.$(ext) &

@@ -4631,6 +4631,19 @@ TYPE VoidType( TYPE type )
     return( type );
 }
 
+TYPE TypedefedType( TYPE type )
+/*****************************/
+{
+    TypeStrip( type, ( 1 << TYP_MODIFIER ) );
+
+    if( type->id == TYP_TYPEDEF ) {
+        TypeStripTdMod( type );
+    } else if ( type->id != TYP_CLASS ) {
+        type = NULL;
+    }
+    return( type );
+}
+
 TYPE ArrayBaseType( TYPE type )
 /*****************************/
 {
@@ -6704,27 +6717,6 @@ boolean TypeHasNumArgs( TYPE fn_type, unsigned num_args )
         return( TRUE );
     }
     return( FALSE );
-}
-
-PTREE MakeScalarDestructor( DECL_SPEC *scalar1, PTREE tree, DECL_SPEC *scalar2 )
-/******************************************************************************/
-{
-    PTREE id;
-
-    figureOutDSpec( scalar1 );
-    figureOutDSpec( scalar2 );
-    if( TypesIdentical( scalar1->partial, scalar2->partial ) ) {
-        id = SimpleDestructorId( scalar2->partial );
-        id = PTreeCopySrcLocation( id, tree );
-    } else {
-        CErr1( ERR_INVALID_SCALAR_DESTRUCTOR );
-        id = PTreeErrorNode( NULL );
-    }
-    PTreeFreeSubtrees( tree );
-    PTypeRelease( scalar1 );
-    PTypeRelease( scalar2 );
-
-    return( id );
 }
 
 uint_32 TypeHash( TYPE type )

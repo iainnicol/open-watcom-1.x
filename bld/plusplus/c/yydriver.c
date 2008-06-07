@@ -596,7 +596,12 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
     name = id->u.id.name;
     result = NULL;
     if( not_nested != NULL ) {
-        result = ScopeFindLexicalColonColon( not_nested, name );
+        /* need to bend over backwards to allow 12.4 Destructors
+         * [class.dtor] (14) "the notation for explicit call of a
+         * destructor can be used for any scalar type name
+         * (5.2.4)." */
+        result = ScopeFindLexicalColonColon( not_nested, name,
+                                             CurToken == T_TILDE );
     }
     if( result == NULL ) {
         if( scope != NULL ) {
@@ -627,7 +632,8 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
             id_scope = scope;
         } else {
             test_type = TypedefRemove( sym->sym_type );
-            if( test_type->id != TYP_CLASS ) {
+            /* see note above regarding 12.4 (14) */
+            if( ( test_type->id != TYP_CLASS ) && ( CurToken != T_TILDE ) ) {
                 CErr2p( ERR_NAME_NOT_A_CLASS_OR_NAMESPACE, name );
             } else {
                 scope_type = test_type;

@@ -558,6 +558,9 @@ static boolean simpleTypeDtor(  // TEST IF DTOR OF A SIMPLE TYPE
       &&( right->cgop == CO_NAME_DTOR ) ) {
         if( TypedefRemove( type )->id == TYP_VOID ) {
             CErr1( ERR_DTOR_TYPE_VOID );
+        } else if( ! TypesIdentical( type,
+                                     expr->u.subtree[1]->type ) ) {
+            CErr1( ERR_INVALID_SCALAR_DESTRUCTOR );
         }
         retn = TRUE;
     } else {

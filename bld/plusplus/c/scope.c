@@ -1779,6 +1779,25 @@ static boolean colonColonName( SYMBOL_NAME sym_name )
     return( TRUE );
 }
 
+static boolean colonColonTildeName( SYMBOL_NAME sym_name )
+{
+    SYMBOL sym;
+    TYPE type;
+
+    sym = sym_name->name_type;
+    if( sym == NULL ) {
+        return( FALSE );
+    }
+    if( SymIsNameSpace( sym ) ) {
+        return( TRUE );
+    }
+    type = TypedefedType( sym->sym_type );
+    if( type == NULL ) {
+        return( FALSE );
+    }
+    return( TRUE );
+}
+
 static boolean nameSpaceName( SYMBOL_NAME sym_name )
 {
     SYMBOL sym;
@@ -6406,8 +6425,9 @@ SEARCH_RESULT *ScopeFindLexicalEnumType( SCOPE scope, char *name )
     return( result );
 }
 
-SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, char *name )
-/******************************************************************/
+SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, char *name,
+                                           boolean tilde )
+/*****************************************************************/
 {
     SEARCH_RESULT *result;
     auto lookup_walk data;
@@ -6415,7 +6435,7 @@ SEARCH_RESULT *ScopeFindLexicalColonColon( SCOPE scope, char *name )
     // 'name' occurs before a '::'
     newLookupData( &data, name );
     data.check_special = TRUE;
-    data.is_special = colonColonName;
+    data.is_special = tilde ? colonColonTildeName : colonColonName;
     lexicalLookup( &data, scope );
     result = makeResult( &data );
     return( result );

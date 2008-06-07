@@ -924,6 +924,7 @@ postfix-expression-before-arrow
                 cls = BindTemplateClass( cls->of, &$1->locn, FALSE );
                 $1->type = BoundTemplateClass( $1->type );
                 cls = TypedefModifierRemoveOnly( cls );
+
                 if( cls->id == TYP_CLASS ) {
                     setTypeMember( state, cls->u.c.scope );
                 }
@@ -946,9 +947,7 @@ expression-list
     ;
 
 pseudo-destructor-name
-    : Y_SCOPED_TILDE Y_ID
-    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
-    | Y_SCOPED_TILDE Y_UNKNOWN_ID
+    : Y_SCOPED_TILDE identifier
     { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
     | Y_SCOPED_TILDE Y_TYPE_NAME
     { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
@@ -1898,9 +1897,7 @@ modifier
 based-expression
     : segment-cast-opt Y___SEGNAME Y_LEFT_PAREN string-literal Y_RIGHT_PAREN
     { $$ = MakeBasedModifier( TF1_BASED_STRING, $1, $4 ); }
-    | segment-cast-opt Y_ID
-    { $$ = MakeBasedModifier( TF1_NULL, $1, $2 ); }
-    | segment-cast-opt Y_UNKNOWN_ID
+    | segment-cast-opt identifier
     { $$ = MakeBasedModifier( TF1_NULL, $1, $2 ); }
     | segment-cast-opt Y_VOID
     { $$ = MakeBasedModifier( TF1_BASED_VOID, $1, NULL ); }
