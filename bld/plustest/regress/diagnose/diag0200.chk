@@ -566,7 +566,7 @@ File: source\diag0221.c
 (98,12): Error! E253: '::' qualifier cannot be used in this context
 (98,12): Error! E336: declaration specifiers are required to declare 'q'
 (99,12): Error! E241: class or namespace 'D' has not been declared
-(111,10): Error! E547: cannot access 'BB::n' through a private base class
+(111,12): Error! E547: cannot access 'BB::n' through a private base class
   definition: 'int X95::BB::n'
 (116,11): Error! E079: missing ')' for expansion of 'x115' macro
   macro 'x115' defined at: (115,9)
@@ -713,8 +713,6 @@ File: source\diag0223.c
   definition: 'int enclose::func( float )'
 (350,15): Error! E056: not expecting a return value
 (351,15): Warning! W013: unreachable code
-(351,15): Error! E148: access to private member 'enclose::private_si' is not allowed
-  definition: 'int enclose::private_si'
 (354,28): Error! E148: access to private member 'inner::private_inner_si' is not allowed
   definition: 'int enclose::inner::private_inner_si'
 (357,6): Error! E374: object (or object pointer) required to access non-static data member
@@ -722,8 +720,6 @@ File: source\diag0223.c
   definition: 'int enclose::func( float )'
 (358,15): Error! E056: not expecting a return value
 (359,15): Warning! W013: unreachable code
-(359,15): Error! E148: access to private member 'enclose::private_si' is not allowed
-  definition: 'int enclose::private_si'
 (366,27): Error! E385: attempt to overload function 'inner_friend' with a different return type
   definition: 'int inner_friend( int )'
 (367,13): Error! E374: object (or object pointer) required to access non-static data member
@@ -740,8 +736,8 @@ File: source\diag0223.c
 (400,5): Error! E029: symbol 'b' has not been declared
 (401,5): Error! E029: symbol 'x' has not been declared
 (402,5): Error! E029: symbol 'y' has not been declared
-(404,14): Error! E029: symbol 'x' has not been declared
-(405,14): Error! E029: symbol 'y' has not been declared
+(404,14): Error! E926: syntax error: 'enclose::x' has not been declared as a member
+(405,14): Error! E926: syntax error: 'enclose::y' has not been declared as a member
 (418,4): Error! E336: declaration specifiers are required to declare 'I'
 (418,3): Error! E498: syntax error before 'b'; probable cause: incorrectly spelled type name
 (419,6): Error! E336: declaration specifiers are required to declare 'S23'
@@ -764,13 +760,13 @@ File: source\diag0223.c
 (489,54): Warning! W311: union contains a protected member
 (496,6): Error! E312: anonymous struct/union contains a private member 'some_var3'
   definition: 'int __far * some_var3' in 'void main( void )'
-(502,12): Error! E149: access to protected member 'U7::pro1' is not allowed
+(502,13): Error! E149: access to protected member 'U7::pro1' is not allowed
   definition: 'int U7::pro1'
-(503,12): Error! E149: access to protected member 'U7::pro2' is not allowed
+(503,13): Error! E149: access to protected member 'U7::pro2' is not allowed
   definition: 'float U7::pro2'
-(504,12): Error! E148: access to private member 'U7::pri1' is not allowed
+(504,13): Error! E148: access to private member 'U7::pri1' is not allowed
   definition: 'long U7::pri1'
-(505,12): Error! E148: access to private member 'U7::s' is not allowed
+(505,13): Error! E148: access to private member 'U7::s' is not allowed
   definition: 'SOK U7::s'
 (508,17): Error! E149: access to protected member 'U7::prof' is not allowed
   definition: 'int U7::prof( int )'
@@ -786,7 +782,7 @@ File: source\diag0223.c
 (525,18): Error! E394: reference object must be initialized
 (540,21): Error! E322: static data members are not allowed in a local class
 (542,13): Warning! W361: member function was not defined in its class
-(547,12): Error! E148: access to private member 'LOCAL::local_int' is not allowed
+(547,13): Error! E148: access to private member 'LOCAL::local_int' is not allowed
   definition: 'int LOCAL::local_int' in 'void main( void )'
 (549,22): Error! E148: access to private member 'LOCAL::priv_func' is not allowed
   definition: 'int LOCAL::priv_func( int )' in 'void main( void )'
@@ -1518,7 +1514,9 @@ File: source\diag0230.c
 (15,10): Error! E227: overloaded function is ambiguous for arguments used in call
   ambiguous function: int X1::f( int ) defined at: (5,9)
   ambiguous function: int X1::f( int & ) defined at: (9,9)
-(26,13): Error! E664: attempt to initialize a non-constant reference with a temporary object
+(26,11): Error! E473: function argument(s) do not match those in prototype
+  definition: 'void X20::f2( int & )'
+  cannot convert argument 1 defined at: (26,13)
   source conversion type is 'double'
   target conversion type is 'int (lvalue)'
 (39,42): Error! E385: attempt to overload function 'operator +' with a different return type
@@ -2046,9 +2044,9 @@ File: source\diag0239.c
   range of possible values for type 'unsigned long' is 0 to 4294967295
   constant expression in comparison has value 0
 (110,29): Error! E029: symbol 'year' has not been declared
-(113,10): Error! E562: cannot take address of non-static member function
+(113,12): Error! E562: cannot take address of non-static member function
   definition: 'unsigned x93::year( void )'
-(114,14): Error! E562: cannot take address of non-static member function
+(114,16): Error! E562: cannot take address of non-static member function
   definition: 'unsigned x93::year( void )'
 (123,11): Error! E326: defining 'y' is not possible because its type has unknown size
   definition: 'x118 y' in 'void t( x118 )'
@@ -3204,7 +3202,7 @@ File: source\diag0272.c
   definition: 'int x::x86::d1'
   ambiguous namespace symbol is 'd1'
   definition: 'int x::x86::D::d1'
-(115,19): Error! E029: symbol 'd1' has not been declared
+(115,19): Error! E927: syntax error: '::d1' has not been declared
 (119,18): Error! E227: overloaded function is ambiguous for arguments used in call
   ambiguous function: void x::x86::E::f( int ) defined at: (104,22)
   ambiguous function: void x::x86::D::f( int ) defined at: (110,22)
@@ -3226,11 +3224,11 @@ File: source\diag0278.c
   source conversion type is 'int * (lvalue)'
   target conversion type is 'int const * (lvalue)'
 File: source\diag0279.c
-(7,13): Error! E660: cannot reference a bit field
+(7,12): Error! E660: cannot reference a bit field
 File: source\diag0280.c
 (26,9): Warning! W389: integral value may be truncated during assignment or initialization
 (27,9): Warning! W389: integral value may be truncated during assignment or initialization
-(30,12): Warning! W716: integral value may be truncated
+(30,11): Warning! W716: integral value may be truncated
 (32,9): Warning! W716: integral value may be truncated
 (33,9): Warning! W389: integral value may be truncated during assignment or initialization
 (34,9): Warning! W389: integral value may be truncated during assignment or initialization
@@ -3330,8 +3328,8 @@ File: source\diag0283.c
 (223,23): Error! E879: invalid bit-field name 'operator +'
 (223,23): Error! E042: symbol 'S::operator +' already defined
   definition: 'unsigned x207::S::operator + : 1'
-(232,13): Error! E660: cannot reference a bit field
-(243,13): Warning! W389: integral value may be truncated during assignment or initialization
+(232,12): Error! E660: cannot reference a bit field
+(243,12): Warning! W389: integral value may be truncated during assignment or initialization
 (245,16): Warning! W716: integral value may be truncated
 (248,18): Warning! W389: integral value may be truncated during assignment or initialization
 (249,12): Warning! W388: integral constant will be truncated during assignment or initialization
@@ -3404,7 +3402,7 @@ File: source\diag0292.c
 (70,1): Error! E003: missing return value
 (70,1): Warning! W726: no reference to formal parameter 'x'
   definition: 'int x' in 'x60::s x60::ack( int )'
-(84,10): Error! E562: cannot take address of non-static member function
+(84,11): Error! E562: cannot take address of non-static member function
   definition: 'int x67::Q::foo( void ) const'
 (94,6): Error! E536: cannot use '.*' nor '->*' with pointer to class member with zero value
 (114,10): Error! E303: constructor is ambiguous for operands used

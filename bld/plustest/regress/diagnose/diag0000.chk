@@ -274,13 +274,13 @@ File: source\diag0022.c
 (35,23): Error! E290: constructor cannot be declared const or volatile
 (36,25): Error! E291: constructor cannot be virtual
 File: source\diag0023.c
-(11,19): Error! E292: types do not match in simple type destructor
-(12,19): Error! E292: types do not match in simple type destructor
-(13,24): Error! E292: types do not match in simple type destructor
-(14,27): Error! E292: types do not match in simple type destructor
-(15,20): Error! E292: types do not match in simple type destructor
-(16,20): Error! E292: types do not match in simple type destructor
-(17,22): Error! E292: types do not match in simple type destructor
+(11,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'int' instead
+(12,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'char' instead
+(13,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'unsigned' instead
+(14,9): Error! E928: syntax error: expected id-expression after . or -> operator, found '__segment' instead
+(15,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'long' instead
+(16,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'float' instead
+(17,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'double' instead
 File: source\diag0024.c
 (6,10): Error! E042: symbol 'S::a' already defined
   definition: 'int S::a'
@@ -325,14 +325,14 @@ File: source\diag0026.c
 (4,28): Warning! W145: unexpected type qualifier found
 (5,31): Error! E298: class friend declarations cannot contain a class definition
 File: source\diag0027.c
-(27,6): Error! E148: access to private member 'C::a' is not allowed
+(27,8): Error! E148: access to private member 'C::a' is not allowed
   definition: 'int C::a'
 (33,21): Error! E125: invalid redefinition of the typedef name 'BAD'
   definition: 'BAD'
 (39,11): Error! E125: invalid redefinition of the typedef name 'BAD'
   definition: 'BAD'
 (45,11): Error! E241: class or namespace 'BAD' has not been declared
-(47,6): Error! E148: access to private member 'W::a' is not allowed
+(47,8): Error! E148: access to private member 'W::a' is not allowed
   definition: 'int W::a'
 File: source\diag0028.c
 (8,33): Error! E301: 'friend', 'virtual' or 'inline' modifiers are not part of a function's type
@@ -343,7 +343,7 @@ File: source\diag0028.c
 File: source\diag0029.c
 (11,37): Error! E254: 'C::not_found' has not been declared as a member
   definition: 'void C::not_found( void )'
-(23,6): Error! E148: access to private member 'Z::a' is not allowed
+(23,8): Error! E148: access to private member 'Z::a' is not allowed
   definition: 'int Z::a'
 File: source\diag0030.c
 (7,12): Warning! W188: base class is inherited with private access
@@ -353,24 +353,24 @@ File: source\diag0030.c
   definition: 'void A::ambig( void )'
 (18,37): Warning! W300: function 'double_OK' has already been declared as a friend
   definition: 'void double_OK( C::Z * )'
-(38,6): Error! E148: access to private member 'Z::a' is not allowed
+(38,8): Error! E148: access to private member 'Z::a' is not allowed
   definition: 'int C::Z::a'
-(43,6): Error! E148: access to private member 'Z::a' is not allowed
+(43,8): Error! E148: access to private member 'Z::a' is not allowed
   definition: 'int C::Z::a'
 File: source\diag0031.c
 (47,1): Error! E254: 'NEST::foo' has not been declared as a member
   definition: 'void NEST::foo( NEST::NESTED * )'
-(48,6): Error! E148: access to private member 'NESTED::q' is not allowed
+(48,8): Error! E148: access to private member 'NESTED::q' is not allowed
   definition: 'int NEST::NESTED::q'
 File: source\diag0032.c
-(18,6): Error! E148: access to private member 'C::a' is not allowed
+(18,8): Error! E148: access to private member 'C::a' is not allowed
   definition: 'int C::a'
 File: source\diag0033.c
-(18,6): Error! E148: access to private member 'C::a' is not allowed
+(18,8): Error! E148: access to private member 'C::a' is not allowed
   definition: 'int C::a'
 (24,1): Error! E003: missing return value
 File: source\diag0034.c
-(25,6): Error! E148: access to private member 'C::a' is not allowed
+(25,8): Error! E148: access to private member 'C::a' is not allowed
   definition: 'int C::a'
 (31,1): Error! E003: missing return value
 File: source\diag0035.c
@@ -381,7 +381,7 @@ File: source\diag0036.c
 (15,32): Error! E254: 'S::operator double ' has not been declared as a member
   definition: 'S::operator double ()'
 (23,1): Error! E003: missing return value
-(27,6): Error! E148: access to private member 'C::a' is not allowed
+(27,8): Error! E148: access to private member 'C::a' is not allowed
   definition: 'int C::a'
 (28,1): Error! E003: missing return value
 File: source\diag0037.c
@@ -428,11 +428,11 @@ Warning! W018: no reference to anonymous union member 'i2'
 Warning! W018: no reference to anonymous union member 'd2'
   definition: 'double d2'
 File: source\diag0039.c
-(32,6): Error! E148: access to private member 'C::u0' is not allowed
+(32,8): Error! E148: access to private member 'C::u0' is not allowed
   definition: 'int C::u0'
-(33,6): Error! E148: access to private member 'C::u1' is not allowed
+(33,8): Error! E148: access to private member 'C::u1' is not allowed
   definition: 'int C::u1'
-(34,6): Error! E148: access to private member 'C::u2' is not allowed
+(34,8): Error! E148: access to private member 'C::u2' is not allowed
   definition: 'int C::u2'
 File: source\diag0040.c
 (2,19): Error! E127: 'sizeof' is not allowed for an undefined type
@@ -1097,133 +1097,133 @@ File: source\diag0058.c
 (86,2): Error! E080: 
 (87,2): Error! E080: 
 File: source\diag0059.c
-(49,7): Error! E148: access to private member 'B::B_pri' is not allowed
+(49,9): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(50,7): Error! E149: access to protected member 'B::B_pro' is not allowed
+(50,9): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(52,10): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
+(52,12): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
   definition: 'int DPUB::DPUB_pri'
-(53,10): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
+(53,12): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
   definition: 'int DPUB::DPUB_pro'
-(55,10): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
+(55,12): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
   definition: 'int DPRI::DPRI_pri'
-(56,10): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
+(56,12): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
   definition: 'int DPRI::DPRI_pro'
-(58,10): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
+(58,12): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
   definition: 'int DPRO::DPRO_pri'
-(59,10): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
+(59,12): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
   definition: 'int DPRO::DPRO_pro'
-(61,10): Error! E148: access to private member 'B::B_pri' is not allowed
+(61,12): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(62,10): Error! E149: access to protected member 'B::B_pro' is not allowed
+(62,12): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(63,10): Error! E547: cannot access 'B::B_pub' through a private base class
+(63,12): Error! E547: cannot access 'B::B_pub' through a private base class
   definition: 'int B::B_pub'
-(64,10): Error! E547: cannot access 'B::B_pri' through a private base class
+(64,12): Error! E547: cannot access 'B::B_pri' through a private base class
   definition: 'int B::B_pri'
-(65,10): Error! E547: cannot access 'B::B_pro' through a private base class
+(65,12): Error! E547: cannot access 'B::B_pro' through a private base class
   definition: 'int B::B_pro'
-(66,10): Error! E548: cannot access 'B::B_pub' through a protected base class
+(66,12): Error! E548: cannot access 'B::B_pub' through a protected base class
   definition: 'int B::B_pub'
-(67,10): Error! E548: cannot access 'B::B_pri' through a protected base class
+(67,12): Error! E548: cannot access 'B::B_pri' through a protected base class
   definition: 'int B::B_pri'
-(68,10): Error! E548: cannot access 'B::B_pro' through a protected base class
+(68,12): Error! E548: cannot access 'B::B_pro' through a protected base class
   definition: 'int B::B_pro'
-(74,7): Error! E148: access to private member 'B::B_pri' is not allowed
+(74,9): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(75,7): Error! E149: access to protected member 'B::B_pro' is not allowed
+(75,9): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(77,10): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
+(77,12): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
   definition: 'int DPUB::DPUB_pri'
-(78,10): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
+(78,12): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
   definition: 'int DPUB::DPUB_pro'
-(83,10): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
+(83,12): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
   definition: 'int DPRO::DPRO_pri'
-(84,10): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
+(84,12): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
   definition: 'int DPRO::DPRO_pro'
-(86,10): Error! E148: access to private member 'B::B_pri' is not allowed
+(86,12): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(87,10): Error! E149: access to protected member 'B::B_pro' is not allowed
+(87,12): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(89,10): Error! E148: access to private member 'B::B_pri' is not allowed
+(89,12): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(91,10): Error! E548: cannot access 'B::B_pub' through a protected base class
+(91,12): Error! E548: cannot access 'B::B_pub' through a protected base class
   definition: 'int B::B_pub'
-(92,10): Error! E548: cannot access 'B::B_pri' through a protected base class
+(92,12): Error! E548: cannot access 'B::B_pri' through a protected base class
   definition: 'int B::B_pri'
-(93,10): Error! E548: cannot access 'B::B_pro' through a protected base class
+(93,12): Error! E548: cannot access 'B::B_pro' through a protected base class
   definition: 'int B::B_pro'
-(99,7): Error! E148: access to private member 'B::B_pri' is not allowed
+(99,9): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(100,7): Error! E149: access to protected member 'B::B_pro' is not allowed
+(100,9): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(102,10): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
+(102,12): Error! E148: access to private member 'DPUB::DPUB_pri' is not allowed
   definition: 'int DPUB::DPUB_pri'
-(103,10): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
+(103,12): Error! E149: access to protected member 'DPUB::DPUB_pro' is not allowed
   definition: 'int DPUB::DPUB_pro'
-(105,10): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
+(105,12): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
   definition: 'int DPRI::DPRI_pri'
-(106,10): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
+(106,12): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
   definition: 'int DPRI::DPRI_pro'
-(111,10): Error! E148: access to private member 'B::B_pri' is not allowed
+(111,12): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(112,10): Error! E149: access to protected member 'B::B_pro' is not allowed
+(112,12): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(113,10): Error! E547: cannot access 'B::B_pub' through a private base class
+(113,12): Error! E547: cannot access 'B::B_pub' through a private base class
   definition: 'int B::B_pub'
-(114,10): Error! E547: cannot access 'B::B_pri' through a private base class
+(114,12): Error! E547: cannot access 'B::B_pri' through a private base class
   definition: 'int B::B_pri'
-(115,10): Error! E547: cannot access 'B::B_pro' through a private base class
+(115,12): Error! E547: cannot access 'B::B_pro' through a private base class
   definition: 'int B::B_pro'
-(117,10): Error! E148: access to private member 'B::B_pri' is not allowed
+(117,12): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(124,7): Error! E148: access to private member 'B::B_pri' is not allowed
+(124,9): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(125,7): Error! E149: access to protected member 'B::B_pro' is not allowed
+(125,9): Error! E149: access to protected member 'B::B_pro' is not allowed
   definition: 'int B::B_pro'
-(130,10): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
+(130,12): Error! E148: access to private member 'DPRI::DPRI_pri' is not allowed
   definition: 'int DPRI::DPRI_pri'
-(131,10): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
+(131,12): Error! E149: access to protected member 'DPRI::DPRI_pro' is not allowed
   definition: 'int DPRI::DPRI_pro'
-(133,10): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
+(133,12): Error! E148: access to private member 'DPRO::DPRO_pri' is not allowed
   definition: 'int DPRO::DPRO_pri'
-(134,10): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
+(134,12): Error! E149: access to protected member 'DPRO::DPRO_pro' is not allowed
   definition: 'int DPRO::DPRO_pro'
-(136,10): Error! E148: access to private member 'B::B_pri' is not allowed
+(136,12): Error! E148: access to private member 'B::B_pri' is not allowed
   definition: 'int B::B_pri'
-(138,10): Error! E547: cannot access 'B::B_pub' through a private base class
+(138,12): Error! E547: cannot access 'B::B_pub' through a private base class
   definition: 'int B::B_pub'
-(139,10): Error! E547: cannot access 'B::B_pri' through a private base class
+(139,12): Error! E547: cannot access 'B::B_pri' through a private base class
   definition: 'int B::B_pri'
-(140,10): Error! E547: cannot access 'B::B_pro' through a private base class
+(140,12): Error! E547: cannot access 'B::B_pro' through a private base class
   definition: 'int B::B_pro'
-(141,10): Error! E548: cannot access 'B::B_pub' through a protected base class
+(141,12): Error! E548: cannot access 'B::B_pub' through a protected base class
   definition: 'int B::B_pub'
-(142,10): Error! E548: cannot access 'B::B_pri' through a protected base class
+(142,12): Error! E548: cannot access 'B::B_pri' through a protected base class
   definition: 'int B::B_pri'
-(143,10): Error! E548: cannot access 'B::B_pro' through a protected base class
+(143,12): Error! E548: cannot access 'B::B_pro' through a protected base class
   definition: 'int B::B_pro'
 File: source\diag0060.c
-(22,7): Error! E548: cannot access 'B::x' through a protected base class
+(22,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
-(24,7): Error! E548: cannot access 'B::x' through a protected base class
+(24,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
-(34,7): Error! E548: cannot access 'B::x' through a protected base class
+(34,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
-(42,7): Error! E548: cannot access 'B::x' through a protected base class
+(42,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
 File: source\diag0061.c
-(21,7): Error! E548: cannot access 'B::x' through a protected base class
+(21,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
-(23,7): Error! E548: cannot access 'B::x' through a protected base class
+(23,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
-(24,7): Error! E548: cannot access 'D::y' through a protected base class
+(24,9): Error! E548: cannot access 'D::y' through a protected base class
   definition: 'int D::y'
-(33,7): Error! E548: cannot access 'B::x' through a protected base class
+(33,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
-(34,7): Error! E548: cannot access 'D::y' through a protected base class
+(34,9): Error! E548: cannot access 'D::y' through a protected base class
   definition: 'int D::y'
-(41,7): Error! E548: cannot access 'B::x' through a protected base class
+(41,9): Error! E548: cannot access 'B::x' through a protected base class
   definition: 'int B::x'
 Compiling generated function: ERR_EQ::ERR_EQ
   definition: 'ERR_EQ::ERR_EQ( void )'
@@ -1449,7 +1449,7 @@ File: source\diag0072.c
 (23,55): Error! E411: static member function cannot be declared const or volatile
 (23,55): Error! E376: virtual function must be a non-static member function
 File: source\diag0073.c
-(20,6): Error! E547: cannot access 'VV::v' through a private base class
+(20,12): Error! E547: cannot access 'VV::v' through a private base class
   definition: 'int VV::v'
 (79,30): Error! E547: cannot access 'UDC_B::operator double ' through a private base class
   definition: 'UDC_B::operator double ()'
@@ -1954,7 +1954,7 @@ File: source\diag0097.c
   template class instantiation for 'S<int,4294967295,int aa>' was at: (35,15)
 (36,16): Error! E042: symbol 'x' already defined
   definition: 'S<int,4294967295,int aa> x'
-(40,6): Error! E148: access to private member 'S::a' is not allowed
+(40,7): Error! E148: access to private member 'S::a' is not allowed
   definition: 'int S<int,4294967295,int aa>::a[1]'
 File: source\diag0098.c
 (16,12): Error! E473: function argument(s) do not match those in prototype

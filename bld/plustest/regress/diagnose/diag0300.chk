@@ -34,6 +34,7 @@ File: source\diag0303.c
 File: source\diag0304.c
 (2,18): Error! E898: in-class initialization is only allowed for const static integral members
 (3,19): Error! E898: in-class initialization is only allowed for const static integral members
+(4,21): Error! E336: declaration specifiers are required to declare 'i3'
 (7,25): Error! E498: syntax error before 'i3'; probable cause: incorrectly spelled type name
 (8,23): Error! E357: virtual function may only be declared in a class
 (8,25): Error! E330: function cannot be initialized
