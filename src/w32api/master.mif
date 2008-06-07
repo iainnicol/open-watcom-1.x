@@ -306,14 +306,22 @@ ddk_headers =        &
         mce.h        &
         ndis.h       &
         netevent.h   &
+        ntddcdrm.h   &
+        ntdddisk.h   &
         ntddk.h      &
+        ntddscsi.h   &
+        ntddstor.h   &
+        ntddtape.h   &
         ntdef.h      &
         ntifs.h      &
         ntiologc.h   &
         ntnls.h      &
         ntstatus.h   &
+        srb.h        &
         wdm.h        &
+        wdmguid.h    &
         winddi.h     &
+        wmilib.h     &
         xfilter.h
 
 directx_headers =    &
@@ -441,7 +449,10 @@ ddk_libs =           &
         ntdll.lib    &
         ntoskrnl.lib &
         rtlver.lib   &
-        win32k.lib
+        scsiport.lib &
+        wdmguid.lib  &
+        win32k.lib   &
+        wmilib.lib
 
 vfw32_lbcs =         &
         avicap32.lbc &
@@ -450,7 +461,7 @@ vfw32_lbcs =         &
 
 extra_lib_flags = -p=16
 
-extra_lib_flags_386 = -ic -ii
+extra_lib_flags_386 = -io -ii
 extra_lib_flags_axp = -ic -ia
 
 additional_cleanup = *.h *.rh
@@ -517,6 +528,11 @@ dxguid.lib: dxguid.obj
 rtlver.lib: rtlver.obj
     %create $^&.lbc
     @%append $^&.lbc +rtlver.obj
+    $(librarian) $(libflags) @$^&.lbc
+
+wdmguid.lib: wdmguid.obj
+    %create $^&.lbc
+    @%append $^&.lbc +wdmguid.obj
     $(librarian) $(libflags) @$^&.lbc
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
