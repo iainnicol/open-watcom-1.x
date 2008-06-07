@@ -623,6 +623,56 @@ lt-special
     : lt-special-init Y_LT
     ;
 
+/* only used for error reporting */
+dot-special
+    : Y_DOT
+    {
+        switch( currToken ) {
+        case Y_CHAR:
+        case Y_WCHAR_T:
+        case Y_BOOL:
+        case Y_SHORT:
+        case Y_INT:
+        case Y___INT64:
+        case Y_LONG:
+        case Y_SIGNED:
+        case Y_UNSIGNED:
+        case Y_FLOAT:
+        case Y_DOUBLE:
+        case Y_VOID:
+        case Y___SEGMENT:
+            CErr2p( ERR_SYNTAX_MEMBER_LOOKUP_UNEXPECTED, TokenString() );
+            what = P_DIAGNOSED;
+            break;
+        }
+    }
+    ;
+
+/* only used for error reporting */
+arrow-special
+    : Y_ARROW
+    {
+        switch( currToken ) {
+        case Y_CHAR:
+        case Y_WCHAR_T:
+        case Y_BOOL:
+        case Y_SHORT:
+        case Y_INT:
+        case Y___INT64:
+        case Y_LONG:
+        case Y_SIGNED:
+        case Y_UNSIGNED:
+        case Y_FLOAT:
+        case Y_DOUBLE:
+        case Y_VOID:
+        case Y___SEGMENT:
+            CErr2p( ERR_SYNTAX_MEMBER_LOOKUP_UNEXPECTED, TokenString() );
+            what = P_DIAGNOSED;
+            break;
+        }
+    }
+    ;
+
 
 expr-decl-stmt
     : expression-before-semicolon Y_SEMI_COLON
@@ -779,9 +829,9 @@ postfix-expression
     {
         $$ = setLocation( MakeFunctionLikeCast( $1, $3 ), &yylp[2] );
     }
-    | postfix-expression-before-dot Y_DOT id-expression
+    | postfix-expression-before-dot dot-special id-expression
     { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
-    | postfix-expression-before-arrow Y_ARROW id-expression
+    | postfix-expression-before-arrow arrow-special id-expression
     { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
 /* id-expression includes pseudo-destructor-name
     | postfix-expression-before-dot Y_DOT pseudo-destructor-name
@@ -1849,6 +1899,8 @@ based-expression
     : segment-cast-opt Y___SEGNAME Y_LEFT_PAREN string-literal Y_RIGHT_PAREN
     { $$ = MakeBasedModifier( TF1_BASED_STRING, $1, $4 ); }
     | segment-cast-opt Y_ID
+    { $$ = MakeBasedModifier( TF1_NULL, $1, $2 ); }
+    | segment-cast-opt Y_UNKNOWN_ID
     { $$ = MakeBasedModifier( TF1_NULL, $1, $2 ); }
     | segment-cast-opt Y_VOID
     { $$ = MakeBasedModifier( TF1_BASED_VOID, $1, NULL ); }

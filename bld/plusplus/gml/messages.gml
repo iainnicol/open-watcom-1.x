@@ -12130,3 +12130,17 @@ void fn() {
     ::undeclared = 0;
 }
 :eerrbad.
+
+:MSGSYM. ERR_SYNTAX_MEMBER_LOOKUP_UNEXPECTED
+:MSGTXT. syntax error: expected id-expression after . or -> operator, found '%s' instead
+:MSGJTXT.
+The . or -> operators must be followed either by an id-expression or a
+pseudo-destructor-name, but an unexpected token was found instead.
+:errbad.
+struct A { };
+
+void fn() {
+    A a;
+    a.int::~int();
+}
+:eerrbad.
