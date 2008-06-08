@@ -1,18 +1,18 @@
 r/r conflict in state 0 on $eof:
-665 (299): start-restart-declarations <-
+669 (29d): start-restart-declarations <-
  14 (00e): goal-symbol <-
 
 ---
 
 s/r conflict in state 39 on Y_TEMPLATE_SCOPED_TEMPLATE_NAME:
-	shift to 302
- 59 (03b): nested-name-specifier <- scoped-template-type (unit production)
+	shift to 301
+ 63 (03f): nested-name-specifier <- scoped-template-type (unit production)
 
-Sample sentence(s) for reduce of rule 59:
+Sample sentence(s) for reduce of rule 63:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_TEMPLATE_NAME
   Will never shift token 'Y_TEMPLATE_SCOPED_TEMPLATE_NAME' in this context
-Sample sentence(s) for shift to state 302:
+Sample sentence(s) for shift to state 301:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
@@ -20,14 +20,14 @@ Y_GT_SPECIAL Y_COMMA
 ---
 
 s/r conflict in state 41 on Y_TEMPLATE_SCOPED_TEMPLATE_NAME:
-	shift to 302
- 58 (03a): nested-name-specifier <- template-type (unit production)
+	shift to 301
+ 62 (03e): nested-name-specifier <- template-type (unit production)
 
-Sample sentence(s) for reduce of rule 58:
+Sample sentence(s) for reduce of rule 62:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_TEMPLATE_NAME
   Will never shift token 'Y_TEMPLATE_SCOPED_TEMPLATE_NAME' in this context
-Sample sentence(s) for shift to state 302:
+Sample sentence(s) for shift to state 301:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
@@ -35,26 +35,26 @@ Y_GT_SPECIAL Y_COMMA
 ---
 
 s/r conflict in state 44 on Y_TEMPLATE_SCOPED_TILDE:
-	shift to 309
-280 (118): qualified-type-specifier <- nested-name-specifier
+	shift to 308
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_TILDE Y_ID Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 309:
+Sample sentence(s) for shift to state 308:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
-Y_TEMPLATE_SCOPED_TILDE Y_ID Y_LEFT_BRACKET Y_TYPENAME 
+Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME Y_LEFT_BRACKET Y_TYPENAME 
 Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
 s/r conflict in state 44 on Y_TEMPLATE_SCOPED_OPERATOR:
 	shift to 118
-280 (118): qualified-type-specifier <- nested-name-specifier
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_OPERATOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_EQUAL 
@@ -66,15 +66,15 @@ Y_LEFT_BRACKET
 ---
 
 s/r conflict in state 44 on Y_TEMPLATE_SCOPED_UNKNOWN_ID:
-	shift to 313
-280 (118): qualified-type-specifier <- nested-name-specifier
+	shift to 312
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_UNKNOWN_ID Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 313:
+Sample sentence(s) for shift to state 312:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_UNKNOWN_ID Y_LEFT_BRACKET Y_TYPENAME 
@@ -82,15 +82,15 @@ Y_SCOPED_TYPE_NAME Y_LEFT_PAREN
 ---
 
 s/r conflict in state 44 on Y_TEMPLATE_SCOPED_ID:
-	shift to 314
-280 (118): qualified-type-specifier <- nested-name-specifier
+	shift to 313
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_ID Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 314:
+Sample sentence(s) for shift to state 313:
   Y_EXCEPTION_SPECIAL Y_INT Y_LEFT_PAREN 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_ID Y_LEFT_BRACKET Y_TYPENAME Y_SCOPED_TYPE_NAME 
@@ -99,9 +99,9 @@ Y_LEFT_PAREN
 
 s/r conflict in state 74 on Y_SCOPED_TEMPLATE_NAME:
 	shift to 124
-239 (0ef): decl-specifier-seq <- non-type-decl-specifier-seq
+243 (0f3): decl-specifier-seq <- non-type-decl-specifier-seq
 
-Sample sentence(s) for reduce of rule 239:
+Sample sentence(s) for reduce of rule 243:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_FRIEND .
 Y_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
@@ -115,9 +115,9 @@ Y_GT_SPECIAL Y_COMMA
 
 s/r conflict in state 74 on Y_GLOBAL_TEMPLATE_NAME:
 	shift to 130
-239 (0ef): decl-specifier-seq <- non-type-decl-specifier-seq
+243 (0f3): decl-specifier-seq <- non-type-decl-specifier-seq
 
-Sample sentence(s) for reduce of rule 239:
+Sample sentence(s) for reduce of rule 243:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_FRIEND .
 Y_GLOBAL_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
@@ -130,15 +130,15 @@ Y_GT_SPECIAL Y_COMMA
 ---
 
 s/r conflict in state 74 on Y_TEMPLATE_NAME:
-	shift to 183
-239 (0ef): decl-specifier-seq <- non-type-decl-specifier-seq
+	shift to 217
+243 (0f3): decl-specifier-seq <- non-type-decl-specifier-seq
 
-Sample sentence(s) for reduce of rule 239:
+Sample sentence(s) for reduce of rule 243:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_FRIEND .
 Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TIMES Y_COMMA 
-Sample sentence(s) for shift to state 183:
+Sample sentence(s) for shift to state 217:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_FRIEND .
 Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
@@ -146,14 +146,14 @@ Y_COMMA
 ---
 
 s/r conflict in state 74 on Y_TYPE_NAME:
-	shift to 184
-239 (0ef): decl-specifier-seq <- non-type-decl-specifier-seq
+	shift to 218
+243 (0f3): decl-specifier-seq <- non-type-decl-specifier-seq
 
-Sample sentence(s) for reduce of rule 239:
+Sample sentence(s) for reduce of rule 243:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_FRIEND .Y_TYPE_NAME
   Will never shift token 'Y_TYPE_NAME' in this context
-Sample sentence(s) for shift to state 184:
+Sample sentence(s) for shift to state 218:
   Y_TYPE_NAME Y_LEFT_PAREN Y_RIGHT_PAREN Y_THROW Y_LEFT_PAREN Y_INT 
 Y_COMMA Y_FRIEND .
 Y_TYPE_NAME Y_COMMA Y_TYPENAME Y_SCOPED_TYPE_NAME Y_RIGHT_PAREN 
@@ -161,15 +161,15 @@ Y_LEFT_BRACE Y_RIGHT_BRACE
 ---
 
 r/r conflict in state 126 on Y_LT:
- 53 (035): qualified-id <- Y_SCOPED_TEMPLATE_ID
- 15 (00f): lt-special-init <-
+ 57 (039): qualified-id <- Y_SCOPED_TEMPLATE_ID
+ 21 (015): lt-special-init <-
 
-Sample sentence(s) for reduce of rule 53:
+Sample sentence(s) for reduce of rule 57:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_SCOPED_TEMPLATE_ID .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 15:
+Sample sentence(s) for reduce of rule 21:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_SCOPED_TEMPLATE_ID .
@@ -178,15 +178,15 @@ Y_ID Y_RIGHT_PAREN Y_OR_OR
 ---
 
 r/r conflict in state 132 on Y_LT:
- 51 (033): qualified-id <- Y_GLOBAL_TEMPLATE_ID
- 15 (00f): lt-special-init <-
+ 55 (037): qualified-id <- Y_GLOBAL_TEMPLATE_ID
+ 21 (015): lt-special-init <-
 
-Sample sentence(s) for reduce of rule 51:
+Sample sentence(s) for reduce of rule 55:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_GLOBAL_TEMPLATE_ID .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 15:
+Sample sentence(s) for reduce of rule 21:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_GLOBAL_TEMPLATE_ID .
@@ -195,102 +195,102 @@ Y_ID Y_RIGHT_PAREN Y_OR_OR
 ---
 
 r/r conflict in state 137 on Y_COMMA:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TIMES Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
-Y_TEMPLATE_SCOPED_TILDE Y_ID Y_SEMI_COLON Y_TYPENAME 
+Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 ---
 
 r/r conflict in state 137 on Y_COLON:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
 r/r conflict in state 137 on Y_SEMI_COLON:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
 r/r conflict in state 137 on Y_LEFT_PAREN:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME Y_EQUAL 
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME Y_EQUAL 
 ---
 
 r/r conflict in state 137 on Y_RIGHT_PAREN:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
 r/r conflict in state 137 on Y_LEFT_BRACKET:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_LEFT_BRACKET Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_LEFT_BRACKET
   Will never shift token 'Y_LEFT_BRACKET' in this context
 ---
 
 r/r conflict in state 137 on Y_EQUAL:
-401 (191): declarator-id <- Y_TYPE_NAME (unit production)
-273 (111): simple-type-specifier <- Y_TYPE_NAME
+405 (195): declarator-id <- Y_TYPE_NAME (unit production)
+277 (115): simple-type-specifier <- Y_TYPE_NAME
 
-Sample sentence(s) for reduce of rule 401:
+Sample sentence(s) for reduce of rule 405:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .
 Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 273:
+Sample sentence(s) for reduce of rule 277:
   Y_UNION Y_LEFT_BRACE Y_TYPE_NAME .Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 ---
 
 r/r conflict in state 138 on Y_LT:
- 28 (01c): identifier <- Y_TEMPLATE_ID (unit production)
- 15 (00f): lt-special-init <-
+ 32 (020): identifier <- Y_TEMPLATE_ID (unit production)
+ 21 (015): lt-special-init <-
 
-Sample sentence(s) for reduce of rule 28:
+Sample sentence(s) for reduce of rule 32:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_ID .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 15:
+Sample sentence(s) for reduce of rule 21:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_ID .
@@ -300,9 +300,9 @@ Y_ID Y_RIGHT_PAREN Y_OR_OR
 
 s/r conflict in state 153 on Y_SCOPED_TEMPLATE_NAME:
 	shift to 124
-636 (27c): explicit-instantiation-special <- Y_TEMPLATE
+640 (280): explicit-instantiation-special <- Y_TEMPLATE
 
-Sample sentence(s) for reduce of rule 636:
+Sample sentence(s) for reduce of rule 640:
   Y_SEMI_COLON Y_TEMPLATE .
 Y_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_GT_SPECIAL Y_SEMI_COLON 
@@ -314,9 +314,9 @@ Y_GT_SPECIAL Y_SEMI_COLON
 
 s/r conflict in state 153 on Y_GLOBAL_TEMPLATE_NAME:
 	shift to 130
-636 (27c): explicit-instantiation-special <- Y_TEMPLATE
+640 (280): explicit-instantiation-special <- Y_TEMPLATE
 
-Sample sentence(s) for reduce of rule 636:
+Sample sentence(s) for reduce of rule 640:
   Y_SEMI_COLON Y_TEMPLATE .
 Y_GLOBAL_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_GT_SPECIAL Y_SEMI_COLON 
@@ -327,41 +327,41 @@ Y_GT_SPECIAL Y_SEMI_COLON
 ---
 
 s/r conflict in state 153 on Y_TEMPLATE_NAME:
-	shift to 183
-636 (27c): explicit-instantiation-special <- Y_TEMPLATE
+	shift to 217
+640 (280): explicit-instantiation-special <- Y_TEMPLATE
 
-Sample sentence(s) for reduce of rule 636:
+Sample sentence(s) for reduce of rule 640:
   Y_SEMI_COLON Y_TEMPLATE .
 Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
 Y_SEMI_COLON 
-Sample sentence(s) for shift to state 183:
+Sample sentence(s) for shift to state 217:
   Y_SEMI_COLON Y_TEMPLATE .
 Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
 Y_SEMI_COLON 
 ---
 
-s/r conflict in state 191 on Y_TEMPLATE_SCOPED_TILDE:
-	shift to 309
-280 (118): qualified-type-specifier <- nested-name-specifier
+s/r conflict in state 185 on Y_TEMPLATE_SCOPED_TILDE:
+	shift to 308
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_TILDE
   Will never shift token 'Y_TEMPLATE_SCOPED_TILDE' in this context
-Sample sentence(s) for shift to state 309:
+Sample sentence(s) for shift to state 308:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
-Y_TEMPLATE_SCOPED_TILDE Y_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN 
-Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME Y_RIGHT_BRACKET Y_DOT Y_ID 
+Y_RIGHT_PAREN Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 191 on Y_TEMPLATE_SCOPED_OPERATOR:
+s/r conflict in state 185 on Y_TEMPLATE_SCOPED_OPERATOR:
 	shift to 118
-280 (118): qualified-type-specifier <- nested-name-specifier
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_OPERATOR
@@ -374,16 +374,16 @@ Y_TEMPLATE_SCOPED_OPERATOR Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
 ---
 
-s/r conflict in state 191 on Y_TEMPLATE_SCOPED_ID:
-	shift to 314
-280 (118): qualified-type-specifier <- nested-name-specifier
+s/r conflict in state 185 on Y_TEMPLATE_SCOPED_ID:
+	shift to 313
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .Y_TEMPLATE_SCOPED_ID
   Will never shift token 'Y_TEMPLATE_SCOPED_ID' in this context
-Sample sentence(s) for shift to state 314:
+Sample sentence(s) for shift to state 313:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
@@ -391,34 +391,34 @@ Y_TEMPLATE_SCOPED_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR
 Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 230 on Y_TEMPLATE_NAME:
-	shift to 183
-113 (071): unary-operator <- Y_TILDE
+r/r conflict in state 226 on Y_UNKNOWN_ID:
+117 (075): unary-operator <- Y_TILDE
+ 18 (012): expect-type-name <-
 
-Sample sentence(s) for reduce of rule 113:
+Sample sentence(s) for reduce of rule 117:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TILDE .
-Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
-Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 183:
+Y_UNKNOWN_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
+Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Sample sentence(s) for reduce of rule 18:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TILDE .
-Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
-Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
+Y_UNKNOWN_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
+Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 230 on Y_TYPE_NAME:
-	shift to 436
-113 (071): unary-operator <- Y_TILDE
+r/r conflict in state 226 on Y_TYPE_NAME:
+117 (075): unary-operator <- Y_TILDE
+ 18 (012): expect-type-name <-
 
-Sample sentence(s) for reduce of rule 113:
+Sample sentence(s) for reduce of rule 117:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TILDE .
 Y_TYPE_NAME Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for shift to state 436:
+Sample sentence(s) for reduce of rule 18:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TILDE .
@@ -426,98 +426,98 @@ Y_TYPE_NAME Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR
 Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 230 on Y_UNKNOWN_ID:
-	shift to 437
-113 (071): unary-operator <- Y_TILDE
+r/r conflict in state 226 on Y_TEMPLATE_NAME:
+117 (075): unary-operator <- Y_TILDE
+ 18 (012): expect-type-name <-
 
-Sample sentence(s) for reduce of rule 113:
+Sample sentence(s) for reduce of rule 117:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TILDE .
-Y_UNKNOWN_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
-Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 437:
+Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
+Y_LEFT_PAREN 
+Sample sentence(s) for reduce of rule 18:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y___OFFSETOF Y_LEFT_PAREN Y_INT Y_COMMA 
 Y_ID Y_LEFT_BRACKET Y_SIZEOF Y_TYPE_NAME Y_RIGHT_BRACKET 
 Y_LEFT_BRACKET Y_TILDE .
-Y_UNKNOWN_ID Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
-Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
+Y_RIGHT_BRACKET Y_DOT Y_ID Y_RIGHT_PAREN Y_OR_OR 
 ---
 
-s/r conflict in state 268 on Y_LEFT_PAREN:
-	shift to 514
-272 (110): type-specifier <- typename-specifier (unit production)
+s/r conflict in state 267 on Y_LEFT_PAREN:
+	shift to 501
+276 (114): type-specifier <- typename-specifier (unit production)
 
-Sample sentence(s) for reduce of rule 272:
+Sample sentence(s) for reduce of rule 276:
   Y_INT Y_TYPE_NAME Y_COMMA Y_TYPE_NAME Y_LEFT_PAREN 
 Y_TYPENAME Y_SCOPED_TYPE_NAME .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME Y_EQUAL 
-Sample sentence(s) for shift to state 514:
+Sample sentence(s) for shift to state 501:
   Y_INT Y_TYPE_NAME Y_COMMA Y_TYPE_NAME Y_LEFT_PAREN 
 Y_TYPENAME Y_SCOPED_TYPE_NAME .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 283 on Y_SEMI_COLON:
-516 (204): simple-member-declaration <- using-declaration (unit production)
-229 (0e5): block-declaration <- using-declaration (unit production)
+r/r conflict in state 282 on Y_SEMI_COLON:
+520 (208): simple-member-declaration <- using-declaration (unit production)
+233 (0e9): block-declaration <- using-declaration (unit production)
 
-Sample sentence(s) for reduce of rule 516:
+Sample sentence(s) for reduce of rule 520:
   Y_EXPORT Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_USING Y_SCOPED_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 229:
+Sample sentence(s) for reduce of rule 233:
   Y_EXPORT Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_USING Y_SCOPED_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-s/r conflict in state 286 on Y_COLON:
-	shift to 569
-340 (154): direct-declarator <- declarator-id
+s/r conflict in state 285 on Y_COLON:
+	shift to 560
+344 (158): direct-declarator <- declarator-id
 
-Sample sentence(s) for reduce of rule 340:
+Sample sentence(s) for reduce of rule 344:
   Y_UNION Y_LEFT_BRACE Y_INT Y_TYPE_NAME .
 Y_COLON Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_SEMI_COLON 
-Sample sentence(s) for shift to state 569:
+Sample sentence(s) for shift to state 560:
   Y_UNION Y_LEFT_BRACE Y_INT Y_TYPE_NAME .
 Y_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 290 on Y_SEMI_COLON:
-667 (29b): no-declarator-declaration <- decl-specifier-seq
-514 (202): simple-member-declaration <- decl-specifier-seq
+r/r conflict in state 289 on Y_SEMI_COLON:
+671 (29f): no-declarator-declaration <- decl-specifier-seq
+518 (206): simple-member-declaration <- decl-specifier-seq
 
-Sample sentence(s) for reduce of rule 667:
+Sample sentence(s) for reduce of rule 671:
   Y_EXPORT Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 514:
+Sample sentence(s) for reduce of rule 518:
   Y_EXPORT Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 293 on Y_RIGHT_BRACE:
-665 (299): start-restart-declarations <-
-298 (12a): namespace-body <-
+r/r conflict in state 292 on Y_RIGHT_BRACE:
+669 (29d): start-restart-declarations <-
+302 (12e): namespace-body <-
 
-Sample sentence(s) for reduce of rule 665:
+Sample sentence(s) for reduce of rule 669:
   Y_NAMESPACE Y_LEFT_BRACE .
 Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
-Sample sentence(s) for reduce of rule 298:
+Sample sentence(s) for reduce of rule 302:
   Y_NAMESPACE Y_LEFT_BRACE .
 Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-s/r conflict in state 300 on Y_TEMPLATE_SCOPED_TEMPLATE_NAME:
-	shift to 302
- 62 (03e): scoped-nested-name-specifier <- template-scoped-template-type (unit production)
+s/r conflict in state 299 on Y_TEMPLATE_SCOPED_TEMPLATE_NAME:
+	shift to 301
+ 66 (042): scoped-nested-name-specifier <- template-scoped-template-type (unit production)
 
-Sample sentence(s) for reduce of rule 62:
+Sample sentence(s) for reduce of rule 66:
   Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_GT_SPECIAL Y_LEFT_BRACE Y_RIGHT_BRACE 
-Sample sentence(s) for shift to state 302:
+Sample sentence(s) for shift to state 301:
   Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
@@ -525,63 +525,63 @@ Y_TEMPLATE_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_GT_SPECIAL Y_SEMI_COLON 
 ---
 
-r/r conflict in state 312 on Y_LT:
- 65 (041): template-scoped-unqualified-id <- Y_TEMPLATE_SCOPED_TEMPLATE_ID
- 15 (00f): lt-special-init <-
+r/r conflict in state 311 on Y_LT:
+ 69 (045): template-scoped-unqualified-id <- Y_TEMPLATE_SCOPED_TEMPLATE_ID
+ 21 (015): lt-special-init <-
 
-Sample sentence(s) for reduce of rule 65:
+Sample sentence(s) for reduce of rule 69:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TEMPLATE_ID .Y_LT
   Will never shift token 'Y_LT' in this context
-Sample sentence(s) for reduce of rule 15:
+Sample sentence(s) for reduce of rule 21:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TEMPLATE_ID .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL Y_SEMI_COLON 
 ---
 
-r/r conflict in state 340 on Y_LEFT_BRACE:
-481 (1e1): class-specifier <- class-key class-name
-465 (1d1): start-class <-
+r/r conflict in state 339 on Y_LEFT_BRACE:
+485 (1e5): class-specifier <- class-key class-name
+469 (1d5): start-class <-
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 485:
   Y_UNION Y_ID .Y_LEFT_BRACE
   Will never shift token 'Y_LEFT_BRACE' in this context
-Sample sentence(s) for reduce of rule 465:
+Sample sentence(s) for reduce of rule 469:
   Y_UNION Y_ID .
 Y_LEFT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-s/r conflict in state 340 on Y_COLON:
-	shift to 622
-481 (1e1): class-specifier <- class-key class-name
+s/r conflict in state 339 on Y_COLON:
+	shift to 611
+485 (1e5): class-specifier <- class-key class-name
 
-Sample sentence(s) for reduce of rule 481:
+Sample sentence(s) for reduce of rule 485:
   Y_UNION Y_ID .Y_COLON
   Will never shift token 'Y_COLON' in this context
-Sample sentence(s) for shift to state 622:
+Sample sentence(s) for shift to state 611:
   Y_UNION Y_ID .
 Y_COLON Y_PROTECTED Y_PUBLIC Y_VIRTUAL Y_PRIVATE 
 Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL Y_LEFT_BRACE Y_TYPENAME 
 Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-r/r conflict in state 351 on Y_LT:
-472 (1d8): class-name-id <- Y_TEMPLATE_NAME (unit production)
- 15 (00f): lt-special-init <-
+r/r conflict in state 350 on Y_LT:
+476 (1dc): class-name-id <- Y_TEMPLATE_NAME (unit production)
+ 21 (015): lt-special-init <-
 
-Sample sentence(s) for reduce of rule 472:
+Sample sentence(s) for reduce of rule 476:
   Y_UNION Y_TEMPLATE_NAME .Y_LT
   Will never shift token 'Y_LT' in this context
-Sample sentence(s) for reduce of rule 15:
+Sample sentence(s) for reduce of rule 21:
   Y_UNION Y_TEMPLATE_NAME .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL Y_SEMI_COLON 
 ---
 
-s/r conflict in state 372 on Y_TIMES:
+s/r conflict in state 371 on Y_TIMES:
 	shift to 141
-542 (21e): conversion-type-id <- type-specifier-seq
+546 (222): conversion-type-id <- type-specifier-seq
 
-Sample sentence(s) for reduce of rule 542:
+Sample sentence(s) for reduce of rule 546:
   Y_OPERATOR Y_INT .Y_TIMES
   Will never shift token 'Y_TIMES' in this context
 Sample sentence(s) for shift to state 141:
@@ -590,11 +590,11 @@ Y_TIMES Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_SEMI_COLON 
 ---
 
-s/r conflict in state 372 on Y_AND:
+s/r conflict in state 371 on Y_AND:
 	shift to 142
-542 (21e): conversion-type-id <- type-specifier-seq
+546 (222): conversion-type-id <- type-specifier-seq
 
-Sample sentence(s) for reduce of rule 542:
+Sample sentence(s) for reduce of rule 546:
   Y_OPERATOR Y_INT .Y_AND
   Will never shift token 'Y_AND' in this context
 Sample sentence(s) for shift to state 142:
@@ -603,37 +603,37 @@ Y_AND Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_SEMI_COLON 
 ---
 
+s/r conflict in state 412 on Y_LEFT_BRACKET:
+	shift to 639
+565 (235): operator <- Y_NEW
+
+Sample sentence(s) for reduce of rule 565:
+  Y_OPERATOR Y_NEW .
+Y_LEFT_BRACKET Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
+Sample sentence(s) for shift to state 639:
+  Y_OPERATOR Y_NEW .
+Y_LEFT_BRACKET Y_RIGHT_BRACKET Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME 
+Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
+---
+
 s/r conflict in state 413 on Y_LEFT_BRACKET:
-	shift to 649
-561 (231): operator <- Y_NEW
+	shift to 640
+566 (236): operator <- Y_DELETE
 
-Sample sentence(s) for reduce of rule 561:
-  Y_OPERATOR Y_NEW .
-Y_LEFT_BRACKET Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 649:
-  Y_OPERATOR Y_NEW .
-Y_LEFT_BRACKET Y_RIGHT_BRACKET Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME 
-Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
----
-
-s/r conflict in state 414 on Y_LEFT_BRACKET:
-	shift to 650
-562 (232): operator <- Y_DELETE
-
-Sample sentence(s) for reduce of rule 562:
+Sample sentence(s) for reduce of rule 566:
   Y_OPERATOR Y_DELETE .
 Y_LEFT_BRACKET Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 650:
+Sample sentence(s) for shift to state 640:
   Y_OPERATOR Y_DELETE .
 Y_LEFT_BRACKET Y_RIGHT_BRACKET Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME 
 Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-s/r conflict in state 457 on Y_SCOPED_TEMPLATE_NAME:
+s/r conflict in state 453 on Y_SCOPED_TEMPLATE_NAME:
 	shift to 124
-637 (27d): explicit-instantiation-special <- Y_EXTERN Y_TEMPLATE
+641 (281): explicit-instantiation-special <- Y_EXTERN Y_TEMPLATE
 
-Sample sentence(s) for reduce of rule 637:
+Sample sentence(s) for reduce of rule 641:
   Y_EXTERN Y_TEMPLATE .
 Y_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_GT_SPECIAL Y_SEMI_COLON 
@@ -643,11 +643,11 @@ Y_SCOPED_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_GT_SPECIAL Y_SEMI_COLON 
 ---
 
-s/r conflict in state 457 on Y_GLOBAL_TEMPLATE_NAME:
+s/r conflict in state 453 on Y_GLOBAL_TEMPLATE_NAME:
 	shift to 130
-637 (27d): explicit-instantiation-special <- Y_EXTERN Y_TEMPLATE
+641 (281): explicit-instantiation-special <- Y_EXTERN Y_TEMPLATE
 
-Sample sentence(s) for reduce of rule 637:
+Sample sentence(s) for reduce of rule 641:
   Y_EXTERN Y_TEMPLATE .
 Y_GLOBAL_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME 
 Y_GT_SPECIAL Y_SEMI_COLON 
@@ -657,103 +657,103 @@ Y_GLOBAL_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_GT_SPECIAL Y_SEMI_COLON 
 ---
 
-s/r conflict in state 457 on Y_TEMPLATE_NAME:
-	shift to 183
-637 (27d): explicit-instantiation-special <- Y_EXTERN Y_TEMPLATE
+s/r conflict in state 453 on Y_TEMPLATE_NAME:
+	shift to 217
+641 (281): explicit-instantiation-special <- Y_EXTERN Y_TEMPLATE
 
-Sample sentence(s) for reduce of rule 637:
+Sample sentence(s) for reduce of rule 641:
   Y_EXTERN Y_TEMPLATE .
 Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
 Y_SEMI_COLON 
-Sample sentence(s) for shift to state 183:
+Sample sentence(s) for shift to state 217:
   Y_EXTERN Y_TEMPLATE .
 Y_TEMPLATE_NAME Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_GT_SPECIAL 
 Y_SEMI_COLON 
 ---
 
-r/r conflict in state 461 on Y_LEFT_BRACE:
-293 (125): elaborated-type-specifier <- Y_ENUM make-id
-286 (11e): enum-key <- Y_ENUM make-id
+r/r conflict in state 457 on Y_LEFT_BRACE:
+297 (129): elaborated-type-specifier <- Y_ENUM make-id
+290 (122): enum-key <- Y_ENUM make-id
 
-Sample sentence(s) for reduce of rule 293:
+Sample sentence(s) for reduce of rule 297:
   Y_ENUM Y_ID .Y_LEFT_BRACE
   Will never shift token 'Y_LEFT_BRACE' in this context
-Sample sentence(s) for reduce of rule 286:
+Sample sentence(s) for reduce of rule 290:
   Y_ENUM Y_ID .
 Y_LEFT_BRACE Y_RIGHT_BRACE Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-s/r conflict in state 567 on Y_TYPENAME:
-	shift to 755
-696 (2b8): typename-special-init <-
+s/r conflict in state 558 on Y_TYPENAME:
+	shift to 753
+700 (2bc): typename-special-init <-
 
-Sample sentence(s) for reduce of rule 696:
+Sample sentence(s) for reduce of rule 700:
   Y_TEMPLATE Y_LT .
 Y_TYPENAME Y_SCOPED_TYPE_NAME Y_EQUAL 
-Sample sentence(s) for shift to state 755:
+Sample sentence(s) for shift to state 753:
   Y_TEMPLATE Y_LT .
 Y_TYPENAME Y_GT_SPECIAL 
 ---
 
-s/r conflict in state 567 on Y_CLASS:
-	shift to 756
-492 (1ec): packed-class-opt <-
+s/r conflict in state 558 on Y_CLASS:
+	shift to 754
+496 (1f0): packed-class-opt <-
 
-Sample sentence(s) for reduce of rule 492:
+Sample sentence(s) for reduce of rule 496:
   Y_TEMPLATE Y_LT .
 Y_CLASS Y_LEFT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
-Sample sentence(s) for shift to state 756:
+Sample sentence(s) for shift to state 754:
   Y_TEMPLATE Y_LT .
 Y_CLASS Y_GT_SPECIAL Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-r/r conflict in state 575 on Y_COMMA:
-524 (20c): member-declaring-declarator <- declarator
-318 (13e): init-declarator <- declarator
+r/r conflict in state 566 on Y_COMMA:
+528 (210): member-declaring-declarator <- declarator
+322 (142): init-declarator <- declarator
 
-Sample sentence(s) for reduce of rule 524:
+Sample sentence(s) for reduce of rule 528:
   Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT Y_TYPE_NAME .
 Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TIMES Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
-Y_TEMPLATE_SCOPED_TILDE Y_ID Y_SEMI_COLON Y_TYPENAME 
+Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 318:
+Sample sentence(s) for reduce of rule 322:
   Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT Y_TYPE_NAME .
 Y_COMMA Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_TIMES Y_GLOBAL_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
-Y_TEMPLATE_SCOPED_TILDE Y_ID Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Y_LEFT_PAREN 
+Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME Y_EQUAL Y_TYPENAME 
+Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 575 on Y_SEMI_COLON:
-524 (20c): member-declaring-declarator <- declarator
-318 (13e): init-declarator <- declarator
+r/r conflict in state 566 on Y_SEMI_COLON:
+528 (210): member-declaring-declarator <- declarator
+322 (142): init-declarator <- declarator
 
-Sample sentence(s) for reduce of rule 524:
+Sample sentence(s) for reduce of rule 528:
   Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT Y_TYPE_NAME .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 318:
+Sample sentence(s) for reduce of rule 322:
   Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT Y_TYPE_NAME .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 575 on Y_EQUAL:
-524 (20c): member-declaring-declarator <- declarator
-328 (148): declaring-declarator <- declarator
+r/r conflict in state 566 on Y_EQUAL:
+528 (210): member-declaring-declarator <- declarator
+332 (14c): declaring-declarator <- declarator
 
-Sample sentence(s) for reduce of rule 524:
+Sample sentence(s) for reduce of rule 528:
   Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT Y_TYPE_NAME .
 Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 328:
+Sample sentence(s) for reduce of rule 332:
   Y_TEMPLATE Y_LT Y_GT_SPECIAL Y_INT Y_TYPE_NAME .
 Y_EQUAL Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 646 on Y_TIMES:
+s/r conflict in state 636 on Y_TIMES:
 	shift to 141
-544 (220): conversion-declarator <- ptr-operator
+548 (224): conversion-declarator <- ptr-operator
 
-Sample sentence(s) for reduce of rule 544:
+Sample sentence(s) for reduce of rule 548:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .Y_TIMES
   Will never shift token 'Y_TIMES' in this context
 Sample sentence(s) for shift to state 141:
@@ -762,11 +762,11 @@ Y_TIMES Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_SEMI_COLON 
 ---
 
-s/r conflict in state 646 on Y_AND:
+s/r conflict in state 636 on Y_AND:
 	shift to 142
-544 (220): conversion-declarator <- ptr-operator
+548 (224): conversion-declarator <- ptr-operator
 
-Sample sentence(s) for reduce of rule 544:
+Sample sentence(s) for reduce of rule 548:
   Y_TEMPLATE_SCOPED_OPERATOR Y_INT Y_AND Y_AND .Y_AND
   Will never shift token 'Y_AND' in this context
 Sample sentence(s) for shift to state 142:
@@ -775,627 +775,627 @@ Y_AND Y_LEFT_BRACE Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME
 Y_SEMI_COLON 
 ---
 
-r/r conflict in state 675 on Y_RIGHT_BRACE:
-665 (299): start-restart-declarations <-
-314 (13a): linkage-body <-
+r/r conflict in state 670 on Y_RIGHT_BRACE:
+669 (29d): start-restart-declarations <-
+318 (13e): linkage-body <-
 
-Sample sentence(s) for reduce of rule 665:
+Sample sentence(s) for reduce of rule 669:
   Y_EXTERN Y_STRING Y_LEFT_BRACE .
 Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
-Sample sentence(s) for reduce of rule 314:
+Sample sentence(s) for reduce of rule 318:
   Y_EXTERN Y_STRING Y_LEFT_BRACE .
 Y_RIGHT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-s/r conflict in state 725 on Y_TIMES:
-	shift to 849
-129 (081): dynamic-type-id <- type-specifier-seq
+s/r conflict in state 713 on Y_TIMES:
+	shift to 848
+133 (085): dynamic-type-id <- type-specifier-seq
 
-Sample sentence(s) for reduce of rule 129:
+Sample sentence(s) for reduce of rule 133:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_INT .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 849:
+Sample sentence(s) for shift to state 848:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_INT .
 Y_TIMES Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 870 on Y_TYPENAME:
-	shift to 755
-696 (2b8): typename-special-init <-
+s/r conflict in state 876 on Y_TYPENAME:
+	shift to 753
+700 (2bc): typename-special-init <-
 
-Sample sentence(s) for reduce of rule 696:
+Sample sentence(s) for reduce of rule 700:
   Y_TEMPLATE Y_LT Y_INT Y_COMMA .
 Y_TYPENAME Y_SCOPED_TYPE_NAME Y_EQUAL 
-Sample sentence(s) for shift to state 755:
+Sample sentence(s) for shift to state 753:
   Y_TEMPLATE Y_LT Y_INT Y_COMMA .
 Y_TYPENAME Y_GT_SPECIAL 
 ---
 
-s/r conflict in state 870 on Y_CLASS:
-	shift to 756
-492 (1ec): packed-class-opt <-
+s/r conflict in state 876 on Y_CLASS:
+	shift to 754
+496 (1f0): packed-class-opt <-
 
-Sample sentence(s) for reduce of rule 492:
+Sample sentence(s) for reduce of rule 496:
   Y_TEMPLATE Y_LT Y_INT Y_COMMA .
 Y_CLASS Y_LEFT_BRACE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
-Sample sentence(s) for shift to state 756:
+Sample sentence(s) for shift to state 754:
   Y_TEMPLATE Y_LT Y_INT Y_COMMA .
 Y_CLASS Y_GT_SPECIAL Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-s/r conflict in state 923 on Y_TIMES:
-	shift to 849
-205 (0cd): partial-ptr-declarator <- Y_SCOPED_TIMES cv-qualifier-seq-opt
+s/r conflict in state 928 on Y_TIMES:
+	shift to 848
+209 (0d1): partial-ptr-declarator <- Y_SCOPED_TIMES cv-qualifier-seq-opt
 
-Sample sentence(s) for reduce of rule 205:
+Sample sentence(s) for reduce of rule 209:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_INT Y_SCOPED_TIMES .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 849:
+Sample sentence(s) for shift to state 848:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_INT Y_SCOPED_TIMES .
 Y_TIMES Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-s/r conflict in state 924 on Y_TIMES:
-	shift to 849
-203 (0cb): partial-ptr-declarator <- Y_TIMES cv-qualifier-seq-opt
+s/r conflict in state 929 on Y_TIMES:
+	shift to 848
+207 (0cf): partial-ptr-declarator <- Y_TIMES cv-qualifier-seq-opt
 
-Sample sentence(s) for reduce of rule 203:
+Sample sentence(s) for reduce of rule 207:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_INT Y_TIMES .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 849:
+Sample sentence(s) for shift to state 848:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_INT Y_TIMES .
 Y_TIMES Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on $eof:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on $eof:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .$eof
   Will never shift token '$eof' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .$eof
   Will never shift token '$eof' in this context
 ---
 
-r/r conflict in state 927 on Y_COMMA:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_COMMA:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
   Will never shift token 'Y_COMMA' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 ---
 
-r/r conflict in state 927 on Y_QUESTION:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_QUESTION:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
 ---
 
-r/r conflict in state 927 on Y_COLON:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_COLON:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
   Will never shift token 'Y_COLON' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
   Will never shift token 'Y_COLON' in this context
 ---
 
-r/r conflict in state 927 on Y_SEMI_COLON:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_SEMI_COLON:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
 ---
 
-r/r conflict in state 927 on Y_RIGHT_PAREN:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_RIGHT_PAREN:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
-r/r conflict in state 927 on Y_RIGHT_BRACKET:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_RIGHT_BRACKET:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
 ---
 
-r/r conflict in state 927 on Y_RIGHT_BRACE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_RIGHT_BRACE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
 ---
 
-r/r conflict in state 927 on Y_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_EQ:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_EQ:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_EQ Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_EQ Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_NE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_NE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_NE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_NE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_OR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_OR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_OR_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_OR_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_OR_OR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_OR_OR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_AND:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_AND:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_AND_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_AND_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_AND_AND:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_AND_AND:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_XOR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_XOR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_XOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_XOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_XOR_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_XOR_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_GT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_GT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_GE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_GE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_LT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_LT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_LE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_LE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_LSHIFT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_LSHIFT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_LSHIFT_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_LSHIFT_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_RSHIFT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_RSHIFT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_RSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_RSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_RSHIFT_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_RSHIFT_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_PLUS:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_PLUS:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PLUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PLUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_PLUS_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_PLUS_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_MINUS:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_MINUS:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_MINUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_MINUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_MINUS_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_MINUS_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_TIMES:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_TIMES:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_TIMES_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_TIMES_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_DIVIDE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_DIVIDE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_DIVIDE_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_DIVIDE_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
   Will never shift token 'Y_DIVIDE_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
   Will never shift token 'Y_DIVIDE_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_PERCENT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_PERCENT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PERCENT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PERCENT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_PERCENT_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_PERCENT_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
 ---
 
-r/r conflict in state 927 on Y_DOT_DOT_DOT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_DOT_DOT_DOT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
 ---
 
-r/r conflict in state 927 on Y_DOT_STAR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_DOT_STAR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DOT_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DOT_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_ARROW_STAR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_ARROW_STAR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_ARROW_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_ARROW_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_SEG_OP:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_SEG_OP:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_SEG_OP Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_SEG_OP Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 927 on Y_DEFARG_END:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_DEFARG_END:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DEFARG_END $eof 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DEFARG_END $eof 
 ---
 
-r/r conflict in state 927 on Y_GT_SPECIAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 932 on Y_GT_SPECIAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
 ---
 
-s/r conflict in state 927 on Y_LEFT_PAREN:
-	shift to 843
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+s/r conflict in state 932 on Y_LEFT_PAREN:
+	shift to 842
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for shift to state 843:
+Sample sentence(s) for shift to state 842:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-s/r conflict in state 961 on Y_TEMPLATE_SCOPED_TILDE:
-	shift to 309
-280 (118): qualified-type-specifier <- nested-name-specifier
+s/r conflict in state 970 on Y_TEMPLATE_SCOPED_TILDE:
+	shift to 308
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_TILDE Y_ID Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for shift to state 309:
+Sample sentence(s) for shift to state 308:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
-Y_TEMPLATE_SCOPED_TILDE Y_ID Y_SEMI_COLON Y_TYPENAME 
+Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
 ---
 
-s/r conflict in state 961 on Y_TEMPLATE_SCOPED_OPERATOR:
+s/r conflict in state 970 on Y_TEMPLATE_SCOPED_OPERATOR:
 	shift to 118
-280 (118): qualified-type-specifier <- nested-name-specifier
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_OPERATOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 Sample sentence(s) for shift to state 118:
@@ -1403,719 +1403,719 @@ Sample sentence(s) for shift to state 118:
 Y_TEMPLATE_SCOPED_OPERATOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_SEMI_COLON 
 ---
 
-s/r conflict in state 961 on Y_TEMPLATE_SCOPED_UNKNOWN_ID:
-	shift to 1012
-280 (118): qualified-type-specifier <- nested-name-specifier
+s/r conflict in state 970 on Y_TEMPLATE_SCOPED_UNKNOWN_ID:
+	shift to 1020
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_UNKNOWN_ID Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for shift to state 1012:
+Sample sentence(s) for shift to state 1020:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_UNKNOWN_ID Y_SEMI_COLON Y_TYPENAME 
 Y_SCOPED_TYPE_NAME 
 ---
 
-s/r conflict in state 961 on Y_TEMPLATE_SCOPED_ID:
-	shift to 314
-280 (118): qualified-type-specifier <- nested-name-specifier
+s/r conflict in state 970 on Y_TEMPLATE_SCOPED_ID:
+	shift to 313
+284 (11c): qualified-type-specifier <- nested-name-specifier
 
-Sample sentence(s) for reduce of rule 280:
+Sample sentence(s) for reduce of rule 284:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_ID Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for shift to state 314:
+Sample sentence(s) for shift to state 313:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL .
 Y_TEMPLATE_SCOPED_ID Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 962 on Y_SEMI_COLON:
- 41 (029): id-expression <- qualified-id (unit production)
- 22 (016): access-declaration <- qualified-id
+r/r conflict in state 971 on Y_SEMI_COLON:
+ 45 (02d): id-expression <- qualified-id (unit production)
+ 26 (01a): access-declaration <- qualified-id
 
-Sample sentence(s) for reduce of rule 41:
+Sample sentence(s) for reduce of rule 45:
   Y_UNION Y_LEFT_BRACE Y_SCOPED_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 22:
+Sample sentence(s) for reduce of rule 26:
   Y_UNION Y_LEFT_BRACE Y_SCOPED_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 963 on Y_SEMI_COLON:
-274 (112): simple-type-specifier <- qualified-type-specifier (unit production)
- 23 (017): access-declaration <- qualified-type-specifier
+r/r conflict in state 972 on Y_SEMI_COLON:
+278 (116): simple-type-specifier <- qualified-type-specifier (unit production)
+ 27 (01b): access-declaration <- qualified-type-specifier
 
-Sample sentence(s) for reduce of rule 274:
+Sample sentence(s) for reduce of rule 278:
   Y_UNION Y_LEFT_BRACE Y_SCOPED_TYPE_NAME .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 23:
+Sample sentence(s) for reduce of rule 27:
   Y_UNION Y_LEFT_BRACE Y_SCOPED_TYPE_NAME .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 966 on Y_SEMI_COLON:
-403 (193): declarator-id <- Y_SCOPED_UNKNOWN_ID
- 24 (018): access-declaration <- Y_SCOPED_UNKNOWN_ID
+r/r conflict in state 975 on Y_SEMI_COLON:
+407 (197): declarator-id <- Y_SCOPED_UNKNOWN_ID
+ 28 (01c): access-declaration <- Y_SCOPED_UNKNOWN_ID
 
-Sample sentence(s) for reduce of rule 403:
+Sample sentence(s) for reduce of rule 407:
   Y_UNION Y_LEFT_BRACE Y_SCOPED_UNKNOWN_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 24:
+Sample sentence(s) for reduce of rule 28:
   Y_UNION Y_LEFT_BRACE Y_SCOPED_UNKNOWN_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-r/r conflict in state 977 on $eof:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on $eof:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .$eof
   Will never shift token '$eof' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .$eof
   Will never shift token '$eof' in this context
 ---
 
-r/r conflict in state 977 on Y_COMMA:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_COMMA:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
   Will never shift token 'Y_COMMA' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COMMA
   Will never shift token 'Y_COMMA' in this context
 ---
 
-r/r conflict in state 977 on Y_QUESTION:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_QUESTION:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_QUESTION
   Will never shift token 'Y_QUESTION' in this context
 ---
 
-r/r conflict in state 977 on Y_COLON:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_COLON:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
   Will never shift token 'Y_COLON' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_COLON
   Will never shift token 'Y_COLON' in this context
 ---
 
-r/r conflict in state 977 on Y_SEMI_COLON:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_SEMI_COLON:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_SEMI_COLON
   Will never shift token 'Y_SEMI_COLON' in this context
 ---
 
-r/r conflict in state 977 on Y_RIGHT_PAREN:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_RIGHT_PAREN:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_PAREN
   Will never shift token 'Y_RIGHT_PAREN' in this context
 ---
 
-r/r conflict in state 977 on Y_RIGHT_BRACKET:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_RIGHT_BRACKET:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACKET
   Will never shift token 'Y_RIGHT_BRACKET' in this context
 ---
 
-r/r conflict in state 977 on Y_RIGHT_BRACE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_RIGHT_BRACE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RIGHT_BRACE
   Will never shift token 'Y_RIGHT_BRACE' in this context
 ---
 
-r/r conflict in state 977 on Y_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_EQUAL
   Will never shift token 'Y_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_EQ:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_EQ:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_EQ Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_EQ Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_NE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_NE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_NE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_NE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_OR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_OR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_OR_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_OR_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_OR_EQUAL
   Will never shift token 'Y_OR_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_OR_OR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_OR_OR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_AND:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_AND:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_AND_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_AND_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_AND_EQUAL
   Will never shift token 'Y_AND_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_AND_AND:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_AND_AND:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_AND_AND Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_XOR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_XOR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_XOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_XOR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_XOR_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_XOR_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_XOR_EQUAL
   Will never shift token 'Y_XOR_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_GT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_GT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_GE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_GE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_GE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_LT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_LT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_LE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_LE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_LSHIFT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_LSHIFT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_LSHIFT_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_LSHIFT_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_LSHIFT_EQUAL
   Will never shift token 'Y_LSHIFT_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_RSHIFT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_RSHIFT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_RSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_RSHIFT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_RSHIFT_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_RSHIFT_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_RSHIFT_EQUAL
   Will never shift token 'Y_RSHIFT_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_PLUS:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_PLUS:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PLUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PLUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_PLUS_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_PLUS_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PLUS_EQUAL
   Will never shift token 'Y_PLUS_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_MINUS:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_MINUS:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_MINUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_MINUS Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_MINUS_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_MINUS_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_MINUS_EQUAL
   Will never shift token 'Y_MINUS_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_TIMES:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_TIMES:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_TIMES_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_TIMES_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_TIMES_EQUAL
   Will never shift token 'Y_TIMES_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_DIVIDE:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_DIVIDE:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DIVIDE Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_DIVIDE_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_DIVIDE_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
   Will never shift token 'Y_DIVIDE_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DIVIDE_EQUAL
   Will never shift token 'Y_DIVIDE_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_PERCENT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_PERCENT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PERCENT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_PERCENT Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_PERCENT_EQUAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_PERCENT_EQUAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_PERCENT_EQUAL
   Will never shift token 'Y_PERCENT_EQUAL' in this context
 ---
 
-r/r conflict in state 977 on Y_DOT_DOT_DOT:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_DOT_DOT_DOT:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_DOT_DOT_DOT
   Will never shift token 'Y_DOT_DOT_DOT' in this context
 ---
 
-r/r conflict in state 977 on Y_DOT_STAR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_DOT_STAR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DOT_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DOT_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_ARROW_STAR:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_ARROW_STAR:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_ARROW_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_ARROW_STAR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_SEG_OP:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_SEG_OP:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_SEG_OP Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_SEG_OP Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 977 on Y_DEFARG_END:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_DEFARG_END:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DEFARG_END $eof 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_DEFARG_END $eof 
 ---
 
-r/r conflict in state 977 on Y_GT_SPECIAL:
-125 (07d): new-initializer-opt <-
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+r/r conflict in state 985 on Y_GT_SPECIAL:
+129 (081): new-initializer-opt <-
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 125:
+Sample sentence(s) for reduce of rule 129:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .Y_GT_SPECIAL
   Will never shift token 'Y_GT_SPECIAL' in this context
 ---
 
-s/r conflict in state 977 on Y_LEFT_PAREN:
-	shift to 843
-124 (07c): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
+s/r conflict in state 985 on Y_LEFT_PAREN:
+	shift to 842
+128 (080): new-type-id <- Y_LEFT_PAREN special-new-type-id Y_RIGHT_PAREN
 
-Sample sentence(s) for reduce of rule 124:
+Sample sentence(s) for reduce of rule 128:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for shift to state 843:
+Sample sentence(s) for shift to state 842:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW 
 Y_LEFT_PAREN Y_THROW Y_RIGHT_PAREN Y_LEFT_PAREN Y_INT Y_RIGHT_PAREN .
 Y_LEFT_PAREN Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-s/r conflict in state 979 on Y_TIMES:
-	shift to 849
-207 (0cf): partial-ptr-declarator <- nested-name-specifier Y_TEMPLATE_SCOPED_TIMES cv-qualifier-seq-opt
+s/r conflict in state 987 on Y_TIMES:
+	shift to 848
+211 (0d3): partial-ptr-declarator <- nested-name-specifier Y_TEMPLATE_SCOPED_TIMES cv-qualifier-seq-opt
 
-Sample sentence(s) for reduce of rule 207:
+Sample sentence(s) for reduce of rule 211:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_INT 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL Y_TEMPLATE_SCOPED_TIMES .
 Y_TIMES Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
-Sample sentence(s) for shift to state 849:
+Sample sentence(s) for shift to state 848:
   Y_TEMPLATE_INT_DEFARG_SPECIAL Y_NEW Y_INT 
 Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL Y_TEMPLATE_SCOPED_TIMES .
 Y_TIMES Y_OR_OR Y_TYPENAME Y_SCOPED_TYPE_NAME Y_LEFT_PAREN 
 ---
 
-r/r conflict in state 1012 on Y_SEMI_COLON:
-404 (194): declarator-id <- nested-name-specifier Y_TEMPLATE_SCOPED_UNKNOWN_ID
- 25 (019): access-declaration <- nested-name-specifier Y_TEMPLATE_SCOPED_UNKNOWN_ID
+r/r conflict in state 1020 on Y_SEMI_COLON:
+408 (198): declarator-id <- nested-name-specifier Y_TEMPLATE_SCOPED_UNKNOWN_ID
+ 29 (01d): access-declaration <- nested-name-specifier Y_TEMPLATE_SCOPED_UNKNOWN_ID
 
-Sample sentence(s) for reduce of rule 404:
+Sample sentence(s) for reduce of rule 408:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_UNKNOWN_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
-Sample sentence(s) for reduce of rule 25:
+Sample sentence(s) for reduce of rule 29:
   Y_UNION Y_LEFT_BRACE Y_TEMPLATE_NAME Y_LT Y_GT_SPECIAL 
 Y_TEMPLATE_SCOPED_UNKNOWN_ID .
 Y_SEMI_COLON Y_TYPENAME Y_SCOPED_TYPE_NAME 
 ---
 
-unit reduction states removed:             111
-unit reduction optimizations:             5757
-actions combined:                          130
-parser states:                             941
-# states (1 reduce only):                  437
-reduce/reduce conflicts:                   112
-shift/reduce conflicts:                     46
+unit reduction states removed:             110
+unit reduction optimizations:             5756
+actions combined:                          129
+parser states:                             962
+# states (1 reduce only):                  436
+reduce/reduce conflicts:                   115
+shift/reduce conflicts:                     43
 number of rules not reduced:                 0
-bytes used in tables:                    51797
+bytes used in tables:                    51296
 table space utilization:                    46

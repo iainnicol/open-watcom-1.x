@@ -118,6 +118,7 @@ struct parse_stack {
     TOKEN_LOCN          template_record_locn;
     REWRITE             *template_record_tokens;
     VSTK_CTL            angle_stack;
+    char                *expect;
     unsigned            no_super_tokens : 1;
     unsigned            use_saved_tokens : 1;
     unsigned            favour_reduce : 1;
@@ -1397,6 +1398,7 @@ static void commonInit( PARSE_STACK *stack )
     stack->class_colon = NULL;
     stack->scope_member = NULL;
     VstkOpen( &(stack->angle_stack), sizeof(angle_bracket_stack), 16 );
+    stack->expect = NULL;
     stack->no_super_tokens = FALSE;
     stack->use_saved_tokens = FALSE;
     stack->favour_reduce = FALSE;
@@ -1419,6 +1421,7 @@ static void restartInit( PARSE_STACK *stack )
     DbgAssert( stack->look_ahead_index == 0 );
     DbgAssert( stack->template_record_tokens == NULL );
     DbgAssert( VstkTop( &(stack->angle_stack) ) == NULL );
+    DbgAssert( stack->expect == NULL );
     DbgAssert( stack->no_super_tokens == FALSE );
     DbgAssert( stack->use_saved_tokens == FALSE );
     DbgAssert( stack->favour_reduce == FALSE );
@@ -2044,6 +2047,8 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         curr_##kind = state->kind; \
         ++curr_##kind; \
         state->kind = curr_##kind;
+
+    state->expect = NULL;
     for(;;) {
 #ifndef NDEBUG
         unsigned stackDepth;
@@ -2059,7 +2064,6 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         if( PragDbgToggle.dump_parse ) 
             dump_state_stack("in start of doAction loop", state);
 #endif
-
 
         if( yyk == YYAMBIGS0 && t == YYAMBIGT0 ) {
             if( state->favour_shift ) {
@@ -2243,16 +2247,20 @@ static void makeStable( int end_token )
     }
 }
 
-static void genIdSyntaxError( int msg )
+static void genIdSyntaxError( int msg, char *expect )
 {
     PTREE id;
 
     id = yylval.tree;
     SetErrLoc( &(id->locn) );
-    CErr2p( msg, id->u.id.name );
+    if( expect != NULL ) {
+        CErr( ERR_SYNTAX_UNEXPECTED_ID, id->u.id.name, expect );
+    } else {
+        CErr2p( msg, id->u.id.name );
+    }
 }
 
-static void genScopedIdSyntaxError( int msg )
+static void genScopedIdSyntaxError( int msg, char *expect )
 {
     PTREE id;
     VBUF vbuf;
@@ -2260,11 +2268,15 @@ static void genScopedIdSyntaxError( int msg )
     id = yylval.tree;
     SetErrLoc( &(id->locn) );
     FormatPTreeId( id, &vbuf );
-    CErr2p( msg, vbuf.buf );
+    if( expect != NULL ) {
+        CErr( ERR_SYNTAX_UNEXPECTED_ID, vbuf.buf, expect );
+    } else {
+        CErr2p( msg, vbuf.buf );
+    }
     VbufFree( &vbuf );
 }
 
-static void syntaxError( void )
+static void syntaxError( PARSE_STACK *state )
 {
     if( CurToken == T_EOF ) {
         CErr1( ERR_PREMATURE_ENDFILE );
@@ -2275,38 +2287,44 @@ static void syntaxError( void )
         case Y_ID:
         case Y_TEMPLATE_ID:
         case Y_UNKNOWN_ID:
-            genIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID );
+            genIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID, state->expect );
             break;
         case Y_GLOBAL_ID:
         case Y_GLOBAL_TEMPLATE_ID:
         case Y_SCOPED_ID:
         case Y_SCOPED_TEMPLATE_ID:
-            genScopedIdSyntaxError( ERR_SYNTAX_SCOPED_ID );
+            genScopedIdSyntaxError( ERR_SYNTAX_SCOPED_ID, state->expect );
             break;
         case Y_GLOBAL_UNKNOWN_ID:
-            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_GLOBAL_ID );
+            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_GLOBAL_ID, NULL );
             break;
         case Y_SCOPED_UNKNOWN_ID:
-            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_SCOPED_ID );
+            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_SCOPED_ID, NULL );
             break;
         case Y_TYPE_NAME:
-            genIdSyntaxError( ERR_SYNTAX_TYPE_NAME );
+            genIdSyntaxError( ERR_SYNTAX_TYPE_NAME, state->expect );
             break;
         case Y_GLOBAL_TYPE_NAME:
         case Y_SCOPED_TYPE_NAME:
-            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID );
+            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID, state->expect );
             break;
         case Y_TEMPLATE_NAME:
-            genIdSyntaxError( ERR_SYNTAX_TEMPLATE_NAME );
+            genIdSyntaxError( ERR_SYNTAX_TEMPLATE_NAME, state->expect );
             break;
         case Y_GLOBAL_TEMPLATE_NAME:
         case Y_SCOPED_TEMPLATE_NAME:
-            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID );
+            genScopedIdSyntaxError( ERR_SYNTAX_UNDECLARED_ID, state->expect );
             break;
         default:
-            CErr1( ERR_SYNTAX );
+            if( state->expect != NULL ) {
+                CErr( ERR_SYNTAX_UNEXPECTED_TOKEN, TokenString(),
+                      state->expect );
+            } else {
+                CErr1( ERR_SYNTAX );
+            }
         }
     }
+    state->expect = NULL;
 }
 
 static void recordTemplateCtorInitializer( PARSE_STACK *state )
@@ -2319,7 +2337,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
 
     for(;;) {
         if( CurToken == T_EOF ) {
-            syntaxError();
+            syntaxError( state );
             break;
         }
 
@@ -2329,7 +2347,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
             break;
         case T_RIGHT_PAREN:
             if( paren_depth == 0 ) {
-                syntaxError();
+                syntaxError( state );
                 break;
             }
             --paren_depth;
@@ -2337,7 +2355,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
         case T_RIGHT_BRACE:
         case T_ALT_RIGHT_BRACE:
             if( brace_depth == 0 ) {
-                syntaxError();
+                syntaxError( state );
                 break;
             }
             --brace_depth;
@@ -2378,7 +2396,7 @@ static PTREE genericParseExpr( YYTOKENTYPE tok, int end_token,
         if( what > P_ERROR ) {
             switch( what ) {
             case P_SYNTAX:
-                syntaxError();
+                syntaxError( &expr_state );
                 break;
             case P_OVERFLOW:
                 CErr1( err_msg );
@@ -2461,7 +2479,7 @@ DECL_INFO *ParseException( void )
         if( what > P_ERROR ) {
             switch( what ) {
             case P_SYNTAX:
-                syntaxError();
+                syntaxError( &except_state );
                 break;
             case P_OVERFLOW:
                 CErr1( ERR_COMPLICATED_EXCEPTION );
@@ -2531,7 +2549,7 @@ void ParseDecls( void )
                 if( what > P_ERROR ) {
                     switch( what ) {
                     case P_SYNTAX:
-                        syntaxError();
+                        syntaxError( &decl_state );
                         break;
                     case P_OVERFLOW:
                         CErr1( ERR_COMPLICATED_DECLARATION );
@@ -2610,7 +2628,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
         if( what > P_ERROR ) {
             switch( what ) {
             case P_SYNTAX:
-                syntaxError();
+                syntaxError( &instantiate_state );
                 break;
             case P_OVERFLOW:
                 CErr1( ERR_COMPLICATED_DECLARATION );
@@ -2685,7 +2703,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
         if( what > P_ERROR ) {
             switch( what ) {
             case P_SYNTAX:
-                syntaxError();
+                syntaxError( &instantiate_state );
                 break;
             case P_OVERFLOW:
                 CErr1( ERR_COMPLICATED_DECLARATION );
@@ -2741,7 +2759,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
         if( what > P_ERROR ) {
             switch( what ) {
             case P_SYNTAX:
-                syntaxError();
+                syntaxError( &instantiate_state );
                 break;
             case P_OVERFLOW:
                 CErr1( ERR_COMPLICATED_DECLARATION );

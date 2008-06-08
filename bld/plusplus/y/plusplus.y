@@ -573,9 +573,9 @@ goal-symbol
         $$ = $2;
         t = YYEOFTOKEN;
     }
-    | Y_TEMPLATE_TYPE_DEFARG_SPECIAL type-id Y_DEFARG_END
+    | Y_TEMPLATE_TYPE_DEFARG_SPECIAL expect-type-id type-id Y_DEFARG_END
     {
-        $$ = $2;
+        $$ = $3;
         t = YYEOFTOKEN;
     }
     | Y_CLASS_INST_SPECIAL class-specifier
@@ -609,6 +609,37 @@ goal-symbol
     }
     ;
 
+/* error reporting hints */
+expect-string-literal
+    : /* nothing */
+    { state->expect = "string-literal"; }
+    ;
+
+expect-identifier
+    : /* nothing */
+    { state->expect = "identifier"; }
+    ;
+
+expect-id-expression
+    : /* nothing */
+    { state->expect = "id-expression"; }
+    ;
+
+expect-type-name
+    : /* nothing */
+    { state->expect = "type-name"; }
+    ;
+
+expect-type-id
+    : /* nothing */
+    { state->expect = "type-id"; }
+    ;
+
+expect-qualified-namespace-specifier
+    : /* nothing */
+    { state->expect = "qualified-namespace-specifier"; }
+    ;
+
 lt-special-init
     : /* nothing */
     {
@@ -622,57 +653,6 @@ lt-special-init
 lt-special
     : lt-special-init Y_LT
     ;
-
-/* only used for error reporting */
-dot-special
-    : Y_DOT
-    {
-        switch( currToken ) {
-        case Y_CHAR:
-        case Y_WCHAR_T:
-        case Y_BOOL:
-        case Y_SHORT:
-        case Y_INT:
-        case Y___INT64:
-        case Y_LONG:
-        case Y_SIGNED:
-        case Y_UNSIGNED:
-        case Y_FLOAT:
-        case Y_DOUBLE:
-        case Y_VOID:
-        case Y___SEGMENT:
-            CErr2p( ERR_SYNTAX_MEMBER_LOOKUP_UNEXPECTED, TokenString() );
-            what = P_DIAGNOSED;
-            break;
-        }
-    }
-    ;
-
-/* only used for error reporting */
-arrow-special
-    : Y_ARROW
-    {
-        switch( currToken ) {
-        case Y_CHAR:
-        case Y_WCHAR_T:
-        case Y_BOOL:
-        case Y_SHORT:
-        case Y_INT:
-        case Y___INT64:
-        case Y_LONG:
-        case Y_SIGNED:
-        case Y_UNSIGNED:
-        case Y_FLOAT:
-        case Y_DOUBLE:
-        case Y_VOID:
-        case Y___SEGMENT:
-            CErr2p( ERR_SYNTAX_MEMBER_LOOKUP_UNEXPECTED, TokenString() );
-            what = P_DIAGNOSED;
-            break;
-        }
-    }
-    ;
-
 
 expr-decl-stmt
     : expression-before-semicolon Y_SEMI_COLON
@@ -759,12 +739,12 @@ unqualified-id
     : identifier
     | operator-function-id
     | conversion-function-id
-    | Y_TILDE Y_TYPE_NAME /* ~ class-name */
-    { $$ = setLocation( MakeDestructorId( $2 ), &yylp[1] ); }
-    | Y_TILDE Y_UNKNOWN_ID /* ~ id (non-stanard, diagnostics only) */
-    { $$ = setLocation( MakeDestructorId( $2 ), &yylp[1] ); }
-    | Y_TILDE template-type /* ~ class-name */
-    { $$ = setLocation( MakeDestructorIdFromType( PTypeClassInstantiation( state->class_colon, $2 ) ), &yylp[1] ); }
+    | Y_TILDE expect-type-name Y_TYPE_NAME /* ~ class-name */
+    { $$ = setLocation( MakeDestructorId( $3 ), &yylp[1] ); }
+    | Y_TILDE expect-type-name Y_UNKNOWN_ID /* ~ id (non-stanard, diagnostics only) */
+    { $$ = setLocation( MakeDestructorId( $3 ), &yylp[1] ); }
+    | Y_TILDE expect-type-name template-type /* ~ class-name */
+    { $$ = setLocation( MakeDestructorIdFromType( PTypeClassInstantiation( state->class_colon, $3 ) ), &yylp[1] ); }
     | template-id
     ;
 
@@ -829,10 +809,10 @@ postfix-expression
     {
         $$ = setLocation( MakeFunctionLikeCast( $1, $3 ), &yylp[2] );
     }
-    | postfix-expression-before-dot dot-special id-expression
-    { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
-    | postfix-expression-before-arrow arrow-special id-expression
-    { $$ = PTreeReplaceRight( setLocation( $1, &yylp[2] ), $3 ); }
+    | postfix-expression-before-dot Y_DOT expect-id-expression id-expression
+    { $$ = PTreeReplaceRight( setLocation( $1, &yylp[3] ), $4 ); }
+    | postfix-expression-before-arrow Y_ARROW expect-id-expression id-expression
+    { $$ = PTreeReplaceRight( setLocation( $1, &yylp[3] ), $4 ); }
 /* id-expression includes pseudo-destructor-name
     | postfix-expression-before-dot Y_DOT pseudo-destructor-name
     | postfix-expression-before-arrow Y_ARROW pseudo-destructor-name
@@ -841,21 +821,21 @@ postfix-expression
     { $$ = setLocation( PTreeUnary( CO_POST_PLUS_PLUS, $1 ), &yylp[2] ); }
     | postfix-expression Y_MINUS_MINUS
     { $$ = setLocation( PTreeUnary( CO_POST_MINUS_MINUS, $1 ), &yylp[2] ); }
-    | Y_DYNAMIC_CAST lt-special type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
-    { $$ = setLocation( PTreeBinary( CO_DYNAMIC_CAST, $3, $6 ), &yylp[1] ); }
-    | Y_STATIC_CAST lt-special type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
-    { $$ = setLocation( PTreeBinary( CO_STATIC_CAST, $3, $6 ), &yylp[1] ); }
-    | Y_REINTERPRET_CAST lt-special type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
-    { $$ = setLocation( PTreeBinary( CO_REINTERPRET_CAST, $3, $6 ), &yylp[1] ); }
-    | Y_CONST_CAST lt-special type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
-    { $$ = setLocation( PTreeBinary( CO_CONST_CAST, $3, $6 ), &yylp[1] ); }
+    | Y_DYNAMIC_CAST lt-special expect-type-id type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
+    { $$ = setLocation( PTreeBinary( CO_DYNAMIC_CAST, $4, $7 ), &yylp[1] ); }
+    | Y_STATIC_CAST lt-special expect-type-id type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
+    { $$ = setLocation( PTreeBinary( CO_STATIC_CAST, $4, $7 ), &yylp[1] ); }
+    | Y_REINTERPRET_CAST lt-special expect-type-id type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
+    { $$ = setLocation( PTreeBinary( CO_REINTERPRET_CAST, $4, $7 ), &yylp[1] ); }
+    | Y_CONST_CAST lt-special expect-type-id type-id Y_GT_SPECIAL Y_LEFT_PAREN expression Y_RIGHT_PAREN
+    { $$ = setLocation( PTreeBinary( CO_CONST_CAST, $4, $7 ), &yylp[1] ); }
     | Y_TYPEID Y_LEFT_PAREN expression Y_RIGHT_PAREN
     { $$ = setLocation( PTreeUnary( CO_TYPEID_EXPR, $3 ), &yylp[1] ); }
     | Y_TYPEID Y_LEFT_PAREN type-id Y_RIGHT_PAREN
     { $$ = setLocation( PTreeUnary( CO_TYPEID_TYPE, $3 ), &yylp[1] ); }
     /* extension */
-    | Y___SEGNAME Y_LEFT_PAREN string-literal Y_RIGHT_PAREN
-    { $$ = setLocation( PTreeUnary( CO_SEGNAME, $3 ), &yylp[1] ); }
+    | Y___SEGNAME Y_LEFT_PAREN expect-string-literal string-literal Y_RIGHT_PAREN
+    { $$ = setLocation( PTreeUnary( CO_SEGNAME, $4 ), &yylp[1] ); }
     ;
 
 /* non-standard */
@@ -947,22 +927,22 @@ expression-list
     ;
 
 pseudo-destructor-name
-    : Y_SCOPED_TILDE identifier
-    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
-    | Y_SCOPED_TILDE Y_TYPE_NAME
-    { $$ = setLocation( MakeScopedDestructorId( $1, $2 ), &yylp[1] ); }
-    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_ID
+    : Y_SCOPED_TILDE expect-type-name identifier
+    { $$ = setLocation( MakeScopedDestructorId( $1, $3 ), &yylp[1] ); }
+    | Y_SCOPED_TILDE expect-type-name Y_TYPE_NAME
+    { $$ = setLocation( MakeScopedDestructorId( $1, $3 ), &yylp[1] ); }
+    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE expect-type-name Y_ID
     {
         PTreeFreeSubtrees( $1 );
-        $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[2] );
+        $$ = setLocation( MakeScopedDestructorId( $2, $4 ), &yylp[2] );
     }
-    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_TEMPLATE_NAME
+    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE expect-type-name Y_TEMPLATE_NAME
     {
         PTreeFreeSubtrees( $1 );
-        $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[2] );
+        $$ = setLocation( MakeScopedDestructorId( $2, $4 ), &yylp[2] );
     }
-    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE Y_TYPE_NAME
-    { $$ = setLocation( MakeScopedDestructorId( $2, $3 ), &yylp[1] ); }
+    | nested-name-specifier Y_TEMPLATE_SCOPED_TILDE expect-type-name Y_TYPE_NAME
+    { $$ = setLocation( MakeScopedDestructorId( $2, $4 ), &yylp[1] ); }
     ;
 
 unary-expression
@@ -982,10 +962,10 @@ unary-expression
     /* extension */
     | Y_SIZEOF Y_TYPE_NAME
     { $$ = setLocation( PTreeUnary( CO_SIZEOF_TYPE, PTreeMSSizeofKludge( $2 ) ), &yylp[1] ); }
-    | Y___BUILTIN_ISFLOAT Y_LEFT_PAREN type-id Y_RIGHT_PAREN
-    { $$ = setLocation( MakeBuiltinIsFloat( $3 ), &yylp[1] ); }
-    | Y___OFFSETOF Y_LEFT_PAREN type-id Y_COMMA offsetof-field Y_RIGHT_PAREN
-    { $$ = setLocation( PTreeOffsetof( $3, $5 ), &yylp[4] ); }
+    | Y___BUILTIN_ISFLOAT Y_LEFT_PAREN expect-type-id type-id Y_RIGHT_PAREN
+    { $$ = setLocation( MakeBuiltinIsFloat( $4 ), &yylp[1] ); }
+    | Y___OFFSETOF Y_LEFT_PAREN expect-type-id type-id Y_COMMA offsetof-field Y_RIGHT_PAREN
+    { $$ = setLocation( PTreeOffsetof( $4, $6 ), &yylp[5] ); }
     ;
 
 unary-operator
@@ -1386,20 +1366,20 @@ simple-declaration
     ;
 
 static_assert-declaration
-    : Y_STATIC_ASSERT Y_LEFT_PAREN constant-expression Y_COMMA string-literal Y_RIGHT_PAREN
+    : Y_STATIC_ASSERT Y_LEFT_PAREN constant-expression Y_COMMA expect-string-literal string-literal Y_RIGHT_PAREN
     {
         /* see N1720 -- Proposal to Add Static Assertions to the Core
          * Language (Revision 3) */
         DbgAssert( $3->op == PT_INT_CONSTANT );
-        DbgAssert( $5->op == PT_STRING_CONSTANT );
+        DbgAssert( $6->op == PT_STRING_CONSTANT );
 
         if( $3->u.int_constant == 0 ) {
             CErr2p( ERR_STATIC_ASSERTION_FAILURE,
-                    StringBytes( $5->u.string ) );
+                    StringBytes( $6->u.string ) );
         }
 
         PTreeFreeSubtrees( $3 );
-        PTreeFreeSubtrees( $5 );
+        PTreeFreeSubtrees( $6 );
     }
     ;
 
@@ -1635,8 +1615,8 @@ namespace-definition
 namespace-key
     : Y_NAMESPACE
     { NameSpaceUnnamed( &yylp[1] ); }
-    | Y_NAMESPACE make-id
-    { NameSpaceNamed( $2 ); }
+    | Y_NAMESPACE expect-identifier make-id
+    { NameSpaceNamed( $3 ); }
     ;
 
 namespace-body
@@ -1647,8 +1627,8 @@ namespace-body
     ;
 
 namespace-alias-definition
-    : Y_NAMESPACE make-id Y_EQUAL qualified-namespace-specifier
-    { NameSpaceAlias( $2, $4 ); }
+    : Y_NAMESPACE expect-identifier make-id Y_EQUAL expect-qualified-namespace-specifier qualified-namespace-specifier
+    { NameSpaceAlias( $3, $6 ); }
     ;
 
 qualified-namespace-specifier
@@ -1674,15 +1654,15 @@ using-declaration
     ;
 
 using-directive
-    : Y_USING Y_NAMESPACE qualified-namespace-specifier
-    { NameSpaceUsingDirective( $3 ); }
+    : Y_USING Y_NAMESPACE expect-qualified-namespace-specifier qualified-namespace-specifier
+    { NameSpaceUsingDirective( $4 ); }
     ;
 
 asm-definition
-    : Y_ASM Y_LEFT_PAREN string-literal Y_RIGHT_PAREN
+    : Y_ASM Y_LEFT_PAREN expect-string-literal string-literal Y_RIGHT_PAREN
     {
-        StringTrash( $3->u.string );
-        PTreeFree( $3 );
+        StringTrash( $4->u.string );
+        PTreeFree( $4 );
         CErr1( WARN_ASM_IGNORED );
     }
     ;
@@ -1895,8 +1875,8 @@ modifier
     ;
 
 based-expression
-    : segment-cast-opt Y___SEGNAME Y_LEFT_PAREN string-literal Y_RIGHT_PAREN
-    { $$ = MakeBasedModifier( TF1_BASED_STRING, $1, $4 ); }
+    : segment-cast-opt Y___SEGNAME Y_LEFT_PAREN expect-string-literal string-literal Y_RIGHT_PAREN
+    { $$ = MakeBasedModifier( TF1_BASED_STRING, $1, $5 ); }
     | segment-cast-opt identifier
     { $$ = MakeBasedModifier( TF1_NULL, $1, $2 ); }
     | segment-cast-opt Y_VOID
@@ -3357,9 +3337,10 @@ exception-specification
     ;
 
 type-id-list
-    : type-id
-    | type-id-list Y_COMMA type-id
-    { $$ = PTreeTListAppend( $1, $3 ); }
+    : expect-type-id type-id
+    { $$ = $2; }
+    | type-id-list Y_COMMA expect-type-id type-id
+    { $$ = PTreeTListAppend( $1, $4 ); }
     ;
 
 

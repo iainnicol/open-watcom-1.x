@@ -132,8 +132,8 @@ File: source\diag0080.c
   right operand type is 'int'
 (140,12): Error! E240: enum 'a' has not been declared
 (141,8): Error! E241: class or namespace 'a' has not been declared
-(141,8): Error! E029: symbol 't' has not been declared
-(141,11): Error! E029: symbol 'q' has not been declared
+(141,8): Error! E926: syntax error: 'a::t' has not been declared as a member
+(142,9): Error! E029: symbol 'q' has not been declared
 (144,35): Error! E243: default arguments are not part of a function's type
 (151,8): Error! E569: left expression is not a pointer to a volatile object
   left operand type is 'void * (lvalue)'
@@ -154,7 +154,7 @@ File: source\diag0080.c
 (176,1): Warning! W726: no reference to formal parameter 'p'
   definition: 'S158 * p' in 'void x173( S158 *, CC * )'
 (179,11): Error! E304: class 'S173' has not been defined
-(185,8): Error! E356: type cannot be used in this context
+(185,8): Error! E928: syntax error: identifier 'T', but expected: 'id-expression'
 (195,14): Error! E400: cannot convert right expression for initialization
   source conversion type is 'D186 *'
   target conversion type is 'D186 * *'
@@ -327,7 +327,8 @@ File: source\diag0080.c
   'S341' defined at: (349,8)
 (399,14): Error! E540: destructor is not properly qualified
   'S384' defined at: (392,8)
-(400,7): Error! E029: symbol 'q' has not been declared
+(400,8): Error! E252: class declaration has not been seen for '~q'
+(400,6): Error! E538: destructor can be invoked only with '.' or '->'
 (405,23): Error! E541: pointers to class members reference different object types
   source conversion type is 'int S327::*'
   target conversion type is 'char S327::*'

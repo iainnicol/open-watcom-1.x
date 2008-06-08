@@ -265,7 +265,7 @@ File: source\diag0021.c
 (9,19): Error! E285: enumerator 'S3' cannot be declared in this class
 (13,6): Error! E316: anonymous struct/union member 'T' is not distinct in enclosing scope
 File: source\diag0022.c
-(5,6): Error! E498: syntax error before 'S1'; probable cause: incorrectly spelled type name
+(5,6): Error! E928: syntax error: identifier 'S1', but expected: 'type-name'
 (6,2): Error! E121: syntax error
 (19,13): Error! E287: constructor cannot have a return type
 (20,17): Error! E287: constructor cannot have a return type
@@ -274,13 +274,14 @@ File: source\diag0022.c
 (35,23): Error! E290: constructor cannot be declared const or volatile
 (36,25): Error! E291: constructor cannot be virtual
 File: source\diag0023.c
-(11,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'int' instead
-(12,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'char' instead
-(13,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'unsigned' instead
-(14,9): Error! E928: syntax error: expected id-expression after . or -> operator, found '__segment' instead
-(15,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'long' instead
-(16,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'float' instead
-(17,9): Error! E928: syntax error: expected id-expression after . or -> operator, found 'double' instead
+(14,9): Error! E929: syntax error: token 'int', but expected: 'id-expression'
+(15,9): Error! E929: syntax error: token 'char', but expected: 'id-expression'
+(16,9): Error! E929: syntax error: token 'unsigned', but expected: 'id-expression'
+(17,9): Error! E929: syntax error: token '__segment', but expected: 'id-expression'
+(18,9): Error! E929: syntax error: token 'long', but expected: 'id-expression'
+(19,9): Error! E929: syntax error: token 'float', but expected: 'id-expression'
+(20,9): Error! E929: syntax error: token 'double', but expected: 'id-expression'
+(22,14): Error! E292: types do not match in simple type destructor
 File: source\diag0024.c
 (6,10): Error! E042: symbol 'S::a' already defined
   definition: 'int S::a'

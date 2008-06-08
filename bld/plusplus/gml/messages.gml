@@ -12131,16 +12131,10 @@ void fn() {
 }
 :eerrbad.
 
-:MSGSYM. ERR_SYNTAX_MEMBER_LOOKUP_UNEXPECTED
-:MSGTXT. syntax error: expected id-expression after . or -> operator, found '%s' instead
+:MSGSYM. ERR_SYNTAX_UNEXPECTED_ID
+:MSGTXT. syntax error: identifier '%s', but expected: '%s'
 :MSGJTXT.
-The . or -> operators must be followed either by an id-expression or a
-pseudo-destructor-name, but an unexpected token was found instead.
-:errbad.
-struct A { };
 
-void fn() {
-    A a;
-    a.int::~int();
-}
-:eerrbad.
+:MSGSYM. ERR_SYNTAX_UNEXPECTED_TOKEN
+:MSGTXT. syntax error: token '%s', but expected: '%s'
+:MSGJTXT.
