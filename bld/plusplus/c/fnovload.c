@@ -597,19 +597,26 @@ static void processSym( FNOV_CONTROL control, FNOV_INFO* info, SYMBOL sym )
                 result = TemplateFunctionGenerate( base_sym, mock_args,
                                                    info->templ_args,
                                                    &sym->locn->tl );
+                if( result == NULL ) {
+                    addListEntry( control, info, base_sym, mock_args,
+                                  LENT_FREE_ARGS );
+                    return;
+                }
+
                 CMemFree( mock_args );
             } else {
                 result = TemplateFunctionGenerate( base_sym, info->alist,
                                                    info->templ_args,
                                                    &sym->locn->tl );
+                if( result == NULL ) {
+                    func_args = SymFuncArgList( base_sym );
+                    addListEntry( control, info, base_sym, func_args, 0 );
+                    return;
+                }
             }
 
-            if( result != NULL ) {
-                sym = result;
-                sym_type = sym->sym_type;
-            } else {
-                return;
-            }
+            sym = result;
+            sym_type = sym->sym_type;
         } else {
             // have to compare template parameters for function templates
             SYMBOL old_curr = NULL, new_curr = NULL;
@@ -1591,7 +1598,12 @@ static boolean getRank( FNOV_INFO* info )
     boolean contender;
     FNOV_LIST* candidate = info->candfunc;
 
-    if( candidate->rankvector != NULL ) {
+    if( SymIsFunctionTemplateModel( candidate->sym )
+     && !( info->control & FNC_DISTINCT_CHECK ) ) {
+        // this means that template argument deduction failed, so it
+        // can't be a contender
+        contender = FALSE;
+    } else if( candidate->rankvector != NULL ) {
         contender = TRUE;
     } else {
         FNOV_CONTROL control = info->control;
