@@ -143,13 +143,15 @@ unsigned SysChdir( char *dir )
 
 int wait( int *status )
 {
+    DWORD       rc;
+
     // *status != 0 means the process was created successfully
     if( *status ) {
         WaitForSingleObject( pinfo.hProcess, INFINITE );
+        GetExitCodeProcess( pinfo.hProcess, &rc );	
         CloseHandle( pinfo.hProcess );
         CloseHandle( pinfo.hThread );
-        // set *status to 0 to make pmake happy
-        *status = 0;
+        *status = rc;
     } else {    // there was no child process, indicate failure
         *status = -1;
     }
