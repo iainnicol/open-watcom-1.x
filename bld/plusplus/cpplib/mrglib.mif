@@ -34,7 +34,7 @@ lib_page_size = $(release_lib_page_size)
 !endif
 !endif
 !ifndef lib_page_size
-lib_page_size = -p=16
+lib_page_size = -p=32
 !endif
 lib_flags += $(lib_page_size)
 
