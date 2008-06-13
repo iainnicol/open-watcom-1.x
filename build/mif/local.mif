@@ -147,7 +147,7 @@ cppflags_386  = -D_M_IX86 -D__386__
 cflags_wng =
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SOLARIS__ -DBOOTSTRAP &
 $(cppflags_$(host_cpu))
-cflags_rel = -g -O3
+cflags_rel = -g -O2 # Warning: O3 and higher may produce buggy code!
 cflags_dbg = -g -O0
 
 !ifeq release 1
