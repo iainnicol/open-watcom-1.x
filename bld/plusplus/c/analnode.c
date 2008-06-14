@@ -765,7 +765,12 @@ boolean NodeIsZeroConstant(     // TEST IF A ZERO INTEGER CONSTANT
     INT_CONSTANT icon;          // - integral constant
 
     if( nodeGetConstant( node, &icon ) ) {
-        retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+        if( ( icon.type->id < TYP_BOOL )
+         || ( icon.type->id > TYP_ULONG64 ) ) {
+            retn = FALSE;
+        } else {
+            retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+        }
     } else {
         retn = FALSE;
     }
@@ -1753,6 +1758,7 @@ TYPE NodeType(                  // GET TYPE FOR A NODE
 
     type = node->type;
     if( ( node->flags & PTF_LVALUE )
+      &&( NULL != type )
       &&( NULL == TypeReference( type ) ) ) {
         type = MakeReferenceTo( type );
     }

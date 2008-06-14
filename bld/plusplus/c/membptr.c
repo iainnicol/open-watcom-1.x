@@ -835,9 +835,35 @@ static boolean membPtrAddrOfNode( // TEST IF (& class::member)
 boolean MembPtrZeroConst(       // DETERMINE IF ZERO MEMBER-PTR CONSTANT
     PTREE expr )                // - CO_MEMPTR_CONST expression
 {
+    boolean retn;
+    INT_CONSTANT icon;
+    SYMBOL sym;
+
     expr = expr->u.subtree[0];
     expr = expr->u.subtree[1];
-    return NodeIsZeroConstant( expr );
+
+    expr = NodeRemoveCasts( PTreeOp( &expr ) );
+    switch( expr->op ) {
+      case PT_INT_CONSTANT :
+        icon.value = expr->u.int64_constant;
+        retn = TRUE;
+        break;
+      case PT_SYMBOL :
+        sym = expr->u.symcg.symbol;
+        retn = SymIsConstantInt( sym );
+        if( retn ) {
+            SymConstantValue( sym, &icon );
+        }
+      default :
+        retn = FALSE;
+        break;
+    }
+
+    if( retn ) {
+        retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+    }
+
+    return retn;
 }
 
 
