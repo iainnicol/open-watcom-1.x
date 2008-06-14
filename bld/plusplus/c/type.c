@@ -7591,6 +7591,7 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
     arg_list *b_args;
     arg_list *u_args;
     type_flag u_cv_mask;
+    boolean u_allow_base;
     TYPE match;
     unsigned i;
     unsigned status;
@@ -7701,13 +7702,15 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
 
         if( flags.arg_1st_level ) {
             u_cv_mask = TF1_CONST | TF1_VOLATILE;
+            u_allow_base = TRUE;
         } else {
             /*
              * In order to implement [conv.qual] we need to pass
              * cv-qualifier information down the stack. We do this by
              * using the "filler" field in the PTREE struct.
              */
-            u_cv_mask = ( *u_top )->filler;
+            u_cv_mask = ( *u_top )->filler & ( TF1_CONST | TF1_VOLATILE );
+            u_allow_base = ( ( *u_top )->filler & 0x80 ) != 0;
         }
 
         PTreeFree( *b_top );
@@ -7873,7 +7876,7 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             }
 
             if( compareClassTypes( b_unmod_type, u_unmod_type, data ) ) {
-                if( flags.arg_1st_level && u_unmod_type->flag & TF1_UNBOUND ) {
+                if( u_allow_base && u_unmod_type->flag & TF1_UNBOUND ) {
                     b_unmod_type = ScopeFindBoundBase( b_unmod_type, u_unmod_type );
                     if( b_unmod_type != NULL ) {
                         if( compareClassTypes( b_unmod_type, u_unmod_type, data ) ) {
@@ -7900,6 +7903,8 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             u_tree->filler = u_cv_mask;
             if( ! flags.arg_1st_level ) {
                 u_tree->filler &= u_flags;
+            } else {
+                u_tree->filler |= 0x80;
             }
             PstkPush( &(data->with_generic), u_tree );
             break;
