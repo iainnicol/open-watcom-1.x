@@ -1,0 +1,4 @@
+target_cpu  = mps 
+target_objs = cpragmps.obj pragmips.obj
+
+!include ../../master.mif

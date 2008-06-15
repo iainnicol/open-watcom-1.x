@@ -31,8 +31,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/cfloat/builder.ctl ]
 [ INCLUDE <SRCDIR>/cg/intel/386/builder.ctl ]
 [ INCLUDE <SRCDIR>/cg/intel/i86/builder.ctl ]
-[ INCLUDE <SRCDIR>/cc/boot386.ctl ]
-[ INCLUDE <SRCDIR>/cc/booti86.ctl ]
+[ INCLUDE <SRCDIR>/cc/386/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/i86/builder.ctl ]
 [ INCLUDE <SRCDIR>/plusplus/boot386.ctl ]
 [ INCLUDE <SRCDIR>/plusplus/booti86.ctl ]
 # Build RISC assemblers
@@ -69,6 +69,21 @@ cdsay .
 [ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]
 [ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
+# Now we have enough to start cross building everything else
+
+# Start with the libs used by various tools
+[ INCLUDE <SRCDIR>/orl/builder.ctl ]
+[ INCLUDE <SRCDIR>/owl/builder.ctl ]
+[ INCLUDE <SRCDIR>/dwarf/builder.ctl ]
+[ INCLUDE <SRCDIR>/cfloat/builder.ctl ]
+# Continue with the assemblers/librarian/linker
+[ INCLUDE <SRCDIR>/wasm/builder.ctl ]
+[ INCLUDE <SRCDIR>/as/builder.ctl ]
+[ INCLUDE <SRCDIR>/lib/builder.ctl ]
+[ INCLUDE <SRCDIR>/link/builder.ctl ]
+# On to the compilers
+# Continue with SDK tools
+[ INCLUDE <SRCDIR>/sdk/builder.ctl ]
 
 [ BLOCK . . ]
 #============

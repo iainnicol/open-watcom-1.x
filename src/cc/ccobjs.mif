@@ -89,14 +89,4 @@ common_objs += cfedump.obj
 # in-line assembler files
 common_objs += $(asminline_objs)
 
-#
-# target specific files
-#
-cc_objs_i86   = cpragx86.obj pragi86.obj
-cc_objs_386   = cpragx86.obj prag386.obj
-cc_objs_axp   = cpragaxp.obj pragaxp.obj
-cc_objs_ppc   = cpragppc.obj pragppc.obj
-cc_objs_mps   = cpragmps.obj pragmips.obj
-cc_objs_sparc = cpragspc.obj pragspc.obj stubspc.obj
-
-common_objs += $(cc_objs_$(target_cpu))
+common_objs += $(target_objs)

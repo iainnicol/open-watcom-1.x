@@ -171,12 +171,10 @@ curr_dir=$+$(%cwd)$-
 !endif
 
 !ifdef asi_build_lib
-all_lib : msg.gh $(asi_lib) $(asi_lib_j) .symbolic
+all_lib : msg.gh $(asi_lib) .symbolic
 
 $(asi_lib) : $(asi_objs)
-        @rm -f $^&.lbc
-        @for %i in ($<) do @%append $^&.lbc +%i
-        $(librarian) $(libflags) @$^&.lbc
+        $(librarian) $(libflags) $(asi_objs)
 
 $(asi_lib_j) : $(asi_lib) asmsgj.obj
         $(librarian) $(libflags) +$[@ -asmsg.obj +asmsgj.obj

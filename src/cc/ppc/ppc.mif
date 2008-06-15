@@ -1,0 +1,4 @@
+target_cpu  = ppc
+target_objs = cpragppc.obj pragppc.obj
+
+!include ../../master.mif
