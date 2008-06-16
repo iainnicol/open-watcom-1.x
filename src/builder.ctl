@@ -41,16 +41,16 @@ cdsay .
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
 
 # The following tools are not required during build
-# Build our vi editor and the libs it requires
-[ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
-[ INCLUDE <SRCDIR>/ui/builder.ctl ]
-[ INCLUDE <SRCDIR>/vi/builder.ctl ]
 # Build miscellaneous utilities
 [ INCLUDE <SRCDIR>/disasm/builder.ctl ]
 [ INCLUDE <SRCDIR>/dump/builder.ctl ]
 [ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
+# Build our vi editor and the libs it requires
+[ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
+[ INCLUDE <SRCDIR>/ui/builder.ctl ]
+[ INCLUDE <SRCDIR>/vi/builder.ctl ]
 [ INCLUDE <SRCDIR>/hlpview/builder.ctl ]
 
 [ BLOCK <1> build rel clean ]

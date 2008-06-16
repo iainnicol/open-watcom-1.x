@@ -197,6 +197,8 @@ cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 cc = cl
 cpp = cl
 cl = $(cc)
+clpp = $(cpp)
+
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 librarian = lib
 libflags = -nologo -out:$^@
