@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#define HASH_DEF                        # ## define
-#define CGCALLBACKDEF( a, b, c )        HASH_DEF a (FEFuncTable->##a)
+#define HASH_DEF                        #define
+#define CGCALLBACKDEF( a, b, c )        HASH_DEF a (FEFuncTable->a)
 
 #include "cgfertns.h"
 
 #undef HASH_DEF
-#undef CGAPIDEF
+#undef CGCALLBACKDEF

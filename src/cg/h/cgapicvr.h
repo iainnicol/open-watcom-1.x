@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#define HASH_DEF            # ## define
-#define CGAPIDEF( a, b, c ) HASH_DEF a (CGFuncTable->##a)
+#define HASH_DEF            #define
+#define CGAPIDEF( a, b, c ) HASH_DEF a (CGFuncTable->a)
 
 #include "cgfuntab.h"
 
