@@ -90,7 +90,7 @@ wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_cpu)) &
 .h: $(wspy_dir);$(sdk_dir)/misc
 .rc: ..
 
-inc_dirs = -I$(wspy_dir) -I"$(sdk_dir)/misc"
+inc_dirs = -I"$(wspy_dir)" -I"$(sdk_dir)/misc"
 
 wspy_to_build_win = rcstr.gh spymsgs.dlg spymsg.gh $(dllname).dll $(name).exe
 

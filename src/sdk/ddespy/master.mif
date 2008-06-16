@@ -29,7 +29,7 @@ extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib
 .c: $(wddespy_dir);$(sdk_dir)/misc
 .h: $(wddespy_dir);$(sdk_dir)/misc
 
-inc_dirs  = -I$(wddespy_dir) -I"$(sdk_dir)/misc"
+inc_dirs  = -I"$(wddespy_dir)" -I"$(sdk_dir)/misc"
 
 msgfiles  = $(sdk_dir)/misc/about.msg $(sdk_dir)/misc/log.msg &
             $(sdk_dir)/misc/savelbox.msg $(sdk_dir)/misc/alias.msg

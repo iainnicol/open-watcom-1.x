@@ -72,6 +72,7 @@ cdsay .
 # Now we have enough to start cross building everything else
 
 # Start with the libs used by various tools
+[ INCLUDE <SRCDIR>/wres/builder.ctl ]
 [ INCLUDE <SRCDIR>/orl/builder.ctl ]
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/builder.ctl ]

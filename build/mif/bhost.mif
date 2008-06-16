@@ -65,7 +65,7 @@ bcl             = *wcl386
 !endif
 
 host_cl         = $(bcl)
-host_cl_opts    = -l=$(bld_sys) $(bld_incs)
+host_cl_opts    = -l=$(bld_sys) $(bld_incs) -fe=$^@
 
 !ifeq host_cpu axp
 bas             = $(as)
