@@ -8,6 +8,8 @@ cdsay .
 
 [ BLOCK <1> boot bootclean ]
 #===========================
+# Build Open Watcom tools using the host platform's native compiler.
+#
 # NB: The ordering of the following inclusions is significant!
 # At the beginning, we only have wmake and builder/pmake
 # Start with the ORL and librarian - boot build has no other dependencies
@@ -41,12 +43,16 @@ cdsay .
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
 
 # The following tools are not required during build
-# Build miscellaneous utilities
 [ INCLUDE <SRCDIR>/disasm/builder.ctl ]
 [ INCLUDE <SRCDIR>/dump/builder.ctl ]
 [ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
+
+[ BLOCK <1> bootunix bootclean ]
+#===============================
+# Build UNIX specific utilities using native tools.
+# 
 # Build our vi editor and the libs it requires
 [ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
@@ -55,6 +61,8 @@ cdsay .
 
 [ BLOCK <1> build rel clean ]
 #============================
+# Build all of Open Watcom using freshly built tools.
+#
 # NB: Again, the order is significant.
 # At the beginning, assume to have compilers/assemblers/librarian/linker
 # running on the host platform, but not necessarily anything else.
