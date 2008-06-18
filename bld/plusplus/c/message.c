@@ -207,7 +207,11 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 }
 
 
+#ifdef IDECALL /* Temp fix to build across V1/V2 branches */
+static IDEBool IDECALL idePrt   // PRINT FOR IDE
+#else
 static IDEBool __stdcall idePrt // PRINT FOR IDE
+#endif
     ( IDECBHdl hdl              // - handle
     , IDEMsgInfo *info )        // - information
 {
