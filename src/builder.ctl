@@ -91,6 +91,16 @@ cdsay .
 [ INCLUDE <SRCDIR>/lib/builder.ctl ]
 [ INCLUDE <SRCDIR>/link/builder.ctl ]
 # On to the compilers
+[ INCLUDE <SRCDIR>/cg/intel/386/builder.ctl ]
+[ INCLUDE <SRCDIR>/cg/intel/i86/builder.ctl ]
+[ INCLUDE <SRCDIR>/cg/risc/axp/builder.ctl ]
+[ INCLUDE <SRCDIR>/cg/risc/ppc/builder.ctl ]
+[ INCLUDE <SRCDIR>/cg/risc/mps/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/386/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/i86/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/axp/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/ppc/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/mps/builder.ctl ]
 # Continue with SDK tools
 [ INCLUDE <SRCDIR>/sdk/builder.ctl ]
 

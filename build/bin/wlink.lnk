@@ -114,6 +114,8 @@ system begin nt
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/stub386
     libpath %OWROOT%/src/w32api/nt386
+    libpath %OWROOT%/src/rtdll/clib/winnt.386/mf_r
+    libpath %OWROOT%/src/rtdll/mathlib/winnt.387/mf_r
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime console=4.0
