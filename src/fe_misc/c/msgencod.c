@@ -1056,7 +1056,11 @@ static void compressMsgs() {
 static void writeExtraDefs( FILE *fp ) {
     fputc( '\n', fp );
     fputs(
+#if CHAR_MIN != 0
         "#define ENC_BIT 0x80\n"
+#else
+        "#define ENC_BIT (-127)\n"
+#endif
         "#define LARGE_BIT 0x40\n"
         "#define MAX_MSG ", fp );
     outputNum( fp, maxMsgLen );
@@ -1286,7 +1290,7 @@ static void writeMsgTable( void ) {
     current_text = 0;
     current_base = 0;
     msg_base = malloc( ( messageCounter + 1 ) * sizeof( unsigned ) );
-    outputTableName( o_msgc, "char const", "msg_text" );
+    outputTableName( o_msgc, "uint_8 const", "msg_text" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         msg_base[ current_base++ ] = current_text;
         fputs( "\n/* ", o_msgc );
