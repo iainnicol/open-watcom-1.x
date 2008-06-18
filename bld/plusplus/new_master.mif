@@ -89,8 +89,7 @@ cflags += -db
  
 extra_c_flags_osi   = -D__OS2__
 !ifndef plusplus_dll
-extra_c_flags_os2   = -DIDE_PGM
-extra_c_flags_nt    = -DIDE_PGM
+extra_c_flags       = -DIDE_PGM
 !endif
  
 extra_c_flags_carve    = -Dheader=$(fesupp_hdr) -Dheader2=$(carvecpp_hdr)
