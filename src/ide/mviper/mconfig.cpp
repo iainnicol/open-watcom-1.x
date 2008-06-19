@@ -46,7 +46,8 @@
 extern "C" {
     #include <malloc.h>
     #if defined( __WINDOWS__ ) || defined( __NT__ )
-        #include <windows.h>    //temporary ?
+        #define WIN32_LEAN_AND_MEAN
+        #include <windows.h>
     #endif
 //    int __nonIBM();
 };
