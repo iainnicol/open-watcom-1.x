@@ -673,6 +673,7 @@ void DumpClassInfo(             // DUMP CLASSINFO
             " needs_assign" F_HEX_2
                             F_NL "  "
             " defined"      F_HEX_2
+            " opened"       F_HEX_2
             " unnamed"      F_HEX_2
             " anonymous"    F_HEX_2
             " corrupted"    F_HEX_2
@@ -733,6 +734,7 @@ void DumpClassInfo(             // DUMP CLASSINFO
           , ci->needs_vdtor
           , ci->needs_assign
           , ci->defined
+          , ci->opened
           , ci->unnamed
           , ci->anonymous
           , ci->corrupted

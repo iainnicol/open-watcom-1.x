@@ -919,6 +919,9 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
                 if( TypesIdentical( sym_type, chk_type ) ) {
                     CErr2p( WARN_BENIGN_TYPEDEF_REDEFN, chk_sym );
                     BrinfReferenceSymbol( &sym->locn->tl, chk_sym );
+                } else if( ( chk_type->id == TYP_CLASS )
+                        && ( chk_type->u.c.scope == GetCurrScope() ) ) {
+                    /* already diagnosed (class name injection) */
                 } else {
                     CErr2p( ERR_INVALID_TYPEDEF_REDEFINITION, chk_sym );
                 }
