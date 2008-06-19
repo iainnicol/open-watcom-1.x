@@ -157,7 +157,7 @@ wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 .rc : ../h
 
 inc_dirs  = -Ih -I"../h" -I"$(fmedit_dir)/dev" -I"$(wres_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(misc_dir)" -I$(cpp_dir)
+inc_dirs += -I"$(wr_dir)/h" -I"$(misc_dir)" -I"$(cpp_dir)"
 
 all : $(name).exe
 

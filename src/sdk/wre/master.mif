@@ -102,7 +102,7 @@ OBJS += trmem.tbj trmemcvr.tbj
 .rc        : ../h
 
 inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I$(trmem_dir) -I"$(wres_dir)/h" -I$(cpp_dir) -I$(misc_dir)
+inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)" -I"$(misc_dir)"
 
 xlibs = $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
         $(wmenu_dir)/$(host_os)$(host_cpu)/wmenu.lib &

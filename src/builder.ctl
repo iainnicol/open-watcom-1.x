@@ -41,6 +41,9 @@ cdsay .
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]
 [ INCLUDE <SRCDIR>/re2c/builder.ctl ]
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
+# Now miscellaneous utilities required during build
+[ INCLUDE <SRCDIR>/ssl/builder.ctl ]
+[ INCLUDE <SRCDIR>/parsedlg/builder.ctl ]
 
 # The following tools are not required during build
 [ INCLUDE <SRCDIR>/disasm/builder.ctl ]
@@ -76,6 +79,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/emu387/builder.ctl ]
 [ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]
+[ INCLUDE <SRCDIR>/plusplus/cpplib/builder.ctl ]
 [ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
 # Now we have enough to start cross building everything else
 
@@ -102,7 +106,24 @@ cdsay .
 [ INCLUDE <SRCDIR>/cc/ppc/builder.ctl ]
 [ INCLUDE <SRCDIR>/cc/mps/builder.ctl ]
 # Continue with SDK tools
+[ INCLUDE <SRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <SRCDIR>/sdk/builder.ctl ]
+# Now miscellaneous command line tools
+[ INCLUDE <SRCDIR>/rc/builder.ctl ]
+[ INCLUDE <SRCDIR>/disasm/builder.ctl ]
+[ INCLUDE <SRCDIR>/dump/builder.ctl ]
+# User interface libs
+[ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
+[ INCLUDE <SRCDIR>/ui/builder.ctl ]
+[ INCLUDE <SRCDIR>/aui/builder.ctl ]
+[ INCLUDE <SRCDIR>/gui/builder.ctl ]
+# Build the debugger
+[ INCLUDE <SRCDIR>/dip/builder.ctl ]
+[ INCLUDE <SRCDIR>/dbg/builder.ctl ]
+# Other GUI tools
+[ INCLUDE <SRCDIR>/profiler/builder.ctl ]
+[ INCLUDE <SRCDIR>/wclass/builder.ctl ]
+[ INCLUDE <SRCDIR>/ide/builder.ctl ]
 
 [ BLOCK . . ]
 #============

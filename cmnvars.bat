@@ -16,7 +16,7 @@ REM Stuff for the Open Watcom build environment
 set BUILD_PLATFORM=nt386
 REM Subdirectory to be used for bootstrapping/prebuild binaries
 set OWBINDIR=%OWROOT%\build\binnt
-set RELROOT=%OWROOT%\rel2
+set RELROOT=%OWROOT%\rel
 set EDPATH=%WATCOM%\eddat
 set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binnt;%WATCOM%\binw;%DEFPATH%
 

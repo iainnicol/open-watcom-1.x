@@ -69,7 +69,7 @@ wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 
 .c: ../c;../../c;$(misc_dir);$(cpp_dir)
 
-inc_dirs = -I"../h" -I"../../h" -I$(misc_dir) -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I$(cpp_dir)
+inc_dirs = -I"../h" -I"../../h" -I"$(misc_dir)" -I"$(wr_dir)/h" -I"$(wres_dir)/h" -I"$(cpp_dir)"
 
 extra_l_flags = op map,v,static
 extra_l_flags_nt = op stack=16k,heap=16k commit heap=8k

@@ -1,4 +1,4 @@
-# WDE Builder Control file
+# WRE Builder Control file
 # ========================
 
 set PROJDIR=<CWD>
@@ -18,9 +18,9 @@ cdsay .
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CPCMD> <PROJDIR>/wini86/wde.exe      <RELROOT>/binw/wde.exe
-    <CPCMD> <PROJDIR>/nt386/wde.exe       <RELROOT>/binnt/wde.exe
-    <CCCMD> <PROJDIR>/ntaxp/wde.exe       <RELROOT>/axpnt/wde.exe
+    <CPCMD> <PROJDIR>/wini86/wre.exe      <RELROOT>/binw/wre.exe
+    <CPCMD> <PROJDIR>/nt386/wre.exe       <RELROOT>/binnt/wre.exe
+    <CCCMD> <PROJDIR>/ntaxp/wre.exe       <RELROOT>/axpnt/wre.exe
 
 [ BLOCK <1> clean ]
 #==================

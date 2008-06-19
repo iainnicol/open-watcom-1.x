@@ -106,14 +106,14 @@ msgstr.obj : msgstr.c msg.h
 wprofui.res : ../h/wprofui.rc .AUTODEPEND
         $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
-./auimkstr.exe : $(aui_dir)/h/aui.msg $(aui_dir)/c/mkstr.c
-        $(host_cl) $(host_cl_opts) $]@
+./auimkstr.exe : $(aui_dir)/c/mkstr.c $(aui_dir)/h/aui.msg
+        $(host_cl) $(host_cl_opts) -I"$(aui_dir)/h" $[@
 
 auistr.gh : $(aui_dir)/h/aui.msg ./auimkstr.exe
         $]@ $^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
-        $(host_cl) $(host_cl_opts) $[@
+        $(host_cl) $(host_cl_opts) -I"$(gui_dir)/h" $[@
 
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)
