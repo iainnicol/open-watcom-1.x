@@ -1056,11 +1056,7 @@ static void compressMsgs() {
 static void writeExtraDefs( FILE *fp ) {
     fputc( '\n', fp );
     fputs(
-#if CHAR_MIN != 0
         "#define ENC_BIT 0x80\n"
-#else
-        "#define ENC_BIT (-127)\n"
-#endif
         "#define LARGE_BIT 0x40\n"
         "#define MAX_MSG ", fp );
     outputNum( fp, maxMsgLen );
