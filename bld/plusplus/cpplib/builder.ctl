@@ -11,9 +11,15 @@ cdsay .
 #
 # Make sure we have the reference compilers
 #
+# NB: This will probably go away. But at the moment the libs needs to build
+# in both V1 and V2 branch, so for V2 we just grab the compilers and copy
+# them in place of the reference compilers (since that's what they effectively
+# are anyway).
+#
 [ BLOCK <1> build rel2 ]
 #=======================
-#    [ INCLUDE prereq.ctl ]
+    <CPCMD> <OWBINDIR>/wpp386<CMDEXT> ../bin/rpp386<CMDEXT>
+    <CPCMD> <OWBINDIR>/wpp<CMDEXT>    ../bin/rppi86<CMDEXT>
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
 
 #[ BLOCK <1> rel2 ]
