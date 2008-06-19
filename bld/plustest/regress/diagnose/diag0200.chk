@@ -1737,9 +1737,7 @@ File: source\diag0232.c
   rejected function: void x171::f( char ) defined at: (185,10)
   rejected function: void x171::f( char x171::A::* ) defined at: (186,10)
 (199,9): Error! E189: overloaded function cannot be selected for arguments used in call
-  rejected function template: void x194( ?, ? ) defined at: (194,24)
-  rejected function: void x194( int, int ) defined at: (197,11)
-  rejected function: void x194( char, char ) defined at: (198,11)
+  rejected function template: void x194( ?1, ?1 ) defined at: (194,24)
 (204,33): Error! E913: 'operator =' does not have a return type specified
 (209,11): Error! E419: cannot call non-const function for a constant object
   'T' defined at: (206,12)
@@ -2132,13 +2130,11 @@ File: source\diag0239.c
 File: source\diag0240.c
 (2,13): Error! E289: invalid copy constructor argument list (causes infinite recursion)
 (41,8): Error! E189: overloaded function cannot be selected for arguments used in call
-  rejected function template: void x29( X26<?> const * * * ) defined at: (29,10)
-  rejected function template: void x29( X26<?> const * ) defined at: (32,10)
-  rejected function: void x29( X26<int> const * ) defined at: (39,10)
+  rejected function template: void x29( X26<?1> const * * * ) defined at: (29,10)
+  rejected function template: void x29( X26<?1> const * ) defined at: (32,10)
 (43,8): Error! E189: overloaded function cannot be selected for arguments used in call
-  rejected function template: void x29( X26<?> const * * * ) defined at: (29,10)
-  rejected function template: void x29( X26<?> const * ) defined at: (32,10)
-  rejected function: void x29( X26<int> const * ) defined at: (39,10)
+  rejected function template: void x29( X26<?1> const * * * ) defined at: (29,10)
+  rejected function template: void x29( X26<?1> const * ) defined at: (32,10)
 (70,9): Warning! W750: function prototype in block scope missing 'extern'
   function prototype is 'X67 ( int )'
 (71,9): Warning! W750: function prototype in block scope missing 'extern'

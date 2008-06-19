@@ -4187,11 +4187,8 @@ File: source\diag0193.c
 (49,19): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
 (50,24): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
 (51,35): Error! E463: linkage must be first in a declaration; probable cause: missing ';'
-(81,6): Error! E473: function argument(s) do not match those in prototype
-  template function 'void g( ?1 volatile & )' defined at: (73,10)
-  cannot convert argument 1 defined at: (81,7)
-  source conversion type is 'int'
-  target conversion type is '?1 volatile (lvalue)'
+(81,6): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function: void g( int volatile & ) defined at: (73,10)
 (85,17): Error! E258: cannot declare both a function and variable of the same name ('x')
 (85,19): Warning! W002: constant out of range; truncated
 File: source\diag0194.c

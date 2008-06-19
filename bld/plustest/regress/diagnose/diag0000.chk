@@ -1876,8 +1876,9 @@ File: source\diag0093.c
   definition: 'void f2( [?1 * ])'
 (11,5): Error! E250: missing default argument for 'f2'
   definition: 'void f2( void (* )( ?1, ?1 )[, ?1 ])'
-(16,7): Error! E341: number of arguments for function 'f2' is incorrect
-  definition: 'void f2( void (* )( ?1, ?1 )[, ?1 ])'
+(16,7): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function template: void f2( ?1 * ) defined at: (3,10)
+  rejected function template: void f2( void (* )( ?1, ?1 ), ?1 ) defined at: (10,10)
 (8,5): Warning! W726: no reference to formal parameter 'p'
   definition: 'int * p' in 'void f2( int * )'
   template function instantiation for 'f2' was at: (19,1)
