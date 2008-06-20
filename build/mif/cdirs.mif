@@ -1,4 +1,7 @@
 # todo: remove unused macros
+!ifndef awk_dir
+awk_dir         = $(dev_dir)/awk
+!endif
 !ifndef bench_dir
 bench_dir       = $(dev_dir)/bench
 !endif
