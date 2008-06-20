@@ -104,6 +104,19 @@ nested), an ENDIF or a BLOCK. An IFDEF may occur inside or outside a BLOCK.
 This terminates a preceding IFDEF. It has no effect on the BLOCK.
 
 
+        Predefined Variables
+        --------------------
+
+Builder predefines special environment variables for use within builder
+control files or any child processes. These variables are useful for testing
+in BLOCK and IFDEF directives.
+
+
+ BLD_HOST       - describes the platform builder is executing on. Currently
+                  defined values are UNIX, NT, OS2, and DOS.
+
+
+
         Built-in Commands
         -----------------
 

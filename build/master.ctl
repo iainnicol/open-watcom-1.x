@@ -10,6 +10,10 @@
 #====================
     error OBJDIR must be set!
 
+[ BLOCK .<BLD_HOST> . ]
+====================
+    error BLD_HOST not set - use updated builder!
+
 # Set default output directory
 [ BLOCK .<RELROOT> . ]
 #=====================

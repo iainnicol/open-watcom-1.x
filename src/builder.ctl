@@ -4,6 +4,8 @@
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
+echo Build host: <BLD_HOST>
+
 cdsay .
 
 [ BLOCK <1> boot bootclean ]
@@ -17,6 +19,10 @@ cdsay .
 [ INCLUDE <SRCDIR>/lib/builder.ctl ]
 # Build our version of yacc
 [ INCLUDE <SRCDIR>/yacc/builder.ctl ]
+# If necessary, build awk
+[ IFDEF <BLD_HOST> OS2 NT DOS ]
+[ INCLUDE <SRCDIR>/awk/builder.ctl ]
+[ ENDIF ]
 # Next build wres and the resource compiler
 [ INCLUDE <SRCDIR>/wres/builder.ctl ]
 [ INCLUDE <SRCDIR>/rc/rc/builder.ctl ]
@@ -52,8 +58,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
 
-[ BLOCK <1> bootunix bootclean ]
-#===============================
+[ IFDEF <BLD_HOST> UNIX ]
+#========================
 # Build UNIX specific utilities using native tools.
 # 
 # Build our vi editor and the libs it requires
@@ -61,6 +67,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/builder.ctl ]
 [ INCLUDE <SRCDIR>/hlpview/builder.ctl ]
+[ ENDIF ]
 
 [ BLOCK <1> build rel clean ]
 #============================

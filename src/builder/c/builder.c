@@ -485,7 +485,7 @@ static void ProcessCtlFile( const char *name )
             /* a directive */
             p = FirstWord( p + 1 );
             if( stricmp( p, "INCLUDE" ) == 0 ) {
-                if( IncludeStk->skipping == 0 ) {
+                if( !IncludeStk->skipping && !IncludeStk->ifdefskipping ) {
                     PushInclude( NextWord( p ) );
                 }
             }
