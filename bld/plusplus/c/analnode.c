@@ -758,7 +758,22 @@ boolean NodeIsIntConstant       // TEST IF INTEGRAL CONSTANT AND GET VALUE
 }
 
 
-boolean NodeIsZeroConstant(     // TEST IF A ZERO INTEGER CONSTANT
+boolean NodeIsZeroConstant(     // TEST IF A ZERO CONSTANT
+    PTREE node )                // - node
+{
+    boolean retn;               // - TRUE ==> is zero constant
+    INT_CONSTANT icon;          // - integral constant
+
+    if( nodeGetConstant( node, &icon ) ) {
+        retn = ( 0 == icon.value.u._32[0] && 0 == icon.value.u._32[1] );
+    } else {
+        retn = FALSE;
+    }
+    return retn;
+}
+
+
+boolean NodeIsZeroIntConstant(  // TEST IF A ZERO INTEGER CONSTANT
     PTREE node )                // - node
 {
     boolean retn;               // - TRUE ==> is zero constant

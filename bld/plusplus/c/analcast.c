@@ -602,7 +602,7 @@ static boolean zeroSrc          // TEST IF SOURCE OPERAND IS CONST ZERO
     ( CONVCTL* ctl )            // - conversion control
 {
     PTREE expr = PTreeOpRight( ctl->expr );
-    return NodeIsZeroConstant( expr );
+    return NodeIsZeroIntConstant( expr );
 }
 
 

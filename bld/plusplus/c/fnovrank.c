@@ -285,7 +285,7 @@ static boolean fromConstZero( FNOV_CONV *conv )
         return( FALSE );
     }
     node = *pnode;
-    if( node != NULL && NodeIsZeroConstant( node ) ) {
+    if( node != NULL && NodeIsZeroIntConstant( node ) ) {
         /* we don't want 0's that are cast to pointer types here */
         if( IntegralType( conv->wsrc.basic ) ) {
             conv->rank->rank = OV_RANK_STD_CONV;

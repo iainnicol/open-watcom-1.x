@@ -271,7 +271,7 @@ static void warnBoolConst(      // WARN, WHEN SPECIFIC BOOLEAN CONSTANT
     boolean parsed_int_const )  // - user coded an int constant
 {
     if( NodeIsConstantInt( expr ) ) {
-        warnBoolConstVal( NodeIsZeroConstant( expr )
+        warnBoolConstVal( NodeIsZeroIntConstant( expr )
                         , parsed_int_const
                         , expr );
     } else if( expr->flags & PTF_PTR_NONZERO ) {

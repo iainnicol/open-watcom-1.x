@@ -2892,7 +2892,7 @@ start_opac_string:
             if( expr->op != PT_ERROR ) continue;
           } break;
           case REQD_ZERO_LEFT :
-            if( ! NodeIsZeroConstant( left ) ) {
+            if( ! NodeIsZeroIntConstant( left ) ) {
                 exprError( left, ERR_NOT_PTR_OR_ZERO );
                 break;
             }
@@ -2942,7 +2942,7 @@ start_opac_string:
               &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
-            if( ! NodeIsZeroConstant( right ) ) {
+            if( ! NodeIsZeroIntConstant( right ) ) {
                 exprError( right, ERR_NOT_PTR_OR_ZERO );
                 break;
             }
@@ -3283,7 +3283,7 @@ start_opac_string:
                 if( ( NULL != type_l )
                   &&( ! ( type_l->flag & TF1_REFERENCE ) )
                   &&( NULL != ArithType( right->type ) )
-                  &&( ! NodeIsZeroConstant( right ) ) ) {
+                  &&( ! NodeIsZeroIntConstant( right ) ) ) {
                     exprError( right, ERR_NOT_PTR_OR_ZERO );
                     break;
                 }
@@ -3296,7 +3296,7 @@ start_opac_string:
           { TYPE type_l;        // - left type
             type_l = PointerTypeEquivalent( type );
             if( ! ( type_l->flag & TF1_REFERENCE ) ) {
-                if( ! NodeIsZeroConstant( right ) ) {
+                if( ! NodeIsZeroIntConstant( right ) ) {
                     exprError( right, ERR_NOT_PTR_OR_ZERO );
                     break;
                 }
