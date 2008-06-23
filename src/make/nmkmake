@@ -1,5 +1,5 @@
 CPPFLAGS = -I. -I..\h -I..\..\watcom\h -I..\..\lib_misc\h $(DEFS)
-CFLAGS = -nologo -Zi
+CFLAGS = -nologo
 DEFS = -DBOOTSTRAP -D__386__ -D__NT__
 
 {..\c}.c.obj :
