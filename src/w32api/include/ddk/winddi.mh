@@ -1056,7 +1056,7 @@ typedef XFORML  *PXFORML;
 typedef struct _CIECHROMA {
     LDECI4  x;
     LDECI4  y;
-    LDECI4  z;
+    LDECI4  Y;
 } CIECHROMA;
 
 /* Color information */
@@ -1114,7 +1114,7 @@ typedef struct _GDIINFO {
     ULONG       ulHTOutputFormat;
     ULONG       flHTFlags;
     ULONG       ulVRefresh;
-    ULONG       ulBitAlignment;
+    ULONG       ulBltAlignment;
     ULONG       ulPanningHorzRes;
     ULONG       ulPanningVertRes;
     ULONG       xPanningAlignment;

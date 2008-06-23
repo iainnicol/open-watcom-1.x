@@ -52,6 +52,20 @@ typedef ULONG               FSRTL_ECP_LOOKASIDE_FLAGS;
 #define EX_PUSH_LOCK    ULONG_PTR
 #define PEX_PUSH_LOCK   PULONG_PTR
 
+/* Flag manipulation macros */
+#ifndef FlagOn
+    #define FlagOn( x, p )          ((x) & (p))
+#endif
+#ifndef BooleanFlagOn
+    #define BooleanFlagOn( x, p )   ((BOOLEAN)(((x) & (p)) != 0))
+#endif
+#ifndef SetFlag
+    #define SetFlag( x, p )         ((x) |= (p))
+#endif
+#ifndef ClearFlag
+    #define ClearFlag( x, p )       ((x) &= ~(p))
+#endif
+
 /* Current SID revision */
 #define SID_REVISION    1
 
@@ -3706,7 +3720,12 @@ typedef struct _FSRTL_PER_STREAM_CONTEXT {
     PFREE_FUNCTION  FreeCallback;
 } FSRTL_PER_STREAM_CONTEXT;
 typedef FSRTL_PER_STREAM_CONTEXT    *PFSRTL_PER_STREAM_CONTEXT;
- 
+
+/* Tear down per stream contexts callback */
+#if (NTDDI_VERSION >= 0x05000000)
+typedef VOID (NTAPI *PFN_FSRTLTEARDOWNPERSTREAMCONTEXTS)( PFSRTL_ADVANCED_FCB_HEADER );
+#endif
+
 /* Per file object context */
 typedef struct _FSRTL_PER_FILEOBJECT_CONTEXT {
     LIST_ENTRY  Links;
@@ -4253,7 +4272,7 @@ NTKERNELAPI NTSTATUS NTAPI      FsRtlNormalizeNtstatus( NTSTATUS, NTSTATUS );
 NTKERNELAPI VOID NTAPI          FsRtlNotifyCleanup( PNOTIFY_SYNC, PLIST_ENTRY, PVOID );
 NTKERNELAPI VOID NTAPI          FsRtlNotifyFilterReportChange( PNOTIFY_SYNC, PLIST_ENTRY, PSTRING, USHORT, PSTRING, PSTRING, ULONG, ULONG, PVOID, PVOID );
 NTKERNELAPI VOID NTAPI          FsRtlNotifyFullChangeDirectory( PNOTIFY_SYNC, PLIST_ENTRY, PVOID, PSTRING, BOOLEAN, BOOLEAN, ULONG, PIRP, PCHECK_FOR_TRAVERSE_ACCESS, PSECURITY_SUBJECT_CONTEXT );
-NTKERNELAPI VOID NTAPI          FsRtlNotifyFullReportDirectory( PNOTIFY_SYNC, PLIST_ENTRY, PSTRING, USHORT, PSTRING, PSTRING, ULONG, ULONG, PVOID );
+NTKERNELAPI VOID NTAPI          FsRtlNotifyFullReportChange( PNOTIFY_SYNC, PLIST_ENTRY, PSTRING, USHORT, PSTRING, PSTRING, ULONG, ULONG, PVOID );
 NTKERNELAPI VOID NTAPI          FsRtlNotifyInitializeSync( PNOTIFY_SYNC * );
 NTKERNELAPI VOID NTAPI          FsRtlNotifyUninitializeSync( PNOTIFY_SYNC * );
 NTKERNELAPI NTSTATUS NTAPI      FsRtlNotifyVolumeEvent( PFILE_OBJECT, ULONG );
@@ -4542,8 +4561,8 @@ KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    MapSecurityError( SECURITY_STATUS );
     { \
         PRTL_SPLAY_LINKS    v1; \
         PRTL_SPLAY_LINKS    v2; \
-        v1 = (PRTL_SPLAY_LINKS)(p1); \
-        v2 = (PRTL_SPLAY_LINKS)(p2); \
+        v1 = (PRTL_SPLAY_LINKS)(x); \
+        v2 = (PRTL_SPLAY_LINKS)(p); \
         v1->LeftChild = v2; \
         v2->Parent = v1; \
     }
@@ -4551,8 +4570,8 @@ KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    MapSecurityError( SECURITY_STATUS );
     { \
         PRTL_SPLAY_LINKS    v1; \
         PRTL_SPLAY_LINKS    v2; \
-        v1 = (PRTL_SPLAY_LINKS)(p1); \
-        v2 = (PRTL_SPLAY_LINKS)(p2); \
+        v1 = (PRTL_SPLAY_LINKS)(x); \
+        v2 = (PRTL_SPLAY_LINKS)(p); \
         v1->RightChild = v2; \
         v2->Parent = v1; \
     }
@@ -4587,7 +4606,7 @@ KSECDDDECLSPEC SECURITY_STATUS SEC_ENTRY    MapSecurityError( SECURITY_STATUS );
 #define FsRtlAreThereCurrentFileLocks( x ) \
     ((x)->FastIoIsQuestionable)
 #define FsRtlTestAnsiCharacter( x, p1, p2, p3 ) \
-    (((SCHAR)(x) < 0) ? DEFAULT_RET : ((*FsRtlLegalAnsiCharacterArray)[(x)] & \
+    (((SCHAR)(x) < 0) ? p1 : ((*FsRtlLegalAnsiCharacterArray)[(x)] & \
     (p3) | ((p2) ? FSRTL_WILD_CHARACTER : 0)))
 #define FsRtlIsAnsiCharacterWild( x ) \
     FsRtlTestAnsiCharacter( x, FALSE, FALSE, FSRTL_WILD_CHARACTER )

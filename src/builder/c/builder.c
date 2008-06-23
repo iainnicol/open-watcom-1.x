@@ -534,7 +534,7 @@ static void ProcessCtlFile( const char *name )
                     Log( FALSE, "+++<%s>+++\n", p );
                 }
                 strcpy( Line, p );
-                res = RunIt( p );
+                res = RunIt( p, IgnoreErrors );
                 if( res != 0 ) {
                     if( !logit ) {
                         Log( FALSE, "<%s> => ", Line );
