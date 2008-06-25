@@ -53,12 +53,16 @@
 #define getch getchar
 #endif
 #endif
+#ifdef _MSC_VER
+#define _vbprintf _vsnprintf
+#else
 #define _vbprintf vsnprintf
+#define _vsnprintf vsnprintf
+#endif
 #define __near
 #define near
 #define __based(x)
 #define _snprintf snprintf
-#define _vsnprintf vsnprintf
 #define  __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 #ifndef _MSC_VER

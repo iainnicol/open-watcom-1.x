@@ -47,7 +47,7 @@ extern "C" {
 #define IDEDLL_EXPORT           __export __stdcall
 #endif
 
-#if defined( __WATCOMC__ ) || defined( _MSC_VER )
+#if defined( __WATCOMC__ )
 #define IDECALL                 __stdcall
 #else
 #define IDECALL

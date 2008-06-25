@@ -24,9 +24,8 @@ objs =              &
 !include exetarg.mif
 
 proctab.c : maketab.exe
-
         cp ../h/ytab.h .
         $[@ > proctab.c
 
 maketab.exe : maketab.c
-        $(host_cl) $(host_cl_opts) $[@
+        $(host_cl) $(host_cl_opts) -I"../h" $[@

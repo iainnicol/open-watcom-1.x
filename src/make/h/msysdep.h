@@ -34,11 +34,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <signal.h>
-#ifdef _MSC_VER
-  #include <io.h>        /* io.h was a really dumb idea */
-#else
-  #include <unistd.h>
-#endif
+#include <unistd.h>
 
 #ifndef __WATCOMC__
     #include "clibext.h"
