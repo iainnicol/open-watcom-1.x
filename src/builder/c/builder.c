@@ -141,7 +141,7 @@ static char **getvalue( char **argv, char *buff )
 
 static void Usage( void )
 {
-    printf( "Usage: builder [-c <ctl>] [-l <log>] [-b <bak>] [-s] [-v] [-u] [-q] [--] <parm>\n" );
+    printf( "Usage: builder [-c <ctl>] [-l <log>] [-b <bak>] [-i] [-v] [-u] [-q] [--] <parm>\n" );
     printf( "    See builder.doc for more information\n" );
     exit( 0 );
 }
