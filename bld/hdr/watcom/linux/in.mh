@@ -1,0 +1,61 @@
+/*
+ *  netinet/in.h      IP related definitions
+ *
+:include crwat.sp
+ */
+#ifndef _NETINET_IN_H_INCLUDED
+#define _NETINET_IN_H_INCLUDED
+#include <sys/types.h>
+:include readonly.sp
+:include cpluspro.sp
+:include lnxkpack.sp
+
+/* Internet address. */
+struct in_addr {
+    uint32_t       s_addr;     /* address in network byte order */
+};
+
+struct sockaddr_in {
+    sa_family_t    sin_family; /* address family: AF_INET */
+    uint16_t       sin_port;   /* port in network byte order */
+    struct in_addr sin_addr;   /* internet address */
+    char           __pad[ 16 - sizeof( sa_family_t ) - sizeof( uint16_t ) - sizeof( struct in_addr ) ];
+};
+
+#define IPPROTO_IP              0
+#define IPPROTO_ICMP            1
+#define IPPROTO_IGMP            2
+#define IPPROTO_IPIP            4
+#define IPPROTO_IPV4            IPPROTO_IPIP
+#define IPPROTO_TCP             6
+#define IPPROTO_EGP             8
+#define IPPROTO_PUP             12
+#define IPPROTO_UDP             17
+#define IPPROTO_IDP             22
+#define IPPROTO_DCCP            33
+#define IPPROTO_IPV6            41
+#define IPPROTO_ROUTING         43
+#define IPPROTO_FRAGMENT        44
+#define IPPROTO_RSVP            46
+#define IPPROTO_GRE             47
+#define IPPROTO_ESP             50
+#define IPPROTO_AH              51
+#define IPPROTO_ICMPV6          58                
+#define IPPROTO_PIM             103
+#define IPPROTO_COMP            108
+#define IPPROTO_SCTP            132
+#define IPPROTO_RAW             255
+
+#define INADDR_ANY              0x00000000UL
+#define INADDR_BROADCAST        0xffffffffUL
+#define INADDR_NONE             0xffffffffUL
+
+_WCRTLINK unsigned long int htonl(unsigned long int hostlong);
+_WCRTLINK unsigned short int htons(unsigned short int hostshort);
+_WCRTLINK unsigned long int ntohl(unsigned long int netlong);
+_WCRTLINK unsigned short int ntohs(unsigned short int netshort);
+
+:include poppack.sp
+:include cplusepi.sp
+#endif /* !_NETINET_IN_H_INCLUDED */
+
