@@ -122,8 +122,8 @@ cdsay .
 # User interface libs
 [ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
-[ INCLUDE <SRCDIR>/aui/builder.ctl ]
 [ INCLUDE <SRCDIR>/gui/builder.ctl ]
+[ INCLUDE <SRCDIR>/aui/builder.ctl ]
 # Build the debugger
 [ INCLUDE <SRCDIR>/dip/builder.ctl ]
 [ INCLUDE <SRCDIR>/dbg/builder.ctl ]
