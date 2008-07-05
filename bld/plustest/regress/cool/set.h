@@ -153,8 +153,10 @@ public:
   Boolean next_xor (CoolSet<Type>&);            // Return next exclusive-or
   Boolean next_intersection (CoolSet<Type>&);   // Return next intersection
   
-  friend ostream& operator<< (ostream&, const CoolSet<Type>&); // Overload output
-  /*inline##*/ friend ostream& operator<< (ostream&, const CoolSet<Type>*); 
+  template< class U >
+  friend ostream& operator<< (ostream&, const CoolSet<U>&); // Overload output
+  template< class U >
+  inline friend ostream& operator<< (ostream&, const CoolSet<U>*); 
 
   Boolean operator== (const CoolSet<Type>&) const; // Set equality test
   inline Boolean operator!= (const CoolSet<Type>&) const; // Set inequality test
@@ -172,8 +174,10 @@ private:
   Bucket* table;                                // Pointer to key buckets
   Hash h_function;              // Pointer to hash function
   Compare compare;              // Pointer operator== function
-  friend Boolean CoolSet_are_keys_equal (const Type&, const Type&);
-  friend long CoolSet_default_hash (const Type&);
+  template< class U >
+  friend Boolean CoolSet_are_keys_equal (const U&, const U&);
+  template< class U >
+  friend long CoolSet_default_hash (const U&);
   
   Boolean do_find (const Type&) const;          // CoolSet current position
 };

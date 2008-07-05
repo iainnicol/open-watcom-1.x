@@ -46,7 +46,7 @@ target_xbjs = $(xbjs)
 
 lib_flags = -b-c-n
 !ifneq release 0
-lib_flags += -s-t
+lib_flags += -s-t-zld
 !endif
 
 !ifndef lib_page_size
@@ -177,7 +177,7 @@ reference : .symbolic $(target_lib)
 !ifdef __UNIX__
 comp_cpp = $(plusplus_dir)/bin/rpp$(host_cpu)
 !else
-comp_cpp = $(plusplus_dir)\bin\rpp$(host_cpu).exe
+comp_cpp = $(plusplus_dir:/=\)\bin\rpp$(host_cpu).exe
 !endif
 
 .cpp : $(cpp_dirs)
