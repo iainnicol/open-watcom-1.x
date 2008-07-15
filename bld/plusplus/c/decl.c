@@ -757,9 +757,7 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
         }
     }
     if( SymIsClassMember( curr_fn ) &&
-        SymScope( curr_fn ) == ScopeNearestFileOrClass( GetCurrScope() ) &&
-        // allow template member function to be instatiated by more than one member
-        SymScope( curr_fn ) != ScopeNearestFileOrClass( ScopeFunctionScopeInProgress() ) ) {
+        SymScope( curr_fn ) == ScopeNearestFileOrClass( GetCurrScope() ) ) {
         // see C++98 9.3 (2)
         CErr2p( ERR_CANNOT_REDECLARE_MEMBER_FUNCTION, prev_fn );
     }
@@ -771,14 +769,17 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
     return( prev_fn );
 }
 
+/* see 3.6.1 Main function [basic.start.main] */
 static void verifyMainFunction( SYMBOL sym )
 {
     TYPE fn_type;
 
     fn_type = FunctionDeclarationType( sym->sym_type );
+
     if( fn_type->flag & TF1_INLINE ) {
         CErr1( ERR_MAIN_CANNOT_BE_INLINE );
     }
+
     switch( sym->id ) {
     case SC_STATIC:
         CErr1( ERR_MAIN_CANNOT_BE_STATIC );
@@ -787,6 +788,12 @@ static void verifyMainFunction( SYMBOL sym )
     case SC_STATIC_FUNCTION_TEMPLATE:
         CErr1( ERR_MAIN_CANNOT_BE_FN_TEMPLATE );
         break;
+    }
+
+    if( ( fn_type->of->id != TYP_SINT )
+     || ( ! CompFlags.extensions_enabled
+       && DefaultIntType( fn_type->of ) ) ) {
+        CErr1( ANSI_MAIN_MUST_RETURN_INT );
     }
 }
 
@@ -912,6 +919,9 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
                 if( TypesIdentical( sym_type, chk_type ) ) {
                     CErr2p( WARN_BENIGN_TYPEDEF_REDEFN, chk_sym );
                     BrinfReferenceSymbol( &sym->locn->tl, chk_sym );
+                } else if( ( chk_type->id == TYP_CLASS )
+                        && ( chk_type->u.c.scope == GetCurrScope() ) ) {
+                    /* already diagnosed (class name injection) */
                 } else {
                     CErr2p( ERR_INVALID_TYPEDEF_REDEFINITION, chk_sym );
                 }
@@ -960,8 +970,15 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
             }
             BrinfDeclSymbol( sym );
             _AddSymToRing( &(sym_name->name_syms), sym );
-            if( new_sym_is_function && MainProcedure( sym ) ) {
-                verifyMainFunction( sym );
+            if( new_sym_is_function ) {
+                if( MainProcedure( sym ) ) {
+                    verifyMainFunction( sym );
+                } else if( DefaultIntType( FunctionDeclarationType( sym->sym_type )->of ) ) {
+                    CErr2p( ERR_FUNCTION_BAD_RETURN, sym_name->name );
+                }
+            } else if ( ( sym_name->name != CppSpecialName( SPECIAL_RETURN_VALUE ) )
+                     && DefaultIntType( sym->sym_type ) ) {
+                CErr2p( ERR_MISSING_DECL_SPECS, sym_name->name );
             }
         } else {
             if( SymIsFunction( chk_sym ) ) {
@@ -1030,9 +1047,7 @@ DECL_INFO *DeclFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
     }
     sym = dinfo->sym;
     if( ! SymIsFunction( sym ) ) {
-        if( dspec == NULL ) {
-            CErr2p( ERR_MISSING_DECL_SPECS, dinfo->name );
-        } else {
+        if( dspec != NULL ) {
             CErr2p( ERR_INCORRECT_FUNCTION_DECL, dinfo->name );
         }
         return( dinfo );
