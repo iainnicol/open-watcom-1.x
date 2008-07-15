@@ -365,3 +365,6 @@ SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE
     SYMBOL aliasee,             // - sym to be aliased
     TOKEN_LOCN *locn )          // - location for symbol
 ;
+SYMBOL SymDefArgBase(           // GET DEFARG BASE SYMBOL
+    SYMBOL sym )                // - the symbol
+;
