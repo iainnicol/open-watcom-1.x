@@ -191,10 +191,10 @@ void hack(CoolM_Vector<double>);
 // Use envelope to avoid deep copy on return by value, and mutate in place
 template<class Type>
 inline CoolEnvelope< CoolM_Vector<Type> > operator+ (const CoolM_Vector<Type>&arg1,const CoolM_Vector<Type>&arg2)
-   { return CoolEnvOp(add)(arg1, arg2); }
+   { return (CoolEnvelope< CoolM_Vector<Type> > &) CoolEnvOp(add)(arg1, arg2); }
 template<class Type>
 inline CoolEnvelope< CoolM_Vector<Type> > operator- (const CoolM_Vector<Type>&arg1,const CoolM_Vector<Type>&arg2)
-   { return CoolEnvOp(minus)(arg1, arg2); }
+   { return (CoolEnvelope< CoolM_Vector<Type> > &) CoolEnvOp(minus)(arg1, arg2); }
 
 
 // get -- Get the element at specified index and return value
@@ -285,7 +285,7 @@ inline Boolean CoolM_Vector<Type>::operator!= (const CoolM_Vector<Type>& v) cons
 template<class Type> 
 inline CoolEnvelope< CoolM_Vector<Type> > operator+ (const Type& value,
                                       const CoolM_Vector<Type>& v) {
-  return v + value;
+  return (CoolEnvelope< CoolM_Vector<Type> > &) (v + value);
 }
 
 // operator- -- Non-destructive vector substraction of a scalar.
@@ -294,20 +294,20 @@ inline CoolEnvelope< CoolM_Vector<Type> > operator+ (const Type& value,
 
 template<class Type> 
 inline CoolEnvelope< CoolM_Vector<Type> > CoolM_Vector<Type>::operator-(const Type& value) const {
-  return (*this) + (- value);
+  return (CoolEnvelope< CoolM_Vector<Type> > &) ((*this) + (- value));
 }
 
 template<class Type> 
 inline CoolEnvelope< CoolM_Vector<Type> > operator- (const Type& value,
                                       const CoolM_Vector<Type>& v) {
-  return (- v) + value;
+  return (CoolEnvelope< CoolM_Vector<Type> > &) ((- v) + value);
 }
 
 
 template<class Type> 
 inline CoolEnvelope< CoolM_Vector<Type> > operator* (const Type& value,
                                       const CoolM_Vector<Type>& v) {
-  return v * value;
+  return (CoolEnvelope< CoolM_Vector<Type> > &) (v * value);
 }
 
 

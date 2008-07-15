@@ -142,7 +142,7 @@ inline float CoolQuaternion::real () const {
 // imaginary -- Get imaginary part
 
 inline CoolEnvelope_M_Vector/*##*/< CoolM_Vector<float> > CoolQuaternion::imaginary () const {
-  return this->extract(3,0);
+  return (CoolEnvelope_M_Vector< CoolM_Vector<float> > &) this->extract(3,0);
 }
 
   // operator=  -- Assignment q1 = q2;

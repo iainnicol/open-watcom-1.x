@@ -206,10 +206,10 @@ void hack(CoolMatrix<double>);
 // Use envelope to avoid deep copy on return by value, and mutate in place
 template<class Type>
 inline CoolEnvelope< CoolMatrix<Type> > operator+ (const CoolMatrix<Type>&arg1,const CoolMatrix<Type>&arg2)
-   { return CoolEnvOp(add)(arg1, arg2); }
+   { return (CoolEnvelope< CoolMatrix<Type> > &) CoolEnvOp(add)(arg1, arg2); }
 template<class Type>
 inline CoolEnvelope< CoolMatrix<Type> > operator- (const CoolMatrix<Type>&arg1,const CoolMatrix<Type>&arg2)
-   { return CoolEnvOp(minus)(arg1, arg2); }
+   { return (CoolEnvelope< CoolMatrix<Type> > &) CoolEnvOp(minus)(arg1, arg2); }
 
 
 // get -- Get the element at specified index and return value
@@ -296,7 +296,7 @@ inline CoolMatrix<Type>& CoolMatrix<Type>::operator-= (const Type& value) {
 template<class Type>
 inline CoolEnvelope< CoolMatrix<Type> > operator+ (const Type& value,
                                     const CoolMatrix<Type>& m) {
-  return m + value;
+  return (CoolEnvelope< CoolMatrix<Type> > &) (m + value);
 }
 
 // operator- -- Non-destructive matrix substraction of a scalar.
@@ -305,20 +305,20 @@ inline CoolEnvelope< CoolMatrix<Type> > operator+ (const Type& value,
 
 template<class Type> 
 inline CoolEnvelope< CoolMatrix<Type> > CoolMatrix<Type>::operator-(const Type& value) const {
-  return (*this) + (- value);
+  return (CoolEnvelope< CoolMatrix<Type> > &) ((*this) + (- value));
 }
 
 template<class Type>
 inline CoolEnvelope< CoolMatrix<Type> > operator- (const Type& value,
                                     const CoolMatrix<Type>& m) {
-  return (- m) + value;
+  return (CoolEnvelope< CoolMatrix<Type> > &) ((- m) + value);
 }
 
 
 template<class Type>
 inline CoolEnvelope< CoolMatrix<Type> > operator* (const Type& value,
                                     const CoolMatrix<Type>& m) {
-  return m * value;
+  return (CoolEnvelope< CoolMatrix<Type> > &) (m * value);
 }
 
 template<class Type>

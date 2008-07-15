@@ -196,16 +196,16 @@ void hack(CoolSet<CoolGen_String>);
 // Use envelope to avoid deep copy on return by value, and mutate in place
 template<class Type>
 inline CoolEnvelope< CoolSet<Type> > operator| (const CoolSet<Type>&arg1,const CoolSet<Type>&arg2)
-   { return CoolEnvOp(vertical)(arg1, arg2); }
+   { return (CoolEnvelope< CoolSet<Type> > &) CoolEnvOp(vertical)(arg1, arg2); }
 template<class Type>
 inline CoolEnvelope< CoolSet<Type> > operator- (const CoolSet<Type>&arg1,const CoolSet<Type>&arg2)
-   { return CoolEnvOp(minus)(arg1, arg2); }
+   { return (CoolEnvelope< CoolSet<Type> > &) CoolEnvOp(minus)(arg1, arg2); }
 template<class Type>
 inline CoolEnvelope< CoolSet<Type> > operator^ (const CoolSet<Type>&arg1,const CoolSet<Type>&arg2)
-   { return CoolEnvOp(caret)(arg1, arg2); }
+   { return (CoolEnvelope< CoolSet<Type> > &) CoolEnvOp(caret)(arg1, arg2); }
 template<class Type>
 inline CoolEnvelope< CoolSet<Type> > operator& (const CoolSet<Type>&arg1,const CoolSet<Type>&arg2)
-   { return CoolEnvOp(ampersand)(arg1, arg2); }
+   { return (CoolEnvelope< CoolSet<Type> > &) CoolEnvOp(ampersand)(arg1, arg2); }
 
 // operator=  -- Assignment from an envelope back to real set
 // Input:     envelope reference
