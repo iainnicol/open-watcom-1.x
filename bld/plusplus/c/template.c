@@ -3159,6 +3159,13 @@ static void processInstantiationMembers( CLASS_INST *instance )
 #endif
 
             sym_scope = SymScope( sym );
+
+            // find class TEMPLATE_INST_SCOPE to replace with our inst scope
+            while( ( sym_scope->enclosing != NULL )
+                && ! ScopeType( sym_scope->enclosing, SCOPE_TEMPLATE_INST )
+                && ! ScopeType( sym_scope->enclosing, SCOPE_FILE ) ) {
+                sym_scope = sym_scope->enclosing;
+            }
             save_scope = sym_scope->enclosing;
 
             save_class_parm_scope = instance->scope->enclosing;
