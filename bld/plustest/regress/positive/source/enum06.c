@@ -1,6 +1,7 @@
 #include "fail.h"
 
 enum A {
+    c0 = 0,
     c1 = 120
 };
 
@@ -15,6 +16,16 @@ int f( A &a )
 }
 
 
+int g( const void * )
+{
+    return 0;
+}
+
+int g( ... )
+{
+    return 1;
+}
+
 int main()
 {
     A a1 = c1;
@@ -22,6 +33,10 @@ int main()
 
     if( f( a1 ) != 2 ) fail(__LINE__);
     if( f( a2 ) != 1 ) fail(__LINE__);
+
+    if( g( c0 ) != 1 ) fail(__LINE__);
+    if( g( 0 ) != 0 ) fail(__LINE__);
+
 
     _PASS;
 }
