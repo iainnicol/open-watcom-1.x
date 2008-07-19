@@ -1228,6 +1228,23 @@ static void checkClassStatus( CLASS_DATA *data )
                 CErr1( ERR_REFERENCE_MEMBER_MEANS_CTOR );
             }
         }
+    } else {
+        /* see 9.2 Class members [class.mem]: "14 In addition, if
+           class T has a user-declared constructor (12.1), every
+           non-static data member of class T shall have a name
+           different from T." */
+        SYMBOL sym;
+        SYMBOL_NAME sym_name;
+
+        sym_name = HashLookup( data->scope->names, data->name );
+
+        if( sym_name != NULL ) {
+            RingIterBeg( sym_name->name_syms, sym ) {
+                if( sym->id == SC_MEMBER ) {
+                    CErr2p( ERR_MEMBER_SAME_NAME_AS_CLASS, sym );
+                }
+            } RingIterEnd( sym )
+        }
     }
 }
 

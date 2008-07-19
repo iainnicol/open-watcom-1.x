@@ -12138,3 +12138,15 @@ void fn() {
 :MSGSYM. ERR_SYNTAX_UNEXPECTED_TOKEN
 :MSGTXT. syntax error: token '%s', but expected: '%s'
 :MSGJTXT.
+
+:MSGSYM. ERR_MEMBER_SAME_NAME_AS_CLASS
+:MSGTXT. member '%S' cannot be declared in this class
+:MSGJTXT.
+A member cannot be declared with the same name as its containing class if
+the class has a user-declared constructor.
+:errbad.
+struct S {
+    S() { }
+    int S;   // Error!
+};
+:eerrbad.

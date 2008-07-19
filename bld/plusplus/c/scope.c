@@ -2174,6 +2174,10 @@ boolean ScopeCarefulInsert( SCOPE scope, SYMBOL *psym, char *name )
 
     sym = *psym;
     sym_name = scopeInsertName( scope, sym, name );
+    if( sym_name->containing != scope ) {
+        /* adjust symbol name when we have found an injected class name */
+        sym_name->containing = scope;
+    }
     if( _IsFileScope( scope ) ) {
         LinkageSet( sym, NULL );
     }
