@@ -2386,6 +2386,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
         break;
     case SC_AUTO:
     case SC_EXTERN:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
     case SC_REGISTER:
         CErr1( ERR_INVALID_STG_CLASS_FOR_MEMBER );
         sym->id = SC_NULL;

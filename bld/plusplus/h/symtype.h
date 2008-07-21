@@ -700,7 +700,8 @@ typedef enum {
 ,SC_DEF(SC_NAMESPACE           )/* symbol is a namespace id             */\
 ,SC_DEF(SC_CLASS_TEMPLATE      )/* symbol is a class template           */\
 ,SC_DEF(SC_FUNCTION_TEMPLATE   )/* symbol is a function template        */\
-,SC_DEF(SC_STATIC_FUNCTION_TEMPLATE)/* symbol is a function template    */\
+,SC_DEF(SC_EXTERN_FUNCTION_TEMPLATE   )/* symbol is an extern function template */\
+,SC_DEF(SC_STATIC_FUNCTION_TEMPLATE)/* symbol is a static function template */\
                                 /* **** used only in Code Generation:   */\
 ,SC_DEF(SC_VIRTUAL_FUNCTION    )/* indirect symbol for a virt. fn call  */\
                                 /* **** only in template instantiation  */\

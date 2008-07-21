@@ -7595,6 +7595,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.tinfo = TemplateClassInfoGetIndex( save_u_tinfo );
         break;
     case SC_FUNCTION_TEMPLATE:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
     case SC_STATIC_FUNCTION_TEMPLATE:
         save_u_defn = s->u.defn;
         s->u.defn = TemplateFunctionInfoGetIndex( save_u_defn );
@@ -7636,6 +7637,7 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.tinfo = save_u_tinfo;
         break;
     case SC_FUNCTION_TEMPLATE:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
     case SC_STATIC_FUNCTION_TEMPLATE:
         s->u.defn = save_u_defn;
         break;
@@ -7902,6 +7904,7 @@ static void readSymbols( void )
             sym->u.tinfo = TemplateClassInfoMapIndex( pch->u.tinfo );
             break;
         case SC_FUNCTION_TEMPLATE:
+        case SC_EXTERN_FUNCTION_TEMPLATE:
         case SC_STATIC_FUNCTION_TEMPLATE:
             sym->u.defn = TemplateFunctionInfoMapIndex( pch->u.defn );
             break;

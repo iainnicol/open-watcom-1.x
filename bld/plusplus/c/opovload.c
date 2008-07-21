@@ -474,7 +474,7 @@ static boolean symInResult( SYMBOL sym, SEARCH_RESULT *result )
     RingIterBeg( result->sym_name->name_syms, curr ) {
         if( curr == sym ) {
             return TRUE;
-        } else if( curr->id == SC_FUNCTION_TEMPLATE ) {
+        } else if( SymIsFunctionTemplateModel( curr ) ) {
             FN_TEMPLATE_INST *fn_inst;
 
             RingIterBeg( curr->u.defn->instantiations, fn_inst ) {

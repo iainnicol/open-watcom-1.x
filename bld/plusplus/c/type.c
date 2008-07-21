@@ -6543,7 +6543,11 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                     if( ScopeId( scope ) == SCOPE_FILE ) {
                         if( ! CompFlags.extensions_enabled ) {
                             /* required by the ANSI C++ draft */
-                            check_sym->id = SC_EXTERN;
+                            if( check_sym->id == SC_FUNCTION_TEMPLATE ) {
+                                check_sym->id = SC_EXTERN_FUNCTION_TEMPLATE;
+                            } else {
+                                check_sym->id = SC_EXTERN;
+                            }
                         }
                     }
                 }

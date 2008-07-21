@@ -291,6 +291,7 @@ static void handleInlineFunction( SYMBOL sym )
     case SC_FUNCTION_TEMPLATE:
     case SC_STATIC_FUNCTION_TEMPLATE:
     case SC_EXTERN:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
         return;
     }
     sym->id = SC_STATIC;
@@ -425,6 +426,7 @@ static fn_stg_class_status checkFnStorageClass( SYMBOL prev, SYMBOL curr, decl_c
     }
     switch( curr->id ) {
     case SC_NULL:
+    case SC_FUNCTION_TEMPLATE:
         break;
     case SC_EXTERN:
         if( prev->id == SC_NULL ) {
@@ -434,10 +436,26 @@ static fn_stg_class_status checkFnStorageClass( SYMBOL prev, SYMBOL curr, decl_c
             return( FSCS_NULL );
         }
         break;
+    case SC_EXTERN_FUNCTION_TEMPLATE:
+        if( prev->id == SC_FUNCTION_TEMPLATE ) {
+            prev->id = SC_EXTERN_FUNCTION_TEMPLATE;
+        } else if( prev->id != SC_EXTERN_FUNCTION_TEMPLATE ) {
+            CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
+            return( FSCS_NULL );
+        }
+        break;
     case SC_STATIC:
         if( prev->id == SC_NULL && CompFlags.extensions_enabled ) {
             prev->id = SC_STATIC;
         } else if( prev->id != SC_STATIC ) {
+            CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
+            return( FSCS_NULL );
+        }
+        break;
+    case SC_STATIC_FUNCTION_TEMPLATE:
+        if( prev->id == SC_FUNCTION_TEMPLATE && CompFlags.extensions_enabled ) {
+            prev->id = SC_STATIC_FUNCTION_TEMPLATE;
+        } else if( prev->id != SC_STATIC_FUNCTION_TEMPLATE ) {
             CErr2p( ERR_CONFLICTING_STORAGE_CLASSES, prev );
             return( FSCS_NULL );
         }
@@ -785,6 +803,7 @@ static void verifyMainFunction( SYMBOL sym )
         CErr1( ERR_MAIN_CANNOT_BE_STATIC );
         break;
     case SC_FUNCTION_TEMPLATE:
+    case SC_EXTERN_FUNCTION_TEMPLATE:
     case SC_STATIC_FUNCTION_TEMPLATE:
         CErr1( ERR_MAIN_CANNOT_BE_FN_TEMPLATE );
         break;

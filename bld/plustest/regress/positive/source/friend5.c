@@ -41,8 +41,18 @@ class D {
     friend class C< void >; // shouldn't cause C< void > to be instantiated
     friend class C< int >;
 
+    template< class T >
+    friend void g( T t );
+
     int i;
 };
+
+template< class T >
+void g( T t )
+{
+    D d;
+    d.i = 0;
+}
 
 
 int main() {
@@ -54,6 +64,8 @@ int main() {
 
     C< int > c;
     c.f();
+
+    g( 0 );
 
 
     _PASS;

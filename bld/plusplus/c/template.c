@@ -1271,10 +1271,12 @@ void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
         CErr1( ERR_NO_VARIABLE_TEMPLATES );
         return;
     }
-    if( sym->id != SC_STATIC ) {
-        sym->id = SC_FUNCTION_TEMPLATE;
-    } else {
+    if( sym->id == SC_STATIC ) {
         sym->id = SC_STATIC_FUNCTION_TEMPLATE;
+    } else if( sym->id == SC_EXTERN ) {
+        sym->id = SC_EXTERN_FUNCTION_TEMPLATE;
+    } else {
+        sym->id = SC_FUNCTION_TEMPLATE;
     }
     sym->sym_type = MakePlusPlusFunction( sym->sym_type );
 }
