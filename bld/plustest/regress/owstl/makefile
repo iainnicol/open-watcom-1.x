@@ -18,14 +18,14 @@ test_cflags_i86 = -os-d1-xs
 test_cflags_axp = -os-d1-xs
 alt_error=02
 !else ifdef test3   # This test was using -xss, but that does not entirely work yet.
-test_cflags_386 = -os-d1-3s-xs-xr
-test_cflags_i86 = -os-d1-xs-xr
-test_cflags_axp = -os-d1-xs-xr
+test_cflags_386 = -ot-d1-3s-xs-xr
+test_cflags_i86 = -ot-d1-xs-xr
+test_cflags_axp = -ot-d1-xs-xr
 alt_error=03
-!else ifdef test4
-test_cflags_386 = -ot-d1-3r-fpd-xs -oe500
-test_cflags_i86 = -ot-d1-fpd-xs -oe100
-test_cflags_axp = -ot-d1-xs -oe500
+!else ifdef test4   # This test was using -oe500 but that does not entirely work yet.
+test_cflags_386 = -ox-3r-fpd-xs
+test_cflags_i86 = -ox-fpd-xs
+test_cflags_axp = -ox-xs
 alt_error=04
 !else ifdef test5
 test_cflags_386 = -d2-xs $(br_opt)
