@@ -7729,6 +7729,10 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
         u_unmod_type = TypeModFlagsBaseEC( u_type, &u_flags, &u_base );
         if( ( b_unmod_type == u_unmod_type )
          && ( b_unmod_type->id != TYP_GENERIC ) ) {
+            if( is_function ) {
+                continue;
+            }
+
             d_flags = u_flags ^ ( b_flags & u_flags );
             if( d_flags != TF1_NULL ) {
                 /*
