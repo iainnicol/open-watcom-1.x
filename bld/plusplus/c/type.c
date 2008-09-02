@@ -7874,7 +7874,8 @@ static unsigned typesBind( type_bind_info *data, boolean is_function )
             status |= TB_NEEDS_TRIVIAL;
             b_flags |= d_flags;
         }
-        if( ! modifiersMatch( b_flags, u_flags, b_base, u_base ) ) {
+        if( ! is_function
+         && ! modifiersMatch( b_flags, u_flags, b_base, u_base ) ) {
             return( TB_NULL );
         }
         switch( b_unmod_type->id ) {
