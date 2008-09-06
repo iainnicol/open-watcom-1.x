@@ -5,12 +5,6 @@ positive_dir = source
 
 !include $(positive_dir)/positive.mif
 
-!ifndef __UNIX__
-!ifndef __DOS__
-br_opt = -br
-!endif
-!endif
-
 !ifdef test1
 test_cflags_386 = -d2-xss-mf
 test_cflags_i86 = -d2-xss-mc-2
@@ -216,6 +210,14 @@ cltemp21.$(exe) : cltemp21.obj cltmp21b.obj
     @set error_msg=failure to execute $^@
     @%append exec.out PASS executing $^@
     $(run) $(exec_prefix)$@ >>exec.out
+
+friend4.$(exe) : friend4.obj friend4b.obj
+    @set error_msg=failure to link $^@
+    $(linker) @test.lnk NAME $^@ FILE $[@, $]@
+    @set error_msg=failure to execute $^@
+    @%append exec.out PASS executing $^@
+    $(run) $^@ >>exec.out
+
 
 start_test : .symbolic test.lnk
     %create exec.out

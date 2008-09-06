@@ -80,6 +80,7 @@ extra_c_flags += -D_CGDLL
 
 !ifeq release 0
 extra_c_flags_axp = -si
+cflags += -db
 !endif
  
 extra_c_flags_osi   = -DIDE_PGM -D__OS2__
@@ -390,7 +391,7 @@ patch_level=0
 !endif
  
 plusplus.rc : ./genverrc.exe ../rc/r_$(host_os)$(host_cpu).rc
-    $[@ $]@ $@ $$ $(dll_name).dll $(patch_level)
+    $[@ $]@ $@ $$ $(dll_name) $(patch_level)
  
 !ifeq target_cpu axp
  

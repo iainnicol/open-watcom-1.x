@@ -5,12 +5,6 @@ plustest_name = except
 
 !include ../environ.mif
 
-!ifndef __UNIX__
-!ifndef __DOS__
-br_opt = -br
-!endif
-!endif
-
 files = &
     excok.$(ext) &
     excfancy.$(ext) &
@@ -78,8 +72,11 @@ stack_386=opt stack=32k
 stack_i86=opt stack=8k
 stack_axp=opt stack=32k
 
-fatal_error_check_i86=
+!ifneq targ_env_386 cw386
+!ifneq targ_env_386 d4g386
 fatal_error_check_386=| diff - fatalerr.chk
+!endif
+!endif
 fatal_error_check_axp=| diff - fatalerr.chk
 
 .c.obj:
@@ -88,7 +85,7 @@ fatal_error_check_axp=| diff - fatalerr.chk
 .obj.$(exe):
     $(linker) @test.lnk name $@ file $[@
     @%append exec.out --------$^*--------
-!ifneq fatal_error_check_$(arch)
+!ifdef fatal_error_check_$(arch)
     -$(run) $(exec_prefix)$@ >>exec.out 2>&1
 !else
     -$(run) $(exec_prefix)$@ >>exec.out
