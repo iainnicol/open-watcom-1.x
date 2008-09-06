@@ -5,12 +5,12 @@ File: source\diag0100.c
   template class member instantiation was at: (48,17)
   operand type is 'int (lvalue)'
 (59,16): Error! E121: syntax error
-  template class instantiation for 'S<int>' was at: (68,1)
+  template class member instantiation was at: (68,8)
 (61,13): Error! E006: syntax error; probable cause: missing ';'
-  template class instantiation for 'S<int>' was at: (68,1)
+  template class member instantiation was at: (68,8)
 (65,9): Warning! W014: no reference to symbol 'q'
   definition: 'S<int> * q' in 'void S<int>::foo( int )'
-  template class instantiation for 'S<int>' was at: (68,1)
+  template class member instantiation was at: (68,8)
 File: source\diag0101.c
 (7,20): Warning! W402: class template 'X2' has already been declared as a friend
   definition: '<class template> X2'
@@ -21,7 +21,7 @@ File: source\diag0101.c
 (35,1): Warning! W011: all members are private
 (29,16): Error! E148: access to private member 'PP::bad' is not allowed
   definition: 'int PP::bad'
-  template class instantiation for 'LL<int>' was at: (42,1)
+  template class member instantiation was at: (42,9)
 File: source\diag0102.c
 (11,16): Warning! W297: class friend declaration needs 'class' or 'struct' keyword
 (23,12): Error! E148: access to private member 'XX::bad' is not allowed
@@ -104,35 +104,25 @@ File: source\diag0108.c
 File: source\diag0109.c
 (4,14): Error! E042: symbol 'XX::a' already defined
   definition: 'int XX<int * (*)( int * )>::a'
-  template class instantiation for 'XX<int * (*)( int * )>' was at: (12,10)
-  function template binding for 'foo' was at: (12,10)
-  template function 'XX<?> foo( ?, ? )' defined at: (8,11)
+  template class instantiation for 'XX<int * (*)( int * )>' was at: (8,11)
 (5,5): Warning! W011: all members are private
-  template class instantiation for 'XX<int * (*)( int * )>' was at: (12,10)
-  function template binding for 'foo' was at: (12,10)
-  template function 'XX<?> foo( ?, ? )' defined at: (8,11)
+  template class instantiation for 'XX<int * (*)( int * )>' was at: (8,11)
 File: source\diag0110.c
 (4,10): Error! E040: expression for '.' must be a class, struct or union
-  template function instantiation for 'foo' was at: (11,9)
+  template function instantiation for 'foo' was at: (12,1)
   definition: 'void foo( int )'
-  function template binding of 'foo' was at: (11,9)
-  template function 'void foo( ? )' defined at: (2,10)
   operand type is 'int (lvalue)'
 File: source\diag0111.c
 (14,5): Error! E003: missing return value
   template function instantiation for 'foo' was at: (19,1)
   definition: 'S<int> foo( int, int * )'
 (7,20): Error! E324: conversion of return value is impossible
-  template class instantiation for 'S<int>' was at: (18,10)
-  function template binding for 'foo' was at: (18,10)
-  template function 'S<?> foo( ?, ? * )' defined at: (12,10)
+  template class member instantiation was at: (12,10)
   source conversion type is 'S<int>'
   target conversion type is 'void *'
 (8,9): Warning! W726: no reference to formal parameter 'x'
   definition: 'int x' in 'void * S<int>::foo( int )'
-  template class instantiation for 'S<int>' was at: (18,10)
-  function template binding for 'foo' was at: (18,10)
-  template function 'S<?> foo( ?, ? * )' defined at: (12,10)
+  template class member instantiation was at: (12,10)
 File: source\diag0112.c
 (6,5): Error! E385: attempt to overload function 'S::foo' with a different return type
   definition: 'int S<int>::foo( int )'
@@ -176,8 +166,6 @@ File: source\diag0116.c
 (11,10): Error! E640: possible non-terminating template instantiation (use "#pragma template_depth 26" to increase depth)
   template function instantiation for 'foo' was at: (19,5)
   definition: 'void foo( D & )'
-  function template binding of 'foo' was at: (18,14)
-  template function 'void foo( ? & )' defined at: (11,10)
 I did not generate errors for diag0117
 File: source\diag0118.c
 (6,13): Error! E112: cannot inherit an undefined base class 'U'
@@ -216,8 +204,8 @@ File: source\diag0121.c
 (2,42): Warning! W248: using default arguments would be overload ambiguous with 'operator new'
 (5,55): Error! E488: 'operator delete' cannot be overloaded
 File: source\diag0122.c
-(12,8): Error! E651: cannot instantiate foo
-  template function 'void foo( xyz<?1,-1>, int (* )( ?1 const &, ?1 const & ))' defined at: (9,10)
+(12,8): Error! E189: overloaded function cannot be selected for arguments used in call
+  rejected function template: void foo( xyz<?1,-1>, int (* )( ?1 const &, ?1 const & )) defined at: (9,10)
 File: source\diag0123.c
 (19,24): Warning! W367: conditional expression in if statement is always true
 (20,30): Warning! W367: conditional expression in if statement is always true
@@ -239,7 +227,6 @@ File: source\diag0123.c
 (100,0): Error! E199: premature end-of-file encountered during compilation
 File: source\diag0124.c
 (9,22): Error! E390: cannot generate default constructor to initialize 'Range<int,1,10>' since constructors were declared
-(23,6): Error! E336: declaration specifiers are required to declare 'FooCB'
 (23,6): Error! E121: syntax error
 File: source\diag0125.c
 (10,10): Error! E121: syntax error
@@ -1043,8 +1030,6 @@ File: source\diag0162.c
 (9,9): Error! E151: operand is neither a pointer nor an arithmetic type
   template function instantiation for 'foo' was at: (15,1)
   definition: 'void foo( S<int> )'
-  function template binding of 'foo' was at: (14,10)
-  template function 'void foo( S<?> )' defined at: (7,10)
   operand type is 'S<int> (lvalue)'
 End of file
 Warning! W014: no reference to symbol 'g'
@@ -1161,16 +1146,12 @@ File: source\diag0167.c
   left operand type is 'void * (lvalue)'
   right operand type is 'int'
 (45,17): Error! E373: invalid modifier for auto variable
-  template function instantiation for 'swap' was at: (52,11)
+  template function instantiation for 'swap' was at: (53,1)
   definition: 'void swap( int &, int & )'
-  function template binding of 'swap' was at: (52,11)
-  template function 'void swap( ? &, ? & )' defined at: (42,10)
 (46,5): Warning! W014: no reference to symbol 'c'
   definition: 'int c' in 'void swap( int &, int & )'
-  template function instantiation for 'swap' was at: (52,11)
+  template function instantiation for 'swap' was at: (53,1)
   definition: 'void swap( int &, int & )'
-  function template binding of 'swap' was at: (52,11)
-  template function 'void swap( ? &, ? & )' defined at: (42,10)
 File: source\diag0168.c
 (2,6): Error! E080: system dependent test for 386
 File: source\diag0169.c

@@ -97,41 +97,29 @@ File: source\diag0207.c
   cannot convert argument 1 defined at: (27,13)
   source conversion type is 'S volatile (lvalue)'
   target conversion type is 'S const (lvalue)'
-(28,11): Error! E475: cannot assign right expression to class object
+(28,5): Error! E419: cannot call non-const function for a constant object
+  'S' defined at: (3,8)
   definition: 'S & S::operator =( S const & )'
-  cannot convert argument 1 defined at: (28,13)
-  source conversion type is 'S volatile (lvalue)'
-  target conversion type is 'S const (lvalue)'
-(29,11): Error! E475: cannot assign right expression to class object
+(29,5): Error! E467: cannot call a non-volatile function for a volatile object
+  'S' defined at: (3,8)
   definition: 'S & S::operator =( S const & )'
-  cannot convert argument 1 defined at: (29,13)
-  source conversion type is 'S volatile (lvalue)'
-  target conversion type is 'S const (lvalue)'
-(30,11): Error! E475: cannot assign right expression to class object
+(30,5): Error! E419: cannot call non-const function for a constant object
+  'S' defined at: (3,8)
   definition: 'S & S::operator =( S const & )'
-  cannot convert argument 1 defined at: (30,13)
-  source conversion type is 'S volatile (lvalue)'
-  target conversion type is 'S const (lvalue)'
 (31,11): Error! E475: cannot assign right expression to class object
   definition: 'S & S::operator =( S const & )'
   cannot convert argument 1 defined at: (31,13)
   source conversion type is 'S const volatile (lvalue)'
   target conversion type is 'S const (lvalue)'
-(32,11): Error! E475: cannot assign right expression to class object
+(32,5): Error! E419: cannot call non-const function for a constant object
+  'S' defined at: (3,8)
   definition: 'S & S::operator =( S const & )'
-  cannot convert argument 1 defined at: (32,13)
-  source conversion type is 'S const volatile (lvalue)'
-  target conversion type is 'S const (lvalue)'
-(33,11): Error! E475: cannot assign right expression to class object
+(33,5): Error! E467: cannot call a non-volatile function for a volatile object
+  'S' defined at: (3,8)
   definition: 'S & S::operator =( S const & )'
-  cannot convert argument 1 defined at: (33,13)
-  source conversion type is 'S const volatile (lvalue)'
-  target conversion type is 'S const (lvalue)'
-(34,11): Error! E475: cannot assign right expression to class object
+(34,5): Error! E419: cannot call non-const function for a constant object
+  'S' defined at: (3,8)
   definition: 'S & S::operator =( S const & )'
-  cannot convert argument 1 defined at: (34,13)
-  source conversion type is 'S const volatile (lvalue)'
-  target conversion type is 'S const (lvalue)'
 File: source\diag0208.c
 (26,30): Error! E400: cannot convert right expression for initialization
   'S' defined at: (3,8)
@@ -610,7 +598,6 @@ File: source\diag0223.c
 (18,11): Error! E126: class 'S2' has already been defined
 (27,23): Error! E003: missing return value
 (30,16): Error! E498: syntax error before 's'; probable cause: incorrectly spelled type name
-(42,15): Error! E336: declaration specifiers are required to declare 'S3_1'
 (42,6): Error! E498: syntax error before 'gs3_1_new'; probable cause: incorrectly spelled type name
 (48,12): Error! E042: symbol 'S4::i' already defined
   definition: 'int S4::i'
@@ -625,9 +612,7 @@ File: source\diag0223.c
 (62,26): Error! E177: invalid storage class in file scope
 (64,15): Error! E336: declaration specifiers are required to declare 'r'
 (64,15): Error! E177: invalid storage class in file scope
-(65,12): Error! E336: declaration specifiers are required to declare 'array'
 (65,12): Error! E121: syntax error
-(66,10): Error! E336: declaration specifiers are required to declare 'wrong'
 (66,10): Error! E121: syntax error
 (68,11): Error! E326: defining 'bs5' is not possible because its type has unknown size
   definition: 'S5 bs5'
@@ -738,9 +723,7 @@ File: source\diag0223.c
 (402,5): Error! E029: symbol 'y' has not been declared
 (404,14): Error! E926: syntax error: 'enclose::x' has not been declared as a member
 (405,14): Error! E926: syntax error: 'enclose::y' has not been declared as a member
-(418,4): Error! E336: declaration specifiers are required to declare 'I'
 (418,3): Error! E498: syntax error before 'b'; probable cause: incorrectly spelled type name
-(419,6): Error! E336: declaration specifiers are required to declare 'S23'
 (419,5): Error! E498: syntax error before 'c'; probable cause: incorrectly spelled type name
 (448,1): Warning! W914: 'main' must return 'int'
 (460,8): Error! E006: syntax error; probable cause: missing ';'
@@ -850,7 +833,6 @@ File: source\diag0224.c
 (70,36): Warning! W145: unexpected type qualifier found
 (74,17): Error! E037: invalid storage class for function
 (74,17): Error! E238: 'f4' is not a function
-(74,41): Error! E336: declaration specifiers are required to declare 'a_funtion'
 (74,41): Error! E121: syntax error
 (76,9): Error! E457: 'i11' was previously declared as a typedef
   definition: 'i11'
@@ -2134,7 +2116,7 @@ File: source\diag0240.c
   rejected function template: void x29( X26<?1> const * ) defined at: (32,10)
 (43,8): Error! E189: overloaded function cannot be selected for arguments used in call
   rejected function template: void x29( X26<?1> const * * * ) defined at: (29,10)
-  rejected function template: void x29( X26<?1> const * ) defined at: (32,10)
+  rejected function: void x29( X26<int> const * ) defined at: (32,10)
 (70,9): Warning! W750: function prototype in block scope missing 'extern'
   function prototype is 'X67 ( int )'
 (71,9): Warning! W750: function prototype in block scope missing 'extern'
@@ -2943,7 +2925,7 @@ File: source\diag0259.c
 (95,24): Error! E834: namespace alias cannot be changed
 (103,9): Warning! W014: no reference to symbol 'x'
   definition: 'int x' in 'void x20::S::x( void )'
-(112,15): Error! E833: name does not reference a namespace
+(112,15): Error! E928: syntax error: identifier 'q', but expected: 'qualified-namespace-specifier'
 (157,18): Error! E279: too many initializers
 (160,14): Warning! W836: symbol has different type than previous symbol in same declaration
   companion definition is 'p'
@@ -3016,7 +2998,6 @@ File: source\diag0259.c
   macro 'XX' defined at: (326,9)
 (337,25): Warning! W848: useless using directive ignored
 File: zip.y
-(123,14): Error! E336: declaration specifiers are required to declare 'syntax'
 (123,8): Error! E498: syntax error before 'error'; probable cause: incorrectly spelled type name
 (124,2): Error! E053: unknown preprocessing directive '#goof'
 (125,2): Error! E080: should be line 125 zip.y
@@ -3445,7 +3426,6 @@ File: source\diag0292.c
   definition: 'void x198::x1::B::foo( int, int )'
 (220,29): Error! E884: virtual function 'B::foo' has a different calling convention
   definition: 'void cdecl x198::x7::B::foo( int, int )'
-(232,16): Error! E336: declaration specifiers are required to declare 'namesapce'
 (232,11): Error! E498: syntax error before 'x232'; probable cause: incorrectly spelled type name
 (248,33): Warning! W248: using default arguments would be overload ambiguous with 'A::f2'
   definition: 'void x244::A::f2( int )'
@@ -3492,7 +3472,6 @@ File: source\diag0295.c
 (10,51): Error! E081: cannot define an array of functions
 (10,51): Error! E683: zero size array 'WRampFile::operator WRampEntry * ' cannot be used in a class with base classes
   definition: 'WRampFile::operator []( long )'
-(10,51): Error! E336: declaration specifiers are required to declare 'conversion operator()'
 (16,1): Warning! W656: define this function inside its class definition (may improve code quality)
 (20,1): Warning! W656: define this function inside its class definition (may improve code quality)
 (22,1): Error! E254: 'WRampFile::operator []' has not been declared as a member

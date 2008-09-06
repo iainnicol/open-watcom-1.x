@@ -153,7 +153,6 @@ File: source\diag0014.c
 (36,27): Error! E237: 'operator +' must be a function
 File: source\diag0015.c
 (2,25): Error! E243: default arguments are not part of a function's type
-(5,39): Error! E244: missing default arguments
 (5,39): Error! E243: default arguments are not part of a function's type
 (6,33): Error! E250: missing default argument for 'sam'
   definition: 'int sam( int, int [, int ])'
@@ -198,10 +197,10 @@ File: source\diag0018.c
 (2,1): Error! E265: destructor must be a non-static member function
 (2,1): Error! E913: 'destructor' does not have a return type specified
 (6,1): Error! E264: user-defined conversion must be a non-static member function
-(11,1): Error! E913: 'operator --' does not have a return type specified
 (11,1): Error! E269: 'operator --' must have either one argument or two arguments
   argument count is 0 for a non-member function
 (11,1): Error! E278: 'operator --' must take at least one argument of a class/enum or a reference to a class/enum
+(11,1): Error! E913: 'operator --' does not have a return type specified
 (15,25): Error! E913: 'operator --' does not have a return type specified
 (19,32): Error! E269: 'operator ++' must have either one argument or two arguments
   argument count is 3 since there is an implicit 'this' argument
@@ -210,7 +209,6 @@ File: source\diag0018.c
 (27,28): Error! E268: 'operator []' must have two arguments
   argument count is 3 since there is an implicit 'this' argument
 (27,28): Error! E913: 'operator []' does not have a return type specified
-(28,23): Error! E913: 'operator []' does not have a return type specified
 (32,1): Error! E266: 'operator ()' must be a non-static member function
 (32,1): Error! E913: 'operator ()' does not have a return type specified
 (36,1): Error! E266: 'operator =' must be a non-static member function
@@ -218,7 +216,6 @@ File: source\diag0018.c
 (40,28): Error! E268: 'operator =' must have two arguments
   argument count is 3 since there is an implicit 'this' argument
 (40,28): Error! E913: 'operator =' does not have a return type specified
-(41,23): Error! E913: 'operator =' does not have a return type specified
 (45,1): Error! E269: 'operator +' must have either one argument or two arguments
   argument count is 3 for a non-member function
 (45,1): Error! E278: 'operator +' must take at least one argument of a class/enum or a reference to a class/enum
@@ -226,7 +223,6 @@ File: source\diag0018.c
 (49,28): Error! E269: 'operator +' must have either one argument or two arguments
   argument count is 3 since there is an implicit 'this' argument
 (49,28): Error! E913: 'operator +' does not have a return type specified
-(50,23): Error! E913: 'operator +' does not have a return type specified
 (54,1): Error! E267: 'operator ~' must have one argument
   argument count is 3 for a non-member function
 (54,1): Error! E278: 'operator ~' must take at least one argument of a class/enum or a reference to a class/enum
@@ -244,7 +240,6 @@ File: source\diag0019.c
   argument count is 2 since there is an implicit 'this' argument
 (35,29): Error! E267: 'operator ->' must have one argument
   argument count is 2 since there is an implicit 'this' argument
-(36,18): Error! E913: 'operator ->' does not have a return type specified
 File: source\diag0020.c
 (3,25): Error! E272: 'operator new' must have a return type of pointer to void
 (3,25): Error! E273: the first argument of 'operator new' must be of type size_t
@@ -269,10 +264,14 @@ File: source\diag0022.c
 (6,2): Error! E121: syntax error
 (19,13): Error! E287: constructor cannot have a return type
 (20,17): Error! E287: constructor cannot have a return type
+(22,1): Error! E930: member 'S3::S3' cannot be declared in this class
+  definition: 'int * S3::S3'
 (25,13): Error! E289: invalid copy constructor argument list (causes infinite recursion)
 (33,15): Error! E290: constructor cannot be declared const or volatile
 (35,23): Error! E290: constructor cannot be declared const or volatile
 (36,25): Error! E291: constructor cannot be virtual
+(37,1): Error! E930: member 'S5::S5' cannot be declared in this class
+  definition: 'int S5::S5'
 File: source\diag0023.c
 (14,9): Error! E929: syntax error: token 'int', but expected: 'id-expression'
 (15,9): Error! E929: syntax error: token 'char', but expected: 'id-expression'
@@ -459,7 +458,6 @@ File: source\diag0040.c
   definition: 'int Z::non_static_2'
 (42,13): Error! E326: defining 'Z::zs1' is not possible because its type has unknown size
   definition: 'int Z::zs1[]'
-(46,33): Error! E336: declaration specifiers are required to declare 'NOT_A_TYPE'
 (46,12): Error! E498: syntax error before 'i_think_this_is_an_id'; probable cause: incorrectly spelled type name
 File: source\diag0041.c
 (9,20): Error! E337: static function declared in block scope
@@ -804,7 +802,6 @@ File: source\diag0049.c
   semicolon (';') may be missing after class/enum definition
 (42,11): Error! E898: in-class initialization is only allowed for const static integral members
 (43,18): Error! E417: only virtual functions may be declared pure
-(48,15): Error! E336: declaration specifiers are required to declare 'not_a_function'
 (48,15): Error! E121: syntax error
 (51,19): Error! E336: declaration specifiers are required to declare 'not_a_function'
 File: source\diag0050.c
@@ -1479,7 +1476,11 @@ File: source\diag0074.c
 (141,1): Warning! W656: define this function inside its class definition (may improve code quality)
 (155,1): Warning! W726: no reference to formal parameter 'x'
   definition: 'int x' in 'OK_TO_NEST2::OK_TO_NEST_INSIDE::OK_TO_NEST_INSIDE( int )'
+(168,1): Error! E930: member 'OK2::OK2' cannot be declared in this class
+  definition: 'int OK2::OK2'
 (177,13): Error! E498: syntax error before 'T'; probable cause: incorrectly spelled type name
+(184,1): Error! E930: member 'BAD2::BAD2' cannot be declared in this class
+  definition: 'int BAD2::BAD2'
 (185,13): Error! E498: syntax error before 'T'; probable cause: incorrectly spelled type name
 File: source\diag0075.c
 (12,15): Error! E580: cannot find a constructor for given initializer argument list
@@ -1834,7 +1835,6 @@ File: source\diag0087.c
 (12,16): Error! E351: type parameter supplied for a non-type argument
 (13,14): Error! E351: type parameter supplied for a non-type argument
 (14,13): Error! E198: expression cannot be used as a class template parameter
-(14,13): Error! E493: template argument is not a constant expression
 (15,13): Error! E198: expression cannot be used as a class template parameter
 (15,13): Error! E494: template argument is not an external linkage symbol
 (16,23): Error! E042: symbol 'ok1' already defined
@@ -1845,7 +1845,7 @@ File: source\diag0087.c
   definition: 'int b' in 'void foo( int, int, int, int )'
 File: source\diag0088.c
 (5,14): Error! E040: expression for '.' must be a class, struct or union
-  template class instantiation for 'Stack<double>' was at: (14,1)
+  template class member instantiation was at: (15,15)
   operand type is 'double (lvalue)'
 File: source\diag0089.c
 (6,19): Error! E320: specific versions of template classes can only be defined in file scope
@@ -1887,13 +1887,10 @@ File: source\diag0094.c
 (4,12): Error! E186: attempt to modify a constant value
   template function instantiation for 'zap' was at: (12,1)
   definition: 'void zap( char const __based( __segment s ) volatile *, char const __based( __segment s ) volatile * )'
-  function template binding of 'zap' was at: (11,10)
-  template function 'void zap( ? volatile *, ? volatile * )' defined at: (2,10)
 File: source\diag0095.c
 (2,11): Error! E224: 'Stack' is a variable of type void
 (2,11): Error! E408: function templates can only name functions
 (2,11): Error! E006: syntax error; probable cause: missing ';'
-(33,6): Error! E336: declaration specifiers are required to declare 'Stack'
 (33,6): Error! E121: syntax error
 (36,1): Warning! W914: 'main' must return 'int'
 (37,6): Error! E029: symbol 's' has not been declared
