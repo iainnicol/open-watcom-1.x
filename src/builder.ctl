@@ -19,8 +19,9 @@ cdsay .
 [ INCLUDE <SRCDIR>/lib/builder.ctl ]
 # Build our version of yacc
 [ INCLUDE <SRCDIR>/yacc/builder.ctl ]
-# If necessary, build awk
+# If necessary, build POSIX tools (awk, sed, cp, ...)
 [ IFDEF <BLD_HOST> OS2 NT DOS ]
+[ INCLUDE <SRCDIR>/posix/builder.ctl ]
 [ INCLUDE <SRCDIR>/awk/builder.ctl ]
 [ ENDIF ]
 # Next build wres and the resource compiler

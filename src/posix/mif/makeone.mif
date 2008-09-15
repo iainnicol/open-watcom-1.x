@@ -16,7 +16,11 @@
 #
 #       define the main target
 #
-$(name).exe: $(objs) $(name).lnk $(posixlibdir)/posix.lib $(__MAKEFILES__)
+!ifeq bootstrap 1
+$(name).exe: $(objs) $(posixlibdir)/posix.lib
+        $(cl) $(clflags) $<
+!else
+$(name).exe: $(objs) $(posixlibdir)/posix.lib $(name).lnk $(__MAKEFILES__)
         $(linker) @$(name).lnk
 !ifeq targos dosos2
         $(binder)\bind $(name).exe $(apilib) $(doscalls)
@@ -61,6 +65,7 @@ $(name).lnk : $(objs) $(__MAKEFILES__)
         @for %i in ($(objs)) do @%append $(name).lnk file %i
 !ifdef extra_lnk
         @%make $(extra_lnk)
+!endif
 !endif
 
 !include $(posix_dir)/mif/clean.mif
