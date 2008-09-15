@@ -132,7 +132,7 @@ inc_dirs = -I. -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(fe_misc_dir)/h" -I"$(cpp_
 !ifdef bootstrap
 
 $(name)e.exe : $(res_depends) $(objs) clibext.obj $(wres_lib)
-        $(cc) $(objs) clibext.obj -o $@ $(wres_lib)
+        $(cc) $(clflags) $(objs) clibext.obj $(wres_lib)
 
 !else ifeq sys_dll 1
 
