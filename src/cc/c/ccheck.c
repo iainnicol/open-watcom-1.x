@@ -973,29 +973,6 @@ int VerifyType( TYPEPTR new, TYPEPTR old, SYMPTR sym )
     case TC_OK:                     /* OK */
         break;
     case TC_TYPE_MISMATCH:          /* types didn't match */
-        SKIP_TYPEDEFS( new );
-        SKIP_TYPEDEFS( old );
-        /*
-            types won't match for:
-
-            extern char a[];        char a[200];
-            char a[200];            extern char a[];
-        */
-        if( (new->decl_type == TYPE_ARRAY)               &&
-          (old->decl_type == TYPE_ARRAY)                 &&
-          IdenticalType( new->object, old->object ) ) {
-            if( TypeSize( new ) != 0 ) {
-                if( TypeSize( old ) == 0 ) {
-                    /* let it go but indicate that the new type holds */
-                }
-            } else {
-                if( TypeSize( old ) != 0 ) {
-                    /* let it go */
-                    return( 1 );
-                    break;
-                }
-            }
-        }
         CErr2p( ERR_TYPE_DOES_NOT_AGREE, sym->name );
         break;
     case TC_PARM_COUNT_MISMATCH:    /* parm count mismatch */
@@ -1003,8 +980,7 @@ int VerifyType( TYPEPTR new, TYPEPTR old, SYMPTR sym )
         break;
     case TC_TYPE2_HAS_MORE_INFO:    /* OK, new= void *, old= something *;*/
         return( 1 );                /* indicate want old definition */
-        break;
-    default:        /* parm type mismatch */
+    default:                        /* parm type mismatch */
         CErr2( ERR_PARM_TYPE_MISMATCH, rc - TC_PARM_TYPE_MISMATCH );
         break;
     }
@@ -1019,6 +995,7 @@ local int TypeCheck( TYPEPTR typ1, TYPEPTR typ2 )
     int                 retcode;
 
     pointer_type = 0;
+    retcode = TC_OK;
     /* "char *s" and "char s[]" differs only by FLAG_WAS_ARRAY, ignore it too */
     if( TargetSwitches & BIG_DATA )
         ptr_mask = ~(FLAG_FAR  | FLAG_WAS_ARRAY | FLAG_LANGUAGES);
@@ -1029,7 +1006,8 @@ local int TypeCheck( TYPEPTR typ1, TYPEPTR typ2 )
         typ2 = SkipTypeFluff( typ2 );
         /* this compare was moved here 20-sep-88 */
         /* ptr to typedef struct failed when this was before typedef skips */
-        if( typ1 == typ2 ) return( TC_OK );
+        if( typ1 == typ2 )
+            return( retcode );
         if( typ1->decl_type != typ2->decl_type ) {
             if( pointer_type ) {
                 /* by popular demand, I disabled the questionable feature to accept
@@ -1048,19 +1026,20 @@ local int TypeCheck( TYPEPTR typ1, TYPEPTR typ2 )
         if( typ1->decl_type == TYPE_POINTER ) {
             pointer_type = 1;
             if( (typ1->u.p.decl_flags & ptr_mask) != (typ2->u.p.decl_flags & ptr_mask) ) {
-                 return( TC_TYPE_MISMATCH );
+                return( TC_TYPE_MISMATCH );
             }
         }
         if( TypeSize(typ1) != TypeSize(typ2) ) {
-            if( typ1->decl_type == TYPE_ARRAY ) {       /* 09-mar-94 */
-                if( TypeSize(typ1) == 0 ) {
-                    return( TC_TYPE2_HAS_MORE_INFO );
-                }
-                if( TypeSize(typ2) == 0 ) {
-                    return( TC_OK );
-                }
+            if( TypeSize(typ1) == 0 ) {
+                retcode = TC_TYPE2_HAS_MORE_INFO;
+            } else if( TypeSize(typ2) == 0 ) {
+                retcode = TC_OK;
+            } else {
+                return( TC_TYPE_MISMATCH );
             }
-            return( TC_TYPE_MISMATCH );
+            if( typ1->decl_type != TYPE_ARRAY ) {
+                return( retcode );
+            }
         }
         /* CarlYoung 31-Oct-03 */
         if( (TYPE_FIELD == typ1->decl_type) || (TYPE_UFIELD == typ1->decl_type) ) {
@@ -1076,7 +1055,8 @@ local int TypeCheck( TYPEPTR typ1, TYPEPTR typ2 )
         }
         if( typ1->decl_type == TYPE_FUNCTION ) {
             retcode = ChkCompatibleFunction( typ1, typ2, 0 );
-            if( retcode != TC_OK ) return( retcode );
+            if( retcode != TC_OK )
+                return( retcode );
             if( typ1->object == NULL  ||  typ2->object == NULL ) {
                 return( TC_OK );
             }
@@ -1086,6 +1066,7 @@ local int TypeCheck( TYPEPTR typ1, TYPEPTR typ2 )
         if( typ1 == NULL ) break;
         if( typ2 == NULL ) break;
     }
-    if( typ1 != typ2 ) return( TC_TYPE_MISMATCH );
+    if( typ1 != typ2 )
+        return( TC_TYPE_MISMATCH );
     return( TC_OK );                /* indicate types are identical */
 }

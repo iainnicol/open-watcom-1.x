@@ -507,7 +507,7 @@ extern  SEGADDR_T AccessSegment(struct seg_info *);     /* cems */
 extern  SEGADDR_T AllocSegment(struct seg_info *);      /* cems */
 
 extern  TYPEPTR EnumDecl(int);                  /* cenum */
-extern  int     EnumLookup(int,char *,ENUM_INFO *); /* cenum */
+extern  ENUMPTR EnumLookup(int,char *);         /* cenum */
 extern  void    EnumInit(void);                 /* cenum */
 extern  void    FreeEnums(void);                /* cenum */
 
@@ -527,6 +527,7 @@ extern  void    CSuicide(void);
 extern  void    OpenErrFile(void);
 extern  void    FmtCMsg( char *buff, cmsg_info *info );
 extern  void    SetDiagSymbol(SYMPTR sym, SYM_HANDLE handle);
+extern  void    SetDiagEnum(ENUMPTR);
 extern  void    SetDiagType1(TYPEPTR typ_source);
 extern  void    SetDiagType2(TYPEPTR typ_source, TYPEPTR typ_target);
 extern  void    SetDiagPop(void);
@@ -748,7 +749,7 @@ extern  void    StmtInit( void );               /* cstmt */
 
 extern  void    FreeLiteral(STRING_LITERAL *);  /* cstring */
 extern  STRING_LITERAL  *GetLiteral(void);      /* cstring */
-extern  void    LoadUnicodeTable(long);         /* cstring */
+extern  void    LoadUnicodeTable(unsigned);     /* cstring */
 extern  void    StringInit(void);               /* cstring */
 extern  TREEPTR StringLeaf(int);                /* cstring */
 
