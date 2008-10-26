@@ -42,8 +42,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/cg/intel/i86/builder.ctl ]
 [ INCLUDE <SRCDIR>/cc/386/builder.ctl ]
 [ INCLUDE <SRCDIR>/cc/i86/builder.ctl ]
-[ INCLUDE <SRCDIR>/plusplus/boot386.ctl ]
-[ INCLUDE <SRCDIR>/plusplus/booti86.ctl ]
+[ INCLUDE <SRCDIR>/plusplus/386/builder.ctl ]
+[ INCLUDE <SRCDIR>/plusplus/i86/builder.ctl ]
 # Build RISC assemblers
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]
 [ INCLUDE <SRCDIR>/re2c/builder.ctl ]
@@ -87,7 +87,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/emu387/builder.ctl ]
 [ INCLUDE <SRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]
-[ INCLUDE <SRCDIR>/plusplus/cpplib/builder.ctl ]
+[ INCLUDE <SRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
 # Now we have enough to start cross building everything else
 

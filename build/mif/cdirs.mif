@@ -24,7 +24,7 @@ cfloat_dir      = $(dev_dir)/cfloat
 plusplus_dir    = $(dev_dir)/plusplus
 !endif
 !ifndef cpplib_dir
-cpplib_dir      = $(dev_dir)/plusplus/cpplib
+cpplib_dir      = $(dev_dir)/cpplib
 !endif
 !ifndef dwarf_dir
 dwarf_dir       = $(dev_dir)/dwarf
