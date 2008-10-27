@@ -213,7 +213,7 @@ cl_objs = clibext.obj
 .c : $(watcom_dir)/c
 
 host_cl = cl
-host_cl_opts = -nologo -I"$(watcom_dir)/h" -Fe$^@
+host_cl_opts = -nologo -I"$(watcom_dir)/h" $(inc_dirs) -Fe$^@
 
 !endif
 !endif
