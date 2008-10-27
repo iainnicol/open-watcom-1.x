@@ -58,7 +58,6 @@ extern  DWORD           __TlsIndex;
 typedef struct thread_args {
     thread_fn   *rtn;
     void        *argument;
-    HANDLE      parent;
     HANDLE      thread_handle;
 } thread_args;
 
@@ -69,27 +68,44 @@ static DWORD WINAPI begin_thread_helper( thread_args *td )
     void                *arg;
     REGISTRATION_RECORD rr;
     thread_data         *tdata;
+    HANDLE              thread_handle;
 
     rtn = td->rtn;
     arg = td->argument;
-    __THREADDATAPTR->thread_handle = td->thread_handle;
+    thread_handle = td->thread_handle;
     free( td );
 
     // For DLLs, __NTAddThread has already been called from _LibMain
     // in DLL_THREAD_ATTACH processing.
-    if( !__Is_DLL ) {                                   /* 15-feb-93 */
-        if (NULL==(tdata = (thread_data *)alloca( __ThreadDataSize ))) {
-            CloseHandle(__THREADDATAPTR->thread_handle);
-            return( 0 );
-        }
-        memset( tdata, 0, __ThreadDataSize );
-        // tdata->__allocated = 0;
-        tdata->__data_size = __ThreadDataSize;
-        if( !__NTAddThread( tdata ) ) {
-            CloseHandle(__THREADDATAPTR->thread_handle);
-            return( 0 );
+    if( !__Is_DLL ) {
+        // allocate thread_data structure on stack
+        tdata = (thread_data *)alloca( __ThreadDataSize );
+
+        if ( tdata ) {
+            memset( tdata, 0, __ThreadDataSize );
+            // tdata->__allocated = 0;
+            tdata->__data_size = __ThreadDataSize;
+
+            // do further thread_data initialization and registration
+            if( !__NTAddThread( tdata ) ) {
+                // print runtime error message now ?
+                CloseHandle( thread_handle );
+                return( 0 );
+            }
         }
     }
+
+    // now get the thread_data ptr the 'standard' way -- this may cause
+    // a new thread_data structure to be allocated on heap:
+    // by __GetThreadPtr() ==> __MultipleThread(){ TlsGetValue(); if NULL ==>
+    //    __GetThreadData() ==> __NTAddThread() ==> __AllocInitThreadData() }
+    tdata = __THREADDATAPTR;
+    if ( !tdata ) {
+        // this is a library runtime error, should we print an error message ?
+        CloseHandle( thread_handle );
+        return( 0 );
+    }
+    tdata->thread_handle = thread_handle;
 
     __NewExceptionFilter( &rr );
     __sig_init_rtn(); // fills in a thread-specific copy of signal table
@@ -123,7 +139,6 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
 
     td->rtn = start_addr;
     td->argument = arglist;
-    td->parent = GetCurrentThread();
 
     th = CreateThread( NULL, stack_size, (LPTHREAD_START_ROUTINE)&begin_thread_helper,
                 (LPVOID) td, CREATE_SUSPENDED, &tid );

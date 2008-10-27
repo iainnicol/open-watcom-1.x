@@ -42,5 +42,3 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
 .asm : ../../../a;$(emu87_dir)/asm;$(emu387_dir)/asm
 
 !include $(mathlib_dir)/clean.mif
-!include $(mathlib_dir)/updlib.mif
-!include $(mathlib_dir)/project.mif
