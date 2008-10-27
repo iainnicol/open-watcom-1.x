@@ -920,7 +920,7 @@ void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
     if( FmtData.type & MK_REAL_MODE ) {
         off = MK_REAL_ADDR( (int)( addr->seg - frame ), addr->off );
         if( check_16bit && ( off >= 0x10000 )) {
-            LnkMsg( LOC+ERR+MSG_FRAME_INVALID, "ax", addr, frame );
+            LnkMsg( LOC+ERR+MSG_FRAME_INVALID, "Ax", addr, frame );
         }
         addr->off = off;
     }
@@ -1078,7 +1078,7 @@ static bool DefPubSym( void *_pub, void *_info )
         leader = seg->u.leader;
         /* address in symbol table is actually signed_32 offset
            from segdata zero */
-        if( seg->isabs || ( leader->dbgtype != NOT_DEBUGGING_INFO ) ) {
+        if( seg->isabs || IS_DBG_INFO( leader ) ) {
             XDefSymAddr( pub, pub->addr.off + seg->a.delta
                              + leader->seg_addr.off, leader->seg_addr.seg );
         } else {

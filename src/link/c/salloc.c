@@ -176,7 +176,7 @@ void NewSegment( seg_leader *seg )
     bool        auto_group;
 
     group = seg->group;
-    if( seg->dbgtype != NOT_DEBUGGING_INFO ) {
+    if( IS_DBG_INFO( seg ) ) {
         CurrentSeg = NULL;
         Align( seg->align );
         ChkLocated(&seg->seg_addr, seg->segflags & SEG_FIXED);
@@ -223,11 +223,9 @@ void NewSegment( seg_leader *seg )
                                         - CurrLoc.off;
             AddSize( FmtData.bsspad );
         }
-        if( seg->size == 0  && group->isautogrp ) {
-            seg->seg_addr.off = CurrLoc.off;
-        } else {
-            Align( seg->align );
-            seg->seg_addr.off = CurrLoc.off;
+        Align( seg->align );
+        seg->seg_addr.off = CurrLoc.off;
+        if( seg->size != 0 || !group->isautogrp ) {
             AddSize( seg->size );
             group->totalsize = CurrLoc.off;
         }
