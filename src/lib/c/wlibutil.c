@@ -29,10 +29,11 @@
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
+
 int SymbolNameCmp( const char *s1, const char *s2)
 {
-    if ( Options.respect_case ){
+    if( Options.respect_case ) {
         return( strcmp( s1, s2 ) );
     } else {
         return( stricmp( s1, s2 ) );
@@ -42,10 +43,11 @@ int SymbolNameCmp( const char *s1, const char *s2)
 
 void GetFileContents( char *name, libfile io, arch_header *arch, char **contents )
 {
-    file_offset size = arch->size;
-    file_offset         bytes_read;
+    file_offset     size;
+    file_offset     bytes_read;
 
-    if( !arch->size ) {
+    size = arch->size;
+    if( size == 0 ) {
         *contents = NULL;
         return;
     }
@@ -53,7 +55,7 @@ void GetFileContents( char *name, libfile io, arch_header *arch, char **contents
     if( size % 2 == 1 ) {
         size++;
     }
-    *contents = (char *) MemAlloc( size );
+    *contents = (char *)MemAlloc( size );
     bytes_read = LibRead( io, *contents, size );
     if( bytes_read != size ) {
         BadLibrary( name );
@@ -89,7 +91,7 @@ static void CopyBytes( char *buffer, libfile source, libfile dest, file_offset l
 
 void Copy( libfile source, libfile dest, file_offset size )
 {
-    char        buffer[4096];
+    char        buffer[ 4096 ];
 
 
     while( size > sizeof( buffer ) ) {
@@ -101,16 +103,16 @@ void Copy( libfile source, libfile dest, file_offset size )
     }
 }
 
-static char     path[_MAX_PATH];
+static char     path[ _MAX_PATH ];
 
-static char     drive[_MAX_DRIVE ];
-static char     dir[_MAX_DIR ];
-static char     fname[_MAX_FNAME ];
-static char     fext[_MAX_EXT ];
+static char     drive[ _MAX_DRIVE ];
+static char     dir[ _MAX_DIR ];
+static char     fname[ _MAX_FNAME ];
+static char     fext[ _MAX_EXT ];
 
 bool SameFile( char *a, char *b )
 {
-    char fulla[_MAX_PATH];
+    char fulla[ _MAX_PATH ];
 
     _fullpath( fulla, a, sizeof( fulla ) );
     _fullpath( path, b, sizeof( path ) );
@@ -139,7 +141,7 @@ bool IsExt( char *a, char *b )
 void DefaultExtension( char *name, char *def_ext )
 {
     _splitpath( name, drive, dir, fname, fext );
-    if( fext[0] == '\0' ) {
+    if( fext[ 0 ] == '\0' ) {
         _makepath( name, drive, dir, fname, def_ext );
     }
 }
@@ -172,45 +174,45 @@ char *MakeBakName( void )
     return( path );
 }
 
-char *MakeTmpName(char *buffer)
+char *MakeTmpName( char *buffer )
 {
-    char name[9];
-    long initial = time(NULL) % 1000L;
-    long count   = (initial + 1L) % 1000L;
+    char name[ 9 ];
+    long initial = time( NULL ) % 1000L;
+    long count   = ( initial + 1L ) % 1000L;
 
-    _splitpath(Options.input_name, drive, dir, fname, fext);
+    _splitpath( Options.input_name, drive, dir, fname, fext );
 
     /*
      * For whatever it's worth, we'll only check 9999 files before
      * quitting ;-)
      */
-    for (; count != initial; count = (count + 1L) % 1000L) {
-        sprintf(name, "_wlib%03ld", count);
-        _makepath(buffer, drive, dir, name, "$$$");
+    for( ; count != initial; count = ( count + 1L ) % 1000L ) {
+        sprintf( name, "_wlib%03ld", count );
+        _makepath( buffer, drive, dir, name, "$$$" );
 
-        if (access(buffer, 0) != 0) {
+        if( access( buffer, 0 ) != 0 ) {
             break;
         }
     }
 
-    if (count == initial) {
-        FatalError(ERR_CANT_WRITE, "temporary file", strerror(errno));
+    if( count == initial ) {
+        FatalError( ERR_CANT_WRITE, "temporary file", strerror( errno ) );
     }
 
-    return buffer;
-} /* MakeTmpName() */
+    return( buffer );
+}
 
 char *TrimPath( char *name )
 {
-    if( !Options.trim_path ) return( name );
     _splitpath( name, NULL, NULL, fname, fext );
-    return( fname );
+    _makepath( name, NULL, NULL, fname, fext );
+    return( name );
 }
 
 
 char    *FormSym( char *name )
 {
-    static      char    buff[128];
+    static      char    buff[ 128 ];
 
     if( Options.mangled ) {
         strcpy( buff, name );
@@ -223,9 +225,13 @@ char    *FormSym( char *name )
 char *LibFormat( void )
 {
     switch( Options.libtype ) {
-    case WL_TYPE_AR:    return( "AR" );
-    case WL_TYPE_MLIB:  return( "MLIB" );
-    case WL_TYPE_OMF:   return( "LIB" );
-    default:            return( "unknown format" );
+    case WL_LTYPE_AR:
+        return( "AR" );
+    case WL_LTYPE_MLIB:
+        return( "MLIB" );
+    case WL_LTYPE_OMF:
+        return( "LIB" );
+    default:
+        return( "unknown format" );
     }
 }

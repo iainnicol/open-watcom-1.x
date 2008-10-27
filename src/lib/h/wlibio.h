@@ -43,7 +43,7 @@ struct io_struct {
     unsigned_16     access;
     unsigned_16     buf_size;
     unsigned_16     buf_pos;
-    char            buffer[1];
+    char            buffer[ 1 ];
 };
 
 #define LIBOPEN_BINARY_READ     ( O_BINARY | O_RDONLY )
@@ -59,6 +59,7 @@ extern void LibSeek( libfile io, long where, int whence );
 extern file_offset LibTell( libfile io );
 extern void LibReadError( libfile io );
 extern void LibWriteError( libfile io );
+extern void BadLibrary( char *name );
 
 #ifdef __UNIX__
 #define FNCMP strcmp

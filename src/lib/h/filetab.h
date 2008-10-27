@@ -40,8 +40,8 @@ typedef struct import_sym_struct import_sym;
 typedef struct elf_import_sym_struct elf_import_sym;
 
 struct sym_table_struct {
-    sym_file *  first;
-    sym_file ** add_to;
+    sym_file    *first;
+    sym_file    **add_to;
 };
 
 typedef enum {
@@ -55,16 +55,16 @@ typedef enum {
 }importType;
 
 struct elf_import_sym_struct {
-    char                        *name;
-    long                        ordinal;
-    long                        len; // To save some calculations
-    elf_import_sym              *next;
+    char            *name;
+    long            ordinal;
+    long            len; // To save some calculations
+    elf_import_sym  *next;
 };
 
 struct import_sym_struct{
-    importType  type;
-    short       processor;
-    char        *DLLName;
+    importType      type;
+    processor_type  processor;
+    char            *DLLName;
     union {
         struct {
             long        ordinal;
@@ -72,8 +72,8 @@ struct import_sym_struct{
             char        *exportedName;
         } sym;
         struct {
-            elf_import_sym      *symlist;
-            long                numsyms;
+            elf_import_sym  *symlist;
+            long            numsyms;
         } elf;
     } u;
 };
@@ -92,7 +92,7 @@ struct sym_file_struct {
     int         ffname_length;
     char        *full_name;
     import_sym  *import;
-    unsigned    obj_type : 2;
+    file_type   obj_type;
 };
 
 typedef enum {
@@ -107,7 +107,7 @@ struct sym_entry_struct {
     short               len;
     unsigned char       info;
     symbol_strength     strength;
-    char                name[1];
+    char                name[ 1 ];
 };
 
 extern void InitFileTab( void );
@@ -119,6 +119,7 @@ extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
 extern bool RemoveObjectSymbols( char *name );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
+extern void WriteFile( sym_file *sfile );
 extern void AddSym( char *name, symbol_strength strength, unsigned char info );
 
 #ifdef __DEBUG__

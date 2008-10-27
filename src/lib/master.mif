@@ -42,7 +42,7 @@ common_objs = &
     wlib.obj &
     libio.obj &
     symtable.obj &
-    symomf.obj &
+    omfproc.obj &
     writelib.obj &
     convert.obj &
     wlibutil.obj &
@@ -269,4 +269,4 @@ patch_level=0
 !endif
 
 version.rc : ./genverrc.exe ../h/version.rc $(fe_misc_dir)/c/genverrc.c
-    $[@ ../h/version.rc version.rc $$ wlibd.dll $(patch_level)
+    $[@ ../h/version.rc version.rc $$ wlibd $(patch_level)

@@ -30,10 +30,12 @@
 ****************************************************************************/
 
 
-#include <wlib.h>
+#include "wlib.h"
 
 libfile ExportListFile;
 libfile NewLibrary;
+
+char *MakeTmpName( char * );
 
 void WriteNew( void *buff, file_offset len )
 {
@@ -41,17 +43,16 @@ void WriteNew( void *buff, file_offset len )
 }
 
 char *MakeTmpName(char *);
-
 void WriteNewLib( void )
 {
-    char tmp[_MAX_PATH+1];
+    char tmp[ _MAX_PATH + 1 ];
     char *bak,*lib,*out;
 
     lib = Options.input_name;
     if( Options.output_name != NULL && !SameFile( lib, Options.output_name ) ) {
         out = Options.output_name;
     } else {
-        out = MakeTmpName(tmp);
+        out = MakeTmpName( tmp );
     }
     if( Options.export_list_file ) {
         ExportListFile = LibOpen( Options.export_list_file, LIBOPEN_BINARY_WRITE | O_CREAT);
@@ -60,10 +61,10 @@ void WriteNewLib( void )
     }
     NewLibrary = LibOpen( out, LIBOPEN_BINARY_WRITE );
     if( NewLibrary == NULL ) {
-        if (out == tmp) {
-            FatalError(ERR_CANT_OPEN, out, "Cannot create temporary file");
+        if( out == tmp ) {
+            FatalError( ERR_CANT_OPEN, out, "Cannot create temporary file" );
         } else {
-            FatalError(ERR_CANT_OPEN, out, strerror(errno));
+            FatalError( ERR_CANT_OPEN, out, strerror( errno ) );
         }
     }
     WriteFileTable();
@@ -92,26 +93,19 @@ void WriteNewLib( void )
 
 void WriteBigEndian32( unsigned_32 num )
 {
-    char        be[4];
-
-    be[3] = num & 0xff;
-    num >>= 8;
-    be[2] = num & 0xff;
-    num >>= 8;
-    be[1] = num & 0xff;
-    num >>= 8;
-    be[0] = num & 0xff;
-    WriteNew( be, sizeof( be ) );
+    CONV_BE_32( num );
+    WriteNew( &num, sizeof( num ) );
 }
 
 void WriteLittleEndian32( unsigned_32 num )
 {
+    CONV_LE_32( num );
     WriteNew( &num, sizeof( num ) );
 }
 
 
 void WriteLittleEndian16( unsigned_16 num )
 {
+    CONV_LE_16( num );
     WriteNew( &num, sizeof( num ) );
 }
-
