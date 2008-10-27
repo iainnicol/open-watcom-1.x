@@ -31,6 +31,9 @@ set CCCMD=accopy
 # Set up directories
 set SRCDIR=<OWROOT>/src
 
+# Clear variables possibly set by previously included control files
+set BOOTSUBDIR=
+
 [ BLOCK .<1> . ]
 #===============
     # default rule

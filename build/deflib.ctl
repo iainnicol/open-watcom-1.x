@@ -38,4 +38,3 @@
 
 [ BLOCK . . ]
 #============
-    set BOOTSUBDIR=
