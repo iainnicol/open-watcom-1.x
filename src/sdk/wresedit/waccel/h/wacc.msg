@@ -173,3 +173,48 @@ pick(   W_ACCELCLEARMSG,
 pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
+pick(   W_ABOUT_NAME,
+        "Open Watcom Accelerator Editor for Windows",
+        "Open Watcom Accelerator Editor for Windows" )
+pick(   W_ABOUT_COPYRIGHT_YEAR,
+        "2002",
+        "2002" )
+pick(   W_ABOUT_TITLE,
+        "About Open Watcom Accelerator Editor",
+        "About Open Watcom Accelerator Editor" )
+
+// WRIBBON.C
+pick(   W_TIP_NEW,
+        "New",
+        "New" )
+pick(   W_TIP_OPEN,
+        "Open",
+        "Open" )
+pick(   W_TIP_SAVE,
+        "Save",
+        "Save" )
+pick(   W_TIP_CLEAR,
+        "Clear",
+        "Clear" )
+pick(   W_TIP_UPDATE,
+        "Update",
+        "Update" )
+pick(   W_TIP_CUT,
+        "Cut",
+        "Cut" )
+pick(   W_TIP_COPY,
+        "Copy",
+        "Copy" )
+pick(   W_TIP_PASTE,
+        "Paste",
+        "Paste" )
+pick(   W_TIP_NEWITEM,
+        "Insert New Item",
+        "Insert New Item" )
+pick(   W_TIP_DELETE,
+        "Delete",
+        "Delete" )
+pick(   W_TIP_KEYVALUE,
+        "Select Key Value",
+        "Select Key Value" )
+

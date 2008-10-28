@@ -175,6 +175,15 @@ pick(   W_MENUCLEARMSG,
 pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
+pick(   W_ABOUT_NAME,
+        "Open Watcom Menu Editor for Windows",
+        "Open Watcom Menu Editor for Windows" )
+pick(   W_ABOUT_COPYRIGHT_YEAR,
+        "2002",
+        "2002" )
+pick(   W_ABOUT_TITLE,
+        "About Open Watcom Menu Editor",
+        "About Open Watcom Menu Editor" )
 
 // WPREV.C
 pick(   W_PREVIEWMENU,
@@ -193,3 +202,39 @@ pick(   W_MENUITEM,
 pick(   W_NOMENUEX,
         "Cannot edit MENUEX resources.",
         "Cannot edit MENUEX resources." )
+
+// WRIBBON.C
+pick(   W_TIP_NEW,
+        "New",
+        "New" )
+pick(   W_TIP_OPEN,
+        "Open",
+        "Open" )
+pick(   W_TIP_SAVE,
+        "Save",
+        "Save" )
+pick(   W_TIP_CLEAR,
+        "Clear",
+        "Clear" )
+pick(   W_TIP_UPDATE,
+        "Update",
+        "Update" )
+pick(   W_TIP_CUT,
+        "Cut",
+        "Cut" )
+pick(   W_TIP_COPY,
+        "Copy",
+        "Copy" )
+pick(   W_TIP_PASTE,
+        "Paste",
+        "Paste" )
+pick(   W_TIP_DELETE,
+        "Delete",
+        "Delete" )
+pick(   W_TIP_INSERTTOGGLE,
+        "Insert After",
+        "Insert After" )
+pick(   W_TIP_NEWITEM,
+        "Insert New Item",
+        "Insert New Item" )
+

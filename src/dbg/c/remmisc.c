@@ -49,8 +49,15 @@ extern bool             InitFileInfoSupp( void );
 extern bool             InitEnvSupp( void );
 extern bool             InitOvlSupp( void );
 extern bool             InitThreadSupp( void );
+extern bool             InitCapabilities( void );
 extern void             StartupErr( char *err );
 extern char             *DupStr( char * );
+
+#ifdef ENABLE_TRAP_LOGGING
+extern int              OpenTrapTraceFile( const char * path );
+extern int              CloseTrapTraceFile( void );
+extern char             *TrpDebugFile;
+#endif
 
 extern system_config    SysConfig;
 extern char             *TxtBuff;
@@ -77,6 +84,7 @@ void InitSuppServices( void )
         InitEnvSupp();
         InitThreadSupp();
         InitOvlSupp();
+        InitCapabilities();
     }
 }
 
@@ -98,6 +106,10 @@ void InitTrap( char *trap_file )
     trap_version        ver;
     char                buff[ TXT_LEN ];
 
+#ifdef ENABLE_TRAP_LOGGING
+    if( TrpDebugFile )
+        OpenTrapTraceFile( TrpDebugFile );
+#endif
 
 /* Don't use TxtBuff except for error -- it may have a Finger message in it */
 
@@ -210,8 +222,12 @@ void FiniTrap( void )
 #if !defined( BUILD_RFX )
     FiniSuppServices();
 #endif
+#ifdef ENABLE_TRAP_LOGGING
+    CloseTrapTraceFile();
+#endif
 }
 
+#if 0
 bool ReInitTrap( char *trap_file )
 /********************************/
 {
@@ -220,3 +236,4 @@ bool ReInitTrap( char *trap_file )
     InitTrap( trap_file );
     return( !InitTrapError );
 }
+#endif

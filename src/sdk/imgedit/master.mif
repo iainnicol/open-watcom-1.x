@@ -60,7 +60,6 @@ extras = wincreat.obj desknt.obj title.obj winutils.obj inipath.obj
 extras = wincreat.obj title.obj winutils.obj
 !endif
 .c : $(wimgedit_dir)/c;$(sdk_dir)/misc;$(misc_dir)
-.rc : $(wimgedit_dir)/res
 !endif
 
 extra_c_flags = -DWIN_GUI -s
@@ -161,8 +160,21 @@ rcstr.gh : rcstrmsg.gh
 rcstrmsg.gh : $(wimgedit_dir)/h/wimgedit.msg $(msgfiles)
         $(cc) -zk0 -p $(inc_path) $[@ -fo=$^@
 
-$(name).res : $(name).rc rcstr.gh
-
-.rc.res: .AUTODEPEND
+$(name).res : ../res/$(name).rc rcstr.gh
         $(rc) $(rc_flags) -r -ad -zk0 -I"$(wimgedit_dir)/res" $(inc_path) $[@ -fo=$^@
+
+exever.res: exever.rc
+        $(rc) $(rc_flags) -r $(inc_path) $[@ -fo=$^@
+
+./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
+        $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
+
+!ifndef patch_level
+patch_level=0
 !endif
+
+exever.rc : ./genverrc.exe ../res/exever.rc $(fe_misc_dir)/c/genverrc.c
+        $[@ ../res/exever.rc exever.rc $$ $(name) $(patch_level)
+
+!endif
+

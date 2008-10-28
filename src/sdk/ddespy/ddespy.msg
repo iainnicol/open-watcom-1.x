@@ -215,15 +215,9 @@ pick(   STR_ADD_CONV_ALIAS,
 pick(   STR_APP_NAME,
         "Open Watcom DDE Spy",
         "Open Watcom DDE Spy" )
-#ifdef __NT__
-pick(   STR_ABOUT_NAME,
-        "Open Watcom DDE Spy for Windows NT",
-        "Open Watcom DDE Spy Windows NT版" )
-#else
 pick(   STR_ABOUT_NAME,
         "Open Watcom DDE Spy for Windows",
         "Open Watcom DDE Spy Windows版" )
-#endif
 
 #include "savelbox.msg"
 #include "log.msg"
@@ -370,3 +364,35 @@ pick(   STR_HINT_HELP_SRCH,
 pick(   STR_HINT_HELP_ON_HELP,
         "Show information on using help",
         "ヘルプの使用方法に関する情報の表示" )
+
+pick(   STR_TIP_TRK_STR,
+        "Track Strings",
+        "Track Strings" )
+pick(   STR_TIP_TRK_CONV,
+        "Track Conversations",
+        "Track Conversations" )
+pick(   STR_TIP_TRK_LINK,
+        "Track Links",
+        "Track Links" )
+pick(   STR_TIP_TRK_SERVER,
+        "Track Servers",
+        "Track Servers" )
+pick(   STR_TIP_LOG_FILE,
+        "Log To File",
+        "Log To File" )
+pick(   STR_TIP_MARK,
+        "Mark",
+        "Mark" )
+pick(   STR_TIP_CLEAR,
+        "Clear",
+        "Clear" )
+pick(   STR_TIP_HWND_ALIAS,
+        "Add HWND Alias",
+        "Add HWND Alias" )
+pick(   STR_TIP_TASK_ALIAS,
+        "Add Task Alias",
+        "Add Task Alias" )
+pick(   STR_TIP_CONV_ALIAS,
+        "Add Conversation Alias",
+        "Add Conversation Alias" )
+

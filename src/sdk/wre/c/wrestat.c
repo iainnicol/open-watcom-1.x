@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include "wreglbl.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "rcstr.gh"
 #include "statwnd.h"
 #include "wreribbn.h"
 #include "wrestat.h"
@@ -161,6 +161,9 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
 
     /* set the text in the status window */
     WRESetStatusReadyText( );
+
+    GetWindowRect( WREStatusWindow, &rect );
+    WREStatusDepth = rect.bottom - rect.top;
 
     return( TRUE );
 }

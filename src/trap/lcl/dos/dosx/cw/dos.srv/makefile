@@ -12,7 +12,7 @@ which = SERVER
 extra_c_flags = -DCAUSEWAY -DDOSXHELP
 extra_a_flags_cwhelp = -fpi87
 
-inc_dirs = -I"../h"
+inc_dirs = -I"$(cw_dir)/inc"
 
 !define substitute_linker
 
@@ -22,4 +22,4 @@ inc_dirs = -I"../h"
 objs =  cwhelp.obj c2asm.obj
 
 $(target) : $(objs) $(__MAKEFILES__)
-    $(linker) system causeway name $^@ op map, stub=$(contrib_dir)/extender/causeway/bin/cwdstub.exe f {$(objs)} l ../lib/system
+    $(linker) system causeway name $^@ op map, stub=$(cw_dir)/cw32/dosi86/cwdstub.exe f {$(objs)} l ../lib/system

@@ -45,7 +45,7 @@
 #include "wremem.h"
 #include "wrememf.h"
 #include "wremsg.h"
-#include "wremsgs.gh"
+#include "rcstr.gh"
 #include "wrenames.h"
 #include "wreopts.h"
 #include "wreres.h"
@@ -77,6 +77,8 @@
 
 #include "wwinhelp.h"
 #include "jdlg.h"
+#include "aboutdlg.h"
+#include "ldstr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -91,7 +93,7 @@
 /****************************************************************************/
 extern int PASCAL        WinMain        ( HINSTANCE, HINSTANCE, LPSTR, int);
 extern LRESULT WINEXPORT WREMainWndProc ( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT    WREAbout       ( HWND, WORD, WPARAM, LPARAM );
+extern Bool WINEXPORT    WRESplash      ( HWND, WORD, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -104,12 +106,16 @@ static LRESULT  WREHandleMDIArrangeEvents ( WORD );
 static void     WREUpdateScreenPosOpt     ( void );
 static Bool     WRECleanup                ( Bool );
 static Bool     WREProcessArgs            ( char **, int );
-static void     WREDisplayAboutBox        ( HINSTANCE, HWND, UINT );
+static void     WREDisplaySplashScreen    ( HINSTANCE, HWND, UINT );
 static void     WREHideSessions           ( Bool show );
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
+
+#ifdef __NT__
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+#endif
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -312,9 +318,9 @@ Bool WREInit( HINSTANCE app_inst )
     wc.cbClsExtra    = 0;
     wc.cbWndExtra    = 0;
     wc.hInstance     = app_inst;
-    wc.hIcon         = LoadIcon( app_inst, "WREIcon" );
+    wc.hIcon         = LoadIcon( app_inst, "APPLICON" );
     wc.hCursor       = LoadCursor( (HINSTANCE) NULL, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.hbrBackground = NULL;
     wc.lpszMenuName  = "WREMenu";
     wc.lpszClassName = WREMainClass;
 
@@ -433,7 +439,7 @@ Bool WREInitInst( HINSTANCE app_inst )
         }
         UpdateWindow( WREMainWin );
 
-        WREDisplayAboutBox( WREInst, WREMainWin, 1250 );
+        WREDisplaySplashScreen( WREInst, WREMainWin, 1250 );
     }
 
     return( TRUE );
@@ -548,6 +554,7 @@ LRESULT WINEXPORT WREMainWndProc( HWND hWnd, UINT message,
     Bool        pass_to_def;
     WREResInfo *res_info;
     WORD        wp;
+    about_info  ai;
 
     if( WRECleanupStarted && ( message != WM_CLOSE ) ) {
         if( message == WM_DESTROY ) {
@@ -802,7 +809,16 @@ LRESULT WINEXPORT WREMainWndProc( HWND hWnd, UINT message,
                     break;
 
                 case IDM_ABOUT:
-                    WREDisplayAboutBox( WREInst, WREMainWin, 0 );
+                    ai.owner = hWnd;
+                    ai.inst = WREInst;
+                    ai.name = AllocRCString( WRE_ABOUT_NAME );
+                    ai.version = banner1p2( _RESEDIT_VERSION_ );
+                    ai.first_cr_year = AllocRCString( WRE_ABOUT_COPYRIGHT_YEAR );
+                    ai.title = AllocRCString( WRE_ABOUT_TITLE );
+                    DoAbout( &ai );
+                    FreeRCString( ai.name );
+                    FreeRCString( ai.first_cr_year );
+                    FreeRCString( ai.title );
                     pass_to_def = FALSE;
                     break;
             }
@@ -1028,17 +1044,17 @@ Bool WREProcessArgs( char **argv, int argc )
 extern  WResID *        WR_EXPORT WRMem2WResID ( void *data, int is32bit );
 extern  int             WR_EXPORT WRWResID2Mem ( WResID *name, void **data,
                                                   uint_32 *size, int is32bit );
-void WREDisplayAboutBox( HINSTANCE inst, HWND parent, UINT msecs )
+void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
     FARPROC     lpProcAbout;
 
-    lpProcAbout = MakeProcInstance( (FARPROC) WREAbout, WREInst );
-    JDialogBoxParam( inst, "WREAboutBox", parent, (DLGPROC) lpProcAbout,
+    lpProcAbout = MakeProcInstance( (FARPROC) WRESplash, WREInst );
+    JDialogBoxParam( inst, "WRESplashScreen", parent, (DLGPROC) lpProcAbout,
                      (LPARAM) &msecs  );
     FreeProcInstance( lpProcAbout );
 }
 
-Bool WINEXPORT WREAbout( HWND hDlg, WORD message,
+Bool WINEXPORT WRESplash( HWND hDlg, WORD message,
                          WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
@@ -1047,8 +1063,10 @@ Bool WINEXPORT WREAbout( HWND hDlg, WORD message,
     HWND        w666;
     RECT        rect, arect;
     PAINTSTRUCT ps;
-    WORD        w;
-    char        *title;
+#ifdef __NT__
+    HINSTANCE   hInstUser;
+    PFNLI       pfnLoadImage;
+#endif
 
     static BITMAP    bm;
     static HBITMAP   logo;
@@ -1076,16 +1094,21 @@ Bool WINEXPORT WREAbout( HWND hDlg, WORD message,
                 timer = SetTimer( hDlg, ABOUT_TIMER, msecs, NULL );
                 if( timer ) {
                     SetWindowLong( hDlg, DWL_USER, (LONG) timer );
-                    ShowWindow( GetDlgItem( hDlg, IDOK ), SW_HIDE );
-                    title = WREAllocRCString( WRE_APPNAME );
-                    SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM) title );
-                    if( title ) {
-                        WREFreeRCString( title );
-                    }
                 }
             }
 
-            logo = LoadBitmap( WREInst, "AboutLogo" );
+#ifdef __NT__
+            hInstUser = GetModuleHandle( "USER32.DLL" );
+            pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
+            if( pfnLoadImage != NULL ) {
+                logo = pfnLoadImage( WREInst, "AboutLogo", IMAGE_BITMAP, 0, 0,
+                                     LR_LOADMAP3DCOLORS );
+            } else {
+#endif
+                logo = LoadBitmap( WREInst, "AboutLogo" );
+#ifdef __NT__
+            }
+#endif
 
             /*
             color = RGB(128,128,128);
@@ -1152,18 +1175,6 @@ Bool WINEXPORT WREAbout( HWND hDlg, WORD message,
             }
             EndDialog( hDlg, TRUE );
             return( TRUE );
-            break;
-
-        case WM_COMMAND:
-            w = LOWORD(wParam);
-            if( ( w == IDOK ) || ( w == IDCANCEL ) ) {
-                timer = (UINT) GetWindowLong( hDlg, DWL_USER );
-                if( timer ) {
-                    KillTimer( hDlg, timer );
-                }
-                EndDialog(hDlg, TRUE);
-                return( TRUE );
-            }
             break;
 
     }

@@ -88,7 +88,6 @@ wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_cpu)) &
 
 .c: $(wspy_dir);$(sdk_dir)/misc
 .h: $(wspy_dir);$(sdk_dir)/misc
-.rc: ..
 
 inc_dirs = -I"$(wspy_dir)" -I"$(sdk_dir)/misc"
 
@@ -96,9 +95,17 @@ wspy_to_build_win = rcstr.gh spymsgs.dlg spymsg.gh $(dllname).dll $(name).exe
 
 wspy_to_build_nt = rcstr.gh spymsgnt.dlg spymsgnt.gh $(dllname).dll $(name).exe
 
+# systems where version resource must be added to .EXE
+build_rc_nt_386 = nt
+
 all : $(wspy_to_build_$(host_os))
 
-$(name).exe : $(objs) $(name).res $(dllname).lib
+!ifdef build_rc_$(host_os)_$(host_cpu)
+res_objs = exever.res
+!endif
+
+
+$(name).exe : $(objs) $(name).res $(dllname).lib $(res_objs)
         $(linker) name $^@ $(lflags) file { $(objs) } 
         $(rc) -k $(name).res $^@
 
@@ -126,5 +133,18 @@ $(dllname).lib : $(dllname).dll
 $(dllname).dll : $(dllobjs)
         $(linker) $(wspy_dll_lflags_$(host_os)$(host_cpu))
 
-.rc.res: .AUTODEPEND
+$(name).res: ../$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -r -ad -zk0 $(inc_path) $[@ -fo=$^@
+exever.res: exever.rc
+        $(rc) $(rc_flags) -r $(inc_path) $[@ -fo=$^@
+
+./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
+        $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $<
+
+!ifndef patch_level
+patch_level=0
+!endif
+
+exever.rc : ./genverrc.exe ../exever.rc $(fe_misc_dir)/c/genverrc.c
+        $[@ ../exever.rc exever.rc $$ $(name) $(patch_level)
+

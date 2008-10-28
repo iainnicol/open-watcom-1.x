@@ -195,6 +195,7 @@ typedef struct gui_toolbar_struct {
     gui_bitmap          bitmap;
     int                 id;
     char                *hinttext;
+    char                *tip;
 } gui_toolbar_struct;
 
 typedef struct gui_menu_struct {
@@ -224,12 +225,16 @@ typedef enum {
         GUI_BRIGHT_MAGENTA,
         GUI_BRIGHT_YELLOW,
         GUI_BRIGHT_WHITE,
-        GUI_NUM_COLOURS,
-        GUI_FIRST_COLOUR = GUI_BLACK,
-        GUI_LAST_COLOUR = GUI_BRIGHT_WHITE,
 /* CEY - ChangeList 31754: Changed to define dialog background 'special' colour. See guiwnclr.c */
 #ifdef __NT__
         GUIEX_DLG_BKGRND = GUI_BRIGHT_WHITE + 1,
+#endif
+        GUI_NUM_COLOURS,
+        GUI_FIRST_COLOUR = GUI_BLACK,
+#ifdef __NT__
+        GUI_LAST_COLOUR = GUIEX_DLG_BKGRND
+#else
+        GUI_LAST_COLOUR = GUI_BRIGHT_WHITE
 #endif
 } gui_colour;
 
@@ -298,24 +303,25 @@ typedef enum gui_create_styles {
 } gui_create_styles;
 
 typedef enum gui_control_styles {
-    GUI_NOSTYLE                         = 0x00,
-    GUI_CHECKED                         = 0x01,
-    GUI_TAB_GROUP                       = 0x02,
-    GUI_AUTOMATIC                       = 0x04,
-    GUI_GROUP                           = 0x08,
-    GUI_FOCUS                           = 0x10,
-    GUI_CONTROL_INIT_INVISIBLE          = 0x20,
-    GUI_CONTROL_LEFTNOWORDWRAP          = 0x40,
-    GUI_CONTROL_NOPREFIX                = 0x80,
-    GUI_CONTROL_CENTRE                  = 0x100,
-    GUI_CONTROL_NOINTEGRALHEIGHT        = 0x200,
-    GUI_CONTROL_SORTED                  = 0x400,
-    GUI_CONTROL_MULTILINE               = 0x800,
-    GUI_CONTROL_WANTRETURN              = 0x1000,
-    GUI_EDIT_INVISIBLE                  = 0x2000,
-    GUI_CONTROL_3STATE                  = 0x4000,
-    GUI_CONTROL_WANTKEYINPUT            = 0x8000,
-    GUI_CONTROL_READONLY                = 0x10000
+    GUI_NOSTYLE                         = 0x00000000,
+    GUI_CHECKED                         = 0x00000001,
+    GUI_TAB_GROUP                       = 0x00000002,
+    GUI_AUTOMATIC                       = 0x00000004,
+    GUI_GROUP                           = 0x00000008,
+    GUI_FOCUS                           = 0x00000010,
+    GUI_CONTROL_INIT_INVISIBLE          = 0x00000020,
+    GUI_CONTROL_LEFTNOWORDWRAP          = 0x00000040,
+    GUI_CONTROL_NOPREFIX                = 0x00000080,
+    GUI_CONTROL_CENTRE                  = 0x00000100,
+    GUI_CONTROL_NOINTEGRALHEIGHT        = 0x00000200,
+    GUI_CONTROL_SORTED                  = 0x00000400,
+    GUI_CONTROL_MULTILINE               = 0x00000800,
+    GUI_CONTROL_WANTRETURN              = 0x00001000,
+    GUI_EDIT_INVISIBLE                  = 0x00002000,
+    GUI_CONTROL_3STATE                  = 0x00004000,
+    GUI_CONTROL_WANTKEYINPUT            = 0x00008000,
+    GUI_CONTROL_READONLY                = 0x00010000,
+    GUI_CONTROL_BORDER                  = 0x00020000
 } gui_control_styles;
 
 typedef enum gui_line_styles {
@@ -794,6 +800,10 @@ extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                               int num_items, gui_toolbar_struct *toolbar,
                               bool excl, gui_colour_set *plain,
                               gui_colour_set *standout );
+extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+                                      int num_items, gui_toolbar_struct *toolbar,
+                                      bool excl, gui_colour_set *plain,
+                                      gui_colour_set *standout );
 extern bool GUICloseToolBar( gui_window *wnd );
 extern bool GUIHasToolBar( gui_window *wnd );
 extern bool GUIChangeToolBar( gui_window *wnd );

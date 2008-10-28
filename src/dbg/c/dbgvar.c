@@ -1710,6 +1710,24 @@ void VarExpandRow( var_info *i, var_node *v, int row )
     }
 }
 
+void VarExpandRowNoCollapse( var_info *i, var_node *v, int row )
+{
+    if( v->node_type == NODE_INHERIT ) {
+        v->display ^= VARDISP_INHERIT_CLOSED;
+        VarNodeDisplayUpdate( v );
+    } else if( v->expand == NULL ) {
+        if( v->old_expand != NULL ) {
+            v->expand = v->old_expand;
+            v->old_expand = NULL;
+        } else {
+            VarExpand( i, v, 0, -1 );
+            if( v->expand != NULL && VarFirstExpandNode( i, v ) == NULL ) {
+                Warn( LIT( No_Visible_Members ) );
+            }
+        }
+    } 
+}
+
 
 static bool     Followable( type_kind class )
 {
@@ -1849,6 +1867,21 @@ void VarDisplaySetHex( var_node *v )
     VarSetType( v, CurrRadix != 16, 0, 0, 0, 0 );
 }
 
+void VarDisplaySetArrayHex( var_node *v )
+{
+    var_node *  next_v;
+    
+    if( NULL == v )
+        return;
+        
+    next_v = v->expand;
+            
+    while( next_v ) {
+        VarSetType( next_v, CurrRadix != 16, 0, 0, 0, 0 );
+        next_v = next_v->next;
+    }
+}
+
 bool VarDisplayIsDecimal( var_node *v )
 {
     return( ( v->display & VARDISP_DECIMAL ) != 0 );
@@ -1857,6 +1890,21 @@ bool VarDisplayIsDecimal( var_node *v )
 void VarDisplaySetDecimal( var_node *v )
 {
     VarSetType( v, 0, CurrRadix != 10, 0, 0, 0 );
+}
+
+void VarDisplaySetArrayDec( var_node *v )
+{
+    var_node *  next_v;
+    
+    if( NULL == v )
+        return;
+        
+    next_v = v->expand;
+            
+    while( next_v ) {
+        VarSetType( next_v, CurrRadix != 10, 0, 0, 0, 0 );
+        next_v = next_v->next;
+    }
 }
 
 bool VarDisplayIsChar( var_node *v )
@@ -2646,3 +2694,25 @@ extern var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdept
     VarGetDepths( i, v, pdepth, pinherit );
     return( v );
 }
+
+bool VarParentIsArray( var_node * v )
+{
+    var_node            *vparent = v;
+    type_info           tinfo;
+    
+    while( vparent->parent != NULL ) {
+        if( vparent->parent->node_type != NODE_INHERIT ) {
+            vparent = vparent->parent;
+            break;
+        }
+        vparent = vparent->parent;
+    }
+    
+    if( ( vparent == v ) || ( NULL == vparent ) )
+        return FALSE;
+    
+    TypeInfo( vparent->th, NULL, &tinfo );
+
+    return ( tinfo.kind == TK_ARRAY || vparent->fake_array );
+}
+

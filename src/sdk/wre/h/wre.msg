@@ -1,3 +1,5 @@
+#include "about.msg"
+
 // the following is the font used in the status bar of the window
 pick(   WRE_STATUSFONT,
         "Helv.8",
@@ -339,11 +341,20 @@ pick(   WRE_INPUTFILESNOTLOADED,
 pick(   WRE_INVALIDINPUTFILE,
         "Invalid input file.",
         "Invalid input file." )
+pick(   WRE_ABOUT_NAME,
+        "Open Watcom Resource Editor for Windows",
+        "Open Watcom Resource Editor for Windows" )
+pick(   WRE_ABOUT_COPYRIGHT_YEAR,
+        "1984",
+        "1984" )
+pick(   WRE_ABOUT_TITLE,
+        "About Open Watcom Resource Editor",
+        "About Open Watcom Resource Editor" )
 
 // WRERES.C
 pick(   WRE_UNTITLED,
-        "_untitled",
-        "_untitled" )
+        "untitled",
+        "untitled" )
 pick(   WRE_OPENPROJECTTITLE,
         "Open File",
         "Open File" )
@@ -448,3 +459,24 @@ pick(   WRE_ERRORCLOSINGSYMFILE,
 pick(   WRE_NOOPENSYMFILE,
         "Could not open symbol file.",
         "Could not open symbol file." )
+
+// WRERIBBN.C
+pick(   WRE_TIP_NEW,
+        "New",
+        "New" )
+pick(   WRE_TIP_OPEN,
+        "Open",
+        "Open" )
+pick(   WRE_TIP_SAVE,
+        "Save",
+        "Save" )
+pick(   WRE_TIP_CUT,
+        "Cut",
+        "Cut" )
+pick(   WRE_TIP_COPY,
+        "Copy",
+        "Copy" )
+pick(   WRE_TIP_PASTE,
+        "Paste",
+        "Paste" )
+

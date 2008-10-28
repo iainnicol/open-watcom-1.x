@@ -1,3 +1,5 @@
+#include "about.msg"
+
 // the following is the font used in the status bar of the window
 pick(   WDE_STATUSFONT,
         "Helv.8",
@@ -436,6 +438,15 @@ pick(   WDE_SETFAILED,
 pick(   WDE_INPUTFILENOTFOUND,
         "Input file not found.",
         "Input file not found." )
+pick(   WDE_ABOUT_NAME,
+        "Open Watcom Dialog Editor for Windows",
+        "Open Watcom Dialog Editor for Windows" )
+pick(   WDE_ABOUT_COPYRIGHT_YEAR,
+        "1984",
+        "1984" )
+pick(   WDE_ABOUT_TITLE,
+        "About Open Watcom Dialog Editor",
+        "About Open Watcom Dialog Editor" )
 
 // WDEFUTIL.C
 pick(   WDE_DEFININGCONTROL,
@@ -518,8 +529,8 @@ pick(   WDE_EDITREGISTERCLASSFAILED,
 
 // WDERES.C
 pick(   WDE_UNTITLEDPROJECT,
-        "_untitled",
-        "_untitled" )
+        "untitled",
+        "untitled" )
 pick(   WDE_OPENPROJECT,
         "Open File",
         "Open File" )
@@ -713,3 +724,39 @@ pick(   WDE_UNICUSTNOTSUPPORTED,
 pick(   WDE_BADCTL3D,
         "You are using an older version of CTL3D.DLL.\nUse the version provided in %WATCOM%\\BINW.",
         "You are using an older version of CTL3D.DLL.\nUse the version provided in %WATCOM%\\BINW." )
+
+// WDERIBBN.C
+pick(   WDE_TIP_NEW,
+        "New",
+        "New" )
+pick(   WDE_TIP_OPEN,
+        "Open",
+        "Open" )
+pick(   WDE_TIP_SAVE,
+        "Save",
+        "Save" )
+pick(   WDE_TIP_CUT,
+        "Cut",
+        "Cut" )
+pick(   WDE_TIP_COPY,
+        "Copy",
+        "Copy" )
+pick(   WDE_TIP_PASTE,
+        "Paste",
+        "Paste" )
+pick(   WDE_TIP_SIZETOTEXT,
+        "Size to Text",
+        "Size to Text" )
+pick(   WDE_TIP_TEST_MODE,
+        "Test Mode",
+        "Test Mode" )
+pick(   WDE_TIP_SET_ORDER,
+        "Set Order",
+        "Set Order" )
+pick(   WDE_TIP_SET_TABS,
+        "Set Tabs",
+        "Set Tabs" )
+pick(   WDE_TIP_SET_GROUPS,
+        "Set Groups",
+        "Set Groups" )
+

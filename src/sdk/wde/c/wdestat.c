@@ -39,7 +39,7 @@
 #include "statwnd.h"
 #include "wdemsgbx.h"
 #include "wdestat.h"
-#include "wdemsgs.gh"
+#include "rcstr.gh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -163,6 +163,9 @@ Bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
 
     /* set the text in the status window */
     WdeSetStatusReadyText( );
+
+    GetWindowRect( WdeStatusWindow, &rect );
+    WdeStatusDepth = rect.bottom - rect.top;
 
     return( TRUE );
 }

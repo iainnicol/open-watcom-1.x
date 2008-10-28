@@ -97,6 +97,36 @@ pick(   W_HIDETOOLBAR,
 pick(   W_TOOLBARSHOWN,
         "Toolbar Shown",
         "Toolbar Shown" )
+pick(   W_TIP_NEW,
+        "New",
+        "New" )
+pick(   W_TIP_OPEN,
+        "Open",
+        "Open" )
+pick(   W_TIP_SAVE,
+        "Save",
+        "Save" )
+pick(   W_TIP_CLEAR,
+        "Clear",
+        "Clear" )
+pick(   W_TIP_UPDATE,
+        "Update",
+        "Update" )
+pick(   W_TIP_CUT,
+        "Cut",
+        "Cut" )
+pick(   W_TIP_COPY,
+        "Copy",
+        "Copy" )
+pick(   W_TIP_PASTE,
+        "Paste",
+        "Paste" )
+pick(   W_TIP_NEWITEM,
+        "Insert New Item",
+        "Insert New Item" )
+pick(   W_TIP_DELETE,
+        "Delete",
+        "Delete" )
 
 // WTOOLBAR.C
 pick(   W_SYSMENUMOVE,
@@ -148,6 +178,15 @@ pick(   W_STRINGNAMES,
 pick(   W_UPDATEMODIFIEDSYM,
         "The symbols have been modified.\nSave?",
         "The symbols have been modified.\nSave?" )
+pick(   W_ABOUT_NAME,
+        "Open Watcom String Editor for Windows",
+        "Open Watcom String Editor for Windows" )
+pick(   W_ABOUT_COPYRIGHT_YEAR,
+        "2002",
+        "2002" )
+pick(   W_ABOUT_TITLE,
+        "About Open Watcom String Editor",
+        "About Open Watcom String Editor" )
 
 // WNEWITEM.C
 pick(   W_QUERYREPLACESTRING,

@@ -100,6 +100,10 @@ extern unsigned         QualifiedSymName( sym_handle *sh, char *name, unsigned m
 extern void             AddrFloat( address * );
 unsigned                GetMADNormalizedString( mad_string, unsigned, char * );
 
+extern int              CapabilitiesGetExactBreakpointSupport( void );
+extern int              CapabilitiesSetExactBreakpointSupport( bool status );
+extern int              SupportsExactBreakpoints;
+
 extern char             OnOffNameTab[];
 extern char             *TxtBuff;
 extern char             *Language;
@@ -141,7 +145,7 @@ static char SetNameTab[] = {
     "Fpu\0"
     "MMx\0"
     "XMm\0"
-    "Bell\0"
+    "BEll\0"
     "Call\0"
     "Dclick\0"
     "Implicit\0"
@@ -157,9 +161,13 @@ static char SetNameTab[] = {
     "LAnguage\0"
     "MAcro\0"
     "SUpportroutine\0"
+    "BReakonwrite\0"
+    "DOntexpandhex\0"    
 };
 
 static void     AutoConf( void );
+static void     BreakOnWriteConf( void );
+static void     DontExpandHexStringConf( void );
 static void     AsmConf( void );
 static void     VarConf( void );
 static void     FuncConf( void );
@@ -182,6 +190,8 @@ static void     SupportConf( void );
 
 static void     BadSet( void );
 static void     AutoSet( void );
+static void     BreakOnWriteSet( void );
+static void     DontExpandHexStringSet( void );
 static void     AsmSet( void );
 static void     VarSet( void );
 static void     FuncSet( void );
@@ -230,6 +240,8 @@ static void (* const SetJmpTab[])( void ) = {
     &LangSet,
     &MacroSet,
     &SupportSet,
+    &BreakOnWriteSet,
+    &DontExpandHexStringSet,
 };
 
 static void (* SetConfJmpTab[])( void ) = {
@@ -259,6 +271,8 @@ static void (* SetConfJmpTab[])( void ) = {
     &LangConf,
     &MacroConf,
     &SupportConf,
+    &BreakOnWriteConf,
+    &DontExpandHexStringConf,
     NULL,
 };
 
@@ -345,6 +359,35 @@ static void AutoConf( void )
     ShowSwitch( _IsOn( SW_AUTO_SAVE_CONFIG ) );
 }
 
+/*
+ *  - set break on write option
+ */
+
+static void BreakOnWriteSet( void )
+{
+    _SwitchSet( SW_BREAK_ON_WRITE, SwitchOnOff() );
+
+    if( SupportsExactBreakpoints && _IsOn( SW_BREAK_ON_WRITE ) )
+        CapabilitiesSetExactBreakpointSupport( TRUE );
+}
+
+static void BreakOnWriteConf( void )
+{
+    ShowSwitch( _IsOn( SW_BREAK_ON_WRITE ) );
+}
+/*
+ *  - set hex expansion
+ */
+
+static void DontExpandHexStringSet( void )
+{
+    _SwitchSet( SW_DONT_EXPAND_HEX, SwitchOnOff() );
+}
+
+static void DontExpandHexStringConf( void )
+{
+    ShowSwitch( _IsOn( SW_DONT_EXPAND_HEX ) );
+}
 
 /*
  * RecursionSet - set recursion checking on/off processing
@@ -393,7 +436,7 @@ void NewLang( char *lang )
     if( lang == NULL ) return;
     strlwr( lang );
     len = strlen( lang );
-    if( (len != strlen( Language )) || memcmp( lang, Language, len ) != 0 ) {
+    if( ( len != strlen( Language ) ) || memcmp( lang, Language, len ) != 0 ) {
         new = DbgMustAlloc( len + 1 );
         memcpy( new, lang, len );
         new[ len ] = NULLCHAR;
@@ -677,7 +720,7 @@ static void ToggleWindowSwitches( window_toggle *toggle, int len,
 static char *DumpAToggle( char *p, mad_handle mh, char *toggle )
 {
     if( toggle[0] != NULLCHAR ) {
-        MADNameDescription( mh, TXT_LEN - (p-TxtBuff), p );
+        MADNameDescription( mh, TXT_LEN - ( p - TxtBuff ), p );
         for( ;; ) {
             if( *p == '\0' ) break;
             if( *p == ' ' ) break;

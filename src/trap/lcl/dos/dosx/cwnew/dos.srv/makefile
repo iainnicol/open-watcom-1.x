@@ -14,7 +14,7 @@ extra_c_flags = -DCAUSEWAY -DDOSXHELP -ms
 extra_a_flags = -dCAUSEWAY -ms
 extra_a_flags_cwhelp = -fpi87
 
-inc_dirs = -I"../h"
+inc_dirs = -I"$(cw_dir)/inc"
 
 !define substitute_linker
 
@@ -29,4 +29,4 @@ objs =  cwhelp.obj &
         x86cpu.obj
 
 $(target) : $(objs) $(__MAKEFILES__)
-    $(linker) system causeway name $^@ op map, statics, stub=$(contrib_dir)/extender/causeway/bin/cwdstub.exe f {$(objs)} l ../lib/system
+    $(linker) system causeway name $^@ op map, statics, stub=$(cw_dir)/cw32/dosi86/cwdstub.exe f {$(objs)} l ../lib/system

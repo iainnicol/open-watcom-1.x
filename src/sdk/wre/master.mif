@@ -33,6 +33,7 @@ TRMEM           += -of+
 extra_c_flags     = -DWIN_GUI -s
 
 extra_c_flags_win = -zu-zw-zc
+extra_c_flags_nt  = -DNOUSE3D
 
 extra_c_flags_preproc = -zm
 extra_c_flags_ppexpr  = -zm
@@ -45,7 +46,7 @@ OBJS =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wrememf.obj wredel.obj wrewait.obj wresvobj.obj wrectl3d.obj &
         wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
         wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
-        wreclip.obj wresym.obj &
+        wreclip.obj wresym.obj about.obj &
         preproc.obj ppexpr.obj ppmacro.obj &
         toolbr.obj statwnd.obj ldstr.obj wwinhelp.obj jdlg.obj inipath.obj
 
@@ -104,6 +105,8 @@ OBJS += trmem.tbj trmemcvr.tbj
 inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
 inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)" -I"$(misc_dir)"
 
+msgfiles  = $(sdk_dir)/misc/about.msg
+
 xlibs = $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
         $(wmenu_dir)/$(host_os)$(host_cpu)/wmenu.lib &
         $(wstring_dir)/$(host_os)$(host_cpu)/wstring.lib &
@@ -116,7 +119,7 @@ extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
 
 # explicit rules
 #################
-$(name).exe: wremsgs.gh $(OBJS) $(name).res $(xlibs)
+$(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs) $(res_objs)
         @%create tmp.lnk
         @%append tmp.lnk $(lflags)
         @for %i in ($(OBJS)) do @%append tmp.lnk file %i
@@ -124,13 +127,13 @@ $(name).exe: wremsgs.gh $(OBJS) $(name).res $(xlibs)
         $(linker) name $^@ @tmp.lnk
         $(rc) -k $(name).res $^@
 
-wremsgs.gh: wretemp.gh
+rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-wretemp.gh: ../h/wre.msg
-        $(cc) $(cflags) $(inc_path) -p $[@ -fo=$^@
+rcstrmsg.gh: ../h/wre.msg $(msgfiles)
+        $(cc) $(cflags) $(inc_path) -zk0 -p $[@ -fo=$^@
 
 # implicit rules
 #################
 .rc.res: .AUTODEPEND
-        $(rc) $(rc_flags) -r -ad $(inc_path) $[@ -fo=$^@
+        $(rc) $(rc_flags) -r -ad -zk0 $(inc_path) $[@ -fo=$^@

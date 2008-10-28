@@ -39,7 +39,7 @@
 #include "wmsg.h"
 #include "wmain.h"
 #include "wstat.h"
-#include "wmsgfile.gh"
+#include "rcstr.gh"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -182,6 +182,9 @@ wstatbar *WCreateStatusLine ( HWND parent, HINSTANCE inst )
     }
 
     WSetStatusReadyText( wsb );
+
+    GetWindowRect( wsb->stat->win, &rect );
+    WStatusDepth = rect.bottom - rect.top;
 
     return( wsb );
 }

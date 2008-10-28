@@ -41,6 +41,10 @@
 static HINSTANCE        wMainInst = NULL;
 static char             *appName;
 
+#ifdef __NT__
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+#endif
+
 /*
  * wTitle - The callback function for the displaying of the title screen.
  */
@@ -52,6 +56,10 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
     HWND         w666;
     RECT         rect, arect;
     PAINTSTRUCT  ps;
+#ifdef __NT__
+    HINSTANCE    hInstUser;
+    PFNLI        pfnLoadImage;
+#endif
 
     static BITMAP    bm;
     static HBITMAP   logo;
@@ -66,12 +74,23 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
                 timer = SetTimer( hwnd, TITLE_TIMER, msecs, NULL );
                 if ( timer ) {
                     SetWindowLong( hwnd, DWL_USER, (LONG)timer );
-                    SendMessage( hwnd, WM_SETTEXT, 0, (LPARAM)IEAppTitle );
                 }
             }
 
-            logo = LoadBitmap ( wMainInst, "APPLBITMAP" );
-            color = RGB( 192, 192, 192);
+#ifdef __NT__
+            hInstUser = GetModuleHandle( "USER32.DLL" );
+            pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
+            if( pfnLoadImage != NULL ) {
+                logo = pfnLoadImage( wMainInst, "APPLBITMAP", IMAGE_BITMAP, 0, 0,
+                                     LR_LOADMAP3DCOLORS );
+            } else {
+#endif
+                logo = LoadBitmap ( wMainInst, "APPLBITMAP" );
+#ifdef __NT__
+            }
+#endif
+
+            color = GetSysColor( COLOR_BTNFACE );
             brush = CreateSolidBrush ( color );
 
             GetObject ( logo, sizeof(BITMAP), &bm );

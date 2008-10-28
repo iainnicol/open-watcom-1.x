@@ -23,6 +23,7 @@ fmedit_dir      = $(sdk_dir)/fmedit
 extra_c_flags     = -DWIN_GUI -s
 
 extra_c_flags_win = -zu-zw-zc
+extra_c_flags_nt  = -DNOUSE3D
 
 of_386  = -of+
 of_i86  = -of+
@@ -57,7 +58,7 @@ OBJS =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdeclear.obj wdecurr.obj wdegoto.obj wdecctl.obj &
         wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
         wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
-        windlg.obj windlg32.obj &
+        windlg.obj windlg32.obj about.obj &
         preproc.obj ppexpr.obj ppmacro.obj &
         toolbr.obj statwnd.obj ldstr.obj wwinhelp.obj jdlg.obj inipath.obj
 
@@ -159,6 +160,8 @@ wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 inc_dirs  = -Ih -I"../h" -I"$(fmedit_dir)/dev" -I"$(wres_dir)/h"
 inc_dirs += -I"$(wr_dir)/h" -I"$(misc_dir)" -I"$(cpp_dir)"
 
+msgfiles  = $(sdk_dir)/misc/about.msg
+
 all : $(name).exe
 
 extra_l_flags      = op map, verbose, symfile
@@ -168,7 +171,7 @@ extra_l_flags_win += library commdlg, ddeml
 
 xlibs = $(wres_lib) $(fmedit_lib) $(wr_lib)
 
-$(name).exe: wdemsgs.gh $(OBJS) $(name).res $(xlibs)
+$(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs)
         @%create tmp.lnk
         @%append tmp.lnk $(lflags)
         @for %i in ($(OBJS)) do @%append tmp.lnk file %i
@@ -179,12 +182,12 @@ $(name).exe: wdemsgs.gh $(OBJS) $(name).res $(xlibs)
 # implicit rules
 #################
 .rc.res: .AUTODEPEND
-        $(rc) $(rc_flags) -r -ad $(inc_path) $[@ -fo=$^@
+        $(rc) $(rc_flags) -r -ad -zk0 $(inc_path) $[@ -fo=$^@
 
 # explicit rules
 #################
-wdemsgs.gh: wdetemp.gh
+rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-wdetemp.gh: ../h/wde.msg
-        $(cc) $(cflags) $(inc_path) -p $[@ -fo=$^@
+rcstrmsg.gh: ../h/wde.msg $(msgfiles)
+        $(cc) $(cflags) $(inc_path) -zk0 -p $[@ -fo=$^@

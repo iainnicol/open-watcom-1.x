@@ -49,7 +49,7 @@
 #include "wdeinfo.h"
 #include "wdefutil.h"
 #include "wdemsgbx.h"
-#include "wdemsgs.gh"
+#include "rcstr.gh"
 #include "wdefont.h"
 #include "wdeopts.h"
 #include "wdefinit.h"
@@ -79,6 +79,8 @@
 #include "jdlg.h"
 
 #include "wwinhelp.h"
+#include "aboutdlg.h"
+#include "ldstr.h"
 
 /* set the WRES library to use compatible functions */
 WResSetRtns(open,close,read,write,lseek,tell,WdeMemAlloc,WdeMemFree);
@@ -102,7 +104,7 @@ void WdeInt3( void );
 /****************************************************************************/
 extern int PASCAL        WinMain        ( HINSTANCE, HINSTANCE, LPSTR, int);
 extern LRESULT WINEXPORT WdeMainWndProc ( HWND, UINT, WPARAM, LPARAM );
-extern Bool WINEXPORT    WdeAbout       ( HWND, WORD, WPARAM, LPARAM );
+extern Bool WINEXPORT    WdeSplash      ( HWND, WORD, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -122,12 +124,16 @@ static void        WdeSetMakeMeCurrent      ( WdeResInfo *, void * );
 static LRESULT     WdeHandleMDIArrangeEvents( WORD );
 static Bool        WdeSetDialogMode         ( WORD );
 static Bool        WdeProcessArgs           ( char **, int  );
-static void        WdeDisplayAboutBox       ( HINSTANCE, HWND, UINT );
+static void        WdeDisplaySplashScreen   ( HINSTANCE, HWND, UINT );
 static Bool        WdeIsDDEArgs             ( char **argv, int argc );
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
+
+#ifdef __NT__
+typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
+#endif
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -294,9 +300,9 @@ Bool WdeInit( HINSTANCE app_inst )
     wc.cbClsExtra    = 0;
     wc.cbWndExtra    = 0;
     wc.hInstance     = app_inst;
-    wc.hIcon         = LoadIcon ( app_inst, "WdeIcon" );
+    wc.hIcon         = LoadIcon ( app_inst, "APPLICON" );
     wc.hCursor       = LoadCursor ( (HINSTANCE) NULL, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.hbrBackground = NULL;
     wc.lpszMenuName  = "WdeMenu";
     wc.lpszClassName = WdeMainClass;
 
@@ -443,7 +449,7 @@ Bool WdeInitInst( HINSTANCE app_inst )
     WdeSetFontList     ( hWinWdeMain );
 
     if( !IsDDE ) {
-        WdeDisplayAboutBox ( hInstWde, hWinWdeMain, 1125 );
+        WdeDisplaySplashScreen ( hInstWde, hWinWdeMain, 1125 );
     }
 
     if( IsDDE ) {
@@ -629,6 +635,7 @@ LRESULT WINEXPORT WdeMainWndProc( HWND hWnd, UINT message,
     Bool        pass_to_def;
     WdeResInfo *res_info;
     WORD        wp;
+    about_info  ai;
 
     if ( WdeCleanupStarted ) {
         if ( message == WM_DESTROY ) {
@@ -654,6 +661,18 @@ LRESULT WINEXPORT WdeMainWndProc( HWND hWnd, UINT message,
 
         case WM_MENUSELECT:
             WdeHandleMenuSelect ( wParam, lParam );
+            break;
+
+        case WM_MEASUREITEM:
+            WdeHandleMeasureItem( (MEASUREITEMSTRUCT *)lParam );
+            ret = TRUE;
+            pass_to_def = FALSE;
+            break;
+
+        case WM_DRAWITEM:
+            WdeHandleDrawItem( (DRAWITEMSTRUCT *)lParam );
+            ret = TRUE;
+            pass_to_def = FALSE;
             break;
 
         case WM_MOVE:
@@ -946,14 +965,16 @@ LRESULT WINEXPORT WdeMainWndProc( HWND hWnd, UINT message,
                     break;
 
                 case IDM_ABOUT:
-                    {
-                        char *text;
-                        WdeSetControlFlagText( CLASS_STATIC, WS_VISIBLE | WS_CAPTION | WS_HSCROLL | SS_LEFT | SS_NOPREFIX, &text );
-                        if( text ) {
-                            WdeMemFree( text );
-                        }
-                    }
-                    WdeDisplayAboutBox ( hInstWde, hWinWdeMain, 0 );
+                    ai.owner = hWnd;
+                    ai.inst = hInstWde;
+                    ai.name = AllocRCString( WDE_ABOUT_NAME );
+                    ai.version = banner1p2( _RESEDIT_VERSION_ );
+                    ai.first_cr_year = AllocRCString( WDE_ABOUT_COPYRIGHT_YEAR );
+                    ai.title = AllocRCString( WDE_ABOUT_TITLE );
+                    DoAbout( &ai );
+                    FreeRCString( ai.name );
+                    FreeRCString( ai.first_cr_year );
+                    FreeRCString( ai.title );
                     pass_to_def = FALSE;
                     break;
             }
@@ -1303,17 +1324,17 @@ Bool WdeProcessArgs( char **argv, int argc )
     return( ok );
 }
 
-void WdeDisplayAboutBox ( HINSTANCE inst, HWND parent, UINT msecs )
+void WdeDisplaySplashScreen ( HINSTANCE inst, HWND parent, UINT msecs )
 {
     FARPROC     lpProcAbout;
 
-    lpProcAbout = MakeProcInstance ( (FARPROC) WdeAbout, hInstWde );
-    JDialogBoxParam ( inst, "WdeAboutBox", parent, (DLGPROC) lpProcAbout,
+    lpProcAbout = MakeProcInstance ( (FARPROC) WdeSplash, hInstWde );
+    JDialogBoxParam ( inst, "WdeSplashScreen", parent, (DLGPROC) lpProcAbout,
                      (LPARAM) &msecs  );
     FreeProcInstance ( lpProcAbout );
 }
 
-Bool WINEXPORT WdeAbout( HWND hDlg, WORD message,
+Bool WINEXPORT WdeSplash( HWND hDlg, WORD message,
                          WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
@@ -1322,8 +1343,10 @@ Bool WINEXPORT WdeAbout( HWND hDlg, WORD message,
     HWND        w666;
     RECT        rect, arect;
     PAINTSTRUCT ps;
-    WORD        w;
-    char        *title;
+#ifdef __NT__
+    HINSTANCE   hInstUser;
+    PFNLI       pfnLoadImage;
+#endif
 
     static BITMAP    bm;
     static HBITMAP   logo;
@@ -1350,17 +1373,22 @@ Bool WINEXPORT WdeAbout( HWND hDlg, WORD message,
             if ( msecs ) {
                 timer = SetTimer ( hDlg, ABOUT_TIMER, msecs, NULL );
                 if ( timer ) {
-                    title = WdeAllocRCString( WDE_APPTITLE );
                     SetWindowLong ( hDlg, DWL_USER, (LONG) timer );
-                    ShowWindow ( GetDlgItem ( hDlg, IDOK ), SW_HIDE );
-                    SendMessage ( hDlg, WM_SETTEXT, 0, (LPARAM)title );
-                    if( title ) {
-                        WdeFreeRCString( title );
-                    }
                 }
             }
 
-            logo = LoadBitmap ( hInstWde, "AboutLogo" );
+#ifdef __NT__
+            hInstUser = GetModuleHandle( "USER32.DLL" );
+            pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
+            if( pfnLoadImage != NULL ) {
+                logo = pfnLoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0,
+                                     LR_LOADMAP3DCOLORS );
+            } else {
+#endif
+                logo = LoadBitmap ( hInstWde, "AboutLogo" );
+#ifdef __NT__
+            }
+#endif
 
             /*
             color = GetSysColor ( COLOR_BTNFACE );
@@ -1428,18 +1456,6 @@ Bool WINEXPORT WdeAbout( HWND hDlg, WORD message,
             }
             EndDialog ( hDlg, TRUE );
             return ( TRUE );
-            break;
-
-        case WM_COMMAND:
-            w = LOWORD(wParam);
-            if ( ( w == IDOK ) || ( w == IDCANCEL ) ) {
-                timer = (UINT) GetWindowLong ( hDlg, DWL_USER );
-                if ( timer ) {
-                    KillTimer ( hDlg, timer );
-                }
-                EndDialog(hDlg, TRUE);
-                return ( TRUE );
-            }
             break;
 
     }
