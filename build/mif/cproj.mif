@@ -10,10 +10,6 @@
 lang_root       = $(lang_root_$(host_cpu))
 !endif
 
-!ifeq %BUILDMODE bootstrap
-bootstrapmode = 1
-!endif
-
 cc_386          = *wcc386
 cc_i86          = *wcc
 cc_axp          = *wccaxp
@@ -331,7 +327,20 @@ rc_flags_axp    = -D__AXP__
 rc_flags        = $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
 
-!ifndef bootstrapmode
+!ifdef bootstrap
+
+inc_dirs_sys_nt    =
+inc_dirs_sys_win   =
+inc_dirs_sys_os2   =
+inc_dirs_sys_dos   =
+inc_dirs_sys_nov   =
+inc_dirs_sys_qnx   =
+inc_dirs_sys_linux =
+inc_dirs_sys_nto   =
+
+inc_dirs_lang      =
+
+!else ifeq %BUILDMODE 1
 
 inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/include"
 inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/include"
@@ -380,11 +389,6 @@ inc_dirs_lang   = $(inc_dirs_lang_$(host_os))
 inc_dirs_lang   = -I"$(lang_root)/h"
 !endif
 
-!endif
-
-# TODO: This is stupid!
-!ifdef bootstrap
-inc_dirs_lang =
 !endif
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
