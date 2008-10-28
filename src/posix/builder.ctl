@@ -7,20 +7,19 @@ set PROJNAME=build POSIX tools
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
+set BOOTSUBDIR=systems/
+
 [ BLOCK <1> bootclean ]
 #======================
-    cdsay <PROJDIR>/systems/<OBJDIR>
+    cdsay <PROJDIR>/<BOOTSUBDIR><OBJDIR>
     wmake -h -f ../bootmake clean_build
     cdsay <PROJDIR>
 
 [ BLOCK . . ]
 
-set BOOTSUBDIR=systems/
 set BOOTCOPY=<CPCMD> *.exe <OWBINDIR>/
+set BOOTCLEAN=rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
-
-[ BLOCK . . ]
-#============
 
 cdsay <PROJDIR>
