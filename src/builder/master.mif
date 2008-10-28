@@ -4,7 +4,7 @@ proj_name = builder
 !include defrule.mif
 !include deftarg.mif
 
-all : cdsay.exe sweep.exe wsplice.exe comstrip.exe &
+all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe &
 !ifndef __UNIX__
     diff.exe &
 !endif
@@ -17,7 +17,7 @@ all : cdsay.exe sweep.exe wsplice.exe comstrip.exe &
 
 inc_dirs = -I"../../pmake" -I"../../posix/h"
 
-.c : ../c;../../pmake;../../posix/src/rm;../../posix/misc
+.c : ../c;../../pmake;../../posix/src/rm;../../posix/src/sed;../../posix/misc;../../lib_misc/c;
 
 sys_dos   = sys.obj sysdos.obj sysdoscd.obj
 sys_os2   = sys.obj sysos2.obj sysdoscd.obj

@@ -1,15 +1,12 @@
 .extensions:
-.extensions: .mif .lst .exe .obj .c .h
+.extensions: .mif .lst .obj .c .h
 
-../objs.mif : aliases.lst ./aliasgen.exe
+../objs.mif : aliases.lst
     rm -f ../objs.mif ../a/*.asm
-    $]@ aliases.lst ../a/ ../objs.mif
-
-./aliasgen.exe : $(lib_misc_dir)/c/aliasgen.c
-    $(host_cl) $(host_cl_opts) $<
+    aliasgen aliases.lst ../a/ ../objs.mif
 
 clean : .symbolic
-    rm -f aliasgen.exe *.?bj *.err ../a/*.asm ../objs.mif
+    rm -f *.?bj *.err ../a/*.asm ../objs.mif
 
 realclean : .symbolic clean
     rm -f ../objs.mif ../a/*.asm
