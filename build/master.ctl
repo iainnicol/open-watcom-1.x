@@ -33,6 +33,8 @@ set SRCDIR=<OWROOT>/src
 
 # Clear variables possibly set by previously included control files
 set BOOTSUBDIR=
+set BOOTCOPY=
+set BOOTCLEAN=
 
 [ BLOCK .<1> . ]
 #===============
