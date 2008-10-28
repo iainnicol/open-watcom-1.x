@@ -4,6 +4,16 @@
 :include crwatcnt.sp
  */
 
+#ifdef DEFINE_GUID
+
+/* GUIDs */
+:include storguid.sp
+
+/* Old names for compatibility */
+:include storgold.sp
+
+#endif /* DEFINE_GUID */
+
 #ifndef _NTDDSTOR_H_
 #define _NTDDSTOR_H_
 
@@ -241,7 +251,8 @@ typedef enum _STORAGE_MEDIA_TYPE {
     ADR_1               = 0x5A,
     ADR_2               = 0x5B,
     STK_9940            = 0x5C,
-    SAIT                = 0x5D
+    SAIT                = 0x5D,
+    VXATape             = 0x5E
 } STORAGE_MEDIA_TYPE;
 typedef STORAGE_MEDIA_TYPE  *PSTORAGE_MEDIA_TYPE;
 
@@ -351,8 +362,8 @@ typedef STORAGE_PROPERTY_QUERY  *PSTORAGE_PROPERTY_QUERY;
 typedef struct _STORAGE_DESCRIPTOR_HEADER {
     ULONG   Version;
     ULONG   Size;
-} STORAGE_DESCRIPTION_HEADER;
-typedef STORAGE_DESCRIPTION_HEADER  *PSTORAGE_DESCRIPTION_HEADER;
+} STORAGE_DESCRIPTOR_HEADER;
+typedef STORAGE_DESCRIPTOR_HEADER   *PSTORAGE_DESCRIPTOR_HEADER;
 
 /* Storage device descriptor */
 typedef struct _STORAGE_DEVICE_DESCRIPTOR {

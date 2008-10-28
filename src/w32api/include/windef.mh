@@ -12,9 +12,16 @@
 
 :include cpluspro.sp
 
+/* Define the STRICT macro for strict type checking. */
+#ifndef NO_STRICT
+    #ifndef STRICT
+        #define STRICT  1
+    #endif
+#endif
+
 /* Define default Windows version number. */
 #ifndef WINVER
-    #define WINVER  0x0500
+    #define WINVER  0x0400
 #endif
 
 /* Override default compiler behavior for these keywords. */
@@ -23,6 +30,12 @@
 #define pascal  __stdcall
 
 /* Calling conventions */
+#undef pascal
+#undef _pascal
+#undef __pascal
+#define pascal      __stdcall
+#define _pascal     __stdcall
+#define __pascal    __stdcall
 #ifndef CDECL
     #define CDECL   __cdecl
 #endif
@@ -213,12 +226,23 @@ typedef struct tagPOINTS {
 typedef POINTS  *PPOINTS;
 typedef POINTS  *LPPOINTS;
 
+/* File time */
+#define _FILETIME_
+typedef struct _FILETIME {
+    DWORD   dwLowDateTime;
+    DWORD   dwHighDateTime;
+} FILETIME;
+typedef FILETIME    *PFILETIME;
+typedef FILETIME    *LPFILETIME;
+
 /* Minimum and maximum macros */
-#ifndef min
-    #define min( p1, p2 )   (((p1) < (p2)) ? (p1) : (p2))
-#endif
-#ifndef max
-    #define max( p1, p2 )   (((p1) > (p2)) ? (p1) : (p2))
+#ifndef NOMINMAX
+    #ifndef min
+        #define min( p1, p2 )   (((p1) < (p2)) ? (p1) : (p2))
+    #endif
+    #ifndef max
+        #define max( p1, p2 )   (((p1) > (p2)) ? (p1) : (p2))
+    #endif
 #endif
 
 /* Macros for manipulating words and longs */

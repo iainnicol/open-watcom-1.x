@@ -19,6 +19,7 @@
 #include <basetsd.h>
 #include <guiddef.h>
 #include <specstrings.h>
+#include <sdkddkver.h>
 
 :include cpluspro.sp
 
@@ -758,6 +759,10 @@ typedef const UCSCHAR UNALIGNED *PCUUCSCHAR;
 #define STATUS_REG_NAT_CONSUMPTION      0xC00002C9L
 #define STATUS_SXS_EARLY_DEACTIVATION   0xC015000FL
 #define STATUS_SXS_INVALID_DEACTIVATION 0xC0150010L
+
+/* Maximum values */
+#define MAXIMUM_WAIT_OBJECTS    64
+#define MAXIMUM_SUSPEND_COUNT   MAXCHAR
 
 /* Size of the 80387 registers in the x86 context record */
 #ifdef _X86_

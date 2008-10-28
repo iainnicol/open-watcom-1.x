@@ -169,7 +169,11 @@ typedef PHYSICAL_ADDRESS    *PSCSI_PHYSICAL_ADDRESS;
 
 /* Access range */
 typedef struct _ACCESS_RANGE {
+#ifdef _NTSTORPORT_
+    STOR_PHYSICAL_ADDRESS   RangeStart;
+#else
     SCSI_PHYSICAL_ADDRESS   RangeStart;
+#endif
     ULONG                   RangeLength;
     BOOLEAN                 RangeInMemory;
 } ACCESS_RANGE;
@@ -228,6 +232,16 @@ typedef struct _PORT_CONFIGURATION_INFORMATION {
     BOOLEAN         ResetTargetSupported;
     UCHAR           MaximumNumberOfLogicalUnits;
     BOOLEAN         WmiDataProvider;
+#ifdef _NTSTORPORT_
+    STOR_SYNCHRONIZATION_MODEL  SynchronizationModel;
+    PHW_MESSAGE_SIGNALED_INTERRUPT_ROUTINE  HwMSInterruptRoutine;
+    INTERRUPT_SYNCHRONIZATION_MODE  InterruptSynchronizationMode;
+    MEMORY_REGION   DumpRegion;
+    ULONG           RequestedDumpBufferSize;
+    BOOLEAN         VirtualDevice;
+    ULONG           ExtendedFlags1;
+    ULONG           MaxNumberOfIO;
+#endif
 } PORT_CONFIGURATION_INFORMATION;
 typedef PORT_CONFIGURATION_INFORMATION  *PPORT_CONFIGURATION_INFORMATION;
 
@@ -286,6 +300,9 @@ typedef struct _SCSI_REQUEST_BLOCK {
     UCHAR                       Cdb[16];
 } SCSI_REQUEST_BLOCK;
 typedef SCSI_REQUEST_BLOCK  *PSCSI_REQUEST_BLOCK;
+
+/* SCSI request block size */
+#define SCSI_REQUEST_BLOCK_SIZE sizeof( SCSI_REQUEST_BLOCK )
 
 /* SCSI WMI request block */
 typedef struct _SCSI_WMI_REQUEST_BLOCK {
@@ -421,21 +438,31 @@ typedef SCSI_ADAPTER_CONTROL_STATUS (NTAPI *PHW_ADAPTER_CONTROL)( PVOID, SCSI_AD
 
 /* SCSI notification types */
 typedef enum _SCSI_NOTIFICATION_TYPE {
-    RequestComplete         = 0,
-    NextRequest             = 1,
-    NextLuRequest           = 2,
-    ResetDetected           = 3,
-    CallDisableInterrupts   = 4,
-    CallEnableInterrupts    = 5,
-    RequestTimerCall        = 6,
-    BusChangeDetected       = 7,
-    WMIEvent                = 8,
-    WMIReregister           = 9,
-    LinkUp                  = 10,
-    LinkDown                = 11,
-    QueryTickCount          = 12,
-    BufferOverrunDetected   = 13,
-    TraceNotification       = 14
+    RequestComplete             = 0,
+    NextRequest                 = 1,
+    NextLuRequest               = 2,
+    ResetDetected               = 3,
+    CallDisableInterrupts       = 4,
+    CallEnableInterrupts        = 5,
+    RequestTimerCall            = 6,
+    BusChangeDetected           = 7,
+    WMIEvent                    = 8,
+    WMIReregister               = 9,
+    LinkUp                      = 10,
+    LinkDown                    = 11,
+    QueryTickCount              = 12,
+    BufferOverrunDetected       = 13,
+#ifdef _NTSTORPORT_
+    TraceNotification           = 14,
+    GetExtendedFunctionTable    = 15,
+    EnablePassiveInitialization = 0x1000,
+    InitializeDpc               = 0x1001,
+    IssueDpc                    = 0x1002,
+    AcquireSpinLock             = 0x1003,
+    ReleaseSpinLock             = 0x1004
+#else
+    TraceNotification           = 14
+#endif
 } SCSI_NOTIFICATION_TYPE;
 typedef SCSI_NOTIFICATION_TYPE  *PSCSI_NOTIFICATION_TYPE;
 
@@ -458,7 +485,7 @@ typedef struct _HW_INITIALIZATION_DATA {
     BOOLEAN             MapBuffers;
     BOOLEAN             NeedPhysicalAddresses;
     BOOLEAN             TaggedQueuing;
-    BOOLEAN             AutoRequestState;
+    BOOLEAN             AutoRequestSense;
     BOOLEAN             MultipleRequestPerLu;
     BOOLEAN             ReceiveEvent;
     USHORT              VendorIdLength;
@@ -470,6 +497,9 @@ typedef struct _HW_INITIALIZATION_DATA {
     USHORT              DeviceIdLength;
     PVOID               DeviceId;
     PHW_ADAPTER_CONTROL HwAdapterControl;
+#ifdef _NTSTORPORT_
+    PHW_BUILDIO         HwBuildIo;
+#endif
 } HW_INITIALIZATION_DATA;
 typedef HW_INITIALIZATION_DATA  *PHW_INITIALIZATION_DATA;
 
@@ -524,6 +554,11 @@ SCSIPORT_API VOID NTAPI     ScsiPortWriteRegisterUshort( PUSHORT, USHORT );
 /* Functions implemented as macros */
 #define ScsiPortConvertPhysicalAddressToUlong( x )      ((x).LowPart)
 #define ScsiPortConvertPhysicalAddressToULongPtr( x )   ((ULONG_PTR)((x).QuadPart))
+#if DBG
+    #define DebugPrint( x )                             ScsiDebugPrint x
+#else
+    #define DebugPrint( x )
+#endif
 
 :include cplusepi.sp
 

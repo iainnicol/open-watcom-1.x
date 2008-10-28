@@ -1,5 +1,13 @@
 .EXTENSIONS : .rh .mh .lbc .def
 
+base_autodepends    = .autodepend
+ddk_autodepends     = .autodepend
+directx_autodepends = .autodepend
+
+base_distrib_lib = 1
+ddk_distrib_lib = 1
+directx_distrib_lib = 1
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
@@ -8,7 +16,7 @@
 !error root_dir is not set!
 !endif
 
-# This should be including w32api2's own DDK headers
+# This should be including w32api's own DDK headers
 inc_dirs = -I"$(root_dir)/nt" -I"$(root_dir)/nt/ddk"
 
 splice = wsplice -i$(hdr_dir) -i$(root_dir)/include $[@ $^@
@@ -20,6 +28,8 @@ base_headers =       &
         accctrl.h    &
         aclapi.h     &
         aclui.h      &
+        adsprop.h    &
+        amaudio.h    &
         amstream.h   &
         amvideo.h    &
         audevcod.h   &
@@ -27,6 +37,7 @@ base_headers =       &
         aviriff.h    &
         basetsd.h    &
         basetyps.h   &
+        batclass.h   &
         bcrypt.h     &
         bdatypes.h   &
         cderr.h      &
@@ -52,6 +63,12 @@ base_headers =       &
         dimm.h       &
         dlgs.h       &
         docobj.h     &
+        dsadmin.h    &
+        dsclient.h   &
+        dsgetdc.h    &
+        dshow.h      &
+        dsquery.h    &
+        dsrole.h     &
         dvdevcod.h   &
         dvdmedia.h   &
         edevdefs.h   &
@@ -64,7 +81,9 @@ base_headers =       &
         exdispid.h   &
         fltdefs.h    &
         guiddef.h    &
+        htmlhelp.h   &
         httpext.h    &
+        iads.h       &
         icm.h        &
         idispids.h   &
         ifdef.h      &
@@ -137,6 +156,7 @@ base_headers =       &
         nb30.h       &
         ncrypt.h     &
         nddeapi.h    &
+        newdev.h     &
         nldef.h      &
         nspapi.h     &
         ntddndis.h   &
@@ -242,6 +262,7 @@ base_headers =       &
         urlmon.h     &
         userenv.h    &
         usp10.h      &
+        uuids.h      &
         uxtheme.h    &
         vfw.h        &
         vfwmsgs.h    &
@@ -300,40 +321,89 @@ base_headers =       &
         zmouse.h
 
 ddk_headers =        &
+        atm.h        &
         bugcodes.h   &
         cfg.h        &
         cfgmgr32.h   &
         classpnp.h   &
+        d4drvif.h    &
+        d4iface.h    &
+        ddkmapi.h    &
         ddrawint.h   &
+        devioctl.h   &
         drvspecs.h   &
+        hidclass.h   &
+        hidpi.h      &
+        hidsdi.h     &
+        hidusage.h   &
+        kbdmou.h     &
+        mcd.h        &
         mce.h        &
+        miniport.h   &
+        minitape.h   &
+        mountdev.h   &
+        mountmgr.h   &
         ndis.h       &
+        ndisguid.h   &
+        ndistapi.h   &
+        ndiswan.h    &
         netevent.h   &
+        netpnp.h     &
+        ntdd8042.h   &
+        ntddbeep.h   &
         ntddcdrm.h   &
+        ntddcdvd.h   &
+        ntddchgr.h   &
         ntdddisk.h   &
         ntddk.h      &
+        ntddkbd.h    &
+        ntddmou.h    &
+        ntddpar.h    &
+        ntddpcm.h    &
         ntddscsi.h   &
         ntddser.h    &
         ntddstor.h   &
         ntddtape.h   &
+        ntddtdi.h    &
         ntddvdeo.h   &
+        ntddvol.h    &
         ntdef.h      &
         ntifs.h      &
         ntiologc.h   &
         ntnls.h      &
+        ntpoapi.h    &
         ntstatus.h   &
+        parallel.h   &
+        pfhook.h     &
+        poclass.h    &
         srb.h        &
         scsi.h       &
+        scsiscan.h   &
+        scsiwmi.h    &
+        smbus.h      &
+        storport.h   &
+        tdi.h        &
+        tdiinfo.h    &
+        tdikrnl.h    &
+        tdistat.h    &
+        upssvc.h     &
         usb.h        &
         usb100.h     &
         usb200.h     &
+        usbcamdi.h   &
         usbdi.h      &
         usbioctl.h   &
         usbiodef.h   &
+        usbscan.h    &
+        usbuser.h    &
+        video.h      &
+        videoagp.h   &
         wdm.h        &
         wdmguid.h    &
         winddi.h     &
+        wmidata.h    &
         wmilib.h     &
+        ws2san.h     &
         xfilter.h
 
 directx_headers =    &
@@ -346,6 +416,8 @@ directx_headers =    &
         d3drmdef.h   &
         d3drmobj.h   &
         d3dtypes.h   &
+        dinput.h     &
+        dsound.h     &
         dvp.h        &
         dxtrans.h
 
@@ -355,6 +427,7 @@ gl_headers =         &
 
 base_libs =          &
         aclui.lib    &
+        adsiid.lib   &
         advapi32.lib &
         bcrypt.lib   &
         comctl32.lib &
@@ -366,9 +439,12 @@ base_libs =          &
         dflayout.lib &
         dhcpcsvc.lib &
         dnsapi.lib   &
+        dsprop.lib   &
+        dsuiext.lib  &
         faultrep.lib &
         gdi32.lib    &
         glu32.lib    &
+        htmlhelp.lib &
         icm32.lib    &
         icmui.lib    &
         imagehlp.lib &
@@ -391,6 +467,7 @@ base_libs =          &
         ncrypt.lib   &
         nddeapi.lib  &
         netapi32.lib &
+        newdev.lib   &
         normaliz.lib &
         ntdsapi.lib  &
         ntdsbcli.lib &
@@ -450,20 +527,33 @@ base_libs =          &
 directx_libs =       &
         d3d9.lib     &
         d3drm.lib    &
+        dinput.lib   &
+        dinput8.lib  &
+        dsound.lib   &
         dxguid.lib
 
 ddk_libs =           &
+        battc.lib    &
         cfgmgr32.lib &
         classpnp.lib &
         clfs.lib     &
+        dxapi.lib    &
         hal.lib      &
+        hid.lib      &
+        hidparse.lib &
         ks.lib       &
         ksecdd.lib   &
+        mcd.lib      &
         ndis.lib     &
         ntdll.lib    &
         ntoskrnl.lib &
         rtlver.lib   &
         scsiport.lib &
+        storport.lib &
+        tape.lib     &
+        tdi.lib      &
+        usbcamd.lib  &
+        videoprt.lib &
         wdmguid.lib  &
         win32k.lib   &
         wmilib.lib
@@ -473,10 +563,9 @@ vfw32_lbcs =         &
         avifil32.lbc &
         msvfw32.lbc
 
-extra_lib_flags = -p=16
-
 extra_lib_flags_386 = -io -ii
 extra_lib_flags_axp = -ic -ia
+extra_lib_flags_ppc = -ic -ip
 
 additional_cleanup = *.h *.rh
 
@@ -501,55 +590,21 @@ all : $($(proj_name)_$(what_to_build)) .SYMBOLIC
 .lbc.lib:
     $(librarian) $(libflags) @$<
 
+.obj.lib:
+    $(librarian) $(libflags) $<
+
 winsock2.h: winsock.mh
     $(ws2splice)
-
-largeint.lib: largeint.obj
-    %create $^&.lbc
-    @%append $^&.lbc +largeint.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-mfuuid.lib: mfuuid.obj
-    %create $^&.lbc
-    @%append $^&.lbc +mfuuid.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-strmiids.lib: strmiids.obj
-    %create $^&.lbc
-    @%append $^&.lbc +strmiids.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-strquery.lib: strquery.obj
-    %create $^&.lbc
-    @%append $^&.lbc +strquery.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-uuid.lib: uuid.obj
-    %create $^&.lbc
-    @%append $^&.lbc +uuid.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-wbemuuid.lib: wbemuuid.obj
-    %create $^&.lbc
-    @%append $^&.lbc +wbemuuid.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-dxguid.lib: dxguid.obj
-    %create $^&.lbc
-    @%append $^&.lbc +dxguid.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-rtlver.lib: rtlver.obj
-    %create $^&.lbc
-    @%append $^&.lbc +rtlver.obj
-    $(librarian) $(libflags) @$^&.lbc
-
-wdmguid.lib: wdmguid.obj
-    %create $^&.lbc
-    @%append $^&.lbc +wdmguid.obj
-    $(librarian) $(libflags) @$^&.lbc
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%create $@
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
     @%append $@ +vfwuuid.obj
+
+dinput.lbc: dinput.def dinpstat.obj
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +dinpstat.obj
+
+dinput8.lbc: dinput8.def dinpstat.obj
+    $(awk) -v cpu=$(host_cpu) -f $(root_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +dinpstat.obj

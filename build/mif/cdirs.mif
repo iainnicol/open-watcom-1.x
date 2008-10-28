@@ -113,8 +113,8 @@ rcsdll_dir      = $(dev_dir)/rcsdll
 !ifndef ncurses_dir
 ncurses_dir     = $(dev_dir)/ncurses
 !endif
-!ifndef viper_dir
-viper_dir       = $(dev_dir)/viper
+!ifndef ide_dir
+ide_dir         = $(dev_dir)/ide
 !endif
 !ifndef wlink_dir
 wlink_dir       = $(dev_dir)/wl

@@ -209,7 +209,7 @@ typedef NTSTATUS (NTAPI *PCLASS_SHUTDOWN_FLUSH)( PDEVICE_OBJECT, PIRP );
 typedef NTSTATUS (NTAPI *PCLASS_CREATE_CLOSE)( PDEVICE_OBJECT, PIRP );
 typedef NTSTATUS (NTAPI *PCLASS_QUERY_ID)( PDEVICE_OBJECT, BUS_QUERY_ID_TYPE, PUNICODE_STRING );
 typedef NTSTATUS (NTAPI *PCLASS_REMOVE_DEVICE)( PDEVICE_OBJECT, UCHAR );
-typedef NTSTATUS (NTAPI *PCLASS_UNLOAD)( PDRIVER_OBJECT );
+typedef VOID (NTAPI *PCLASS_UNLOAD)( PDRIVER_OBJECT );
 typedef NTSTATUS (NTAPI *PCLASS_QUERY_PNP_CAPABILITIES)( PDEVICE_OBJECT, PDEVICE_CAPABILITIES );
 typedef VOID (NTAPI *PCLASS_TICK)( PDEVICE_OBJECT );
 typedef NTSTATUS (NTAPI *PCLASS_QUERY_WMI_REGINFO_EX)( PDEVICE_OBJECT, ULONG *, PUNICODE_STRING, PUNICODE_STRING );
@@ -637,6 +637,12 @@ SCSIPORT_API NTSTATUS NTAPI ClassWmiFireEvent( PDEVICE_OBJECT, LPGUID, ULONG, UL
     #define ClasspFreeSrb( p1, p2 ) \
         ExFreeToNPagedLookasideList( &((p1)->CommonExtension.SrbLookasideList), p2 )
 #endif
+#undef DebugPrint
+#if DBG
+    #define DebugPrint( x ) ClassDebugPrint x
+#else
+    #define DebugPrint( x )
+#endif
 
 /* Other macros */
 #define ASSERT_FDO( x ) \
@@ -673,7 +679,6 @@ SCSIPORT_API NTSTATUS NTAPI ClassWmiFireEvent( PDEVICE_OBJECT, LPGUID, ULONG, UL
 
 __inline BOOLEAN PORT_ALLOCATED_SENSE( PFUNCTIONAL_DEVICE_EXTENSION p1,
                                        PSCSI_REQUEST_BLOCK p2 )
-/*********************************************************************/
 {
     return( (BOOLEAN)(TEST_FLAG( p2->SrbFlags, SRB_FLAGS_PORT_DRIVER_ALLOCSENSE) &&
         TEST_FLAG( p2->SrbFlags, SRB_FLAGS_FREE_SENSE_BUFFER ) &&
@@ -682,7 +687,6 @@ __inline BOOLEAN PORT_ALLOCATED_SENSE( PFUNCTIONAL_DEVICE_EXTENSION p1,
 
 __inline VOID FREE_PORT_ALLOCATED_SENSE_BUFFER( PFUNCTIONAL_DEVICE_EXTENSION p1,
                                                 PSCSI_REQUEST_BLOCK p2 )
-/******************************************************************************/
 {
     ASSERT( TEST_FLAG( p2->SrbFlags, SRB_FLAGS_PORT_DRIVER_ALLOCSENSE ) );
     ASSERT( TEST_FLAG( p2->SrbFlags, SRB_FLAGS_FREE_SENSE_BUFFER ) );
