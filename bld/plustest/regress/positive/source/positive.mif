@@ -308,6 +308,7 @@ positive_tests = &
     cv02.$(ext) &
     decl01.$(ext) &
     decl02.$(ext) &
+    decl03.$(ext) &
     defarg01.$(ext) &
     defarg02.$(ext) &
     defarg03.$(ext) &
@@ -614,6 +615,7 @@ positive_tests = &
     ns42.$(ext) &
     ns43.$(ext) &
     ns44.$(ext) &
+    ns45.$(ext) &
     offset01.$(ext) &
     opeq01.$(ext) &
     opeq02.$(ext) &

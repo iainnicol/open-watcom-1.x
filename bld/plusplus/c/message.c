@@ -207,11 +207,7 @@ static SYMBOL msgBuild(         // BUILD ERROR MESSAGE
 }
 
 
-#ifdef IDECALL /* Temp fix to build across V1/V2 branches */
-static IDEBool IDECALL idePrt   // PRINT FOR IDE
-#else
 static IDEBool __stdcall idePrt // PRINT FOR IDE
-#endif
     ( IDECBHdl hdl              // - handle
     , IDEMsgInfo *info )        // - information
 {
@@ -344,7 +340,6 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     prt_locn = err_locn;
     ++reserveDepth;
     VbufInit( &buffer );
-    VStrNull( &buffer );
     sym = msgBuild( msgnum, args, &buffer );
     switch( severity ) {
       case IDEMSGSEV_ERROR :
@@ -391,7 +386,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     }
     ideDisplay( severity
               , msgnum
-              , buffer.buf
+              , VbufString( &buffer )
               , msg_locn );
     if( context_changed
      && ! CompFlags.ew_switch_used
@@ -444,12 +439,11 @@ void MsgDisplayLineArgs         // DISPLAY A BARE LINE, FROM ARGUMENTS
     VBUF buffer;                // - buffer
 
     VbufInit( &buffer );
-    VStrNull( &buffer );
     va_start( args, seg );
     for( str = seg; str != NULL; str = va_arg( args, char* ) ) {
-        VStrConcStr( &buffer, str );
+        VbufConcStr( &buffer, str );
     }
-    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, buffer.buf, NULL );
+    ideDisplay( IDEMSGSEV_NOTE_MSG, 0, VbufString( &buffer ), NULL );
     va_end( args );
     VbufFree( &buffer );
 }
@@ -500,7 +494,7 @@ static void prtMsg(             // PRINT A MESSAGE
 }
 
 
-static void errFileErase(       // ERASE ERROR FILE
+static void fileErase(          // ERASE ERROR FILE
     const char *name )          // - file name
 {
     if( name != NULL ) {
@@ -527,23 +521,29 @@ static void reserveRelease( void )
 }
 
 
-void ErrFileOpen(               // OPEN ERROR FILE
-    void )
+void ErrFileOpen( void )        // OPEN ERROR FILE
 {
     char *buf;                  // - file name
 
-    if( CompFlags.errfile_opened ) return;
-    if( SrcFName != NULL ) {
+    if( !CompFlags.errfile_opened && SrcFName != NULL ) {
         // we want to keep retrying until we get a source file name
         CompFlags.errfile_opened = TRUE;
         buf = IoSuppOutFileName( OFT_ERR );
         if( buf != NULL ) {
-            errFileErase( buf );
+            fileErase( buf );
             err_file = SrcFileFOpen( buf, SFO_WRITE_TEXT );
             if( err_file != NULL ) {
                 IoSuppSetBuffering( err_file, 128 );
             }
         }
+    }
+}
+
+
+void ErrFileErase( void )       // ERASE ERROR FILE
+{
+    if( err_file == NULL ) {
+        fileErase( IoSuppOutFileName( OFT_ERR ) );
     }
 }
 
@@ -943,7 +943,7 @@ static void openDefFile( void )
 
     if( SrcFName != NULL ) {
         def_fname = IoSuppOutFileName( OFT_DEF );
-        errFileErase( def_fname );
+        fileErase( def_fname );
         DefFile = SrcFileFOpen( def_fname, SFO_WRITE_TEXT );
         if( DefFile != NULL ) {
             IoSuppSetBuffering( DefFile, 128 );
@@ -978,7 +978,7 @@ void DefAddPrototype(           // ADD PROTOTYPE FOR SYMBOL TO .DEF FILE
            , "//#line \"%s\" %u\n"
            , fileName( fn->locn->tl.src_file )
            , fn->locn->tl.line );
-    fprintf( DefFile, "extern %s;\n", proto.buf );
+    fprintf( DefFile, "extern %s;\n", VbufString( &proto ) );
     VbufFree( &proto );
 }
 
@@ -1011,7 +1011,7 @@ static void errFileFini(        // CLOSE ERROR FILE
     defn = defn;
     if( IoSuppCloseFile( &err_file ) ) {
         if( ! CompFlags.errfile_written ) {
-            errFileErase( IoSuppOutFileName( OFT_ERR ) );
+            fileErase( IoSuppOutFileName( OFT_ERR ) );
         }
     }
     CMemFree( ErrorFileName );

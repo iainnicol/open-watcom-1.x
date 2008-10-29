@@ -225,6 +225,7 @@ static DECL_INFO *makeDeclInfo( PTREE id )
     dinfo->has_dspec = FALSE;
     dinfo->has_defarg = FALSE;
     dinfo->explicit_parms = FALSE;
+    dinfo->free = FALSE;
     return( dinfo );
 }
 
@@ -251,6 +252,15 @@ static CLASSINFO *newINFO( void )
     info->refno = NULL_CGREFNO;
     info->dbg_no_vbases = 0;
     info->class_mod = NULL;
+    /*
+     *  Carl 12-Aug-2008.
+     *  Added a copy of the class modifiers to the CLASS_INFO structure so that
+     *  type modifiers can be added and retained from a class declaration.
+     */
+    info->fn_pragma = NULL;
+    info->fn_flags = TF1_NULL;
+    info->mod_flags = TF1_NULL;
+
     info->last_vfn = 0;
     info->last_vbase = 0;
     info->vf_offset = 0;
@@ -8609,9 +8619,28 @@ CLASSINFO *ClassInfoMapIndex( CLASSINFO *cinfo )
     return( CarveMapIndex( carveCLASSINFO, cinfo ) );
 }
 
+DECL_INFO *DeclInfoGetIndex( DECL_INFO *dinfo )
+/**********************************************/
+{
+    return( CarveGetIndex( carveDECL_INFO, dinfo ) );
+}
+
+DECL_INFO *DeclInfoMapIndex( DECL_INFO *dinfo )
+/**********************************************/
+{
+    return( CarveMapIndex( carveDECL_INFO, dinfo ) );
+}
+
 static void markFreeClassInfo( void *p )
 {
     CLASSINFO *s = p;
+
+    s->free = TRUE;
+}
+
+static void markFreeDeclInfo( void *p )
+{
+    DECL_INFO *s = p;
 
     s->free = TRUE;
 }
@@ -8903,6 +8932,7 @@ static void saveClassInfo( void *e, carve_walk_base *d )
     BASE_CLASS *save_bases;
     char *save_name;
     TYPE save_class_mod;
+    AUX_INFO *save_pragma;
     FRIEND *friend;
     signed char friend_is_type;
     SYMBOL friend_sym;
@@ -8920,6 +8950,8 @@ static void saveClassInfo( void *e, carve_walk_base *d )
     s->cdopt_cache = NULL;
     save_class_mod = s->class_mod;
     s->class_mod = TypeGetIndex( save_class_mod );
+    save_pragma = s->fn_pragma;
+    s->fn_pragma_idx = PragmaGetIndex( save_pragma );
     PCHWriteCVIndex( d->index );
     PCHWrite( s, sizeof( *s ) );
     RingIterBeg( s->friends, friend ) {
@@ -8935,10 +8967,88 @@ static void saveClassInfo( void *e, carve_walk_base *d )
     } RingIterEnd( friend )
     friend_is_type = -1;
     PCHWrite( &friend_is_type, sizeof( friend_is_type ) );
+    s->fn_pragma = save_pragma;
     s->class_mod = save_class_mod;
     s->cdopt_cache = save_cdopt_cache;
     s->name = save_name;
     s->bases = save_bases;
+}
+
+static void saveDeclInfo( void *e, carve_walk_base *d )
+{
+    DECL_INFO *s = e;
+    DECL_INFO *save_next;
+    DECL_INFO *save_parms;
+    PTREE save_id;
+    SCOPE save_scope;
+    SCOPE save_friend_scope;
+    SYMBOL save_sym;
+    SYMBOL save_generic_sym;
+    SYMBOL save_proto_sym;
+    TYPE save_list;
+    TYPE save_type;
+    PTREE save_defarg_expr;
+    REWRITE *save_body;
+    REWRITE *save_mem_init;
+    REWRITE *save_defarg_rewrite;
+    char *save_name;
+    SRCFILE save_locn_src_file;
+
+    if( s->free ) {
+        return;
+    }
+    save_next = s->next;
+    s->next = DeclInfoGetIndex( save_next );
+    save_parms = s->parms;
+    s->parms = DeclInfoGetIndex( save_parms );
+    save_id = s->id;
+    s->id = PTreeGetIndex( save_id );
+    save_scope = s->scope;
+    s->scope = ScopeGetIndex( save_scope );
+    save_friend_scope = s->friend_scope;
+    s->friend_scope = ScopeGetIndex( save_friend_scope );
+    save_sym = s->sym;
+    s->sym = SymbolGetIndex( save_sym );
+    save_generic_sym = s->generic_sym;
+    s->generic_sym = SymbolGetIndex( save_generic_sym );
+    save_proto_sym = s->proto_sym;
+    s->proto_sym = SymbolGetIndex( save_proto_sym );
+    save_list = s->list;
+    s->list = TypeGetIndex( save_list );
+    save_type = s->type;
+    s->type = TypeGetIndex( save_type );
+    save_defarg_expr = s->defarg_expr;
+    s->defarg_expr = PTreeGetIndex( save_defarg_expr );
+    save_body = s->body;
+    s->body = RewriteGetIndex( save_body );
+    save_mem_init = s->mem_init;
+    s->mem_init = RewriteGetIndex( save_mem_init );
+    save_defarg_rewrite = s->defarg_rewrite;
+    s->defarg_rewrite = RewriteGetIndex( save_defarg_rewrite );
+    save_name = s->name;
+    s->name = NameGetIndex( save_name );
+    save_locn_src_file = s->init_locn.src_file;
+    s->init_locn.src_file = SrcFileGetIndex( save_locn_src_file );
+
+    PCHWriteCVIndex( d->index );
+    PCHWrite( s, sizeof( *s ) );
+
+    s->next = save_next;
+    s->parms = save_parms;
+    s->id = save_id;
+    s->scope = save_scope;
+    s->friend_scope = save_friend_scope;
+    s->sym = save_sym;
+    s->generic_sym = save_generic_sym;
+    s->proto_sym = save_proto_sym;
+    s->list = save_list;
+    s->type = save_type;
+    s->defarg_expr = save_defarg_expr;
+    s->body = save_body;
+    s->mem_init = save_mem_init;
+    s->defarg_rewrite = save_defarg_rewrite;
+    s->name = save_name;
+    s->init_locn.src_file = save_locn_src_file;
 }
 
 static void writeType( TYPE t )
@@ -9014,6 +9124,9 @@ pch_status PCHWriteTypes( void )
     PCHWriteCVIndex( terminator );
     CarveWalkAllFree( carveCLASSINFO, markFreeClassInfo );
     CarveWalkAll( carveCLASSINFO, saveClassInfo, &data );
+    PCHWriteCVIndex( terminator );
+    CarveWalkAllFree( carveDECL_INFO, markFreeDeclInfo );
+    CarveWalkAll( carveDECL_INFO, saveDeclInfo, &data );
     PCHWriteCVIndex( terminator );
     CMemFree( type_data.translate );
     return( PCHCB_OK );
@@ -9113,6 +9226,7 @@ static void readClassInfos( void )
         ci->name = NameMapIndex( ci->name );
         ci->cdopt_cache = NULL;
         ci->class_mod = TypeMapIndex( ci->class_mod );
+        ci->fn_pragma = PragmaMapIndex( ci->fn_pragma_idx );
         ci->friends = NULL;
         for(;;) {
             PCHRead( &friend_is_type, sizeof( friend_is_type ) );
@@ -9127,6 +9241,38 @@ static void readClassInfos( void )
                 ScopeRawAddFriendSym( ci, sym );
             }
         }
+    }
+}
+
+static void readDeclInfos( void )
+{
+    cv_index i;
+    DECL_INFO *dinfo;
+    auto cvinit_t data;
+
+    CarveInitStart( carveDECL_INFO, &data );
+    for(;;) {
+        PCHLocateCVIndex( i );
+        if( i == CARVE_NULL_INDEX ) break;
+        dinfo = CarveInitElement( &data, i );
+        PCHRead( dinfo, sizeof( *dinfo ) );
+
+        dinfo->next = DeclInfoMapIndex( dinfo->next );
+        dinfo->parms = DeclInfoMapIndex( dinfo->parms );
+        dinfo->id = PTreeMapIndex( dinfo->id );
+        dinfo->scope = ScopeMapIndex( dinfo->scope );
+        dinfo->friend_scope = ScopeMapIndex( dinfo->friend_scope );
+        dinfo->sym = SymbolMapIndex( dinfo->sym );
+        dinfo->generic_sym = SymbolMapIndex( dinfo->generic_sym );
+        dinfo->proto_sym = SymbolMapIndex( dinfo->proto_sym );
+        dinfo->list = TypeMapIndex( dinfo->list );
+        dinfo->type = TypeMapIndex( dinfo->type );
+        dinfo->defarg_expr = PTreeMapIndex( dinfo->defarg_expr );
+        dinfo->body = RewriteMapIndex( dinfo->body );
+        dinfo->mem_init = RewriteMapIndex( dinfo->mem_init );
+        dinfo->defarg_rewrite = RewriteMapIndex( dinfo->defarg_rewrite );
+        dinfo->name = NameMapIndex( dinfo->name );
+        dinfo->init_locn.src_file = SrcFileMapIndex( dinfo->init_locn.src_file );
     }
 }
 
@@ -9206,6 +9352,7 @@ pch_status PCHReadTypes( void )
     }
     readTypes( &type_data );
     readClassInfos();
+    readDeclInfos();
     CMemFreePtr( &translate );
     return( PCHCB_OK );
 }
@@ -9219,6 +9366,8 @@ pch_status PCHInitTypes( boolean writing )
         PCHWriteCVIndex( n );
         n = CarveLastValidIndex( carveCLASSINFO );
         PCHWriteCVIndex( n );
+        n = CarveLastValidIndex( carveDECL_INFO );
+        PCHWriteCVIndex( n );
     } else {
         carveTYPE = CarveRestart( carveTYPE );
         n = PCHReadCVIndex();
@@ -9226,6 +9375,9 @@ pch_status PCHInitTypes( boolean writing )
         carveCLASSINFO = CarveRestart( carveCLASSINFO );
         n = PCHReadCVIndex();
         CarveMapOptimize( carveCLASSINFO, n );
+        carveDECL_INFO = CarveRestart( carveDECL_INFO );
+        n = PCHReadCVIndex();
+        CarveMapOptimize( carveDECL_INFO, n );
     }
     return( PCHCB_OK );
 }
@@ -9235,6 +9387,7 @@ pch_status PCHFiniTypes( boolean writing )
     if( ! writing ) {
         CarveMapUnoptimize( carveTYPE );
         CarveMapUnoptimize( carveCLASSINFO );
+        CarveMapUnoptimize( carveDECL_INFO );
     }
     return( PCHCB_OK );
 }
@@ -9283,129 +9436,4 @@ pch_status PCHRelocTypes( char *block, size_t size )
     CarveWalkAll( carveTYPE, relocType, &type_data.base );
     DbgAssert( type_data.amount == 0 );
     return( PCHCB_OK );
-}
-
-void PCHWriteDeclInfo( DECL_INFO *dinfo )
-{
-    DECL_INFO *curr_dinfo;
-    DECL_INFO *save_next;
-    DECL_INFO *save_parms;
-    PTREE save_id;
-    SCOPE save_scope;
-    SCOPE save_friend_scope;
-    SYMBOL save_sym;
-    SYMBOL save_generic_sym;
-    SYMBOL save_proto_sym;
-    TYPE save_list;
-    TYPE save_type;
-    PTREE save_defarg_expr;
-    REWRITE *save_body;
-    REWRITE *save_mem_init;
-    REWRITE *save_defarg_rewrite;
-    char *save_name;
-    SRCFILE save_locn_src_file;
-
-    RingIterBeg( dinfo, curr_dinfo ) {
-        save_next = curr_dinfo->next;
-        curr_dinfo->next =
-            (void *) ( ( save_next == NULL ) ? 0 :
-                       ( curr_dinfo == dinfo ) ? -1 : 1 );
-        save_parms = curr_dinfo->parms;
-        curr_dinfo->parms =
-            (void *) ( save_parms != NULL );
-        save_id = curr_dinfo->id;
-        curr_dinfo->id = PTreeGetIndex( save_id );
-        save_scope = curr_dinfo->scope;
-        curr_dinfo->scope = ScopeGetIndex( save_scope );
-        save_friend_scope = curr_dinfo->friend_scope;
-        curr_dinfo->friend_scope = ScopeGetIndex( save_friend_scope );
-        save_sym = curr_dinfo->sym;
-        curr_dinfo->sym = SymbolGetIndex( save_sym );
-        save_generic_sym = curr_dinfo->generic_sym;
-        curr_dinfo->generic_sym = SymbolGetIndex( save_generic_sym );
-        save_proto_sym = curr_dinfo->proto_sym;
-        curr_dinfo->proto_sym = SymbolGetIndex( save_proto_sym );
-        save_list = curr_dinfo->list;
-        curr_dinfo->list = TypeGetIndex( save_list );
-        save_type = curr_dinfo->type;
-        curr_dinfo->type = TypeGetIndex( save_type );
-        save_defarg_expr = curr_dinfo->defarg_expr;
-        curr_dinfo->defarg_expr = PTreeGetIndex( save_defarg_expr );
-        save_body = curr_dinfo->body;
-        curr_dinfo->body = RewriteGetIndex( save_body );
-        save_mem_init = curr_dinfo->mem_init;
-        curr_dinfo->mem_init = RewriteGetIndex( save_mem_init );
-        save_defarg_rewrite = curr_dinfo->defarg_rewrite;
-        curr_dinfo->defarg_rewrite = RewriteGetIndex( save_defarg_rewrite );
-        save_name = curr_dinfo->name;
-        curr_dinfo->name = NameGetIndex( save_name );
-        save_locn_src_file = curr_dinfo->init_locn.src_file;
-        curr_dinfo->init_locn.src_file = SrcFileGetIndex( save_locn_src_file );
-
-        PCHWrite( curr_dinfo, sizeof( *curr_dinfo ) );
-
-        curr_dinfo->next = save_next;
-        curr_dinfo->parms = save_parms;
-        curr_dinfo->id = save_id;
-        curr_dinfo->scope = save_scope;
-        curr_dinfo->friend_scope = save_friend_scope;
-        curr_dinfo->sym = save_sym;
-        curr_dinfo->generic_sym = save_generic_sym;
-        curr_dinfo->proto_sym = save_proto_sym;
-        curr_dinfo->list = save_list;
-        curr_dinfo->type = save_type;
-        curr_dinfo->defarg_expr = save_defarg_expr;
-        curr_dinfo->body = save_body;
-        curr_dinfo->mem_init = save_mem_init;
-        curr_dinfo->defarg_rewrite = save_defarg_rewrite;
-        curr_dinfo->name = save_name;
-        curr_dinfo->init_locn.src_file = save_locn_src_file;
-
-        if( curr_dinfo->parms != NULL ) {
-            PCHWriteDeclInfo( curr_dinfo->parms );
-        }
-
-    } RingIterEnd( curr_dinfo )
-}
-
-DECL_INFO *PCHReadDeclInfo()
-{
-    DECL_INFO *dinfo;
-    DECL_INFO *curr_dinfo;
-    DECL_INFO **prev_dinfo;
-
-    dinfo = NULL;
-    prev_dinfo = &dinfo;
-    do {
-        curr_dinfo = CarveAlloc( carveDECL_INFO );
-        *prev_dinfo = curr_dinfo;
-        prev_dinfo = &curr_dinfo->next;
-        
-        PCHRead( curr_dinfo, sizeof( *curr_dinfo ) );
-
-        curr_dinfo->id = PTreeMapIndex( curr_dinfo->id );
-        curr_dinfo->scope = ScopeMapIndex( curr_dinfo->scope );
-        curr_dinfo->friend_scope = ScopeMapIndex( curr_dinfo->friend_scope );
-        curr_dinfo->sym = SymbolMapIndex( curr_dinfo->sym );
-        curr_dinfo->generic_sym = SymbolMapIndex( curr_dinfo->generic_sym );
-        curr_dinfo->proto_sym = SymbolMapIndex( curr_dinfo->proto_sym );
-        curr_dinfo->list = TypeMapIndex( curr_dinfo->list );
-        curr_dinfo->type = TypeMapIndex( curr_dinfo->type );
-        curr_dinfo->defarg_expr = PTreeMapIndex( curr_dinfo->defarg_expr );
-        curr_dinfo->body = RewriteMapIndex( curr_dinfo->body );
-        curr_dinfo->mem_init = RewriteMapIndex( curr_dinfo->mem_init );
-        curr_dinfo->defarg_rewrite = RewriteMapIndex( curr_dinfo->defarg_rewrite );
-        curr_dinfo->name = NameMapIndex( curr_dinfo->name );
-        curr_dinfo->init_locn.src_file = SrcFileMapIndex( curr_dinfo->init_locn.src_file );
-
-        if( curr_dinfo->parms != NULL ) {
-            curr_dinfo->parms = PCHReadDeclInfo();
-        }
-    } while( curr_dinfo->next == (void *) 1 );
-
-    if( *prev_dinfo == (void *) -1 ) {
-        *prev_dinfo = dinfo;
-    }
-
-    return dinfo;
 }

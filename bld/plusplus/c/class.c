@@ -259,6 +259,7 @@ void ClassInitState( type_flag class_variant, CLASS_INIT extra, TYPE class_mod_l
     data->sym = NULL;
     data->type = NULL;
     data->scope = NULL;
+    data->enclosing = NULL;
     data->info = NULL;
     data->bases = NULL;
     data->base_vbptr = NULL;
@@ -702,6 +703,19 @@ static void newClassType( CLASS_DATA *data, CLASS_DECL declaration )
         info = class_type->u.c.info;
         data->info = info;
         data->scope = class_type->u.c.scope;
+        
+        /*
+         * A declspec modifier has been applied to the class
+         * definition/declaration. Store the information into the
+         * CLASS_INFO for subsequent use and checking
+         */
+        if( data->member_mod_adjust ) {
+            info->class_mod = data->class_mod_type;
+            info->fn_pragma = data->fn_pragma;
+            info->fn_flags = data->fn_flags;    
+            info->mod_flags = data->mod_flags;
+        }
+        
         if( declaration == CLASS_DEFINITION ) {
             if( ScopeType( data->scope->enclosing, SCOPE_TEMPLATE_INST ) ) {
                 TYPE unbound_class =
@@ -727,6 +741,28 @@ static void setClassType( CLASS_DATA *data, TYPE type, CLASS_DECL declaration )
     info = class_type->u.c.info;
     data->info = info;
     data->scope = class_type->u.c.scope;
+    
+    /*
+     * A declspec modifier has been applied to the class
+     * definition/declaration. If the definition is not consistent
+     * with any previous declarations, then generate an error
+     */
+    if( info->class_mod != NULL ) {
+        if( data->member_mod_adjust ) {
+            if( ! IdenticalClassModifiers( info->class_mod,
+                                           data->class_mod_type ) ) {
+                CErr1( ERR_MULTIPLE_PRAGMA_MODS );
+            }
+        } else {
+            data->class_mod_type = info->class_mod;
+            data->fn_pragma = info->fn_pragma;
+            data->fn_flags = info->fn_flags;
+            data->mod_flags = info->mod_flags;
+        }
+
+        data->member_mod_adjust = TRUE;
+    }
+
     if( declaration == CLASS_DEFINITION ) {
         classOpen( data, info );
     }
@@ -755,8 +791,7 @@ static void injectClassName( char *name, TYPE type, TOKEN_LOCN *locn )
 {
     SCOPE scope = type->u.c.scope;
     SYMBOL sym = AllocSymbol();
-    SYMBOL_NAME sym_name =
-        AllocSymbolName( name, scope->enclosing );
+    SYMBOL_NAME sym_name = AllocSymbolName( name, scope->enclosing );
 
     sym->id = SC_TYPEDEF;
     sym->sym_type = type;
@@ -985,7 +1020,6 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
                             if( enclosing_data != NULL ) {
                                 if( !scoped_id
                                  && ( name == enclosing_data->name ) ) {
-                                    // TODO
                                     newClassType( data, declaration );
                                     newClassSym( data, declaration, id );
                                     PTreeFreeSubtrees( id );
@@ -1105,19 +1139,17 @@ void ClassStart( void )
     CLASS_DATA *data;
     CLASSINFO *info;
     TYPE type;
+    SCOPE scope;
 
     data = classDataStack;
     data->start = data->offset;
     type = data->type;
     info = type->u.c.info;
     info->index = nextClassIndex();
-#if 0
-    /* TODO */
-    if( data->scope->enclosing != GetCurrScope() ) {
-        CFatal( "class open is out of synch" );
-    }
-#endif
-    ScopeOpen( data->scope );
+    scope = data->scope;
+    data->enclosing = GetCurrScope();
+    SetCurrScope( scope );
+    BrinfOpenScope( GetCurrScope() );
 }
 
 static void changeToInlineFunction( DECL_INFO *dinfo )
@@ -1743,6 +1775,7 @@ DECL_SPEC *ClassEnd( void )
     checkClassStatus( data );
     warnAboutHiding( data );
     ScopeEnd( SCOPE_CLASS );
+    SetCurrScope( data->enclosing );
     if( data->specific_defn ) {
         TemplateSpecificDefnEnd();
     }
@@ -3070,10 +3103,9 @@ void ClassMakeUniqueName( TYPE class_type, char *signature )
         VBUF big_buff;
 
         VbufInit( &big_buff );
-        VStrNull( &big_buff );
-        VStrConcStr( &big_buff, buff );
-        VStrConcStr( &big_buff, signature );
-        info->name = NameCreateLen( big_buff.buf, VStrLen( &big_buff ) );
+        VbufConcStr( &big_buff, buff );
+        VbufConcStr( &big_buff, signature );
+        info->name = NameCreateLen( VbufString( &big_buff ), VbufLen( &big_buff ) );
         VbufFree( &big_buff );
     } else {
         info->name = NameCreateNoLen( buff );

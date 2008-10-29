@@ -45,7 +45,7 @@
 extern void DoSpawn( when_time );
 extern void SetupTitle();
 extern void DeleteObsoleteFiles();
-extern void ResetDiskInfo(void);
+extern void ResetDiskInfo( void );
 
 int IsPatch = 0;
 extern int SkipDialogs;
@@ -54,7 +54,8 @@ extern vhandle UnInstall;
 typedef enum {
     Stack_Push,
     Stack_Pop,
-    Stack_IsEmpty } DIR_PARAM_STACK_OPS;
+    Stack_IsEmpty
+} DIR_PARAM_STACK_OPS;
 
 
 static bool SetupOperations()
@@ -83,6 +84,9 @@ static bool SetupOperations()
         }
     }
 #endif
+
+    DeleteObsoleteFiles();
+
     // Copy the files
     if( GetVariableIntVal( "DoCopyFiles" ) == 1 ) {
         if( !CopyAllFiles() ) {
@@ -97,6 +101,23 @@ static bool SetupOperations()
             return( FALSE );
         }
     }
+
+    // Perform file associations
+    if( GetVariableIntVal( "DoFileAssociations" ) == 1 ) {
+        if( !ModifyAssociations( uninstall ) ) {
+            return( FALSE );
+        }
+    }
+
+    // Generate batch file
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+    if( GetVariableIntVal( "GenerateBatchFile" ) == 1 ) {
+        if( !GenerateBatchFile( uninstall ) ) {
+            return( FALSE );
+        }
+    }
+#endif
+
     // Create program group (folder)
     if( GetVariableIntVal( "DoCreateIcons" ) == 1 ||
         GetVariableIntVal( "DoCreateHelpIcons" ) == 1 ) {
@@ -104,6 +125,7 @@ static bool SetupOperations()
             return( FALSE );
         }
     }
+
     DoSpawn( WHEN_END );
 
     return( TRUE );
@@ -133,9 +155,9 @@ bool CheckForSetup32( int argc, char **argv )
         _makepath( new_exe, drive, path, "SETUP32", ext );
         mem_needed = strlen( new_exe );
         for( i = 1; i < argc; i++ ) {
-            mem_needed += strlen( argv[ i ] ); // command line arguments
+            mem_needed += strlen( argv[i] ); // command line arguments
         }
-        mem_needed += i; //spaces between arguments + terminating null
+        mem_needed += i; // spaces between arguments + terminating null
         buff = malloc( mem_needed );
         if( buff == NULL ) {
             return( FALSE );
@@ -144,7 +166,7 @@ bool CheckForSetup32( int argc, char **argv )
         if( access( buff, F_OK ) == 0 ) {
             for( i = 1; i < argc; i++ ) {
                 strcat( buff, " " );
-                strcat( buff, argv[ i ] );
+                strcat( buff, argv[i] );
             }
             WinExec( buff, SW_SHOW );
             return( TRUE );
@@ -164,24 +186,24 @@ static bool CheckWin95Uninstall( int argc, char **argv )
 // the WININIT program.
 
     int                 len;
-    char                buff[ 2 * _MAX_PATH ];
-    char                drive[ _MAX_DRIVE ];
-    char                dir[ _MAX_DIR ];
-    char                name[ _MAX_FNAME ];
+    char                buff[2 * _MAX_PATH];
+    char                drive[_MAX_DRIVE];
+    char                dir[_MAX_DIR];
+    char                name[_MAX_FNAME];
 
     if( argc > 1 && stricmp( argv[ 1 ], "-u" ) == 0 ) {
         // copy setup program to unsetup.exe in system directory
         GetWindowsDirectory( buff, _MAX_PATH );
         strcat( buff, "\\UnSetup.exe" );
-        if( DoCopyFile( argv[ 0 ], buff, FALSE ) == CFE_NOERROR ) {
+        if( DoCopyFile( argv[0], buff, FALSE ) == CFE_NOERROR ) {
             // add entry to wininit.ini to erase unsetup.exe
             WritePrivateProfileString( "rename", "NUL", buff, "wininit.ini" );
             // setup.inf should be in same directory as setup.exe
             len = strlen( buff );
-            buff[ len ] = ' ';
-            buff[ len + 1 ] = '\"';
-            _splitpath( argv[ 0 ], drive, dir, name, NULL );
-            _makepath( &buff[ len + 2 ], drive, dir, name, "inf" );
+            buff[len] = ' ';
+            buff[len + 1] = '\"';
+            _splitpath( argv[0], drive, dir, name, NULL );
+            _makepath( &buff[len + 2], drive, dir, name, "inf" );
             strcat( buff, "\"" );
             // execute unsetup
             WinExec( buff, SW_SHOW );
@@ -193,15 +215,13 @@ static bool CheckWin95Uninstall( int argc, char **argv )
 #endif
 
 
-bool DirParamStack( char                **inf_name,
-                    char                **tmp_path,
-                    DIR_PARAM_STACK_OPS function)
-/*************************************************/
+bool DirParamStack( char **inf_name, char **tmp_path, DIR_PARAM_STACK_OPS function)
+/*********************************************************************************/
 {
     // Not really a stack; stores only one "node"
 
-    static char *       old_inf_name =                  NULL;
-    static char *       old_tmp_path =                  NULL;
+    static char *       old_inf_name = NULL;
+    static char *       old_tmp_path = NULL;
 
     if( function == Stack_Push ) {
         // Push values on "stack"
@@ -210,14 +230,14 @@ bool DirParamStack( char                **inf_name,
 
         *inf_name = GUIMemAlloc( _MAX_PATH );
         if( *inf_name == NULL ) {
-            return FALSE;
+            return( FALSE );
         }
         *tmp_path = GUIMemAlloc( _MAX_PATH );
         if( *tmp_path == NULL ) {
             GUIMemFree( *inf_name );
-            return FALSE;
+            return( FALSE );
         }
-        return TRUE;
+        return( TRUE );
     } else if( function == Stack_Pop ) {
         // Pop
         GUIMemFree( *inf_name );
@@ -226,7 +246,7 @@ bool DirParamStack( char                **inf_name,
         *tmp_path = old_tmp_path;
         old_inf_name = NULL;
         old_tmp_path = NULL;
-        return TRUE;
+        return( TRUE );
     } else {
         // IsEmpty
         return( old_inf_name == NULL );
@@ -236,7 +256,7 @@ bool DirParamStack( char                **inf_name,
 extern bool DoMainLoop( dlg_state * state )
 /*****************************************/
 {
-    char                *diag_list[MAX_DIAGS+1];
+    char                *diag_list[MAX_DIAGS + 1];
     char                *diags;
     char                *dstdir;
     int                 dstlen;
@@ -250,7 +270,9 @@ extern bool DoMainLoop( dlg_state * state )
 
     // display initial dialog
     diags = GetVariableStrVal( "DialogOrder" );
-    if( stricmp( diags, "" ) == 0 ) diags = "Welcome";
+    if( stricmp( diags, "" ) == 0 ) {
+        diags = "Welcome";
+    }
     i = 0;
     for( ;; ) {
         diag_list[i] = diags;
@@ -260,7 +282,7 @@ extern bool DoMainLoop( dlg_state * state )
         diags = next + 1;
         ++i;
     }
-    diag_list[i+1] = NULL;
+    diag_list[i + 1] = NULL;
     /* process installation dialogs */
 
     i = 0;
@@ -290,13 +312,13 @@ extern bool DoMainLoop( dlg_state * state )
                 dstdir = GetVariableStrVal( "DstDir" );
                 dstlen = strlen( dstdir );
                 if( dstlen != 0 &&
-                  ( dstdir[dstlen-1] == '\\' || dstdir[dstlen-1] == '/' ) ) {
+                    (dstdir[dstlen - 1] == '\\' || dstdir[dstlen - 1] == '/') ) {
                     strcpy( newdst, dstdir );
                     if( dstlen == 3 && dstdir[1] == ':' ) {
                         newdst[dstlen] = '.';
-                        newdst[dstlen+1] = '\0';
+                        newdst[dstlen + 1] = '\0';
                     } else {
-                        newdst[dstlen-1] = '\0';
+                        newdst[dstlen - 1] = '\0';
                     }
                     SetVariableByName( "DstDir", newdst );
                 }
@@ -347,7 +369,7 @@ extern bool DoMainLoop( dlg_state * state )
         }
     } /* for */
 
-    return ret;
+    return( ret );
 }
 
 extern void GUImain( void )
@@ -361,7 +383,7 @@ extern void GUImain( void )
     char                *tmp_path;
     char                *arc_name;
     char                *new_inf;
-    char                current_dir[ _MAX_PATH ];
+    char                current_dir[_MAX_PATH];
     bool                ret = FALSE;
     dlg_state           state;
 
@@ -445,3 +467,4 @@ extern void GUImain( void )
     FreeDirParams( &inf_name, &tmp_path );
     CloseDownProgram();
 }
+

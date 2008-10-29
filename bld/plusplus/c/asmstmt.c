@@ -74,7 +74,7 @@ static void ensureBufferReflectsCurToken( void )
                 break;
             case TYP_ULONG64:
             case TYP_SLONG64:
-                sti64cpy( Buffer, Constant64.u._64[0] );
+                sti64cpy( Buffer, Constant64 );
                 break;
             }
         }
@@ -119,7 +119,7 @@ static void getAsmLine( VBUF *buff )
         return;
     /* reserve at least MAX_INSTR_SIZE bytes in the buffer */
     VbufReqd( buff, ((AsmCodeAddress+MAX_INSTR_SIZE) + (MAX_INSTR_SIZE-1)) & ~(MAX_INSTR_SIZE-1) );
-    AsmCodeBuffer = (byte *)buff->buf;
+    AsmCodeBuffer = VbufBuffer( buff );
     ensureBufferReflectsCurToken();
     if( isId( CurToken ) && strcmp( Buffer, "__emit" ) == 0 ) {
         strcpy( line, AsmSysDefineByte() );
@@ -150,7 +150,7 @@ static void getAsmLine( VBUF *buff )
     if( line[0] != '\0' ) {
         AsmLine( line );
     }
-    VbufUsed( buff, AsmCodeAddress );
+    VbufSetLen( buff, AsmCodeAddress );
     if( CurToken == T_SEMI_COLON ) {
         // ; .ASM comment
         for(;;) {

@@ -9,7 +9,11 @@ DoCreateIcons=1
 DoCreateHelpIcons=1
 DoModifyAuto=1
 DoCopyFiles=1
+DoFileAssociations=1
 ToolHelp=%CDDir%\binw\toolhelp.dll
+GenerateBatchFile=1
+BatchFileName=%DstDir%\owsetenv.bat
+BatchFileCaption=Open Watcom Build Environment
 spawnbefore=%CDDir%\binp\nmpbind.exe q, SrcIsCD IsOS2
 spawnbefore=%CDDir%\binp\batserv.exe q, SrcIsCD IsOS2DosBox
 spawnafter=cmd.exe /c detach %CDDir%\binp\nmpbind.exe, SrcIsCD IsOS2
@@ -181,6 +185,7 @@ icon=%OWDir%\binnt\wde.exe,, Dialog Editor,,, IsWin32 DoCreateIcons ?%OWDir%\bin
 icon=%OWDir%\binnt\wimgedit.exe,,Image Editor,,, IsWin32 DoCreateIcons ?%OWDir%\binnt\wimgedit.exe
 icon=%OWDir%\binnt\wzoom.exe,, Zoom,,, IsWin32 DoCreateIcons ?%OWDir%\binnt\wzoom.exe
 icon=%OWDir%\binnt\viw.exe,, Text Editor,,, IsWin32 DoCreateIcons ?%OWDir%\binnt\viw.exe
+icon=%Command%, /k %OWDir%\owsetenv.bat, Build Environment,,, IsWin32 DoCreateIcons
 icon=GROUP, wpp32hlp.grp, Open Watcom C/C++ Tools Help,,, DoCreateHelpIcons IsFortranInstall !
 icon=GROUP, wf77hlp.grp, Open Watcom FORTRAN Tools Help,,, DoCreateHelpIcons IsFortranInstall
 icon=%HDir%\binnt\cbooks.hlp,, C/C++ Master Help Index,,, DoCreateHelpIcons IsWin32 win32_helpfiles MinimalInstall | ?%HDir%\binnt\cbooks.hlp IsFortranInstall !
@@ -252,3 +257,86 @@ icon=view.exe, %HDir%\binp\help\fpguide.inf, F77 Programmer's Reference,,, IsOS2
 icon=view.exe, %HDir%\binp\help\ftools.inf, F77 Tools Guide,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\ftools.inf IsFortranInstall
 icon=view.exe, %HDir%\binp\help\f77graph.inf, F77 Graphics Library,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\f77graph.inf IsFortranInstall
 icon=view.exe, %HDir%\binp\help\f77lr.inf, F77 Language Reference,,, IsOS2 DoCreateHelpIcons  os2_helpfiles ?%HDir%\binp\help\f77lr.inf IsFortranInstall
+assoc=c=cfile, %DstDir%\binnt\viw.exe, C Source File, 2, 0
+assoc=cpp=cppfile, %DstDir%\binnt\viw.exe, C++ Source File, 3, 0
+assoc=h=hfile, %DstDir%\binnt\viw.exe, C/C++ Header File, 4, 0
+assoc=hpp=hppfile, %DstDir%\binnt\viw.exe, C++ Header File, 5, 0
+assoc=for=forfile, %DstDir%\binnt\viw.exe, FORTRAN Source File, 6, 0
+assoc=f=ffile, %DstDir%\binnt\viw.exe, FORTRAN Source File, 6, 0
+assoc=fi=fifile, %DstDir%\binnt\viw.exe, FORTRAN Include File, 7, 0
+assoc=mak=makfile, %DstDir%\binnt\viw.exe, Makefile, 8, 0
+assoc=mk=mkfile, %DstDir%\binnt\viw.exe, Makefile, 8, 0
+assoc=mif=miffile, %DstDir%\binnt\viw.exe, Make Include File, 8, 0
+assoc=obj=objfile, %DstDir%\binnt\viw.exe, Object File, 10, 1
+assoc=pch=pchfile, %DstDir%\binnt\viw.exe, Precompiled Header File, 10, 1
+assoc=rc=rcfile, %DstDir%\binnt\viw.exe, Resource Source File, 11, 0
+assoc=rh=rhfile, %DstDir%\binnt\viw.exe, Resource Header File, 12, 0
+assoc=dlg=dlgfile, %DstDir%\binnt\wde.exe, Dialog File, 2, 0
+assoc=res=resfile, %DstDir%\binnt\wre.exe, Resource File, 1, 0
+assoc=wpj=wpjfile, %DstDir%\binnt\ide.exe, Open Watcom Project File, 0, 0
+deletefile=%DstDir%\h\nt\afxres.h
+deletefile=%DstDir%\h\nt\aygshell.h
+deletefile=%DstDir%\h\nt\lmbrowsr.h
+deletefile=%DstDir%\h\nt\lmchdev.h
+deletefile=%DstDir%\h\nt\ntdef.h
+deletefile=%DstDir%\h\nt\ntdll.h
+deletefile=%DstDir%\h\nt\objfwd.h
+deletefile=%DstDir%\h\nt\rapi.h
+deletefile=%DstDir%\h\nt\rpcdce2.h
+deletefile=%DstDir%\h\nt\scrnsave.h
+deletefile=%DstDir%\h\nt\wsahelp.h
+deletefile=%DstDir%\h\nt\ddk\newdev.h
+deletefile=%DstDir%\h\nt\ddk\ntapi.h
+deletefile=%DstDir%\h\nt\ddk\ntddndis.h
+deletefile=%DstDir%\h\nt\ddk\tvout.h
+deletefile=%DstDir%\h\nt\ddk\win2k.h
+deletefile=%DstDir%\h\nt\ddk\winddk.h
+deletefile=%DstDir%\h\nt\ddk\winnt4.h
+deletefile=%DstDir%\h\nt\ddk\winxp.h
+deletefile=%DstDir%\h\nt\directx\dxerr8.h
+deletefile=%DstDir%\h\nt\directx\dxerr9.h
+deletefile=%DstDir%\h\nt\gl\glext.h
+deletefile=%DstDir%\h\nt\gl\wglext.h
+deletefile=%DstDir%\lib386\nt\cap.lib
+deletefile=%DstDir%\lib386\nt\ctl3d32.lib
+deletefile=%DstDir%\lib386\nt\dlcapi.lib
+deletefile=%DstDir%\lib386\nt\dmoguids.lib
+deletefile=%DstDir%\lib386\nt\glaux.lib
+deletefile=%DstDir%\lib386\nt\glut.lib
+deletefile=%DstDir%\lib386\nt\glut32.lib
+deletefile=%DstDir%\lib386\nt\igmpagnt.lib
+deletefile=%DstDir%\lib386\nt\mfcuia32.lib
+deletefile=%DstDir%\lib386\nt\msvcp60.lib
+deletefile=%DstDir%\lib386\nt\ntdll.lib
+deletefile=%DstDir%\lib386\nt\penwin32.lib
+deletefile=%DstDir%\lib386\nt\pkpd32.lib
+deletefile=%DstDir%\lib386\nt\rapi.lib
+deletefile=%DstDir%\lib386\nt\rpcdce4.lib
+deletefile=%DstDir%\lib386\nt\scrnsave.lib
+deletefile=%DstDir%\lib386\nt\tapi32.lib
+deletefile=%DstDir%\lib386\nt\thunk32.lib
+deletefile=%DstDir%\lib386\nt\vdmdbg.lib
+deletefile=%DstDir%\lib386\nt\win32spl.lib
+deletefile=%DstDir%\lib386\nt\winstrm.lib
+deletefile=%DstDir%\lib386\nt\wow32.lib
+deletefile=%DstDir%\lib386\nt\wst.lib
+deletefile=%DstDir%\lib386\nt\ddk\apcups.lib
+deletefile=%DstDir%\lib386\nt\ddk\newdev.lib
+deletefile=%DstDir%\lib386\nt\ddk\usbcamd2.lib
+deletefile=%DstDir%\lib386\nt\directx\d3d8.lib
+deletefile=%DstDir%\lib386\nt\directx\d3dim.lib
+deletefile=%DstDir%\lib386\nt\directx\d3dx8d.lib
+deletefile=%DstDir%\lib386\nt\directx\d3dx9d.lib
+deletefile=%DstDir%\lib386\nt\directx\d3dxod.lib
+deletefile=%DstDir%\lib386\nt\directx\ddraw.lib
+deletefile=%DstDir%\lib386\nt\directx\dplayx.lib
+deletefile=%DstDir%\lib386\nt\directx\dpnaddr.lib
+deletefile=%DstDir%\lib386\nt\directx\dpnet.lib
+deletefile=%DstDir%\lib386\nt\directx\dpnlobby.lib
+deletefile=%DstDir%\lib386\nt\directx\dpvoice.lib
+deletefile=%DstDir%\lib386\nt\directx\dsetup.lib
+deletefile=%DstDir%\lib386\nt\directx\dxerr8.lib
+deletefile=%DstDir%\lib386\nt\directx\dxerr9.lib
+deletefile=%DstDir%\lib386\nt\directx\ksproxy.lib
+deletefile=%DstDir%\lib386\nt\directx\ksuser.lib
+deletefile=%DstDir%\lib386\nt\directx\msdmo.lib

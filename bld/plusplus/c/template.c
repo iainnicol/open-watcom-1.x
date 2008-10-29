@@ -843,8 +843,8 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 FormatPTreeList( curr_spec->spec_args, &vbuf1 );
                 FormatPTreeList( tspec->spec_args, &vbuf2 );
                 printf( "%s<%s> is at least as specialised as %s<%s>\n",
-                        tinfo->sym->name->name, vbuf1.buf,
-                        tinfo->sym->name->name, vbuf2.buf );
+                        tinfo->sym->name->name, VbufString( &vbuf1 ),
+                        tinfo->sym->name->name, VbufString( &vbuf2 ) );
                 VbufFree( &vbuf1 );
                 VbufFree( &vbuf2 );
             }
@@ -873,8 +873,8 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 FormatPTreeList( tspec->spec_args, &vbuf1 );
                 FormatPTreeList( curr_spec->spec_args, &vbuf2 );
                 printf( "%s<%s> is at least as specialised as %s<%s>\n",
-                        tinfo->sym->name->name, vbuf1.buf,
-                        tinfo->sym->name->name, vbuf2.buf );
+                        tinfo->sym->name->name, VbufString( &vbuf1 ),
+                        tinfo->sym->name->name, VbufString( &vbuf2 ) );
                 VbufFree( &vbuf1 );
                 VbufFree( &vbuf2 );
             }
@@ -1407,12 +1407,12 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
 
         FormatPTreeList( templ_args, &vbuf1 );
         FormatPTreeList( pargs, &vbuf2 );
-        printf( "attemptGen for %s<%s>(%s)\n",
-                fn_templ->name->name, vbuf1.buf, vbuf2.buf );
+        printf( "attemptGen for %s<%s>(%s)\n", fn_templ->name->name,
+                               VbufString( &vbuf1 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         FormatSym( fn_templ, &vbuf1 );
-        printf( "  symbol: %s ", vbuf1.buf );
+        printf( "  symbol: %s ", VbufString( &vbuf1 ) );
         DbgDumpTokenLocn( fn_templ->locn );
         printf( "\n" );
         VbufFree( &vbuf1 );
@@ -1651,8 +1651,8 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( fn_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
-        printf( "TemplateFunctionGenerate: %s%s%s%s\n",
-                vbuf1.buf, sym->name->name, vbuf3.buf, vbuf2.buf );
+        printf( "TemplateFunctionGenerate: %s%s%s%s\n", VbufString( &vbuf1 ),
+               sym->name->name, VbufString( &vbuf3 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         VbufFree( &vbuf3 );
@@ -2386,7 +2386,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
         FormatPTreeList( parms, &vbuf );
         printf( "try to find template class specialisation for %s<%s>\n",
-                tinfo->sym->name->name, vbuf.buf );
+                            tinfo->sym->name->name, VbufString( &vbuf ) );
         VbufFree( &vbuf );
     }
 #endif
@@ -2412,7 +2412,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
                     FormatPTreeList( spec_list, &vbuf );
                     printf( "found specialisation candidate %s<%s>\n",
-                            tinfo->sym->name->name, vbuf.buf );
+                            tinfo->sym->name->name, VbufString( &vbuf ) );
                     VbufFree( &vbuf );
                 }
 #endif
@@ -2487,7 +2487,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
 
             FormatPTreeList( tspec->spec_args, &vbuf );
             printf( "chose specialisation %s<%s> ",
-                    tinfo->sym->name->name, vbuf.buf );
+                              tinfo->sym->name->name, VbufString( &vbuf ) );
             DbgDumpTokenLocn( &tspec->locn );
             printf( "\n" );
             VbufFree( &vbuf );
@@ -2549,9 +2549,8 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
             VBUF vbuf;
 
             FormatPTreeList( parms, &vbuf );
-            printf( "referencing template %s<%s>%s\n",
-                    template_name, vbuf.buf,
-                    is_generic ? " (generic)" : "");
+            printf( "referencing template %s<%s>%s\n", template_name,
+                     VbufString( &vbuf ), is_generic ? " (generic)" : "");
             VbufFree( &vbuf );
         }
 #endif
@@ -2686,7 +2685,7 @@ static TYPE makeBoundClass( TYPE unbound_class, SCOPE parm_scope,
 
         FormatPTreeList( parms, &vbuf );
         printf( "instantiating template %s<%s>\n",
-                tinfo->sym->name->name, vbuf.buf );
+                tinfo->sym->name->name, VbufString( &vbuf ) );
         VbufFree( &vbuf );
     }
 #endif
@@ -3027,14 +3026,14 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( bound_sym->sym_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
-        printf( "templateFunctionInstantiate: %s%s%s%s\n",
-                vbuf1.buf, fn_sym->name->name, vbuf3.buf, vbuf2.buf );
+        printf( "templateFunctionInstantiate: %s%s%s%s\n", VbufString( &vbuf1 ),
+               fn_sym->name->name, VbufString( &vbuf3 ), VbufString( &vbuf2 ) );
         VbufFree( &vbuf1 );
         VbufFree( &vbuf2 );
         VbufFree( &vbuf3 );
 
         FormatSym( fn_sym, &vbuf1 );
-        printf( "  symbol: %s ", vbuf1.buf );
+        printf( "  symbol: %s ", VbufString( &vbuf1 ) );
         DbgDumpTokenLocn( fn_sym->locn );
         printf( "\n" );
         VbufFree( &vbuf1 );
@@ -3625,7 +3624,7 @@ static void saveMemberInst( MEMBER_INST *s, MEMBER_INST *stop )
     save_next = s->next;
     s->next = (MEMBER_INST *) ( s != stop );
     save_dinfo = s->dinfo;
-    s->dinfo = (void *) ( s->dinfo != NULL );
+    s->dinfo = DeclInfoGetIndex( save_dinfo );
     save_scope = s->scope;
     s->scope = ScopeGetIndex( save_scope );
     save_class_parm_scope = s->class_parm_scope;
@@ -3640,10 +3639,6 @@ static void saveMemberInst( MEMBER_INST *s, MEMBER_INST *stop )
     s->scope = save_scope;
     s->class_parm_scope = save_class_parm_scope;
     s->class_parm_enclosing = save_class_parm_enclosing;
-
-    if( s->dinfo != NULL ) {
-        PCHWriteDeclInfo( s->dinfo );
-    }
 }
 
 static void saveClassInst( void *p, carve_walk_base *d )
@@ -3811,13 +3806,10 @@ pch_status PCHReadTemplates( void )
             cont = mi->next != NULL;
 
             mi->next = NULL;
+            mi->dinfo = DeclInfoMapIndex( mi->dinfo );
             mi->scope = ScopeMapIndex( mi->scope );
             mi->class_parm_scope = ScopeMapIndex( mi->class_parm_scope );
             mi->class_parm_enclosing = ScopeMapIndex( mi->class_parm_enclosing );
-
-            if( mi->dinfo != NULL ) {
-                mi->dinfo = PCHReadDeclInfo();
-            }
             RingAppend( &ci->members, mi );
         }
     }

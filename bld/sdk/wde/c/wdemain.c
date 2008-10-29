@@ -663,6 +663,18 @@ LRESULT WINEXPORT WdeMainWndProc( HWND hWnd, UINT message,
             WdeHandleMenuSelect ( wParam, lParam );
             break;
 
+        case WM_MEASUREITEM:
+            WdeHandleMeasureItem( (MEASUREITEMSTRUCT *)lParam );
+            ret = TRUE;
+            pass_to_def = FALSE;
+            break;
+
+        case WM_DRAWITEM:
+            WdeHandleDrawItem( (DRAWITEMSTRUCT *)lParam );
+            ret = TRUE;
+            pass_to_def = FALSE;
+            break;
+
         case WM_MOVE:
             if ( IsZoomed ( hWnd ) ) {
                 WdeSetOption ( WdeOptIsScreenMax, TRUE );
@@ -1369,8 +1381,8 @@ Bool WINEXPORT WdeSplash( HWND hDlg, WORD message,
             hInstUser = GetModuleHandle( "USER32.DLL" );
             pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
             if( pfnLoadImage != NULL ) {
-                logo = LoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0,
-                                  LR_LOADMAP3DCOLORS );
+                logo = pfnLoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0,
+                                     LR_LOADMAP3DCOLORS );
             } else {
 #endif
                 logo = LoadBitmap ( hInstWde, "AboutLogo" );

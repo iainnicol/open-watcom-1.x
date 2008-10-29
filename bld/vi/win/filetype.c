@@ -30,22 +30,28 @@
 
 
 #include "winvi.h"
+#include "iconids.h"
 
 typedef struct filetype {
     const char  *extension;
     const char  *iconname;
 } filetype;
 
-#define NUM_FILE_TYPES  7
+#define NUM_FILE_TYPES  12
 #ifdef __NT__
 static const filetype fileTypes[NUM_FILE_TYPES] = {
-    { ".c",     "CFILE" },
-    { ".cpp",   "CPPFILE" },
-    { ".h",     "HFILE" },
-    { ".hpp",   "HPPFILE" },
-    { ".for",   "FORFILE" },
-    { ".f",     "FORFILE" },
-    { ".fi",    "FIFILE" }
+    { ".c",     MAKEINTRESOURCE( IDI_CFILE ) },
+    { ".cpp",   MAKEINTRESOURCE( IDI_CPPFILE ) },
+    { ".h",     MAKEINTRESOURCE( IDI_HFILE ) },
+    { ".hpp",   MAKEINTRESOURCE( IDI_HPPFILE ) },
+    { ".for",   MAKEINTRESOURCE( IDI_FORFILE ) },
+    { ".f",     MAKEINTRESOURCE( IDI_FORFILE ) },
+    { ".fi",    MAKEINTRESOURCE( IDI_FIFILE ) },
+    { ".mak",   MAKEINTRESOURCE( IDI_MAKFILE ) },
+    { ".mk",    MAKEINTRESOURCE( IDI_MAKFILE ) },
+    { ".mif",   MAKEINTRESOURCE( IDI_MAKFILE ) },
+    { ".rc",    MAKEINTRESOURCE( IDI_RCFILE ) },
+    { ".rh",    MAKEINTRESOURCE( IDI_RHFILE ) }
 };
 #endif
 
@@ -79,7 +85,7 @@ void UpdateFileTypeIcon( HWND hwnd, const char *filename )
             }
         }
         if( hicon == NULL ) {
-            hicon = LoadIcon( InstanceHandle, "WATCOMICON" );
+            hicon = LoadIcon( InstanceHandle, MAKEINTRESOURCE( IDI_TXTFILE ) );
         }
         SendMessage( hwnd, WM_SETICON, ICON_BIG, (LPARAM)hicon );
         SendMessage( hwnd, WM_SETICON, ICON_SMALL, (LPARAM)smallicon );

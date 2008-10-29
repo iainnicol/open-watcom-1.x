@@ -174,7 +174,7 @@ struct decl_spec {
 };
 
 typedef struct decl_info DECL_INFO;
-struct decl_info {
+PCH_struct decl_info {
     DECL_INFO           *next;
     DECL_INFO           *parms;         // function parms (NULLable)
     PTREE               id;             // declarator id (NULLable)
@@ -198,6 +198,7 @@ struct decl_info {
     unsigned            has_dspec : 1;  // has decl-specifiers (set by DeclFunction)
     unsigned            has_defarg : 1; // has default argument
     unsigned            explicit_parms : 1;// explicit parms in declarator
+    unsigned            free : 1;       // used for precompiled headers
 };
 
 // types dealing with representing types
@@ -531,6 +532,18 @@ typedef PCH_struct {
     char            *name;          // name of class
     CDOPT_CACHE     *cdopt_cache;   // CDOPT info cache
     TYPE            class_mod;      // type representing class <mods> X mods
+    /*
+     *  Carl 12-Aug-2008.
+     *  Added a copy of the class modifiers to the CLASS_INFO structure so that
+     *  type modifiers can be added and retained from a class declaration.
+     */
+    union {
+        AUX_INFO    *fn_pragma;     // function pragma for member functions
+        unsigned    fn_pragma_idx;
+    };
+    type_flag       fn_flags;       // function flags for member functions
+    type_flag       mod_flags;      // modifier flags for members
+
     CGREFNO         refno;          // code-generator ref #
     dbg_handle      dbg_no_vbases;  // for Watcom -d2 info
     target_offset_t size;           // size of class (including vbases)
@@ -1777,10 +1790,10 @@ extern TYPE BindTemplateClass( TYPE , TOKEN_LOCN *, boolean );
 // pre-compiled header support
 TYPE TypeGetIndex( TYPE );
 TYPE TypeMapIndex( TYPE );
-void PCHWriteDeclInfo( DECL_INFO * );
-DECL_INFO *PCHReadDeclInfo();
 CLASSINFO *ClassInfoGetIndex( CLASSINFO * );
 CLASSINFO *ClassInfoMapIndex( CLASSINFO * );
+DECL_INFO *DeclInfoGetIndex( DECL_INFO * );
+DECL_INFO *DeclInfoMapIndex( DECL_INFO * );
 SYMBOL_NAME SymbolNameGetIndex( SYMBOL_NAME );
 SYMBOL_NAME SymbolNameMapIndex( SYMBOL_NAME );
 SYMBOL SymbolGetIndex( SYMBOL );

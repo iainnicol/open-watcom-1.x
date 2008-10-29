@@ -171,10 +171,6 @@ void CloseFiles( void )
         fclose( DefFile );
         DefFile = NULL;
     }
-    if( ErrFile != NULL ) {
-        fclose( ErrFile );
-        ErrFile = NULL;
-    }
 }
 
 static bool ParseCmdLine( char **cmdline )
@@ -1180,10 +1176,10 @@ void SrcFileIncludeAlias( const char *alias_name, const char *real_name, int del
 
 static int FCB_Alloc( FILE *fp, char *filename )
 {
-    int         i;
-    FCB         *srcfcb;
-    char        *src_buffer;
-    FNAMEPTR    flist;
+    int             i;
+    FCB             *srcfcb;
+    unsigned char   *src_buffer;
+    FNAMEPTR        flist;
 
    --IncFileDepth;
     srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
