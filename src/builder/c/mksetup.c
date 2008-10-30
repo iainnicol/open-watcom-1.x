@@ -39,6 +39,7 @@
     #include <unistd.h>
 #else
     #include <direct.h>
+    #include <dos.h>
 #endif
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
@@ -117,6 +118,7 @@ static LIST                 *BeforeList = NULL;
 static LIST                 *EndList = NULL;
 static LIST                 *DeleteList = NULL;
 static LIST                 *ForceDLLInstallList = NULL;
+static LIST                 *AssociationList = NULL;
 static LIST                 *ErrMsgList = NULL;
 static LIST                 *SetupErrMsgList = NULL;
 static unsigned             MaxDiskFiles;
@@ -403,8 +405,13 @@ int AddPathTree( char *path, int target )
 }
 
 static int mkdir_nested( char *path )
+/***********************************/
 {
+#ifdef __UNIX__
     struct stat sb;
+#else
+    unsigned    attr;
+#endif
     char        pathname[ FILENAME_MAX ];
     char        *p;
     char        *end;
@@ -430,7 +437,11 @@ static int mkdir_nested( char *path )
         *p = '\0';
 
         /* check if pathname exists */
+#ifdef __UNIX__
         if( stat( pathname, &sb ) == -1 ) {
+#else
+        if( _dos_getfileattr( pathname, &attr ) != 0 ) {
+#endif
             int rc;
 
 #ifdef __UNIX__
@@ -444,7 +455,11 @@ static int mkdir_nested( char *path )
             }
         } else {
             /* make sure it really is a directory */
+#ifdef __UNIX__
             if( !S_ISDIR( sb.st_mode ) ) {
+#else
+            if( (attr & _A_SUBDIR) == 0 ) {
+#endif
                 printf( "Can not create directory '%s': file with the same name already exists\n", pathname );
                 return( -1 );
             }
@@ -806,6 +821,7 @@ int ReadList( FILE *fp )
 #define STRING_language         "language="
 #define STRING_upgrade          "upgrade="
 #define STRING_forcedll         "forcedll="
+#define STRING_assoc            "assoc="
 #define STRING_errmsg           "errmsg="
 #define STRING_setuperrmsg      "setuperrmsg="
 
@@ -971,6 +987,8 @@ void ReadSection( FILE *fp, char *section, LIST **list )
             free( new );
         } else if( STRING_IS( SectionBuf, new, STRING_forcedll ) ) {
             AddToList( new, &ForceDLLInstallList );
+        } else if( STRING_IS( SectionBuf, new, STRING_assoc ) ) {
+            AddToList( new, &AssociationList );
         } else if( STRING_IS( SectionBuf, new, STRING_errmsg ) ) {
             AddToList( new, &ErrMsgList );
         } else if( STRING_IS( SectionBuf, new, STRING_setuperrmsg ) ) {
@@ -1273,6 +1291,13 @@ int CreateScript( long init_size, unsigned padding )
     if( ForceDLLInstallList != NULL ) {
         fprintf( fp, "\n[ForceDLLInstall]\n" );
         for( list = ForceDLLInstallList; list != NULL; list = list->next ) {
+            fprintf( fp, "%s\n", list->item );
+        }
+    }
+
+    if( AssociationList != NULL ) {
+        fprintf( fp, "\n[Associations]\n" );
+        for( list = AssociationList; list != NULL; list = list->next ) {
             fprintf( fp, "%s\n", list->item );
         }
     }

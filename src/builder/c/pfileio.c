@@ -24,44 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Cross-platform implementation of popen and pclose.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include <string.h>
-#include "spy.h"
 
-/*
- * HandleMessage
- */
-void CALLBACK HandleMessage( LPMSG pmsg )
+FILE *popen( const char *s, const char *m )
 {
+#ifdef __DOS__
+    return( NULL );
+#else
+    return( _popen( s, m ) );
+#endif
+}
 
-    static char msg[80];
-    int         i;
+int pclose( FILE *f )
+{
+#ifdef __DOS__
+    return( NULL );
+#else
+    return( _pclose( f ) );
+#endif
+}
 
-    if( SpyState != ON ) {
-        return;
-    }
-    if( IsMyWindow( pmsg->hwnd ) ) {
-        return;
-    }
-    if( WindowCount != 0 ) {
-        for( i=0;i<WindowCount;i++ ) {
-            if( pmsg->hwnd == WindowList[i] ) {
-                break;
-            }
-        }
-        if( i == WindowCount ) {
-            return;
-        }
-    }
-    ProcessIncomingMessage( pmsg->message, msg );
-    if( msg[0] != 0 ) {
-        SpyOut( msg, pmsg );
-    }
-
-} /* HandleMessage */
