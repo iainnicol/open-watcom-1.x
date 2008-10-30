@@ -125,9 +125,10 @@ cdsay .
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
 [ INCLUDE <SRCDIR>/gui/builder.ctl ]
 [ INCLUDE <SRCDIR>/aui/builder.ctl ]
-# Build the debugger
+# Build the debugger and sampler
 [ INCLUDE <SRCDIR>/dip/builder.ctl ]
 [ INCLUDE <SRCDIR>/dbg/builder.ctl ]
+[ INCLUDE <SRCDIR>/sampler/builder.ctl ]
 # Other GUI tools
 [ INCLUDE <SRCDIR>/profiler/builder.ctl ]
 [ INCLUDE <SRCDIR>/wclass/builder.ctl ]
