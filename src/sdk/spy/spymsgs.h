@@ -24,20 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Font selection for Windows.
+* Description:  Individual message control dialog definitions.
 *
 ****************************************************************************/
 
 
-#include "fontstr.h"
-void SetDlgMonoFont( HWND hwnd, int id );
-void SetMonoFont( HWND hwnd );
-void SetDlgCourierFont( HWND hwnd, int id );
-void SetCourierFont( HWND hwnd );
-void InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst );
-void SaveMonoFont( char *app, char *inifile );
-BOOL ChooseMonoFont( HWND hwnd );
-void DestroyMonoFonts( void );
-HFONT GetMonoFont( void );
-void AllowVariableFonts( void );
+#define DLGMSG1         5000
+#define NUM_DLGMSGS     57
+#define DLGMSG_CLEARALL 4800
+#define DLGMSG_SETALL   4801
+#define DLGMSG_NEXT     4802
+#define DLGMSG_PREV     4803
 
