@@ -24,7 +24,7 @@ setscr.ch : setscr.ctl
 extra_c_flags_ideactiv = -D__ISVI__
 extra_c_flags_getopt = -D__ISVI__
 
-.c : $(viper_dir)/ideact
+.c : $(ide_dir)/ideact
 .c : $(posix_dir)/misc
 
 !ifeq release 0
