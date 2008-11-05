@@ -1,4 +1,4 @@
-# Print set counter variable
+# Set counter variable
 BEGIN { 
     num = 0
 }
