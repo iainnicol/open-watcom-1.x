@@ -64,7 +64,7 @@ $(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $
 !ifdef sys_windowed
 !ifeq host_os win
 !ifeq host_cpu 386
-        wbind $(lname) -s $(lang_root)/binw/win386.ext -R -q $(proj_name).res
+        wbind $(lname) -s $(win386_dir)/ext/win386.ext -R -q $(proj_name).res
         rm $(lname)
 !else
         $(rc) -k -zk0 $(proj_name).res $^@

@@ -176,6 +176,9 @@ lib_misc_dir    = $(dev_dir)/lib_misc
 !ifndef womp_dir
 womp_dir        = $(dev_dir)/womp
 !endif
+!ifndef win386_dir
+win386_dir      = $(dev_dir)/win386
+!endif
 !ifndef wclass_dir
 wclass_dir      = $(dev_dir)/wclass
 !endif

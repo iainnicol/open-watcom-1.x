@@ -1,0 +1,21 @@
+proj_name = wbind
+
+!ifndef wbind_autodepends
+wbind_autodepends = .AUTODEPEND
+!endif
+
+memory_model_i86 = c
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c : ..
+
+extra_c_flags = -s
+
+inc_dirs = -I"../../h"
+
+objs = wbind.obj
+
+!include exetarg.mif

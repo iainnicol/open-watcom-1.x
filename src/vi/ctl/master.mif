@@ -16,7 +16,7 @@ all: parsectl.exe parsedyn.exe
 .c: ..
 
 parsectl.exe : parsectl.obj
-        $(linker) $(lflags) name $^@ op map file { $< }
+        $(cl) $(clflags) $< $(cl_libs)
 
 parsedyn.exe : parsedyn.obj
-        $(linker) $(lflags) name $^@ op map file { $< }
+        $(cl) $(clflags) $< $(cl_libs)

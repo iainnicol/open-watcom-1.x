@@ -36,9 +36,10 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <malloc.h>
 #include <sys/stat.h>
 #include "banner.h"
+
+#include "clibext.h"
 
 char    magic_cookie[] = "CGEXXX";
 
@@ -55,7 +56,7 @@ char    magic_cookie[] = "CGEXXX";
 char    *dats[MAX_DATA_FILES];
 
 short   FileCount;
-long    *index;
+long    *idx;
 short   *entries;
 short   sflag = FALSE;
 short   qflag = FALSE;
@@ -411,7 +412,7 @@ int main( int argc, char *argv[] )
             }
         }
         fclose( f );
-        index = MyAlloc( FileCount * sizeof( long ) );
+        idx = MyAlloc( FileCount * sizeof( long ) );
         entries = MyAlloc( FileCount * sizeof( short ) );
 
         buffn = buff;
@@ -451,7 +452,7 @@ int main( int argc, char *argv[] )
             }
             setvbuf( f, buff2, _IOFBF, 32000 );
             bytes = lines = 0;
-            index[ j ] = (long)cnt;
+            idx[ j ] = (long)cnt;
             while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
                 for( i = strlen( buff3 ); i && isWSorCtrlZ( buff3[ i - 1] ); --i )
                     buff3[ i - 1 ] = '\0';
@@ -476,7 +477,7 @@ int main( int argc, char *argv[] )
             MyPrintf( "Added %d lines (%d bytes)\n", lines, bytes );
         }
         i = FileCount;
-        memcpy( buffs, index, FileCount * sizeof( long ) );
+        memcpy( buffs, idx, FileCount * sizeof( long ) );
         buffs += FileCount * sizeof( long );
         memcpy( buffs, entries, FileCount * sizeof( short ) );
     }

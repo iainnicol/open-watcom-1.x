@@ -41,6 +41,32 @@ static char White_space[]=" \t";
 
 static int Line = 1;
 
+/* Local implementations of strupr()/strlwr() for portability */
+
+char *strupr( char *string )
+/**************************/
+{
+      char    *s;
+
+      if( string ) {
+            for( s = string; *s; ++s )
+                  *s = toupper( *s );
+      }
+      return( string );
+} 
+
+char *strlwr( char *string )
+/**************************/
+{
+      char    *s;
+
+      if( string ) {
+            for( s = string; *s; ++s )
+                  *s = tolower( *s );
+      }
+      return( string );
+}
+
 static char *get_line( char *buf, FILE *file ) 
 /********************************************/
 {

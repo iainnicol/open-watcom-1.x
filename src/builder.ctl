@@ -50,7 +50,10 @@ cdsay .
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
 # Now miscellaneous utilities required during build
 [ INCLUDE <SRCDIR>/ssl/builder.ctl ]
+[ INCLUDE <SRCDIR>/win386/wbind/builder.ctl ]
 [ INCLUDE <SRCDIR>/parsedlg/builder.ctl ]
+[ INCLUDE <SRCDIR>/vi/ctl/builder.ctl ]
+[ INCLUDE <SRCDIR>/vi/bind/builder.ctl ]
 
 # The following tools are not required during build
 [ INCLUDE <SRCDIR>/disasm/builder.ctl ]
@@ -89,6 +92,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/clib/builder.ctl ]
 [ INCLUDE <SRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
+[ INCLUDE <SRCDIR>/win386/builder.ctl ]
 # Now we have enough to start cross building everything else
 
 # Start with the libs used by various tools
@@ -125,6 +129,9 @@ cdsay .
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
 [ INCLUDE <SRCDIR>/gui/builder.ctl ]
 [ INCLUDE <SRCDIR>/aui/builder.ctl ]
+# The vi(w) editor
+[ INCLUDE <SRCDIR>/rcsdll/builder.ctl ]
+[ INCLUDE <SRCDIR>/vi/builder.ctl ]
 # Build the debugger and sampler
 [ INCLUDE <SRCDIR>/dip/builder.ctl ]
 [ INCLUDE <SRCDIR>/dbg/builder.ctl ]

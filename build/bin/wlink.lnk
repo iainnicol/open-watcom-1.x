@@ -18,12 +18,14 @@ system begin windows
     option osname='Windows 16-bit'
     libpath %OWROOT%/src/clib/library/windows.086/mc
     libpath %OWROOT%/src/clib/library/windows.086/ml
+    libpath %OWROOT%/src/clib/library/windows.086/ms
     libpath %OWROOT%/src/cpplib/windows.086/ml
     libpath %OWROOT%/src/mathlib/library/windows.286/mc
     libpath %OWROOT%/src/mathlib/library/windows.287/ml
     libpath %OWROOT%/src/emu87/wini86
     libpath %OWROOT%/src/w16api/wini86
     library windows
+    option nocaseexact
     option stack=8k, heapsize=1k
     format windows ^
 end
@@ -37,6 +39,7 @@ system begin windows_dll
     libpath %OWROOT%/src/emu87/wini86
     libpath %OWROOT%/src/w16api/wini86
     library windows
+    option nocaseexact
     option stack=8k, heapsize=1k
     libfile %OWROOT%/src/clib/startup/library/windows.086/ml/libentry.obj
     format windows dll ^
@@ -159,4 +162,18 @@ system begin linux
     runtime linux
     op exportall
     op norelocs
+end
+
+system begin win386
+    option osname='Windows 32-bit'
+    libpath %OWROOT%/src/clib/library/windows.386/mf_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/emu387/stub386
+    libpath %OWROOT%/src/win386/conv/win386
+    format phar rex
+end
+
+system begin win_vxd
+    option osname='Windows VxD'
+    format windows vxd ^
 end
