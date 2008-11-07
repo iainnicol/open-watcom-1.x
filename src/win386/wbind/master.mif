@@ -12,8 +12,6 @@ memory_model_i86 = c
 
 .c : ..
 
-extra_c_flags = -s
-
 inc_dirs = -I"../../h"
 
 objs = wbind.obj
