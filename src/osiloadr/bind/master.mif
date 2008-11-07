@@ -1,0 +1,14 @@
+proj_name = osibind
+
+osibind_autodepends = .autodepend
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+.c: ../..
+.h: ../..
+
+objs = w32bind.obj
+
+!include exetarg.mif	

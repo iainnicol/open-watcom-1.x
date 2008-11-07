@@ -107,7 +107,7 @@ $(name).exe : asmops.gh asmopsd.gh $(name).res $(proj_obj) $(__MAKEFILES__)
 !ifeq host_OS osi
         @%append $^&.lnk name $^&.rex
         $(linker) @$^&.lnk
-        $(w32bind) $^&.rex $@ $(os2ldr)
+        $(osibind) $^&.rex $@ $(osildr)
         @rm -f $^&.rex
 !else
         @%append $^&.lnk name $@

@@ -77,10 +77,9 @@ bas             = $(as)
 bas             = *wasm
 !endif
 
-bvi             = bvi -q -d -i
 blib            = *wlib
 bre2c           = re2c
-w32bind         = w32bind
+osibind         = osibind
 byacc           = yacc
 brc             = *wrc
-os2ldr          = $(%OWBINDIR)/os2ldr.exe
+osildr          = $(dev_dir)/osiloadr/os2ldr/os2ldr.exe

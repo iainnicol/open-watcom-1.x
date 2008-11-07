@@ -191,7 +191,7 @@ external_dependencies += $(cg_deps)
 external_dependencies += $(cg_debug_deps)
 !endif
 !ifeq host_os osi
-external_dependencies += $(os2ldr)
+external_dependencies += $(osildr)
 !endif
  
 #
@@ -248,7 +248,7 @@ $(exe_name).exe : $(depends_exe) exe.lnk
 $(exe_name).exe : $(depends_exe) exe.lnk
 !ifeq host_os osi
     $(linker) name $^&.rex @exe.lnk
-    $(w32bind) $^&.rex $@ $(os2ldr)
+    $(osibind) $^&.rex $@ $(osildr)
     @rm -f $^&.rex
 !else
     $(linker) name $@ @exe.lnk
@@ -347,7 +347,7 @@ keywords.gh weights.gh : ./findhash.exe ../../hash/plusplus.key ../../hash/pc.ke
     $[@ -q ../../hash/plusplus.key ../../hash/pc.key
  
 ./umktable.exe: ../../c/umktable.c xlat.gh
-    $(host_cl) $(host_cl_opts) $[@
+    $(host_cl) $(host_cl_opts) -I"../../h" $[@
  
 yylex.gh : ./umktable.exe
     $[@ $@
@@ -384,7 +384,7 @@ cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh usage.u usage01.int : ./optencod.exe ../../g
     $[@ -i -q $(optencod_opt_$(host_os)) $]@ cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
  
 ./icmask.exe: ../../c/icmask.c
-    $(host_cl) $(host_cl_opts) $<
+    $(host_cl) $(host_cl_opts) -I"../../h" $<
  
 ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
     $[@ ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c

@@ -1,5 +1,5 @@
-# Linker initialization file for use during builds. Searches for libs in the src
-# tree instead of the usual %WATCOM/libxxx hierarchy.
+# Linker initialization file for use during builds. Searches for libs in the
+# src tree instead of the usual %WATCOM/libxxx hierarchy.
 
 system begin dos
     libpath %OWROOT%/src/clib/library/msdos.086/ms
@@ -52,7 +52,7 @@ system begin dos4g
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/dos386
     op stub=%OWROOT%/src/wstub/wstub.exe
-    format os2 le
+    format os2 le ^
 end
 
 system begin causeway
@@ -170,10 +170,18 @@ system begin win386
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/stub386
     libpath %OWROOT%/src/win386/conv/win386
-    format phar rex
+    format phar rex ^
 end
 
 system begin win_vxd
     option osname='Windows VxD'
-    format windows vxd ^
+    format windows vxd ^ 
+end
+
+system begin osi
+    option osname='OS Independent'
+    libpath %OWROOT%/src/clib/library/osi.386/ms_r
+    libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
+    libpath %OWROOT%/src/emu387/stub386
+    format pharlap rex ^
 end

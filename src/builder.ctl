@@ -112,11 +112,8 @@ cdsay .
 [ INCLUDE <SRCDIR>/cg/risc/axp/builder.ctl ]
 [ INCLUDE <SRCDIR>/cg/risc/ppc/builder.ctl ]
 [ INCLUDE <SRCDIR>/cg/risc/mps/builder.ctl ]
-[ INCLUDE <SRCDIR>/cc/386/builder.ctl ]
-[ INCLUDE <SRCDIR>/cc/i86/builder.ctl ]
-[ INCLUDE <SRCDIR>/cc/axp/builder.ctl ]
-[ INCLUDE <SRCDIR>/cc/ppc/builder.ctl ]
-[ INCLUDE <SRCDIR>/cc/mps/builder.ctl ]
+[ INCLUDE <SRCDIR>/cc/builder.ctl ]
+[ INCLUDE <SRCDIR>/plusplus/builder.ctl ]
 # Continue with SDK tools
 [ INCLUDE <SRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <SRCDIR>/sdk/builder.ctl ]

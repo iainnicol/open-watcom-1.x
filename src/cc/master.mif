@@ -120,7 +120,7 @@ external_dependencies += $(cg_debug_deps)
 external_dependencies += $(cg_deps)
 !endif
 !ifeq host_os osi
-external_dependencies += $(os2ldr)
+external_dependencies += $(osildr)
 !endif
 
 #
@@ -165,7 +165,7 @@ $(exe_name).exe: $(depends_exe) exe.lnk
         $(cc) $(clflags) $(comp_objs_exe) $(xlibs) $(libs) $(cg_deps)
 !else ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
-        $(w32bind) $^&.rex $@ $(os2ldr)
+        $(osibind) $^&.rex $@ $(osildr)
         @rm -f $^&.rex
 !else	
         $(linker) name $@ @exe.lnk
