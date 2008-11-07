@@ -8,5 +8,6 @@ proj_name = edbind
 
 inc_dirs = -I"../../h"
 
-edbind.exe: main.obj clibext.obj
-        $(cl) $(clflags) $< $(cl_libs)
+objs = main.obj
+
+!include exetarg.mif
