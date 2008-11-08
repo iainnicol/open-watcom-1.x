@@ -21,12 +21,12 @@ cdsay .
     <CCCMD> os2386/wccd386.sym    <RELROOT>/binp/dll/wccd386.sym
     <CCCMD> nt386/wcpp386.exe     <RELROOT>/binnt/wpp386.exe
     <CCCMD> nt386/wcpp386.sym     <RELROOT>/binnt/wpp386.sym
-    <CCCMD> nt386/wccd386.dll     <RELROOT>/binnt/wccd386.exe
-    <CCCMD> nt386/wccd386.sym     <RELROOT>/binnt/wccd386.sym
+    <CCCMD> nt386/wppd386.dll     <RELROOT>/binnt/wppd386.dll
+    <CCCMD> nt386/wppd386.sym     <RELROOT>/binnt/wppd386.sym
     <CCCMD> ntaxp/wcpp386.exe     <RELROOT>/axpnt/wpp386.exe
     <CCCMD> ntaxp/wcpp386.sym     <RELROOT>/axpnt/wpp386.sym
-    <CCCMD> ntaxp/wccd386.dll     <RELROOT>/axpnt/wccd386.dll
-    <CCCMD> ntaxp/wccd386.sym     <RELROOT>/axpnt/wccd386.sym
+    <CCCMD> ntaxp/wppd386.dll     <RELROOT>/axpnt/wppd386.dll
+    <CCCMD> ntaxp/wppd386.sym     <RELROOT>/axpnt/wppd386.sym
     <CCCMD> qnx386/wcpp386.exe    <RELROOT>/qnx/binq/wpp386
     <CCCMD> qnx386/wcpp386.sym    <RELROOT>/qnx/sym/wpp386.sym
     <CCCMD> linux386/wcpp386.exe  <RELROOT>/binl/wpp386

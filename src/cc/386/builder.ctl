@@ -21,7 +21,7 @@ cdsay .
     <CCCMD> os2386/wccd386c.sym   <RELROOT>/binp/dll/wccd386.sym
     <CCCMD> nt386/wcc386c.exe     <RELROOT>/binnt/wcc386.exe
     <CCCMD> nt386/wcc386c.sym     <RELROOT>/binnt/wcc386.sym
-    <CCCMD> nt386/wccd386c.dll    <RELROOT>/binnt/wccd386.exe
+    <CCCMD> nt386/wccd386c.dll    <RELROOT>/binnt/wccd386.dll
     <CCCMD> nt386/wccd386c.sym    <RELROOT>/binnt/wccd386.sym
     <CCCMD> ntaxp/wcc386c.exe     <RELROOT>/axpnt/wcc386.exe
     <CCCMD> ntaxp/wcc386c.sym     <RELROOT>/axpnt/wcc386.sym

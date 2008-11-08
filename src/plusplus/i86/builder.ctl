@@ -18,16 +18,16 @@ set BOOTCLEAN=rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
     <CCCMD> dos386/wcppi86.sym    <RELROOT>/binw/wpp.sym
     <CCCMD> os2386/wcppi86.exe    <RELROOT>/binp/wpp.exe
     <CCCMD> os2386/wcppi86.sym    <RELROOT>/binp/wpp.sym
-    <CCCMD> os2386/wccdi86.dll    <RELROOT>/binp/dll/wppd.dll
-    <CCCMD> os2386/wccdi86.sym    <RELROOT>/binp/dll/wppd.sym
+    <CCCMD> os2386/wppdi86.dll    <RELROOT>/binp/dll/wppdi86.dll
+    <CCCMD> os2386/wppdi86.sym    <RELROOT>/binp/dll/wppdi86.sym
     <CCCMD> nt386/wcppi86.exe     <RELROOT>/binnt/wpp.exe
     <CCCMD> nt386/wcppi86.sym     <RELROOT>/binnt/wpp.sym
-    <CCCMD> nt386/wccdi86.dll     <RELROOT>/binnt/wppd.exe
-    <CCCMD> nt386/wccdi86.sym     <RELROOT>/binnt/wppd.sym
+    <CCCMD> nt386/wppdi86.dll     <RELROOT>/binnt/wppdi86.dll
+    <CCCMD> nt386/wppdi86.sym     <RELROOT>/binnt/wppdi86.sym
     <CCCMD> ntaxp/wcppi86.exe     <RELROOT>/axpnt/wpp.exe
     <CCCMD> ntaxp/wcppi86.sym     <RELROOT>/axpnt/wpp.sym
-    <CCCMD> ntaxp/wccdi86.dll     <RELROOT>/axpnt/wppd.dll
-    <CCCMD> ntaxp/wccdi86.sym     <RELROOT>/axpnt/wppd.sym
+    <CCCMD> ntaxp/wppdi86.dll     <RELROOT>/axpnt/wppdi86.dll
+    <CCCMD> ntaxp/wppdi86.sym     <RELROOT>/axpnt/wppdi86.sym
     <CCCMD> qnx386/wcppi86.exe    <RELROOT>/qnx/binq/wpp
     <CCCMD> qnx386/wcppi86.sym    <RELROOT>/qnx/sym/wpp.sym
     <CCCMD> linux386/wcppi86.exe  <RELROOT>/binl/wpp

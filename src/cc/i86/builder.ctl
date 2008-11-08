@@ -24,7 +24,7 @@ set BOOTCLEAN=rm -f <OWBINDIR>/wcc<CMDEXT>
     <CCCMD> os2386/wccdi86c.sym   <RELROOT>/binp/dll/wccd.sym
     <CCCMD> nt386/wcci86c.exe     <RELROOT>/binnt/wcc.exe
     <CCCMD> nt386/wcci86c.sym     <RELROOT>/binnt/wcc.sym
-    <CCCMD> nt386/wccdi86c.dll    <RELROOT>/binnt/wccd.exe
+    <CCCMD> nt386/wccdi86c.dll    <RELROOT>/binnt/wccd.dll
     <CCCMD> nt386/wccdi86c.sym    <RELROOT>/binnt/wccd.sym
     <CCCMD> ntaxp/wcci86c.exe     <RELROOT>/axpnt/wcc.exe
     <CCCMD> ntaxp/wcci86c.sym     <RELROOT>/axpnt/wcc.sym

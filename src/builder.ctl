@@ -101,11 +101,12 @@ cdsay .
 [ INCLUDE <SRCDIR>/owl/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/builder.ctl ]
 [ INCLUDE <SRCDIR>/cfloat/builder.ctl ]
-# Continue with the assemblers/librarian/linker
+# Continue with the assemblers/librarian/linker/make
 [ INCLUDE <SRCDIR>/wasm/builder.ctl ]
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
 [ INCLUDE <SRCDIR>/lib/builder.ctl ]
 [ INCLUDE <SRCDIR>/link/builder.ctl ]
+[ INCLUDE <SRCDIR>/make/builder.ctl ]
 # On to the compilers
 [ INCLUDE <SRCDIR>/cg/intel/386/builder.ctl ]
 [ INCLUDE <SRCDIR>/cg/intel/i86/builder.ctl ]
@@ -117,6 +118,8 @@ cdsay .
 # Continue with SDK tools
 [ INCLUDE <SRCDIR>/wpi/builder.ctl ]
 [ INCLUDE <SRCDIR>/sdk/builder.ctl ]
+[ INCLUDE <SRCDIR>/rc/rc/builder.ctl ]
+[ INCLUDE <SRCDIR>/rc/builder.ctl ]
 # Now miscellaneous command line tools
 [ INCLUDE <SRCDIR>/rc/builder.ctl ]
 [ INCLUDE <SRCDIR>/disasm/builder.ctl ]

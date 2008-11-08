@@ -21,7 +21,7 @@ cdsay .
     <CCCMD> os2386/wccdaxpc.sym   <RELROOT>/binp/dll/wccdaxp.sym
     <CCCMD> nt386/wccaxpc.exe     <RELROOT>/binnt/wccaxp.exe
     <CCCMD> nt386/wccaxpc.sym     <RELROOT>/binnt/wccaxp.sym
-    <CCCMD> nt386/wccdaxpc.dll    <RELROOT>/binnt/wccdaxp.exe
+    <CCCMD> nt386/wccdaxpc.dll    <RELROOT>/binnt/wccdaxp.dll
     <CCCMD> nt386/wccdaxpc.sym    <RELROOT>/binnt/wccdaxp.sym
     <CCCMD> ntaxp/wccaxpc.exe     <RELROOT>/axpnt/wccaxp.exe
     <CCCMD> ntaxp/wccaxpc.sym     <RELROOT>/axpnt/wccaxp.sym

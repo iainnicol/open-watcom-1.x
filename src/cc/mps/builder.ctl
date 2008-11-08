@@ -21,7 +21,7 @@ cdsay .
     <CCCMD> os2386/wccdmpsc.sym   <RELROOT>/binp/dll/wccdmps.sym
     <CCCMD> nt386/wccmpsc.exe     <RELROOT>/binnt/wccmps.exe
     <CCCMD> nt386/wccmpsc.sym     <RELROOT>/binnt/wccmps.sym
-    <CCCMD> nt386/wccdmpsc.dll    <RELROOT>/binnt/wccdmps.exe
+    <CCCMD> nt386/wccdmpsc.dll    <RELROOT>/binnt/wccdmps.dll
     <CCCMD> nt386/wccdmpsc.sym    <RELROOT>/binnt/wccdmps.sym
     <CCCMD> ntaxp/wccmpsc.exe     <RELROOT>/axpnt/wccmps.exe
     <CCCMD> ntaxp/wccmpsc.sym     <RELROOT>/axpnt/wccmps.sym
