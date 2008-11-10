@@ -125,7 +125,7 @@ extra_rc_flags_osi = -D__OSI__
 .key : $(wrc_dir)/hash
 .h : $(wrc_dir)/h;$(trmem_dir)
 
-inc_dirs = -I. -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(fe_misc_dir)/h" -I"$(cpp_dir)" -I$(trmem_dir)
+inc_dirs = -I. -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(fe_misc_dir)/h" -I"$(cpp_dir)" -I"$(trmem_dir)"
 
 # explicit rules
 
