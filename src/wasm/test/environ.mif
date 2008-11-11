@@ -446,11 +446,11 @@ host_cpu = $(arch)
 !else ifdef __OS2__
 !  define host_os os2
 !else ifdef __NT__
-!  define host_os
+!  define host_os nt
 !else ifdef __LINUX__
 !  define host_os linux
 !else ifdef __OSX__
-!  define host_os
+!  define host_os osx
 !else
 !  error unknown OS
 !endif
