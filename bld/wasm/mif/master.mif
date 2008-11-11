@@ -17,8 +17,6 @@ wasm_trmem = 1
 
 !include trmem.mif
 
-fpu_flags = -fpc
-
 inc_dirs  = -I. -I"$(proj_path)/h" -I"$(womp_dir)/h"
 
 libs = $(wres_dir)/$(%OBJDIR)/wres.lib
@@ -145,13 +143,13 @@ usagej.u : $(proj_path)/h/usage.sp
         wsplice -kJAPANESE -k$(host_OS) -t8 -u $[@ $^@
 
 msg.gh : $(proj_path)/h/asmshare.msg
-        $(awk) -v base=MSG_SHARE_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_SHARE_RC_BASE" $[@
 
 wasmmsg.gh : $(proj_path)/h/wasm.msg
-        $(awk) -v base=MSG_WASM_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_WASM_RC_BASE" $[@
 
 wmpmsg.gh : $(proj_path)/h/womp.msg
-        $(awk) -v base=MSG_WOMP_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
+        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_WOMP_RC_BASE" $[@
 
 ###################################################################
 

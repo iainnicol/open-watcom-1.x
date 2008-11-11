@@ -90,7 +90,7 @@
 #define OBJ_MAJOR_VERSION   1
 #define OBJ_MINOR_VERSION   3
 
-#include "pushpck1.h"
+#pragma pack(push,1)
 
 typedef struct {
     word            signature;      /* == 0x8386                    */
@@ -178,4 +178,4 @@ typedef struct {
 
 #define SEG_NUM_MASK    0x7fff
 
-#include "poppck.h"
+#pragma pack(pop)

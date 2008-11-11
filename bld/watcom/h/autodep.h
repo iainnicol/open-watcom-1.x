@@ -37,7 +37,7 @@ extern "C" {
 #define         DEP_LIST_TYPE   0x79
 #define         DEP_LIST_NAME   "EBWF_XFMMTUPPE"
 
-#include "pushpck1.h"
+#pragma pack(push, 1)
 
 typedef struct {
     uint_32     time;           /* file's time taken from stat */
@@ -45,7 +45,7 @@ typedef struct {
     char        name[1];        /* dynamic array */
 } _WCUNALIGNED DepInfo;
 
-#include "poppck.h"
+#pragma pack(pop)
 
 DepInfo *WResGetAutoDep( char *fname );
 void WResFreeAutoDep( DepInfo *ptr );

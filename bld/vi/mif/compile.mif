@@ -1,6 +1,10 @@
 c_dirs_root = $(vi_dir)/$(host_os)
 !if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx"
+!ifdef prebuild
+c_dirs_root = $(vi_dir)/noui
+!else
 c_dirs_root = $(vi_dir)/unix
+!endif
 !endif
 !ifdef curses
 c_dirs_root = $(vi_dir)/curses
@@ -58,6 +62,6 @@ extra_c_flags += -ai
 !endif
 
 .ctl.ch:
-        $(parsectl) $[@ $[&.ch Ctl_$^&
+        parsectl $[@ $[&.ch Ctl_$^&
 .dyn.dh:
-        $(parsedyn) $[@ $[&.dh Dyn_$^&
+        parsedyn $[@ $[&.dh Dyn_$^&
