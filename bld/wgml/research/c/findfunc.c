@@ -49,7 +49,7 @@
 #include "research.h"
 #include "wgml.h"
 
-/* Local structs. */
+/* Local structs */
 
 /* This was suggested by wgml's tag struct, which should be studied when
  * gendev is written for additional fields. For example, flags indicating
@@ -66,11 +66,11 @@ typedef struct {
     size_t      count;
 } token;
 
-/* Local variables. */
+/* Local variables */
 
 static filecb   *   file_cbs;   // duplicates wgml def
 
-/* These should probably be globals in gendev. */
+/* These should probably be globals in gendev */
 
 static token    *   cur_token;
 
@@ -125,16 +125,16 @@ static dev_func     dev_funcs[] = {
     { "y_size" },
 };
 
-/* Load the usage text array. */
+/* Load the usage text array */
 
 static  char const          *   usage_text[] = {
 #include "ffusage.h"
 NULL
 };
 
-/* Local function definitions. */
+/* Local function definitions */
 
-/* Borrowed from wgml. */
+/* Borrowed from wgml */
 
 #include <stdarg.h>
 
@@ -294,8 +294,12 @@ static int get_dev_func( void )
 }
 
 /* Function check_directory().
- * Checks the directory provided to the program: examines all .PCD files
- * to locate all device functions and identify any not already known to exist.
+ * Perform the check of the directory provided to the program.
+ * Only files, not subdirectories, are checked.
+ * The length of all files is checked to see if it is a multiple of 16.
+ * Function parse_header() is used to process the header of each file.
+ * The number of files of types 0x02, 0x03 and 0x04 is displayed.
+ * Any file types other than 0x02, 0x03 and 0x04 are displayed.
  *
  * Global Used:
  *      tgt_path contains the directory passed on the command line.
@@ -358,7 +362,7 @@ static int check_directory( void )
 
             for( i = 0; i < dev_func_cnt; i++ ) {
                 if( !memicmp( dev_funcs[i].func_name, cur_token->start, \
-                                                    cur_token->count ) ) break;
+                    cur_token->count ) ) break;
 
             }
 
@@ -385,7 +389,7 @@ static int check_directory( void )
 }
 
 /*  Function print_banner().
- *  Print the banner to the screen.
+ *  Print the banner to the screen
  */
 
 void print_banner( void )
@@ -397,7 +401,7 @@ void print_banner( void )
 }
 
 /*  Function print_usage().
- *  Print the usage information to the screen.
+ *  Print the usage information to the screen
  */
 
 void print_usage( void )
@@ -418,22 +422,22 @@ void print_usage( void )
  *  is concerned with overall program architecture, not details.
  *
  *  Returns:
- *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate.
+ *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate
  */
 
 int main()
 {
-    /* Declare automatic variables. */
+    /* Declare automatic variables */
 
     size_t  cmdlen  = 0;
     char *  cmdline = NULL;
     int     retval;
 
-    /* Display the banner. */
+    /* Display the banner */
 
     print_banner();
 
-    /* Display the usage information if the command line is empty. */
+    /* Display the usage information if the command line is empty */
 
     cmdlen = _bgetcmd( NULL, 0 );
     if( cmdlen == 0 ) {
@@ -441,12 +445,9 @@ int main()
         return( EXIT_FAILURE );
     }
 
-    /* Include space for the terminating null character. */
+    /* Get the command line */
 
-    cmdlen++;
-
-    /* Get the command line. */
-
+    cmdlen++; /* Include space for the terminating null character */
     cmdline = malloc( cmdlen );
     if( cmdline == NULL ) {
         return( EXIT_FAILURE );
@@ -454,7 +455,7 @@ int main()
 
     cmdlen = _bgetcmd( cmdline, cmdlen );
 
-    /* Initialize the globals. */
+    /* Initialize the globals */
 
     initialize_globals();
     res_initialize_globals();
@@ -469,7 +470,7 @@ int main()
 
     cur_token = (token *) mem_alloc( sizeof( token ) );
 
-    /* Parse the command line: allocates and sets tgt_path. */
+    /* Parse the command line: allocates and sets tgt_path */
 
     retval = parse_cmdline( cmdline );
     if( retval == FAILURE ) {
@@ -477,12 +478,12 @@ int main()
         return( EXIT_FAILURE );
     }
 
-    /* Free the memory held by cmdline and reset it. */
+    /* Free the memory held by cmdline and reset it */
 
     free( cmdline );
     cmdline = NULL;
 
-    /* Check all files in current directory. */
+    /* Check all files in current directory */
 
     retval = check_directory();
 
@@ -497,7 +498,7 @@ int main()
     mem_free(cur_token);
     cur_token = NULL;
 
-    /* Print the useage if the process failed. */
+    /* Done */
 
     if( retval == FAILURE) {
       print_usage();
@@ -506,4 +507,3 @@ int main()
     
     return( EXIT_SUCCESS );
 }
-

@@ -78,8 +78,8 @@ orl_return DoSymTable( orl_sec_handle orl_sec_hnd )
     return( ORL_OKAY );
 }
 
-static void * objRead( void *hdl, size_t len )
-/********************************************/
+static void * objRead( void *hdl, unsigned int len )
+/**************************************************/
 {
     buff_list   ptr;
 
@@ -121,8 +121,8 @@ char *secNames[] = {
     ".debug_aranges"
 };
 
-unsigned long   sectsizes[DR_DEBUG_NUM_SECTS];
-unsigned_8      *sections[DR_DEBUG_NUM_SECTS];
+unsigned long sectsizes[DR_DEBUG_NUM_SECTS];
+char *sections[DR_DEBUG_NUM_SECTS];
 
 orl_return ReadDbgInfoSec( orl_sec_handle o_shnd )
 /************************************************/
@@ -229,8 +229,8 @@ static int setSects( orl_file_handle o_fhnd )
     return( 0 );
 }
 
-int main( int argc, char *argv[] )
-/********************************/
+void main( int argc, char *argv[] )
+/*********************************/
 {
     orl_handle                  o_hnd;
     orl_file_handle             o_fhnd;
@@ -246,7 +246,7 @@ int main( int argc, char *argv[] )
         printf( "Usage:  dwdump <file>\n" );
         printf( "Where <file> is a COFF, ELF or OMF object file\n" );
         printf( "dwdump reads and dumps DWARF debugging information\n" );
-        return( EXIT_SUCCESS );
+        return;
     }
 
     dump.sections++;
@@ -254,7 +254,7 @@ int main( int argc, char *argv[] )
     file = open( argv[1], O_BINARY | O_RDONLY );
     if( file == -1 ) {
         printf( "Error opening file.\n" );
-        return( EXIT_FAILURE );
+        return;
     }
     TRMemOpen();
     funcs.read = &objRead;
@@ -264,12 +264,12 @@ int main( int argc, char *argv[] )
     o_hnd = ORLInit( &funcs );
     if( o_hnd == NULL ) {
         printf( "Got NULL orl_handle.\n" );
-        return( EXIT_FAILURE );
+        return;
     }
     type = ORLFileIdentify( o_hnd, (void *)file );
     if( type == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
-        return( EXIT_FAILURE );
+        return;
     }
     switch( type ) {
     case ORL_OMF:
@@ -289,7 +289,7 @@ int main( int argc, char *argv[] )
     o_fhnd = ORLFileInit( o_hnd, (void *)file, type );
     if( o_fhnd == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
-        return( EXIT_FAILURE );
+        return;
     }
 
     o_flags = ORLFileGetFlags( o_fhnd );
@@ -317,7 +317,7 @@ int main( int argc, char *argv[] )
     } else {
         if( ORLFileScan( o_fhnd, NULL, &DoSection ) != ORL_OKAY ) {
             printf( "Error occured in scanning file.\n" );
-            return( EXIT_FAILURE );
+            return;
         }
     }
 
@@ -325,11 +325,11 @@ int main( int argc, char *argv[] )
 
     if( ORLFileFini( o_fhnd ) != ORL_OKAY ) {
         printf( "Error calling ORLFileFini.\n" );
-        return( EXIT_FAILURE );
+        return;
     }
     if( close( file ) == -1 ) {
         printf( "Error closing file.\n" );
-        return( EXIT_FAILURE );
+        return;
     }
     if( ORLFini( o_hnd ) != ORL_OKAY ) {
         printf( "Error calling ORLFini.\n" );
@@ -342,5 +342,4 @@ int main( int argc, char *argv[] )
     TRMemPrtList();
 #endif
     TRMemClose();
-    return( EXIT_SUCCESS );
 }

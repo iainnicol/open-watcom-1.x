@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Internal data types used by standalone disassembler.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -205,15 +206,6 @@ struct unnamed_label_return_struct {
     label_entry         entry;
     return_val          error;
 };
-
-struct sa_disasm_struct {
-    uint_8              *data;
-    orl_sec_offset      offs;
-    orl_sec_offset      last;
-};
-
-typedef struct sa_disasm_struct sa_disasm_struct;
-typedef sa_disasm_struct *sa_disasm;
 
 // hash table definitions
 typedef uint_32         hash_value;
