@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <string.h>
+#include "spy.h"
 #include <dde.h>
 
 static message *userMsg;
@@ -40,56 +40,12 @@ static message *userMsg;
 /*
  * GetMessageDataFromID - use message id to look up message structure
  */
-message *GetMessageDataFromID( int msgid, char *class_name )
+message *GetMessageDataFromID( int msgid  )
 {
     int i;
 
     for( i=0;i< MessageArraySize;i++ ) {
         if( msgid == MessageArray[i].id ) return( &MessageArray[i] );
-    }
-    if( !stricmp( class_name, "edit" ) ) {
-        for( i = 0; i < EditMessageArraySize; i++ ) {
-            if( msgid == EditMessageArray[i].id ) {
-                return( &EditMessageArray[i] );
-            }
-        }
-    } else if( !stricmp( class_name, "button" ) ) {
-        for( i = 0; i < ButtonMessageArraySize; i++ ) {
-            if( msgid == ButtonMessageArray[i].id ) {
-                return( &ButtonMessageArray[i] );
-            }
-        }
-    } else if( !stricmp( class_name, "static" ) ) {
-        for( i = 0; i < StaticMessageArraySize; i++ ) {
-            if( msgid == StaticMessageArray[i].id ) {
-                return( &StaticMessageArray[i] );
-            }
-        }
-    } else if( !stricmp( class_name, "listbox" ) ) {
-        for( i = 0; i < ListBoxMessageArraySize; i++ ) {
-            if( msgid == ListBoxMessageArray[i].id ) {
-                return( &ListBoxMessageArray[i] );
-            }
-        }
-#ifdef NT_MSGS
-    } else if( !stricmp( class_name, "combobox" ) ||
-               !stricmp( class_name, WC_COMBOBOXEX ) ) {
-#else
-    } else if( !stricmp( class_name, "combobox" ) ) {
-#endif
-        for( i = 0; i < ComboBoxMessageArraySize; i++ ) {
-            if( msgid == ComboBoxMessageArray[i].id ) {
-                return( &ComboBoxMessageArray[i] );
-            }
-        }
-#ifdef NT_MSGS
-    } else if( !stricmp( class_name, "scrollbar" ) ) {
-        for( i = 0; i < ScrollBarMessageArraySize; i++ ) {
-            if( msgid == ScrollBarMessageArray[i].id ) {
-                return( &ScrollBarMessageArray[i] );
-            }
-        }
-#endif
     }
     return( NULL );
 
@@ -98,14 +54,14 @@ message *GetMessageDataFromID( int msgid, char *class_name )
 /*
  * ProcessIncomingMessage - get a string associated with a message id
  */
-void ProcessIncomingMessage( int msgid, char *class_name, char *res )
+void ProcessIncomingMessage( int msgid, char *res )
 {
     message     *msg;
     char        *fmtstr;
     char        buf[256];
 
     res[0] = 0;
-    msg = GetMessageDataFromID( msgid, class_name );
+    msg = GetMessageDataFromID( msgid );
     if( msg != NULL ) {
         if( msg->bits[M_WATCH] ) {
             strcpy( res, msg->str );
@@ -179,7 +135,7 @@ void SetFilterSaveBitsMsgs( MsgClass type, BOOL val, char *bits ) {
  */
 void InitMessages( void )
 {
-    userMsg = GetMessageDataFromID( WM_USER, NULL );
+    userMsg = GetMessageDataFromID( WM_USER );
 
 } /* InitMessages */
 

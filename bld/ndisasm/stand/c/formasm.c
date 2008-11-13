@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Emit assembly language source.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -198,7 +199,7 @@ static orl_sec_offset printString( char * string, string_type type )
     return( 0 );
 }
 
-static orl_sec_offset tryDUP( unsigned_8 *bytes, orl_sec_offset i, orl_sec_size size )
+static orl_sec_offset tryDUP(char *string, orl_sec_offset i, orl_sec_size size)
 {
     orl_sec_offset      d;
     unsigned int        dup;
@@ -207,25 +208,25 @@ static orl_sec_offset tryDUP( unsigned_8 *bytes, orl_sec_offset i, orl_sec_size 
     if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) ) return( 0 );
 
     for( d = i + 8; d < ( size - 8 ); d += 8 ) {
-        if( memcmp( &bytes[i], &bytes[d], 8 ) ) return( 0 );
+        if( memcmp( &string[i], &string[d], 8 ) ) return( 0 );
     }
 
     d -= i;
     dup = d / 8;
     if( dup < MIN_DUP_LINES ) return( 0 );
 
-    BufferStore( "0%XH DUP(", dup, bytes[i] );
+    BufferStore( "0%XH DUP(", dup, string[i] );
 
     for( dup = 0; dup < 7; dup++ ) {
-        BufferHex( 2, bytes[i + dup] );
+        BufferHex( 2, string[i + dup] );
         BufferConcat( "," );
     }
-    BufferHex( 2, bytes[i + 7] );
+    BufferHex( 2, string[i + 7] );
     BufferConcat( ")" );
     return( d );
 }
 
-static void printRest( unsigned_8 *bytes, orl_sec_size size )
+static void printRest( char *string, orl_sec_size size )
 {
     orl_sec_offset      i;
     orl_sec_offset      d;
@@ -243,7 +244,7 @@ static void printRest( unsigned_8 *bytes, orl_sec_size size )
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
         if( is_masm && !( i % 8 ) ) {
-            d = tryDUP( bytes, i, size );
+            d = tryDUP( string, i, size );
             if( d > 0 ) {
                 i += d;
                 if( i < size ) {
@@ -255,7 +256,7 @@ static void printRest( unsigned_8 *bytes, orl_sec_size size )
             }
         }
 
-        BufferHex( 2, bytes[i] );
+        BufferHex( 2, string[i] );
         if( i < size-1 ) {
             if( ( i % 8 ) == 7 ) {
                 BufferConcatNL();
@@ -443,7 +444,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels && types[rv] ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
+        HandleAReference(*((long *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -451,7 +452,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
+        HandleAReference(*((long *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -459,7 +460,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_16 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
+        HandleAReference(*((short*)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -467,7 +468,7 @@ orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_8 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
+        HandleAReference(*((char *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
                          r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
@@ -513,7 +514,7 @@ static void printOut( char *string, orl_sec_offset offset, orl_sec_size size)
                 }
                 string_left += curr_pos;
             } else {
-                printRest( (unsigned_8 *)string_left, size - (int)( string_left - string ) );
+                printRest( string_left, size - (int)( string_left - string ) );
                 break;
             }
         } else {

@@ -32,10 +32,6 @@
 *                   skip_compact_entry()
 *                   skip_extended_entry()
 *
-* Note:         The field names are intended to correspond to the field names 
-*               shown in the Wiki. The Wiki structs are named when the structs
-*               defined here are defined; they are not identical.
-*
 ****************************************************************************/
 
 #ifndef CFDIR_H_INCLUDED
@@ -45,20 +41,14 @@
 #include <stdio.h>
 #include "lhdirect.h"
 
-/* An item_name can have at most 78 characters. */
+#define ITEM_MAX 78     /* Per documentation, max length of item name */
 
-#define ITEM_MAX 78
-
-/* Structure declarations. */
-
-/* To hold the data from the CompactDirEntry struct. */
+/* Structure declarations */
 
 typedef struct compact_entry_struct {
     char    item_name[ITEM_MAX+1];
     char    file_name[NAME_MAX+1];
 } compact_entry_t;
-
-/* To hold the data from the ExtendedDirEntry struct. */
 
 typedef struct extended_entry_struct {
     char        item_name[ITEM_MAX+1];
@@ -67,10 +57,10 @@ typedef struct extended_entry_struct {
     uint16_t    preview;
 } extended_entry_t;
 
-/* Function declarations. */
+/* Function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
 int get_entry_count( FILE *, uint16_t *);
@@ -81,7 +71,7 @@ int skip_compact_entry( FILE * );
 int skip_extended_entry( FILE * );
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}   /* End of "C" linkage for C++ */
 #endif
 
 #endif  /* CFDIR_H_INCLUDED */

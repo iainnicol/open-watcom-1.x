@@ -31,6 +31,8 @@
 #ifndef _VXD_DDB_H
 #define _VXD_DDB_H
 
+#pragma pack(push, 1)
+
 typedef struct {
     unsigned_32 next;
     unsigned_16 SDK_version;
@@ -59,5 +61,7 @@ typedef struct {
     unsigned_32 reserved3;
     //********************
 } vxd_ddb;
+
+#pragma pack(pop)
 
 #endif
