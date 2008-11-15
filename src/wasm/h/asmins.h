@@ -58,7 +58,7 @@ enum prefix_reg {
 
 #if defined( _STANDALONE_ )
     struct asm_ins {
-        unsigned short      token;                  /* T_ADD, etc */
+        enum asm_token      token;                  /* T_ADD, etc */
         unsigned            allowed_prefix  : 4;    /* allowed prefix */
         unsigned            byte1_info      : 4;    /* flags for 1st byte */
         unsigned            rm_info         : 2;    /* info on r/m byte */
@@ -95,7 +95,7 @@ struct asm_code {
     long            data[3];
     struct {
 #if defined( _STANDALONE_ )
-        unsigned short      token;
+        enum asm_token      token;
         enum asm_cpu        cpu;
         OPNDTYPE            opnd_type[3];
         unsigned char       opcode;

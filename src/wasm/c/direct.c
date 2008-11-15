@@ -87,7 +87,7 @@ typedef struct {
     int_16      stack_size;             // size of stack segment
 } last_seg_info;        // information about last opened simplified segment
 
-enum {
+enum dir_tok {
 #undef pick
 #define pick( tok, str, val, init )     tok
 
@@ -112,7 +112,7 @@ static typeinfo TypeInfo[] = {
 #define LOCAL_STRING_32         " [ebp- "
 
 static char             *Check4Mangler( int *i );
-static int              token_cmp( char **token, int start, int end );
+static int              token_cmp( char **token, enum dir_tok start, enum dir_tok end );
 static void             ModelAssumeInit( void );
 
 extern  char            write_to_file;  // write if there is no error
@@ -1259,8 +1259,8 @@ int  SetCurrSeg( int i )
     return( SetUse32() );
 }
 
-static int token_cmp( char **token, int start, int end )
-/******************************************************/
+static int token_cmp( char **token, enum dir_tok start, enum dir_tok end )
+/************************************************************************/
 /* compare token against those specified in TypeInfo[ start...end ] */
 {
     int         i;
