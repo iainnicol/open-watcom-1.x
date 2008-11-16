@@ -59,6 +59,7 @@
 #include "ring.h"
 #include "procfile.h"
 #include "hash.h"
+#include "loadpe.h"
 
 static bool             EndOfLib( file_list *, unsigned long );
 static void             IncLoadObjFiles( void );
@@ -101,7 +102,7 @@ void SetupFakeModule( void )
     if( FmtData.type & MK_PE ) {
         FakeModule = NewModEntry();
         FakeModule->modinfo = DBI_ALL|MOD_LAST_SEG|MOD_NEED_PASS_2|FMT_PE_XFER;
-        FakeModule->name = StringStringTable( &PermStrings, LinkerModule );
+        FakeModule->name = AddStringStringTable( &PermStrings, LinkerModule );
         DBIInitModule( FakeModule );
     }
 }
@@ -645,7 +646,7 @@ unsigned long ObjPass1( void )
     SymModEnd();
     if( !(CurrMod->modinfo & MOD_GOT_NAME) ) {
         savename = CurrMod->name;
-        CurrMod->name = StringStringTable( &PermStrings, savename );
+        CurrMod->name = AddStringStringTable( &PermStrings, savename );
         _LnkFree( savename );
         CurrMod->modinfo |= MOD_GOT_NAME;
     }
@@ -711,4 +712,27 @@ void ResolveUndefined( void )
 
     BurnLibs();
     PrintBadTraces();
+}
+
+void ProcLocalImports( void )
+/***************************/
+{
+#ifdef _OS2
+    symbol  *sym;
+
+    if( FmtData.type & MK_PE )
+        for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+            if( !(sym->info & SYM_DEFINED) && !IS_SYM_WEAK_REF(sym) && !(sym->info & SYM_IS_ALTDEF) ) {
+                ImportPELocalSym( sym );
+            }
+        }
+#endif
+}
+
+void FreeLocalImports( void )
+/***************************/
+{
+#ifdef _OS2
+    FreePELocalImports();
+#endif
 }

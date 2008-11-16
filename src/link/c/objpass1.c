@@ -54,6 +54,7 @@
 #include "obj2supp.h"
 #include "objpass2.h"
 #include "objpass1.h"
+#include "loadpe.h"
 
 #define MAX_SEGMENT         0x10000
 
@@ -527,7 +528,7 @@ class_entry *FindClass( section *sect, char *name, bool is32bit,
 
     if( is32bit )
         is32bit = CLASS_32BIT;
-    
+
     lastclass = sect->classlist;
     for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
         if( stricmp( currclass->name, name ) == 0
@@ -538,7 +539,7 @@ class_entry *FindClass( section *sect, char *name, bool is32bit,
     }
     namelen = strlen( name );
     currclass = CarveAlloc( CarveClass );
-    currclass->name = AddStringTable( &PermStrings, name, namelen + 1 );
+    currclass->name = AddBufferStringTable( &PermStrings, name, namelen + 1 );
     currclass->segs = NULL;
     currclass->section = sect;
     currclass->flags = is32bit;
@@ -639,7 +640,7 @@ seg_leader *InitLeader( char *segname )
     seg->seg_addr.seg = UNDEFINED;
     seg->group = NULL;
     seg->info = 0;
-    seg->segname = StringStringTable( &PermStrings, segname );
+    seg->segname = AddStringStringTable( &PermStrings, segname );
     seg->dbgtype = NOT_DEBUGGING_INFO;
     seg->segflags = FmtData.def_seg_flags;
     return( seg );
@@ -706,7 +707,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     Ring2Append( &group->leaders, seg );
 }
 
-void SetAddPubSym(symbol *sym, int type, mod_entry *mod, offset off,
+void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off,
                          unsigned_16 frame )
 /*************************************************************************/
 {
@@ -721,8 +722,9 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
 /**************************************************************/
 // do the object file independent public symbol definition.
 {
-    unsigned    name_len;
-    bool        frame_ok;
+    unsigned        name_len;
+    bool            frame_ok;
+    sym_info        sym_type;
 
     if( seg != NULL ) {
         frame = 0;
@@ -745,15 +747,22 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
             ReportMultiple( sym, sym->name, name_len );
         }
     } else {
-        if( IS_SYM_COMMUNAL(sym) || IS_SYM_IMPORTED(sym) ) {
+        sym_type = SYM_REGULAR;
+        if( IS_SYM_IMPORTED(sym) ) {
             sym = HashReplace( sym );
-            if( IS_SYM_COMMUNAL(sym) ) {
-                sym->p.seg = NULL;
+            if( FmtData.type & MK_PE && sym->p.import != NULL ) {
+                dll_sym_info  *dll_info = sym->p.import;
+                AddPEImportLocalSym( sym, dll_info->iatsym );
+                sym_type |= SYM_REFERENCED;
+                LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name );
             }
+        } else if( IS_SYM_COMMUNAL(sym) ) {
+            sym = HashReplace( sym );
+            sym->p.seg = NULL;
         }
 
         ClearSymUnion( sym );
-        SetAddPubSym(sym, SYM_REGULAR, CurrMod, off, frame);
+        SetAddPubSym(sym, sym_type, CurrMod, off, frame);
         sym->info &= ~SYM_DISTRIB;
         if( seg != NULL ) {
             if( LinkFlags & STRIP_CODE ) {
@@ -860,7 +869,7 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar,
                                  bool is32bit )
 /*********************************************************************/
 {
-    unsigned    symtype;
+    sym_info    symtype;
     symbol      *altsym;
 
     if( is32bit ) {
@@ -895,13 +904,13 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar,
     return( sym );
 }
 
-void CheckComdatSym( symbol *sym, unsigned flags )
+void CheckComdatSym( symbol *sym, sym_info flags )
 /*******************************************************/
 // check a comdat redefinition to see if it is OK
 // NYI: SYM_CDAT_SEL_SIZE, SYM_CDAT_SEL_EXACT, & SYM_CDAT_SEL_ASSOC not yet
 // handled properly.  no prob. under coff, but OMF makes it very hard...
 {
-    unsigned    symflags;
+    sym_info    symflags;
 
     symflags = sym->info & SYM_CDAT_SEL_MASK;
     if( flags == SYM_CDAT_SEL_NODUP || symflags == SYM_CDAT_SEL_NODUP ) {
