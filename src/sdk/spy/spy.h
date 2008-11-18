@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+/* Include new common control styles that require recent versions of Windows. */
+#ifdef __NT__
+    #undef _WIN32_IE
+    #define _WIN32_IE   0x0600
+#endif
+
 #include <windows.h>
 #define MSG_RC_BASE     0
 #include "rcstr.gh"
@@ -230,6 +236,26 @@
     #define WM_GETTITLEBARINFOEX            0x033F
 #endif
 
+// Control messages
+#ifndef EM_SETIMESTATUS
+    #define EM_SETIMESTATUS                 0x00D8
+#endif
+#ifndef EM_GETIMESTATUS
+    #define EM_GETIMESTATUS                 0x00D9
+#endif
+#ifndef BM_SETDONTCLICK
+    #define BM_SETDONTCLICK                 0x00F8
+#endif
+#ifndef LB_GETLISTBOXINFO
+    #define LB_GETLISTBOXINFO               0x01B2
+#endif
+#ifndef CB_GETCOMBOBOXINFO
+    #define CB_GETCOMBOBOXINFO              0x0164
+#endif
+#ifndef SBM_GETSCROLLBARINFO
+    #define SBM_GETSCROLLBARINFO            0x00EB
+#endif
+
 #include "font.h"
 #include "mem.h"
 #include "savelbox.h"
@@ -309,7 +335,8 @@ typedef enum {
     MC_SYSTEM,
     MC_UNKNOWN,
     MC_USER,
-    MC_WINDOW
+    MC_WINDOW,
+    MC_CONTROL
 } MsgClass;
 
 typedef struct {
@@ -380,6 +407,20 @@ extern HANDLE           ResInstance;
 extern filters          Filters;
 extern WORD             MessageArraySize;
 extern message          near MessageArray[];
+extern WORD             EditMessageArraySize;
+extern message          near EditMessageArray[];
+extern WORD             ButtonMessageArraySize;
+extern message          near ButtonMessageArray[];
+extern WORD             StaticMessageArraySize;
+extern message          near StaticMessageArray[];
+extern WORD             ListBoxMessageArraySize;
+extern message          near ListBoxMessageArray[];
+extern WORD             ComboBoxMessageArraySize;
+extern message          near ComboBoxMessageArray[];
+#ifdef NT_MSGS
+extern WORD             ScrollBarMessageArraySize;
+extern message          near ScrollBarMessageArray[];
+#endif
 extern BOOL             SpyMessagesAutoScroll;
 extern BOOL             AutoSaveConfig;
 extern WORD             WindowCount;
@@ -401,6 +442,7 @@ void SpyMessagePauseToggle( void );
 void ResizeSpyBox( WORD width, WORD height );
 void SaveSpyBox( void );
 void ResetSpyListBox( void );
+BOOL GetSpyBoxSelection( char *str );
 
 /* spycfg.c */
 void LoadSpyConfig( char *fname );
@@ -428,8 +470,8 @@ BOOL GetFileName( char *ext, int type, char *fname );
 BOOL InitGblStrings( void );
 
 /* spymsgs.c */
-message *GetMessageDataFromID( int msgid );
-void ProcessIncomingMessage( int msgid, char *res );
+message *GetMessageDataFromID( int msgid, char *class_name );
+void ProcessIncomingMessage( int msgid, char *class_name, char *res );
 LPSTR GetMessageStructAddr( int msgid );
 void InitMessages( void );
 void SetFilterMsgs( MsgClass type, BOOL val, int bit );
@@ -442,10 +484,9 @@ void CopyBitState( char *dst, char *src );
 void SetFilterSaveBitsMsgs( MsgClass type, BOOL val, char *bits );
 
 /* spypick.c */
-void FrameAWindow( HWND hwnd, BOOL use_snap );
+void FrameAWindow( HWND hwnd );
 void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  );
 HWND DoPickDialog( WORD );
-LONG CALLBACK SpyPickProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam );
 
 /* spyproc.c */
 LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam );

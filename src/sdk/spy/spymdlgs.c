@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
+#include "spy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "spy.h"
 #include <dde.h>
 #include "wwinhelp.h"
 
@@ -333,6 +333,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
     LPSTR       ptr;
     char        str[256];
     char        tmp[20];
+    char        class_name[80];
     char        *endptr;
     char        *warnmsg;
     char        *strptr;
@@ -362,7 +363,8 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
             EndDialog( hwnd, 0 );
             break;
         }
-        msgPtr = GetMessageDataFromID( id );
+        GetClassName( currHwnd, class_name, 80 );
+        msgPtr = GetMessageDataFromID( id, class_name );
         if( msgPtr == NULL ) {
             EndDialog( hwnd, 0 );
             break;
@@ -407,7 +409,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
             break;
         case MSGSEL_HILIGHT:
             if( IsWindow( currHwnd ) ) {
-                FrameAWindow( currHwnd, FALSE );
+                FrameAWindow( currHwnd );
                 doHilite = !doHilite;
             } else {
                 warnmsg = GetRCString( STR_WIN_DOESNT_EXIST );
@@ -448,7 +450,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         break;
     case WM_CLOSE:
         if( doHilite ) {
-            FrameAWindow( currHwnd, FALSE );
+            FrameAWindow( currHwnd );
         }
         EndDialog( hwnd, 0 );
         break;
@@ -470,13 +472,10 @@ void DoMessageSelDialog( HWND hwnd )
 {
     FARPROC     fp;
     char        str[80];
-    LRESULT     sel;
 
-    sel = SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
-    if( sel == (WORD)LB_ERR ) {
+    if( !GetSpyBoxSelection( str ) ) {
         return;
     }
-    SendMessage( SpyListBox, LB_GETTEXT, sel, (DWORD) (LPSTR) str );
     fp = MakeProcInstance( (FARPROC) MessageSelectDialog, Instance );
     JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (LPVOID) fp, (DWORD) (LPSTR) str );
     FreeProcInstance( fp );

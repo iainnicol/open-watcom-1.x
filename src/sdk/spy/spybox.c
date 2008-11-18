@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
+#include "spy.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "spy.h"
 #ifdef __NT__
     #include <commctrl.h>
 #endif
@@ -62,10 +62,10 @@ typedef struct column_info {
 
 column_info columns[NUM_COLUMNS] = {
     { STR_HEADING_1, 150 },
-    { STR_HEADING_2, 70 },
-    { STR_HEADING_3, 70 },
-    { STR_HEADING_4, 70 },
-    { STR_HEADING_5, 70 }
+    { STR_HEADING_2, 80 },
+    { STR_HEADING_3, 80 },
+    { STR_HEADING_4, 80 },
+    { STR_HEADING_5, 80 }
 };
 #endif
 
@@ -340,3 +340,51 @@ void ResetSpyListBox( void  )
     UpdateWindow( SpyListBoxTitle );
 
 } /* ResetSpyListBox */
+
+/*
+ * GetSpyBoxSelection - get the currently selected message
+ */
+BOOL GetSpyBoxSelection( char *str )
+{
+    LRESULT sel;
+#ifdef __NT__
+    if( hInstCommCtrl == NULL ) {
+#endif
+        sel = SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
+        if( sel == (WORD)LB_ERR ) {
+            return( FALSE );
+        }
+        SendMessage( SpyListBox, LB_GETTEXT, sel, (DWORD)(LPSTR)str );
+        return( TRUE );
+#ifdef __NT__
+    } else {
+        LVITEM  lvi;
+        char    buf[9];
+        memset( str, ' ', SPYOUT_LENGTH );
+        str[SPYOUT_LENGTH - 1] = '\0';
+        sel = SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
+        if( sel == (LRESULT)-1 ) {
+            return( FALSE );
+        }
+        lvi.mask = LVIF_TEXT;
+        lvi.iItem = (int)sel;
+        lvi.iSubItem = 0;
+        lvi.pszText = buf;
+        lvi.cchTextMax = SPYOUT_LENGTH;
+        SendMessage( SpyListBox, LVM_GETITEM, 0, (LPARAM)&lvi );
+        strcpy( str, buf );
+        str[strlen( str )] = ' ';
+        lvi.iSubItem = 1;
+        SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
+        strncpy( &str[SPYOUT_HWND], buf, SPYOUT_HWND_LEN );
+        str[SPYOUT_HWND + SPYOUT_HWND_LEN] = ' ';
+        lvi.iSubItem = 2;
+        SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
+        strncpy( &str[SPYOUT_MSG], buf, SPYOUT_MSG_LEN );
+        str[SPYOUT_MSG + SPYOUT_MSG_LEN] = ' ';
+        return( TRUE );
+    }
+#endif
+
+} /* GetSpyBoxSelection */
+

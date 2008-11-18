@@ -200,7 +200,7 @@ void ClearBit( byte *array, unsigned num )
 }
 
 char *ChkStrDup( char *str )
-/***********************************/
+/**************************/
 {
     size_t      len;
     char        *copy;
@@ -211,14 +211,15 @@ char *ChkStrDup( char *str )
     return( copy );
 }
 
-void *ChkMemDup( void *mem, unsigned len  )
-/**************************************************/
+char *ChkToString( void *mem, unsigned len )
+/******************************************/
 {
-    char        *copy;
+    char        *str;
 
-    _ChkAlloc( copy, len  );
-    memcpy( copy, mem, len );
-    return( copy );
+    _ChkAlloc( str, len + 1 );
+    memcpy( str, mem, len );
+    str[ len ] = '\0';
+    return( str );
 }
 
 static void WalkList( node *list, void (*fn)( void * ) )
@@ -311,8 +312,8 @@ void FreeList( void *_curr )
 /*********************************/
 /* Free a list of nodes. */
 {
-    node                *curr = _curr;
-    node                *next_node;
+    node        *curr = _curr;
+    node        *next_node;
 
     while( curr ) {
         next_node = curr->next;
@@ -321,9 +322,8 @@ void FreeList( void *_curr )
     }
 }
 
-name_list *AddNameTable( char *name, unsigned len, bool is_mod,
-                                                        name_list **owner )
-/*************************************************************************/
+name_list *AddNameTable( char *name, unsigned len, bool is_mod, name_list **owner )
+/*********************************************************************************/
 {
     name_list   *imp;
     unsigned_32 off;
@@ -331,22 +331,20 @@ name_list *AddNameTable( char *name, unsigned len, bool is_mod,
 
     index = 1;
     off = 1;
-    for( ;; ) {
-        imp = *owner;
-        if( imp == NULL ) {
-            _PermAlloc( imp, sizeof( name_list ) );
-            imp->next = NULL;
-            imp->len = len;
-            imp->name = AddSymbolStringTable( &PermStrings, name, len );
-            imp->num = is_mod ? index : off;
-            *owner = imp;
-            break;
-        }
+    for( imp = *owner; imp != NULL; imp = imp->next ) {
         if( len == imp->len && memcmp( imp->name, name, len ) == 0 )
             break;
         off += imp->len + 1;
-        owner = &imp->next;
         ++index;
+        owner = &imp->next;
+    }
+    if( imp == NULL ) {
+        _PermAlloc( imp, sizeof( name_list ) );
+        imp->next = NULL;
+        imp->len = len;
+        imp->name = AddSymbolStringTable( &PermStrings, name, len );
+        imp->num = is_mod ? index : off;
+        *owner = imp;
     }
     return( imp );
 }
@@ -391,7 +389,7 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-char *RemovePath( char *name, int *len )
+char *RemovePath( char *name, unsigned *len )
 /**********************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
