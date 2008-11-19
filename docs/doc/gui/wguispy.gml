@@ -326,10 +326,13 @@ from the Messages Menu.
 .result
 This opens a Message Class dialog box.  The caption of
 the dialog box reflects the menu item selected.
-.figure *depth='3.23' *scale=80 *file='spy5' In the Message Class dialog, select the Individual Message Control button.
-.step Click on the Individual Message Control button.
+.figure *depth='3.23' *scale=80 *file='spy5' In the Message Class dialog, select change button.
+.step Click on the Change button
+next to the alphabetic range into
+which your first message selection falls.
 .result
-This opens a dialog that contains a check box for each message.
+This opens a dialog that contains a check box for each message
+that falls into that alphabetic range.
 .figure *depth='2.55' *scale=52 *file='spy6' In the Message Range dialog, you select the individual messages you want &spy to watch or stop on.
 .step Add or remove messages from the list of messages.
 .result
@@ -432,13 +435,13 @@ Messages followed by (**) are available under Win32 only.
 .tb set $
 .tb &INDlvl.+2 &syscl./2+1
 $WM_ASKCBFORMATNAME $WM_CHANGECBCHAIN
-$WM_CLEAR           $WM_CLIPBOARDUPDATE (**)
-$WM_COPY            $WM_CUT
-$WM_DESTROYCLIPBOARD$WM_DRAWCLIPBOARD
-$WM_HSCROLLCLIPBOARD$WM_PAINTCLIPBOARD
-$WM_PASTE           $WM_RENDERALLFORMATS
-$WM_RENDERFORMAT    $WM_SIZECLIPBOARD
-$WM_UNDO            $WM_VSCROLLCLIPBOARD
+$WM_CLEAR           $WM_COPY
+$WM_CUT             $WM_DESTROYCLIPBOARD
+$WM_DRAWCLIPBOARD   $WM_HSCROLLCLIPBOARD
+$WM_PAINTCLIPBOARD  $WM_PASTE
+$WM_RENDERALLFORMATS$WM_RENDERFORMAT
+$WM_SIZECLIPBOARD   $WM_UNDO
+$WM_VSCROLLCLIPBOARD
 .monooff
 .*
 .section DDE Messages
@@ -461,8 +464,7 @@ $WM_DDE_UNADVISE
 .tb set $
 .tb &INDlvl.+2 &syscl./2+1
 $WM_INITDIALOG      $WM_INITMENU
-$WM_INITMENUPOPUP   $WM_UNINITMENUPOPUP (**)
-
+$WM_INITMENUPOPUP
 .monooff
 .*
 .section Input Messages
@@ -471,23 +473,16 @@ $WM_INITMENUPOPUP   $WM_UNINITMENUPOPUP (**)
 .monoon
 .tb set $
 .tb &INDlvl.+2 &syscl./2+1
-$WM_APPCOMMAND (**)    $WM_BEGINDRAG (*)
-$WM_CHAR               $WM_CHARTOITEM
-$WM_COMMAND            $WM_CONTEXTMENU (**)
+$WM_BEGINDRAG (*)      $WM_CHAR
+$WM_CHARTOITEM         $WM_COMMAND
 $WM_COPYDATA (**)      $WM_DEADCHAR
 $WM_DRAGLOOP (*)       $WM_DRAGMOVE (*)
 $WM_DRAGSELECT (*)     $WM_DROPOBJECT (*)
 $WM_EXITSIZEMEOVE (*)  $WM_HSCROLL
-$WM_INPUT (**)         $WM_INPUT_DEVICE_CHANGE (**)
-$WM_INPUTLANGCHANGE (**)$WM_INPUTLANGCHANGEREQUEST (**)
 $WM_KEYDOWN            $WM_KEYUP
 $WM_LBTRACKPOINT (*)   $WM_MENUCHAR
-$WM_MENUCOMMAND (**)   $WM_MENUDRAG (**)
-$WM_MENUGETOBJECT (**) $WM_MENURBUTTONUP (**)
 $WM_MENUSELECT         $WM_NEXTMENU (*)
-$WM_NOTIFY (**)        $WM_NOTIFYFORMAT (**)
-$WM_QUERYDROPOBJECT (*)$WM_TCARD (**)
-$WM_UNICHAR (**)       $WM_VSCROLL
+$WM_QUERYDROPOBJECT (*)$WM_VSCROLL
 .monooff
 .*
 .section MDI Messages
@@ -510,16 +505,12 @@ $WM_MDISETMENU      $WM_MDITILE
 .monoon
 .tb set $
 .tb &INDlvl.+2 &syscl./2+1
-$WM_CAPTURECHANGED (**)$WM_LBUTTONDBLCLK
-$WM_LBUTTONDOWN     $WM_LBUTTONUP
-$WM_MBUTTONDBLCLK   $WM_MBUTTONDOWN
-$WM_MBUTTONUP       $WM_MOUSEACTIVATE   
-$WM_MOUSEHOVER (**) $WM_MOUSEHWHEEL (**)
-$WM_MOUSELEAVE (**) $WM_MOUSEMOVE
-$WM_MOUSEWHEEL (**) $WM_RBUTTONDBLCLK
-$WM_RBUTTONDOWN     $WM_RBUTTONUP
-$WM_SETCURSOR       $WM_XBUTTONDBLCLK (**)
-$WM_XBUTTONDOWN (**)$WM_XBUTTONUP (**)
+$WM_LBUTTONDBLCLK   $WM_LBUTTONDOWN
+$WM_LBUTTONUP       $WM_MBUTTONDBLCLK
+$WM_MBUTTONDOWN     $WM_MBUTTONUP
+$WM_MOUSEACTIVATE   $WM_MOUSEMOVE
+$WM_RBUTTONDBLCLK   $WM_RBUTTONDOWN
+$WM_RBUTTONUP       $WM_SETCURSOR
 .monooff
 .*
 .section NC Misc Messages
@@ -542,11 +533,9 @@ $WM_NCPAINT
 $WM_NCHITTEST       $WM_NCLBUTTONDBLCLK
 $WM_NCLBUTTONDOWN   $WM_NCLBUTTONUP
 $WM_NCMBUTTONDBLCLK $WM_NCMBUTTONDOWN
-$WM_NCMBUTTONUP     $WM_NCMOUSEHOVER (**)
-$WM_NCMOUSELEAVE (**)$WM_NCMOUSEMOVE
+$WM_NCMBUTTONUP     $WM_NCMOUSEMOVE
 $WM_NCRBUTTONDBLCLK $WM_NCRBUTTONDOWN
-$WM_NCRBUTTONUP     $WM_NCXBUTTONDBLCLK (**)
-$WM_NCXBUTTONDOWN (**)$WM_NCXBUTTONUP (**)
+$WM_NCRBUTTONUP
 .monooff
 .*
 .section Other Messages
@@ -555,16 +544,14 @@ $WM_NCXBUTTONDOWN (**)$WM_NCXBUTTONUP (**)
 .monoon
 .tb set $
 .tb &INDlvl.+2 &syscl./2+1
-$WM_CHANGEUISTATE (**)$WM_COALESCE_FIRST
-$WM_COALESCE_LAST     $WM_COMMNOTIFY
-$WM_CONVERTREQUEST (*)$WM_CONVERTRESULT (*)
-$WM_DROPFILES         $WM_INTERIM (*)
-$WM_PENWINFIRST       $WM_PENWINLAST
-$WM_PRINT (**)        $WM_PRINTCLIENT (**)
-$WM_QUERYSAVESTATE (*)$WM_QUEUESYNC
-$WM_QUERYUISTATE (**) $WM_SIZEWAIT (*)
-$WM_SYNCTASK (*)      $WM_TESTING (*)
-$WM_UPDATEUISTATE (**)$WM_YOMICHAR (*)
+$WM_COALESCE_FIRST   $WM_COALESCE_LAST
+$WM_COMMNOTIFY       $WM_CONVERTREQUEST (*)
+$WM_CONVERTRESULT (*)$WM_DROPFILES
+$WM_INTERIM (*)      $WM_PENWINFIRST
+$WM_PENWINLAST       $WM_QUERYSAVESTATE (*)
+$WM_QUEUESYNC        $WM_SIZEWAIT (*)
+$WM_SYNCTASK (*)     $WM_TESTING (*)
+$WM_YOMICHAR (*)
 .monooff
 .*
 .section System Messages
@@ -574,19 +561,16 @@ $WM_UPDATEUISTATE (**)$WM_YOMICHAR (*)
 .tb set $
 .tb &INDlvl.+2 &syscl./2+1
 $WM_CANCELJOURNAL (**)$WM_COMPACTING
-$WM_DEVMODECHANGE     $WM_DEVICECHANGE (**)
-$WM_DISPLAYCHANGE (**)$WM_ENDSESSION
+$WM_DEVMODECHANGE     $WM_ENDSESSION
 $WM_ENTERIDLE         $WM_ENTERMENULOOP
 $WM_EXITMENULOOP      $WM_FILESYSCHANGE (*)
 $WM_NULL              $WM_POWER
-$WM_POWERBROADCAST (**)$WM_SPOOLERSTATUS
-$WM_SYSCHAR           $WM_SYSCOLORCHANGE
-$WM_SYSCOMMAND        $WM_SYSDEADCHAR
-$WM_SYSKEYDOWN        $WM_SYSKEYUP
-$WM_SYSTEMERROR (*)   $WM_SYSTIMER (*)
-$WM_THEMECHANGED (**) $WM_TIMECHANGE
-$WM_TIMER             $WM_USERCHANGED (**)
-$WM_WININICHANGE      $WM_WTSSESSION_CHANGE (**)
+$WM_SPOOLERSTATUS     $WM_SYSCHAR
+$WM_SYSCOLORCHANGE    $WM_SYSCOMMAND
+$WM_SYSDEADCHAR       $WM_SYSKEYDOWN
+$WM_SYSKEYUP          $WM_SYSTEMERROR (*)
+$WM_SYSTIMER (*)      $WM_TIMECHANGE
+$WM_TIMER             $WM_WININICHANGE
 .monooff
 .*
 .section User Messages
@@ -623,17 +607,13 @@ $WM_CTLCOLOREDIT (**)  $WM_CTLCOLORLISTBOX (**)
 $WM_CTLCOLORMSGBOX (**)$WM_CTLCOLORSCROLLBAR (**)
 $WM_CTLCOLORSTATIC (**)$WM_DELETEITEM
 $WM_DESTROY            $WM_DRAWITEM
-$WM_DWMCOLORIZATIONCHANGED (**)$WM_DWMCOMPOSITIONCHANGED (**)
-$WM_DWMNCRENDERINGCHANGED (**)$WM_DWMWINDOWMAXIMIZEDCHANGE (**)
 $WM_ENABLE             $WM_ENTERSIZEMOVE (*)
 $WM_ERASEBKGND         $WM_FONTCHANGE
 $WM_GETDLGCODE         $WM_GETFONT
-$WM_GETHOTKEY          $WM_GETICON (**)
-$WM_GETMINMAXINFO      $WM_GETTEXT
-$WM_GETTEXTLENGTH      $WM_GETTITLEBARINFOEX (**)
-$WM_HELP (**)          $WM_ICONERASEBKGND
-$WM_KILLFOCUS          $WM_MEASUREITEM
-$WM_MOVE               $WM_MOVING (**)
+$WM_GETHOTKEY          $WM_GETMINMAXINFO
+$WM_GETTEXT            $WM_GETTEXTLENGTH
+$WM_ICONERASEBKGND     $WM_KILLFOCUS
+$WM_MEASUREITEM        $WM_MOVE
 $WM_NEXTDLGCTL         $WM_OTHERWINDOWCREATED
 $WM_OTHERWINDOWDESTROYED$WM_PAINT
 $WM_PAINTICON          $WM_PALETTECHANGED
@@ -642,11 +622,9 @@ $WM_QUERYDRAGICON      $WM_QUERYENDSESSION
 $WM_QUERYNEWPALETTE    $WM_QUERYOPEN
 $WM_QUERYPARKICON (*)  $WM_QUIT
 $WM_SETFOCUS           $WM_SETFONT
-$WM_SETHOTKEY          $WM_SETICON (**)
-$WM_SETREDRAW          $WM_SETTEXT
-$WM_SETVISIBLE (*)     $WM_SHOWWINDOW
-$WM_SIZE               $WM_SIZING (**)
-$WM_STYLECHANGED (**)  $WM_STYLECHANGING (**)
+$WM_SETHOTKEY          $WM_SETREDRAW
+$WM_SETTEXT            $WM_SETVISIBLE (*)
+$WM_SHOWWINDOW         $WM_SIZE
 $WM_SYNCPAINT (*)      $WM_VKEYTOITEM
 $WM_WINDOWPOSCHANGED   $WM_WINDOWPOSCHANGING
 .monooff
@@ -781,12 +759,18 @@ from the Spy menu.
 This minimizes the &spy window and opens the Select Window dialog
 which prompts you to choose a window to monitor.
 .figure *depth='2.46' *scale=100 *file='spy8' The Select Window dialog displays information for the window on which the cursor rests.
-.step Position the cursor inside the icon in the dialog box.  Press the mouse button and hold it down.
+.step Position the cursor on the window you want to monitor.
 .result
 As you move the cursor across the screen, the window on which the
 cursor is positioned has a highlighted border and information about
 the selected window appears in the dialog box.
-.step Position the cursor on the window you want to monitor.  Release the mouse button.
+.step Click on the window you want to monitor.
+.result
+Once you select a window by clicking on it, the other windows are not
+selected as you move over them with the cursor. However, you can
+select a window by clicking on it. This de-selects the previously
+selected window and enters information about the new window in the
+dialog box.
 .begnote
 .note Note:
 You can select only one window at a time using the Select Window
@@ -811,10 +795,10 @@ select additional windows in the same way you select one window.
 from the Spy menu.
 .result
 This minimizes the &spy window and opens the Select Window dialog.
-.step Position the cursor inside the icon in the dialog box.  Press the mouse button and hold it down.
+.step Position the cursor on the window you want to monitor.
 .result
 Information about the currently selected window appears in the dialog.
-.step Position the cursor on the window you want to monitor.  Release the mouse button.
+.step Click on the window you want to monitor.
 .begnote
 .note Note:
 You can select only one window at a time using the Select Window
@@ -955,7 +939,7 @@ from the Spy menu.
 This minimizes the &spy window and opens the Peek At Window dialog
 box.
 :cmt. .figure *depth='1.xx' *file='spy12' The Peek at Window dialog displays information about the window on which the cursor rests.
-.step Position the cursor inside the icon in the dialog box.  Press the mouse button and hold it down.
+.step Position the cursor on the window you want to monitor.
 .result
 As you move the cursor across the screen, the window on which the
 cursor is positioned has a highlighted border and information about
@@ -979,7 +963,13 @@ the style bits for the window's class
 a numeric identifier associated with the window when it is created
 (This only appears if the selected window is a child window.)
 .endpoint
-.step Position the cursor on the window you want to monitor.  Release the mouse button.
+.step Click on the desired window to monitor.
+.result
+Once you select a window by clicking on it, the other windows are not
+selected as you move over them with the cursor. However, you can
+select a window by clicking on it. This de-selects the previously
+selected window and enters information specific to the new window in
+the dialog box.
 .step Click on OK
 to close the dialog box.
 .result

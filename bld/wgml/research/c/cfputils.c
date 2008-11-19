@@ -36,9 +36,6 @@
 *                   verify_driver()
 *                   verify_font()
 *
-* Note:         The Wiki should be consulted for any term whose meaning is
-*               not apparent. This should help in most cases.
-*
 ****************************************************************************/
 
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -47,6 +44,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* wstd.h must preceed cfdev.h,cfdrv.h,cffon.h to avoid conflict with */
+/* stdbool.h, which those headers include */
+
+#include "wstd.h"
 #include "banner.h"
 #include "cfdev.h"
 #include "cfdir.h"
@@ -58,7 +59,7 @@
 #include "dfinterp.h"
 #include "research.h"
 
-/*  Return values for the verify_ local functions. */
+/*  Return values for the verify_ local functions */
 
 #define OPEN_ERROR 0
 #define BAD_HEADER 1
@@ -66,16 +67,16 @@
 #define BAD_MATCH  3
 #define GOOD_MATCH 4
 
-/*  Local variables. */
+/*  Local variables */
 
-/*  Load the usage text array. */
+/*  Load the usage text array */
 
 static  char const *    usage_text[] = {
 #include "cfpusage.h"
 NULL
 };
 
-/*  Local function declarations. */
+/*  Local function declarations */
 
 static void check_directory( FILE *, uint32_t);
 static void display_device( cop_device *);
@@ -85,25 +86,26 @@ static int  verify_device( char *, char * );
 static int  verify_driver( char *, char * );
 static int  verify_font( char *, char * );
 
-/*  Function definitions. */
+/*  Function definitions */
 
 /*  Function parse_cop_file().
  *  Verify that the file provided to the program is a .COP file and parse it
  *  if it is.
+ *  This version only actually parses directory and device files.
  *  The actual parsing is done using functions declared in other headers:
- *      cfdir.h for directory files.
- *      cfdev.h for device files.
- *      cfdrv.h for driver files.
- *      cffon.h for font files.
+ *      cfdir.h for directory files
+ *      cfdev.h for device files (planned, not implemented)
+ *      cfdrv.h for driver files (planned, not implemented)
+ *      cffon.h for font files (planned, not implemented)
  *  The number of each type of directory file record (0x101, 0x201, 0x401)
  *  is displayed.
  *
  *  Global Used:
- *      tgt_path contains the file passed on the command line.
+ *      tgt_path contains the file passed on the command line
  *
  *  Returns:
- *      FAILURE if the directory provided cannot be opened.
- *      SUCCESS if the directory can be opened (and so was checked).
+ *      FAILURE if the directory provided cannot be opened
+ *      SUCCESS if the directory can be opened (and so was checked)
  */
 
 int parse_cop_file( void )
@@ -117,12 +119,12 @@ int parse_cop_file( void )
     char            file_type;
     int             retval;    
 
-    /* Open the file. */
+    /* Open the file */
 
     fopen_s( &current_file, tgt_path, "rb" );
     if( current_file == NULL ) return( FAILURE );
 
-    /* Process the file. */
+    /* Process the file */
 
     retval = parse_header( current_file, &file_type );
     if(retval == FAILURE)
@@ -132,15 +134,12 @@ int parse_cop_file( void )
     }
     switch( file_type ) {
     case( 0x02 ): 
-        /* This is a version 3.33 directory file. */
-
+    /* This is a version 3.33 directory file */
         retval = get_entry_count( current_file, &entry_count );
         if(retval == FAILURE) return( FAILURE );
         check_directory( current_file, entry_count );
         break;
     case( 0x03 ):
-        /* This is a device, driver or font file -- or an error. */
-
         if( is_dev_file( current_file ) ) {
             printf_s( "%s is a device file\n", tgt_path );
             current_device = parse_device( current_file );
@@ -167,12 +166,11 @@ int parse_cop_file( void )
             puts("Incorrect file type: file error on attempt to get designator");
             break;
         }
-        designator[3] = '\0';
+        designator[3] = NULLCHAR;
         printf_s("Incorrect file type: %s\n", designator);
         break;
     case( 0x04 ): 
-        /* This is a version 4.1 directory file */
-
+    /* This is a version 4.1 directory file */
         retval = get_entry_count( current_file, &entry_count );
         if(retval == FAILURE) return( FAILURE );
         check_directory( current_file, entry_count );
@@ -187,7 +185,7 @@ int parse_cop_file( void )
 }
 
 /*  Function print_banner().
- *  Print the banner to the screen.
+ *  Print the banner to the screen
  */
 
 void print_banner( void )
@@ -199,7 +197,7 @@ void print_banner( void )
 }
 
 /*  Function print_usage().
- *  Print the usage information to the screen.
+ *  Print the usage information to the screen
  */
 
 void print_usage( void )
@@ -221,42 +219,37 @@ void print_usage( void )
  *
  *  Parameters:
  *      in_file points to the start of the first directory entry to check
- *      count contains the number of entries to check.
+ *      count contains the number of entries to check
  */
 
 void check_directory( FILE * in_file, uint32_t count)
 {
-    /* Used for processing the directory file. */
-
+    int                 bad_file_count  = 0;  /* counts files with errors */
+    compact_entry_t     compact_entry;
+    int                 dev_file_count  = 0; /* counts entries of type 0x101 */
     char                dir[_MAX_DIR];
     char                drive[_MAX_DRIVE];
+    int                 drv_file_count  = 0; /* counts entries of type 0x201 */
+    uint16_t            entry_type;
     char                ext[_MAX_EXT];
+    extended_entry_t    extended_entry;
     char                file_path[_MAX_PATH];
     char                fname[_MAX_FNAME];
-    compact_entry_t     compact_entry;
-    extended_entry_t    extended_entry;
+    int                 fon_file_count  = 0; /* counts entries of type 0x401 */
     int                 i;
+    int                 mismatch_count  = 0;  /* counts files with wrong designator */
     int                 retval;
-    uint16_t            entry_type;
 
-    /* Used for diagnostic counts. */
-
-    int                 bad_file_count  = 0; /* files with errors. */
-    int                 dev_file_count  = 0; /* entries of type 0x101. */
-    int                 drv_file_count  = 0; /* entries of type 0x201. */
-    int                 fon_file_count  = 0; /* entries of type 0x401. */
-    int                 mismatch_count  = 0; /* files with wrong designator. */
-
-    /* Split tgt_path. */
+    /* Split tgt_path */
 
     _splitpath( tgt_path, drive, dir, fname, ext );
 
-    /* Construct file_path. */
+    /* Construct file_path */
 
     strcpy_s( file_path, sizeof( file_path ), drive );
     strcat_s( file_path, sizeof( file_path ), dir );
 
-    /* Tabulate the entry types. */
+    /* Tabulate the entry types */
 
     for( i = 0; i < count; i++) {
         retval = get_entry_type( in_file, &entry_type );
@@ -264,156 +257,106 @@ void check_directory( FILE * in_file, uint32_t count)
             puts( "File error or EOF: entry counts may not match expected total");
             break;
         }
-
         switch( entry_type) {
         case 0x0000:
-            /* Not an entry type, reset counter. */
-
-            i--;
+            i--;    /* no actual entry found, reset counter */
             break;    
         case 0x0001:
-            /* Start of an ExtendedDirEntry. */
-            /* Ensure loop is always exited at some point. */
-
-            for( ;; ) {
+            for( ;; ) { /* ensure loop is always exited at some point */
                 retval = get_entry_type( in_file, &entry_type );
                 if( retval == FAILURE ) {
-                    puts( "File error or EOF: entry counts may not match " \
-                          "expected total");
+                    puts( "File error or EOF: entry counts may not match expected total");
                     break;
                 }
                 switch( entry_type) {
                 case 0x0000:
-                    /* Not an entry type, reset counter. */
-
-                    i--;
+                    i--;    /* no actual entry found, reset counter */
                     break;    
-                case 0x0001:
-                    /* Start of an ExtendedDirEntry. */
-                    /* This is the only case where the loop is not exited. */
-                
+                case 0x0001: /* the only case where the loop is not exited */
                     continue;    
                 case 0x0101:
-                    /* This ExtendedDirEntry is for a device file. */
-
-                    dev_file_count++;
+                    dev_file_count++;   /* entry is for a device file */
                     retval = get_extended_entry( in_file, &extended_entry );
-                    if( retval == FAILURE ) printf_s( "No data for device entry " \
-                                            "%i of type %i\n", i+1, entry_type );
-                    else printf_s( "Entry: %i Device Name: %s File Name: %s\n", \
-                        i+1, extended_entry.item_name, extended_entry.file_name );
-                    retval = verify_device( &file_path, \
-                                            &extended_entry.file_name );
+                    if( retval == FAILURE ) \
+                            printf_s( "No data for device entry %i of type %i\n", i+1, entry_type );
+                    else printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, extended_entry.item_name, extended_entry.file_name );
+                    retval = verify_device( &file_path, & extended_entry.file_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
                     break;
                 case 0x0201:
-                    /* This ExtendedDirEntry is for a driver file. */
-
-                    drv_file_count++;
+                    drv_file_count++;   /* entry is for a driver file */
                     retval = get_extended_entry( in_file, &extended_entry );
                     if( retval == FAILURE ) \
-                            printf_s( "No data for device entry %i of type %i\n", \
-                                                                i+1, entry_type );
-                    else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", \
-                        i+1, extended_entry.item_name, extended_entry.file_name );
-                    retval = verify_driver( &file_path, \
-                                            &extended_entry.file_name );
+                            printf_s( "No data for device entry %i of type %i\n", i+1, entry_type );
+                    else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, extended_entry.item_name, extended_entry.file_name );
+                    retval = verify_driver( &file_path, & extended_entry.file_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
                     break;
                 case 0x0401:
-                    /* This ExtendedDirEntry is for a font file. */
-
-                    fon_file_count++;
+                    fon_file_count++;   /* entry is for a font file */
                     retval = get_extended_entry( in_file, &extended_entry );
                     if( retval == FAILURE ) \
-                            printf_s( "No data for device entry %i of type %i\n", \
-                                                                i+1, entry_type );
-                    else printf_s( "Entry: %i Font Name: %s File Name: %s\n", \
-                        i+1, extended_entry.item_name, extended_entry.file_name );
+                            printf_s( "No data for device entry %i of type %i\n", i+1, entry_type );
+                    else printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, extended_entry.item_name, extended_entry.file_name );
                     retval = verify_font( &file_path, & extended_entry.file_name );
                     if( retval == BAD_MATCH ) mismatch_count++;
                     else if( retval != GOOD_MATCH) bad_file_count++;
                     break;
                 default:
-                    /* Unknown ExtendedDirEntry type. */
-
                     retval = get_extended_entry( in_file, &extended_entry );
                     if( retval == FAILURE ) \
-                        printf_s( "No data for unknown entry %i of type %i\n", \
-                                                            i+1, entry_type);
-                    else printf_s( "Entry: %i Unknown Item Type: %i Name: %20s " \
-                                    "File Name: %s\n", i+1, entry_type, \
-                                    extended_entry.item_name, \
-                                    extended_entry.file_name );
+                        printf_s( "No data for unknown entry %i of type %i\n", i+1, entry_type);
+                    else printf_s( "Entry: %i Unknown Item Type: %i Name: %20s File Name: %s\n", i+1, entry_type, extended_entry.item_name, extended_entry.file_name );
                 }
-                /* Ensure loop is exited for any ExtendedDirEntry. */
-
-                break;
+                break; /* exits unless entry_type is 0x0001 */
             }
             break;
         case 0x0101:
-            /* This CompactDirEntry is for a device file. */
-
-            dev_file_count++;
+            dev_file_count++;   /* entry is for a device file */
             retval = get_compact_entry( in_file, &compact_entry );
             if( retval == FAILURE ) \
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
-            else printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, \
-                            compact_entry.item_name, compact_entry.file_name );
+            else printf_s( "Entry: %i Device Name: %s File Name: %s\n", i+1, compact_entry.item_name, compact_entry.file_name );
             retval = verify_device( &file_path, & compact_entry.file_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
             break;
         case 0x0201:
-            /* This CompactDirEntry is for a driver file. */
-
-            drv_file_count++;
+            drv_file_count++;   /* entry is for a driver file */
             retval = get_compact_entry( in_file, &compact_entry );
             if( retval == FAILURE ) \
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
-            else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, \
-                            compact_entry.item_name, compact_entry.file_name );
+            else printf_s( "Entry: %i Driver Name: %s File Name: %s\n", i+1, compact_entry.item_name, compact_entry.file_name );
             retval = verify_driver( &file_path, & compact_entry.file_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
             break;
         case 0x0401:
-            /* This CompactDirEntry is for a font file. */
-
-            fon_file_count++;
+            fon_file_count++;   /* entry is for a font file */
             retval = get_compact_entry( in_file, &compact_entry );
             if( retval == FAILURE ) \
                 printf_s( "No data for entry %i of type %i\n", i+1, entry_type);
-            else printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, \
-                            compact_entry.item_name, compact_entry.file_name );
+            else printf_s( "Entry: %i Font Name: %s File Name: %s\n", i+1, compact_entry.item_name, compact_entry.file_name );
             retval = verify_font( &file_path, & compact_entry.file_name );
             if( retval == BAD_MATCH ) mismatch_count++;
             else if( retval != GOOD_MATCH) bad_file_count++;
             break;
           default:
-            /* Unknown CompactDirEntry type. */
-
             retval = get_compact_entry( in_file, &compact_entry );
             if( retval == FAILURE ) \
-                printf_s( "No data for unknown entry %i of type %i\n", i+1, \
-                                                                    entry_type);
-            else printf_s( "Entry: %i Unknown Item Type: %i Name: %20s " \
-                           "File Name: %s\n", i+1, entry_type, \
-                           compact_entry.item_name, compact_entry.file_name );
+                printf_s( "No data for unknown entry %i of type %i\n", i+1, entry_type);
+            else printf_s( "Entry: %i Unknown Item Type: %i Name: %20s File Name: %s\n", i+1, entry_type, compact_entry.item_name, compact_entry.file_name );
       }
     }
 
-    /* Report the number of each type of entry. */
+    /* Report the number of each type of entry */
 
     printf_s( "Entries requested: %i\n", count );
-    printf_s( "Entries found:     %i\n", dev_file_count + drv_file_count + \
-                                                                fon_file_count );
-    printf_s( "   of which %i could not be opened or, if opened, read\n", \
-                                                                bad_file_count++);
-    printf_s( "   and of which %i had a different designator (DEV, DRV, FON) " \
-              "than was expected\n", mismatch_count);
+    printf_s( "Entries found:     %i\n", dev_file_count + drv_file_count + fon_file_count );
+    printf_s( "   of which %i could not be opened or, if opened, read\n", bad_file_count++);
+    printf_s( "   and of which %i had a different designator (DEV, DRV, FON) than was expected\n", mismatch_count);
     puts( "By type:");
     printf_s( "Device entries:    %i\n", dev_file_count );
     printf_s( "Driver entries:    %i\n", drv_file_count );
@@ -443,19 +386,16 @@ void display_device( cop_device * in_device)
     if( in_device->output_name == NULL ) puts( "Output File Name:" );
     else printf_s( "Output File Name:          %s\n", in_device->output_name );
     if( in_device->output_extension == NULL ) puts( "Output File Extension:" );
-    else printf_s( "Output File Extension:     %s\n", \
-                                                    in_device->output_extension );
+    else printf_s( "Output File Extension:     %s\n", in_device->output_extension );
     printf_s( "Page Width:                %i\n", in_device->page_width );
     printf_s( "Page Depth:                %i\n", in_device->page_depth );
-    printf_s( "Horizontal Base Units:     %i\n", \
-                                                in_device->horizontal_base_units );
+    printf_s( "Horizontal Base Units:     %i\n", in_device->horizontal_base_units );
     printf_s( "Vertical Base Units:       %i\n", in_device->vertical_base_units );
     printf_s( "Page Start X Value:        %i\n", in_device->x_start );
     printf_s( "Page Start Y Value:        %i\n", in_device->y_start );
     printf_s( "Page Offset X Value:       %i\n", in_device->x_offset );
     printf_s( "Page Offset Y Value:       %i\n", in_device->y_offset );
-    if( in_device->box.font_name == NULL ) printf_s( "Box Font Number:           " \
-                                           "%i\n", in_device->box.font_number );
+    if( in_device->box.font_name == NULL ) printf_s( "Box Font Number:           %i\n", in_device->box.font_number);
     else printf_s( "Box Font Name:             %s\n", in_device->box.font_name );
     printf_s( "Horizontal line character: %c\n", in_device->box.horizontal_line );
     printf_s( "Vertical line character:   %c\n", in_device->box.vertical_line );
@@ -468,12 +408,9 @@ void display_device( cop_device * in_device)
     printf_s( "Left join character:       %c\n", in_device->box.left_join );
     printf_s( "Right join character:      %c\n", in_device->box.right_join );
     printf_s( "Inside join character:     %c\n", in_device->box.inside_join );
-    if( in_device->underscore.font_name == NULL ) printf_s( "Underscore Font " \
-                            "Number:    %i\n", in_device->underscore.font_number);
-    else printf_s( "Underscore Font Name:      %s\n", \
-                                                in_device->underscore.font_name );
-    printf_s( "Underscore character:      %c\n", \
-                                        in_device->underscore.underscore_char );
+    if( in_device->underscore.font_name == NULL ) printf_s( "Underscore Font Number:    %i\n", in_device->underscore.font_number);
+    else printf_s( "Underscore Font Name:      %s\n", in_device->underscore.font_name );
+    printf_s( "Underscore character:      %c\n", in_device->underscore.underscore_char );
     if( in_device->intrans == NULL) {
         puts( "No Intrans Table");
     } else {
@@ -482,8 +419,7 @@ void display_device( cop_device * in_device)
             if( in_device->intrans->table[i] != i ) {
                 display_char( font_character, (char) i );
                 display_char( translation, in_device->intrans->table[i] );
-                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], \
-                                         translation[0], translation[1] );
+                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], translation[0], translation[1] );
             }
         }
     }
@@ -496,8 +432,7 @@ void display_device( cop_device * in_device)
                 display_char( font_character, (char) i );
                 printf_s( "%c%c ", font_character[0], font_character[1] );
                 for( j = 0; j < in_device->outtrans->table[i]->count; j++ ) {
-                    display_char( translation, \
-                                    in_device->outtrans->table[i]->data[j] );
+                    display_char( translation, in_device->outtrans->table[i]->data[j] );
                     printf_s( "%c%c ", translation[0], translation[1] );
                 }
                 puts( "" );
@@ -507,18 +442,12 @@ void display_device( cop_device * in_device)
     printf_s( "Number of Default Fonts: %i\n", in_device->defaultfonts.count );
     for( i = 0; i < in_device->defaultfonts.count; i++ ) {
         printf_s( "  Default Font Number  %i:\n", i );
-        if( in_device->defaultfonts.font[i].font_name == NULL ) \
-                                                        puts( "    Font Name:");
-        else printf_s( "    Font Name:         %s\n", \
-                                    in_device->defaultfonts.font[i].font_name );
-        if( in_device->defaultfonts.font[i].font_style == NULL ) \
-                                                        puts( "    FontStyle:");
-        else printf_s( "    Font Style:        %s\n", \
-                                    in_device->defaultfonts.font[i].font_style );
-        printf_s( "    Font Height:       %i\n", \
-                                    in_device->defaultfonts.font[i].font_height );
-        printf_s( "    Font Space:        %i\n", \
-                                    in_device->defaultfonts.font[i].font_space );
+        if( in_device->defaultfonts.font[i].font_name == NULL ) puts( "    Font Name:");
+        else printf_s( "    Font Name:         %s\n", in_device->defaultfonts.font[i].font_name );
+        if( in_device->defaultfonts.font[i].font_style == NULL ) puts( "    FontStyle:");
+        else printf_s( "    Font Style:        %s\n", in_device->defaultfonts.font[i].font_style );
+        printf_s( "    Font Height:       %i\n", in_device->defaultfonts.font[i].font_height );
+        printf_s( "    Font Space:        %i\n", in_device->defaultfonts.font[i].font_space );
     }
     if( in_device->pauses.startpause == NULL ) puts( "No START Pause" );
     else {
@@ -543,18 +472,12 @@ void display_device( cop_device * in_device)
     printf_s( "Number of Device Fonts: %i\n", in_device->devicefonts.count );
     for( i = 0; i < in_device->devicefonts.count; i++ ) {
         printf_s( "  Device Font Index:   %i:\n", i );
-        if( in_device->devicefonts.font[i].font_name == NULL ) \
-                                                        puts( "    Font Name:");
-        else printf_s( "    Font Name:         %s\n", \
-                                        in_device->devicefonts.font[i].font_name );
-        if( in_device->devicefonts.font[i].font_switch == NULL ) \
-                                                        puts( "    Font Switch:");
-        else printf_s( "    Font Switch:       %s\n", \
-                                    in_device->devicefonts.font[i].font_switch );
-        printf_s( "    Resident Font:     %i\n", \
-                                        in_device->devicefonts.font[i].resident );
-        if( in_device->devicefonts.font[i].fontpause == NULL ) \
-                                                    puts( "    No Font Pause" );
+        if( in_device->devicefonts.font[i].font_name == NULL ) puts( "    Font Name:");
+        else printf_s( "    Font Name:         %s\n", in_device->devicefonts.font[i].font_name );
+        if( in_device->devicefonts.font[i].font_switch == NULL ) puts( "    Font Switch:");
+        else printf_s( "    Font Switch:       %s\n", in_device->devicefonts.font[i].font_switch );
+        printf_s( "    Resident Font:     %i\n", in_device->devicefonts.font[i].resident );
+        if( in_device->devicefonts.font[i].fontpause == NULL ) puts( "    No Font Pause" );
         else {
             puts( "    Font Pause:" );
             interpret_function( in_device->devicefonts.font[i].fontpause );
@@ -568,15 +491,15 @@ void display_device( cop_device * in_device)
  *  Verifies that the file is a device file.
  *
  *  Parameter:
- *      in_path contains the path from the command-line parameter.
- *      in_file contains the file name from the directory file entry.
+ *      in_path contains the path from the command-line parameter
+     *      in_file contains the file name from the directory file entry
  *
  *  Returns:
- *      OPEN_ERROR if the file cannot be opened (implies file does not exist).
- *      BAD_HEADER if the file does not start with a valid .COP file header.
- *      READ_ERROR if the file cannot be read (implies is not a valid .COP file).
- *      BAD_MATCH  if the bytes that should contain "DEV" contains something else.
- *      GOOD_MATCH if the bytes that should contain "DEV" do contain "DEV".
+ *      OPEN_ERROR if the file cannot be opened (implies file does not exist)
+ *      BAD_HEADER if the file does not start with a valid .COP file header
+ *      READ_ERROR if the file cannot be read (implies is not a valid .COP file)
+ *      BAD_MATCH  if the bytes that should contain "DEV" contains something else
+ *      GOOD_MATCH if the bytes that should contain "DEV" do contain "DEV"
  */
  
 int verify_device( char * in_path, char * in_name)
@@ -587,21 +510,19 @@ int verify_device( char * in_path, char * in_name)
     cop_device *    current_device = NULL;
     FILE *          device_file = NULL;
     
-    /* Build the file name. */
-
+    /* Build the file name */
     strcpy_s( file_name, sizeof( file_name ), in_path );
     strcat_s( file_name, sizeof( file_name ), in_name );
     strcat_s( file_name, sizeof( file_name ), ".COP" );
 
-    /* Open the file. */
-
+    /* Open the file */
     fopen_s( &device_file, file_name, "rb" );
     if( device_file == NULL ) {
         printf_s( "Could not open device file %s\n", file_name );
         return( OPEN_ERROR );
     }
 
-    /* Skip the header. */
+    /* Skip the header */
 
     if( parse_header( device_file, &type ) == FAILURE ) {
         printf_s( "%s is not a .COP file (bad header)\n", file_name );
@@ -609,8 +530,7 @@ int verify_device( char * in_path, char * in_name)
         return( BAD_HEADER );
     }
     
-    /* Perform the test and parse the file if appropriate. */
-
+    /* Perform the test and parse the file if appropriate */
     if( is_dev_file( device_file ) ) {
         current_device = parse_device( device_file );
         if( current_device ) display_device( current_device );
@@ -618,20 +538,16 @@ int verify_device( char * in_path, char * in_name)
         return( GOOD_MATCH );
     }
 
-    /* Report the mismatched designator. */
-    
-    /* Reset file to designator. */
-
-    fseek( device_file, -3, SEEK_CUR ); 
+    /* Report the mismatch */
+    fseek( device_file, -3, SEEK_CUR ); /* Reset file to designator */
     fread( &designator, 3, 1, device_file );
     if( ferror( device_file ) || feof( device_file ) ) {
         puts("Incorrect file type: file error on attempt to get designator");
         fclose( device_file );
         return( READ_ERROR );
     }
-    designator[3] = '\0';
-    printf_s( "%s has incorrect designator for a device file: %s\n", tgt_path, \
-                                                                    designator );
+    designator[3] = NULLCHAR;
+    printf_s( "%s has incorrect designator for a device file: %s\n", tgt_path, designator );
     fclose( device_file );
     return( BAD_MATCH );
 }
@@ -659,21 +575,17 @@ void display_driver( cop_driver * in_driver )
     puts( "Start :INIT Block:" );
     if( in_driver->init.start_initblock != NULL ) {
         for( i = 0; i < in_driver->init.start_initblock->count; i++ ) {
-            if( in_driver->init.start_initblock->codetext[i].is_fontvalue ) \
-                                                    puts( ":FONTVALUE Block:");
+            if( in_driver->init.start_initblock->codetext[i].is_fontvalue ) puts( ":FONTVALUE Block:");
             else puts( ":VALUE Block:");
-            interpret_function( \
-                            in_driver->init.start_initblock->codetext[i].text );
+            interpret_function( in_driver->init.start_initblock->codetext[i].text );
         }
     }
     puts( "Document :INIT Block:" );
     if( in_driver->init.document_initblock != NULL ) {
         for( i = 0; i < in_driver->init.document_initblock->count; i++ ) {
-            if( in_driver->init.document_initblock->codetext[i].is_fontvalue ) \
-                                                    puts( ":FONTVALUE Block:");
+            if( in_driver->init.document_initblock->codetext[i].is_fontvalue ) puts( ":FONTVALUE Block:");
             else puts( ":VALUE Block:");
-            interpret_function( \
-                            in_driver->init.document_initblock->codetext[i].text );
+            interpret_function( in_driver->init.document_initblock->codetext[i].text );
         }
     }
     puts( "End :FINISH Block:" );
@@ -688,8 +600,7 @@ void display_driver( cop_driver * in_driver )
     else {
         puts( ":NEWLINE Block(s):" );
         for( i = 0; i < in_driver->newline.count; i++ ) {
-            printf_s( "  Advance: %i\n", \
-                                    in_driver->newline.newlineblock[i].advance );
+            printf_s( "  Advance: %i\n", in_driver->newline.newlineblock[i].advance );
             if( in_driver->newline.newlineblock[i].text != NULL ) {
                 interpret_function( in_driver->newline.newlineblock[i].text );
             }
@@ -703,22 +614,18 @@ void display_driver( cop_driver * in_driver )
     if( in_driver->htab.text != NULL ) {
         interpret_function( in_driver->htab.text );
     }
-    if( in_driver->fontswitch.fontswitchblock == NULL ) \
-                                                    puts( ":FONTSWITCH Block:");
+    if( in_driver->fontswitch.fontswitchblock == NULL ) puts( ":FONTSWITCH Block:");
     else {
         puts( ":FONTSWITCH Block(s):" );    
         for( i = 0; i < in_driver->fontswitch.count; i++ ) {
-            printf_s( "  Type: %s\n", \
-                                in_driver->fontswitch.fontswitchblock[i].type );
+            printf_s( "  Type: %s\n", in_driver->fontswitch.fontswitchblock[i].type );
             if( in_driver->fontswitch.fontswitchblock[i].startvalue != NULL ) {
                 puts( "  :STARTVALUE Block:");
-                interpret_function( \
-                    in_driver->fontswitch.fontswitchblock[i].startvalue->text );
+                interpret_function( in_driver->fontswitch.fontswitchblock[i].startvalue->text );
             }
             if( in_driver->fontswitch.fontswitchblock[i].endvalue != NULL ) {
                 puts( "  :ENDVALUE Block:");
-                interpret_function( \
-                    in_driver->fontswitch.fontswitchblock[i].endvalue->text );
+                interpret_function( in_driver->fontswitch.fontswitchblock[i].endvalue->text );
             }
         }
     }
@@ -731,15 +638,13 @@ void display_driver( cop_driver * in_driver )
                 puts( "  No :STARTVALUE Block");
             } else {
                 puts( "  :STARTVALUE Block:");
-                interpret_function( \
-                            in_driver->fontstyle.fontstyle[i].startvalue->text );
+                interpret_function( in_driver->fontstyle.fontstyle[i].startvalue->text );
             }
             if( in_driver->fontstyle.fontstyle[i].endvalue == NULL ) {
                 puts( "  No :ENDVALUE Block");
             } else {
                 puts( "  :ENDVALUE Block:");
-                interpret_function( \
-                            in_driver->fontstyle.fontstyle[i].endvalue->text );
+                interpret_function( in_driver->fontstyle.fontstyle[i].endvalue->text );
             }
             if(in_driver->fontstyle.fontstyle[i].lineprocs == NULL ) {
                 puts( "  No :LINEPROC Blocks");
@@ -747,45 +652,35 @@ void display_driver( cop_driver * in_driver )
                 puts( "  :LINEPROC Block(s):");
                 for( j = 0; j < in_driver->fontstyle.fontstyle[i].passes; j++ ) { 
                     printf_s( "  Pass: %i\n", j+1 );
-                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].startvalue \
-                                                                    == NULL ) {
+                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].startvalue == NULL ) {
                         puts( "  No :STARTVALUE Block");
                     } else {
                         puts( "  :STARTVALUE Block:");
-                        interpret_function( in_driver->fontstyle.fontstyle[i].\
-                                                lineprocs[j].startvalue->text );
+                        interpret_function( in_driver->fontstyle.fontstyle[i].lineprocs[j].startvalue->text );
                     }
-                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].firstword \
-                                                                    == NULL ) {
+                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].firstword == NULL ) {
                         puts( "  No :FIRSTWORD Block");
                     } else {
                         puts( "  :FIRSTWORD Block:");
-                        interpret_function( in_driver->fontstyle.fontstyle[i].\
-                                                lineprocs[j].firstword->text );
+                        interpret_function( in_driver->fontstyle.fontstyle[i].lineprocs[j].firstword->text );
                     }
-                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].startword \
-                                                                    == NULL ) {
+                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].startword == NULL ) {
                         puts( "  No :STARTWORD Block");
                     } else {
                         puts( "  :STARTWORD Block");
-                        interpret_function( in_driver->fontstyle.fontstyle[i].\
-                        lineprocs[j].startword->text );
+                        interpret_function( in_driver->fontstyle.fontstyle[i].lineprocs[j].startword->text );
                     }
-                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].endword \
-                                                                    == NULL ) {
+                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].endword == NULL ) {
                         puts( "  No :ENDWORD Block");
                     } else {
                         puts( "  :ENDWORD Block:");
-                        interpret_function( in_driver->fontstyle.fontstyle[i].\
-                                                    lineprocs[j].endword->text );
+                        interpret_function( in_driver->fontstyle.fontstyle[i].lineprocs[j].endword->text );
                     }
-                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].endvalue \
-                                                                        == NULL ) {
+                    if( in_driver->fontstyle.fontstyle[i].lineprocs[j].endvalue == NULL ) {
                         puts( "  No :ENDVALUE Block");
                     } else {
                         puts( "  :ENDVALUE Block:");
-                        interpret_function( in_driver->fontstyle.fontstyle[i].\
-                                                    lineprocs[j].endvalue->text );
+                        interpret_function( in_driver->fontstyle.fontstyle[i].lineprocs[j].endvalue->text );
                     }
                 }
             }
@@ -826,15 +721,15 @@ void display_driver( cop_driver * in_driver )
  *  Verifies that the file is a driver file.
  *
  *  Parameter:
- *      in_path contains the path from the command-line parameter.
- *      in_file contains the file name from the directory file entry.
+ *      in_path contains the path from the command-line parameter
+ *      in_file contains the file name from the directory file entry
  *
  *  Returns:
- *      OPEN_ERROR if the file cannot be opened (implies file does not exist).
- *      BAD_HEADER if the file does not start with a valid .COP file header.
- *      READ_ERROR if the file cannot be read (implies is not a valid .COP file).
- *      BAD_MATCH  if the bytes that should contain "DRV" contains something else.
- *      GOOD_MATCH if the bytes that should contain "DRV" do contain "DRV".
+ *      OPEN_ERROR if the file cannot be opened (implies file does not exist)
+ *      BAD_HEADER if the file does not start with a valid .COP file header
+ *      READ_ERROR if the file cannot be read (implies is not a valid .COP file)
+ *      BAD_MATCH  if the bytes that should contain "DRV" contains something else
+ *      GOOD_MATCH if the bytes that should contain "DRV" do contain "DRV"
  */
  
 int verify_driver( char * in_path, char * in_name )
@@ -845,21 +740,19 @@ int verify_driver( char * in_path, char * in_name )
     cop_driver *    current_driver = NULL;
     FILE *          driver_file = NULL;
 
-    /* Build the file name. */
-
+    /* Build the file name */
     strcpy_s( file_name, sizeof( file_name ), in_path );
     strcat_s( file_name, sizeof( file_name ), in_name );
     strcat_s( file_name, sizeof( file_name ), ".COP" );
 
-    /* Open the file. */
-
+    /* Open the file */
     fopen_s( &driver_file, file_name, "rb" );
     if( driver_file == NULL ) {
         printf_s( "Could not open driver file %s\n", file_name );
         return( OPEN_ERROR );
     }
 
-    /* Skip the header. */
+    /* Skip the header */
 
     if( parse_header( driver_file, &type ) == FAILURE ) {
         printf_s( "%s is not a .COP file (bad header)\n", file_name );
@@ -867,8 +760,7 @@ int verify_driver( char * in_path, char * in_name )
         return( BAD_HEADER );
     }
     
-    /* Perform the test and parse the file if appropriate. */
-
+    /* Perform the test and parse the file if appropriate */
     if( is_drv_file( driver_file ) ) {
         current_driver = parse_driver( driver_file );
         if( current_driver ) display_driver( current_driver );
@@ -876,18 +768,15 @@ int verify_driver( char * in_path, char * in_name )
         return( GOOD_MATCH );
     }
 
-    /* Report the mismatched designator. */
-    
-    /* Reset file to designator. */
-
-    fseek( driver_file, -3, SEEK_CUR );
+    /* Report the mismatch */
+    fseek( driver_file, -3, SEEK_CUR ); /* Reset file to designator */
     fread( &designator, 3, 1, driver_file );
     if( ferror( driver_file ) || feof( driver_file ) ) {
         puts("Incorrect file type: file error on attempt to get designator");
         fclose( driver_file );
         return( READ_ERROR );
     }
-    designator[3] = '\0';
+    designator[3] = NULLCHAR;
     printf_s( "%s has incorrect designator for a driver file: %s\n", tgt_path, designator );
     fclose( driver_file );
     return( BAD_MATCH );
@@ -928,8 +817,7 @@ void display_font( cop_font * in_font )
             if( in_font->intrans->table[i] != i ) {
                 display_char( font_character, (char) i );
                 display_char( translation, in_font->intrans->table[i] );
-                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], \
-                                         translation[0], translation[1] );
+                printf_s( "%c%c %c%c\n", font_character[0], font_character[1], translation[0], translation[1] );
             }
         }
     }
@@ -942,8 +830,7 @@ void display_font( cop_font * in_font )
                 display_char( font_character, (char) i );
                 printf_s( "%c%c ", font_character[0], font_character[1] );
                 for( j = 0; j < in_font->outtrans->table[i]->count; j++ ) {
-                    display_char( translation, \
-                                        in_font->outtrans->table[i]->data[j] );
+                    display_char( translation, in_font->outtrans->table[i]->data[j] );
                     printf_s( "%c%c ", translation[0], translation[1] );
                 }
                 puts( "" );
@@ -957,8 +844,7 @@ void display_font( cop_font * in_font )
         for( i = 0; i < 0x100; i++ ) {
             if( in_font->width->table[i] != in_font->char_width ) {
                 display_char( font_character, (char) i );
-                printf_s( "%c%c %lu\n", font_character[0], \
-                                    font_character[1], in_font->width->table[i] );
+                printf_s( "%c%c %lu\n", font_character[0], font_character[1], in_font->width->table[i] );
             }
         }
     }
@@ -970,15 +856,15 @@ void display_font( cop_font * in_font )
  *  Verifies that the file is a font file.
  *
  *  Parameter:
- *      in_path contains the path from the command-line parameter.
- *      in_file contains the file name from the directory file entry.
+ *      in_path contains the path from the command-line parameter
+ *      in_file contains the file name from the directory file entry
  *
  *  Returns:
- *      OPEN_ERROR if the file cannot be opened (implies file does not exist).
- *      BAD_HEADER if the file does not start with a valid .COP file header.
- *      READ_ERROR if the file cannot be read (implies is not a valid .COP file).
- *      BAD_MATCH  if the bytes that should contain "FON" contains something else.
- *      GOOD_MATCH if the bytes that should contain "FON" do contain "FON".
+ *      OPEN_ERROR if the file cannot be opened (implies file does not exist)
+ *      BAD_HEADER if the file does not start with a valid .COP file header
+ *      READ_ERROR if the file cannot be read (implies is not a valid .COP file)
+ *      BAD_MATCH  if the bytes that should contain "FON" contains something else
+ *      GOOD_MATCH if the bytes that should contain "FON" do contain "FON"
  */
  
 int verify_font( char * in_path, char * in_name )
@@ -989,21 +875,19 @@ int verify_font( char * in_path, char * in_name )
     cop_font * current_font = NULL;
     FILE *     font_file = NULL;
     
-    /* Build the file name. */
-
+    /* Build the file name */
     strcpy_s( file_name, sizeof( file_name ), in_path );
     strcat_s( file_name, sizeof( file_name ), in_name );
     strcat_s( file_name, sizeof( file_name ), ".COP" );
 
-    /* Open the file. */
-
+    /* Open the file */
     fopen_s( &font_file, file_name, "rb" );
     if( font_file == NULL ) {
         printf_s( "Could not open font file %s\n", file_name );
         return( OPEN_ERROR );
     }
 
-    /* Skip the header. */
+    /* Skip the header */
 
     if( parse_header( font_file, &type ) == FAILURE ) {
         printf_s( "%s is not a .COP file (bad header)\n", file_name );
@@ -1011,8 +895,7 @@ int verify_font( char * in_path, char * in_name )
         return( BAD_HEADER );
     }
     
-    /* Perform the test and parse the file if appropriate. */
-
+    /* Perform the test and parse the file if appropriate */
     if( is_fon_file( font_file ) ) {
         current_font = parse_font( font_file );
         if( current_font ) display_font( current_font );
@@ -1020,21 +903,18 @@ int verify_font( char * in_path, char * in_name )
         return( GOOD_MATCH );
     }
     
-    /* Report the mismatched designator. */
-    
-    /* Reset file to designator. */
-
-    fseek( font_file, -3, SEEK_CUR );
+    /* Report the mismatch */
+    fseek( font_file, -3, SEEK_CUR ); /* Reset file to designator */
     fread( &designator, 3, 1, font_file );
     if( ferror( font_file ) || feof( font_file ) ) {
         puts("Incorrect file type: file error on attempt to get designator");
         fclose( font_file );
         return( READ_ERROR );
     }
-    designator[3] = '\0';
-    printf_s( "%s has incorrect designator for a font file: %s\n", tgt_path, \
-                                                                    designator );
+    designator[3] = NULLCHAR;
+    printf_s( "%s has incorrect designator for a font file: %s\n", tgt_path, designator );
     fclose( font_file );
     return( BAD_MATCH );
 }
+
 

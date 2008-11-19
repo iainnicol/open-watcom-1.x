@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "spy.h"
 #include "mark.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"
-#ifdef __NT__
-    #include <commctrl.h>
-#endif
 
 static BOOL     spyAll;
 static WORD     statusHite = 25;
@@ -216,11 +213,6 @@ static void showHintBar( HWND hwnd ) {
     }
 }
 
-void markCallback( char *res )
-{
-    SpyOut( res, NULL );
-}
-
 /*
  * SpyWindowProc - handle messages for the spy appl.
  */
@@ -335,7 +327,7 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             pausestate = SpyMessagesPaused;
             SpyMessagesPaused = FALSE;              /* make sure marks are
                                                      * always added */
-            ProcessMark( hwnd, Instance, markCallback );
+            ProcessMark( hwnd, Instance, SpyOut );
             SpyMessagesPaused = pausestate;
             break;
         case SPY_SET_FONT:
@@ -503,14 +495,6 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             break;
         }
         break;
-#ifdef __NT__
-    case WM_NOTIFY:
-        if( ((NMHDR *)lparam)->code == NM_DBLCLK &&
-            ((NMHDR *)lparam)->idFrom == SPY_LIST_BOX ) {
-            DoMessageSelDialog( hwnd );
-        }
-        break;
-#endif
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( SPY_EXIT, 0, 0 ) );
         break;

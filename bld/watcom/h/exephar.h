@@ -24,14 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  PharLap executable formats.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #ifndef _EXEPHAR_H
 
-#include "pushpck1.h"
+#pragma pack(push,1)
 
 typedef struct simple_header {
     unsigned_16     signature;
@@ -121,7 +122,7 @@ typedef struct {
 #define PHAR_FORMAT_FLAT        1
 #define PHAR_FORMAT_SEGMENTED   2
 
-#include "poppck.h"
+#pragma pack(pop)
 
 #define _EXEPHAR_H
 #endif

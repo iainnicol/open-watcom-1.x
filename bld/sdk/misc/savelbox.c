@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <commdlg.h>
 #include <string.h>
 #include <stdio.h>
 #include <io.h>
@@ -38,6 +36,8 @@
 #include <ctype.h>
 #include <direct.h>
 #include <stdlib.h>
+#include <windows.h>
+#include <commdlg.h>
 #include "savelbox.h"
 #include "win1632.h"
 #ifndef NOUSE3D

@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "spy.h"
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
@@ -131,11 +131,12 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, DWORD lparam )
  */
 static void addFormattedWindow( HWND hwnd )
 {
-    char        res[259 + UINT_STR_LEN];
+    char        res[128];
     char        name[128];
     char        tmp[5];
     char        lead_bl[128];
     int         i,len;
+
     if( IsMyWindow( hwnd ) ) {
         return;
     }
@@ -157,8 +158,7 @@ static void addFormattedWindow( HWND hwnd )
             }
         }
     }
-    snprintf( res, sizeof( res ), "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd,
-              tmp, name );
+    sprintf( res,"%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd, tmp, name );
     SendDlgItemMessage( (HWND) hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0,
         (LONG) (LPSTR) res );
 
@@ -320,13 +320,13 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
                 tmpWndList = doAddSelectedWindow( id, tmpWndList, &tmpWndCnt );
             } else {
                 if( framedHwnd != NULL ) {
-                    FrameAWindow( framedHwnd );
+                    FrameAWindow( framedHwnd, FALSE );
                 }
                 if( id == framedHwnd ) {
                     framedHwnd = NULL;
                 } else {
                     framedHwnd = id;
-                    FrameAWindow( framedHwnd );
+                    FrameAWindow( framedHwnd, FALSE );
                 }
                 break;
             }
@@ -335,17 +335,17 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
             SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETCURSEL, sel, 0L );
             break;
         case IDCANCEL:
-            FrameAWindow( framedHwnd );
+            FrameAWindow( framedHwnd, FALSE );
             EndDialog( hwnd, 0 );
             break;
         case IDOK:
-            FrameAWindow( framedHwnd );
+            FrameAWindow( framedHwnd, FALSE );
             EndDialog( hwnd, 1 );
             break;
         }
         break;
     case WM_CLOSE:
-        FrameAWindow( framedHwnd );
+        FrameAWindow( framedHwnd, FALSE );
         EndDialog( hwnd, 1 );
         break;
     default:

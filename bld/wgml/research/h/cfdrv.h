@@ -46,10 +46,6 @@
 *                   is_drv_file()
 *                   parse_driver()
 *
-* Note:         The field names are intended to correspond to the field names 
-*               shown in the Wiki. The Wiki structs are named when the structs
-*               defined here are defined; they are not identical.
-*
 ****************************************************************************/
 
 #ifndef CFDRV_H_INCLUDED
@@ -61,16 +57,19 @@
 
 /* Structure declarations */
 
+/* These structs are based on the discussion in the Wiki, which should be
+ * consulted for further information on how the data is structured.
+ */
+
 /* In all cases: a count of "0" or a NULL pointer indicates that the
  * corresponding item did not exist in the .COP file
  */
 
-/* To hold the data extracted from a CodeBlock struct.
- * The :INIT block is unique in allowing multiple intermixed :VALUE and
+/* The :INIT block is unique in allowing multiple intermixed :VALUE and
  * :FONTVALUE blocks. Testing shows wgml invoking each :FONTVALUE block
- * multiple times but each :VALUE block only once, so is_fontvalue is provided
- * to allow wgml to determine if an init_text instance came from a :FONTVALUE
- * block or a :VALUE block.
+ * four times but each :VALUE block only once, so is_fontvalue is provided
+ * to allow wgml to determine if a init_text instance came from a :FONTVALUE
+ * block or not.
  */
 
 typedef struct init_text_struct
@@ -80,20 +79,13 @@ typedef struct init_text_struct
     uint8_t *           text;
 } init_text;
 
-/* To hold the data from the InitBlock struct. */
-/* The field names do not all correspond to those in the Wiki. */
-
 typedef struct init_block_struct
 {
     uint16_t            count;
     init_text *         codetext;
 } init_block;
 
-/* To hold the data from the InitFuncs struct.
- * This struct bears no resemblence to that in the Wiki: it takes advantage
- * of the fact that there can be at most two :INIT blocks, and that they must
- * be distinguished because wgml processes them at different times.
- */
+/* There can be at most two :INIT blocks. */
 
 typedef struct init_funcs_struct
 {
@@ -101,7 +93,7 @@ typedef struct init_funcs_struct
     init_block *        document_initblock;
 } init_funcs;
 
-/* To hold the data extracted from a CodeBlock struct. */
+/* This struct is used for all blocks where at most one CodeBlock is allowed */
 
 typedef struct code_text_struct
 {
@@ -109,14 +101,10 @@ typedef struct code_text_struct
     uint8_t *           text;
 } code_text;
 
-/* The FinishBlock struct is implemented by the code_text struct. */
-
-/* To hold the data from the FinishFuncs struct.
- * This struct bears no resemblence to that in the Wiki: it takes advantage
- * of the fact that there can be at most two :FINISH blocks, that wgml will
- * only use the first :VALUE block in a :FINISH block, so that only that one
- * needs to be presented here, and that they must be distinguished because
- * wgml processes at most one of them. 
+/* There can be at most two :FINISH blocks. code_text is used because, although
+ * gendev will accept multiple :VALUE blocks in a :FINISH block and even encode
+ * them in the .COP file, wgml will only use the first, so only that one needs
+ * to be presented here.
  */
 
 typedef struct finish_funcs_struct
@@ -125,9 +113,8 @@ typedef struct finish_funcs_struct
     code_text *         document_finishblock;
 } finish_funcs;
 
-/* To hold the data from the NewlineBlock struct.
- * There will be as many newline_blocks as there are distinct values of
- * "advance".
+/* There will be as many newline_blocks as there are distinct values of
+ * "advance". "count" contains the number of bytes in "text".
  */
 
 typedef struct newline_block_struct
@@ -137,7 +124,7 @@ typedef struct newline_block_struct
     uint8_t *           text;
 } newline_block;
 
-/* To hold the data extracted from a NewlineFuncs struct. */
+/* "count" contains the number of newline_block instances */
 
 typedef struct newline_funcs_struct
 {
@@ -145,11 +132,8 @@ typedef struct newline_funcs_struct
     newline_block *     newlineblock;
 } newline_funcs;
 
-/* To hold the data from the FontswitchBlock struct.
- * There will be as many fontswitch_blocks as there are distinct values of
- * "type". The other field names do not correspond to the Wiki: they take
- * advantage of the fact that there are at most two CodeBlocks, one from a
- * :STARTVALUE block and the other from an :ENDVALUE block.
+/* There will be as many fontswitch_blocks as there are distinct values of
+ * "type"
  */
 
 typedef struct fontswitch_block_struct
@@ -159,18 +143,13 @@ typedef struct fontswitch_block_struct
     code_text *         endvalue;
 } fontswitch_block;
 
-/* To hold the data extracted from a FontswitchFuncs struct. */
+/* "count" contains the number of fontswitch_block instances */
 
 typedef struct fontswitch_funcs_struct
 {
     uint16_t            count;
     fontswitch_block *  fontswitchblock;
 } fontswitch_funcs;
-
-/* This struct does not correspond to any struct in the Wiki. Instead, it takes
- * advantage of the fact that each :LINEPROC block can define at most one of each
- * of its sub-blocks.
- */
 
 typedef struct line_proc_struct
 {
@@ -181,11 +160,8 @@ typedef struct line_proc_struct
     code_text *         endvalue;
 } line_proc;
 
-/* To hold the data extracted from a ShortFontStyle struct. 
- * Only the first two fields are found in the Wiki struct. The next two take
- * advantage of the fact that a :FONTSTYLE block directly defines at most one of
- * each of two sub-blocks, plus any number of :LINEPROC blocks. Note that the
- * number of line_proc instances is equal to the value of the field "passes".
+/* "passes" contains the number of line_proc instances; "type" is the style
+ * name, a null-terminated string
  */
 
 typedef struct font_style_struct
@@ -197,10 +173,7 @@ typedef struct font_style_struct
     line_proc *         lineprocs;
 } font_style;
 
-/* To hold the data extracted from a FontstyleBlock struct. 
- * This struct bears only a function relationship to the struct in the Wiki,
- * which must be seen to be believed.
- */
+/* "count" contains the number of font_style instances */
 
 typedef struct fontstyle_block_struct
 {
@@ -208,10 +181,8 @@ typedef struct fontstyle_block_struct
     font_style *        fontstyle;
 } fontstyle_block;
 
-/* To hold the data extracted from an HlineBlock, a VlineBlock, or a DboxBlock
- * struct. 
- * This differs from the structs in the Wiki because each of them can contain at
- * most one CodeBlock, as well as the thickness.
+/* "thickness" is the value of attribute "thickness"; "count" is the number
+ * of bytes pointed to by "text"
  */
 
 typedef struct line_block_struct
@@ -221,18 +192,8 @@ typedef struct line_block_struct
     uint8_t *           text;
 } line_block;
 
-/* This struct embodies the binary form of the :DRIVER block.
- *
- * The order of fields follows the order in the .COP file, except for "unknown",
+/* The order of fields follows the order in the .COP file, except for "unknown",
  * which is omitted as it never has any data in it.
- *
- * The comments within the structs refer to the "blocks" discussed in the Wiki. 
- *
- * The first two fields are used internally and were used for sizing during
- * development
- *
- * The instance returned will be allocated as a single block and so can be
- * freed in one statement.
  */
 
 typedef struct cop_driver_struct
@@ -268,17 +229,17 @@ typedef struct cop_driver_struct
     line_block          dbox;
 } cop_driver;
 
-/* Function declarations. */
+/* Function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
 bool is_drv_file( FILE * );
 cop_driver * parse_driver( FILE *);
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}   /* End of "C" linkage for C++ */
 #endif
 
 #endif  /* CFDRV_H_INCLUDED */

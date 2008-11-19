@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Internal interfaces for DWARF dump utility.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -34,7 +35,7 @@
 struct section_data {
     uint        cur_offset;
     uint        max_offset;
-    unsigned_8  *data;
+    char *      data;
 };
 extern struct section_data Sections[];
 
