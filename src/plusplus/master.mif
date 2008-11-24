@@ -107,8 +107,6 @@ extra_c_flags_carve    = -Dheader=$(fesupp_hdr) -Dheader2=$(carvecpp_hdr)
 extra_c_flags_cmdlnany = -os
 !endif
 !endif
-extra_c_flags_cscan_386 = -4r
-extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
 !ifeq release 0
 extra_c_flags_dbgzap   = -Dheader=$(fesupp_hdr)
 !endif

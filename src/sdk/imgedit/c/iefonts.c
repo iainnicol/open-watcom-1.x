@@ -37,7 +37,6 @@
 #include <string.h>
 #include <mbstring.h>
 #include "iemem.h"
-#include "rcstr.h"
 
 #define STATUS_FONTNAME         "Helv"
 #define STATUS_POINTSIZE        8
@@ -61,7 +60,7 @@ void CreateStatusFont( void )
 
     status_font = IEAllocRCString( WIE_STATUSFONT );
     if( status_font ) {
-        cp = _mbschr( status_font, '.' );
+        cp = (char *)_mbschr( (unsigned char *)status_font, '.' );
         if( cp ) {
             *cp = '\0';
             strcpy( lf.lfFaceName, status_font );

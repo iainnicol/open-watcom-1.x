@@ -56,206 +56,6 @@
 #include "win1632.h"
 #include "spydll.h"
 #include "jdlg.h"
-
-/* PenWindows specific messages */
-#ifndef WM_PENWINFIRST
-    #define WM_PENWINFIRST                  0x0380
-#endif
-#ifndef WM_PENWINLAST
-    #define WM_PENWINLAST                   0x038F
-#endif
-#ifndef WM_COALESCE_FIRST
-    #define WM_COALESCE_FIRST               0x0390
-#endif
-#ifndef WM_COALESCE_LAST
-    #define WM_COALESCE_LAST                0x039F
-#endif
-#ifndef WM_CTLCOLOR
-    #define WM_CTLCOLOR                     0x0019
-#endif
-#ifndef WM_GETHOTKEY
-    #define WM_GETHOTKEY                    0x0033
-#endif
-#ifndef WM_SETHOTKEY
-    #define WM_SETHOTKEY                    0x0032
-#endif
-#ifndef WM_PAINTICON
-    #define WM_PAINTICON                    0x0026
-#endif
-#ifndef WM_OTHERWINDOWCREATED
-    #define WM_OTHERWINDOWCREATED           0x0042
-#endif
-#ifndef WM_OTHERWINDOWDESTROYED
-    #define WM_OTHERWINDOWDESTROYED         0x0043
-#endif
-
-// Messages undocumented for WINDOWS but documented for NT
-#ifndef WM_ENTERMENULOOP
-    #define WM_ENTERMENULOOP                0x0211
-#endif
-#ifndef WM_EXITMENULOOP
-    #define WM_EXITMENULOOP                 0x0212
-#endif
-
-// Windows 95 specific messages
-#ifndef WM_NOTIFY
-    #define WM_NOTIFY                       0x004E
-#endif
-#ifndef WM_INPUTLANGCHANGEREQUEST
-    #define WM_INPUTLANGCHANGEREQUEST       0x0050
-#endif
-#ifndef WM_INPUTLANGCHANGE
-    #define WM_INPUTLANGCHANGE              0x0051
-#endif
-#ifndef WM_TCARD
-    #define WM_TCARD                        0x0052
-#endif
-#ifndef WM_HELP
-    #define WM_HELP                         0x0053
-#endif
-#ifndef WM_USERCHANGED
-    #define WM_USERCHANGED                  0x0054
-#endif
-#ifndef WM_CONTEXTMENU
-    #define WM_CONTEXTMENU                  0x007B
-#endif
-#ifndef WM_STYLECHANGING
-    #define WM_STYLECHANGING                0x007C
-#endif
-#ifndef WM_STYLECHANGED
-    #define WM_STYLECHANGED                 0x007D
-#endif
-#ifndef WM_DISPLAYCHANGE
-    #define WM_DISPLAYCHANGE                0x007E
-#endif
-#ifndef WM_GETICON
-    #define WM_GETICON                      0x007F
-#endif
-#ifndef WM_SETICON
-    #define WM_SETICON                      0x0080
-#endif
-
-// Messages introduced after Windows 95
-#ifndef WM_NCXBUTTONDOWN
-    #define WM_NCXBUTTONDOWN                0x00AB
-#endif
-#ifndef WM_NCXBUTTONUP
-    #define WM_NCXBUTTONUP                  0x00AC
-#endif
-#ifndef WM_NCXBUTTONDBLCLK
-    #define WM_NCXBUTTONDBLCLK              0x00AD
-#endif
-#ifndef WM_INPUT_DEVICE_CHANGE
-    #define WM_INPUT_DEVICE_CHANGE          0x00FE
-#endif
-#ifndef WM_INPUT
-    #define WM_INPUT                        0x00FF
-#endif
-#ifndef WM_UNICHAR
-    #define WM_UNICHAR                      0x0108
-#endif
-#ifndef WM_MENURBUTTONUP
-    #define WM_MENURBUTTONUP                0x0122
-#endif
-#ifndef WM_MENUDRAG
-    #define WM_MENUDRAG                     0x0123
-#endif
-#ifndef WM_MENUGETOBJECT
-    #define WM_MENUGETOBJECT                0x0124
-#endif
-#ifndef WM_UNINITMENUPOPUP
-    #define WM_UNINITMENUPOPUP              0x0125
-#endif
-#ifndef WM_MENUCOMMAND
-    #define WM_MENUCOMMAND                  0x0126
-#endif
-#ifndef WM_CHANGEUISTATE
-    #define WM_CHANGEUISTATE                0x0127
-#endif
-#ifndef WM_UPDATEUISTATE
-    #define WM_UPDATEUISTATE                0x0128
-#endif
-#ifndef WM_QUERYUISTATE
-    #define WM_QUERYUISTATE                 0x0129
-#endif
-#ifndef WM_MOUSEWHEEL
-    #define WM_MOUSEWHEEL                   0x020A
-#endif
-#ifndef WM_XBUTTONDOWN
-    #define WM_XBUTTONDOWN                  0x020B
-#endif
-#ifndef WM_XBUTTONUP
-    #define WM_XBUTTONUP                    0x020C
-#endif
-#ifndef WM_XBUTTONDBLCLK
-    #define WM_XBUTTONDBLCLK                0x020D
-#endif
-#ifndef WM_MOUSEHWHEEL
-    #define WM_MOUSEHWHEEL                  0x020E
-#endif
-#ifndef WM_IME_REQUEST
-    #define WM_IME_REQUEST                  0x0288
-#endif
-#ifndef WM_MOUSEHOVER
-    #define WM_MOUSEHOVER                   0x02A1
-#endif
-#ifndef WM_MOUSELEAVE
-    #define WM_MOUSELEAVE                   0x02A3
-#endif
-#ifndef WM_NCMOUSEHOVER
-    #define WM_NCMOUSEHOVER                 0x02A0
-#endif
-#ifndef WM_NCMOUSELEAVE
-    #define WM_NCMOUSELEAVE                 0x02A2
-#endif
-#ifndef WM_WTSSESSION_CHANGE
-    #define WM_WTSSESSION_CHANGE            0x02B1
-#endif
-#ifndef WM_APPCOMMAND
-    #define WM_APPCOMMAND                   0x0319
-#endif
-#ifndef WM_THEMECHANGED
-    #define WM_THEMECHANGED                 0x031A
-#endif
-#ifndef WM_CLIPBOARDUPDATE
-    #define WM_CLIPBOARDUPDATE              0x031D
-#endif
-#ifndef WM_DWMCOMPOSITIONCHANGED
-    #define WM_DWMCOMPOSITIONCHANGED        0x031E
-#endif
-#ifndef WM_DWMNCRENDERINGCHANGED
-    #define WM_DWMNCRENDERINGCHANGED        0x031F
-#endif
-#ifndef WM_DWMCOLORIZATIONCOLORCHANGED
-    #define WM_DWMCOLORIZATIONCOLORCHANGED  0x0320
-#endif
-#ifndef WM_DWMWINDOWMAXIMIZEDCHANGE
-    #define WM_DWMWINDOWMAXIMIZEDCHANGE     0x0321
-#endif
-#ifndef WM_GETTITLEBARINFOEX
-    #define WM_GETTITLEBARINFOEX            0x033F
-#endif
-
-// Control messages
-#ifndef EM_SETIMESTATUS
-    #define EM_SETIMESTATUS                 0x00D8
-#endif
-#ifndef EM_GETIMESTATUS
-    #define EM_GETIMESTATUS                 0x00D9
-#endif
-#ifndef BM_SETDONTCLICK
-    #define BM_SETDONTCLICK                 0x00F8
-#endif
-#ifndef LB_GETLISTBOXINFO
-    #define LB_GETLISTBOXINFO               0x01B2
-#endif
-#ifndef CB_GETCOMBOBOXINFO
-    #define CB_GETCOMBOBOXINFO              0x0164
-#endif
-#ifndef SBM_GETSCROLLBARINFO
-    #define SBM_GETSCROLLBARINFO            0x00EB
-#endif
-
 #include "font.h"
 #include "mem.h"
 #include "savelbox.h"
@@ -417,9 +217,41 @@ extern WORD             ListBoxMessageArraySize;
 extern message          near ListBoxMessageArray[];
 extern WORD             ComboBoxMessageArraySize;
 extern message          near ComboBoxMessageArray[];
-#ifdef NT_MSGS
+#ifdef __NT__
 extern WORD             ScrollBarMessageArraySize;
 extern message          near ScrollBarMessageArray[];
+extern WORD             HeaderMessageArraySize;
+extern message          near HeaderMessageArray[];
+extern WORD             ToolbarMessageArraySize;
+extern message          near ToolbarMessageArray[];
+extern WORD             RebarMessageArraySize;
+extern message          near RebarMessageArray[];
+extern WORD             ToolTipsMessageArraySize;
+extern message          near ToolTipsMessageArray[];
+extern WORD             StatusBarMessageArraySize;
+extern message          near StatusBarMessageArray[];
+extern WORD             TrackBarMessageArraySize;
+extern message          near TrackBarMessageArray[];
+extern WORD             UpDownMessageArraySize;
+extern message          near UpDownMessageArray[];
+extern WORD             ProgressBarMessageArraySize;
+extern message          near ProgressBarMessageArray[];
+extern WORD             HotKeyMessageArraySize;
+extern message          near HotKeyMessageArray[];
+extern WORD             ListViewMessageArraySize;
+extern message          near ListViewMessageArray[];
+extern WORD             TreeViewMessageArraySize;
+extern message          near TreeViewMessageArray[];
+extern WORD             ComboBoxExMessageArraySize;
+extern message          near ComboBoxExMessageArray[];
+extern WORD             TabControlMessageArraySize;
+extern message          near TabControlMessageArray[];
+extern WORD             AnimateMessageArraySize;
+extern message          near AnimateMessageArray[];
+extern WORD             MonthCalMessageArraySize;
+extern message          near MonthCalMessageArray[];
+extern WORD             DateTimeMessageArraySize;
+extern message          near DateTimeMessageArray[];
 #endif
 extern BOOL             SpyMessagesAutoScroll;
 extern BOOL             AutoSaveConfig;

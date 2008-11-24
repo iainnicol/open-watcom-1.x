@@ -191,7 +191,7 @@ weights2.gh keyword2.gh : ./findhash.exe ../hash/rcos2.key
         @rm -f weights.gh
 
 rcmsg1.gh : ../h/rcmsg.h ../h/rc.msg
-        $(cc) $(cflags) -p $[@ -fo=$@
+        $(cc) $(preproc_opts) $(cflags) -fo=$@
 
 rcmsg.gh : rcmsg1.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@

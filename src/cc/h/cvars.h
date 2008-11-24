@@ -451,6 +451,7 @@ extern  char    *ObjFileName(char *);
 extern  char    *ForceSlash(char *, char );
 extern  char    *CreateFileName( char *template, char *extension, bool forceext );
 extern  char    *GetSourceDepName( void );
+extern  FNAMEPTR NextDependency( FNAMEPTR );
 
 extern  FNAMEPTR AddFlist(char const *);
 extern  FNAMEPTR FileIndexToFName(unsigned);
@@ -466,6 +467,9 @@ extern  void    SetSrcFNameOnce( void );
 extern  void    GetNextToken(void);
 extern  void    EmitLine(unsigned,char *);
 extern  void    EmitPoundLine(unsigned,char *,int);
+
+extern  void    AddIncFileList( char *filename );
+extern  void    FreeIncFileList( void );
 
 // cdata.c
 extern  void    InitGlobalVars( void );
@@ -723,7 +727,7 @@ extern  int     InitPPScan( void );             /* cscan */
 extern  void    FiniPPScan( int );              /* cscan */
 extern  int     CalcHash( const char *, int );  /* cscan */
 extern  unsigned hashpjw( const char * );       /* cscan */
-extern  int     ESCChar( int, const char **, char * );  /* cscan */
+extern  int     ESCChar( int, const unsigned char **, bool * );  /* cscan */
 extern  void    SkipAhead( void );              /* cscan */
 extern  TOKEN   ScanToken( void );              /* cscan */
 extern  void    ReScanInit( char * );           /* cscan */
