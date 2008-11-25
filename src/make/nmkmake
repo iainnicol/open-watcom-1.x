@@ -17,7 +17,7 @@ OBJS= macros.obj main.obj massert.obj mautodep.obj mautoomf.obj mautoorl.obj \
   mautores.obj memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj \
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj \
   msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj autodept.obj \
-  mcache.obj misc.obj
+  mcache.obj misc.obj idedrv.obj idemsgfm.obj
 
 wsplice.exe: wsplice.obj clibext.obj
 	$(CC) -nologo -Fe$@ $**

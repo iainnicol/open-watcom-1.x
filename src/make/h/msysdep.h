@@ -46,7 +46,7 @@
 
 #include "mtypes.h"
 
-#ifndef BOOTSTRAP
+#if !defined(BOOTSTRAP) || defined(__WATCOMC__)
 //
 // DLL's implemented only for:
 //      Intel 386 (OS/2,NT)
