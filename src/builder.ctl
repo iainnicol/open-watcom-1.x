@@ -141,7 +141,8 @@ cdsay .
 # Other GUI tools
 [ INCLUDE <SRCDIR>/profiler/builder.ctl ]
 [ INCLUDE <SRCDIR>/wclass/builder.ctl ]
-[ INCLUDE <SRCDIR>/ide/builder.ctl ]
+# IDE currently disabled due to wgml dependency
+# [ INCLUDE <SRCDIR>/ide/builder.ctl ]
 
 [ BLOCK . . ]
 #============
