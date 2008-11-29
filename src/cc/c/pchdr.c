@@ -60,7 +60,7 @@ extern  TAGPTR  TagHash[TAG_HASH_SIZE + 1];
 
 #define PH_BUF_SIZE     32768
 #define PCH_SIGNATURE   (unsigned long) 'WPCH'
-#define PCH_VERSION     0x019F
+#define PCH_VERSION     0x0120
 #if defined(__I86__)
 #define PCH_VERSION_HOST ( ( 1L << 16 ) | PCH_VERSION )
 #elif defined(__386__)
@@ -114,6 +114,7 @@ static  char            PH_computing_size;
 static  RDIRPTR         PCHRDirNames;       /* list of read-only directories */
 static  IALIASPTR       PCHIAliasNames;     /* list of include aliases */
 static  INCFILE         *PCHOldIncFileList; /* temporary copy of old include file list */
+static  int             PCHOldIncListValid; /* flag to indicate if PCHOldIncFileList is valid */
 
 struct  pheader {
     unsigned long   signature;      //  'WPCH'
@@ -144,6 +145,7 @@ struct  pheader {
     unsigned        specialsyms_count;
     unsigned        cwd_len;        // length of current working directory
     unsigned        msgflags_len;   // length of MsgFlags array
+    unsigned        disable_ialias;
 };
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -297,8 +299,9 @@ static void OutPutHeader( void )
     if( MsgFlags != NULL ) {                            /* 06-jul-94 */
         pch.msgflags_len  = _RoundUp( ((HIGHEST_MESSAGE_NUMBER + 7) / 8), sizeof( int ) );
     } else {
-        pch.msgflags_len = 0;
+        pch.msgflags_len  = 0;
     }
+    pch.disable_ialias    = CompFlags.disable_ialias;
     rc  = WritePHeader( &pch, sizeof( struct pheader ) );
     rc |= WritePHeader( PH_Buffer + sizeof( struct pheader ), pch.cwd_len );
     if( rc != 0 ) {
@@ -306,18 +309,18 @@ static void OutPutHeader( void )
     }
 }
 
-static void OutPutHFileList( void )     // output include paths
+static void OutPutIncPathList( void )     // output include paths
 {
     int         rc;
     unsigned    len;
 
-    if( HFileList == NULL ) {
+    if( IncPathList == NULL ) {
         rc = 0;
         rc = WritePHeader( &rc, sizeof( int ) );
     } else {
-        len = strlen( HFileList ) + 1;
+        len = strlen( IncPathList ) + 1;
         len = _RoundUp( len, sizeof( int ) );
-        rc = WritePHeader( HFileList, len );
+        rc = WritePHeader( IncPathList, len );
     }
     if( rc != 0 ) {
         longjmp( PH_jmpbuf, rc );
@@ -979,7 +982,7 @@ void OutPutEverything( void )
     OutPutIncludes();
     OutPutRoDirList();
     OutPutIncAliasList();
-    OutPutHFileList();
+    OutPutIncPathList();
     OutPutIncFileList();
     OutPutLibraries();
     OutPutAliases();
@@ -1061,6 +1064,7 @@ static char *FixupIncFileList( char *p, unsigned incfile_count )
     unsigned    len;
 
     PCHOldIncFileList = IncFileList;
+    PCHOldIncListValid = 1;
     IncFileList = NULL;
     if( incfile_count != 0 ) {
         do {
@@ -1076,7 +1080,7 @@ static char *FixupIncFileList( char *p, unsigned incfile_count )
 
 static void RestoreIncFileList( void )
 {
-    if( PCHOldIncFileList != NULL ) {
+    if( PCHOldIncListValid ) {
         FreeIncFileList();
         IncFileList = PCHOldIncFileList;
         PCHOldIncFileList = NULL;
@@ -1087,11 +1091,14 @@ static void FreeOldIncFileList( void )
 {
     INCFILE *ilist;
 
-    while( (ilist = PCHOldIncFileList) != NULL ) {
-        PCHOldIncFileList = ilist->nextfile;
-        CMemFree( ilist );
+    if( PCHOldIncListValid ) {
+        while( (ilist = PCHOldIncFileList) != NULL ) {
+            PCHOldIncFileList = ilist->nextfile;
+            CMemFree( ilist );
+        }
+        PCHOldIncFileList = NULL;
+        PCHOldIncListValid = 0;
     }
-    PCHOldIncFileList = NULL;
 }
 
 static char *FixupIncludes( char *p, unsigned file_count )
@@ -1805,7 +1812,6 @@ void AbortPreCompiledHeader( void )
     TagArray         = NULL;
     TextSegArray     = NULL;
     FNameList        = NULL;
-    IncFileList      = NULL;
     PCHMacroHash     = NULL;
     IAliasNames      = PCHIAliasNames;
     RestoreIncFileList();
@@ -1838,6 +1844,7 @@ int UsePreCompiledHeader( char *filename )
     TagArray = NULL;
     PCHMacroHash = NULL;
     PCHOldIncFileList = NULL;
+    PCHOldIncListValid = 0;
     len = read( handle, &pch, sizeof( struct pheader ) );
     if( len != sizeof( struct pheader ) ) {
         close( handle );
@@ -1883,20 +1890,19 @@ int UsePreCompiledHeader( char *filename )
         AbortPreCompiledHeader();
         return( -1 );
     }
-    len = strlen( p ) + 1;              // get length of saved HFileList
+    len = strlen( p ) + 1;              // get length of saved IncPathList
     len = _RoundUp( len, sizeof( int ) );
-    if( ((HFileList == NULL) && (strlen( p ) > 0))
-      || ((HFileList != NULL) && (strcmp( p, HFileList ) != 0)) ) {
+    if( ((IncPathList == NULL) && (strlen( p ) > 0))
+      || ((IncPathList != NULL) && (strcmp( p, IncPathList ) != 0)) ) {
         PCHNote( PCHDR_INCPATH_CHANGED );
         AbortPreCompiledHeader();
         return( -1 );
     }
     p = FixupIncFileList( p + len, pch.incfile_count );
     ifile = IncFileList;
-    ialias_error = 0;
-    if( !CompFlags.disable_ialias ) {
-        if( strstr( ifile->filename, "_ialias.h" ) == NULL ||
-            ifile->nextfile == NULL ) {
+    ialias_error = (CompFlags.disable_ialias != pch.disable_ialias);
+    if( !CompFlags.disable_ialias && !ForceInclude ) {
+        if( ifile->nextfile == NULL ) {
             ialias_error = 1;
         } else {
             ifile = ifile->nextfile;
