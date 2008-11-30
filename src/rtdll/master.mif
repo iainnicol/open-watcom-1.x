@@ -33,9 +33,9 @@ rtdll_nosymfile = 1
 !endif
 
 !ifeq component clib
-br_sufix=1
+br_suffix=1
 !else
-br_sufix=0
+br_suffix=0
 !endif
 
 !ifndef patch_level
@@ -63,7 +63,7 @@ $(libdllname).lib : $(dllname).lbc
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).imp $(rtdll_dir)/proclbc.awk $(static_objs)
-    $(awk) -f $(rtdll_dir)/proclbc.awk -v os=$(host_os) -v br=$(br_sufix) $(dllname).imp > $@
+    $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v LSTFILE="$(rtdll_dir)/brfunc.lst" $(dllname).imp > $@
     @for %i in ($(static_objs)) do @%append $@ +%i
 
 !ifeq system winnt
