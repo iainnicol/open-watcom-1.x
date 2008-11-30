@@ -348,7 +348,7 @@ void ProcessDefFile( FILE *f )
         if( buff[0] == '!' ) {
             ThunkStrs = _fmyrealloc( ThunkStrs, sizeof( char *) *
                                     (ThunkIndex + 1) );
-            ThunkStrs[ThunkIndex] = _fmyalloc( i );
+            ThunkStrs[ThunkIndex] = _fmyalloc( i + 1 );
             strcpy( ThunkStrs[ThunkIndex], &buff[1] );
             ThunkIndex++;
             continue;
