@@ -1,4 +1,0 @@
-target_cpu  = i86
-target_objs = cpragx86.obj pragi86.obj
-
-!include ../../master.mif
