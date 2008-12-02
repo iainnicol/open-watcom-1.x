@@ -110,15 +110,15 @@ void VbufPrepStr(               // PREPEND STRING TO vbuf->buf
     char const *string )        // - string to be prepended
 ;
 #define VbufLen(v)              ((v)->used)                 // RETURN LENGTH OF BUFFER
-;
+
 #define VbufRewind(v)           VbufSetLen(v,0)             // CLEAN BUFFER
-;
+
 #define VbufSetPosBack(v,n)     VbufSetLen(v,(v)->used-n)   // SHORTEN BUFFER LENGTH
-;
+
 #define VbufBuffer(v)           ((unsigned char *)(v)->buf) // RETURN POINTER OF BUFFER
-;
+
 #define VbufString(v)           ((v)->buf)                  // RETURN POINTER OF BUFFER
-;
+
 
 #ifdef __cplusplus
 };
