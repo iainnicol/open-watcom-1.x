@@ -315,13 +315,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 CompFlags.cpp_output = TRUE;
                 CompFlags.ignore_fnf = FALSE;
-                if( ForceInclude ) {
-                    EmitLineNL( 1, WholeFName );
-                    openForceIncludeFile();
-                    PpParse();
-                    SrcFileClose( TRUE );
-                }
                 OpenPgmFile();
+                if( ForceInclude ) {
+                    openForceIncludeFile();
+                }
                 PpParse();
             } else {
                 OpenPgmFile();
@@ -331,18 +328,17 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ExitPointAcquire( cpp_object );
                 ExitPointAcquire( cpp_analysis );
                 CgFrontModInitInit();       // must be before pchdr read point
-                CompFlags.watch_for_pcheader = FALSE;
-                CompFlags.ignore_fnf = TRUE;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", TRUE );
-                }
-                CompFlags.ignore_fnf = FALSE;
                 if( CompFlags.use_pcheaders ) {
                     // getting the first token should involve opening
                     // the first #include if there are no definitions
                     // in the primary source file
                     CompFlags.watch_for_pcheader = TRUE;
                 }
+                CompFlags.ignore_fnf = TRUE;
+                if( !CompFlags.disable_ialias ) {
+                    OpenSrcFile( "_ialias.h", TRUE );
+                }
+                CompFlags.ignore_fnf = FALSE;
                 if( ForceInclude ) {
                     openForceIncludeFile();
                     DbgVerify( ! CompFlags.watch_for_pcheader,

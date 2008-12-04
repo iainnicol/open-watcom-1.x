@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Process referecnes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -46,7 +47,7 @@
 */
 
 struct delayed_ref {
-    struct delayed_ref          *next;
+    struct delayed_ref *        next;
     debug_ref                   offset;
     uint                        scope;
 };
@@ -55,9 +56,9 @@ struct delayed_ref {
 static void emitDelayed(
     dw_client                   cli )
 {
-    struct delayed_ref          *cur;
-    uint_8                      buf[ 1 + MAX_LEB128 ];
-    uint_8                      *end;
+    struct delayed_ref *        cur;
+    char                        buf[ 1 + MAX_LEB128 ];
+    char *                      end;
 
     /* delayed_refs are stacked up; we want to emit them in FIFO order */
     cur = ReverseChain( cli->references.delayed );
@@ -80,7 +81,7 @@ static void emitDelayed(
 void StartRef(
     dw_client                   cli )
 {
-    struct delayed_ref          *new;
+    struct delayed_ref *        new;
 
     /*
         We just stack up the StartRef until we find that we have to actually
@@ -126,8 +127,8 @@ void DWENTRY DWReference(
 {
     dw_linenum_delta            line_delta;
     dw_column_delta             column_delta;
-    uint_8                      buf[ 1 + MAX_LEB128 ];
-    uint_8                      *end;
+    char                        buf[ 1 + MAX_LEB128 ];
+    char *                      end;
 
     /*
         We actually have a reference for this scope, so emit all the

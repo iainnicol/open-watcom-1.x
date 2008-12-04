@@ -119,7 +119,7 @@ static void *ORLRead( void *_list, size_t len )
 
     result = CachePermRead( list, ORLFilePos, len );
     ORLFilePos += len;
-    _ChkAlloc( cache, sizeof( readcache ) );
+    _ChkAlloc( cache, sizeof(readcache) );
     cache->next = ReadCacheList;
     ReadCacheList = cache;
     cache->data = result;
@@ -501,7 +501,7 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
 
 static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
-                           size_t namelen )
+                           int namelen )
 /***************************************************************************/
 {
     if( type & ORL_SYM_TYPE_UNDEFINED ) {
@@ -596,7 +596,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         binding = ORLSymbolGetBinding( symhdl );
         symop = ST_CREATE;
         if( binding == ORL_SYM_BINDING_LOCAL ) {
-            symop |= ST_STATIC;
+            symop = ST_STATIC;
         }
         if( type & ORL_SYM_TYPE_UNDEFINED && binding != ORL_SYM_BINDING_ALIAS ){
             symop |= ST_REFERENCE;
@@ -620,9 +620,11 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
                 name = ORLSymbolGetName( assocsymhdl );
                 namelen = strlen(name);
                 if( binding == ORL_SYM_BINDING_ALIAS ) {
-                    MakeSymAlias( sym->name, strlen(sym->name), name, namelen );
+                    name = ChkMemDup( name, namelen + 1 );
+                    MakeSymAlias( sym->name, strlen(sym->name), name,
+                                    namelen );
                 } else {
-                    assocsym = SymOp( ST_CREATE | ST_REFERENCE, name, namelen );
+                    assocsym = SymOp(ST_CREATE|ST_REFERENCE, name, namelen);
                     DefineLazyExtdef( sym, assocsym, isweak );
                     newnode->isweak = TRUE;
                 }

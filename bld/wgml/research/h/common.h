@@ -41,16 +41,15 @@
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
 
-#include <stddef.h>
-
-/* Function return values. */
+/* Function return values */
 
 #define FAILURE 0
 #define SUCCESS 1
 
-/* Global variable declarations. */
+/* Global variable declarations */
 
-/* This allows the same declarations to function as definitions.
+/*
+ * This allows the same declarations to function as definitions.
  * Just #define global before including this file.
  */
 
@@ -58,37 +57,31 @@
     #define global  extern
 #endif
 
-/* This records, generally, whether '\' or '/' is used on the command line. */ 
+/* This records, generally, whether '\' or '/' is used on the command line */ 
 
 global char switch_char;    
 
-/* Reset so can be reused with other headers. */
+#undef global   /* reset so can be reused with other headers */
 
-#undef global
-
-/* Function declarations. */
+/* Function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
-/* These functions must be defined by each program using them. */
+/* These functions must be defined by each program using them */
 
-extern  int         parse_cmdline( char * );
-extern  void        print_banner( void );
-extern  void        print_usage( void );
+int     parse_cmdline( char * );
+void    print_banner( void );
+void    print_usage( void );
 
-/* These functions are defined in common.c. */
+/* These functions are defined in common.c */
 
-extern  void        initialize_globals( void );
-extern  void        mem_free( void *p );
-extern  void    *   mem_alloc( size_t size );
-extern  void    *   mem_realloc( void *p, size_t size );
-extern  void        out_msg( char *fmt, ... );
-extern  char    *   skip_spaces( char * start );
+void    initialize_globals( void );
+char *  skip_spaces( char * );
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}   /* End of "C" linkage for C++ */
 #endif
 
 #endif  /* COMMON_H_INCLUDED */

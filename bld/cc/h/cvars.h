@@ -117,7 +117,7 @@ global  FILE    *DefFile;       /* output for func prototypes */
 global  FILE    *CppFile;       /* output for preprocessor */
 global  FILE    *DepFile;       /* make style auto depend file */
 global  struct  cpp_info *CppStack; /* #if structure control stack */
-global  char    *IncPathList;   /* list of path names to try for include files */
+global  char    *HFileList;     /* list of path names to try for H files */
 global  source_loc SrcLoc;
 global  unsigned SrcLineCount;   /* # of lines in primary source file */
 global  unsigned IncLineCount;   /* # of lines in all included files  */
@@ -227,11 +227,11 @@ global  jmp_buf *Environment;   /* var for Suicide() */
 
 #define MAX_LEVEL       1024
 
-/* The ValueStack array is also used by CGEN for saving _try block info */
-global  TREEPTR     ValueStack[ MAX_LEVEL ];
-global  char        Token[ MAX_LEVEL ];
-global  token_class Class[ MAX_LEVEL ];
-global  int         Level;
+/* The following 3 arrays are also used by CGEN for saving _try block info */
+global  TREEPTR ValueStack[ MAX_LEVEL ];
+global  char    Token[ MAX_LEVEL ];
+global  char    Class[ MAX_LEVEL ];
+global  int     Level;
 
 global  struct  segment_list *SegListHead;
 global  int     SegImport;              /* next segment # for import sym */
@@ -451,7 +451,6 @@ extern  char    *ObjFileName(char *);
 extern  char    *ForceSlash(char *, char );
 extern  char    *CreateFileName( char *template, char *extension, bool forceext );
 extern  char    *GetSourceDepName( void );
-extern  FNAMEPTR NextDependency( FNAMEPTR );
 
 extern  FNAMEPTR AddFlist(char const *);
 extern  FNAMEPTR FileIndexToFName(unsigned);
@@ -467,9 +466,6 @@ extern  void    SetSrcFNameOnce( void );
 extern  void    GetNextToken(void);
 extern  void    EmitLine(unsigned,char *);
 extern  void    EmitPoundLine(unsigned,char *,int);
-
-extern  void    AddIncFileList( char *filename );
-extern  void    FreeIncFileList( void );
 
 // cdata.c
 extern  void    InitGlobalVars( void );
@@ -727,7 +723,7 @@ extern  int     InitPPScan( void );             /* cscan */
 extern  void    FiniPPScan( int );              /* cscan */
 extern  int     CalcHash( const char *, int );  /* cscan */
 extern  unsigned hashpjw( const char * );       /* cscan */
-extern  int     ESCChar( int, const unsigned char **, bool * );  /* cscan */
+extern  int     ESCChar( int, const char **, char * );  /* cscan */
 extern  void    SkipAhead( void );              /* cscan */
 extern  TOKEN   ScanToken( void );              /* cscan */
 extern  void    ReScanInit( char * );           /* cscan */

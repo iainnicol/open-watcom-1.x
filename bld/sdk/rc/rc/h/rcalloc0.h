@@ -51,7 +51,7 @@ typedef struct HeapHandle {
 #define RCMEM_GARBAGEBYTE    0xE2
 typedef struct DebugMemInfo {
     unsigned long       size;
-    unsigned char       startbyte;
+    char                startbyte;
 } DebugMemInfo;
 #endif
 

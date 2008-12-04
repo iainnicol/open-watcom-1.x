@@ -32,4 +32,3 @@
 
 #define WINSEL_HWND                 500
 #define WINSEL_NAME                 501
-#define WINSEL_ICON                 502

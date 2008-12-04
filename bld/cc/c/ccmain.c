@@ -79,6 +79,7 @@ static  int     OpenPgmFile( void );
 static  void    DelDepFile( void );
 static  const char  *IncludeAlias( const char *filename, int delimiter );
 
+
 void FrontEndInit( bool reuse )
 //***************************//
 // Do the once only things   //
@@ -109,7 +110,7 @@ void ClearGlobals( void )
     DefFile = NULL;
     CppFile = NULL;
     DepFile = NULL;
-    IncPathList = NULL;
+    HFileList = NULL;
     IncFileDepth = MAX_INC_DEPTH;
     SegmentNum = FIRST_PRIVATE_SEGMENT;
     BufSize = BUF_SIZE;
@@ -217,27 +218,13 @@ char *ForceSlash( char *name, char slash )
 
     if( !slash || !save )
         return( name );
-    while( name[0] ) {
+    while( name[0] )
+    {
         if( name[0] == '\\' || name[0] == '/' )
             name[0] = slash;
         name++;
     }
     return( save );
-}
-
-FNAMEPTR NextDependency( FNAMEPTR curr )
-{
-    if( curr == NULL ) {
-        curr = FNames;
-    } else {
-        curr = curr->next;
-    }
-    while( curr != NULL ) {
-        if( curr->rwflag && !SrcFileInRDir( curr ) )
-            break;
-        curr = curr->next;
-    }
-    return( curr );
 }
 
 void DumpDepFile( void )
@@ -246,14 +233,30 @@ void DumpDepFile( void )
 
     OpenDepFile();
     if( DepFile != NULL ) {
-        curr = NextDependency( NULL );
-        if( curr != NULL ) {
-            fprintf( DepFile, "%s :", ForceSlash( CreateFileName( DependTarget, OBJ_EXT, FALSE ), DependForceSlash ) );
-            fprintf( DepFile, " %s", ForceSlash( GetSourceDepName(), DependForceSlash ) );
-            for( curr = NextDependency( curr ); curr != NULL; curr = NextDependency( curr ) ) {
-                fprintf( DepFile, " %s", ForceSlash( curr->name, DependForceSlash ) );
+        if( FNames ) {
+            fprintf( DepFile, "%s :"
+                   , ForceSlash( CreateFileName( DependTarget, OBJ_EXT, FALSE )
+                              , DependForceSlash ) );
+            curr = FNames;
+            if( curr )
+                if( curr->rwflag && !SrcFileInRDir( curr ) )
+                    fprintf( DepFile, " %s"
+                            , ForceSlash( GetSourceDepName()
+                                        , DependForceSlash ) );
+            curr = curr->next;
+            for( ; curr; curr = curr->next ) {
+                if( curr->rwflag && !SrcFileInRDir( curr ) )
+                    fprintf( DepFile, " %s", ForceSlash( curr->name, DependForceSlash ) );
             }
             fprintf( DepFile, "\n" );
+            /*
+            for( curr = FNames; curr; curr = curr->next )
+            {
+                if( curr->rwflag && !SrcFileInRDir( curr ) )
+                    continue;
+                //fprintf( DepFile, "#Skipped file...%s\n", curr->name );
+            }
+            */
         }
         fclose( DepFile );
         DepFile = NULL;
@@ -345,7 +348,7 @@ static void DoCCompile( char **cmdline )
             return;
         }
         DelErrFile();               /* delete old error file */
-        MergeInclude();             /* merge INCLUDE= with IncPathList */
+        MergeInclude();             /* merge INCLUDE= with HFileList */
         CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
         ParseAuxFile();
@@ -392,7 +395,6 @@ static void DoCCompile( char **cmdline )
     FreeFNames();
     FreeRDir();
     FreeIAlias();
-    FreeIncFileList();
 }
 
 
@@ -695,9 +697,7 @@ static void DelErrFile(void)
     char        *name;
 
     name = ErrFileName();
-    if( name != NULL ) {
-        remove( name );
-    }
+    if( name != NULL ) remove( name );
 }
 
 static void DelDepFile( void )
@@ -705,9 +705,7 @@ static void DelDepFile( void )
     char        *name;
 
     name = DepFileName();
-    if( name != NULL ) {
-        remove( name );
-    }
+    if( name != NULL ) remove( name );
 }
 
 int OpenSrcFile( char *filename, int delimiter )
@@ -743,8 +741,8 @@ int OpenSrcFile( char *filename, int delimiter )
             }
         }
     }
-    if( IncPathList != NULL ) {
-        p = IncPathList;
+    if( HFileList != NULL ) {
+        p = HFileList;
         do {
             i = 0;
             while( *p == ' ' ) ++p;                     /* 28-feb-95 */
@@ -819,6 +817,14 @@ void CloseSrcFile( FCB *srcfcb )
     }
     SrcFile = srcfcb->prev_file;
     CurrChar = srcfcb->prev_currchar;
+    if( SrcFile == MainSrcFile ) {
+        if( CompFlags.make_precompiled_header ) {
+            CompFlags.make_precompiled_header = 0;
+            if( ErrCount == 0 ) {
+                BuildPreCompiledHeader( PCH_FileName );
+            }
+        }
+    }
     if( SrcFile != NULL ) {
         if( SrcFile->src_fp == NULL ) {
             SrcFile->src_fp = fopen( SrcFile->src_flist->name, "rb" );
@@ -826,14 +832,6 @@ void CloseSrcFile( FCB *srcfcb )
         }
         SrcFileLoc = SrcFile->src_loc;
         IncLineCount += srcfcb->src_line_cnt;
-        if( SrcFile == MainSrcFile ) {
-            if( CompFlags.make_precompiled_header ) {
-                CompFlags.make_precompiled_header = 0;
-                if( ErrCount == 0 ) {
-                    BuildPreCompiledHeader( PCH_FileName );
-                }
-            }
-        }
         if( CompFlags.cpp_output ) {
             EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, 1 );
         }
@@ -930,10 +928,10 @@ static FNAMEPTR FindFlist( char const *filename )
 { // find a flist
     FNAMEPTR    flist;
 
-    for( flist = FNames; flist != NULL; flist = flist->next ) {
-        if( strcmp( filename, flist->name ) == 0 ) {
-            break;
-        }
+    flist = FNames;
+    while( flist  != NULL ) {
+        if( strcmp( filename, flist->name ) == 0 ) break;
+        flist = flist->next;
     }
     return( flist );
 }
@@ -1052,7 +1050,7 @@ void FreeFNames( void )
     }
 }
 
-void AddIncFileList( char *filename )
+static void AddIncFileList( char *filename )
 {
     INCFILE     *ifile;
     INCFILE     *ifilep;
@@ -1069,16 +1067,6 @@ void AddIncFileList( char *filename )
         ifilep = IncFileList;
         while( ifilep->nextfile != NULL )  ifilep = ifilep->nextfile;
         ifilep->nextfile = ifile;
-    }
-}
-
-void FreeIncFileList( void )
-{
-    INCFILE *ilist;
-
-    while( (ilist = IncFileList) != NULL ) {
-        IncFileList = ilist->nextfile;
-        CMemFree( ilist );
     }
 }
 
@@ -1261,6 +1249,11 @@ static void ParseInit( void )
 local void Parse( void )
 {
     EmitInit();
+    CompFlags.ignore_fnf = TRUE;
+    if( !CompFlags.disable_ialias ) {
+        OpenSrcFile( "_ialias.h", '<' );
+    }
+    CompFlags.ignore_fnf = FALSE;
     // The first token in a file should be #include if a user wants to
     // use pre-compiled headers. The following call to NextToken() to
     // get the very first token of the file will load the pre-compiled
@@ -1274,16 +1267,8 @@ local void Parse( void )
         // any macros that are defined in forced include file
         InitialMacroFlag = 0;                   /* 02-jun-95 */
         OpenSrcFile( ForceInclude, 0 );
-    }
-    CompFlags.ok_to_use_precompiled_hdr = 0;
-    CompFlags.use_precompiled_header = 0;
-    CompFlags.ignore_fnf = TRUE;
-    if( !CompFlags.disable_ialias ) {
-        OpenSrcFile( "_ialias.h", '<' );
-    }
-    CompFlags.ignore_fnf = FALSE;
-    if( !ForceInclude ) {
-        CompFlags.ok_to_use_precompiled_hdr = 1;
+        CompFlags.use_precompiled_header = 0;
+        CompFlags.ok_to_use_precompiled_hdr = 0;
     }
     NextToken();
     // If we didn't get a #include with the above call to NextToken()

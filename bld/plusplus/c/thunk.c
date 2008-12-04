@@ -316,7 +316,7 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     SetCurrScope(save_scope);
     CgFrontResumeFunction( curr_func );
     cgfile = CgioLocateFile( thunk_sym );
-    cgfile->s.thunk = TRUE;
+    cgfile->thunk = TRUE;
     if( ( SymIsInitialized( orig_sym ) )
       ||( SymIsDefArg( orig_sym ) )
       ||( classification == SPECIAL_OP_DEL_THUNK )

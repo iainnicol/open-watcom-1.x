@@ -74,7 +74,7 @@ typedef enum {
 
 typedef struct tok {
     char        *buff;
-    unsigned    len;
+    int         len;
     char        *next;
     char        *this;
     unsigned_16 line;
@@ -183,7 +183,7 @@ extern parse_entry OutputOpts[];
 
 /* handy globals */
 
-extern file_defext  Extension;
+extern byte         Extension;
 extern file_list    **CurrFList;
 extern tok          Token;
 extern commandflag  CmdFlags;
@@ -197,7 +197,7 @@ extern cmdfilelist *CmdFile;
 extern bool             ProcArgList( bool (*)( void ), tokcontrol );
 extern bool             ProcArgListEx( bool (*)( void ), tokcontrol ,cmdfilelist * );
 extern bool             ProcOne( parse_entry *, sep_type, bool );
-extern bool             MatchOne( parse_entry *, sep_type, char *, unsigned );
+extern bool             MatchOne( parse_entry *, sep_type, char *, int );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );
 extern bool             HaveEquals( tokcontrol );
@@ -210,7 +210,7 @@ extern void             RestoreParser( void );
 extern void             NewCommandSource( char *, char *, method );
 extern void             SetCommandFile( f_handle, char * );
 extern void             EatWhite( void );
-extern char             *FileName( char *, unsigned, file_defext, bool );
+extern char             *FileName( char *, int, byte, bool );
 extern void             RestoreCmdLine( void );
 extern bool             IsSystemBlock( void );
 extern void             BurnUtils( void );

@@ -30,35 +30,22 @@
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <string.h>
+#include "spy.h"
 #include <dde.h>
-#ifdef __NT__
-    #include <commctrl.h>
-#endif
 
 static message *userMsg;
 
 /*
  * GetMessageDataFromID - use message id to look up message structure
  */
-message *GetMessageDataFromID( int msgid, char *class_name )
+message *GetMessageDataFromID( int msgid  )
 {
     int i;
-    int j;
 
     for( i=0;i< MessageArraySize;i++ ) {
         if( msgid == MessageArray[i].id ) return( &MessageArray[i] );
-    }
-    for( i = 0; i < ClassMessagesSize; i++ ) {
-        if( !stricmp( class_name, ClassMessages[i].class_name ) ) {
-            for( j = 0; j < *ClassMessages[i].message_array_size; j++ ) {
-                if( msgid == ClassMessages[i].message_array[j].id ) {
-                    return( &ClassMessages[i].message_array[j] );
-                }
-            }
-        }
     }
     return( NULL );
 
@@ -67,14 +54,14 @@ message *GetMessageDataFromID( int msgid, char *class_name )
 /*
  * ProcessIncomingMessage - get a string associated with a message id
  */
-void ProcessIncomingMessage( int msgid, char *class_name, char *res )
+void ProcessIncomingMessage( int msgid, char *res )
 {
     message     *msg;
     char        *fmtstr;
     char        buf[256];
 
     res[0] = 0;
-    msg = GetMessageDataFromID( msgid, class_name );
+    msg = GetMessageDataFromID( msgid );
     if( msg != NULL ) {
         if( msg->bits[M_WATCH] ) {
             strcpy( res, msg->str );
@@ -148,7 +135,7 @@ void SetFilterSaveBitsMsgs( MsgClass type, BOOL val, char *bits ) {
  */
 void InitMessages( void )
 {
-    userMsg = GetMessageDataFromID( WM_USER, NULL );
+    userMsg = GetMessageDataFromID( WM_USER );
 
 } /* InitMessages */
 

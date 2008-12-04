@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  PC Object Module Format, also known as OMF.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,7 +33,7 @@
 #ifndef PCOBJ_H
 #include <watcom.h>
 
-#include "pushpck1.h"
+#pragma pack(1)
 /*
  * Library stuff
  */
@@ -429,8 +430,7 @@ enum {
     EASY_EXEC_READ      = 0x02, /* exec-read                            */
     EASY_READ_WRITE     = 0x03  /* read-write                           */
 };
-
-#include "poppck.h"
+#pragma pack()
 
 #define PCOBJ_H 1
 #endif
