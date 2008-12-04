@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
+#include "spy.h"
 
 WndConfigInfo   SpyMainWndInfo;
 char            *SpyName;

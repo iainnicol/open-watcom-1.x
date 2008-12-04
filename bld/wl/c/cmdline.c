@@ -105,7 +105,7 @@ static  parse_entry   FormatHelp[] = {
     NULL
 };
 
-file_defext     Extension;
+byte            Extension;
 file_list       **CurrFList;
 tok             Token;
 commandflag     CmdFlags;
@@ -162,7 +162,7 @@ void DoCmdFile( char *fname )
     exe_format  possible;
     f_handle    file;
     size_t      namelen;
-    file_defext extension;
+    unsigned    extension;
     char        *namelnk;
 
     ResetCmdFile();
@@ -207,7 +207,9 @@ void DoCmdFile( char *fname )
         file = SearchPath( namelnk );
     }
     if( file != NIL_HANDLE ) {
-        fname = ChkStrDup( namelnk );
+        namelen = strlen( namelnk ) + 1;
+        _ChkAlloc( fname, namelen );
+        memcpy( fname, namelnk, namelen );
         SetCommandFile( file, fname );
     }
     if( Spawn( DoCmdParse ) ) {
@@ -255,14 +257,14 @@ void DoCmdFile( char *fname )
     namelen = strlen( Name );
     if( MapFlags & MAP_FLAG ) {
         if( MapFName == NULL ) {
-            MapFName = FileName( Name, namelen, E_MAP, TRUE );
+            MapFName = FileName( Name, (int) namelen, E_MAP, TRUE );
         }
     } else {
         MapFlags = 0;   // if main isn't set, don't set anything.
     }
     if( SymFileName == NULL && (CmdFlags & CF_SEPARATE_SYM ||
                    (LinkFlags & OLD_DBI_FLAG && FmtData.type & MK_COM)) ) {
-        SymFileName = FileName( Name, namelen, E_SYM, TRUE );
+        SymFileName = FileName( Name, (int) namelen, E_SYM, TRUE );
     }
     if( FmtData.make_implib && FmtData.implibname == NULL ) {
         if( FmtData.make_impfile ) {
@@ -270,7 +272,7 @@ void DoCmdFile( char *fname )
         } else {
             extension = E_LIBRARY;
         }
-        FmtData.implibname = FileName( Name, namelen, extension, TRUE );
+        FmtData.implibname = FileName( Name, (int) namelen, (byte) extension, TRUE );
     }
     CheckTraces();
     BurnUtils();
@@ -627,7 +629,7 @@ void SetFormat( void )
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
-        unsigned    len = strlen( Name );
+        int const len = (int) strlen(Name);
 
         if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
             Extension = E_HEX;       //   has been specified
@@ -784,14 +786,13 @@ void FreeFormatStuff( void )
     if( check->free_func != NULL ) check->free_func();
 }
 
-void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
+void AddCommentLib( char *ptr, int len, lib_priority priority )
 /*********************************************************************/
 //  Add a library from a comment record.
 {
     file_list   *result;
 
-    if( CmdFlags & CF_NO_DEF_LIBS )
-        return;
+    if( CmdFlags & CF_NO_DEF_LIBS ) return;
     ptr = FileName( ptr, len, E_LIBRARY, FALSE );
     result = AddObjLib( ptr, priority );
     CheckLibTrace( result );
@@ -802,15 +803,15 @@ void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
 // we don't need these next two when under workframe
 #ifndef APP
 
-void AddLibPaths( char *name, unsigned len, bool add_to_front )
+void AddLibPaths( char *name, int len, bool add_to_front )
 /***************************************************************/
 {
     path_entry         *newpath;
     file_list const    *libfiles;
 
-    _ChkAlloc( newpath, sizeof( path_entry ) + len );
-    memcpy( newpath->name, name, len );
-    newpath->name[ len ] = '\0';
+    _ChkAlloc( newpath, sizeof( path_entry ) + (size_t) len );
+    memcpy( newpath->name, name, (size_t) len );
+    newpath->name[len] = '\0';
     if( add_to_front ) {
         newpath->next = LibPath;
         LibPath = newpath;
@@ -835,11 +836,10 @@ void AddEnvPaths( char *envname )
 /**************************************/
 {
     char * const        val = GetEnvString( envname );
-    unsigned            len;
+    int                 len;
 
-    if( val == NULL )
-        return;
-    len = strlen( val );
+    if( val == NULL ) return;
+    len = (int) strlen( val );
     AddLibPaths( val, len, FALSE );
 }
 

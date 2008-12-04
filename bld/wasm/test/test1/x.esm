@@ -1,6 +1,5 @@
 .387
-.386p
-_TEXT		SEGMENT	BYTE PUBLIC USE32 'CODE'
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
 		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
     cpuid     
     wrmsr     
@@ -8,6 +7,7 @@ _TEXT		SEGMENT	BYTE PUBLIC USE32 'CODE'
     rdmsr     
     mov       cr4,eax
     mov       eax,cr4
-    cmpxchg8b qword ptr [eax]
+    ????      
+    mov       word ptr [si],0
 _TEXT		ENDS
 		END

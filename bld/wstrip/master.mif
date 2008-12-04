@@ -45,7 +45,7 @@ $(proj_name).exe : $(dependants)
 !endif
 
 msg.gh : ../wstrip.msg
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(vi) -s $(sdk_dir)/misc/msgtoh.vi -p"$^@" $[@
 
 owstrip.res : wstrip.rc wstrip.msg msg.gh ousage.rc ousagej.rc
         $(rc_aui) -DDOS $[@ -fo=$^@

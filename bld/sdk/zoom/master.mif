@@ -45,10 +45,10 @@ $(name)j.exe : $(name).exe $(name)j.res
         $(rc) -k $(name)j.res $^@
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(vi) -s ../../misc/msgtoh.vi -p"$^@" $[@
 
 rcstrmsg.gh : ../wzoom.msg $(sdk_dir)/misc/about.msg
-        $(cc) $(preproc_opts) $(inc_path) -fo=$^@
+        $(cc) $(inc_path) -zk0 -p $[@ -fo=$^@
 
 $(name).res : ../wzoom.rc .AUTODEPEND
         $(rc) $(rc_flags) -r -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@

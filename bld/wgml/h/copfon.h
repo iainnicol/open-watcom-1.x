@@ -34,19 +34,18 @@
 #define COPFON_H_INCLUDED
 
 #include "copfiles.h"
-#include "wgml.h"
 
-/* Function declarations. */
+/* function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
 bool            is_fon_file( FILE * );
 cop_font    *   parse_font( FILE * );
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}               /* End of "C" linkage for C++ */
 #endif
 
-#endif  /* COPFON_H_INCLUDED */
+#endif          /* COPFON_H_INCLUDED */
