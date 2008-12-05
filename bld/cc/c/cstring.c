@@ -178,60 +178,61 @@ STRING_LITERAL *GetLiteral( void )
 
 static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
 {
-    int                 c;
+    unsigned int        c;
     size_t              j;
-    bool                error;
-    const unsigned char *end;
-    const unsigned char *p = (const unsigned char *)inbuf;
+    char                error;
+    const char          *end;
 
     j = 0;
-    error = FALSE;
-    end = p + length;
-    while( p < end ) {
-        c = *p++;
+    error = 0;
+    end = inbuf + length;
+    while( inbuf < end ) {
+        c = *inbuf;
         if( c == '\\' ) {
-            c = ESCChar( *p, &p, &error );
+            ++inbuf;
+            c = ESCChar( *inbuf, &inbuf, &error );
             if( CompFlags.wide_char_string ) {
-                if( buf != NULL )
-                    buf[ j ] = c;
+                if( buf )
+                    buf[j] = c;
                 ++j;
                 c = c >> 8;                     /* 31-may-91 */
             }
         } else {
-            if( CharSet[ c ] & C_DB ) {       /* if double-byte character */
+            ++inbuf;
+            if( CharSet[c] & C_DB ) {       /* if double-byte character */
                 if( CompFlags.jis_to_unicode &&
                     CompFlags.wide_char_string ) {      /* 15-jun-93 */
-                    c = (c << 8) + *p;
+                    c = (c << 8) + *inbuf;
                     c = JIS2Unicode( c );
-                    if( buf != NULL )
-                        buf[ j ] = c;
+                    if( buf )
+                        buf[j] = c;
                     c = c >> 8;
                 } else {
-                    if( buf != NULL )
-                        buf[ j ] = c;
-                    c = *p;
+                    if( buf )
+                        buf[j] = c;
+                    c = *inbuf;
                 }
                 ++j;
-                ++p;
+                ++inbuf;
             } else if( CompFlags.wide_char_string ) {
                 if( CompFlags.use_unicode ) {   /* 05-jun-91 */
                     c = UniCode[ c ];
                 } else if( CompFlags.jis_to_unicode ) {
                     c = JIS2Unicode( c );
                 }
-                if( buf != NULL )
-                    buf[ j ] = c;
+                if( buf )
+                    buf[j] = c;
                 ++j;
                 c = c >> 8;
             } else {
                 _ASCIIOUT( c );
             }
         }
-        if( buf != NULL )
-            buf[ j ] = c;
+        if( buf )
+            buf[j] = c;
         ++j;
     }
-    if( error && buf != NULL ) {                   /* 16-nov-94 */
+    if( error != 0 && buf != NULL ) {                   /* 16-nov-94 */
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_INVALID_HEX_CONSTANT );
         }

@@ -46,12 +46,12 @@ extern char _NEAR CONFIG_FILE[];
 extern char _NEAR MEMORIZE_MODE[];
 extern char _NEAR SingleBlank[];
 extern char _NEAR SingleSlash[];
-extern char * _NEAR EditOpts[];
-extern char * _NEAR BoolStr[];
+extern char _NEAR * _NEAR EditOpts[];
+extern char _NEAR * _NEAR BoolStr[];
 extern int NumEditOpts;
 
 /* mouse data */
-#if defined( __LINUX__ )        /* compatible with the ui lib */
+#if defined( __LINUX__ ) && !defined( PREBUILD ) /* compatible with the ui lib */
 extern unsigned short MouseRow;
 extern unsigned short MouseCol;
 extern unsigned short MouseStatus;

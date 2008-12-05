@@ -63,30 +63,38 @@ static char     *Font_end[]={
 
 #define HTML_SPACE "&nbsp;"
 
-static int Font_list[ 100 ];      // up to 100 nested fonts
-static int Font_list_curr = 0;
+static int Font_list[100];      // up to 100 nested fonts
+static int Font_list_curr= 0;
 
-static bool Blank_line_pfx = FALSE;
-static bool Blank_line_sfx = TRUE;
+static bool Blank_line_pfx=FALSE;
+static bool Blank_line_sfx=TRUE;
 
 #define IPF_TRANS_LEN           50
 
-static char *Trans_str = NULL;
-static int Trans_len = 0;
+static char *Trans_str=NULL;
+static int Trans_len=0;
 
 #define MAX_TABS                100     // up to 100 tab stops
-static int Tab_list[ MAX_TABS ];
+static int Tab_list[MAX_TABS];
 
-static void draw_line( section_def *section, int *alloc_size )
-/************************************************************/
-{
+static void draw_line(
+/********************/
+
+    section_def         *section,
+    int                 *alloc_size
+) {
     trans_add_str( "<HR>\n", section, alloc_size );
 }
 
-static int translate_char_html( int ch, int next_ch, char *buf )
-/**************************************************************/
-{
+static int translate_char_html(
+/****************************/
+
+    char                ch,
+    char                next_ch,
+    char                *buf
+) {
     switch( ch ) {
+
     case '<':
         strcpy( buf, "&lt;" );
         break;
@@ -114,20 +122,23 @@ static int translate_char_html( int ch, int next_ch, char *buf )
         buf[1] = '\0';
         break;
     }
+
     return( strlen( buf ) );
 }
 
-static char *translate_str_html( char *str )
-/******************************************/
-{
-    unsigned char   *t_str;
-    int             len;
-    char            buf[ IPF_TRANS_LEN ];
-    char            *ptr;
+static char *translate_str_html(
+/******************************/
+
+    char                *str
+) {
+    char                *t_str;
+    int                 len;
+    char                buf[IPF_TRANS_LEN];
+    char                *ptr;
 
     len = 1;
-    for( t_str = (unsigned char *)str; *t_str != '\0'; ++t_str ) {
-        len += translate_char_html( *t_str, *(t_str + 1), buf );
+    for( t_str = str; *t_str != '\0'; ++t_str ) {
+        len += translate_char_html( *t_str, *(t_str+1), buf );
     }
     if( len > Trans_len ) {
         if( Trans_str != NULL ) {
@@ -137,40 +148,56 @@ static char *translate_str_html( char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = (unsigned char *)str; *t_str != '\0'; ++t_str ) {
-        len = translate_char_html( *t_str, *(t_str + 1), buf );
+    for( t_str = str; *t_str != '\0'; ++t_str ) {
+        len = translate_char_html( *t_str, *(t_str+1), buf );
         strcpy( ptr, buf );
         ptr += len;
     }
     *ptr = '\0';
+
     return( Trans_str );
 }
 
-static int trans_add_char_html( int ch, int next_ch, section_def *section, int *alloc_size )
-/******************************************************************************************/
-{
-    char        buf[ IPF_TRANS_LEN ];
+static int trans_add_char_html(
+/******************************/
+
+    char                ch,
+    char                next_ch,
+    section_def         *section,
+    int                 *alloc_size
+) {
+    char                buf[IPF_TRANS_LEN];
 
     translate_char_html( ch, next_ch, buf );
     return( trans_add_str( buf, section, alloc_size ) );
 }
 
-static int trans_add_str_html( char *str, section_def *section, int *alloc_size )
-/*******************************************************************************/
-{
-    int         len;
+static int trans_add_str_html(
+/***************************/
+
+    char                *str,
+    section_def         *section,
+    int                 *alloc_size
+) {
+    int                 len;
 
     len = 0;
     for( ; *str != '\0'; ++str ) {
-        len += trans_add_char_html( *(unsigned char *)str, *(unsigned char *)(str + 1), section, alloc_size );
+        len += trans_add_char_html( *str, *(str+1), section, alloc_size );
     }
+
     return( len );
 }
 
-static int trans_add_list( char *list, section_def *section, int *alloc_size, char *ptr )
-/***************************************************************************************/
-{
-    int         len;
+static int trans_add_list(
+/************************/
+
+    char                *list,
+    section_def         *section,
+    int                 *alloc_size,
+    char                *ptr
+) {
+    int                 len;
 
     len = trans_add_str( list, section, alloc_size );
     ++ptr;
@@ -184,12 +211,13 @@ static int trans_add_list( char *list, section_def *section, int *alloc_size, ch
     return( len );
 }
 
-static void read_tabs( char *tab_line )
-/*************************************/
-{
-    char        *ptr;
-    int         i;
-    int         tabcol;
+static void read_tabs(
+/********************/
+    char                *tab_line
+) {
+    char                *ptr;
+    int                 i;
+    int                 tabcol;
 
     Tab_xmp_char = *tab_line;
 
@@ -200,28 +228,31 @@ static void read_tabs( char *tab_line )
         } else {
             tabcol = atoi( ptr );
         }
-        Tab_list[ i] = tabcol;
+        Tab_list[i] = tabcol;
     }
-    Tab_list[ i ] = -1;
+    Tab_list[i] = -1;
 }
 
-static int tab_align( int ch_len, section_def *section, int *alloc_size )
-/***********************************************************************/
-{
-    int         i;
-    int         len;
+static int tab_align(
+/*******************/
+
+    int                 ch_len,
+    section_def         *section,
+    int                 *alloc_size
+) {
+    int                 i;
+    int                 len;
 
     // find the tab we should use
     i = 0;
-    while( ch_len >= Tab_list[ i ] ) {
-        if( Tab_list[ i ] == -1 )
-            break;
+    while( ch_len >= Tab_list[i]) {
+        if( Tab_list[i] == -1 ) break;
         ++i;
     }
 
     len = 1;
-    if( Tab_list[ i ] != -1 ) {
-        len =  Tab_list[ i ] - ch_len;
+    if( Tab_list[i] != -1 ) {
+        len =  Tab_list[i] - ch_len;
     }
     for( i = len; i > 0; --i ) {
         trans_add_str_html( HTML_SPACE, section, alloc_size );
@@ -231,19 +262,22 @@ static int tab_align( int ch_len, section_def *section, int *alloc_size )
 }
 
 void html_topic_init( void )
-/**************************/
+/******************/
 {
 }
 
-int html_trans_line( section_def *section, int alloc_size )
-/*********************************************************/
-{
+int html_trans_line(
+/*****************/
+
+    section_def         *section,
+    int                 alloc_size
+) {
     char                *ptr;
     char                *end;
-    int                 ch;
+    char                ch;
     char                *ctx_name;
     char                *ctx_text;
-    char                buf[ 500 ];
+    char                buf[500];
     int                 font_idx;
     int                 line_len;
     bool                term_fix;
@@ -253,11 +287,12 @@ int html_trans_line( section_def *section, int alloc_size )
 
     /* check for special column 0 stuff first */
     ptr = Line_buf;
-    ch = *(unsigned char *)ptr;
+    ch = *ptr;
     ch_len = 0;
     line_len = 0;
 
     switch( ch ) {
+
     case CH_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
             Tab_xmp = FALSE;
@@ -385,7 +420,7 @@ int html_trans_line( section_def *section, int alloc_size )
 
     term_fix = FALSE;
     for( ;; ) {
-        ch = *(unsigned char *)ptr;
+        ch = *ptr;
         if( ch == '\0' ) {
             if( term_fix ) {
 //              trans_add_str( "</hp2>", section, &alloc_size );
@@ -457,7 +492,7 @@ int html_trans_line( section_def *section, int alloc_size )
         } else if( ch == CH_CTX_KW ) {
             end = strchr( ptr + 1, CH_CTX_KW );
             memcpy( buf, ptr + 1, end - ptr - 1 );
-            buf[ end - ptr - 1 ] = '\0';
+            buf[end - ptr - 1] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
             if( *ptr == ' ' ) {
@@ -472,7 +507,7 @@ int html_trans_line( section_def *section, int alloc_size )
         } else if( ch == CH_BMP ) {
             Curr_ctx->empty = FALSE;
             ++ptr;
-            ch = *(unsigned char *)ptr;
+            ch = *ptr;
             ptr += 2;
             end = strchr( ptr, CH_BMP );
             *end = '\0';
@@ -503,6 +538,7 @@ int html_trans_line( section_def *section, int alloc_size )
             font_idx = 0;
             for( ; ptr != end; ++ptr ) {
                 switch( *ptr ) {
+
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
                     break;
@@ -517,13 +553,15 @@ int html_trans_line( section_def *section, int alloc_size )
                     break;
                 }
             }
-            line_len += trans_add_str( Font_match[ font_idx ], section, &alloc_size );
-            Font_list[ Font_list_curr ] = font_idx;
+            line_len += trans_add_str( Font_match[font_idx],
+                                                section, &alloc_size );
+            Font_list[Font_list_curr] = font_idx;
             ++Font_list_curr;
             ++ptr;
         } else if( ch == CH_FONTSTYLE_END ) {
             --Font_list_curr;
-            line_len += trans_add_str( Font_end[ Font_list[ Font_list_curr ] ], section, &alloc_size );
+            line_len += trans_add_str( Font_end[Font_list[Font_list_curr]],
+                                                section, &alloc_size );
             ++ptr;
         } else if( ch == CH_FONTTYPE ) {
             ++ptr;
@@ -559,7 +597,7 @@ int html_trans_line( section_def *section, int alloc_size )
                     ptr++;
                 }
             } else {
-                line_len += trans_add_char_html( ch, *(unsigned char *)ptr, section, &alloc_size );
+                line_len += trans_add_char_html( ch, *ptr, section, &alloc_size );
                 ++ch_len;
             }
         }
@@ -568,9 +606,11 @@ int html_trans_line( section_def *section, int alloc_size )
     return( alloc_size );
 }
 
-static void output_hdr( void )
-/****************************/
-{
+static void output_hdr(
+/*********************/
+
+    void
+) {
     whp_fprintf( Out_file, "<HEAD>\n" );
     if( Ipf_title != NULL && Ipf_title[0] != '\0' ) {
         whp_fprintf( Out_file, "<TITLE> %s </TITLE>\n", Ipf_title );
@@ -579,11 +619,13 @@ static void output_hdr( void )
     whp_fprintf( Out_file, "<BODY>\n" );
 }
 
-static void output_ctx_hdr( ctx_def *ctx )
-/****************************************/
-{
-    int         head_level;
-    int         p_skip;
+static void output_ctx_hdr(
+/*************************/
+
+    ctx_def                     *ctx
+) {
+    int                         head_level;
+    int                         p_skip;
 
     head_level = ctx->head_level;
     if( head_level == 0 ) {
@@ -611,9 +653,9 @@ static void output_ctx_hdr( ctx_def *ctx )
 
     Curr_head_level = head_level;
 
-    whp_fprintf( Out_file, "<H%d", head_level );
-    whp_fprintf( Out_file, " ID=\"%s\">", translate_str_html( ctx->ctx_name ) );
-    whp_fprintf( Out_file, " %s </H%d>\n", translate_str_html( ctx->title ), head_level );
+    whp_fprintf( Out_file, "<H%d", head_level);
+    whp_fprintf( Out_file, " ID=\"%s\">", translate_str_html( ctx->ctx_name ));
+    whp_fprintf( Out_file, " %s </H%d>\n", translate_str_html( ctx->title ), head_level);
 
 #if 0
     if( ctx->keylist != NULL ) {
@@ -645,7 +687,8 @@ static void output_ctx_hdr( ctx_def *ctx )
           }
 #endif
 
-    if( Real_ipf_font ) {
+
+        if( Real_ipf_font ) {
         /* The default font is system, which wouldn't be right */
         whp_fprintf( Out_file, "<font facename=Helv size=10x10>\n" );
     }
@@ -653,28 +696,36 @@ static void output_ctx_hdr( ctx_def *ctx )
     /* nor does 'Up' topicing have any relevance */
 }
 
-static void output_end( void )
-/****************************/
-{
+static void output_end(
+/*********************/
+
+    void
+) {
     whp_fprintf( Out_file, "</BODY>\n" );
 }
 
-static void output_ctx_sections( ctx_def *ctx )
-/*********************************************/
-{
-    section_def     *section;
+static void output_ctx_sections(
+/******************************/
 
-    for( section = ctx->section_list; section != NULL; section = section->next ) {
+    ctx_def                     *ctx
+) {
+    section_def                 *section;
+
+    for( section = ctx->section_list; section != NULL; ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
+            whp_fwrite( section->section_text, 1,
+                                        section->section_size, Out_file );
         }
+        section = section->next;
     }
 }
 
-void html_output_file( void )
-/***************************/
-{
-    ctx_def     *ctx;
+void html_output_file(
+/*******************/
+
+    void
+) {
+    ctx_def                     *ctx;
 
     output_hdr();
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {

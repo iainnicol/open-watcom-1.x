@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Disassembler pass 1.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -122,10 +123,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
     orl_sec_offset                      op_pos;
     int                                 is_intel;
     int                                 adjusted;
-    sa_disasm_struct                    sds;
 
-    sds.data = contents;
-    sds.last = size - 1;
     if( sec_ref_list != NULL ) {
         r_entry = sec_ref_list->first;
     } else {
@@ -177,8 +175,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
 
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags |= flags;
-        sds.offs = loop;
-        dr = DisDecode( &DHnd, &sds, &decoded );
+        dr = DisDecode( &DHnd, &contents[loop], &decoded );
         // if an invalid instruction was found, there is nothing we can do.
         if( dr != DR_OK )
             return( ERROR );

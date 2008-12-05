@@ -39,5 +39,3 @@ void SaveMonoFont( char *app, char *inifile );
 BOOL ChooseMonoFont( HWND hwnd );
 void DestroyMonoFonts( void );
 HFONT GetMonoFont( void );
-void AllowVariableFonts( void );
-

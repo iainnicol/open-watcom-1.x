@@ -306,6 +306,7 @@ char *GetOMFName( file_list *list, unsigned long *loc )
 {
     obj_record  *rec;
     char        *name;
+    char        *newname;
     unsigned    len;
 
     rec = CacheRead( list, *loc, sizeof(obj_record) );
@@ -317,8 +318,11 @@ char *GetOMFName( file_list *list, unsigned long *loc )
     *loc += len;
     if( name == NULL )
         return( NULL );
-    len = *(unsigned char *)name;        // get actual name length
-    return( ChkToString( name + 1, len ) );
+    len = *name;        // get actual name length
+    _ChkAlloc( newname, len + 1 );
+    memcpy( newname, name + 1, len );
+    *(newname + len) = '\0';
+    return( newname );
 }
 
 void OMFSkipObj( file_list *list, unsigned long *loc )
@@ -553,8 +557,9 @@ static void ProcAlias( void )
 /* process a symbol alias directive */
 {
     char        *alias;
-    unsigned    aliaslen;
-    unsigned    targetlen;
+    int         aliaslen;
+    char        *target;
+    int         targetlen;
     symbol      *sym;
 
     while( ObjBuff < EOObjRec ) {
@@ -564,9 +569,12 @@ static void ProcAlias( void )
         ObjBuff += aliaslen;
         targetlen = *ObjBuff;
         ObjBuff++;
-        sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
+        sym = SymXOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
         if( !sym || !(sym->info & SYM_DEFINED) ) {
-            MakeSymAlias( alias, aliaslen, (char *)ObjBuff, targetlen );
+            _ChkAlloc( target, targetlen + 1 );
+            memcpy( target, ObjBuff, targetlen );
+            target[targetlen] = '\0';
+            MakeSymAlias( alias, aliaslen, target, targetlen );
         }
         ObjBuff += targetlen;
     }
@@ -775,7 +783,7 @@ static void ProcPubdef( bool static_sym )
     char            *sym_name;
     segnode         *seg;
     offset          off;
-    unsigned        sym_len;
+    int             sym_len;
     unsigned_16     frame;
     unsigned_16     segidx;
 
@@ -805,9 +813,9 @@ static void ProcPubdef( bool static_sym )
             ObjBuff += sizeof( unsigned_16 );
         }
         if( static_sym ) {
-            sym = SymOp( ST_DEFINE_SYM | ST_STATIC, sym_name, sym_len );
+            sym = SymXOp( ST_DEFINE_SYM | ST_STATIC, sym_name, sym_len );
         } else {
-            sym = SymOp( ST_DEFINE_SYM, sym_name, sym_len );
+            sym = SymXOp( ST_DEFINE_SYM, sym_name, sym_len );
         }
         DefineSymbol( sym, seg, off, frame );
         SkipIdx();   /* skip type index */
@@ -923,13 +931,13 @@ static void UseSymbols( bool static_sym, bool iscextdef )
 {
     list_of_names       *lnptr;
     char                *sym_name;
-    unsigned            sym_len;
+    int                 sym_len;
     extnode             *newnode;
     symbol              *sym;
     sym_flags           flags;
 
     DEBUG(( DBG_OLD, "UseSymbols()" ));
-    flags = ST_CREATE | ST_REFERENCE;
+    flags = ST_REFERENCE | ST_CREATE;
     if( static_sym ) {
         flags |= ST_STATIC;
     }
@@ -944,7 +952,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
                 BadObject();
             }
             ObjBuff += sym_len + sizeof( byte );
-            sym = SymOp( flags, sym_name, sym_len );
+            sym = SymXOp( flags, sym_name, sym_len );
         }
         newnode = AllocNode( ExtNodes );
         newnode->entry = sym;

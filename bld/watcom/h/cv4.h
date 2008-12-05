@@ -87,8 +87,7 @@ typedef enum s_values { /* symbol enumerations */
     #undef SLMAC
 } s_values;
 
-#include "pushpck1.h"
-
+#pragma pack( 1 )
 typedef enum {
     sstModule=0x120,
     sstTypes,
@@ -140,7 +139,7 @@ typedef struct {
     unsigned_32 cbSeg;
 } cv_seginfo;
 
-#define CV_DEBUG_STYLE ('V' << 8 | 'C')
+#define CV_DEBUG_STYLE 'VC'
 
 typedef struct {
     unsigned_16 ovlNumber;
@@ -245,4 +244,4 @@ typedef struct {
     seg_desc    segdesc[1];
 } cv_sst_seg_map;
 
-#include "poppck.h"
+#pragma pack()
