@@ -33,7 +33,7 @@
 #define MACH_TYPES_INCLUDED
 #include <watcom.h>
 
-#include "pushpck1.h"
+#pragma pack( push, 1 )
 
 #define BITS_PER_BYTE   8U
 
@@ -136,6 +136,6 @@ typedef struct {
         (addr32).segment = (addr48).segment; \
         (addr32).offset  = (addr48).offset;
 
-#include "poppck.h"
+#pragma pack( pop )
 
 #endif

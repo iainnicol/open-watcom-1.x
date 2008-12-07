@@ -184,10 +184,10 @@ $(name).exe : $(name).res $(objs) $(libs) $(res_objs)
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(vi) -s ../../misc/msgtoh.vi -p"$^@" $[@
 
 rcstrmsg.gh : $(wimgedit_dir)/h/wimgedit.msg $(msgfiles)
-        $(cc) $(preproc_opts) $(inc_path) -fo=$^@
+        $(cc) -zk0 -p $(inc_path) $[@ -fo=$^@
 
 $(name).res : ../res/$(name).rc rcstr.gh
         $(rc) $(rc_flags) -r -ad -zk0 -I"$(wimgedit_dir)/res" $(inc_path) $[@ -fo=$^@

@@ -79,7 +79,6 @@ static  int     OpenPgmFile( void );
 static  void    DelDepFile( void );
 static  const char  *IncludeAlias( const char *filename, int delimiter );
 
-
 void FrontEndInit( bool reuse )
 //***************************//
 // Do the once only things   //
@@ -110,7 +109,7 @@ void ClearGlobals( void )
     DefFile = NULL;
     CppFile = NULL;
     DepFile = NULL;
-    HFileList = NULL;
+    IncPathList = NULL;
     IncFileDepth = MAX_INC_DEPTH;
     SegmentNum = FIRST_PRIVATE_SEGMENT;
     BufSize = BUF_SIZE;
@@ -348,7 +347,7 @@ static void DoCCompile( char **cmdline )
             return;
         }
         DelErrFile();               /* delete old error file */
-        MergeInclude();             /* merge INCLUDE= with HFileList */
+        MergeInclude();             /* merge INCLUDE= with IncPathList */
         CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
         ParseAuxFile();
@@ -395,6 +394,7 @@ static void DoCCompile( char **cmdline )
     FreeFNames();
     FreeRDir();
     FreeIAlias();
+    FreeIncFileList();
 }
 
 
@@ -741,8 +741,8 @@ int OpenSrcFile( char *filename, int delimiter )
             }
         }
     }
-    if( HFileList != NULL ) {
-        p = HFileList;
+    if( IncPathList != NULL ) {
+        p = IncPathList;
         do {
             i = 0;
             while( *p == ' ' ) ++p;                     /* 28-feb-95 */
@@ -817,14 +817,6 @@ void CloseSrcFile( FCB *srcfcb )
     }
     SrcFile = srcfcb->prev_file;
     CurrChar = srcfcb->prev_currchar;
-    if( SrcFile == MainSrcFile ) {
-        if( CompFlags.make_precompiled_header ) {
-            CompFlags.make_precompiled_header = 0;
-            if( ErrCount == 0 ) {
-                BuildPreCompiledHeader( PCH_FileName );
-            }
-        }
-    }
     if( SrcFile != NULL ) {
         if( SrcFile->src_fp == NULL ) {
             SrcFile->src_fp = fopen( SrcFile->src_flist->name, "rb" );
@@ -832,6 +824,14 @@ void CloseSrcFile( FCB *srcfcb )
         }
         SrcFileLoc = SrcFile->src_loc;
         IncLineCount += srcfcb->src_line_cnt;
+        if( SrcFile == MainSrcFile ) {
+            if( CompFlags.make_precompiled_header ) {
+                CompFlags.make_precompiled_header = 0;
+                if( ErrCount == 0 ) {
+                    BuildPreCompiledHeader( PCH_FileName );
+                }
+            }
+        }
         if( CompFlags.cpp_output ) {
             EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, 1 );
         }
@@ -1050,7 +1050,7 @@ void FreeFNames( void )
     }
 }
 
-static void AddIncFileList( char *filename )
+void AddIncFileList( char *filename )
 {
     INCFILE     *ifile;
     INCFILE     *ifilep;
@@ -1067,6 +1067,16 @@ static void AddIncFileList( char *filename )
         ifilep = IncFileList;
         while( ifilep->nextfile != NULL )  ifilep = ifilep->nextfile;
         ifilep->nextfile = ifile;
+    }
+}
+
+void FreeIncFileList( void )
+{
+    INCFILE *ilist;
+
+    while( (ilist = IncFileList) != NULL ) {
+        IncFileList = ilist->nextfile;
+        CMemFree( ilist );
     }
 }
 
@@ -1249,11 +1259,6 @@ static void ParseInit( void )
 local void Parse( void )
 {
     EmitInit();
-    CompFlags.ignore_fnf = TRUE;
-    if( !CompFlags.disable_ialias ) {
-        OpenSrcFile( "_ialias.h", '<' );
-    }
-    CompFlags.ignore_fnf = FALSE;
     // The first token in a file should be #include if a user wants to
     // use pre-compiled headers. The following call to NextToken() to
     // get the very first token of the file will load the pre-compiled
@@ -1267,8 +1272,16 @@ local void Parse( void )
         // any macros that are defined in forced include file
         InitialMacroFlag = 0;                   /* 02-jun-95 */
         OpenSrcFile( ForceInclude, 0 );
-        CompFlags.use_precompiled_header = 0;
-        CompFlags.ok_to_use_precompiled_hdr = 0;
+    }
+    CompFlags.ok_to_use_precompiled_hdr = 0;
+    CompFlags.use_precompiled_header = 0;
+    CompFlags.ignore_fnf = TRUE;
+    if( !CompFlags.disable_ialias ) {
+        OpenSrcFile( "_ialias.h", '<' );
+    }
+    CompFlags.ignore_fnf = FALSE;
+    if( !ForceInclude ) {
+        CompFlags.ok_to_use_precompiled_hdr = 1;
     }
     NextToken();
     // If we didn't get a #include with the above call to NextToken()

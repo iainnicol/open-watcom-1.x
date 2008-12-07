@@ -42,22 +42,22 @@
  *  is concerned with overall program architecture, not details.
  *
  *  Returns:
- *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate.
+ *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate
  */
 
 int main()
 {
-    /* Declare automatic variables. */
+    /* Declare automatic variables */
 
     size_t  cmdlen  = 0;
     char *  cmdline = NULL;
     int     retval;
 
-    /* Display the banner. */
+    /* Display the banner */
 
     print_banner();
 
-    /* Display the usage information if the command line is empty. */
+    /* Display the usage information if the command line is empty */
 
     cmdlen = _bgetcmd( NULL, 0 );
     if( cmdlen == 0 ) {
@@ -65,12 +65,9 @@ int main()
         return( EXIT_FAILURE );
     }
 
-    /* Include space for the terminating null character. */
+    /* Get the command line */
 
-    cmdlen++;
-
-    /* Get the command line. */
-
+    cmdlen++; /* Include space for the terminating null character */
     cmdline = malloc( cmdlen );
     if( cmdline == NULL ) {
         return( EXIT_FAILURE );
@@ -78,12 +75,12 @@ int main()
 
     cmdlen = _bgetcmd( cmdline, cmdlen );
 
-    /* Initialize the globals. */
+    /* Initialize the globals */
 
     initialize_globals();
     res_initialize_globals();
     
-    /* Parse the command line: allocates and sets tgt_path. */
+    /* Parse the command line: allocates and sets tgt_path */
 
     retval = parse_cmdline( cmdline );
     if( retval == FAILURE ) {
@@ -91,21 +88,21 @@ int main()
         return( EXIT_FAILURE );
     }
 
-    /* Free the memory held by cmdline. */
+    /* Free the memory held by cmdline and reset it */
 
     free( cmdline );
     cmdline = NULL;
 
-    /* Parse the alleged .COP file. */
+    /* Parse the alleged .COP file */
 
     retval = parse_cop_file();
 
-    /* Free the memory held by tgt_path. */
+    /* Free the memory held by tgt_path and reset it */
 
     free( tgt_path );
     tgt_path = NULL;
 
-    /* React to any failure. */
+    /* Done */
 
     if( retval == FAILURE) {
       print_usage();
@@ -114,4 +111,3 @@ int main()
 
     return( EXIT_SUCCESS );
 }
-

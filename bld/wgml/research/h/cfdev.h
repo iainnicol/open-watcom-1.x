@@ -37,10 +37,6 @@
 *                   is_dev_file()
 *                   parse_device()
 *
-* Note:         The field names are intended to correspond to the field names 
-*               shown in the Wiki. The Wiki structs are named when the structs
-*               defined here are defined; they are not identical.
-*
 ****************************************************************************/
 
 #ifndef CFDEV_H_INCLUDED
@@ -51,9 +47,13 @@
 #include <stdio.h>
 #include "cftrans.h"
 
-/* Structure declarations. */
+/* Structure declarations */
 
-/* Fonts in box_block and underscore_block.
+/* These structs are based on the discussion in the Wiki, which should be
+ * consulted for further information on how the data is structured.
+ */
+
+/* Fonts In box_block and underscore_block.
  *
  * These structs have two font fields: font_name and font_number.
  *
@@ -66,8 +66,6 @@
  * If the font_name is not NULL but the font indicated cannot be found, then
  * font number "0" should be used. There is always a font numbered "0".
  */
-
-/* To hold the data from the BoxBlock struct. */
 
 typedef struct box_block_struct
 {
@@ -86,16 +84,12 @@ typedef struct box_block_struct
     char            inside_join;
 } box_block;
 
-/* To hold the data from the UnderscoreBlock struct. */
-
 typedef struct underscore_block_struct
 {
     char *          font_name;
     uint8_t         font_number;
     char            underscore_char;
 } underscore_block;
-
-/* To hold the data from the DefaultFont struct. */
 
 typedef struct default_font_struct
 {
@@ -105,9 +99,7 @@ typedef struct default_font_struct
     uint16_t        font_space;    
 } default_font;
 
-/* To hold the data from the DefaultfontBlock struct.
-   These field names do not correspond to those in the Wiki.
- */
+/* Field "font" points to an array of "count" default_font instances. */
 
 typedef struct defaultfont_block_struct
 {
@@ -115,7 +107,9 @@ typedef struct defaultfont_block_struct
     default_font *  font;
 } defaultfont_block;
 
-/* This struct duplicates the PauseBlock struct. */
+/* For each type of :PAUSE, the pointer points to an array of bytes whose
+ * length is given in the corresponding "_count" field.
+ */
 
 typedef struct pause_block_struct
 {
@@ -129,9 +123,7 @@ typedef struct pause_block_struct
     uint8_t *       devpagepause;
 } pause_block;
 
-/* To hold the data from the DeviceFont struct.
- * Field names "fontpause" and "fontpause_count" are aberrant.
- */
+/* Field "fontpause" points to an array of "fontpause_count" bytes */
 
 typedef struct device_font_struct
 {
@@ -142,9 +134,7 @@ typedef struct device_font_struct
     uint8_t *       fontpause;
 } device_font;
 
-/* To hold the data from the DevicefontBlock struct.
-   These field names do not correspond to those in the Wiki.
- */
+/* Field "font" points to an array of "count" device_font instances. */
 
 typedef struct devicefont_block_struct
 {
@@ -152,16 +142,16 @@ typedef struct devicefont_block_struct
     device_font *       font;
 } devicefont_block;
 
-/* This struct embodies the binary form of the :DEVICE block. 
+/*  The comments refer to the "blocks" discussed in the Wiki. 
  *
- * Note that the FunctionsBlock is not mentioned. The various CodeBlocks
- * are instead provided as part of PauseBlock and DevicefontBlock.
+ *  Note that the "FunctionsBlock" is not mentioned. The various "CodeBlock"s
+ *  are instead provided as part of PauseBlock and DevicefontBlock.
  *
- * The first two fields are used internally and were used for sizing during
- * development.
+ *  The first two fields are used internally and were used for sizing during
+ *  development
  *
- * The instance returned will be allocated as a single block and so can be
- * freed in one statement.
+ *  The instance returned will be allocated as a single block and so can be
+ *  freed in one statement.
  */
 
 typedef struct cop_device_struct
@@ -196,17 +186,17 @@ typedef struct cop_device_struct
     devicefont_block    devicefonts;
 } cop_device;
 
-/* Function declarations. */
+/* Function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
 bool is_dev_file( FILE * );
 cop_device * parse_device( FILE *);
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}   /* End of "C" linkage for C++ */
 #endif
 
 #endif  /* CFDEV_H_INCLUDED */

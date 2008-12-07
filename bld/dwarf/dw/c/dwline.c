@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Generate file and line number information.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -44,13 +45,13 @@
 
 static void writeFileName(
     dw_client                   cli,
-    const char                  *name,
+    const char *                name,
     size_t                      len ) // len of name including terminator
 {
-    uint_8                      buf[1 + MAX_LEB128 + 1 + _MAX_PATH + 1 + MAX_LEB128 * 3];
-    uint_8                      attribBuf[MAX_LEB128];
-    uint_8                      *end;
-    int                         bufSize = 0;
+    char                        buf[1+MAX_LEB128+1+_MAX_PATH+1+MAX_LEB128*3];
+    char                        attribBuf[MAX_LEB128];
+    char *                      end;
+    int                         bufSize=0;
 
     buf[0] = 0;  // identifies extended opcode
     bufSize = 2+len; // size of sub-opcode, name+terminator, & path size
@@ -66,7 +67,7 @@ static void writeFileName(
     *end = DW_LNE_define_file; // write in the sub-opcode
     end++;
 
-    end = (uint_8 *)strncpy( (char *)end, name, len ); // write the filename
+    end = strncpy(end,name,len); // write the filename
     end += len;
 
     end = ULEB128( end, 0 );    // not using a path index
@@ -80,10 +81,10 @@ static void writeFileName(
 
 uint GetFileNumber(
     dw_client                   cli,
-    const char                  *name )
+    const char *                name )
 {
     size_t                      len;
-    dw_include                  *walk;
+    dw_include *                walk;
 
     len = strlen( name ) + 1;
     walk = cli->debug_line.files;
@@ -109,10 +110,10 @@ uint GetFileNumber(
 
 void DWENTRY DWSetFile(
     dw_client                   cli,
-    const char                  *filename )
+    const char *                filename )
 {
-    uint_8                      buf[ 1 + MAX_LEB128 ];
-    uint_8                      *end;
+    char                        buf[ 1 + MAX_LEB128 ];
+    char *                      end;
 
     _Validate( filename != NULL );
 
@@ -129,8 +130,8 @@ void DWENTRY DWLineNum(
     dw_column           column,
     dw_addr_offset      addr )
 {
-    uint_8              buf[ 3 + 2 * MAX_LEB128 ];
-    uint_8              *end;
+    char                buf[ 3 + 2 * MAX_LEB128 ];
+    char *              end;
     unsigned            size;
 
     /* set the basic_block register properly */
@@ -168,8 +169,8 @@ void DWENTRY DWLineNum(
 
 void DWLineAddr(  dw_client  cli, dw_sym_handle sym, dw_addr_offset addr )
 {
-    uint_8                      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
-    uint_8                      *end;
+    char                        buf[1+MAX_LEB128+sizeof(dw_targ_addr )];
+    char *                      end;
 
     buf[ 0 ] = 0;  //extended
     end = ULEB128(buf+1, 1+cli->offset_size ); // write the opcode size
@@ -182,10 +183,10 @@ void DWLineAddr(  dw_client  cli, dw_sym_handle sym, dw_addr_offset addr )
 
 void DWLineSeg(  dw_client  cli, dw_sym_handle sym )
 {
-    uint_8                      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
-    uint_8                      *end;
+    char                        buf[1+MAX_LEB128+sizeof(dw_targ_addr )];
+    char *                      end;
 
-    if( cli->segment_size != 0 ) {
+    if( cli->segment_size != 0 ){
         buf[ 0 ] = 0;  //extended
         end = ULEB128(buf+1, 1+cli->segment_size ); // write the opcode size
         *end = DW_LNE_set_segment;
@@ -197,8 +198,8 @@ void DWLineSeg(  dw_client  cli, dw_sym_handle sym )
 
 void InitDebugLine(
     dw_client                   cli,
-    const char                  *source_filename,
-    char                        *inc_list,
+    const char *                source_filename,
+    char *                      inc_list,
     unsigned                    inc_list_len )
 {
     stmt_prologue prol = {
@@ -270,3 +271,4 @@ void FiniDebugLine(
     CLISeek( DW_DEBUG_LINE, 0, DW_SEEK_END );
     FreeChain( cli, cli->debug_line.files );
 }
+
