@@ -143,10 +143,9 @@ static int getFile( char *fname )
     } else {
         strcpy( dir, origString );
     }
-    AddString2( &(FindHist.data[ FindHist.curr % FindHist.max ] ), origString );
+    AddString2( &(FindHist.data[ FindHist.curr % FindHist.max ] ), dirptr );
     FindHist.curr += 1;
     ColorFind( dirptr, FINDFL_NOERROR );
-    SetLastFind( origString );
     return( rc );
 }
 

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Spy peek message dialog identifiers.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -38,4 +39,3 @@
 #define PEEKMSG_STYLECLASS          101
 #define PEEKMSG_STYLECB             107
 #define PEEKMSG_STYLECLASSCB        110
-#define PEEKMSG_ICON                111

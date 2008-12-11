@@ -1903,7 +1903,7 @@ static bool ADirtyNameSpace( SYMBOL curr )
     bool ret;
     ret = FALSE;
     if( SymIsNameSpace( curr ) ){
-        ret = curr->u.ns->scope->s.dirty;
+        ret = curr->u.ns->scope->dirty;
     }
     return( ret );
 }
@@ -1927,7 +1927,7 @@ static void dwarfNameSpace( SYMBOL curr )
 /***************************************/
 {
     SCOPE scope = curr->u.ns->scope;
-    if( curr->u.ns->s.unnamed ){
+    if( curr->u.ns->unnamed ){
         dwarfDebugSymbol( scope );
     } else {
         dwarfBegNameSpace( curr );
@@ -2000,11 +2000,11 @@ static bool dwarfUsedNameSpace( SYMBOL curr )
 {
     bool   has_changed;
 
-    if( !curr->u.ns->s.unnamed ){
+    if( !curr->u.ns->unnamed ){
         dwarfBegNameSpace( curr );
     }
     has_changed = dwarfUsedTypeSymbol( curr->u.ns->scope );
-    if( !curr->u.ns->s.unnamed ){
+    if( !curr->u.ns->unnamed ){
         DWEndNameSpace( Client );
     }
     return( has_changed );
@@ -2066,11 +2066,11 @@ static void dwarfPreUsedNameSpace( SYMBOL curr )
 /***************************************/
 {
 
-    if( !curr->u.ns->s.unnamed ){
+    if( !curr->u.ns->unnamed ){
         dwarfBegNameSpace( curr );
     }
     dwarfPreUsedSymbol( curr->u.ns->scope );
-    if( !curr->u.ns->s.unnamed ){
+    if( !curr->u.ns->unnamed ){
         DWEndNameSpace( Client );
     }
 }

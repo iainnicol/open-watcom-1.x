@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include "vi.h"
 
-char * near InternalCommands[] = {
+char near *near InternalCommands[] = {
     "BREAK",
     "CALL",
     "CD",
@@ -68,5 +68,5 @@ char * near InternalCommands[] = {
 };
 int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char near * );
 
-char * near ExeExtensions[] = {".bat", ".com",".exe" };
+char near * near ExeExtensions[] = {".bat", ".com",".exe" };
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char near * );

@@ -136,8 +136,8 @@ TREEPTR FarPtr16Cvt( TREEPTR newparm  )
         op2_class = ExprTypeClass( newparm->expr_type );
         newparm = ExprNode( NULL, OPR_CONVERT_PTR, newparm );
         newparm->expr_type = parmtyp;
-        newparm->op.sp.oldptr_class = op2_class;
-        newparm->op.sp.newptr_class = op1_class;
+        newparm->op.oldptr_class = op2_class;
+        newparm->op.newptr_class = op1_class;
     }
     return( newparm );
 }
@@ -1183,7 +1183,7 @@ local TREEPTR GetExpr( void )
 {
     TREEPTR     tree, op1;
     TYPEPTR     typ;
-    token_class curclass;
+    char        curclass;
     TYPEPTR     *plist;
 
     CompFlags.useful_side_effect = 0;
@@ -1193,7 +1193,7 @@ local TREEPTR GetExpr( void )
     for( ;; ) {
         if( tree == 0 )
             tree = ExprOpnd();
-        curclass = TokenClass[ CurToken ];
+        curclass = TokenClass[ CurToken ] & 0x7F;
         while( curclass <= Class[ Level ] ) {
             op1 = ValueStack[ Level ];
 
@@ -1207,7 +1207,7 @@ local TREEPTR GetExpr( void )
                 return( tree );
             case TC_LEFT_PAREN:         /* bracketed expression */
                 MustRecog( T_RIGHT_PAREN );
-                curclass = TokenClass[ CurToken ];
+                curclass = TokenClass[ CurToken ] & 0x7F;
                 break;
             case TC_COMMA:
                 if( op1->op.opr == OPR_ERROR ) {
@@ -1331,7 +1331,7 @@ local TREEPTR GetExpr( void )
                 break;
             case TC_INDEX:
                 tree = IndexOp( op1, tree );
-                curclass = TokenClass[ CurToken ];
+                curclass = TokenClass[ CurToken ] & 0x7F;
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_SEG_OP:                             /* 23-oct-91 */
@@ -1365,7 +1365,7 @@ local TREEPTR GetExpr( void )
                 if( !(sym->flags & SYM_TEMP) )
                     SetDiagPop();
                 PopNestedParms( &plist );
-                curclass = TokenClass[ CurToken ];
+                curclass = TokenClass[ CurToken ] & 0x7F;
                 CompFlags.meaningless_stmt = 0;
                 CompFlags.useful_side_effect = 1;
                 }

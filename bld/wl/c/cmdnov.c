@@ -48,11 +48,11 @@ static bool             GetNovExport( void );
 
 static bool             ProcModuleTypeN( int n );
 
-static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
+static bool IsNetWarePrefix( const char * pToken, int nLen )
 {
     if( NULL == pToken )
         return( FALSE );
-    if( ( pToken[0] == '(' ) && ( pToken[ nLen - 1 ] == ')' ) )
+    if( (pToken[0] == '(') && (pToken[nLen-1] == ')') )
         return( TRUE );
     return( FALSE );
 }
@@ -63,10 +63,10 @@ static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
 #define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
-static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name, unsigned *namelen, char **prefix, unsigned *prefixlen )
+static bool NetWareSplitSymbol( char * tokenThis, int tokenLen, char ** name, int *namelen, char **prefix, int *prefixlen )
 {
-    char        *findAt = tokenThis;
-    unsigned    nLen = tokenLen;
+    char    *findAt = tokenThis;
+    int     nLen = tokenLen;
 
     if( (NULL == tokenThis) || (0 == tokenLen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
         return( FALSE );
@@ -97,17 +97,17 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     //  a function name with a numeric character (I believe)
     */
 
-    if( IS_NUMBER( &findAt[ 1 ] ) ) {
+    if( IS_NUMBER(&findAt[1]) ) {
         *name = tokenThis;
         *namelen = tokenLen;
         return( TRUE );
     }
 
     *prefix = tokenThis;
-    *prefixlen = findAt - tokenThis;
+    *prefixlen = (int)(findAt - tokenThis);
 
-    *name = &findAt[ 1 ];
-    *namelen = nLen - 1;
+    *name = &findAt[1];
+    *namelen = nLen-1;
 
     return( TRUE );
 }
@@ -119,21 +119,21 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
 //  this also affects us using
 //      IMPORT x, (PREFIX), y, (PREFIX), x
 */
-static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
+static unsigned int DoWeNeedToSkipASeparator( bool CheckDirectives )
 {
     char *parse;
 
     if( (NULL == (parse = Token.next)) || ('\0' == *parse) )
-        return( FALSE );
+        return( 0 );
 
     while( ('\0' != *parse) && (IS_WHITESPACE(parse)) )
         parse++;
 
     if( '\0' == *parse )
-        return( FALSE );
+        return( 0 );
 
     if( ',' == *parse )
-        return( FALSE );
+        return( 0 );
 
     /*
     //  skip cr-lf
@@ -153,8 +153,8 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
         //  before allowing the skip!
         */
         if( CheckDirectives ) {
-            unsigned    len = 0;
-            char        *t = parse;
+            int     len = 0;
+            char    *t = parse;
 
             while( !IS_WHITESPACE(t) ) {
                 t++;
@@ -162,12 +162,13 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
             }
 
             if( MatchOne( Directives, SEP_NO, parse, len ) ) {
-                return( FALSE );
+                return( 0 );
             }
         }
-        return( TRUE );
+        return( 1 );
     }
-    return( FALSE );
+
+    return( 0 );
 }
 
 bool ProcNovImport( void )
@@ -192,11 +193,11 @@ extern int printf( const char *fmt, ... );
 static bool GetNovImport( void )
 /******************************/
 {
-    symbol      *sym;
-    char        *name = NULL;
-    char        *prefix = NULL;
-    unsigned    namelen = 0;
-    unsigned    prefixlen = 0;
+    symbol  *sym;
+    char    *name = NULL;
+    char    *prefix = NULL;
+    int     namelen = 0;
+    int     prefixlen = 0;
 
     /*
     //  we need to trap import/export prefixes here. Unfortunately the prefix context
@@ -222,7 +223,7 @@ static bool GetNovImport( void )
         return( FALSE );
     }
 
-    sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
+    sym = SymXOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
     if( sym == NULL || sym->p.import != NULL ) {
         return( TRUE );
     }
@@ -240,7 +241,7 @@ static bool GetNovImport( void )
     return( TRUE );
 }
 
-void SetNovImportSymbol( symbol *sym )
+void SetNovImportSymbol( symbol * sym )
 /********************************************/
 {
     sym->p.import = DUMMY_IMPORT_PTR;
@@ -249,11 +250,11 @@ void SetNovImportSymbol( symbol *sym )
 static bool GetNovExport( void )
 /******************************/
 {
-    symbol      *sym;
-    char        *name = NULL;
-    char        *prefix = NULL;
-    unsigned    namelen = 0;
-    unsigned    prefixlen = 0;
+    symbol  *sym;
+    char    *name = NULL;
+    char    *prefix = NULL;
+    int     namelen = 0;
+    int     prefixlen = 0;
 
     /*
     //  we need to trap import/export prefixes here. Unfortunately the prefix context
@@ -275,10 +276,10 @@ static bool GetNovExport( void )
         return( FALSE );
     }
 
-    sym = SymOpNWPfx( ST_CREATE | ST_REFERENCE, name, namelen, prefix, prefixlen );
+    sym = SymXOpNWPfx( ST_CREATE | ST_REFERENCE, name, namelen, prefix, prefixlen );
 
     sym->info |= SYM_DCE_REF | SYM_EXPORTED;
-
+/*    AddNameTable( Token.this, Token.len, TRUE, &FmtData.u.nov.exp.export ); */
     AddNameTable( name, namelen, TRUE, &FmtData.u.nov.exp.export );
 
     Token.skipToNext = DoWeNeedToSkipASeparator( TRUE );
@@ -440,10 +441,10 @@ bool ProcThreadName( void )
 bool ProcCopyright( void )
 /*******************************/
 {
-    struct tm       *currtime;
+    struct tm *     currtime;
     time_t          thetime;
     unsigned        year;
-    char            *copy_year;
+    char *          copy_year;
 
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT )
                 && !GetToken( SEP_NO, TOK_INCLUDE_DOT) ) {

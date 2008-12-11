@@ -80,8 +80,8 @@ static struct  try_table_back_handles {
 } *TryTableBackHandles;
 #endif
 
-#define PushCGName(name)        ((cg_name *)ValueStack)[index++] = name
-#define PopCGName()             ValueStack[--index]
+#define PushCGName(name)        cgnames[index++] = name
+#define PopCGName()             cgnames[--index]
 
 static label_handle     *CGLabelHandles;
 static TREEPTR          FirstNode;
@@ -107,17 +107,45 @@ static  char    CGDataType[] = {
 #include "cdatatyp.h"
 };
 
-static  cg_op   CGOperator[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) cgenum,
-#include "copcodes.h"
+static  char    CGOperator[] = {
+    O_PLUS,         //      OPR_ADD,        // +
+    O_MINUS,        //      OPR_SUB,        // -
+    O_TIMES,        //      OPR_MUL,        // *
+    O_DIV,          //      OPR_DIV,        // /
+    O_UMINUS,       //      OPR_NEG,        // negate
+    0,              //      OPR_CMP,        // compare
+    O_MOD,          //      OPR_MOD,        // %
+    O_COMPLEMENT,   //      OPR_COM,        // ~
+    O_FLOW_NOT,     //      OPR_NOT,        // !
+    O_OR,           //      OPR_OR,         // |
+    O_AND,          //      OPR_AND,        // &
+    O_XOR,          //      OPR_XOR,        // ^
+    O_RSHIFT,       //      OPR_RSHIFT,     // >>
+    O_LSHIFT,       //      OPR_LSHIFT,     // <<
+    O_GETS,         //      OPR_EQUALS,     // lvalue = rvalue
+    O_OR,           //      OPR_OR_EQUAL,   // |=
+    O_AND,          //      OPR_AND_EQUAL,  // &=
+    O_XOR,          //      OPR_XOR_EQUAL,  // ^=
+    O_RSHIFT,       //      OPR_RSHIFT_EQUAL,// >>=
+    O_LSHIFT,       //      OPR_LSHIFT_EQUAL,// <<=
+    O_PLUS,         //      OPR_PLUS_EQUAL, // +=
+    O_MINUS,        //      OPR_MINUS_EQUAL,// -=
+    O_TIMES,        //      OPR_TIMES_EQUAL,// *=
+    O_DIV,          //      OPR_DIV_EQUAL,  // /=
+    O_MOD,          //      OPR_MOD_EQUAL,  // %=
+    0,              //      OPR_QUESTION,   // ?
+    0,              //      OPR_COLON,      // :
+    O_FLOW_OR,      //      OPR_OR_OR,      // ||
+    O_FLOW_AND,     //      OPR_AND_AND,    // &&
+    O_POINTS,       //      OPR_POINTS,     // *ptr
+    0,              //      OPR_UNUSED1,    // spare
+    0,              //      OPR_UNUSED2,    // spare
+    O_PLUS,         //      OPR_POSTINC,    // lvalue++
+    O_MINUS,        //      OPR_POSTDEC,    // lvalue--
+    O_CONVERT,      //      OPR_CONVERT,    // do conversion
 };
 
-static  cg_op   CC2CGOp[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) cgenum,
-#include "copcond.h"
-};
+static  char    CC2CGOp[] = { O_EQ, O_NE, O_LT, O_LE, O_GT, O_GE };
 
 #ifdef HEAP_SIZE_STAT
 
@@ -719,9 +747,9 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
 static cg_name ConvertPointer( OPNODE *node, cg_name name )
 {
 #if _CPU == 386
-    if( FAR16_PTRCLASS( node->sp.oldptr_class ) ) {
+    if( FAR16_PTRCLASS( node->oldptr_class ) ) {
         name = CGUnary( O_PTR_TO_NATIVE, name, T_POINTER );
-    } else if( FAR16_PTRCLASS( node->sp.newptr_class ) ) {
+    } else if( FAR16_PTRCLASS( node->newptr_class ) ) {
         name = CGUnary( O_PTR_TO_FOREIGN, name, T_POINTER );
     }
 #endif
@@ -790,10 +818,12 @@ local void EmitNodes( TREEPTR tree )
     cg_name     op2;
     cg_name     expr;
     call_handle call_list;
-    int         index;
+    cg_name     *cgnames;
+    unsigned    index;
     OPNODE      *node;
 
     index = 0;
+    cgnames = (cg_name *)&ValueStack[0];
     for( ; tree != NULL; tree = tree->thread ) {
         node = &tree->op;
         switch( node->opr ) {
@@ -1072,7 +1102,7 @@ local void EmitNodes( TREEPTR tree )
             break;
 #ifdef __SEH__
         case OPR_TRY:                   // start of try block
-            SetTryScope( node->st.parent_scope );
+            SetTryScope( node->parent_scope );
             break;
         case OPR_EXCEPT:
         case OPR_FINALLY:
@@ -1082,7 +1112,7 @@ local void EmitNodes( TREEPTR tree )
             EndFinally();
             break;
         case OPR_UNWIND:
-            TryUnwind( node->st.try_index );
+            TryUnwind( node->try_index );
             break;
         case OPR_EXCEPT_CODE:
             op1 = TryExceptionInfoAddr();
@@ -1117,7 +1147,7 @@ local void EmitNodes( TREEPTR tree )
             break;
         }
     }
-    if( index > 0 ) {
+    if( index != 0 ) {
         CGDone( PopCGName() );
     }
 }
@@ -1997,23 +2027,25 @@ static void GenerateTryBlock( TREEPTR tree )
 
     try_index = 0;
     max_try_index = -1;
-    for( ; tree != NULL; tree = tree->left ) {
+    for( ;; ) {
         stmt = tree->right;
-        if( stmt->op.opr == OPR_FUNCEND )
-            break;
+        if( stmt->op.opr == OPR_FUNCEND ) break;
         switch( stmt->op.opr ) {
         case OPR_TRY:
-            try_index = stmt->op.st.try_index;
-            if( try_index > max_try_index )
-                max_try_index = try_index;
+            try_index = stmt->op.try_index;
+            if( try_index > max_try_index )  max_try_index = try_index;
             break;
         case OPR_EXCEPT:
         case OPR_FINALLY:
-            ValueStack[ try_index ] = stmt;
+            ValueStack[ try_index ] = (TREEPTR)stmt->op.try_sym_handle;
+            Class[ try_index ] = stmt->op.parent_scope;
+            Token[ try_index ] = stmt->op.opr;
             break;
         default:
             break;
         }
+        tree = tree->left;
+        if( tree == NULL ) break;               // should never happen
     }
     if( max_try_index != -1 ) {
         segment_id      old_segment;
@@ -2030,15 +2062,15 @@ static void GenerateTryBlock( TREEPTR tree )
         TryTableBackHandles = try_backinfo;
         DGLabel( except_table );
         for( try_index = 0; try_index <= max_try_index; try_index++ ) {
-            stmt = ValueStack[ try_index ];
-            DGInteger( stmt->op.st.parent_scope, T_UINT_1 );  // parent index
-            if( stmt->op.opr == OPR_EXCEPT ) {
+            DGInteger( Class[ try_index ], T_UINT_1 );  // parent index
+            if( Token[ try_index ] == OPR_EXCEPT ) {
                 DGInteger( 0, T_UINT_1 );
             } else {
                 DGInteger( 1, T_UINT_1 );
             }
-            except_label = FEBack( stmt->op.st.try_sym_handle );
-            DGBackPtr( except_label, FESegID( CurFuncHandle ), 0, T_CODE_PTR );
+            except_label = FEBack( (SYM_HANDLE)ValueStack[ try_index ] );
+            DGBackPtr( except_label, FESegID( CurFuncHandle ), 0,
+                            T_CODE_PTR );
         }
         BESetSeg( old_segment );
         SetTryTable( except_table );

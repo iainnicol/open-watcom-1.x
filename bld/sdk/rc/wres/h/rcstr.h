@@ -24,15 +24,38 @@
 *
 *  ========================================================================
 *
-* Description:  Individual message control dialog definitions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define DLGMSG1         5000
-#define NUM_DLGMSGS     57
-#define DLGMSG_CLEARALL 4800
-#define DLGMSG_SETALL   4801
-#define DLGMSG_NEXT     4802
-#define DLGMSG_PREV     4803
+#ifndef RCSTR_INCLUDED
+#define RCSTR_INCLUDED
 
+#include "wresall.h"
+
+typedef struct StringItem32 {
+    uint_16     NumChars;       /* length */
+    char        Name[2];        /* followed by that many characters */
+} StringItem32;
+
+typedef struct StringItem16 {
+    uint_8      NumChars;       /* length */
+    char        Name[1];        /* followed by that many characters */
+} StringItem16;
+
+typedef struct StringBlock {
+    int         UseUnicode;
+    uint_16     StringBlockSize;
+    void *      StringBlock;
+    uint_16     StringListLen;  /* number of entries in the string list */
+    void        **StringList;   /* sorted array of pointers to strings
+                                 * in the StringBlock */
+} StringBlock;
+
+
+extern void StringBlockBuild( StringBlock *, WResDir, int use_unicode );
+extern int_32 StringBlockFind( StringBlock *, WResIDName * name );
+extern int CompareStringItems32( const StringItem32 *item1, const StringItem32 *item2 );
+#endif

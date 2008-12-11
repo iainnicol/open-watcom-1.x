@@ -44,7 +44,6 @@
 static LOGFONT  logFont;
 static HFONT    fixedFont = (HFONT)0;
 static HFONT    courierFont = (HFONT)0;
-static BOOL     variableAllowed = FALSE;
 
 static char     *fontKey="Font";
 
@@ -184,8 +183,6 @@ void InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst )
             fixedFont = GetStockObject( default_font );
             GetObject( fixedFont, sizeof( LOGFONT ), &logFont );
             fixedFont = CreateFontIndirect( &logFont );
-        } else {
-            GetObject( fixedFont, sizeof( LOGFONT ), &logFont );
         }
     }
 } /* InitMonoFont */
@@ -217,10 +214,8 @@ BOOL ChooseMonoFont( HWND hwnd )
     cf.lStructSize = sizeof(CHOOSEFONT);
     cf.hwndOwner = hwnd;
     cf.lpLogFont = &lf;
-    cf.Flags = CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
-    if( !variableAllowed ) {
-        cf.Flags |= CF_FIXEDPITCHONLY;
-    }
+    cf.Flags = CF_SCREENFONTS | CF_FIXEDPITCHONLY |
+                CF_INITTOLOGFONTSTRUCT;
     cf.nFontType = SCREEN_FONTTYPE;
     cf.rgbColors = RGB( 0, 0, 0 );
 
@@ -256,12 +251,3 @@ HFONT GetMonoFont( void )
     return( fixedFont );
 
 } /* GetMonoFont */
-
-/*
- * AllowVariableFonts - enable selection of variable pitch fonts
- */
-void AllowVariableFonts( void )
-{
-    variableAllowed = TRUE;
-}
-

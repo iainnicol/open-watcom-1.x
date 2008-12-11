@@ -26,12 +26,15 @@
 *
 * Description:  Checks files in a gendev source directory for
 *               unknown device functions.
-*               In addition to main(), these global functions are defined:
-*                   print_banner()
-*                   print_usage()
-*               as well as these local functions:
+*               In addition to main(), these local functions are defined:
 *                   check_directory()
 *                   get_dev_func()
+*                   print_banner()
+*                   print_usage()
+*               and copies of
+*                   mem_alloc()
+*                   mem_free()
+*                   out_msg()
 *
 ****************************************************************************/
 
@@ -46,7 +49,7 @@
 #include "research.h"
 #include "wgml.h"
 
-/* Local structs. */
+/* Local structs */
 
 /* This was suggested by wgml's tag struct, which should be studied when
  * gendev is written for additional fields. For example, flags indicating
@@ -63,21 +66,11 @@ typedef struct {
     size_t      count;
 } token;
 
-/* This is based on the original version of struct filecb. */
+/* Local variables */
 
-typedef struct file_info {
-    FILE                *   fp;             // FILE ptr
-    size_t                  buflen;         // length of filebuf
-    char                *   filebuf;
-    char                *   scanptr;        // ptr into filebuf
-    size_t                  usedlen;        // used data of filebuf
-} file_info;
+static filecb   *   file_cbs;   // duplicates wgml def
 
-/* Local variables. */
-
-static file_info   *   cur_file;
-
-/* These should probably be globals in gendev. */
+/* These should probably be globals in gendev */
 
 static token    *   cur_token;
 
@@ -132,24 +125,55 @@ static dev_func     dev_funcs[] = {
     { "y_size" },
 };
 
-/* Load the usage text array. */
+/* Load the usage text array */
 
 static  char const          *   usage_text[] = {
 #include "ffusage.h"
 NULL
 };
 
-/* Local function definitions. */
+/* Local function definitions */
+
+/* Borrowed from wgml */
+
+#include <stdarg.h>
+
+void out_msg( char * msg, ... )
+{
+    va_list args;
+
+    va_start( args, msg );
+    vprintf_s( msg, args );
+    va_end( args );
+}
+
+void * mem_alloc( size_t size )
+{
+    void    *   p;
+
+    p = malloc( size );
+    if( p == NULL ) {
+        out_msg( "ERR_NOMEM_AVAIL" );
+        exit(EXIT_FAILURE);
+    }
+    return( p );
+}
+
+void mem_free( void * p )
+{
+    free( p );
+    p = NULL;
+}
 
 /* Function get_dev_func().
  * Determine the length and start position of the next device function name.
  *
  * Static Variables Used:
- *      cur_file is a pointer to the current file_info entry.
+ *      file_cbs is a pointer to the current file_cb.
  *      cur_token is a pointer to the current file_cur_token.
  *
  * Static Variables modified on success:
- *      cur_file->scanptr is set to the first character after the device
+ *      file_cbs->scanPtr is set to the first character after the device
  *          function name which was found.
  *      cur_token->start is set to the first character of the device 
  *          function name which was found.
@@ -162,8 +186,8 @@ NULL
  *
  * Notes:
  *      on the first call, file_cbs should be in this minimal state:
- *          cur_file->fp should be the FILE * for the current file.
- *          cur_file->scanptr should be NULL.
+ *          file_cbs->fp should be the FILE * for the current file.
+ *          file_cbs->scanPtr should be NULL.
  *      FAILURE should be taken as meaning that all device function names have
  *          been found. The value of cur_token is undefined in this case.
  */
@@ -176,16 +200,16 @@ static int get_dev_func( void )
     size_t      scanned;
     size_t      unscanned;
     
-    if( cur_file->scanptr == NULL ) {
+    if( file_cbs->scanPtr == NULL ) {
 
         /* First call: start by getting data into the buffer. */
 
-        cur_file->usedlen = fread( cur_file->filebuf, 1, \
-                                            cur_file->buflen, cur_file->fp );
-        if( ferror( cur_file->fp ) ) return( FAILURE );
-        if( cur_file->usedlen == 0 ) return( FAILURE );
+        file_cbs->usedlen = fread( file_cbs->filebuf, 1, \
+            file_cbs->buflen, file_cbs->fp );
+        if( ferror( file_cbs->fp ) ) return( FAILURE );
+        if( file_cbs->usedlen == 0 ) return( FAILURE );
 
-        cur_file->scanptr = cur_file->filebuf;
+        file_cbs->scanPtr = file_cbs->filebuf;
     }
 
     /* Initialize the output values to clear any old data. */
@@ -197,25 +221,25 @@ static int get_dev_func( void )
 
         /* Find the next device function name. */
 
-        position = cur_file->scanptr - cur_file->filebuf;
-        for( i = 0; i < cur_file->usedlen - position; i++ ){
-            if( *cur_file->scanptr == '%' ) break;
-            cur_file->scanptr++;
+        position = file_cbs->scanPtr - file_cbs->filebuf;
+        for( i = 0; i < file_cbs->usedlen - position; i++ ){
+            if( *file_cbs->scanPtr == '%' ) break;
+            file_cbs->scanPtr++;
         }
 
-        if( *cur_file->scanptr == '%' ) {
+        if( *file_cbs->scanPtr == '%' ) {
 
-            /* cur_file->scanptr points to the start of a device
+            /* file_cbs->scanPtr points to the start of a device
              * function name.
              */
 
-            cur_token->start = cur_file->scanptr;
+            cur_token->start = file_cbs->scanPtr;
 
             /* Find the length of the device function name. */
 
             end = cur_token->start;
-            position = cur_file->scanptr - cur_file->filebuf;
-            for( i = 0; i < cur_file->usedlen - position; i++ ){
+            position = file_cbs->scanPtr - file_cbs->filebuf;
+            for( i = 0; i < file_cbs->usedlen - position; i++ ){
                 if( *end == '(' ) break;
                 end++;
             }
@@ -224,54 +248,58 @@ static int get_dev_func( void )
 
             /* end points to one position beyond the end of the name. */
 
-                cur_file->scanptr = end;
+                file_cbs->scanPtr = end;
                 cur_token->count = end - cur_token->start;
                 break;
             }
 
-            if( feof( cur_file->fp ) ) return( FAILURE );
+            if( feof( file_cbs->fp ) ) return( FAILURE );
 
             /* If we get here, we ran out of data before finding the end of
              * the device function name: reset the buffer to start with the
              * start of the device function name and read more data in.
              */
 
-            scanned = cur_token->start - cur_file->filebuf;
-            unscanned = &cur_file->filebuf[cur_file->usedlen] - \
-                                                            cur_token->start;
-            memmove_s( cur_file->filebuf, cur_file->buflen, \
-                                                cur_token->start, unscanned );
+            scanned = cur_token->start - file_cbs->filebuf;
+            unscanned = &file_cbs->filebuf[file_cbs->usedlen] - \
+                cur_token->start;
+            memmove_s( file_cbs->filebuf, file_cbs->buflen, \
+                cur_token->start, unscanned );
 
-            cur_file->usedlen = fread( &cur_file->filebuf[ unscanned ], 1, \
-                                cur_file->buflen - unscanned, cur_file->fp );
-            cur_file->usedlen += unscanned;
-            if( ferror( cur_file->fp ) ) return( FAILURE );
-            if( cur_file->usedlen == 0 ) return( FAILURE );
+            file_cbs->usedlen = fread( &file_cbs->filebuf[ unscanned ], 1, \
+                file_cbs->buflen - unscanned, file_cbs->fp );
+            file_cbs->usedlen += unscanned;
+            if( ferror( file_cbs->fp ) ) return( FAILURE );
+            if( file_cbs->usedlen == 0 ) return( FAILURE );
 
-            cur_file->scanptr = cur_file->filebuf;
+            file_cbs->scanPtr = file_cbs->filebuf;
             continue;
         }
 
-        if( feof( cur_file->fp ) ) return( FAILURE );
+        if( feof( file_cbs->fp ) ) return( FAILURE );
 
         /* If we get here, then we ran out of buffer before finding the start
          * of a device function name: replace the entire buffer.
          */
 
-        cur_file->usedlen = fread( cur_file->filebuf, 1, \
-                                            cur_file->buflen, cur_file->fp );
-        if( ferror( cur_file->fp ) ) return( FAILURE );
-        if( cur_file->usedlen == 0 ) return( FAILURE );
+        file_cbs->usedlen = fread( file_cbs->filebuf, 1, \
+            file_cbs->buflen, file_cbs->fp );
+        if( ferror( file_cbs->fp ) ) return( FAILURE );
+        if( file_cbs->usedlen == 0 ) return( FAILURE );
 
-        cur_file->scanptr = cur_file->filebuf;
+        file_cbs->scanPtr = file_cbs->filebuf;
     }
     
-    return( SUCCESS ) ;
+    return( SUCCESS) ;
 }
 
 /* Function check_directory().
- * Checks the directory provided to the program: examines all .PCD files
- * to locate all device functions and identify any not already known to exist.
+ * Perform the check of the directory provided to the program.
+ * Only files, not subdirectories, are checked.
+ * The length of all files is checked to see if it is a multiple of 16.
+ * Function parse_header() is used to process the header of each file.
+ * The number of files of types 0x02, 0x03 and 0x04 is displayed.
+ * Any file types other than 0x02, 0x03 and 0x04 are displayed.
  *
  * Global Used:
  *      tgt_path contains the directory passed on the command line.
@@ -314,8 +342,8 @@ static int check_directory( void )
 
         /* Process the file. */
 
-        cur_file->fp = current_file;
-        cur_file->scanptr = NULL;
+        file_cbs->fp = current_file;
+        file_cbs->scanPtr = NULL;
         ret_val = SUCCESS;
 
         while( ret_val != FAILURE ) {
@@ -334,7 +362,7 @@ static int check_directory( void )
 
             for( i = 0; i < dev_func_cnt; i++ ) {
                 if( !memicmp( dev_funcs[i].func_name, cur_token->start, \
-                                                    cur_token->count ) ) break;
+                    cur_token->count ) ) break;
 
             }
 
@@ -361,7 +389,7 @@ static int check_directory( void )
 }
 
 /*  Function print_banner().
- *  Print the banner to the screen.
+ *  Print the banner to the screen
  */
 
 void print_banner( void )
@@ -373,7 +401,7 @@ void print_banner( void )
 }
 
 /*  Function print_usage().
- *  Print the usage information to the screen.
+ *  Print the usage information to the screen
  */
 
 void print_usage( void )
@@ -394,22 +422,22 @@ void print_usage( void )
  *  is concerned with overall program architecture, not details.
  *
  *  Returns:
- *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate.
+ *      EXIT_FAILURE or EXIT_SUCCESS, as appropriate
  */
 
 int main()
 {
-    /* Declare automatic variables. */
+    /* Declare automatic variables */
 
     size_t  cmdlen  = 0;
     char *  cmdline = NULL;
     int     retval;
 
-    /* Display the banner. */
+    /* Display the banner */
 
     print_banner();
 
-    /* Display the usage information if the command line is empty. */
+    /* Display the usage information if the command line is empty */
 
     cmdlen = _bgetcmd( NULL, 0 );
     if( cmdlen == 0 ) {
@@ -417,12 +445,9 @@ int main()
         return( EXIT_FAILURE );
     }
 
-    /* Include space for the terminating null character. */
+    /* Get the command line */
 
-    cmdlen++;
-
-    /* Get the command line. */
-
+    cmdlen++; /* Include space for the terminating null character */
     cmdline = malloc( cmdlen );
     if( cmdline == NULL ) {
         return( EXIT_FAILURE );
@@ -430,22 +455,22 @@ int main()
 
     cmdlen = _bgetcmd( cmdline, cmdlen );
 
-    /* Initialize the globals. */
+    /* Initialize the globals */
 
     initialize_globals();
     res_initialize_globals();
 
     /* Initialize the statics, which should be globals in gendev. */
 
-    cur_file = (file_info *) mem_alloc( sizeof( file_info ) );
-    cur_file->filebuf = (char * ) mem_alloc( BUF_SIZE );
-    cur_file->buflen = BUF_SIZE;
-    cur_file->scanptr = NULL;
-    cur_file->usedlen = 0;
+    file_cbs = (filecb * ) mem_alloc( sizeof( filecb ) );
+    file_cbs->filebuf = (char * ) mem_alloc( BUF_SIZE );
+    file_cbs->buflen = BUF_SIZE;
+    file_cbs->scanPtr = NULL;
+    file_cbs->usedlen = 0;
 
     cur_token = (token *) mem_alloc( sizeof( token ) );
 
-    /* Parse the command line: allocates and sets tgt_path. */
+    /* Parse the command line: allocates and sets tgt_path */
 
     retval = parse_cmdline( cmdline );
     if( retval == FAILURE ) {
@@ -453,12 +478,12 @@ int main()
         return( EXIT_FAILURE );
     }
 
-    /* Free the memory held by cmdline and reset it. */
+    /* Free the memory held by cmdline and reset it */
 
     free( cmdline );
     cmdline = NULL;
 
-    /* Check all files in current directory. */
+    /* Check all files in current directory */
 
     retval = check_directory();
 
@@ -466,20 +491,19 @@ int main()
 
     free( tgt_path );
     tgt_path = NULL;
-    mem_free( cur_file->filebuf );
-    cur_file->filebuf = NULL;
-    mem_free( cur_file );
-    cur_file = NULL;
-    mem_free( cur_token );
+    mem_free(file_cbs->filebuf);
+    file_cbs->filebuf = NULL;
+    mem_free(file_cbs);
+    file_cbs = NULL;
+    mem_free(cur_token);
     cur_token = NULL;
 
-    /* Print the useage if the process failed. */
+    /* Done */
 
-    if( retval == FAILURE ) {
+    if( retval == FAILURE) {
       print_usage();
       return( EXIT_FAILURE );
     }
     
     return( EXIT_SUCCESS );
 }
-

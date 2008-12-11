@@ -72,45 +72,42 @@ char *WRCopyString( char *mem, char *str, int len )
     return( mem+len );
 }
 
-BOOL WRIsStrSpace( char *_s )
+BOOL WRIsStrSpace( char *s )
 {
-    unsigned char   *s = (unsigned char *)_s;
-
-    if( s != NULL ) {
-        for( ; *s != '\0'; s = _mbsinc( s ) ) {
+    if( s ) {
+        for( ; *s; s=_mbsinc(s) ) {
             if( _mbclen( s ) != 1 || ( _mbclen( s ) == 1 && !isspace( *s ) ) ) {
                 return( FALSE );
             }
         }
     }
+
     return( TRUE );
 }
 
-BOOL WRStrHasSpace( char *_s )
+BOOL WRStrHasSpace( char *s )
 {
-    unsigned char   *s = (unsigned char *)_s;
-
-    if( s != NULL ) {
-        for( ; *s != '\0'; s = _mbsinc( s ) ) {
+    if( s ) {
+        for( ; *s; s=_mbsinc(s) ) {
             if( ( _mbclen( s ) == 1 ) && isspace( *s ) ) {
                 return( TRUE );
             }
         }
     }
+
     return( FALSE );
 }
 
-void WRStripStr( char *_s )
+void WRStripStr( char *s )
 {
-    unsigned char   *last_space;
-    unsigned char   *last_nonspace;
-    unsigned char   *p;
-    unsigned char   *s = (unsigned char *)_s;
+    char        *last_space;
+    char        *last_nonspace;
+    char        *p;
 
-    if( s != NULL ) {
+    if( s ) {
         last_space = NULL;
         last_nonspace = NULL;
-        for( p = s; *p != '\0'; p = _mbsinc( p ) ) {
+        for( p=s; *p; p=_mbsinc(p) ) {
             if( ( _mbclen( p ) == 1 ) && isspace( *p ) ) {
                 if( !last_space || ( last_nonspace && ( last_nonspace > last_space ) ) ) {
                     last_space = p;
@@ -127,22 +124,23 @@ void WRStripStr( char *_s )
 
         // string has is all spaces
         if( last_space == NULL ) {
-            s[ 0 ] = '\0';
+            s[0] = '\0';
             return;
         }
 
         if( last_space > last_nonspace ) {
-            last_space[ 0 ] = '\0';
+            last_space[0] = '\0';
         }
 
         // find first non-whitespace char
-        for( p = s; *p != '\0'; p = _mbsinc( p ) ) {
+        for( p=s; *p; p=_mbsinc(p) ) {
             if( _mbclen( p ) != 1 || ( _mbclen( p ) == 1 && !isspace( *p ) ) ) {
                 break;
             }
         }
-        if( *p != '\0' && p != s ) {
-            memmove( s, p, strlen( (char *)p ) + 1 );
+        if( *p && p != s ) {
+            memmove( s, p, strlen(p) + 1 );
         }
     }
 }
+

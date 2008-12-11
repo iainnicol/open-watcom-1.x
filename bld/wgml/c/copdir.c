@@ -28,33 +28,28 @@
 *                   get_compact_entry()
 *                   get_extended_entry()
 *
-* Note:         The Wiki should be consulted for any term whose meaning is
-*               not apparent. This should help in most cases.
-*
 ****************************************************************************/
 
 #include <stdlib.h>
 
 #include "copdir.h"
 
-/* Global function definitions. */
-
-/* Function get_compact_entry().
- * Reads and returns the current (compact) entry.
+/*  Function get_compact_entry().
+ *  Reads and returns the current (compact) entry.
  *
- * Parameters:
+ *  Parameters:
  *      in_file points to the length-byte of the defined name.
  *      entry is intended to contain the current entry.
  *
- * Modified Parameter:
+ *  Modified Parameter:
  *      entry will be modified as indicated below.
  *
- * Returns:
+ *  Returns:
  *      valid_entry if both values of entry were updated.
  *      not_valid_entry if only one of the values or neither of the values
  *          of entry was updated.
  *
- * Notes:
+ *  Notes:
  *      The defined_name and the embedded_name fields will be terminated 
  *          with '\0' if updated.
  *      A file error may have occurred if not_valid_entry is returned.
@@ -64,63 +59,63 @@ entry_found get_compact_entry( FILE * in_file, directory_entry * entry )
 {
     uint8_t count;
 
-    /* Get the defined_name_length. */
+    /* Get the length of the defined name. */
     
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
-    /* Ensure the defined_name_length is not too long for the buffer. */
+    /* Ensure the length is not too long for the buffer. */
 
     if( count > DEFINED_NAME_MAX ) {
         return( not_valid_entry );
     }
 
-    /* Get the defined_name. An empty value is allowed; see the Wiki. */
+    /* Get the defined name. The Wiki discusses the "count == 0" case. */
 
     if( count == 0 ) {
         entry->defined_name[0] = '\0';
     } else {
         fread( entry->defined_name, count, 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
-        entry->defined_name[count] = '\0';
+        entry->defined_name[ count ] = '\0';
     }
 
-    /* Get the member_name_length. */
+    /* Get the length of the member name. */
     
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
-    /* Ensure the member_name_length is not zero or too long for the buffer. */
+    /* Ensure the length is not zero or too long for the buffer. */
 
     if( (count == 0) || ((uint16_t) count > _MAX_PATH) ) {
         return( not_valid_entry );
     }
 
-    /* Get the member_name. */
+    /* Get the member name. */
 
     fread( entry->member_name, count, 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
-    entry->member_name[count] = '\0';
+    entry->member_name[ count ] = '\0';
 
     return( valid_entry );
 }
 
-/* Function get_extended_entry().
- * Reads and returns the current (extended) entry.
+/*  Function get_extended_entry().
+ *  Reads and returns the current (extended) entry.
  *
- * Parameters:
+ *  Parameters:
  *      in_file points to the length-byte of the defined name.
  *      entry is intended to contain the current entry.
  *
- * Modified Parameter:
+ *  Modified Parameter:
  *      entry will be modified as indicated below.
  *
- * Returns:
+ *  Returns:
  *      valid_entry if both values of entry were updated.
  *      not_valid_entry if only one of the values or neither of the values
  *          of entry was updated.
  *
- * Notes:
+ *  Notes:
  *      The defined_name and the embedded_name fields will be terminated 
  *          with '\0' if updated.
  *      A file error may have occurred even if valid_entry is returned.
@@ -130,25 +125,25 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
 {
     uint8_t count;
 
-    /* Get the defined_name_length. */
+    /* Get the length of the defined name. */
     
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
-    /* Ensure the defined_name_length is not too long for the buffer. */
+    /* Ensure the length is not too long for the buffer. */
 
     if( count > DEFINED_NAME_MAX ) {
         return( not_valid_entry );
     }
 
-    /* Get the defined_name. An empty value is allowed; see the Wiki. */
+    /* Get the defined name. The Wiki discusses the "count == 0" case. */
 
     if( count == 0 ) {
         entry->defined_name[0] = '\0';
     } else {
         fread( entry->defined_name, count, 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
-        entry->defined_name[count] = '\0';
+        entry->defined_name[ count ] = '\0';
     }
     
     /* Skip the marker. */
@@ -156,22 +151,22 @@ entry_found get_extended_entry( FILE * in_file, directory_entry * entry )
     fseek( in_file, sizeof( uint16_t ), SEEK_CUR );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
-    /* Get the the member_name_length. */
+    /* Get the length of the member name. */
     
     count = fgetc( in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
 
-    /* Ensure the member_name_length is not zero or too long for the buffer. */
+    /* Ensure the length is not zero or too long for the buffer. */
 
     if( (count == 0) || ((uint16_t) count > _MAX_PATH) ) {
         return( not_valid_entry );
     }
 
-    /* Get the member_name. */
+    /* Get the member name. */
 
     fread( entry->member_name, count, 1, in_file );
     if( ferror( in_file ) || feof( in_file ) ) return( not_valid_entry );
-    entry->member_name[count] = '\0';
+    entry->member_name[ count ] = '\0';
 
     /* Skip the preview. */
 

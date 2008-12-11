@@ -24,14 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Novell NetWare NLM executable image format.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #ifndef _EXENOV_H
 
-#include "pushpck1.h"
+#pragma pack(push,1)
 
 #define MAX_DESCRIPTION_LENGTH			127
 #define MAX_SCREEN_NAME_LENGTH			71
@@ -185,7 +186,7 @@ typedef struct nov_dbg_info {
 
 #define NOV_EXP_ISCODE			0x80000000
 
-#include "poppck.h"
+#pragma pack(pop)
 
 #define _EXENOV_H
 #endif

@@ -34,16 +34,102 @@
 #include "cgdefs.h"
 
 static char *_Ops[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) dump,
-#include "copcodes.h"
+    "+",
+    "-",
+    "*",
+    "/",
+    "-",
+    "cmp",
+    "%",
+    "~",
+    "!",
+    "|",
+    "&",
+    "^",
+    ">>",
+    "<<",
+    "=",
+    "|=",
+    "&=",
+    "^=",
+    ">>=",
+    "<<=",
+    "+=",
+    "-=",
+    "*=",
+    "/=",
+    "%=",
+    "?",
+    ":",
+    "||",
+    "&&",
+    "*",
+    "pushbackhdl",
+    "callback",
+    "++",
+    "--",
+    "convert",
+    "pushsym",
+    "pushaddr",
+    "pushint",
+    "pushfloat",
+    "pushstring",
+    "pushseg",
+    "dupe",
+    "convert_ptr",
+    "convert_seg",
+    "nop",
+    ".",
+    "->",
+    "[]",
+    "&",
+    ":>",
+    "funcname",
+    "call",
+    "*call",
+    ",",
+    ",",
+    "return",
+    "label",
+    "case",
+    "jumptrue",
+    "jumpfalse",
+    "jump",
+    "switch",
+    "function",
+    "funcend",
+    "stmt",
+    "{",
+    "}",
+    "_try",
+    "_except",
+    "_exception_code",
+    "_exception_info",
+    "unwind",
+    "_finally",
+    "_end_finally",
+    "error",
+    "cast",
+    "label_count",
+    "mathfunc",
+    "mathfunc2",
+    "vastart",
+    "index2[]",
+    "alloca",
+    "patchnode",
+    "inline_call",
+    "temp_addr",
+    "push_temp",
+    "push_parm",
+    "post ||",
+    "side_effect",
+    "&index",
+    "dbg{",
+    "dbg}",
+    "_abnormal_termination",
 };
 
-char    *CCOps[] = {
-#undef pick1
-#define pick1(enum,dump,cgenum) dump,
-#include "copcond.h"
-};
+char    *CCOps[] = { "==", "!=", "<", "<=", ">", ">=" };
 
 static void DumpAString( STR_HANDLE str_handle )
 {
@@ -227,14 +313,14 @@ void DumpInfix( TREEPTR node )
         printf( " %s ", CCOps[ node->op.cc ] );
         break;
     case OPR_TRY:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.st.parent_scope );
+        printf( "%s %d", _Ops[ node->op.opr ], node->op.parent_scope );
         break;
     case OPR_UNWIND:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.st.try_index );
+        printf( "%s %d", _Ops[ node->op.opr ], node->op.try_index );
         break;
     case OPR_EXCEPT:
     case OPR_FINALLY:
-        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.st.parent_scope );
+        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.parent_scope );
         break;
     default:
         printf( " " );

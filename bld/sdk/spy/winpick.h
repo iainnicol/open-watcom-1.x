@@ -24,11 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Spy pick window dialog identifiers.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
 #define WINSEL_HWND                 500
 #define WINSEL_NAME                 501
-#define WINSEL_ICON                 502

@@ -31,10 +31,6 @@
 *                   is_fon_file()
 *                   parse_font()
 *
-* Note:         The field names are intended to correspond to the field names 
-*               shown in the Wiki. The Wiki structs are named when the structs
-*               defined here are defined; they are not identical.
-*
 ****************************************************************************/
 
 #ifndef CFFON_H_INCLUDED
@@ -45,28 +41,23 @@
 #include <stdio.h>
 #include "cftrans.h"
 
-/* Structure declarations. */
+/* Structure declarations */
 
-/* To hold the data extracted from a WidthBlock struct.
- * width_block is a struct for consistency with outtrans_block.
+/* Structure declarations */
+
+/* These structs are based on the discussion in the Wiki, which should be
+ * consulted for further information on how the data is structured.
  */
 
-typedef struct {
+/* width_block is a struct for consistency with outtrans_block. */
+
+typedef struct width_block_struct
+{
     uint32_t         table[0x100];
 } width_block;
 
-/* This struct embodies the binary form of the :FONT block.
- *
- * The comments within the structs refer to the "blocks" discussed in the Wiki. 
- *
- * The first two fields are used internally and were used for sizing during
- * development
- *
- * The instance returned will be allocated as a single block and so can be
- * freed in one statement.
- */
-
-typedef struct {
+typedef struct cop_font_struct
+{
     size_t           allocated_size;
     size_t           next_offset;
     /* The Attributes */
@@ -84,17 +75,17 @@ typedef struct {
     width_block *    width;
 } cop_font;
 
-/* Function declarations. */
+/* Function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
-extern bool            is_fon_file( FILE * in_file );
-extern cop_font    *   parse_font( FILE * in_file );
+bool is_fon_file( FILE * );
+cop_font * parse_font( FILE * );
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}   /* End of "C" linkage for C++ */
 #endif
 
 #endif  /* CFFON_H_INCLUDED */
