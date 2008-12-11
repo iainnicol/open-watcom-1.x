@@ -49,12 +49,43 @@
 
 cmdfilelist      *CmdFile = NULL;
 
-/* Default File Extension array, see ldefext.h */
-
-static  char    *DefExt[] = {
-#undef pick1
-#define pick1(enum,text) text,
-#include "ldefext.h"
+static  char            *DefExt[] = {           /* see LINK.H */
+    ".lnk",
+    ".map",
+    ".lib",
+#if defined( __UNIX__ )
+    ".o",
+#else
+    ".obj",
+#endif
+    ".exe",
+    ".ovl",
+    ".dll",
+    ".exp",
+    ".nlm", /* netware loadable module  */
+    ".lan", /* LAN driver               */
+    ".dsk", /* disk driver              */
+    ".nam", /* name space module        */
+    ".msl", /* mirrored server link     */
+    ".ham", /* host adapter module      */
+    ".cdm", /* custom device module     */
+    ".com",
+    ".rex",
+#if defined( __UNIX__ )
+    "",
+#else
+    ".qnx",
+#endif
+    ".sym",
+    ".lbc",
+#if defined( __UNIX__ )
+    "",
+#else
+    ".elf",
+#endif
+    ".ilk",
+    ".hex",
+    ".bin"
 };
 
 static bool     CheckFence( void );
@@ -179,7 +210,7 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
 {
     char                *key;
     char                *ptr;
-    unsigned            plen;
+    int                 plen;
     bool                ret;
     char                keybuff[20];
 
@@ -222,13 +253,13 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
     return( ret );
 }
 
-bool MatchOne( parse_entry *entry , sep_type req , char *match, unsigned len )
-/****************************************************************************/
+bool MatchOne( parse_entry *entry , sep_type req , char *match, int len )
+/*******************************************************************/
 /* recognize token out of parse table */
 {
     char                *key;
     char                *ptr;
-    unsigned            plen;
+    int                 plen;
     bool                ret = FALSE;
 
     while( entry->keyword != NULL ) {
@@ -274,7 +305,7 @@ ord_state getatol( unsigned_32 *pnt )
 /*******************************************/
 {
     char            *p;
-    unsigned        len;
+    int             len;
     unsigned long   value;
     unsigned        radix;
     bool            isvalid;
@@ -283,16 +314,14 @@ ord_state getatol( unsigned_32 *pnt )
     char            ch;
 
     len = Token.len;
-    if( len == 0 )
-        return( ST_NOT_ORDINAL );
+    if( len <= 0 ) return( ST_NOT_ORDINAL );
     p = Token.this;
     gotdigit = FALSE;
     value = 0ul;
     radix = 10;
-    if( len >= 2 && *p == '0' ) {
+    if( *p == '0' ) {
         --len;
-        ++p;
-        if( tolower( *p ) == 'x' ) {
+        if( tolower(*++p) == 'x') {
             radix = 16;
             ++p;
             --len;
@@ -367,7 +396,16 @@ char *tostring( void )
 /****************************/
 // make the current token into a C string.
 {
-    return( ChkToString( Token.this, Token.len ) );
+    char            *src;
+    int             len;
+    char            *str;
+
+    src = Token.this;
+    len = Token.len;
+    _ChkAlloc( str, len + 1 );
+    memcpy( str, src, len );
+    str[ len ] = '\0';
+    return( str );
 }
 
 char *totext( void )
@@ -410,7 +448,9 @@ static void ExpandEnvVariable( void )
             memcpy( buff + envlen, Token.this, Token.len );
             buff[ Token.len + envlen ] = '\0';
         } else {
-            buff = ChkToString( env, envlen );
+            _ChkAlloc( buff, envlen + 1 );
+            memcpy( buff, env, envlen );
+            buff[ envlen ] = '\0';
         }
         NewCommandSource( envname, buff, ENVIRONMENT );
     }
@@ -756,6 +796,7 @@ static void StartNewFile( void )
     char        *envstring;
     char        *buff;
     f_handle    file;
+    size_t      envlen;
 
     fname = FileName( Token.this, Token.len, E_COMMAND, FALSE );
     file = QObjOpen( fname );
@@ -764,7 +805,10 @@ static void StartNewFile( void )
         fname = tostring();
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
-            buff = ChkStrDup( envstring );
+            envlen = strlen( envstring );       // make a copy of envstring
+            _ChkAlloc( buff, envlen + 1 );      // so we can free it
+            memcpy( buff, envstring, envlen );
+            buff[ envlen ] = '\0';
             NewCommandSource( fname, buff, ENVIRONMENT );
         } else {
             LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
@@ -867,8 +911,8 @@ static void MapEscapeChar( void )
     memmove( Token.next + 1, str, strlen( str ) + 1 );
 }
 
-static unsigned MapDoubleByteChar( unsigned char c )
-/**************************************************/
+static int MapDoubleByteChar( unsigned char c )
+/*********************************************/
 /* if the double byte character support is on, check if the current character
  * is a double byte character skip it */
 {
@@ -893,12 +937,12 @@ static unsigned MapDoubleByteChar( unsigned char c )
 static bool MakeToken( tokcontrol ctrl, sep_type separator )
 /**********************************************************/
 {
-    bool        quit;
-    char        hmm;
-    unsigned    len;
-    bool        forcematch;
-    bool        hitmatch;
-    bool        keepspecial;
+    bool    quit;
+    char    hmm;
+    int     len;
+    bool    forcematch;
+    bool    hitmatch;
+    bool    keepspecial;
 
     Token.this = Token.next;
     len = 0;
@@ -989,33 +1033,31 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 }
 
 
-char *FileName( char *buff, unsigned len, file_defext etype, bool force )
-/***********************************************************************/
+char *FileName( char *buff, int len, byte etype, bool force )
+/******************************************************************/
 {
-    char        *namptr;
-    char        *namstart;
-    char        *ptr;
-    unsigned    cnt;
-    unsigned    namelen;
+    char    *namptr;
+    char    *namstart;
+    char    *ptr;
+    int     cnt;
+    int     namelen;
 
     namptr = buff + len;
     cnt = 0;
     while( cnt != len ) {
         cnt++;
         --namptr;
-        if( IS_PATH_SEP( *namptr ) ) {
-            break;
-        }
+        if( IS_PATH_SEP( *namptr ) ) break;
     }
     if( IS_PATH_SEP( *namptr ) ) {
         namptr++;
     }
     namstart = namptr;
-    cnt = len - ( namptr - buff );
+    cnt = len - ( (int) namptr - (int) buff );
     if( cnt == 0 ) {
         ptr = alloca( len + 1 );
         memcpy( ptr, buff, len );
-        ptr[ len ] = '\0';
+        ptr[len] = '\0';
         LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
     }
     namelen = cnt;
@@ -1035,7 +1077,9 @@ char *FileName( char *buff, unsigned len, file_defext etype, bool force )
         memcpy( ptr, buff, len );
         strcpy( ptr + len, DefExt[ etype ] );
     } else {
-        ptr = ChkToString( buff, len );
+        _ChkAlloc( ptr, len + 1 );
+        memcpy( ptr, buff, len );
+        ptr[ len ] = '\0';
     }
     return( ptr );
 }
@@ -1175,11 +1219,11 @@ section *NewSection( void )
 char *GetFileName( char **membname, bool setname )
 /********************************************************/
 {
-    char        *ptr;
-    unsigned    namelen;
-    char        *objname;
-    char        *fullmemb;
-    unsigned    memblen;
+    char    *ptr;
+    int     namelen;
+    char    *objname;
+    char    *fullmemb;
+    int     memblen;
 
     namelen = Token.len;
     objname = alloca( namelen );
@@ -1187,14 +1231,18 @@ char *GetFileName( char **membname, bool setname )
     if( GetToken( SEP_PAREN, TOK_INCLUDE_DOT ) ) {   // got LIBNAME(LIB_MEMBER)
         fullmemb = alloca( Token.len + 1 );
         memcpy( fullmemb, Token.this, Token.len );
-        fullmemb[ Token.len ] = '\0';
+        fullmemb[Token.len] = '\0';
         fullmemb = RemovePath( fullmemb, &memblen );
-        *membname = ChkToString( fullmemb, memblen );
+        _ChkAlloc( *membname, memblen + 1 );
+        memcpy( *membname, fullmemb, memblen );
+        (*membname)[memblen] = '\0';
         ptr = FileName( objname, namelen, E_LIBRARY, FALSE );
     } else {
         *membname = NULL;
         if( setname && Name == NULL ) {
-            Name = ChkToString( objname, namelen );
+            _ChkAlloc( Name, namelen + 1 );
+            memcpy( Name, objname, namelen );
+            Name[ namelen ] = '\0';
         }
         ptr = FileName( objname, namelen, E_OBJECT, FALSE );
     }

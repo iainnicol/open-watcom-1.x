@@ -494,14 +494,13 @@ void WdeChangeDialogInfo ( WdeInfoStruct *is )
     WRStripSymbol( str );
 
     quoted_str = FALSE;
-    if( _mbclen( (unsigned char *)str ) == 1 && str[0] == '"' ) {
-        unsigned char   *s;
-
+    if( _mbclen( str ) == 1 && str[0] == '"' ) {
+        char    *s;
         str[0] = ' ';
         cp = NULL;
-        for( s = (unsigned char *)str; *s != '\0'; s = _mbsinc( s ) ) {
+        for( s=str; *s; s=_mbsinc(s) ) {
             if( _mbclen( s ) == 1 && *s == '"' ) {
-                cp = (char *)s;
+                cp = s;
             }
         }
         if( cp ) {
@@ -690,7 +689,7 @@ void WdeInfoLookupComboEntry ( HWND hWnd, WORD hw )
         return;
     }
 
-    if( _mbclen( (unsigned char *)str ) == 1 && str[0] == '"' ) {
+    if( _mbclen( str ) == 1 && str[0] == '"' ) {
         value = WdeLookupName ( WdeCurrentInfo.res_info->hash_table,
                                 str, &found );
         if( found ) {
@@ -698,7 +697,7 @@ void WdeInfoLookupComboEntry ( HWND hWnd, WORD hw )
         }
     }
 
-    WdeMemFree( str );
+    WdeMemFree ( str );
 }
 
 LRESULT WINEXPORT WdeInfoWndProc( HWND hWnd, UINT message,

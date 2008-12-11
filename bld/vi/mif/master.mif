@@ -24,34 +24,9 @@ additional_cleanup = *.dh *.ch
 !include deftarg.mif
 !include defrule.mif
 
-# get the right version of tool depending on host platform
-!ifdef __OS2__
-edbind = $(vi_dir)\bind\os2386\edbind
-parsectl = $(vi_dir)\ctl\os2386\parsectl
-parsedyn = $(vi_dir)\ctl\os2386\parsedyn
-!else ifdef __MSDOS__
-edbind = $(vi_dir)\bind\dos386\edbind
-parsectl = $(vi_dir)\ctl\dos386\parsectl
-parsedyn = $(vi_dir)\ctl\dos386\parsedyn
-!else ifdef __LINUXMIPS__
-edbind = $(vi_dir)/bind/linuxmps/edbind.exe
-parsectl = $(vi_dir)/ctl/linuxmps/parsectl.exe
-parsedyn = $(vi_dir)/ctl/linuxmps/parsedyn.exe
-!else ifdef __LINUX__
-edbind = $(vi_dir)/bind/linux386/edbind.exe
-parsectl = $(vi_dir)/ctl/linux386/parsectl.exe
-parsedyn = $(vi_dir)/ctl/linux386/parsedyn.exe
-!else ifdef __NTAXP__
-edbind = $(vi_dir)\bind\ntaxp\edbind
-parsectl = $(vi_dir)\ctl\ntaxp\parsectl
-parsedyn = $(vi_dir)\ctl\ntaxp\parsedyn
-!else
-edbind = $(vi_dir)\bind\nt386\edbind
-parsectl = $(vi_dir)\ctl\nt386\parsectl
-parsedyn = $(vi_dir)\ctl\nt386\parsedyn
-!endif
-
+!ifndef prebuild
 !include ../mif/rcsdll.mif
+!endif
 !include ../mif/include.mif
 !include ../mif/objects.mif
 !include ../mif/compile.mif
@@ -61,6 +36,10 @@ parsedyn = $(vi_dir)\ctl\nt386\parsedyn
 .h : $(vi_dir)/h
 .ctl : $(vi_dir)/ctl
 .dyn : $(vi_dir)/ctl
+
+!ifdef prebuild
+extra_c_flags += -DPREBUILD
+!endif
 
 !ifdef bind
 .vi : $(vi_dir)/dat
@@ -105,8 +84,23 @@ $(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $
 !endif
         # don't bind - it screws up everything - BBB
 !else
+!ifndef prebuild
         set edpath=$(vi_dir)/dat
-        $(edbind) $(bindextra) -q $(name)
+# run the right version of edbind depending on host platform
+!ifdef __OS2__
+        $(vi_dir)\bind\os2386\edbind $(bindextra) -q $(name)
+!else ifdef __MSDOS__
+        $(vi_dir)\bind\dosi86\edbind $(bindextra) -q $(name)
+!else ifdef __LINUXMIPS__
+        $(vi_dir)/bind/linuxmps/edbind.exe $(bindextra) -q $(name)
+!else ifdef __LINUX__
+        $(vi_dir)/bind/linux386/edbind.exe $(bindextra) -q $(name)
+!else ifdef __NTAXP__
+        $(vi_dir)\bind\ntaxp\edbind.exe $(bindextra) -q $(name)
+!else
+        $(vi_dir)\bind\nt386\edbind $(bindextra) -q $(name)
+!endif
+!endif
 !endif
 !endif
 

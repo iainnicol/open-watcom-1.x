@@ -24,18 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Spy log functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
 #include <time.h>
+#include "spy.h"
 
 /*
  * writeCRLF - write carriage return/line feed to a file
@@ -57,7 +58,7 @@ void SpyLogTitle( int f )
 
     tod = time( NULL );
     strcpy( buff, ctime( &tod ) );
-    buff[strlen( buff ) - 1] = 0;
+    buff[ strlen( buff ) - 1] = 0;
 
     write( f, SpyName, strlen( SpyName ) );
     writeCRLF( f );

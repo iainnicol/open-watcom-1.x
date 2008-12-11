@@ -35,17 +35,18 @@
 
 
 typedef struct taglist {
-    struct  taglist *   nxt;
-    long                count;
-    char                tagname[ 16 ];
-} taglist;
+    struct  taglist *nxt;
+    long    count;
+    char    tagname[ 16 ];
+}   taglist;
 
-static  taglist *   tags = NULL;        // list of found gml tags
-static  taglist *   scrkws = NULL;      // list of found scr keywords
+static  taglist *tags = NULL;           // list of found gml tags
+static  taglist *scrkws = NULL;         // list of found scr keywords
 
 
 
-void printf_research( char * msg, ... )
+void printf_research( char *msg, ... )
+/***********************************/
 {
     va_list args;
 
@@ -63,8 +64,8 @@ void printf_research( char * msg, ... )
 
 void add_GML_tag_research( char * tag )
 {
-    taglist *   wk = tags;
-    taglist *   new;
+    taglist     *wk = tags;
+    taglist     *new;
 
     while( wk ) {
         if( !stricmp( tag, wk->tagname ) ) {
@@ -95,11 +96,11 @@ void add_GML_tag_research( char * tag )
 
 void    print_GML_tags_research( void )
 {
-    taglist *   wk = tags;
+    taglist *wk = tags;
 
     printf_research("\nGML tag list sorted by first occurrence\n\n" );
     while( wk ) {
-        printf_research("%6ld  :%s\n", wk->count, wk->tagname );
+        printf_research("%6ld  %s\n", wk->count, wk->tagname );
         wk = wk->nxt;
     }
 }
@@ -110,8 +111,8 @@ void    print_GML_tags_research( void )
 
 void    free_GML_tags_research( void )
 {
-    taglist *   wk = tags;
-    taglist *   wk1;
+    taglist *wk = tags;
+    taglist *wk1;
 
     while( wk ) {
         wk1 = wk;
@@ -127,8 +128,8 @@ void    free_GML_tags_research( void )
 
 void    add_SCR_tag_research( char * tag )
 {
-    taglist *   wk = scrkws;
-    taglist *   new;
+    taglist     *wk = scrkws;
+    taglist     *new;
 
     while( wk ) {
         if( !stricmp( tag, wk->tagname ) ) {
@@ -159,11 +160,11 @@ void    add_SCR_tag_research( char * tag )
 
 void    print_SCR_tags_research( void )
 {
-    taglist *   wk = scrkws;
+    taglist *wk = scrkws;
 
     printf_research("\nScript tag list sorted by first occurrence\n\n" );
     while( wk ) {
-        printf_research("%6ld  .%s\n", wk->count, wk->tagname );
+        printf_research("%6ld  %s\n", wk->count, wk->tagname );
         wk= wk->nxt;
     }
 }
@@ -174,8 +175,8 @@ void    print_SCR_tags_research( void )
 
 void    free_SCR_tags_research( void )
 {
-    taglist *   wk = scrkws;
-    taglist *   wk1;
+    taglist *wk = scrkws;
+    taglist *wk1;
 
     while( wk ) {
         wk1 = wk;

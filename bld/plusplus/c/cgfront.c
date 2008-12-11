@@ -608,11 +608,11 @@ void CgFrontFuncClose(          // CLOSE A FUNCTION (AND ITS FILE)
             codeCGFILE->opt_retn = opt_sym;
             switch( ObjModelFunctionReturn( func->sym_type ) ) {
               case OMR_CLASS_REF :
-                codeCGFILE->s.opt_retn_ref = TRUE;
+                codeCGFILE->opt_retn_ref = TRUE;
                 break;
               case OMR_CLASS_VAL :
               case OMR_SCALAR :
-                codeCGFILE->s.opt_retn_val = TRUE;
+                codeCGFILE->opt_retn_val = TRUE;
                 break;
             }
         }
@@ -784,7 +784,7 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
 void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
     void )
 {
-    codeCGFILE->s.ctor_test = TRUE;
+    codeCGFILE->ctor_test = TRUE;
 }
 
 

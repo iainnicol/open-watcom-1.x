@@ -36,8 +36,8 @@
 
 
 WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, WHotSpots* hs,
-                            WStyle wstyle, WExStyle wexstyle )
-    : WWindow( prt, r, text, wstyle, wexstyle )
+                            WStyle wstyle )
+    : WWindow( prt, r, text, wstyle )
     , _topIndex( 0 )
     , _selected( -1 )
     , _leftDown( FALSE )
@@ -52,7 +52,6 @@ WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, W
     , _hs( hs )
 //--------------------------------------------------------------
 {
-    changeBackground( WPaintAttrControlBackground );
 }
 
 WHotSpotList::~WHotSpotList()
@@ -101,8 +100,6 @@ bool WHotSpotList::paint()
     int extent;
     WRect r;
 
-    getClientRect( r );
-
     for( int i = _topIndex + firstDirtyRow(); i < maxRows && i < numElem; i += 1 ) {
         const char * str = getString( i );
 
@@ -121,13 +118,14 @@ bool WHotSpotList::paint()
         } else {
             offset = 0;
         }
+        getRectangle( r );
         extent = r.w();
         if( width() > extent ) extent = width();
         if( i == _selected ) {
             drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive,
                             extent );
         } else {
-            drawTextExtent( i - _topIndex, offset, str, WPaintAttrControlBackground,
+            drawTextExtent( i - _topIndex, offset, str, WPaintAttrBackground,
                             extent );
         }
     }

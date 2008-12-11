@@ -38,14 +38,15 @@
 
 #include <stdint.h>
 
-/* In theory, this should go into banner.h. */
-/* For gendev and wgml, the equivalent macros will. */
+/* In theory, this should go into banner.h */
+/* For gendev and wgml, the equivalent macros will */
 
 #define _RESEARCH_VERSION_ BAN_VER_STR
 
-/* Global variable declarations. */
+/* Global variable declarations */
 
-/* This allows the same declarations to function as definitions.
+/*
+ * This allows the same declarations to function as definitions.
  * Just #define global before including this file.
  */
 
@@ -53,28 +54,24 @@
     #define global  extern
 #endif
 
-/* The path of the directory to be checked. */
+global  char *  tgt_path;   /* path of directory to be checked */
 
-global  char *  tgt_path;
+#undef global   /* reset so can be reused with other headers */
 
-/* Reset so can be reused with other headers. */
-
-#undef global
-
-/* Function declarations. */
+/* Function declarations */
 
 #ifdef  __cplusplus
-extern "C" {    /* Use "C" linkage when in C++ mode. */
+extern "C" {    /* Use "C" linkage when in C++ mode */
 #endif
 
-extern void    display_char( char * out_chars, char in_char );
-extern void    display_hex_block( uint8_t * in_data, uint16_t in_count );
-extern void    display_hex_char(char * out_chars, char in_char );
-extern void    display_hex_line( char * out_chars, char * in_chars );
-extern void    res_initialize_globals( void );
+void    display_char( char *, char );
+void    display_hex_block( uint8_t *, uint16_t );
+void    display_hex_char(char *, char );
+void    display_hex_line( char *, char * );
+void    res_initialize_globals( void );
 
 #ifdef  __cplusplus
-}   /* End of "C" linkage for C++. */
+}   /* End of "C" linkage for C++ */
 #endif
 
 #endif  /* RESEARCH_H_INCLUDED */

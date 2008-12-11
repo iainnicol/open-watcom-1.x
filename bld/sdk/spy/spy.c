@@ -24,15 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Main source file for the spy.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include "spy.h"
 
 extern WORD _STACKLOW;
 
@@ -66,27 +67,30 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
      */
     if( !previnst ) {
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID)SpyWindowProc;
+        wc.lpfnWndProc = (LPVOID) SpyWindowProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = sizeof( DWORD );
         wc.hInstance = Instance;
         wc.hIcon = LoadIcon( ResInstance, "APPLICON" );
-        wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW);
-#ifdef __NT__
+        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
         wc.hbrBackground = NULL;
-#else
-        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-#endif
         wc.lpszMenuName = NULL;
         wc.lpszClassName = SPY_CLASS_NAME;
-        if( !RegisterClass( &wc ) ) {
-            return( FALSE );
-        }
+        if( !RegisterClass( &wc ) ) return( FALSE );
 
+        wc.style = CS_DBLCLKS;
+        wc.lpfnWndProc = (LPVOID) SpyPickProc;
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = 0;
+        wc.hInstance = Instance;
+        wc.hIcon = LoadIcon( ResInstance, "SPYICON" );
+        wc.hCursor = LoadCursor( (HANDLE) NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+        wc.lpszMenuName = NULL;
+        wc.lpszClassName = SpyPickClass;
+        if( !RegisterClass( &wc ) ) return( FALSE );
 #ifdef USE_SNAP_WINDOW
-        if( !RegisterSnapClass( Instance ) ) {
-            return( FALSE );
-        }
+        if( !RegisterSnapClass( Instance ) ) return( FALSE );
 #endif
     }
 
@@ -100,17 +104,17 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
      */
     LoadSpyConfig( NULL );
     SpyMainWindow = CreateWindow(
-        SPY_CLASS_NAME,         /* Window class name */
-        SpyName,                /* Window caption */
-        WS_OVERLAPPEDWINDOW,    /* Window style */
-        SpyMainWndInfo.xpos,    /* Initial x position */
-        SpyMainWndInfo.ypos,    /* Initial y position */
-        SpyMainWndInfo.xsize,   /* Initial x size */
-        SpyMainWndInfo.ysize,   /* Initial y size */
-        (HWND)NULL,             /* Parent window handle */
-        (HMENU)SpyMenu,         /* Window menu handle */
-        Instance,               /* Program instance handle */
-        NULL );                 /* Create parameters */
+        SPY_CLASS_NAME,     /* Window class name */
+        SpyName,            /* Window caption */
+        WS_OVERLAPPEDWINDOW,  /* Window style */
+        SpyMainWndInfo.xpos,  /* initial x position */
+        SpyMainWndInfo.ypos,  /* initial y position */
+        SpyMainWndInfo.xsize, /* initial x size */
+        SpyMainWndInfo.ysize, /* initial y size */
+        (HWND) NULL,        /* Parent window handle */
+        (HMENU) SpyMenu,    /* Window menu handle */
+        Instance,           /* Program instance handle */
+        NULL);              /* Create parameters */
 
     if( SpyMainWindow == NULL ) {
         return( FALSE );
@@ -130,6 +134,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
  */
 void SpyFini( void )
 {
+
 #ifndef NOUSE3D
     Ctl3dUnregister( Instance );
 #endif
@@ -137,14 +142,12 @@ void SpyFini( void )
     SpyLogClose();
     SaveSpyConfig( NULL );
     JDialogFini();
-
 } /* SpyFini */
 
 /*
  * WinMain - main entry point
  */
-int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
-                          int cmdshow )
+int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
     MSG         msg;
     HWND        prev_hwnd;
@@ -168,21 +171,18 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
 
         SetWindowPos( prev_hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetWindowPos( prev_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        exit( 0 );
+        exit(0);
     }
 #else
     prev_hwnd = prev_hwnd;
 #endif
-    if( !spyInit( currinst, previnst, cmdshow ) ) {
-        exit( 0 );
-    }
+    if( !spyInit( currinst, previnst, cmdshow ) ) exit( 0 );
 
-    while( GetMessage( &msg, (HWND)NULL, 0, 0 ) ) {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
+    while( GetMessage( &msg, (HWND) NULL, 0, 0 ) ) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
     SpyFini();
     return( 1 );
 
 } /* WinMain */
-

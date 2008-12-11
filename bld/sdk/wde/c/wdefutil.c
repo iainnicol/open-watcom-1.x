@@ -310,17 +310,16 @@ uint_16 WdeGetNextControlID ( void )
     return ( id );
 }
 
-Bool WdeIsStrSpace ( char *_s )
+Bool WdeIsStrSpace ( char *s )
 {
-    unsigned char   *s = (unsigned char *)_s;
-
-    if( s != NULL ) {
-        for( ; *s != '\0'; s = _mbsinc( s ) ) {
+    if( s ) {
+        for( ; *s; s=_mbsinc(s) ) {
             if( _mbclen( s ) != 1 || ( _mbclen( s ) == 1 && !isspace( *s ) ) ) {
                 return( FALSE );
             }
         }
     }
+
     return( TRUE );
 }
 
@@ -720,13 +719,12 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     quoted_str = FALSE;
     if( str[0] == '"' ) {
-        unsigned char   *s;
-
+        char    *s;
         str[0] = ' ';
         cp = NULL;
-        for( s = (unsigned char *)str; *s != '\0'; s = _mbsinc( s ) ) {
+        for( s=str; *s; s=_mbsinc(s) ) {
             if( _mbclen( s ) == 1 && *s == '"' ) {
-                cp = (char *)s;
+                cp = s;
             }
         }
         if( cp ) {
@@ -813,13 +811,12 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     quoted_str = FALSE;
     if( str[0] == '"' ) {
-        unsigned char   *s;
-
+        char    *s;
         str[0] = ' ';
         cp = NULL;
-        for( s = (unsigned char *)str; *s != '\0'; s = _mbsinc( s ) ) {
+        for( s=str; *s; s=_mbsinc(s) ) {
             if( _mbclen( s ) == 1 && *s == '"' ) {
-                cp = (char *)s;
+                cp = s;
             }
         }
         if( cp ) {

@@ -32,13 +32,10 @@
 ****************************************************************************/
 
 #define __STDC_WANT_LIB_EXT1__ 1
-
 #include <stdio.h>
-
 #include "banner.h"
 #include "cfheader.h"
 #include "common.h"
-#include "heapchk.h"
 #include "lhdirect.h"
 #include "research.h"
 
@@ -59,11 +56,11 @@ NULL
  *  Any file types other than 0x02, 0x03 and 0x04 are displayed.
  *
  *  Global Used:
- *      tgt_path contains the directory passed on the command line.
+ *      tgt_path contains the directory passed on the command line
  *
  *  Returns:
- *      FAILURE if the directory provided cannot be opened.
- *      SUCCESS if the directory can be opened (and so was checked).
+ *      FAILURE if the directory provided cannot be opened
+ *      SUCCESS if the directory can be opened (and so was checked)
  */
 
 int check_directory( void )
@@ -79,34 +76,27 @@ int check_directory( void )
 
     current_dir = opendir( tgt_path );
     if( current_dir == NULL ) return( FAILURE );
-
     chdir( tgt_path );
-
     for(;;) {
-
         dir_entry = readdir( current_dir );
         if( dir_entry == NULL ) break;
 
-        /* Check the file size. */
+        /* Check the file size */
 
         if( (get_file_size( dir_entry ) % 16) != 0) \
         printf_s( "Size of file %s is not a multiple of 16\n", dir_entry->d_name );
 
-        /* Open the file. */
+        /* Open the file */
 
         fopen_s( &current_file, dir_entry->d_name, "rb" );
-        if( current_file == NULL ) {
-            continue;
-        }
+        if( current_file == NULL ) continue;
 
-        /* Process the file. */
+        /* Process the file */
 
         retval = parse_header( current_file, &type );
         if(retval == FAILURE)
         {
             printf_s( "%s is not a valid .COP file\n", dir_entry->d_name );
-            fclose( current_file );
-            current_file = NULL;
             continue;
         }
         switch( type ) {
@@ -127,7 +117,7 @@ int check_directory( void )
     }
     closedir( current_dir );
    
-    /* Output counts. */
+    /* Output counts */
 
     printf_s( "Number of device/driver/font files:  %i\n", datafile );
     printf_s( "Number of version 3 directory files: %i\n", v3directoryfile );
@@ -137,20 +127,19 @@ int check_directory( void )
 }
 
 /*  Function print_banner().
- *  Print the banner to the screen.
+ *  Print the banner to the screen
  */
 
 void print_banner( void )
 {
-    puts( banner1w( "Script/GML Binary File Type Check Program", \
-                                                        _RESEARCH_VERSION_ ) );
+    puts( banner1w( "Script/GML Binary File Type Check Program", _RESEARCH_VERSION_ ) );
     puts( banner2( "1983" ) );
     puts( banner3 );
     puts( banner3a );
 }
 
 /*  Function print_usage().
- *  Print the usage information to the screen.
+ *  Print the usage information to the screen
  */
 
 void print_usage( void )
