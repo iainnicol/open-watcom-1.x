@@ -313,33 +313,21 @@ static void WriteELFGroups( ElfHdr *hdr )
 
 #define RELA_NAME_SIZE sizeof(RelASecName)
 
-static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, char *secname )
-/************************************************************************/
-{
-    size_t      len;
-    char        *name;
-
-    len = strlen( secname );
-    name = alloca( RELA_NAME_SIZE + len );
-    memcpy( name, RelASecName, RELA_NAME_SIZE - 1 );
-    memcpy( name + RELA_NAME_SIZE - 1, secname, len + 1 );
-    AddSecName( hdr, sh, name );
-}
-
-
 static void WriteRelocsSections( ElfHdr *hdr )
 /********************************************/
 {
     group_entry *group;
     int         currgrp;
-    Elf32_Shdr  *sh;
-    void        *relocs;
-    char        *secname;
+    Elf32_Shdr *sh;
+    void *      relocs;
+    char *      secname;
+    char *      name;
+    unsigned    namelen;
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
     for( group = Groups; group != NULL; group = group->next_group ) {
-	relocs = group->g.grp_relocs;
+        relocs = group->g.grp_relocs;
         if( relocs != NULL ) {
             sh->sh_offset = hdr->curr_off;
             sh->sh_entsize = sizeof(elf_reloc_item);
@@ -351,7 +339,11 @@ static void WriteRelocsSections( ElfHdr *hdr )
             sh->sh_addralign = 4;
             sh->sh_size = RelocSize( relocs );
             secname = GroupSecName( group );
-            SetRelocSectName( hdr, sh, secname );
+            namelen = strlen(secname);
+            name = alloca( RELA_NAME_SIZE + namelen );
+            memcpy( name, RelASecName, RELA_NAME_SIZE - 1 );
+            memcpy( name + RELA_NAME_SIZE - 1, secname, namelen + 1 );
+            AddSecName( hdr, sh, name );
             DumpRelocList( relocs );
             hdr->curr_off += sh->sh_size;
             sh++;

@@ -42,28 +42,24 @@ static int              Line_postfix=LPOSTFIX_NONE;
 
 // We use the escape char a lot...
 #define STR_ESCAPE              "\x1B"
-#define CHR_ESCAPE              0x1B
+#define CHR_ESCAPE              '\x1B'
 
 // these are for the map_char_ib function
 #define MAP_REMOVE              -1
 #define MAP_NONE                -2
 
 // internal hyperlink symbol. Gets filtered out at output time
-#define CHR_TEMP_HLINK          0x7F
+#define CHR_TEMP_HLINK          '\x7F'
 
 // this symbol separates the hyper-link label and topic. Other hyper-link
 // related symbols are in whpcvt.h
-#define CHR_HLINK               0xE0
-#define CHR_HLINK_BREAK         0xE8
+#define CHR_HLINK               '\xE0'
+#define CHR_HLINK_BREAK         '\xE8'
 
 // Some characters we use for graphics
-#define CHR_BULLET              0x07
-#define BOX_VBAR                0xB3
-#define BOX_HBAR                0xC4
-#define BOX_CORNER_TOP_LEFT     0xDA
-#define BOX_CORNER_TOP_RIGHT    0xBF
-#define BOX_CORNER_BOTOM_LEFT   0xC0
-#define BOX_CORNER_BOTOM_RIGHT  0xD9
+#define CHR_BULLET              '\x07'
+#define BOX_VBAR                '\xB3'
+#define BOX_HBAR                '\xC4'
 
 // InfoBench style codes
 #define STR_BOLD_ON             STR_ESCAPE "b"
@@ -129,15 +125,20 @@ static int              NL_Group = 0;   // Number of contiguous newlines
 
 static bool             Box_Mode = FALSE;
 
-static void warning( char *msg, unsigned int line )
-/*************************************************/
-{
+static void warning(
+/******************/
+
+    char                *msg,
+    unsigned int        line
+) {
     printf( "*** WARNING: %s on line %d.\n", msg, line );
 }
 
-static void set_compact( char *line )
-/***********************************/
-{
+static void set_compact(
+/**********************/
+
+    char                *line
+) {
     ++line;
     if( *line == 'c' ) {
         /* compact list */
@@ -151,14 +152,17 @@ static void set_compact( char *line )
 // spaces (character 0xFF ). It's currently only used for the labels on
 // hyper-links to ensure that they do not get broken across lines as
 // this is not allowed by the InfoBench grammar.
-static void to_nobreak( char *str )
-/*********************************/
-{
+static void to_nobreak(
+/*********************/
+
+    char                *str
+) {
     if( str != NULL ) {
-        for( ; *str != '\0'; ++str ) {
+        while( *str != '\0' ) {
             if( *str == ' ' ) {
                 *str = '\xFF';
             }
+            str++;
         }
     }
 }
@@ -167,12 +171,15 @@ static void to_nobreak( char *str )
  * InfoBench, null if the character is okay. Any other values are prefixes
  * used to escape the character.
  */
-static int map_char_ib( int ch )
-/******************************/
-{
-    int         res;
+static int map_char_ib(
+/***************************/
+
+    char                ch
+) {
+    int                 res;
 
     switch( ch ) {
+
     // The following characters should be preceded by an ESC character
     // Some could also be preceded by themselves, but this leads to
     // ambiguity. ie: what does <<< mean?
@@ -204,7 +211,7 @@ static int map_char_ib( int ch )
 static int trans_add_char_ib(
 /***************************/
 
-    int                 ch,
+    char                ch,
     section_def         *section,
     int                 *alloc_size
 ) {
@@ -215,7 +222,7 @@ static int trans_add_char_ib(
     if( esc == MAP_REMOVE ) {
         return( 0 );
     } else if( esc != MAP_NONE ) {
-        len += trans_add_char( esc, section, alloc_size );
+        len += trans_add_char( (char)esc, section, alloc_size );
     }
 
     len += trans_add_char( ch, section, alloc_size );
@@ -226,33 +233,43 @@ static int trans_add_char_ib(
 /* This function will do proper escaping or character substitution for
  * characters special to InfoBench and send them to the output stream.
  */
-static void str_out_ib( FILE *f, char *str )
-/******************************************/
-{
+static void str_out_ib(
+/***************************/
+
+    FILE                *f,
+    char                *str
+) {
     int         esc;
 
     if( str != NULL ) {
-        for( ; *str != '\0'; ++str ) {
-            esc = map_char_ib( *(unsigned char *)str );
+        while( *str != '\0' ) {
+            esc = map_char_ib( *str );
             if( esc != MAP_REMOVE ) {
                 if( esc != MAP_NONE ) {
                     whp_fprintf( f, "%c", esc );
                 }
                 whp_fwrite( str, 1, 1, f );
             }
+            str++;
         }
     }
 }
 
 // The following two functions handle word-wrapping
-int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
-/**********************************************************************/
-{
+int trans_add_char_wrap(
+/**********************/
+    char                ch,
+    section_def         *section,
+    int                 *alloc_size
+) {
     int                 ctr;            // misc. counter
+
     int                 wrap_amount;    // amount of wrapped text
     int                 shift;          // amount we need to shift text
     int                 delta;          // amount of whitespace we ignore
+
     int                 indent;         // actual indent
+
     int                 len = 0;        // number of chars we just added
 
     // the "1" is because a character is allowed to appear on the right margin
@@ -302,7 +319,7 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
     // adjust the nearest safe break point if the char we got was a space and
     // is not preceded by a space
     if( ch == ' ' && section->section_size > 2 &&
-                section->section_text[ section->section_size - 2 ] != ' ' ) {
+                section->section_text[ section->section_size - 2 ]!= ' ' ) {
         Wrap_Safe = section->section_size;
         R_Chars = 0;
     }
@@ -349,7 +366,8 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
         } else {
             // remove existing trailing spaces when not in box mode
             delta = 0;
-            while( 1 + delta < Wrap_Safe && section->section_text[ Wrap_Safe - 1 - delta ] == ' ' ) {
+            while( 1 + delta < Wrap_Safe  &&
+                    section->section_text[ Wrap_Safe - 1 - delta ] == ' ' ) {
                 delta++;
             }
             shift -= delta;
@@ -358,7 +376,7 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
         // figure out which way the text has to move, and tweak the section
         if( shift > 0 ) {
             // add some padding so we can shift the chars over
-            for( ctr = 1; ctr <= shift; ctr++ ) {
+            for( ctr = 1; ctr <= shift; ctr++) {
                 trans_add_char( 'X', section, alloc_size );
             }
         } else {
@@ -367,11 +385,13 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
         }
 
         // shift the chars over
-        memmove( section->section_text + Wrap_Safe + shift, section->section_text + Wrap_Safe, wrap_amount );
+        memmove( &section->section_text[ Wrap_Safe + shift ],
+                 &section->section_text[ Wrap_Safe ],
+                 wrap_amount );
 
         // fill "vacated" region with spaces (if there was one)
         if( shift > 0 ) {
-            memset( section->section_text + Wrap_Safe, ' ', shift );
+            memset( &section->section_text[ Wrap_Safe ], ' ', shift );
             // if shift is negative then the region we'll be working with
             // should already be filled with spaces.
         }
@@ -384,12 +404,12 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
             // before them...
             ctr -= 2;
         }
-        *(unsigned char *)(section->section_text + ctr) = '\n';
+        section->section_text[ ctr ] = '\n';
 
         // if we're in Box_Mode then we also add the vertical bars
         if( Box_Mode ) {
-            *(unsigned char *)(section->section_text + ctr - 1) = BOX_VBAR;
-            *(unsigned char *)(section->section_text + Wrap_Safe + shift - 2) = BOX_VBAR;
+            section->section_text[ ctr - 1 ] = BOX_VBAR;
+            section->section_text[ Wrap_Safe + shift - 2 ] = BOX_VBAR;
         }
 
         // reset cursor x position
@@ -402,23 +422,31 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
             R_Chars = 1;
         }
     }
+
     return( len );
 }
 
-int trans_add_str_wrap( char *str, section_def *section, int *alloc_size )
-/************************************************************************/
-{
-    int         len = 0;
+int trans_add_str_wrap(
+/*********************/
+    char                *str,
+    section_def         *section,
+    int                 *alloc_size
+) {
+    int                 len=0;
 
-    for( ; *str != '\0'; ++str ) {
-        len += trans_add_char_wrap( *(unsigned char *)str, section, alloc_size );
+    while( *str ) {
+        len += trans_add_char_wrap( *str, section, alloc_size );
+        str++;
     }
+
     return( len );
 }
 
-static void new_list( int type )
-/******************************/
-{
+static void new_list(
+/*******************/
+
+    int                 type
+) {
     ++List_level;
     if( List_level == MAX_LISTS ) {
         error( ERR_MAX_LISTS, TRUE );
@@ -441,11 +469,11 @@ static void pop_list( void )
 static void read_tabs(
 /********************/
 
-    char        *tab_line
+    char                *tab_line
 ) {
-    char        *ptr;
-    int         i;
-    int         tabcol;
+    char                *ptr;
+    int                 i;
+    int                 tabcol;
 
     Tab_xmp_char = *tab_line;
 
@@ -508,7 +536,7 @@ int ib_trans_line(
 ) {
     char                *ptr;
     char                *end;
-    int                 ch;
+    char                ch;
     char                *ctx_name;
     char                *ctx_text;
     char                buf[ 100 ];
@@ -518,7 +546,7 @@ int ib_trans_line(
 
     // check for special pre-processing stuff first
     ptr = Line_buf;
-    ch = *(unsigned char *)ptr;
+    ch = *ptr;
 
     // We start at a new line...
     Wrap_Safe = section->section_size;
@@ -530,6 +558,7 @@ int ib_trans_line(
         Blank_line = FALSE;
     }
     switch( ch ) {
+
     // Tabbed-example
     case CH_TABXMP:
         if( *skip_blank( ptr + 1 ) == '\0' ) {
@@ -549,11 +578,11 @@ int ib_trans_line(
             trans_add_char( ' ', section, &alloc_size);
         }
         // draw the top line of the box
-        trans_add_char( BOX_CORNER_TOP_LEFT, section, &alloc_size );
+        trans_add_char( 'Ú', section, &alloc_size );
         for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
             trans_add_char( BOX_HBAR, section, &alloc_size );
         }
-        trans_add_char( BOX_CORNER_TOP_RIGHT, section, &alloc_size );
+        trans_add_char( '¿', section, &alloc_size );
 
         trans_add_char_wrap( '\n', section, &alloc_size);
 
@@ -567,11 +596,11 @@ int ib_trans_line(
             trans_add_char( ' ', section, &alloc_size);
         }
 
-        trans_add_char( BOX_CORNER_BOTOM_LEFT, section, &alloc_size );
+        trans_add_char( 'À', section, &alloc_size );
         for( ctr = 1; ctr <= Right_Margin - Curr_indent - 2; ctr++ ) {
             trans_add_char( BOX_HBAR, section, &alloc_size );
         }
-        trans_add_char( BOX_CORNER_BOTOM_RIGHT, section, &alloc_size );
+        trans_add_char( 'Ù', section, &alloc_size );
         Box_Mode = FALSE;
 
         trans_add_char_wrap( '\n', section, &alloc_size );
@@ -672,7 +701,7 @@ int ib_trans_line(
 
     Blank_line = TRUE;
     for( ;; ) {
-        ch = *(unsigned char *)ptr;
+        ch = *ptr;
         if( ch != '\0' && ( ch != ' ' || ch != '\t' ) ) {
             Blank_line = FALSE;
         }
@@ -857,10 +886,15 @@ static void find_browse_pair(
     browse_ctx                  *next_ctx;
     browse_def                  *browse_list;
 
-    for( browse_list = Browse_list; browse_list != NULL; browse_list = browse_list->next ) {
+    browse_list = Browse_list;
+
+    while( browse_list != NULL ) {
+        curr_ctx = browse_list->ctx_list;
         prev_ctx = NULL;
-        for( curr_ctx = browse_list->ctx_list; curr_ctx != NULL; curr_ctx = curr_ctx->next ) {
-            if( curr_ctx->ctx == ctx ) {
+
+        while ( curr_ctx != NULL ) {
+            if( curr_ctx->ctx == ctx )
+            {
                 if( prev_ctx == NULL ) {
                     *prev = ctx;
                 } else {
@@ -888,10 +922,13 @@ static void find_browse_pair(
             if( !Remove_empty || !curr_ctx->ctx->empty ) {
                 prev_ctx = curr_ctx;
             }
-        }
+            curr_ctx = curr_ctx->next;
+        };
+
         /* if we've reached this point we know this browse list is no good
          * so we go onto the next one
          */
+        browse_list = browse_list->next;
     }
     /* and if we get here we know there are no next and prev, so we point
      * back at the same context
@@ -1076,70 +1113,68 @@ static void output_end(
     whp_fprintf( Out_file, "\n" );
 }
 
-static void output_section_ib( section_def *section )
-/***************************************************/
-{
-    int                         len;
+static void output_section_ib(
+/****************************/
+
+    section_def                 *section
+) {
+    int                         ctr=0;
+    int                         len=0;
     ctx_def                     *ctx;
     unsigned int                line;
-    unsigned char               *label;
+    char                        *label;
     int                         label_len;
-    int                         ch;
+    char                        ch;
     char                        *file;
     char                        *topic;
-    unsigned char               *p;
-    unsigned char               *end;
 
-    p = (unsigned char *)section->section_text;
-    end = p + section->section_size;
-    len = 0;
-    while( p + len < end ) {
+    while( ctr + len < section->section_size ) {
         // stop when we hit a hyper-link
-        if( *(p + len) != CHR_TEMP_HLINK ) {
-            len++;
-        } else {
+        if( section->section_text[ ctr + len ] == CHR_TEMP_HLINK )
+        {
             // write out the block of text we've got so far
-            whp_fwrite( p, 1, len, Out_file );
-            p += len + 1;
+            whp_fwrite( &section->section_text[ ctr ], 1, len, Out_file );
+
+            ctr += len + 1;
 
             // grab the line number
-            for( len = 0; ; ++len ) {
-                if( *(p + len) == CHR_TEMP_HLINK ) {
-                    break;
-                }
+            len = 0;
+            while( section->section_text[ ctr + len ] != CHR_TEMP_HLINK ) {
+                len++;
             }
-            p[ len ] = '\0';
-            line = atoi( (char *)p );
-            p += len + 1;
+            section->section_text[ ctr + len ] = '\0';
+            line = atoi( &section->section_text[ ctr ] );
+            ctr += len + 1;
 
             // find the length of the link label (what the user sees)
-            for( len = 0; ; ++len ) {
-                if( *(p + len) == CHR_HLINK_BREAK ) {
-                    break;
-                }
+            len = 0;
+            while( section->section_text[ ctr + len ] != CHR_HLINK_BREAK ) {
+                len++;
             }
 
             // if we're using the brace mode we strip off the "XX"
             if( Hyper_Brace_L == '<' ) {
-                p += 2;
+                ctr += 2;
                 len -= 2;
             }
 
             // output the label and the break
-            label = p;
+            label = &section->section_text[ ctr ];
             label_len = len + 1;
-            p += len + 1;
+            ctr += len + 1;
 
             // find the length of the link context
-            for( len = 0; ; ++len ) {
-                ch = *(p + len);
+            len = 0;
+            for( ;; ++len ) {
+                ch = section->section_text[ ctr + len ];
                 if( ch == CHR_TEMP_HLINK || ch == CHR_HLINK_BREAK ) {
                     break;
                 }
             }
+
             // null terminate the context name, and find the associated topic
-            *(p + len) = '\0';
-            topic = (char *)p;
+            section->section_text[ ctr + len ] = '\0';
+            topic = &section->section_text[ ctr ];
             ctx = find_ctx( topic );
 
             // output the topic name that belongs to the context
@@ -1157,27 +1192,31 @@ static void output_section_ib( section_def *section )
                 }
                 if( ch == CHR_HLINK_BREAK ) {
                     /* file link. Get the file name */
-                    file = (char *)(p + len + 1);
+                    file = &(section->section_text[ ctr + len + 1 ]);
                     for( ;; ) {
                         ++len;
-                        if( *(p + len) == CHR_TEMP_HLINK ) {
+                        ch = section->section_text[ ctr + len ];
+                        if( ch == CHR_TEMP_HLINK ) {
                             break;
                         }
                     }
-                    *(p + len) = '\0';
+                    section->section_text[ ctr + len ] = '\0';
                     whp_fprintf( Out_file, "%c%s", CHR_HLINK_BREAK, file );
                 }
                 whp_fwrite( &Hyper_Brace_R, 1, 1, Out_file );
             }
 
             // adjust the len and ctr counters appropriately
-            p += len + 1;
+            ctr += len + 1;
             len = 0;
+        } else {
+            len++;
         }
     }
     // output whatever's left
-    if( p < end ) {
-        whp_fwrite( p, 1, end - p, Out_file );
+    if( ctr < section->section_size ) {
+        whp_fwrite( &section->section_text[ ctr ], 1,
+                        section->section_size - ctr, Out_file );
     }
 }
 

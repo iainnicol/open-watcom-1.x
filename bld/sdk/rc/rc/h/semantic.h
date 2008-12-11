@@ -38,18 +38,18 @@
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
     ResMemFlags         flags;
-    unsigned            loadOptGiven        : 1;
-    unsigned            memOptGiven         : 1;
-    unsigned            purityOptGiven      : 1;
+    uint_8              loadOptGiven        : 1;
+    uint_8              memOptGiven         : 1;
+    uint_8              purityOptGiven      : 1;
 } FullMemFlags;
 
 typedef struct FullOptFlagsOS2 {
     ResMemFlags         flags;
     uint_32             codePage;
-    unsigned            loadOptGiven        : 1;
-    unsigned            memOptGiven         : 1;
-    unsigned            purityOptGiven      : 1;
-    unsigned            cpOptGiven          : 1;
+    uint_8              loadOptGiven        : 1;
+    uint_8              memOptGiven         : 1;
+    uint_8              purityOptGiven      : 1;
+    uint_8              cpOptGiven          : 1;
 } FullOptFlagsOS2;
 
 typedef uint_32 SemOffset;
@@ -63,8 +63,8 @@ typedef struct ResLocation {
 typedef struct IntMask {
     uint_32     Mask;
     uint_32     Value;
-    unsigned    longVal         : 1;
-    unsigned    unsgVal         : 1;
+    uint_8      longVal         : 1;
+    uint_8      unsgVal         : 1;
 } IntMask;
 
 

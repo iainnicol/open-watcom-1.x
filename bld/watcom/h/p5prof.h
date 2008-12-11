@@ -31,8 +31,7 @@
 
 typedef unsigned long reg_32;
 
-#include "pushpck1.h"
-
+#pragma pack(push,1)
 typedef struct P5_timing_info {
     reg_32      count;
     reg_32      semaphore;
@@ -62,8 +61,7 @@ typedef struct block_count_info {
     reg_32      address;
     reg_32      function;
 } block_count_info;
-
-#include "poppck.h"
+#pragma pack(pop)
 
 #define PROFILE_FLAG_DYNAMIC    '+'
 #define PROFILE_FLAG_END_GROUP  '-'

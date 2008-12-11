@@ -24,16 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Spy window selection functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "spy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "spy.h"
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
@@ -54,28 +55,25 @@ HWND *doAddSelectedWindow( HWND hwnd, HWND *list, WORD *cnt )
 {
     HWND        *ret;
 
-    ret = realloc( list, (*cnt + 1) * sizeof( HWND ) );
-    ret[*cnt] = hwnd;
+    ret = realloc( list, ( *cnt + 1) * sizeof(HWND) );
+    ret[ *cnt ] = hwnd;
     (*cnt)++;
     return( ret );
-
 } /* AddSelectedWindow */
 
 /*
  * AddSelectedWindow - add a window to the monitor list
  */
-void AddSelectedWindow( HWND hwnd )
-{
+void AddSelectedWindow( HWND hwnd ) {
     WindowList = doAddSelectedWindow( hwnd, WindowList, &WindowCount );
-
-} /* AddSelectedWindow */
+}
 
 /*
  * deleteSelectedWindow - remove a window from monitor list
  */
 static void deleteSelectedWindow( HWND hwnd )
 {
-    int         i, j;
+    int         i,j;
     BOOL        found;
 
     if( tmpWndCnt == 0 ) {
@@ -83,10 +81,10 @@ static void deleteSelectedWindow( HWND hwnd )
     }
     found = FALSE;
 
-    for( i = 0; i < tmpWndCnt; i++ ) {
+    for( i=0; i < tmpWndCnt; i++ ) {
         if( tmpWndList[i] == hwnd ) {
-            for( j = i; j < tmpWndCnt - 1; j++ ) {
-                tmpWndList[j] = tmpWndList[j + 1];
+            for( j=i; j < tmpWndCnt - 1; j++ ) {
+                tmpWndList[j] = tmpWndList[j+1];
             }
             found = TRUE;
             break;
@@ -112,15 +110,15 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, DWORD lparam )
     FARPROC     fp;
 
     if( lparam != 0 ) {
-        if( GetParent( hwnd ) != (HWND)lparam ) {
+        if( GetParent( hwnd ) != (HWND) lparam ) {
             return( 1 );
         }
     }
     addFormattedWindow( hwnd );
 
     indentLevel += 3;
-    fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance );
-    EnumChildWindows( hwnd, (LPVOID)fp, (DWORD)hwnd );
+    fp = MakeProcInstance( (FARPROC) EnumWindowsFunc, Instance );
+    EnumChildWindows( hwnd, (LPVOID) fp, (DWORD) hwnd );
     FreeProcInstance( fp );
     indentLevel -= 3;
     return( 1 );
@@ -133,36 +131,36 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, DWORD lparam )
  */
 static void addFormattedWindow( HWND hwnd )
 {
-    char        res[259 + UINT_STR_LEN];
+    char        res[128];
     char        name[128];
     char        tmp[5];
     char        lead_bl[128];
-    int         i, len;
+    int         i,len;
+
     if( IsMyWindow( hwnd ) ) {
         return;
     }
-    for( i = 0; i < indentLevel; i++ ) {
+    for( i=0; i < indentLevel; i++ ) {
         lead_bl[i] = ' ';
     }
     lead_bl[i] = 0;
 
     name[0] = 0;
     len = GetWindowText( hwnd, name, sizeof( name ) );
-    name[len] = 0;
+    name[ len ] = 0;
     tmp[0] = ' ';
     tmp[1] = 0;
     if( !tmpSpyAll ) {
-        for( i = 0; i < tmpWndCnt; i++ ) {
+        for( i=0; i < tmpWndCnt; i++ ) {
             if( hwnd == tmpWndList[i] ) {
                 tmp[0] = '*';
                 break;
             }
         }
     }
-    snprintf( res, sizeof( res ), "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd,
-              tmp, name );
-    SendDlgItemMessage( (HWND)hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0,
-                        (LONG)(LPSTR)res );
+    sprintf( res,"%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd, tmp, name );
+    SendDlgItemMessage( (HWND) hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0,
+        (LONG) (LPSTR) res );
 
 } /* addFormattedWindow */
 
@@ -175,8 +173,8 @@ static void setUpWindows( void )
 
     indentLevel = 0;
     SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_RESETCONTENT, 0, 0L );
-    fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance);
-    EnumWindows( (LPVOID)fp, (DWORD)NULL );
+    fp = MakeProcInstance( (FARPROC) EnumWindowsFunc, Instance);
+    EnumWindows( (LPVOID) fp, (DWORD) NULL );
     FreeProcInstance( fp );
     addFormattedWindow( GetDesktopWindow() );
 
@@ -190,7 +188,7 @@ BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
-        UpdateFramedInfo( hwnd, (HWND)lparam, TRUE );
+        UpdateFramedInfo( hwnd, (HWND) lparam, TRUE );
         return( TRUE );
         break;
 #ifndef NOUSE3D
@@ -220,9 +218,9 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
 {
     DLGPROC     fp;
 
-    fp = (DLGPROC)MakeProcInstance( (FARPROC)ShowInfoProc, Instance );
-    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, (LPVOID)fp, (DWORD)framed );
-    FreeProcInstance( (FARPROC)fp );
+    fp = (DLGPROC) MakeProcInstance( (FARPROC) ShowInfoProc, Instance );
+    JDialogBoxParam( Instance, "PEEKWIN", (HWND) hwnd, (LPVOID) fp, (DWORD) framed );
+    FreeProcInstance( (FARPROC) fp );
 
 } /* ShowFramedInfo */
 
@@ -231,7 +229,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
  */
 BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
 {
-    char        resdata[256], ch;
+    char        resdata[256],ch;
     char        *errstr;
     char        *res;
     LRESULT     top;
@@ -280,12 +278,8 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
             if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ) {
                 parm = SELWIN_HILIGHT;
             } else {
-                if( GET_WM_COMMAND_CMD( wparam, lparam ) != LBN_DBLCLK ) {
-                    break;
-                }
-                if( tmpSpyAll ) {
-                    break;
-                }
+                if( GET_WM_COMMAND_CMD( wparam, lparam ) != LBN_DBLCLK ) break;
+                if( tmpSpyAll ) break;
             }
         case SELWIN_ADD:
         case SELWIN_DELETE:
@@ -300,7 +294,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
             }
             top = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTOPINDEX, 0, 0L );
             SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, sel,
-                                (LONG)(LPSTR)resdata );
+                (LONG) (LPSTR) resdata );
             res = resdata;
             while( isspace( *res ) ) {
                 res++;
@@ -310,7 +304,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
             }
             ch = res[SPYOUT_HWND_LEN];
             res[SPYOUT_HWND_LEN] = 0;
-            id = (HWND)strtol( res, NULL, 16 );
+            id = (HWND) strtol( res, NULL, 16 );
             if( parm == SELWIN_LISTBOX ) {
                 if( ch == '*' ) {
                     parm = SELWIN_DELETE;
@@ -326,13 +320,13 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
                 tmpWndList = doAddSelectedWindow( id, tmpWndList, &tmpWndCnt );
             } else {
                 if( framedHwnd != NULL ) {
-                    FrameAWindow( framedHwnd );
+                    FrameAWindow( framedHwnd, FALSE );
                 }
                 if( id == framedHwnd ) {
                     framedHwnd = NULL;
                 } else {
                     framedHwnd = id;
-                    FrameAWindow( framedHwnd );
+                    FrameAWindow( framedHwnd, FALSE );
                 }
                 break;
             }
@@ -341,17 +335,17 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
             SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETCURSEL, sel, 0L );
             break;
         case IDCANCEL:
-            FrameAWindow( framedHwnd );
+            FrameAWindow( framedHwnd, FALSE );
             EndDialog( hwnd, 0 );
             break;
         case IDOK:
-            FrameAWindow( framedHwnd );
+            FrameAWindow( framedHwnd, FALSE );
             EndDialog( hwnd, 1 );
             break;
         }
         break;
     case WM_CLOSE:
-        FrameAWindow( framedHwnd );
+        FrameAWindow( framedHwnd, FALSE );
         EndDialog( hwnd, 1 );
         break;
     default:
@@ -373,11 +367,11 @@ void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
     tmpSpyAll = *spyall;
     tmpWndList = NULL;
     if( WindowCount > 0 ) {
-        tmpWndList = MemAlloc( WindowCount * sizeof( HWND ) );
-        memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
+        tmpWndList = MemAlloc( WindowCount * sizeof(HWND) );
+        memcpy( tmpWndList, WindowList, WindowCount * sizeof(HWND) );
     }
-    fp = MakeProcInstance( (FARPROC)ShowSelectedDialog, Instance );
-    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, (LPVOID)fp );
+    fp = MakeProcInstance( (FARPROC) ShowSelectedDialog, Instance );
+    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, (LPVOID) fp );
     if( rc ) {
         *spyall = tmpSpyAll;
         WindowCount = tmpWndCnt;
@@ -389,4 +383,3 @@ void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
     FreeProcInstance( fp );
 
 } /* DoShowSelectedDialog */
-

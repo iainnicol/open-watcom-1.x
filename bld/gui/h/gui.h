@@ -148,9 +148,8 @@ typedef enum {
     GUI_ICON,
     GUI_MENU_GRAYED_ACTIVE,
     GUI_FRAME_RESIZE,
-    GUI_CONTROL_BACKGROUND,
     GUI_FIRST_ATTR = GUI_MENU_PLAIN,
-    GUI_LAST_ATTR  = GUI_CONTROL_BACKGROUND,
+    GUI_LAST_ATTR  = GUI_FRAME_RESIZE,
     GUI_FIRST_UNUSED = GUI_LAST_ATTR + 1,
     GUI_NUM_ATTRS = GUI_LAST_ATTR + 1
 } gui_attr;
@@ -226,13 +225,17 @@ typedef enum {
         GUI_BRIGHT_MAGENTA,
         GUI_BRIGHT_YELLOW,
         GUI_BRIGHT_WHITE,
-        GUIEX_DLG_BKGRND,
-        GUIEX_WND_BKGRND,
-        GUIEX_HIGHLIGHT,
-        GUIEX_HIGHLIGHTTEXT,
+/* CEY - ChangeList 31754: Changed to define dialog background 'special' colour. See guiwnclr.c */
+#ifdef __NT__
+        GUIEX_DLG_BKGRND = GUI_BRIGHT_WHITE + 1,
+#endif
         GUI_NUM_COLOURS,
         GUI_FIRST_COLOUR = GUI_BLACK,
-        GUI_LAST_COLOUR = GUIEX_HIGHLIGHTTEXT
+#ifdef __NT__
+        GUI_LAST_COLOUR = GUIEX_DLG_BKGRND
+#else
+        GUI_LAST_COLOUR = GUI_BRIGHT_WHITE
+#endif
 } gui_colour;
 
 #define GUI_NORMAL GUI_BLACK            // for NEC PC
@@ -276,24 +279,23 @@ typedef enum gui_scroll_styles {
 } gui_scroll_styles;
 
 typedef enum gui_create_styles {
-    GUI_NONE            = 0x00000000,
-    GUI_HSCROLL_EVENTS  = 0x00000001,
-    GUI_VSCROLL_EVENTS  = 0x00000002,
-    GUI_CURSOR          = 0x00000004,
-    GUI_RESIZEABLE      = 0x00000008,
-    GUI_MAXIMIZE        = 0x00000010,
-    GUI_MINIMIZE        = 0x00000020,
-    GUI_CLOSEABLE       = 0x00000040,
-    GUI_SYSTEM_MENU     = 0x00000080,
-    GUI_VISIBLE         = 0x00000100,
-    GUI_DIALOG_LOOK     = 0x00000200,
-    GUI_INIT_INVISIBLE  = 0x00000400,
-    GUI_CHANGEABLE_FONT = 0x00000800,
-    GUI_POPUP           = 0x00001000,
-    GUI_INIT_MAXIMIZED  = 0x00002000,
-    GUI_INIT_MINIMIZED  = 0x00004000,
-    GUI_NOFRAME         = 0x00008000,
-    GUI_3D_BORDER       = 0x00010000,
+    GUI_NONE            = 0x0000,
+    GUI_HSCROLL_EVENTS  = 0x0001,
+    GUI_VSCROLL_EVENTS  = 0x0002,
+    GUI_CURSOR          = 0x0004,
+    GUI_RESIZEABLE      = 0x0008,
+    GUI_MAXIMIZE        = 0x0010,
+    GUI_MINIMIZE        = 0x0020,
+    GUI_CLOSEABLE       = 0x0040,
+    GUI_SYSTEM_MENU     = 0x0080,
+    GUI_VISIBLE         = 0x0100,
+    GUI_DIALOG_LOOK     = 0x0200,
+    GUI_INIT_INVISIBLE  = 0x0400,
+    GUI_CHANGEABLE_FONT = 0x0800,
+    GUI_POPUP           = 0x1000,
+    GUI_INIT_MAXIMIZED  = 0x2000,
+    GUI_INIT_MINIMIZED  = 0x4000,
+    GUI_NOFRAME         = 0x8000,
     GUI_SCROLL_EVENTS   = GUI_HSCROLL_EVENTS | GUI_VSCROLL_EVENTS,
     GUI_GADGETS         = GUI_CURSOR | GUI_RESIZEABLE | GUI_MINIMIZE |
                           GUI_MAXIMIZE | GUI_CLOSEABLE | GUI_SYSTEM_MENU,

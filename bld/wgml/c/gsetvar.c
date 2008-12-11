@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2008 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2007 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,234 @@
 *               still incomplete
 ****************************************************************************/
 
+/******* from http://www.openwatcom.org/ftp/manuals/1.5/wgmlref.pdf
+           or docs\doc\wgmlref\*.gml
+
+8.6 Symbolic Substitution
+A symbol is a name which represents an arbitrary string of text. Once a symbol
+is assigned a text value, the symbol can be used in the document source in
+place of that text. Consider the following:
+:SET symbol='product'
+     value='WATCOM Script/GML'.
+:GDOC.
+:BODY.
+:P.
+Symbolic substitution is quite
+simple with &product..
+:eGDOC.
+
+The document, when processed, may appear as follows:
+
+Symbolic substitution is quite simple
+with WATCOM Script/GML.
+
+A symbol name is defined and assigned a string of text with the :set tag.
+The value of the symbol name can be defined at any point in the document file.
+Any valid character string may be assigned to the symbol name. When the symbol
+is referenced later, the value is substituted into the input text. The
+substitution is done before the source text or input translation is processed
+by WATCOM Script/GML.
+A symbol name is preceded by an ampersand(&) when referenced, and is terminated
+by any character not valid in a symbol name. If the terminating character is a
+period, it is considered part of the symbol specification (you must therefore
+remember to specify two periods if a symbol ends a sentence).
+The recognition of a symbol name is case insensitive.
+The symbol name should not have a length greater than ten characters, and may
+only contain letters, numbers, and the characters @, #, $ and underscore(_).
+Specifying the letters SYS as the first three characters of the symbol name is
+equivalent to specifying a ollar($) sign.
+Recursive substitution is performed on a symbol. This means that the text
+substituted for a symbol is checked for the presence of more symbol names.
+As well, if the symbol name is immediately followed by another symbol name
+(no intervening period or blanks), new names can be constructed from the
+successive substitutions. For example:
+:SET symbol='prodgml'
+     value='WATCOM Script/GML'.
+:SET symbol='prodname'
+     value='gml'.
+:GDOC.
+:BODY.
+:P.
+Symbolic substitution is quite simple with &prod&prodname...
+:eGDOC.
+
+The first part of the symbol sequence, &prod, does not exist as a defined symbol.
+However, when &prodname. is substituted, the resulting symbol name &prodgml
+exists. The resulting substitution produces the following:
+
+Symbolic substitution is quite simple with WATCOM Script/GML.
+
+If an asterisk is specified immediately before the symbol name
+(ie symbol='*prodname' or &*prodname.), then the symbol is local. Local symbols
+may not be referenced outside the file or macro in which they are defined.
+If an undefined local symbol is referenced in a macro, it is replaced with an
+empty value.
+
+
+
+9.70 SET
+Format: :SET symbol='symbol-name'
+             value='character-string'
+                   delete.
+This tag defines and assigns a value to a symbol name.
+The symbol attribute must be specified. The value of this attribute is the
+name of the symbol being defined, and cannot have a length greater than ten
+characters. The symbol name may only contain letters, numbers, and the
+characters @, #, $ and underscore(_).
+The value attribute must be specified. The attribute value delete or a valid
+character string may be assigned to the symbol name. If the attribute value
+delete is used, the symbol referred to by the symbol name is deleted. Refer to
+"Symbolic Substitution" for more information about symbol substitution.
+
+
+********** from docs\gml\manuals\script-tso.txt ****************************
+
+
+ SET SYMBOL allows the user to assign a character or numeric value to a
+ Set Symbol.   It is  an alternate to .SR that will  function even when
+ .SU is OFF.
+
+                          = <character string>
+         .SE       symbol = <numeric expression>
+                          <OFF>
+
+ This control word does not cause  a break.   Substitution is automati-
+ cally applied  to the operands to  replace any Set Symbols  with their
+ values,  and the result  is then processed as if the  .SR control word
+ had been used instead.  For details and examples, see the .SR descrip-
+ tion.
+
+...
+
+ SET REFERENCE assigns a character or numeric value to a Set Symbol.
+
+                          = <character string>
+         .SR       symbol = <numeric expression>
+                          <OFF>
+
+
+ This control word does not cause a break.  The Set Symbol specified as
+ the  first operand  is  assigned the  value  specified  by the  second
+ operand.   If  the second operand is  omitted,  a null string  will be
+ assigned.   If the Set Symbol did not previously exist, it is created.
+ The Symbol name must be followed by  an equal sign "=" with or without
+ intervening blanks.
+
+ symbol =:  The name  of a Set Symbol may consist of  up to ten charac-
+    ters.   Names may include only  uppercase or lowercase alphabetics,
+    digits, the "$", "#", and "@", and the underscore ("_").   When the
+    UPPER option or ".SU UPPER" is in effect,  all lowercase alphabetic
+    characters in a Set Symbol name are treated as if entered in upper-
+    case.   The Set  Symbol name may optionally be  subscripted with an
+    integer,  signed or unsigned.   A subscript may range from -1000000
+    to +1000000.   A zero subscript is  logically the same as having no
+    subscript.  The subscript value may be implied by specifying a null
+    subscript in the form "()":
+      .sr symbol() = ...
+    has the same effect as
+      .sr symbol = &symbol + 1
+      .sr symbol(&symbol) = ...
+    because SCRIPT  uses "array position zero"  to retain the  count of
+    the number of elements in the array.
+ symbol =  character string:   The string  operand may  be a  delimited
+    string or an undelimited string.   In the first case,  if the first
+    character is a ' (quote), " (double quote), / (slash),  | (or bar),
+    !  (exclamation mark),  ^ (not sign),   or › (cent sign)  then that
+    first character will be treated as  the delimiter if the last char-
+    acter in  the operand  matches the  initial delimiter.    The value
+    assigned will be from the character following the leading delimiter
+    up to  the character  preceding the  final delimiter.    Blanks and
+    embedded  delimiters are  considered  to be  part  of the  assigned
+    value.
+       If there is  no matching terminating delimiter,   the operand is
+    treated as an undelimited string,   and the value assigned consists
+    of everything up  to and including the last  non-blank character on
+    the input line.
+ symbol 'character string:   The equal sign in a  symbol assignment may
+    be omitted if the  first character of the value is  a single quote.
+    The value  is taken from the  character following the quote  to the
+    end of the record, not including the last character if it also is a
+    single quote.   If  the value is to include trailing  blanks then a
+    terminating quote must be used.
+ symbol =  numeric expression:  Numeric  values may consist  of expres-
+    sions (see Examples for details).  Integer decimal terms as well as
+    binary,  character,   and hexadecimal  self-defining terms  (in the
+    ASSEMBLER sense)  are  supported.   Parentheses and unary  plus and
+    minus operators  are fully  supported.   Blanks  between terms  and
+    operators are optional.
+ symbol = %:  The page-number symbol (see .PS)  if entered by itself or
+    symbolically as &SYSPS, will be treated as though the current prin-
+    table  output page  number had  been  specified in  its place  (the
+    System Set Symbol &SYSPPAGE also  provides this ability).   If this
+    form of  the control  word is used  within a Text  Block such  as a
+    Footnote or  Floating Keep,   the value of  the symbol  is actually
+    assigned twice:   once immediately and a second time when the block
+    finally prints.    The page  number string is  always treated  as a
+    character operand, even if the current page number is all numeric.
+ symbol OFF:  Undefines the specified Set Symbol name.
+
+ NOTES
+ (1) If a character string is the assigned value, it must consist of no
+     more characters  than the maximum  allowed by the  SRLength option
+     (default is 240), or the string will be truncated on the right.
+ (2) A  complete list  of  System Set  Symbols  and  their purposes  is
+     provided in an Appendix to this manual.
+
+ EXAMPLES
+ (1) The following demonstrate valid numeric (integer) expressions:
+       .sr i=5
+       .sr i= +5
+       .sr i=((+5*3-1)*7)+1
+       .sr i = ((X'F05'+C'A')* B'1111')/16
+       .sr i(1+1) = (1+1)
+
+ (2) The following demonstrate character-string assignments:
+       .sr x = 3.5
+       .sr c=abcdefg
+       .sr c = 'ABCDEFG'
+       .sr c = "don't be silly"
+       .sr string = 'undelimited string
+       .sr alpha(1) = 'A'
+       .sr alpha(2) = B
+       .sr pagenum = %
+ (3) The sequence:
+       .sr equno=0
+           .
+           .
+       .sr equno = &equno + 1
+       .sr xeqn = &equno
+        (&equno):  x = erfc(a - bc)
+       .sr equno = &equno +1
+        (&equno):  y = erfc(a + bc)
+        Using Equation &xeqn gives ...
+     produces the following results:
+        (1):  x = erfc(a - bc)
+        (2):  y = erfc(a + bc)
+        Using Equation 1 gives ...
+ (4) The sequence:
+       .sr a = 0
+       .sr b = -5
+       .sr c = a
+       .sr d = 'b'
+       .sr &c = &&d+1
+       The value of "a" is &a..
+       The value of "b" is &b..
+       The value of "c" is &c..
+       The value of "d" is &d..
+     produces the following results:
+       The value of "a" is -4.
+       The value of "b" is -5.
+       The value of "c" is a.
+       The value of "d" is b.
+ (5) To undefine a Set Symbol:
+       .sr var = first;.* Set Symbol 'var' has a value
+       .sr var OFF    ;.* Set Symbol 'var' is undefined
+       .sr var = next ;.* Set Symbol 'var' defined again
+
+*************************************************************************************/
+
+
+
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
 
 #include <stdarg.h>
@@ -37,16 +265,27 @@
 #include "gvars.h"
 
 
+typedef enum {
+    local_var   = 1,
+    delete      = 2
+} sym_flags;
 
-/* construct symbol name and optionally subscript from input
- *
- *
- */
+#define symnamelen  11
 
-char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
-{
+typedef struct symvar {
+    struct symvar   *next;
+    char            name[ symnamelen + 1 ];
+    size_t          length;
+    char            *value;
+    sym_flags       flags;
+} symvar;
+
+
+
+static char     *scan_sym( char *p, symvar *sym ) {
+
     size_t      k;
-    char    *   sym_start;
+    char        *sym_start;
     bool        scan_err;
 
     scan_err = false;
@@ -61,59 +300,25 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         sym->flags |= local_var;
     }
     sym_start = p;
-
+    if( *p == '$' ) {                   // sys shortcut?
+        p++;
+        sym->name[ 0 ] = 's';
+        sym->name[ 1 ] = 'y';
+        sym->name[ 2 ] = 's';
+        k = 3;
+    }
     while( *p &&
            (isalnum( *p )
             || *p == '@' || *p == '#' || *p == '$' || *p == '_') ) {
-
-        if( k < SYM_NAME_LENGTH ) {
-            if( (k == 3) && (sym->name[0] != '$') ) {
-                if( sym->name[ 0 ] == 's' &&
-                    sym->name[ 1 ] == 'y' &&
-                    sym->name[ 2 ] == 's' ) {
-
-                    sym->name[ 0 ] = '$';   // create sys shortcut $
-                    k = 1;
-                }
-            }
-            sym->name[ k++ ] = tolower( *p );
-            sym->name[ k ] = '\0';
+        if( k < symnamelen ) {
+            sym->name[ ++k ] = tolower( *p );
+            p++;
         } else {
             if( !scan_err ) {
                 out_msg( "WNG_SYMBOL_NAME_TOO_LONG %s\n", sym_start );
                 wng_count++;
             }
-        }
-        p++;
-    }
-    *subscript = no_subscript;          // not subscripted
-    if( *p == '(' ) {                   // subscripted
-        char    *   psave = p;
-        int         sign = 1;           // default positive
-        long        val  = 0;
-
-        p++;
-        if( !isdigit( *p ) ) {
-            if( *p == '-' ) {
-                sign = -1;
-            } else if( *p == '+' ) {
-                sign = 1;
-            } else {
-                scan_err = true;
-            }
-        }
-        while( *p && *p != ')' ) {
-            if( isdigit( *p ) ) {
-                val = val * 10 + *p - '0';
-            }
             p++;
-        }
-        if( !scan_err && (*p == ')') ) {
-            p++;
-        }
-        *subscript = val * sign;
-        if( scan_err ) {
-           p = psave;
         }
     }
     return( p );
@@ -128,92 +333,32 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
 /*                                                                         */
 /***************************************************************************/
 
-void    scr_se( void )
+void    sc_se( void )
 {
-    char        *   p;
-    char        *   valstart;
+    char            *fnstart;
+    char            *p;
+    char            quote;
+    condcode        cc;
+    getnum_block    gn;
     symvar          sym;
-    sub_index       subscript;
     bool            scan_err;
-    int             rc;
-    symvar      * * working_dict;
 
-    subscript = no_subscript;           // not subscripted
     scan_err = false;
-    p = scan_sym( scan_start, &sym, &subscript );
-
-    if( sym.flags & local_var ) {
-        working_dict = &input_cbs->local_dict;
-    } else {
-        working_dict = &global_dict;
-    }
+    p = scan_sym( scan_start, &sym );
 
     while( *p && *p == ' ' ) {          // skip over spaces
         p++;
     }
     if( *p == '\0' ) {
         out_msg( "WNG_SYMBOL_VALUE_MISSING for %s\n", sym.name );
-        show_include_stack();
         wng_count++;
         scan_err = true;
     } else {
-        if( *p == '(' ) {               // subscripted
-            int sign = 1;               // default positive
-            long val  = 0;
-
-            p++;
-            if( !isdigit( *p ) ) {
-                if( *p == '-' ) {
-                    sign = -1;
-                } else if( *p == '+' ) {
-                    sign = 1;
-                } else {
-                    if( *p == ')' ) {
-                        out_msg( "ERR_SYMBOL_autoincrement not supported %s\n",
-                                 sym.name );
-                        show_include_stack();
-                        err_count++;
-                        scan_err = true;
-                    } else {
-                        out_msg( "ERR_SYMBOL_subscript invalid %s\n", sym.name );
-                        show_include_stack();
-                        err_count++;
-                        scan_err = true;
-                    }
-                }
-            }
-            while( *p && *p != ')' ) {
-                if( isdigit( *p ) ) {
-                    val = val * 10 + *p - '0';
-                }
-                p++;
-            }
-            if( *p == ')' ) {
-                p++;
-            }
-            subscript = val * sign;
-        }
-        while( *p && *p == ' ' ) {      // skip over spaces
-            p++;
-        }
         if( *p == '=' ) {
-            p++;
             while( *p && *p == ' ' ) {  // skip over spaces
                 p++;
             }
-            valstart = p;
-            if( *valstart == '\'' || *valstart == '"' ) { // quotes ?
-                p++;
-                while( *p && (*valstart != *p) ) { // look for quote end
-                    ++p;
-                }
-                if( *p == *valstart ) { // delete quotes
-                    valstart++;
-                    *p = '\0';
-                }
-            }
-
-            rc = add_symvar( working_dict, sym.name, valstart, subscript, sym.flags );
+            // wert scannen
 
         } else {                        // OFF value = delete variable ?
             if( tolower( *p )       == 'o' &&
@@ -221,7 +366,7 @@ void    scr_se( void )
                 tolower( *(p + 2) ) == 'f' &&
                 *(p + 3)            == '\0' ) {
                 p += 3;
-                sym.flags |= deleted;
+                sym.flags |= delete;
             } else {
                 out_msg( "WNG_SYMBOL_VALUE_INVALID for %s (%s)\n", sym.name, p );
                 wng_count++;
@@ -229,6 +374,28 @@ void    scr_se( void )
             }
         }
     }
+
+    gn.argstart = p;
+    gn.argstop  = scan_stop;
+    gn.ignore_blanks = 0;
+    cc = getnum( &gn );
+
+    p = gn.argstart;
+
+    if( *p == '"' || *p == '\'' ) {
+        quote = *p;
+        ++p;
+    } else {
+        quote = ' ';                    // error??
+    }
+    fnstart = p;
+    while( *p && *p != quote ) {
+        ++p;
+    }
+    *p = '\0';
+    strcpy_s( token_buf, buf_size, fnstart );
+
+
     return;
 }
 
@@ -865,229 +1032,3 @@ compt:
 
     return( 0 );
 }
-
-/******* from http://www.openwatcom.org/ftp/manuals/1.5/wgmlref.pdf
-           or docs\doc\wgmlref\*.gml
-
-8.6 Symbolic Substitution
-A symbol is a name which represents an arbitrary string of text. Once a symbol
-is assigned a text value, the symbol can be used in the document source in
-place of that text. Consider the following:
-:SET symbol='product'
-     value='WATCOM Script/GML'.
-:GDOC.
-:BODY.
-:P.
-Symbolic substitution is quite
-simple with &product..
-:eGDOC.
-
-The document, when processed, may appear as follows:
-
-Symbolic substitution is quite simple
-with WATCOM Script/GML.
-
-A symbol name is defined and assigned a string of text with the :set tag.
-The value of the symbol name can be defined at any point in the document file.
-Any valid character string may be assigned to the symbol name. When the symbol
-is referenced later, the value is substituted into the input text. The
-substitution is done before the source text or input translation is processed
-by WATCOM Script/GML.
-A symbol name is preceded by an ampersand(&) when referenced, and is terminated
-by any character not valid in a symbol name. If the terminating character is a
-period, it is considered part of the symbol specification (you must therefore
-remember to specify two periods if a symbol ends a sentence).
-The recognition of a symbol name is case insensitive.
-The symbol name should not have a length greater than ten characters, and may
-only contain letters, numbers, and the characters @, #, $ and underscore(_).
-Specifying the letters SYS as the first three characters of the symbol name is
-equivalent to specifying a ollar($) sign.
-Recursive substitution is performed on a symbol. This means that the text
-substituted for a symbol is checked for the presence of more symbol names.
-As well, if the symbol name is immediately followed by another symbol name
-(no intervening period or blanks), new names can be constructed from the
-successive substitutions. For example:
-:SET symbol='prodgml'
-     value='WATCOM Script/GML'.
-:SET symbol='prodname'
-     value='gml'.
-:GDOC.
-:BODY.
-:P.
-Symbolic substitution is quite simple with &prod&prodname...
-:eGDOC.
-
-The first part of the symbol sequence, &prod, does not exist as a defined symbol.
-However, when &prodname. is substituted, the resulting symbol name &prodgml
-exists. The resulting substitution produces the following:
-
-Symbolic substitution is quite simple with WATCOM Script/GML.
-
-If an asterisk is specified immediately before the symbol name
-(ie symbol='*prodname' or &*prodname.), then the symbol is local. Local symbols
-may not be referenced outside the file or macro in which they are defined.
-If an undefined local symbol is referenced in a macro, it is replaced with an
-empty value.
-
-
-
-9.70 SET
-Format: :SET symbol='symbol-name'
-             value='character-string'
-                   delete.
-This tag defines and assigns a value to a symbol name.
-The symbol attribute must be specified. The value of this attribute is the
-name of the symbol being defined, and cannot have a length greater than ten
-characters. The symbol name may only contain letters, numbers, and the
-characters @, #, $ and underscore(_).
-The value attribute must be specified. The attribute value delete or a valid
-character string may be assigned to the symbol name. If the attribute value
-delete is used, the symbol referred to by the symbol name is deleted. Refer to
-"Symbolic Substitution" for more information about symbol substitution.
-
-
-********** from docs\gml\manuals\script-tso.txt ****************************
-
-
- SET SYMBOL allows the user to assign a character or numeric value to a
- Set Symbol.   It is  an alternate to .SR that will  function even when
- .SU is OFF.
-
-                          = <character string>
-         .SE       symbol = <numeric expression>
-                          <OFF>
-
- This control word does not cause  a break.   Substitution is automati-
- cally applied  to the operands to  replace any Set Symbols  with their
- values,  and the result  is then processed as if the  .SR control word
- had been used instead.  For details and examples, see the .SR descrip-
- tion.
-
-...
-
- SET REFERENCE assigns a character or numeric value to a Set Symbol.
-
-                          = <character string>
-         .SR       symbol = <numeric expression>
-                          <OFF>
-
-
- This control word does not cause a break.  The Set Symbol specified as
- the  first operand  is  assigned the  value  specified  by the  second
- operand.   If  the second operand is  omitted,  a null string  will be
- assigned.   If the Set Symbol did not previously exist, it is created.
- The Symbol name must be followed by  an equal sign "=" with or without
- intervening blanks.
-
- symbol =:  The name  of a Set Symbol may consist of  up to ten charac-
-    ters.   Names may include only  uppercase or lowercase alphabetics,
-    digits, the "$", "#", and "@", and the underscore ("_").   When the
-    UPPER option or ".SU UPPER" is in effect,  all lowercase alphabetic
-    characters in a Set Symbol name are treated as if entered in upper-
-    case.   The Set  Symbol name may optionally be  subscripted with an
-    integer,  signed or unsigned.   A subscript may range from -1000000
-    to +1000000.   A zero subscript is  logically the same as having no
-    subscript.  The subscript value may be implied by specifying a null
-    subscript in the form "()":
-      .sr symbol() = ...
-    has the same effect as
-      .sr symbol = &symbol + 1
-      .sr symbol(&symbol) = ...
-    because SCRIPT  uses "array position zero"  to retain the  count of
-    the number of elements in the array.
- symbol =  character string:   The string  operand may  be a  delimited
-    string or an undelimited string.   In the first case,  if the first
-    character is a ' (quote), " (double quote), / (slash),  | (or bar),
-    !  (exclamation mark),  ^ (not sign),   or › (cent sign)  then that
-    first character will be treated as  the delimiter if the last char-
-    acter in  the operand  matches the  initial delimiter.    The value
-    assigned will be from the character following the leading delimiter
-    up to  the character  preceding the  final delimiter.    Blanks and
-    embedded  delimiters are  considered  to be  part  of the  assigned
-    value.
-       If there is  no matching terminating delimiter,   the operand is
-    treated as an undelimited string,   and the value assigned consists
-    of everything up  to and including the last  non-blank character on
-    the input line.
- symbol 'character string:   The equal sign in a  symbol assignment may
-    be omitted if the  first character of the value is  a single quote.
-    The value  is taken from the  character following the quote  to the
-    end of the record, not including the last character if it also is a
-    single quote.   If  the value is to include trailing  blanks then a
-    terminating quote must be used.
- symbol =  numeric expression:  Numeric  values may consist  of expres-
-    sions (see Examples for details).  Integer decimal terms as well as
-    binary,  character,   and hexadecimal  self-defining terms  (in the
-    ASSEMBLER sense)  are  supported.   Parentheses and unary  plus and
-    minus operators  are fully  supported.   Blanks  between terms  and
-    operators are optional.
- symbol = %:  The page-number symbol (see .PS)  if entered by itself or
-    symbolically as &SYSPS, will be treated as though the current prin-
-    table  output page  number had  been  specified in  its place  (the
-    System Set Symbol &SYSPPAGE also  provides this ability).   If this
-    form of  the control  word is used  within a Text  Block such  as a
-    Footnote or  Floating Keep,   the value of  the symbol  is actually
-    assigned twice:   once immediately and a second time when the block
-    finally prints.    The page  number string is  always treated  as a
-    character operand, even if the current page number is all numeric.
- symbol OFF:  Undefines the specified Set Symbol name.
-
- NOTES
- (1) If a character string is the assigned value, it must consist of no
-     more characters  than the maximum  allowed by the  SRLength option
-     (default is 240), or the string will be truncated on the right.
- (2) A  complete list  of  System Set  Symbols  and  their purposes  is
-     provided in an Appendix to this manual.
-
- EXAMPLES
- (1) The following demonstrate valid numeric (integer) expressions:
-       .sr i=5
-       .sr i= +5
-       .sr i=((+5*3-1)*7)+1
-       .sr i = ((X'F05'+C'A')* B'1111')/16
-       .sr i(1+1) = (1+1)
-
- (2) The following demonstrate character-string assignments:
-       .sr x = 3.5
-       .sr c=abcdefg
-       .sr c = 'ABCDEFG'
-       .sr c = "don't be silly"
-       .sr string = 'undelimited string
-       .sr alpha(1) = 'A'
-       .sr alpha(2) = B
-       .sr pagenum = %
- (3) The sequence:
-       .sr equno=0
-           .
-           .
-       .sr equno = &equno + 1
-       .sr xeqn = &equno
-        (&equno):  x = erfc(a - bc)
-       .sr equno = &equno +1
-        (&equno):  y = erfc(a + bc)
-        Using Equation &xeqn gives ...
-     produces the following results:
-        (1):  x = erfc(a - bc)
-        (2):  y = erfc(a + bc)
-        Using Equation 1 gives ...
- (4) The sequence:
-       .sr a = 0
-       .sr b = -5
-       .sr c = a
-       .sr d = 'b'
-       .sr &c = &&d+1
-       The value of "a" is &a..
-       The value of "b" is &b..
-       The value of "c" is &c..
-       The value of "d" is &d..
-     produces the following results:
-       The value of "a" is -4.
-       The value of "b" is -5.
-       The value of "c" is a.
-       The value of "d" is b.
- (5) To undefine a Set Symbol:
-       .sr var = first;.* Set Symbol 'var' has a value
-       .sr var OFF    ;.* Set Symbol 'var' is undefined
-       .sr var = next ;.* Set Symbol 'var' defined again
-
-*************************************************************************************/

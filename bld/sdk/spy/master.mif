@@ -53,34 +53,6 @@ extra_c_flags_spydll = -bd -mc
 !else ifeq host_os nt
 extra_c_flags_spydll = -bd
 !endif
-extra_c_flags_spy = -fh=spy01.pch
-extra_c_flags_spyglob = -fh=spy01.pch
-extra_c_flags_spybox = -fh=spy01.pch
-extra_c_flags_spyproc = -fh=spy01.pch
-extra_C_flags_spymsgs = -fh=spy01.pch
-extra_c_flags_spyfilt = -fh=spy01.pch
-extra_c_flags_spypick = -fh=spy01.pch
-extra_c_flags_spymdlgs = -fh=spy01.pch
-extra_c_flags_spyarray = -fh=spy01.pch
-extra_c_flags_spyzord = -fh=spy01.pch
-extra_c_flags_spymisc = -fh=spy01.pch
-extra_c_flags_spycfg = -fh=spy01.pch
-extra_c_flags_spylog = -fh=spy01.pch
-extra_c_flags_spytool = -fh=spy01.pch
-extra_c_flags_spysel = -fh=spy01.pch
-extra_c_flags_savelbox = -fh=spy02.pch
-extra_c_flags_toolbr = -fh=spy02.pch
-extra_c_flags_font = -fh=spy02.pch
-extra_c_flags_fontstr = -fh=spy02.pch
-extra_c_flags_log = -fh=spy02.pch
-extra_c_flags_mark = -fh=spy02.pch
-extra_c_flags_desknt = -fh=spy02.pch
-extra_c_flags_ldstr = -fh=spy02.pch
-extra_c_flags_mstatwnd = -fh=spy02.pch
-extra_c_flags_hint = -fh=spy02.pch
-extra_c_flags_wwinhelp = -fh=spy02.pch
-extra_c_flags_jdlg = -fh=spy02.pch
-extra_c_flags_inipath = -fh=spy02.pch
 
 !ifeq release 0
 wspy_non_release_option = option rwr
@@ -123,9 +95,9 @@ wspy_dll_lflags_ntaxp  = $(dll_debug_$(host_cpu)) &
 
 inc_dirs = -I$(wspy_dir) -I"$(sdk_dir)/misc"
 
-wspy_to_build_win = rcstr.gh $(dllname).dll $(name).exe
+wspy_to_build_win = rcstr.gh spymsgs.dlg spymsg.gh $(dllname).dll $(name).exe
 
-wspy_to_build_nt = rcstr.gh $(dllname).dll $(name).exe
+wspy_to_build_nt = rcstr.gh spymsgnt.dlg spymsgnt.gh $(dllname).dll $(name).exe
 
 # systems where version resource must be added to .EXE
 build_rc_nt_386 = nt
@@ -160,10 +132,22 @@ $(name).exe : $(objs) $(name).res $(dllname).lib $(res_objs)
 !endif
 
 rcstr.gh : rcstrmsg.gh
-        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+        $(vi) -s ../../misc/msgtoh.vi -p"$^@" $[@
 
 rcstrmsg.gh : $(wspy_dir)/spy.msg $(msgfiles)
-        $(cc) $(preproc_opts) $(inc_path) -fo=$^@
+        $(cc) -zk0 -p $(inc_path) $[@ -fo=$^@
+
+spymsgs.dlg spymsg.gh: spyarray.h ./mkdlg.exe
+        $]@ spymsgs.dlg spymsg.gh
+
+spymsgnt.dlg spymsgnt.gh: spyarray.h ./mkdlgnt.exe
+        $]@ spymsgnt.dlg spymsgnt.gh
+
+./mkdlg.exe : ../utils/mkdlg.c
+        $(bld_cl) -I".." -D__NOSPYMSGS__ $(wcl_util_opts) $[@
+
+./mkdlgnt.exe : ../utils/mkdlg.c
+        $(bld_cl) -I".." -D__NOSPYMSGS__ -DNT_MSGS $(wcl_util_opts) $[@
 
 $(dllname).lib : $(dllname).dll
         $(librarian) $(libflags) +$[@

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  MultiLib library format.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,7 +34,7 @@
 
 #define LIB_H
 
-#include "pushpck1.h"
+#pragma pack(push,1)
 
 #define LIBMAG          "!<mlib>\n"
 #define LIBMAG_LEN      8
@@ -86,6 +87,6 @@ typedef struct
 #define LIB_LONG_NAME_END_STRING        "/\n"
 #define LIB_LONG_NAME_END_STRING_LEN    2
 
-#include "poppck.h"
+#pragma pack(pop)
 
 #endif

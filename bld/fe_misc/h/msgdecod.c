@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Decode compressed messages.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -73,7 +74,7 @@ static char *decodePhrase(      // DECODE PHRASE
             word_start = word_base[ word_index ];
             word_stop = word_base[ word_index + 1 ];
         } else {
-            word_table = (char const *)msg_text;
+            word_table = (char *)msg_text;
             word_start = msg_start;
             word_stop = msg_start + msg_leader;
             msg_start = word_stop;

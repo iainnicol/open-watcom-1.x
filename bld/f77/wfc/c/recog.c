@@ -38,7 +38,7 @@
 #include "insert.h"
 #include "utility.h"
 
-extern  void            AdvError(int);
+extern  void            AdvError(uint);
 extern  sym_id          LkSym(void);
 extern  void            GetFunctionShadow(void);
 

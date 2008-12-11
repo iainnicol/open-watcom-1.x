@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Spy hook DLL header.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,8 +33,7 @@
 void CALLBACK SetFilter( LPVOID );
 void CALLBACK ClearFilter( void );
 #ifdef __NT__
-    #define SPY_CLASS_NAME  "watspy_NT"
+#define SPY_CLASS_NAME  "watspy_NT"
 #else
-    #define SPY_CLASS_NAME  "watspy"
+#define SPY_CLASS_NAME  "watspy"
 #endif
-

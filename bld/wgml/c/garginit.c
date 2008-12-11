@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*  Copyright (c) 2004-2007 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,14 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  Parse tree comparision operators.
+* Description: Internal functions:
+*                         'Garginit' --- initialize operand scan
 *
 ****************************************************************************/
 
-//     enum     dump    cgenum
-pick1( CC_EQ,   "==",   O_EQ )
-pick1( CC_NE,   "!=",   O_NE )
-pick1( CC_LT,   "<",    O_LT )
-pick1( CC_LE,   "<=",   O_LE )
-pick1( CC_GT,   ">",    O_GT )
-pick1( CC_GE,   ">=",   O_GE )
+#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
+
+#include <stdarg.h>
+#include <errno.h>
+
+#include "wgml.h"
+#include "gvars.h"
+
+
+void    Garginit( void )
+{
+    char    *p;
+
+    p = Buff2;                          // adress of input buffer
+    ArgStop = Buff2 + BufSize - 1;      // store scan stop address
+    while( *p != ' ' && p <= ArgStop ) {// search end of keyword
+        p++;
+    }
+    ArgStart = p;                       // store argument start address
+
+    OpenParn = NULL;                    // clear open parenthesis pointer
+    ClosParn = NULL;                    // clear close parenthesis pointer
+    ErrStart = NULL;                    // clear error address
+    ProcFlags.nocase = FALSE;           // operands to uppercase by default
+}

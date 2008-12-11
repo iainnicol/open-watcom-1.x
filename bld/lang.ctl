@@ -31,6 +31,7 @@ echo Bootstrapping compiler using GNU tools...
 [ INCLUDE <DEVDIR>/bmp2eps/prereq.ctl ]
 [ INCLUDE <DEVDIR>/ssl/prereq.ctl ]
 [ INCLUDE <DEVDIR>/wstub/lang.ctl ]
+[ INCLUDE <DEVDIR>/vi/prereq.ctl ]
 [ INCLUDE <DEVDIR>/wpack/prereq.ctl ]
 #        Prebuild new WLIB for build process
 [ INCLUDE <DEVDIR>/nwlib/prereq.ctl ]
