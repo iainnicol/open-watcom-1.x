@@ -36,6 +36,7 @@
 #include "wgml.h"
 #include "gvars.h"
 
+inputcb *   cb;
 
 /***************************************************************************/
 /*  add info about macro   to LIFO input list                              */
@@ -155,7 +156,6 @@ static  void    scr_dm( void )
     char        *   pn;
     char            save;
     int             len;
-    int             macro_line_count;
     int             compbegin;
     int             compend;
     char            macname[ MAC_NAME_LENGTH + 1 ];
@@ -164,7 +164,6 @@ static  void    scr_dm( void )
     inp_line    *   work;
     ulong           lineno_start;
     condcode        cc;
-    inputcb     *   cb;
 
     cb = input_cbs;
 
@@ -180,7 +179,7 @@ static  void    scr_dm( void )
         return;
     }
 
-    p = tok_start;
+    p = err_start;
 
     pn      = macname;
     len     = 0;
@@ -213,15 +212,14 @@ static  void    scr_dm( void )
         return;
     }
 
-    p = scan_start;
+    p = arg_start;
     head = NULL;
     last = NULL;
     save = *p;
     *p   = '\0';
-    macro_line_count = 0;
 
-    compend   = !stricmp( tok_start, "end" );
-    compbegin = !stricmp( tok_start, "begin" );
+    compend   = !stricmp( err_start, "end" );
+    compbegin = !stricmp( err_start, "begin" );
     if( !(compbegin | compend) ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
 
@@ -229,7 +227,7 @@ static  void    scr_dm( void )
             err_count++;
             out_msg("ERR_NESTED_MACRO_DEFINE '%s' expecting END\n"
                     "\t\t\tline %d of file '%s'\n",
-                    tok_start,
+                    err_start,
                     cb->s.f->lineno,
                     cb->s.f->filename );
             return;
@@ -240,7 +238,7 @@ static  void    scr_dm( void )
         lineno_start = cb->s.f->lineno;
 
 
-        p = tok_start;
+        p = err_start;
         sepchar = *p++;
         nmstart = p;
         while( *p ) {
@@ -260,7 +258,6 @@ static  void    scr_dm( void )
                 head = work;
             }
             nmstart = ++p;
-            macro_line_count++;
         }
         compend = 1;                    // so the end processing will happen
     }                                   // BEGIN or END not found
@@ -310,16 +307,16 @@ static  void    scr_dm( void )
                         compend = 1;
                         break;          // out of read loop
                     }
-                    p = scan_start;
+                    p = arg_start;
                     save = *p;
                     *p = '\0';
-                    if( strncmp( macname, tok_start, MAC_NAME_LENGTH ) ) {
+                    if( strncmp( macname, err_start, MAC_NAME_LENGTH ) ) {
                         // macroname from begin different from end
                         err_count++;
                         // SC--005 Macro '%s' is not being defined
                         out_msg( "ERR_MACRO_DEF Macro '%s' is not being defined\n"
                                 "\t\t\tLine %d of file '%s'\n",
-                                tok_start,
+                                err_start,
                                 cb->s.f->lineno,
                                 cb->s.f->filename );
                         *p = save;
@@ -339,10 +336,10 @@ static  void    scr_dm( void )
                         free_lines( head );
                         return;
                     }
-                    p = scan_start;
+                    p = arg_start;
                     save = *p;
                     *p = '\0';
-                    if( strcmp( tok_start, "end") ) {
+                    if( strcmp( err_start, "end") ) {
                         err_count++;
                         // SC--002 The control word parameter '%s' is invalid
                         out_msg( "ERR_PARMINVALID "
@@ -367,7 +364,6 @@ static  void    scr_dm( void )
             if( head == NULL ) {
                 head = work;
             }
-            macro_line_count++;
         }                               // end read loop
         if( cb->s.f->flags & (FF_eof | FF_err) ) {
             err_count++;
@@ -411,11 +407,6 @@ static  void    scr_dm( void )
                 dict = dict->next;
             }
             dict->next = me;
-        }
-
-        if( GlobalFlags.research && GlobalFlags.firstpass ) {
-            out_msg( "INF_MACRO '%s' defined with %d lines\n", macname,
-                     macro_line_count );
         }
     } else {
         err_count++;
@@ -543,22 +534,10 @@ static  void    gml_set( const gmltag * entry )
             p++;
         }
 
-        if( !strnicmp( "symbol", p, 6 ) ) {
+        if( !strnicmp( "symbol=", p, 7 ) ) {
 
-            p += 6;
-            while( *p == ' ' ) {        // over WS to attribute
-                p++;
-            }
-            if( *p == '=' ) {
-                p++;
-                while( *p == ' ' ) {    // over WS to attribute
-                    p++;
-                }
-            } else {
-                continue;
-            }
+            p += 7;
             symstart = p;
-
 
             p = scan_sym( symstart, &sym, &subscript );
             if( scan_err ) {
@@ -573,27 +552,15 @@ static  void    gml_set( const gmltag * entry )
                 working_dict = &global_dict;
             }
             symbolthere = true;
-
-            while( *p == ' ' ) {
-                p++;
-            }
         }
 
-        if( !strnicmp( "value", p, 5 ) ) {
+        while( *p == ' ' ) {
+            p++;
+        }
+        if( !strnicmp( "value=", p, 6 ) ) {
             char    quote;
 
-            p += 5;
-            while( *p == ' ' ) {        // over WS to attribute
-                p++;
-            }
-            if( *p == '=' ) {
-                p++;
-                while( *p == ' ' ) {    // over WS to attribute
-                    p++;
-                }
-            } else {
-                continue;
-            }
+            p += 6;
             if( *p == '"' || *p == '\'' ) {
                 quote = *p;
                 ++p;
@@ -620,12 +587,14 @@ static  void    gml_set( const gmltag * entry )
             }
             rc = add_symvar( working_dict, sym.name, token_buf, subscript,
                              sym.flags );
-            break;                          // tag complete with attributes
         }
 
+        if( symbolthere && valuethere ) {   // tag complete with attributes
+            break;
+        }
         c = *p;
         if( p >= scan_stop ) {
-            c = '.';                    // simulate end of tag if EOF
+            c = '.';                    // simulate end of tag
 
             if( !(input_cbs->fmflags & II_eof) ) {
                 if( get_line() ) {      // next line for missing attribute
@@ -650,8 +619,7 @@ static  void    gml_set( const gmltag * entry )
             if( input_cbs->fmflags & II_macro ) {
                 out_msg( "ERR_ATT_missing Required attribute not found\n"
                          "\t\t\tLine %d of macro '%s'\n",
-                         input_cbs->s.m->lineno,
-                         input_cbs->s.m->mac->name );
+                         input_cbs->s.m->mac->name, input_cbs->s.m->lineno );
             } else {
                 out_msg( "ERR_ATT_missing Required attribute not found\n"
                          "\t\t\tLine %d of file '%s'\n",
@@ -707,21 +675,21 @@ static  const   scrtag  scr_tags[] = {
 
 static void scan_gml( void )
 {
-    inputcb     *   cb;
-    char        *   p;
-    int             toklen;
-    int             k;
-    char            csave;
+    char    *   p;
+    int         toklen;
+    int         k;
+    char        csave;
 
     cb = input_cbs;
 
     p = scan_start +1;
-    tok_start = scan_start;
-    while( *p != ' ' && *p != '.' && p <= scan_stop ) {// search end of keyword
+    arg_stop = buff2 + buff2_lg - 1;    // store scan stop address
+    while( *p != ' ' && *p != '.' && p <= arg_stop ) {// search end of keyword
         p++;
     }
-    scan_start = p;                      // store argument start address
-    toklen = p - tok_start - 1;
+    arg_start = p;                      // store argument start address
+    err_start = NULL;                   // clear error address
+    toklen = p - scan_start - 1;
     csave = *p;
     *p = '\0';
     if( toklen >= TAG_NAME_LENGTH ) {
@@ -732,45 +700,43 @@ static void scan_gml( void )
             out_msg( "ERR_SYM_NAME_too_long '%s'\n"
                      "\t\tThe length of a symbol cannot exceed ten characters\n"
                      "\t\t\tLine %d of macro '%s'\n",
-                     tok_start + 1,
-                     cb->s.m->lineno, cb->s.m->mac->name );
+                     scan_start,
+                     cb->s.m->mac->name, cb->s.m->lineno );
         } else {
             out_msg( "ERR_SYM_NAME_too_long '%s'\n"
                      "\t\tThe length of a symbol cannot exceed ten characters\n"
                      "\t\t\tLine %d of file '%s'\n",
-                     tok_start + 1,
+                     scan_start,
                      cb->s.f->lineno, cb->s.f->filename );
         }
-        if( inc_level > 0 ) {
-            show_include_stack();
-        }
+        show_include_stack();
         return;
     }
 
     if( GlobalFlags.research && GlobalFlags.firstpass ) {
         if( cb->fmflags & II_macro ) {
             printf_research( "L%d    %c%s found in macro %s(%d)\n\n",
-                             inc_level, GML_char, tok_start + 1,
+                             inc_level, GML_char, scan_start + 1,
                              cb->s.m->mac->name, cb->s.m->lineno );
         } else {
             printf_research( "L%d    %c%s found in file %s(%d)\n\n",
-                             inc_level, GML_char, tok_start + 1,
+                             inc_level, GML_char, scan_start + 1,
                              cb->s.f->filename, cb->s.f->lineno );
         }
-        add_GML_tag_research( tok_start + 1 );
+        add_GML_tag_research( scan_start + 1 );
     }
 
 
     for( k = 0; k < GML_TAGMAX; ++k ) {
         if( toklen == gml_tags[ k].taglen ) {
-            if( !stricmp( gml_tags[ k ].tagname, tok_start + 1 ) ) {
+            if( !stricmp( gml_tags[ k ].tagname, scan_start + 1 ) ) {
                 *p = csave;
+                scan_start = p;         // gml tag found, process
                 gml_tags[ k ].gmlproc( &gml_tags[ k ] );
                 break;
             }
         }
     }
-    *p = csave;
 }
 
 
@@ -778,7 +744,7 @@ static void scan_gml( void )
  * add macro parms from input line as local symbolic variables
  * for non quoted parms try to assign symbolic variables
  * i.e.  a b c *var="1.8" d "1 + 2"
- *    will give &* =a b c *var="1.8" d "1 + 2"
+ *    will give &* =a b c *var="1.8" d
  *              &*0=5
  *              &*1=a
  *              &*2=b
@@ -813,45 +779,34 @@ static void     add_macro_parms( char * p )
         garginit();
         cc = getarg();
         while( cc > omit ) {            // as long as there are parms
-            char        c;
-            char    *   scan_save;
+            char    c;
 
             if( cc == pos ) {           // argument not quoted
                            /* look if it is a symbolic variable definition */
-                scan_save  = scan_start;
-                c          = *scan_save; // prepare value end
-                *scan_save = '\0';      // terminate string
-                scan_start = tok_start; // rescan for variable
+                scan_start = err_start;
+                c          = *arg_start;// prepare value end
+                *arg_start = '\0';      // terminate string
                 ProcFlags.suppress_msg = true;  // no errmsg please
                 ProcFlags.blanks_allowed = 0;   // no blanks please
 
                 scr_se();               // try to set variable and value
+                if( scan_err ) {        // not valid
+                    cc = quotes;        // treat as positional parm
+                }
 
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
-                *scan_save = c;        // restore original char at string end
-                scan_start = scan_save; // restore scan address
-                if( scan_err ) {        // not valid
-                    cc = omit;
-             //    scan_start = tok_start;
-                    star0++;
-                    sprintf( starbuf, "%d", star0 );
-                    p = tok_start + arg_flen ;
-                    c = *p;                 // prepare value end
-                    *p = '\0';              // terminate string
-                    add_symvar( &input_cbs->local_dict, starbuf, tok_start,
-                                no_subscript, local_var );
-                    *p = c;                // restore original char at string end
-                }
+                *arg_start = c;        // restore original char at string end
+
 
             }
-            if( cc == quotes ) {        // add argument as local symbolic var
+            if( cc == quotes ) {       // copy argument as local symbolic var
                 star0++;
                 sprintf( starbuf, "%d", star0 );
-                p = tok_start + arg_flen ;
+                p = err_start + arg_flen ;
                 c = *p;                 // prepare value end
                 *p = '\0';              // terminate string
-                add_symvar( &input_cbs->local_dict, starbuf, tok_start,
+                add_symvar( &input_cbs->local_dict, starbuf, err_start,
                             no_subscript, local_var );
                 *p = c;                // restore original char at string end
             }
@@ -912,7 +867,6 @@ char    *   search_separator( char * str, char sep )
 
 static void     scan_script( void)
 {
-    inputcb     *   cb;
     mac_entry   *   me;
     char        *   p;
     char        *   pt;
@@ -921,7 +875,7 @@ static void     scan_script( void)
     char            c;
 
     cb = input_cbs;
-    p = scan_start + 1;
+    p = ++scan_start;
 
     if( *p == '*' ) {
         return;                         // .*   +++ ignore comment up to EOL
