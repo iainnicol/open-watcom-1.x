@@ -28,26 +28,3 @@ host_os=$(clib_host_os_$(system))
 
 !include cproj.mif
 !include $(clib_dir)/flags.mif
-
-#
-# Temporary solution until WASM supports IDEAL mode syntax
-#
-
-!ifeq system zdosdrv
-lzasm_option = /d__ZDOSDRV__
-!endif
-
-!ifeq system zdos
-lzasm_option = /d__ZDOS__
-!endif
-
-!ifdef lzasm_option
-
-.EXTENSIONS: .azm
-
-.azm : ../../../z
-
-.azm.obj: $($(proj_name)_autodepends)
-	lzasm $(lzasm_option) /i$(%owroot)\bld\clib\zinc $[*.azm
-
-!endif
