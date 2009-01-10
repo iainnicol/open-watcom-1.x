@@ -249,9 +249,6 @@ FILE *GetFromEnvAndOpen( char *inpath )
 /*
  * Usage - dump the usage message
  */
-#ifndef __ALPHA__
-#pragma aux Usage aborts;
-#endif
 void Usage( char *msg )
 {
     if( msg != NULL ) {
@@ -325,7 +322,7 @@ int main( int argc, char *argv[] )
     char                *buff = NULL;
     char                *buff2, *buff3;
     char                *buffn, *buffs;
-    int                 i, cnt, bytes, lines, j, k, sl;
+    int                 i, cnt, bytes, lines, j, k;
     FILE                *f;
     struct stat         fs;
     char                drive[ _MAX_DRIVE ], dir[ _MAX_DIR ];
@@ -333,46 +330,41 @@ int main( int argc, char *argv[] )
     char                path[ _MAX_PATH ];
     char                tmppath[ _MAX_PATH ];
     char                tmpfname[ _MAX_FNAME ], tmpext[ _MAX_EXT ];
+    int                 c;
 
-    j = argc - 1;
-    while( j > 0 ) {
-        if( argv[ j ][ 0 ] == '/' || argv[ j ][ 0 ] == '-' ) {
-            sl = strlen( argv[ j ] );
-            for( i = 1; i < sl; i++ ) {
-                switch( argv[ j ][ i ] ) {
-                case 's': sflag = TRUE; break;
-                case 'q': qflag = TRUE; break;
-                case 'd':
-                    bindfile = &argv[ j ][ i + 1 ];
-                    i = sl;
-                    break;
-                case '?':
-                    Banner();
-                    Usage( NULL );
-                default:
-                    Banner();
-                    Usage( "Invalid option" );
-                }
-            }
-            for( i = j; i < (unsigned)argc; i++ ) {
-                argv[ i ]= argv[ i + 1 ];
-            }
-            argc--;
+    while( (c = getopt( argc, argv, "d:qs" )) != EOF ) {
+        switch( c ) {
+        case 's':
+            sflag = TRUE;
+            break;
+        case 'q':
+            qflag = TRUE;
+            break;
+        case 'd':
+            bindfile = optarg;
+            break;
+        case '?':
+            Banner();
+            Usage( NULL );
+            break;
+        default:
+            Banner();
+            Usage( "Invalid option" );
         }
-        j--;
     }
+
     Banner();
     /*
      * now, check for null file name
      */
-    if( argc < 2 ) {
+    if( optind >= argc ) {
         Usage( "No executable to bind" );
     }
-    _splitpath( argv[ 1 ], drive, dir, fname, ext );
+    _splitpath( argv[ optind ], drive, dir, fname, ext );
     if( ext[ 0 ] == 0 ) {
         _makepath( path, drive, dir, fname, ".exe" );
     } else {
-        strcpy( path, argv[ 1 ] );
+        strcpy( path, argv[ optind ] );
     }
     if( stat( path, &fs ) == -1 ) {
         Abort( "Could not find executable \"%s\"", path );
