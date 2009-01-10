@@ -9,7 +9,6 @@
 
 :include readonly.sp
 #include <sql.h>
-#include <sqlucode.h>
 
 :include cpluspro.sp
 
@@ -431,6 +430,7 @@ typedef SQLTCHAR    SQLSTATE[SQL_SQLSTATE_SIZE + 1];
 #if (ODBCVER >= 0x0300)
     #define SQL_C_TYPE_DATE                 SQL_TYPE_DATE
     #define SQL_C_TYPE_TIME                 SQL_TYPE_TIME
+    #define SQL_C_TYPE_TIMESTAMP            SQL_TYPE_TIMESTAMP
     #define SQL_C_INTERVAL_YEAR             SQL_INTERVAL_YEAR
     #define SQL_C_INTERVAL_MONTH            SQL_INTERVAL_MONTH
     #define SQL_C_INTERVAL_DAY              SQL_INTERVAL_DAY
@@ -1695,6 +1695,8 @@ SQLRETURN SQL_API   SQLBulkOperations( SQLHSTMT, SQLSMALLINT );
 #endif
 
 :include cplusepi.sp
+
+#include <sqlucode.h>
 
 #endif /* __SQLEXT */
 

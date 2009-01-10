@@ -24,19 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of ntohs() for Linux.
+* Description:  Parse tree comparision operators.
 *
 ****************************************************************************/
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-_WCRTLINK unsigned short int ntohs( unsigned short int netshort )
-{
-#if defined( __BIG_ENDIAN__ )
-    return ( netshort );
-#else
-    return ( ((netshort >> 8) & 0xff) | ((netshort & 0xff) << 8) );
-#endif
-}
+//     enum     dump    cgenum
+pick1( CC_EQ,   "==",   O_EQ )
+pick1( CC_NE,   "!=",   O_NE )
+pick1( CC_LT,   "<",    O_LT )
+pick1( CC_LE,   "<=",   O_LE )
+pick1( CC_GT,   ">",    O_GT )
+pick1( CC_GE,   ">=",   O_GE )

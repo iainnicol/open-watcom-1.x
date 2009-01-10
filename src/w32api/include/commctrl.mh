@@ -3590,7 +3590,7 @@ typedef DWORD   *LPMONTHDAYSTATE;
 /* Messages used with _TrackMouseEvent() */
 #if (_WIN32_IE >= 0x0300) && !defined( WM_MOUSEHOVER )
     #define WM_MOUSEHOVER   0x02A1
-    #define WM_MOUSELEAVE   0x02A2
+    #define WM_MOUSELEAVE   0x02A3
 #endif
 
 /* Definitions for _TrackMouseEvent() */
@@ -6775,7 +6775,7 @@ WINCOMMCTRLAPI HRESULT WINAPI       LoadIconWithScaleDown( HINSTANCE, PCWSTR, in
 #define TreeView_SortChildrenCB( x, p1, p2 ) \
     (BOOL)SNDMSG( x, TVM_SORTCHILDRENCB, (WPARAM)(p2), (LPARAM)(LPTV_SORTCB)(p2) )
 #define TreeView_EndEditLabelNow( x, p ) \
-    (BOOL)SNDMSG( x, TVM_ENDLABELEDITNOW, (WPARAM)(p), 0L )
+    (BOOL)SNDMSG( x, TVM_ENDEDITLABELNOW, (WPARAM)(p), 0L )
 #define TreeView_GetISearchString( x, p ) \
     (BOOL)SNDMSG( x, TVM_GETISEARCHSTRING, 0, (LPARAM)(LPTSTR)(p) )
 #if (_WIN32_IE >= 0x0300)
