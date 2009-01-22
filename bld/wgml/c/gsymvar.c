@@ -25,7 +25,7 @@
 *  ========================================================================
 *
 * Description:  Implements symbolic variables (tables and access routines)
-*
+*               still incomplete
 ****************************************************************************/
 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
@@ -80,7 +80,7 @@ void    free_dict( symvar * * dict )
 
 /***************************************************************************/
 /*  search symbol and subscript entry in specified  dictionary             */
-/*  fills symsub structure pointer if found                                */
+/*  fills symsub struktur pointer if found                                 */
 /*                                                                         */
 /***************************************************************************/
 
@@ -97,47 +97,6 @@ int find_symvar( symvar * * dict, char * name, sub_index sub, symsub * * symsubv
             if( wk->flags & deleted ) {
                 break;                  // symbol name is deleted
             }
-            rc = 1;                     // symbol name found
-            break;
-        }
-        wk = wk->next;
-    }
-    if( rc ) {
-        *symsubval = wk->subscripts;    // return at least first subscript
-        if( wk->flags & subscripted ) {
-            rc = 1;                     // name is found
-            ws = wk->subscripts;
-            while( ws != NULL ) {
-                if( sub == ws->subscript ) {
-                    *symsubval = ws;    // subscript found
-                    rc = 2;
-                    break;
-                }
-                ws = ws->next;
-            }
-        } else {
-            rc = 2;                     // not subscripted -> all found
-        }
-    }
-    return( rc );
-}
-
-/***************************************************************************/
-/*  search symbol and subscript entry in specified  dictionary             */
-/*  fills symsub structure pointer if found                                */
-/*  finds deleted variables too internal routine                                                                       */
-/***************************************************************************/
-
-static  int find_symvar_del( symvar * * dict, char * name, sub_index sub, symsub * * symsubval )
-{
-    symvar  *   wk;
-    symsub  *   ws;
-    int         rc = 0;
-
-    *symsubval = NULL;
-    wk = *dict;
-    while( wk != NULL) {
-        if( !strcmp( wk->name, name ) ) {
             rc = 1;                     // symbol name found
             break;
         }
@@ -200,9 +159,6 @@ static bool add_symvar_sub( symvar * var, char * val, sub_index sub )
         } else {
             var->subscript_used++;
             var->flags |= subscripted;
-            if( (var->flags & auto_inc) && (sub == var->last_auto_inc + 1) ) {
-                var->last_auto_inc++;
-            }
         }
     }
     newsub            = mem_alloc( sizeof( symsub ) );
@@ -255,10 +211,9 @@ static void add_symsym( symvar * * dict, char * name, sym_flags f, symvar * * n 
        new->name[k] = '\0';
     }
     new->next = NULL;
-    new->last_auto_inc  = 0;
     new->subscript_used = 0;
     new->subscripts = NULL;
-    new->flags = f & ~deleted;
+    new->flags = f & ~(deleted | subscripted);
 
     *n = new;
     new->next = *dict;
@@ -281,7 +236,7 @@ int add_symvar( symvar * * dict, char * name, char * val, sub_index subscript, s
     if( !check_subscript( subscript ) ) {
         rc = 3;
     } else {
-        rc = find_symvar_del( dict, name, subscript, &newsub );
+        rc = find_symvar( dict, name, subscript, &newsub );
         switch ( rc ) {
         case 0 :                        // nothing found
             add_symsym( dict, name, f, &new );
@@ -291,14 +246,12 @@ int add_symvar( symvar * * dict, char * name, char * val, sub_index subscript, s
             }
             break;
         case 1 :                        // symbol found, but not subscript
-            newsub->base->flags &= ~deleted;// reset deleted switch
             ok = add_symvar_sub( newsub->base, val, subscript );
             if( !ok ) {
                 rc = 3;
             }
             break;
         case 2 :              // symbol + subscript found, or not subscripted
-            newsub->base->flags &= ~deleted;// reset deleted switch
             if( !strcmp( newsub->value, val ) ) {
                 ;                       // nothing to do value is unchanged
             } else {
@@ -314,39 +267,6 @@ int add_symvar( symvar * * dict, char * name, char * val, sub_index subscript, s
         }
     }
     return( rc );
-}
-
-/***************************************************************************/
-/*  reset_auto_inc_dict  reset auto_inc value for passes 2 - n             */
-/*  and set variable as deleted                                            */
-/***************************************************************************/
-
-void    reset_auto_inc_dict( symvar * dict )
-{
-    symvar  *   wk;
-    symsub  *   ws;
-
-    wk = dict;
-    while( wk != NULL ) {
-
-        if( wk->flags & auto_inc ) {
-
-            wk->flags |= deleted;
-            wk->subscript_used = 0;
-            while( (ws = wk->subscripts) != NULL ) {
-                if( ws->next == NULL ) {// keep last subscript as sub 0
-                    ws->subscript = 0;
-                    break;
-                }
-                wk->subscripts = ws->next;
-                mem_free( ws->value );
-                mem_free( ws );
-            }
-        }
-        wk->last_auto_inc = 0;
-        wk = wk->next;
-    }
-    return;
 }
 
 /***************************************************************************/
@@ -369,10 +289,9 @@ void    print_sym_dict( symvar * dict )
     while( wk != NULL ) {
         len = strlen( wk->name );
 
-        out_msg( "Variable='%s'%s flags=%s%s%s subscript_used=%d", wk->name,
+        out_msg( "Variable='%s'%s flags=%s%s subscript_used=%d", wk->name,
                  &fill[ len ], wk->flags & deleted ? "deleted " : "",
                  wk->flags & local_var ? "local " : "",
-                 wk->flags & auto_inc ? "auto_inc " : "",
                  wk->subscript_used );
         ws = wk->subscripts;
         if( wk->flags & subscripted ) {

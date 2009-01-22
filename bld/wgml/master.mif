@@ -16,9 +16,6 @@ wgml_trmem       = 1
 debug_build      = 1
 verbose          = 1
  
-#  extra_c_flags      += -fti
-#  extra_c_flags      += -pcl
- 
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
@@ -30,25 +27,23 @@ inc_dirs = -I"../h" -I$(trmem_dir)
  
 objs =  &
         wgml.obj        &
-        copdev.obj      &
-        copdir.obj      &
-        copdrv.obj      &
-        copfiles.obj    &
-        copfon.obj      &
-        copfunc.obj     &
+	copdev.obj      &
+	copdir.obj      &
+	copdrv.obj      &
+	copfiles.obj    &
+	copfon.obj      &
+	copfunc.obj     &
         findfile.obj    &
         gargutil.obj    &
         gdata.obj       &
         gargutil.obj    &
         gerror.obj      &
-        getnum.obj      &
         gmacdict.obj    &
         gmemory.obj     &
         goptions.obj    &
         gprocess.obj    &
         gresrch.obj     &
         gscan.obj       &
-        gsfunelu.obj    &
         gsetvar.obj     &
         gsymvar.obj     &
         gutil.obj       &

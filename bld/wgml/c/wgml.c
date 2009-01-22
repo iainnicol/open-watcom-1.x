@@ -27,7 +27,6 @@
 * Description:  WGML top level driver module and file I/O.
 *               not yet functional
 *   some logic / ideas adopted from Watcom Script 3.2 IBM S/360 Assembler
-*   as found on www.cbttape.org files 280 - 288
 ****************************************************************************/
 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
@@ -140,15 +139,13 @@ bool    free_inc_fp( void )
                 if( (cb->flags & FF_open) ) {   // and file is open
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
-                        strerror_s( buff2, buf_size, errno );
-                        out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+                        out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                         err_count++;
                         g_suicide();
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
-                        strerror_s( buff2, buf_size, errno );
-                        out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+                        out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                         err_count++;
                         g_suicide();
                     }
@@ -179,15 +176,13 @@ static void reopen_inc_fp( filecb *cb )
         if( erc == 0 ) {
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
-                strerror_s( buff2, buf_size, errno );
-                out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+                out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                 err_count++;
                 g_suicide();
             }
             cb->flags |= FF_open;
         } else {
-            strerror_s( buff2, buf_size, erc2 );
-            out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+            out_msg( "ERR_FILE_IO %d %s\n", erc2, cb->filename );
             err_count++;
             g_suicide();
         }
@@ -242,6 +237,7 @@ static  void    add_file_cb_entry( void )
     new = mem_alloc( sizeof( filecb ) + fnlen );// count for terminating \0
                                                 //  is in filecb structure
     nip = mem_alloc( sizeof( inputcb ) );
+    nip->prev   = NULL;
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
     nip->fmflags = II_file;
@@ -258,13 +254,14 @@ static  void    add_file_cb_entry( void )
     if( try_fp ) {
         new->flags = FF_open;
         new->fp    = try_fp;
-        try_fp     = NULL;
     } else {
         new->flags = FF_clear;
         new->fp    = NULL;
     }
 
-    nip->prev = input_cbs;
+    if( input_cbs != NULL ) {
+        nip->prev = input_cbs;
+    }
     input_cbs = nip;
     return;
 }
@@ -311,12 +308,6 @@ static  void    get_macro_line( void )
 {
     macrocb *   cb;
 
-    if( input_cbs->fmflags & II_file ) {
-        out_msg( "ERR_logic get_macroline() for file\n");
-        show_include_stack();
-        err_count++;
-        g_suicide();
-    }
     cb = input_cbs->s.m;
 
     if( cb->macline == NULL ) {         // no more macrolines
@@ -396,9 +387,7 @@ bool    get_line( void )
                         *buff2 = '\0';
                         break;
                     } else {
-                        strerror_s( buff2, buf_size, errno );
-                        out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
-
+                        out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                         err_count++;
                         g_suicide();
                     }
@@ -579,16 +568,8 @@ static  void    init_pass( void )
 
     if( pass > 1 ) {
         GlobalFlags.firstpass = 0;
-
-/*
- * design question: free dictionaries or not                            TBD
- *                  setsymbol defines from cmdline must not be deleted
- */
-
-    reset_auto_inc_dict( global_dict ); // let auto inc start with 1 again
-
-//      free_dict( &global_dict );      // free dictionaries
-//      free_macro_dict( &macro_dict );
+        free_dict( &global_dict );      // free dictionaries
+        free_macro_dict( &macro_dict );
     } else {
         GlobalFlags.firstpass = 1;
     }
@@ -601,25 +582,6 @@ static  void    init_pass( void )
     line_from   = 1;                  // processing line range Masterdocument
     line_to     = ULONG_MAX - 1;
 
-}
-
-/***************************************************************************/
-/*  get_systime   gets system time and initializes symbols date and time   */
-/***************************************************************************/
-
-static void get_systime( void )
-{
-    char        date_str[80];
-    char        time_str[80];
-    time_t      gtime;
-
-    gtime = time( NULL );
-    localtime_s( &gtime, &doc_tm );
-    strftime( date_str, 80, "%B %d, %Y", &doc_tm );
-    strftime( time_str, 80, "%H:%M:%S", &doc_tm );
-    printf( "%s %s\n", date_str, time_str );
-    add_symvar( &global_dict, "date", date_str, no_subscript, 0 );
-    add_symvar( &global_dict, "time", time_str, no_subscript, 0 );
 }
 
 /***************************************************************************/
@@ -639,12 +601,14 @@ int main( int argc, char * argv[] )
 
     g_trmem_init();                     // init memory tracker if necessary
 
-    init_global_vars();
     get_systime();                      // initialize symbols date and time
+
+    init_global_vars();
 
     token_buf = mem_alloc( buf_size );
 
     ff_setup();                         // init findfile
+    cop_setup();                        // init copfiles
 
     cmdlen = _bgetcmd( NULL, 0 ) + 1;
     cmdline = mem_alloc( cmdlen );
@@ -653,7 +617,6 @@ int main( int argc, char * argv[] )
     out_msg( "cmdline=%s\n", cmdline );
 
     proc_options( cmdline );
-    cop_setup();                        // init copfiles
     g_banner();
 
     if( master_fname != NULL ) {        // filename specified
@@ -672,9 +635,6 @@ int main( int argc, char * argv[] )
 
 //            g_trmem_prt_list();       // show allocated memory at pass end
 
-            if( GlobalFlags.research && (pass < passes) ) {
-                print_sym_dict( global_dict );
-            }
             out_msg( "\n  End of pass %d of %d ( %s mode ) \n", pass, passes,
                      GlobalFlags.research ? "research" : "normal" );
         }
@@ -714,9 +674,6 @@ int main( int argc, char * argv[] )
     }
     if( master_fname_attr != NULL ) {
         mem_free( master_fname_attr );
-    }
-    if( dev_name != NULL ) {
-        mem_free( dev_name );
     }
     if( out_file != NULL ) {
         mem_free( out_file );
