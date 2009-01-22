@@ -24,9 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Declares the items needed to parse and interpret the 
-*               information from .COP files:
-*               the structs:
+* Description:  Declares an enum, structs and functions used by wgml to
+*               parse and interpret the information from .COP files:
+*                   cop_file_type
 *                   cop_device
 *                       box_block
 *                       underscore_block
@@ -62,20 +62,22 @@
 *                       outtrans_block
 *                           translation
 *                       width_block
-*                   wgml_font
-*               the variables:
-*                   bin_device
-*                   bin_driver
-*                   bin_fonts
-*                   wgml_font_cnt
-*                   wgml_fonts
-*               the functions:
+*                   get_cop_device()
+*                   get_cop_driver()
+*                   get_cop_font()
+*                   parse_header()
+*
+*               Also these functions for integration with wgml:
 *                   cop_setup()
 *                   cop_teardown()
+*                   get_systime()
+*                   set_device()
+*                   set_font()
 *
 * Note:         The field names are intended to correspond to the field names 
 *               shown in the Wiki. The Wiki structs are named when the structs
 *               defined here are defined; they are not identical.
+*
 ****************************************************************************/
 
 #ifndef COPFILE_H_INCLUDED
@@ -85,6 +87,20 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#include "gtype.h" // Only needed for set_device2 & set_font2.
+
+/* Enum definition. */
+
+/* This enum is used for the return value of function parse_header(). */
+
+typedef enum {
+    dir_v4_1_se,        // The file is a same-endian version 4.1 directory file.
+    se_v4_1_not_dir,    // The file is a same-endian version 4.1 device, driver, or font file.
+    not_se_v4_1,        // The file is not same-endian and/or not version 4.1.
+    not_bin_dev,        // The file is not a binary device file at all.
+    file_error          // An error occurred while reading the file.
+} cop_file_type;
 
 /* Structure declarations. */
 
@@ -451,16 +467,11 @@ typedef struct {
     line_block          dbox;
 } cop_driver;
 
-/* This struct embodies the binary form of the :FONT block.
- * Only the fonts need to be treated as a linked list.
- */
+/* This struct embodies the binary form of the :FONT block. */
 
-typedef struct cop_font {
-    struct cop_font *   next_font;
+typedef struct {
     size_t              allocated_size;
     size_t              next_offset;
-    /* For matching by defined name. */
-    char *              defined_name;
     /* The Attributes */
     char *              font_out_name1;
     char *              font_out_name2;
@@ -476,39 +487,41 @@ typedef struct cop_font {
     width_block *       width;
 } cop_font;
 
-typedef struct {
-    cop_font            *   bin_font;
-    fontswitch_block    *   font_switch;
-    code_text           *   font_pause;
-    fontstyle_block     *   font_style;
-    uint16_t                font_height;
-    uint16_t                font_space;    
-} wgml_font;
-
-/* Global variable declarations. */
-
-#ifndef global
-    #define global  extern
-#endif
-
-global cop_device   *   bin_device;     // binary device being used
-global cop_driver   *   bin_driver;     // binary driver being used
-global cop_font     *   bin_fonts;      // binary fonts being used (linked list)
-global int              wgml_font_cnt;  // number of available fonts
-global wgml_font    *   wgml_fonts;     // the available fonts
-
-/* Reset so can be reused with other headers. */
-
-#undef global
-
 /* Function declarations. */
 
 #ifdef  __cplusplus
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern void             cop_setup( void );
-extern void             cop_teardown( void );
+extern cop_device   *   get_cop_device( char const * defined_name );
+extern cop_driver   *   get_cop_driver( char const * defined_name );
+extern cop_font     *   get_cop_font( char const * defined_name );
+extern cop_file_type    parse_header( FILE * in_file );
+
+/* For integration with wgml. */
+
+typedef struct  option {
+    char        *   option;             // the option
+    short           optionLenM1;        // length of option - 1
+    short           minLength;          // minimum abbreviation
+    long            value;              // sometimes value to set option to
+    void            (*function)( struct option *optentry );
+    int             parmcount;          // expected number of parms
+} option;
+
+typedef struct cmd_tok {
+    struct cmd_tok  *   nxt;
+    size_t              toklen;
+    bool                bol;
+    char                token[1];       // variable length
+
+} cmd_tok;
+
+extern void cop_setup( void );
+extern void cop_teardown( void );
+extern void get_systime( void );
+extern void set_device2( option * opt, char * opt_scan_ptr, cmd_tok * tokennext );
+extern void set_font2( option * opt, char * opt_scan_ptr, cmd_tok * tokennext );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

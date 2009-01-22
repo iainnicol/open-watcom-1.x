@@ -38,6 +38,7 @@
 #include "banner.h"
 #include "cfheader.h"
 #include "common.h"
+#include "heapchk.h"
 #include "lhdirect.h"
 #include "research.h"
 

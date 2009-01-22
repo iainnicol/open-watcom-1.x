@@ -62,17 +62,19 @@
  *      in_driver is a pointer to the cop_driver to be resized.
  *      in_size is the minimum acceptable increase in size.
  *
+ * Warning:
+ *      If mem_realloc() returns a different value from in_driver, then the
+ *      memory pointed to by in_driver will be freed whether the function
+ *      succeeds or fails. The intended use is for the pointer passed as
+ *      in_driver to be used to store the return value. 
+ *
  *  Returns:
  *      A pointer to a cop_driver instance at least in_size larger with 
  *          the same data (except for the allocated_size field, which reflects 
  *          the new size).
  *
- * Notes:
- *      mem_realloc() will call exit() if the reallocation fails.
- *      mem_realloc() will free in_driver if the instance is actually moved to a
- *          new location.
- *      The intended use is for the pointer passed as in_driver to be used to
- *          store the return value.
+ * Note:
+ *     mem_realloc() will call exit() if the reallocation fails.
  */
 
 static cop_driver * resize_cop_driver( cop_driver * in_driver, size_t in_size )
@@ -94,6 +96,7 @@ static cop_driver * resize_cop_driver( cop_driver * in_driver, size_t in_size )
     /* Reallocate the cop_driver. */
 
     local_driver = (cop_driver *) mem_realloc( in_driver, new_size );
+    if( local_driver != in_driver ) mem_free( in_driver );
     local_driver->allocated_size = new_size;
 
     return( local_driver );
@@ -1543,11 +1546,7 @@ cop_driver * parse_driver( FILE * in_file )
     if( cop_functions->count != 0x0001 ) {
         mem_free( p_buffer_set );
         p_buffer_set = NULL;
-        if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
-            cop_functions->code_blocks = NULL;
-        }
-        mem_free( cop_functions );
+        mem_free(cop_functions);
         cop_functions = NULL;
         mem_free( out_driver );
         out_driver = NULL;
@@ -1567,9 +1566,7 @@ cop_driver * parse_driver( FILE * in_file )
     out_driver->newpage.text = (uint8_t *) out_driver->next_offset;
     out_driver->next_offset += out_driver->newpage.count;
 
-    mem_free( cop_functions->code_blocks );
-    cop_functions->code_blocks = NULL;
-    mem_free( cop_functions );
+    mem_free(cop_functions);
     cop_functions = NULL;
 
     /* Reset to the start of the next P-buffer's data. */
@@ -1609,20 +1606,14 @@ cop_driver * parse_driver( FILE * in_file )
     default :
         mem_free( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        mem_free(cop_functions);
         cop_functions = NULL;
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
-    if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-    }
-    mem_free( cop_functions );
+    mem_free(cop_functions);
     cop_functions = NULL;
 
     /* Reset to the start of the next P-buffer's data. */
@@ -2020,20 +2011,14 @@ cop_driver * parse_driver( FILE * in_file )
     default:
         mem_free( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        mem_free(cop_functions);
         cop_functions = NULL;
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
-    if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-    }
-    mem_free( cop_functions );
+    mem_free(cop_functions);
     cop_functions = NULL;
 
     /* Reset to the start of the next P-buffer's data. */
@@ -2075,20 +2060,14 @@ cop_driver * parse_driver( FILE * in_file )
     default:
         mem_free( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        mem_free(cop_functions);
         cop_functions = NULL;
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
-    if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-    }
-    mem_free( cop_functions );
+    mem_free(cop_functions);
     cop_functions = NULL;
 
     /* The thickness is present only if the HlineBlock was present. */
@@ -2188,20 +2167,14 @@ cop_driver * parse_driver( FILE * in_file )
     default:
         mem_free( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        mem_free(cop_functions);
         cop_functions = NULL;
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
-    if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-    }
-    mem_free( cop_functions );
+    mem_free(cop_functions);
     cop_functions = NULL;
 
     /* The thickness is present only if the VlineBlock was present. */
@@ -2303,9 +2276,7 @@ cop_driver * parse_driver( FILE * in_file )
     default:
         mem_free( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        mem_free(cop_functions);
         cop_functions = NULL;
         mem_free( out_driver );
         out_driver = NULL;
@@ -2316,11 +2287,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     mem_free( p_buffer_set );
     p_buffer_set = NULL;
-    if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
-        cop_functions->code_blocks = NULL;
-    }
-    mem_free( cop_functions );
+    mem_free(cop_functions);
     cop_functions = NULL;
 
     /* The thickness is present only if DboxBlock was present. */
