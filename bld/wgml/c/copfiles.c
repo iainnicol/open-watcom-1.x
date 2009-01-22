@@ -24,13 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Implements the functions used to parse .COP files:
-*                   cop_setup()
-*                   cop_teardown()
+* Description:  Implements the functions used by wgml to parse .COP files:
 *                   get_cop_device()
 *                   get_cop_driver()
 *                   get_cop_font()
 *                   parse_header()
+*
+*               Also these functions for integration with wgml:
+*                   cop_setup()
+*                   cop_teardown()
+*                   get_systime()
+*                   set_device()
+*                   set_font()
 *
 * Note:         The Wiki should be consulted for any term whose meaning is
 *               not apparent. This should help in most cases.
@@ -39,7 +44,6 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <setjmp.h> // Required (but not included) by gvars.h.
 #include <stdlib.h>
-#include <time.h>
 
 #include "copdev.h"
 #include "copdrv.h"
@@ -360,58 +364,47 @@ cop_file_type parse_header( FILE * in_file )
 
 /* For integration with wgml. */
 
-
-static void free_opt_fonts( void )
+extern void cop_setup( void ) {}
+extern void cop_teardown( void ) {}
+extern void get_systime( void ) {}
+extern void set_device2( option * opt, char * opt_scan_ptr, cmd_tok * tokennext )
 {
-    opt_font    *   current;
-    opt_font    *   old;
 
-    if( opt_fonts == NULL) return;
+    out_msg( "WNG_IGN_OPTION %s\n", opt->option );
+    wng_count++;
+    if( opt->parmcount > 0 ) {
+        char    *p = opt_scan_ptr;
+        int     k;
 
-    if( opt_fonts->name != NULL) {
-        mem_free( opt_fonts->name );
-        opt_fonts->name = NULL;
-    }
-
-    if( opt_fonts->style != NULL) {
-        mem_free( opt_fonts->style );
-        opt_fonts->style = NULL;
-    }
-
-    current = opt_fonts->nxt;
-    while( current != NULL) {
-        old = current;
-
-        if( current->name != NULL) {
-            mem_free( current->name );
-            current->name = NULL;
+        while( *p == ' ' || *p == '\t' ) ++p;
+        for( k = 0; k < opt->parmcount; k++ ) {
+            if( tokennext == NULL )  break;
+            if( tokennext->bol ) break;
+            if( tokennext->token[ 0 ] == '(' ) break;
+            tokennext = tokennext->nxt;
         }
-
-        if( current->style != NULL) {
-            mem_free( current->style );
-            current->style = NULL;
-        }
-
-        current = current->nxt;
-        mem_free( old );
     }
-
-    mem_free( opt_fonts );
-    opt_fonts = NULL;
-
     return;
 }
 
-extern void cop_setup( void )
+extern void set_font2( option * opt, char * opt_scan_ptr, cmd_tok * tokennext )
 {
-    free_opt_fonts();    
+
+    out_msg( "WNG_IGN_OPTION %s\n", opt->option );
+    wng_count++;
+    if( opt->parmcount > 0 ) {
+        char    *p = opt_scan_ptr;
+        int     k;
+
+        while( *p == ' ' || *p == '\t' ) ++p;
+        for( k = 0; k < opt->parmcount; k++ ) {
+            if( tokennext == NULL )  break;
+            if( tokennext->bol ) break;
+            if( tokennext->token[ 0 ] == '(' ) break;
+            tokennext = tokennext->nxt;
+        }
+    }
     return;
 }
-
-extern void cop_teardown( void )
-{
-    return;
-}
-
 
 
