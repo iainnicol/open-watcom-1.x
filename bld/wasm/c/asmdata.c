@@ -47,7 +47,7 @@
 
 /* structure stuff from asmstruct */
 extern int              InitializeStructure( asm_sym *, asm_sym *, int );
-extern int              AddFieldToStruct( int );
+extern int              AddFieldToStruct( asm_sym *, int );
 extern int              GetStructSize( asm_sym * );
 
 #if defined( _STANDALONE_ )
@@ -842,6 +842,13 @@ int data_init( int sym_loc, int initializer_loc )
       {
          return( ERROR );
       }
+#if defined( _STANDALONE_ )
+      if( ( Parse_Pass == PASS_1 ) && ( sym->state != SYM_UNDEFINED ) )
+      {
+         AsmError( SYMBOL_ALREADY_DEFINED );
+         return( ERROR );
+      }
+#endif
    }
    switch( AsmBuffer[initializer_loc]->value )
    {
@@ -877,6 +884,8 @@ int data_init( int sym_loc, int initializer_loc )
          mem_type = MT_STRUCT;
          struct_sym = AsmLookup( AsmBuffer[initializer_loc]->string_ptr );
          no_of_bytes = GetStructSize( struct_sym );
+         if( Options.ideal )
+            sym->structure = struct_sym;
          break;
 #endif
       case T_DB:
@@ -910,6 +919,8 @@ int data_init( int sym_loc, int initializer_loc )
       AsmError( SYNTAX_ERROR );
       return( ERROR );
    }
+   if( sym != NULL )
+      sym->mem_type = mem_type;
 #if defined( _STANDALONE_ )
    if( sym_loc >= 0 && AsmBuffer[ sym_loc ]->value == T_LABEL )
    {
@@ -922,7 +933,7 @@ int data_init( int sym_loc, int initializer_loc )
       {
          if( Parse_Pass == PASS_1 )
          {
-            AddFieldToStruct( initializer_loc );
+            AddFieldToStruct( sym, initializer_loc );
             struct_field = TRUE;
          }
          else
@@ -935,7 +946,8 @@ int data_init( int sym_loc, int initializer_loc )
    if( More_Array_Element == TRUE )
    {
       More_Array_Element = FALSE;
-   } else if( sym_loc >= 0 )
+   }
+   else if( sym_loc >= 0 )
    {
 #if defined( _STANDALONE_ )
       /* defining a field in a structure */
@@ -943,10 +955,9 @@ int data_init( int sym_loc, int initializer_loc )
       {
          if( Parse_Pass == PASS_1 )
          {
-            sym->offset = AddFieldToStruct( initializer_loc );
+            sym->offset = AddFieldToStruct( sym, initializer_loc );
             struct_field = TRUE;
             sym->state = SYM_STRUCT_FIELD;
-            sym->mem_type = mem_type;
             if( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) == ERROR )
             {
                return( ERROR );
@@ -979,9 +990,9 @@ int data_init( int sym_loc, int initializer_loc )
          AsmError( SYMBOL_ALREADY_DEFINED );
          return( ERROR );
       }
+      sym->mem_type = mem_type;
 #endif
       sym->state = SYM_INTERNAL;
-      sym->mem_type = mem_type;
       BackPatch( sym );
    }
 #if defined( _STANDALONE_ )

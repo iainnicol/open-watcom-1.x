@@ -301,7 +301,8 @@ int jmp( expr_list *opndx )
          {
 #if defined( _STANDALONE_ )
             if( ( Code->info.token == T_CALL ) &&
-                ( Code->mem_type == MT_EMPTY ) && ( sym->mem_type == MT_FAR ) )
+                ( Code->mem_type == MT_EMPTY ) &&
+                ( sym->mem_type == MT_FAR ) )
             {
                FarCallToNear();
                return( SCRAP_INSTRUCTION );
@@ -664,7 +665,9 @@ int jmp( expr_list *opndx )
             case T_LOOPNEW:
             case T_LOOPNZW:
             case T_LOOPZW:
-               if( Code->mem_type != MT_EMPTY && Code->mem_type != MT_SHORT )
+               if( ( Code->mem_type != MT_EMPTY ) &&
+                   ( Code->mem_type != MT_SHORT ) &&
+                   ( Options.ideal == 0 ) )
                {
                   AsmError( ONLY_SHORT_DISPLACEMENT_IS_ALLOWED );
                   return( ERROR );

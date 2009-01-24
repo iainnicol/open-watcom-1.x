@@ -155,7 +155,7 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
    dir_node *seg;
 
    // all relative fixups should occure only at first pass and they signal forward references
-   // they must be removed after patching or skiped ( next processed as normal fixup )
+   // they must be removed after patching or skipped ( next processed as normal fixup )
    seg = GetSeg( sym );
    if( seg == NULL || fixup->def_seg != seg )
    {

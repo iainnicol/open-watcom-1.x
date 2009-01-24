@@ -33,6 +33,7 @@
 #include "asmins.h"
 #include "asmeval.h"
 #include "asmdefs.h"
+#include "directiv.h"
 
 #if defined( _STANDALONE_ )
 #include "myassert.h"
@@ -239,7 +240,13 @@ static int get_operand( expr_list *new, int *start, int end, bool (*is_expr)(int
    {
       case T_NUM:
          new->empty = FALSE;
-         new->type = EXPR_CONST;
+         if( ( Options.ideal ) && ( op_sq_bracket_level ) )
+         {
+            new->type = EXPR_ADDR;
+            new->indirect = TRUE;
+         }
+         else
+            new->type = EXPR_CONST;
          new->value = AsmBuffer[i]->value;
          break;
       case T_STRING:
@@ -364,17 +371,38 @@ static int get_operand( expr_list *new, int *start, int end, bool (*is_expr)(int
          }
          if( new->sym != NULL )
          {
-            if( new->sym->state == SYM_STRUCT )
+            if( ( new->sym->state == SYM_STRUCT  ) ||
+                ( ( Options.ideal ) && ( new->sym->mem_type == MT_STRUCT ) ) )
             {
                new->empty = FALSE;
                new->value = new->sym->offset;
                new->mbr = new->sym;
                new->sym = NULL;
                new->type = EXPR_ADDR;
+               if( ( Options.ideal ) && ( op_sq_bracket_level ) )
+               {
+                  Definition.struct_depth++;
+                  if( new->mbr->state == SYM_STRUCT )
+                  {
+                     Definition.curr_struct = (dir_node *)new->mbr;
+                     (*start)++; /* Skip structure override and process next token */
+                     return( get_operand( new, start, end, is_expr ) );
+                  }
+                  else
+                  {
+                     new->indirect = TRUE;
+                     Definition.curr_struct = (dir_node *)new->mbr->structure;
+                  }
+               }
                break;
             }
             else if( new->sym->state == SYM_STRUCT_FIELD )
             {
+               if( ( Options.ideal ) && ( Definition.struct_depth ) )
+               {
+                  Definition.struct_depth--;
+                  new->indirect = TRUE;
+               }
                new->empty = FALSE;
                new->mem_type = new->sym->mem_type;
                new->value = new->sym->offset;
@@ -1258,10 +1286,10 @@ static int calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
                      break;
                   default:
                      // find 'ptr' but no 'byte', 'word' etc in front of it
-                  if( error_msg )
-                     AsmError( NO_SIZE_GIVEN_BEFORE_PTR_OPERATOR );
-                  token_1->type = EXPR_UNDEF;
-                  return( ERROR );
+                     if( error_msg )
+                        AsmError( NO_SIZE_GIVEN_BEFORE_PTR_OPERATOR );
+                     token_1->type = EXPR_UNDEF;
+                     return( ERROR );
                }
                break;
             case T_SHORT:
@@ -2453,16 +2481,13 @@ extern int EvalOperand( int *start_tok, int count, expr_list *result, bool flag_
       num++;
    }
    op_sq_bracket_level = 0;
+   if( Options.ideal )
+      Definition.struct_depth = 0;
    error_msg = flag_msg;
-   if( evaluate( result, start_tok, *start_tok + num, PROC_BRACKET,
-                 is_expr2 ) == ERROR )
-   {
-      return( ERROR );
-   }
-   else
-   {
-      return( NOT_ERROR );
-   }
+   i = evaluate( result, start_tok, *start_tok + num, PROC_BRACKET, is_expr2 );
+   if( Options.ideal )
+      Definition.struct_depth = 0;
+   return( i );
 }
 
 #if 0

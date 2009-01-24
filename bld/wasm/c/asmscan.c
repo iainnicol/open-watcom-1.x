@@ -35,8 +35,12 @@
 
 #include "asmins.h"
 #include "asmdefs.h"
+#include "directiv.h"
 
-char                    *CurrString; // Current Input Line
+char                    *CurrString;   // Current Input Line
+#if defined( _STANDALONE_ )
+bool                    EnumDirective;
+#endif
 
 extern int              get_instruction_position( char *string );
 
@@ -503,6 +507,18 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
    }
    else
    {
+      if( Options.ideal )
+      {
+         int i = *buf_index;
+
+         if( ( ( i == 0 ) && ( Definition.struct_depth != 0 )  &&
+               !( AsmOpTable[count].rm_byte & ( OP_DIRECTIVE|OP_RES_ID ) ) ) ||
+             ( ( i > 0 ) && ( AsmBuffer[--i]->token == T_DOT ) ) )
+         {
+            buf->token = T_ID;
+            return( NOT_ERROR );
+         }
+      }
       buf->value = AsmOpTable[count].token;
       // count = AsmOpcode[count].position;
 
@@ -557,6 +573,9 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
                   buf->token = T_STRING;
                   buf->value = 0;
                   break;
+               case T_ENUM:
+                  EnumDirective = TRUE;
+                  break;
             } /* default do nothing */
 #endif
          }
@@ -588,6 +607,12 @@ static int get_special_symbol( struct asm_tok *buf,
    symbol = **input;
    switch( symbol )
    {
+#if defined( _STANDALONE_ )
+      case '{' :
+         if( EnumDirective == FALSE )  /* String delimiter? */
+            return( get_string( buf, input, output ) );
+      case '}' :
+#endif
       case '.' :
       case ',' :
       case '+' :
@@ -620,11 +645,12 @@ static int get_special_symbol( struct asm_tok *buf,
          *(*output)++ = *(*input)++;
          *(*output)++ = '\0';
          break;
+#else
+      case '{' :
 #endif
       case '\'' :
       case '"' :
       case '<' :
-      case '{' :
          /* string delimiters */
          /* fall through */
       default:
@@ -691,6 +717,7 @@ int AsmScan( char *string )
 
    CurrString = string;
    output_ptr = stringbuf;
+   EnumDirective = FALSE;
 
    ptr = string;
    // FIXME !!

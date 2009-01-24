@@ -112,14 +112,14 @@ static typeinfo TypeInfo[] =
 #define LOCAL_DEFAULT_SIZE       2
 #define DEFAULT_STACK_SIZE       1024
 
-#define ARGUMENT_STRING          " [bp+ "
-#define ARGUMENT_STRING_32       " [ebp+ "
-#define LOCAL_STRING             " [bp- "
-#define LOCAL_STRING_32          " [ebp- "
-#define IDEAL_ARGUMENT_STRING    " bp+ "
-#define IDEAL_ARGUMENT_STRING_32 " ebp+ "
-#define IDEAL_LOCAL_STRING       " bp- "
-#define IDEAL_LOCAL_STRING_32    " ebp- "
+#define ARGUMENT_STRING          "[bp+"
+#define ARGUMENT_STRING_32       "[ebp+"
+#define LOCAL_STRING             "[bp-"
+#define LOCAL_STRING_32          "[ebp-"
+#define IDEAL_ARGUMENT_STRING    "bp+"
+#define IDEAL_ARGUMENT_STRING_32 "ebp+"
+#define IDEAL_LOCAL_STRING       "bp-"
+#define IDEAL_LOCAL_STRING_32    "ebp-"
 
 static char             *Check4Mangler( int *i );
 static int              token_cmp( char **token, int start, int end );
@@ -131,6 +131,7 @@ extern  int_8           DefineProc;       // TRUE if the definition of procedure
                                           // has not ended
 extern char             EndDirectiveFound;
 extern struct asm_sym   *SegOverride;
+extern void             FreeASym( struct asm_sym *sym );
 
 seg_list                *CurrSeg;         // points to stack of opened segments
 uint                    LnamesIdx;        // Number of LNAMES definition
@@ -608,7 +609,7 @@ static void dir_add( dir_node *new, int tab )
    }
 }
 
-static void dir_init( dir_node *dir, int tab )
+void dir_init( dir_node *dir, int tab )
 /********************************************/
 /* Change node and insert it into the table specified by tab */
 {
@@ -666,6 +667,7 @@ static void dir_init( dir_node *dir, int tab )
          dir->e.procinfo->regslist = NULL;
          dir->e.procinfo->paralist = NULL;
          dir->e.procinfo->locallist = NULL;
+         dir->e.procinfo->labellist = NULL;
          break;
       case TAB_MACRO:
          sym->state = SYM_MACRO;
@@ -879,6 +881,23 @@ void FreeInfo( dir_node *dir )
             }
          }
 
+         labelcurr = dir->e.procinfo->labellist;
+         if( labelcurr != NULL )
+         {
+            for( ;; )
+            {
+               labelnext = labelcurr->next;
+               AsmFree( labelcurr->label );
+               AsmFree( labelcurr->replace );
+               if( labelcurr->sym != NULL )
+                  FreeASym( labelcurr->sym );
+               AsmFree( labelcurr );
+               if( labelnext == NULL )
+                  break;
+               labelcurr = labelnext;
+            }
+         }
+
          regcurr = dir->e.procinfo->regslist;
          if( regcurr != NULL )
          {
@@ -951,6 +970,8 @@ void FreeInfo( dir_node *dir )
          {
             AsmFree( ptr->initializer );
             AsmFree( ptr->value );
+            if( ptr->sym != NULL )
+               FreeASym( ptr->sym );
             next = ptr->next;
             AsmFree( ptr );
          }
@@ -1767,13 +1788,27 @@ int SegDef( int i )
    struct asm_sym *sym;
 
    if( Options.ideal )
-      n = i + 1;
-   else
-      n = i - 1;
-   if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) )   /* name present? */
    {
-      AsmError( SEG_NAME_MISSING );
-      return( ERROR );
+      n = i + 1;
+      if( ( AsmBuffer[n]->token == T_DIRECTIVE ) &&
+          ( ( AsmBuffer[n]->value == T_STACK ) ||
+            ( AsmBuffer[n]->value == T_CONST ) ) )
+         AsmBuffer[n]->token = T_ID;
+      if( ( AsmBuffer[i]->value == T_SEGMENT ) &&
+          ( AsmBuffer[n]->token != T_ID ) )
+      {
+         AsmError( SEG_NAME_MISSING );
+         return( ERROR );
+      }
+   }
+   else
+   {
+      n = i - 1;
+      if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) )
+      {
+         AsmError( SEG_NAME_MISSING );
+         return( ERROR );
+      }
    }
    name = AsmBuffer[n]->string_ptr;
    switch( AsmBuffer[i]->value )
@@ -2051,7 +2086,7 @@ int SegDef( int i )
             AsmError( SEGMENT_NOT_OPENED );
             return( ERROR );
          }
-         if( name )
+         if( AsmBuffer[n]->token == T_ID )
          {
             sym = AsmGetSymbol( name );
             if( sym == NULL )
@@ -2302,16 +2337,7 @@ int SimSeg( int i )
       return( ERROR );
    }
    ModuleInfo.cmdline = FALSE;
-   if( Options.ideal )
-   {
-      if( AsmBuffer[i]->value != T_STACK )
-         close_lastseg();
-   }
-   else
-   {
-      if( AsmBuffer[i]->value != T_DOT_STACK )
-         close_lastseg();
-   }
+   close_lastseg();
    buffer[0] = '\0';
    bit = ( ModuleInfo.defUse32 ) ? BIT32 : BIT16;
    type = AsmBuffer[i]->value;
@@ -2984,11 +3010,8 @@ int SymIs32( struct asm_sym *sym )
             curr = (dir_node *)sym;
             return( curr->e.extinfo->use32);
          }
-         else
-         {
-            return( ModuleInfo.use32 );
-         }
       }
+      return( ModuleInfo.use32 );
    }
    else if( curr->e.seginfo->segrec != NULL )
    {
@@ -3330,28 +3353,28 @@ static void size_override( char *buffer, int size )
       {
          default:
          case 0:
-            strcpy( buffer, " [" );
+            buffer[0] = '\0';
             break;
          case 1:
-            strcpy( buffer, " [byte " );
+            strcpy( buffer, "byte " );
             break;
          case 2:
-            strcpy( buffer, " [word " );
+            strcpy( buffer, "word " );
             break;
          case 4:
-            strcpy( buffer, " [dword " );
+            strcpy( buffer, "dword " );
             break;
          case 6:
-            strcpy( buffer, " [fword " );
+            strcpy( buffer, "fword " );
             break;
          case 8:
-            strcpy( buffer, " [qword " );
+            strcpy( buffer, "qword " );
             break;
          case 10:
-            strcpy( buffer, " [tbyte " );
+            strcpy( buffer, "tbyte " );
             break;
          case 16:
-            strcpy( buffer, " [oword " );
+            strcpy( buffer, "oword " );
             break;
       }
    }
@@ -3364,25 +3387,25 @@ static void size_override( char *buffer, int size )
             buffer[0] = '\0';
             break;
          case 1:
-            strcpy( buffer, " byte ptr " );
+            strcpy( buffer, "byte ptr " );
             break;
          case 2:
-            strcpy( buffer, " word ptr " );
+            strcpy( buffer, "word ptr " );
             break;
          case 4:
-            strcpy( buffer, " dword ptr " );
+            strcpy( buffer, "dword ptr " );
             break;
          case 6:
-            strcpy( buffer, " fword ptr " );
+            strcpy( buffer, "fword ptr " );
             break;
          case 8:
-            strcpy( buffer, " qword ptr " );
+            strcpy( buffer, "qword ptr " );
             break;
          case 10:
-            strcpy( buffer, " tbyte ptr " );
+            strcpy( buffer, "tbyte ptr " );
             break;
          case 16:
-            strcpy( buffer, " oword ptr " );
+            strcpy( buffer, "oword ptr " );
             break;
       }
    }
@@ -3391,16 +3414,15 @@ static void size_override( char *buffer, int size )
 int LocalDef( int i )
 /*******************/
 {
-   char           *string;
    int            type;
    label_list     *local;
    label_list     *curr;
    proc_info      *info;
-   struct asm_sym *sym;
+   struct asm_sym *sym, *tmp;
 
 /*
 
-    LOCAL symbol[,symbol]...
+    LOCAL symbol[,symbol]...[=symbol]
 
     symbol:
           name [[count]] [:[type]]
@@ -3421,9 +3443,8 @@ int LocalDef( int i )
 
    info = CurrProc->e.procinfo;
 
-   for( i++; i< Token_Count; i++ )
+   for( i++; i < Token_Count; i++ )
    {
-      string = AsmBuffer[i]->string_ptr;
       if( AsmBuffer[i]->token != T_ID )
       {
          AsmError( LABEL_IS_EXPECTED );
@@ -3450,6 +3471,7 @@ int LocalDef( int i )
       strcpy( local->label, AsmBuffer[i++]->string_ptr );
       local->size = LOCAL_DEFAULT_SIZE;
       local->replace = NULL;
+      local->sym = NULL;
       local->factor = 1;
       local->next = NULL;
 
@@ -3484,13 +3506,28 @@ int LocalDef( int i )
 
          type = token_cmp( &(AsmBuffer[i]->string_ptr), TOK_EXT_BYTE,
                            TOK_EXT_TBYTE );
+         if( ( type == ERROR ) && ( Options.ideal ) )
+         {
+            tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
+            if( tmp != NULL )
+            {
+               if( tmp->state == SYM_STRUCT )
+               {
+                  type = MT_STRUCT;
+                  local->sym = tmp;
+               }
+            }
+         }
          if( type == ERROR )
          {
             AsmError( INVALID_QUALIFIED_TYPE );
             return( ERROR );
          }
          sym->mem_type = TypeInfo[type].value;
-         local->size = find_size( type );
+         if( type == MT_STRUCT )
+            local->size = ( ( dir_node *)tmp)->e.structinfo->size;
+         else
+            local->size = find_size( type );
       }
 
       info->localsize += ( local->size * local->factor );
@@ -3511,13 +3548,380 @@ int LocalDef( int i )
          curr->next = local;
       }
 
-      /* go past comma */
-      i++;
-      if( ( i < Token_Count ) && ( AsmBuffer[i]->token != T_COMMA ) )
+      switch( AsmBuffer[++i]->token )
       {
-         AsmError( EXPECTING_COMMA );
+         case T_DIRECTIVE:
+            if( ( AsmBuffer[i]->value == T_EQU2 ) &&
+                ( AsmBuffer[i+1]->token == T_ID ) &&
+                ( AsmBuffer[i+2]->token == T_FINAL ) )
+            {
+               i++;
+               StoreConstantNumber( AsmBuffer[i++]->string_ptr, info->localsize, TRUE );
+            }
+            break;
+         case T_COMMA:
+            continue;
+         case T_FINAL:
+         default:
+            break;
+      }
+      break;
+   }
+   if( AsmBuffer[i]->token != T_FINAL )
+   {
+      AsmError( SYNTAX_ERROR );
+      return( ERROR );
+   }
+   return( NOT_ERROR );
+}
+
+int ArgDef( int i )
+/*******************/
+{
+   char           *token;
+   char           *typetoken;
+   proc_info      *info;
+   label_list     *paranode;
+   label_list     *paracurr;
+   int            type;
+   struct asm_sym *param, *tmp;
+
+/*
+
+    ARG argument[,argument]...[=symbol]
+
+    argument:
+          name [[count]] [:[type]]
+    count:
+          number of array elements, default is 1
+    type:
+          one of BYTE,SBYTE,WORD,SWORD,DWORD,SDWORD,PWORD,FWORD,TBYTE, default is WORD
+
+ */
+
+   if( DefineProc == FALSE )
+   {
+      AsmError( ARG_MUST_FOLLOW_PROC );
+      return( ERROR );
+   }
+
+   /**/myassert( CurrProc != NULL );
+
+   info = CurrProc->e.procinfo;
+
+   for( i++; i < Token_Count; i++ )
+   {
+      if( AsmBuffer[i]->token != T_ID )
+      {
+         AsmError( LABEL_IS_EXPECTED );
          return( ERROR );
       }
+
+      /* read symbol */
+      token = AsmBuffer[i++]->string_ptr;
+
+      /* read colon */
+      if( AsmBuffer[i]->token != T_COLON )
+      {
+         AsmError( COLON_EXPECTED );
+         return( ERROR );
+      }
+      i++;
+
+      /* now read qualified type */
+      typetoken = AsmBuffer[i]->string_ptr;
+
+      type = token_cmp( &typetoken, TOK_EXT_BYTE, TOK_EXT_TBYTE );
+
+      if( ( type == ERROR ) && ( Options.ideal ) )
+      {
+         tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
+         if( tmp != NULL )
+         {
+            if( tmp->state == SYM_STRUCT )
+               type = MT_STRUCT;
+         }
+      }
+      if( type == ERROR )
+      {
+         type = token_cmp( &typetoken, TOK_PROC_VARARG, TOK_PROC_VARARG );
+         if( type == ERROR )
+         {
+            AsmError( INVALID_QUALIFIED_TYPE );
+            return( ERROR );
+         }
+         else
+         {
+            switch( CurrProc->sym.langtype )
+            {
+               case LANG_NONE:
+               case LANG_BASIC:
+               case LANG_FORTRAN:
+               case LANG_PASCAL:
+                  AsmError( VARARG_REQUIRES_C_CALLING_CONVENTION );
+                  return( ERROR );
+               default:
+                  break;
+            }
+         }
+      }
+
+      param = AsmLookup( token );
+      if( param == NULL )
+         return( ERROR );
+
+      if( param->state != SYM_UNDEFINED )
+      {
+         AsmErr( SYMBOL_PREVIOUSLY_DEFINED, param->name );
+         return( ERROR );
+      }
+      else
+      {
+         param->state = SYM_INTERNAL;
+         param->mem_type = TypeInfo[type].value;
+      }
+
+      paranode = AsmAlloc( sizeof( label_list ) );
+      paranode->is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
+      paranode->label = AsmAlloc( strlen( token ) + 1 );
+      paranode->replace = NULL;
+      if( type == MT_STRUCT )
+      {
+         paranode->sym = tmp;
+         paranode->size = ( ( dir_node *)tmp)->e.structinfo->size;
+      }
+      else
+      {
+         paranode->size = find_size( type );
+         paranode->sym = NULL;
+      }
+      strcpy( paranode->label, token );
+
+      if( Use32 )
+      {
+         info->parasize += ROUND_UP( paranode->size, 4 );
+      }
+      else
+      {
+         info->parasize += ROUND_UP( paranode->size, 2 );
+      }
+      info->is_vararg |= paranode->is_vararg;
+
+      switch( CurrProc->sym.langtype )
+      {
+         case LANG_BASIC:
+         case LANG_FORTRAN:
+         case LANG_PASCAL:
+            /* Parameters are stored in reverse order */
+            paranode->next = info->paralist;
+            info->paralist = paranode;
+            break;
+         default:
+            paranode->next = NULL;
+            if( info->paralist == NULL )
+            {
+               info->paralist = paranode;
+            }
+            else
+            {
+               for( paracurr = info->paralist;; paracurr = paracurr->next )
+               {
+                  if( paracurr->next == NULL )
+                  {
+                     break;
+                  }
+               }
+               paracurr->next = paranode;
+            }
+            break;
+      }
+      switch( AsmBuffer[++i]->token )
+      {
+         case T_DIRECTIVE:
+            if( ( AsmBuffer[i]->value == T_EQU2 ) &&
+                ( AsmBuffer[i+1]->token == T_ID ) &&
+                ( AsmBuffer[i+2]->token == T_FINAL ) )
+            {
+               i++;
+               StoreConstantNumber( AsmBuffer[i++]->string_ptr, info->localsize, TRUE );
+            }
+            break;
+         case T_COMMA:
+            continue;
+         case T_FINAL:
+         default:
+            break;
+      }
+      break;
+   }
+   if( AsmBuffer[i]->token != T_FINAL )
+   {
+      AsmError( SYNTAX_ERROR );
+      return( ERROR );
+   }
+   return( NOT_ERROR );
+}
+
+int UsesDef( int i )
+/*******************/
+{
+   char        *token;
+   proc_info   *info;
+   regs_list   *regist;
+   regs_list   *temp_regist;
+
+   if( DefineProc == FALSE )
+   {
+      AsmError( USES_MUST_FOLLOW_PROC );
+      return( ERROR );
+   }
+
+   /**/myassert( CurrProc != NULL );
+
+   info = CurrProc->e.procinfo;
+
+   for( i++; ( i < Token_Count ) && ( AsmBuffer[i]->token != T_FINAL ); i++ )
+   {
+      token = AsmBuffer[i]->string_ptr;
+      regist = AsmAlloc( sizeof( regs_list ));
+      regist->next = NULL;
+      regist->reg = AsmAlloc( strlen(token) + 1 );
+      strcpy( regist->reg, token );
+      if( info->regslist == NULL )
+      {
+         info->regslist = regist;
+      }
+      else
+      {
+         for( temp_regist = info->regslist;;
+              temp_regist = temp_regist->next )
+         {
+            if( temp_regist->next == NULL )
+            {
+               break;
+            }
+         }
+         temp_regist->next = regist;
+      }
+      if( AsmBuffer[++i]->token != T_COMMA )
+         break;
+   }
+   if( AsmBuffer[i]->token != T_FINAL )
+   {
+      AsmError( SYNTAX_ERROR );
+      return( ERROR );
+   }
+   return( NOT_ERROR );
+}
+
+int EnumDef( int i )
+{
+   char           *name, string[ MAX_LINE_LEN ];
+   int            n, enums, in_braces;
+   long           count;
+   struct asm_sym *sym;
+   dir_node       *dir;
+
+   /*
+    name ENUM [var [, var...]] {
+              [var [, var]...]
+              [var [, var]...] }
+    or
+    ENUM name [var [, var...]] {
+              [var [, var]...]
+              [var [, var]...] }
+
+    var: name [= number]
+    */
+   if( Options.ideal )
+      n = i + 1;
+   else
+      n = --i;
+   if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) /* name present? */
+   {
+      AsmError( ENUM_NAME_MISSING );
+      return( ERROR );
+   }
+   count = enums = in_braces = 0;
+   name = AsmBuffer[n]->string_ptr;
+   if( StoreConstantNumber( name, count, TRUE ) == ERROR )
+      return( ERROR );
+   n = 2;
+   do
+   {
+      for( i = n++; ; i++ )
+      {
+         switch( AsmBuffer[i]->token )
+         {
+            case T_OP_BRACE:
+               in_braces++;
+               continue;
+            case T_CL_BRACE:
+               in_braces--;
+               continue;
+            case T_FINAL:
+               n = 0;
+               break;
+            case T_ID:
+               name = AsmBuffer[i]->string_ptr;
+               break;
+            default:
+               AsmError( SYNTAX_ERROR );
+               return( ERROR );
+         }
+         if( n )
+         {
+            if( ( AsmBuffer[i+1]->token == T_DIRECTIVE ) &&
+                ( AsmBuffer[i+1]->value == T_EQU2 ) )
+            {
+               i += 2;
+               switch( AsmBuffer[i]->token )
+               {
+                  case T_NUM:
+                     count = AsmBuffer[i]->value;
+                     break;
+                  case T_ID:
+                     sym = AsmGetSymbol( AsmBuffer[i]->string_ptr );
+                     if( ( sym != NULL ) && ( sym->state == SYM_CONST ) )
+                     {
+                        dir = ( dir_node * ) sym;
+                        if( dir->e.constinfo->data[0].token == T_NUM )
+                        {
+                           count = dir->e.constinfo->data[0].value;
+                           break;
+                        }
+                     }
+                  default:
+                     AsmError( EXPECTING_NUMBER );
+                     return( ERROR );
+               }
+            }
+            if( StoreConstantNumber( name, count++, TRUE ) == ERROR )
+               return( ERROR );
+            enums++;
+            if( AsmBuffer[i+1]->token == T_COMMA )
+               i++;
+            continue;
+         }
+         else
+         {
+            if( in_braces )
+            {
+               if( ScanLine( string, MAX_LINE_LEN ) == NULL )
+               {
+                  AsmError( UNEXPECTED_END_OF_FILE );
+                  return( ERROR );
+               }
+               Token_Count = AsmScan( string );
+            }
+         }
+         break;
+      }
+   } while( in_braces );
+   if( ( AsmBuffer[i]->token != T_FINAL ) || ( enums == 0 ) )
+   {
+      AsmError( SYNTAX_ERROR );
+      return( ERROR );
    }
    return( NOT_ERROR );
 }
@@ -3619,7 +4023,7 @@ static int proc_exam( dir_node *proc, int i )
                else
                {
                   for( temp_regist = info->regslist;;
-                          temp_regist = temp_regist->next )
+                       temp_regist = temp_regist->next )
                   {
                      if( temp_regist->next == NULL )
                      {
@@ -3874,7 +4278,7 @@ int ProcEnd( int i )
    if( Options.ideal )
    {
       ProcFini();
-      if( AsmBuffer[i+1]->token == T_ID )
+      if( AsmBuffer[++i]->token == T_ID )
       {
          if( ( (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr ) != CurrProc ) )
             AsmError( PROC_NAME_DOES_NOT_MATCH );
@@ -3944,10 +4348,16 @@ int WritePrologue( void )
          offset += ROUND_UP( size, align );
          size_override( buffer, curr->size );
          if( Options.ideal )
-            sprintf( buffer + strlen(buffer), "%s%d] ",
-                     Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+         {
+            if( curr->sym != NULL )
+               sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                        Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+            else
+               sprintf( buffer + strlen(buffer), "%s%d",
+                        Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+         }
          else
-            sprintf( buffer + strlen(buffer), "%s%d] ",
+            sprintf( buffer + strlen(buffer), "%s%d]",
                      Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
          curr->replace = AsmAlloc( strlen( buffer ) + 1 );
          strcpy( curr->replace, buffer );
@@ -3983,19 +4393,33 @@ int WritePrologue( void )
             if( Use32 )
             {
                if( Options.ideal )
-                  strcat( buffer, IDEAL_ARGUMENT_STRING_32 );
+               {
+                  if( curr->sym != NULL )
+                     sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                              IDEAL_ARGUMENT_STRING_32, offset );
+                  else
+                     sprintf( buffer + strlen(buffer), "%s%d",
+                              IDEAL_ARGUMENT_STRING_32, offset );
+               }
                else
-                  strcat( buffer, ARGUMENT_STRING_32 );
+                     sprintf( buffer + strlen(buffer), "%s%d]",
+                              ARGUMENT_STRING_32, offset );
             }
             else
             {
                if( Options.ideal )
-                  strcat( buffer, IDEAL_ARGUMENT_STRING );
+               {
+                  if( curr->sym != NULL )
+                     sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
+                              IDEAL_ARGUMENT_STRING, offset );
+                  else
+                     sprintf( buffer + strlen(buffer), "%s%d",
+                              IDEAL_ARGUMENT_STRING, offset );
+               }
                else
-                  strcat( buffer, ARGUMENT_STRING );
+                     sprintf( buffer + strlen(buffer), "%s%d]",
+                              ARGUMENT_STRING, offset );
             }
-            sprintf( buffer + strlen( buffer ), "%d", offset );
-            strcat( buffer, "] " );
             offset += ROUND_UP( curr->size, align );
          }
          if( *buffer == '\0' )
@@ -4043,11 +4467,11 @@ int WritePrologue( void )
          // SUB  ESP, the number of localbytes
          strcpy( buffer, "push ebp" );
          InputQueueLine( buffer );
-         strcpy( buffer, "mov ebp, esp" );
+         strcpy( buffer, "mov ebp,esp" );
          if( info->localsize != 0 )
          {
             InputQueueLine( buffer );
-            strcpy( buffer, "sub esp, " );
+            strcpy( buffer, "sub esp," );
             sprintf( buffer+strlen(buffer), "%d", info->localsize );
          }
       }
@@ -4059,11 +4483,11 @@ int WritePrologue( void )
          // SUB  SP, the number of localbytes
          strcpy( buffer, "push bp" );
          InputQueueLine( buffer );
-         strcpy( buffer, "mov bp, sp" );
+         strcpy( buffer, "mov bp,sp" );
          if( info->localsize != 0 )
          {
             InputQueueLine( buffer );
-            strcpy( buffer, "sub sp, " );
+            strcpy( buffer, "sub sp," );
             sprintf( buffer+strlen(buffer), "%d", info->localsize );
          }
       }
@@ -4180,7 +4604,7 @@ static void write_epilogue( void )
       // POP EBP
       if( info->localsize != 0 )
       {
-         strcpy( buffer, "mov esp, ebp" );
+         strcpy( buffer, "mov esp,ebp" );
          InputQueueLine( buffer );
       }
       strcpy( buffer, "pop ebp" );
@@ -4192,7 +4616,7 @@ static void write_epilogue( void )
       // POP BP
       if( info->localsize != 0 )
       {
-         strcpy( buffer, "mov sp, bp" );
+         strcpy( buffer, "mov sp,bp" );
          InputQueueLine( buffer );
       }
       strcpy( buffer, "pop bp" );

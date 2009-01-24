@@ -183,6 +183,8 @@ int directive( int i, long direct )
         return( ProcDef(i) );
       case T_ENDP:
          return( ProcEnd(i) );
+      case T_ENUM:
+         return( EnumDef( i ) );
       case T_DOT_CODE:
       case T_DOT_STACK:
       case T_DOT_DATA:
@@ -203,6 +205,9 @@ int directive( int i, long direct )
       case T_UFARDATA:
       case T_CONST:
          return( SimSeg(i) );
+      case T_WARN:
+      case T_NOWARN:
+         return( NOT_ERROR ); /* Not implemented yet */
       case T_DOT_ALPHA:
       case T_DOT_SEQ:
       case T_DOT_LIST:
@@ -351,6 +356,10 @@ int directive( int i, long direct )
          return( MacroEnd( FALSE ) );
       case T_EXITM:
          return( MacroEnd( TRUE ) );
+      case T_ARG:
+         return( Parse_Pass == PASS_1 ? ArgDef(i) : NOT_ERROR );
+      case T_USES:
+         return( Parse_Pass == PASS_1 ? UsesDef(i) : NOT_ERROR );
       case T_LOCAL:
          return( Parse_Pass == PASS_1 ? LocalDef(i) : NOT_ERROR );
       case T_COMMENT:

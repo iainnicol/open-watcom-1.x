@@ -19,7 +19,7 @@
 *    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
 *    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
 *    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
+*    NON-INFRINGEMENT. Please see txhe License for the specific language
 *    governing rights and limitations under the License.
 *
 *  ========================================================================
@@ -142,14 +142,14 @@ int ExpandSymbol( int i, bool early_only )
 int ExpandProcString( int index )
 /*******************************/
 {
-   int_8       i;
-   int_8       cnt;
-   int_8       count = 0;     /* number of words in the name string */
-   char        *string;
-   char        *word;
-   char        *replace = NULL;
-   char        buffer[MAX_LINE_LEN];
-   label_list  *label;
+   int_8          i;
+   int_8          cnt;
+   int_8          count = 0;  /* number of words in the name string */
+   char           *string;
+   char           *word;
+   char           *replace = NULL;
+   char           buffer[MAX_LINE_LEN];
+   label_list     *label;
 
    string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
    strcpy( string, AsmBuffer[index]->string_ptr );
@@ -162,9 +162,7 @@ int ExpandProcString( int index )
       /**/myassert( CurrProc != NULL );
       label = label_cmp( word, CurrProc->e.procinfo->paralist );
       if( label == NULL )
-      {
          label = label_cmp( word, CurrProc->e.procinfo->locallist );
-      }
       if( label != NULL )
       {
          if( label->replace != NULL )
@@ -172,7 +170,6 @@ int ExpandProcString( int index )
             replace = label->replace;
          }
       }
-
       if( replace != NULL )
       {
          if( *replace == '\0' )
@@ -215,7 +212,7 @@ int ExpandProcString( int index )
    /* now we need to build the new line string to pass through the scanner */
    buffer[0] = '\0';
    /* NOTE: if we have a T_DIRECTIVE, token_count is always set to 1 !??! */
-   for( i=0; i < Token_Count; i++ )
+   for( i = 0; i < Token_Count; i++ )
    {
       if( i != index )
       {
@@ -298,6 +295,56 @@ int StoreConstant( char *name, char *value, bool redefine )
 {
    AsmScan( value );
    return( createconstant( name, FALSE, 0, redefine, FALSE ) );
+}
+
+int StoreConstantNumber( char *name, long value, bool redefine )
+{
+   struct asm_tok *new;
+   dir_node       *dir;
+   struct asm_sym *sym;
+
+   sym = AsmGetSymbol( name );
+
+   /* if we've never seen it before, put it in */
+   if( sym == NULL )
+   {
+      dir = dir_insert( name, TAB_CONST );
+      if( dir == NULL )
+      {
+         return( ERROR );
+      }
+      dir->e.constinfo->redefine = redefine;
+      dir->e.constinfo->expand_early = FALSE;
+   }
+   else
+   {
+      /* check if it can be redefined */
+      dir = (dir_node *)sym;
+      if( sym->state == SYM_UNDEFINED )
+      {
+         dir_change( dir, TAB_CONST );
+         dir->e.constinfo->redefine = redefine;
+         dir->e.constinfo->expand_early = FALSE;
+      }
+      else if( ( sym->state != SYM_CONST ) ||
+               ( ( dir->e.constinfo->redefine == FALSE ) &&
+               ( Parse_Pass == PASS_1 ) ) )
+      {
+         /* error */
+         AsmError( LABEL_ALREADY_DEFINED );
+         return( ERROR );
+      }
+   }
+
+   new = AsmAlloc( sizeof( struct asm_tok ) );
+   memset( new[0].bytes, 0, sizeof( new[0].bytes ) );
+   new[0].token = T_NUM;
+   new[0].value = value;
+   new[0].string_ptr = NULL;
+   FreeConstData( dir->e.constinfo );
+   dir->e.constinfo->count = 1;
+   dir->e.constinfo->data = new;
+   return( NOT_ERROR );
 }
 
 void MakeConstantUnderscored( int token )

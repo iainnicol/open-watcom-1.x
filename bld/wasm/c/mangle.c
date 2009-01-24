@@ -111,7 +111,7 @@ static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
    char     *name;
    dir_node *dir = (dir_node *)sym;
 
-   if( !Options.mangle_stdcall )
+   if( ( !Options.mangle_stdcall ) || ( Options.ideal ) )
       return( AsmMangler( sym, buffer ) );
 
    if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) )

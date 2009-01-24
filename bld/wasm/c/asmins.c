@@ -1078,6 +1078,85 @@ static int proc_check( void )
    return( TRUE );
 }
 
+int expand_call( int index )
+{
+   int   i = index + 1;
+   char  *arglist[16];
+   int   argindex, argcount, cleanup, reversed, regs;
+   char  buffer[ MAX_LINE_LEN ];
+
+   argcount = argindex = cleanup = reversed = regs = 0;
+   switch( AsmBuffer[index]->value )
+   {
+      case T_C:
+      case T_SYSCALL:
+         cleanup++;
+      case T_STDCALL:
+      case T_WATCOM_C:
+         reversed++;
+      case T_PASCAL:
+         for( ; ; )
+         {
+            if( AsmBuffer[i]->token == T_FINAL )
+               break;
+            if( ( AsmBuffer[i]->token != T_COMMA ) ||
+                ( AsmBuffer[i+1]->token == T_FINAL ) )
+            {
+               AsmError( SYNTAX_ERROR );
+               return ( ERROR );
+            }
+            i++;
+            arglist[argcount] = AsmBuffer[i++]->string_ptr;
+            if( ++argcount > 16 )
+            {
+               AsmError( TOO_MANY_ARGS );
+               return( ERROR );
+            }
+         }
+         break;
+      case T_NOLANGUAGE:
+         if( AsmBuffer[i]->token == T_FINAL )
+            return( NOT_ERROR );
+      default:
+         AsmError( SYNTAX_ERROR );  /* Maybe implemented later */
+         return( ERROR );
+   }
+   /* put parameters on top of stack */
+   if( reversed )  /* Reversed order (right to left)*/
+   {
+      i = argcount;
+      if( AsmBuffer[index]->value == T_WATCOM_C )
+         regs = 4;
+      while( i > regs )
+      {
+         sprintf( buffer, "push %s", arglist[--i] );
+         InputQueueLine( buffer );
+      }
+   }
+   else
+   {
+      for( i = 0; i < argcount; i++ )
+      {
+         sprintf( buffer, "push %s", arglist[i] );
+         InputQueueLine( buffer );
+      }
+   }
+   *buffer = 0;
+   /* add original line up to before language */
+   for( i = 0; i < index; i++ )
+      sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i]->string_ptr );
+   InputQueueLine( buffer );
+   /* add cleanup after call */
+   if( cleanup && argcount )
+   {
+      if( Code->use32 )
+         sprintf( buffer, "add esp,%d", argcount << 2 );
+      else
+         sprintf( buffer, "add sp,%d", argcount << 1 );
+      InputQueueLine( buffer );
+   }
+   return( NOT_ERROR );
+}
 #endif
 
 static int process_jumps( expr_list *opndx )
@@ -1094,7 +1173,8 @@ static int process_jumps( expr_list *opndx )
    flag = ( opndx->explicit ) ? TRUE : FALSE ;
    if( ptr_operator( opndx->mem_type, flag ) == ERROR )
       return( ERROR );
-   if( ptr_operator( MT_PTR, flag ) == ERROR ) {
+   if( ptr_operator( MT_PTR, flag ) == ERROR )
+   {
       return( ERROR );
    }
    if( opndx->mbr != NULL )
@@ -2315,7 +2395,7 @@ int AsmParse( void )
   with the switch statement;
 */
 {
-   int               i;
+   int               i, n;
    OPNDTYPE          cur_opnd = OP_NONE;
    OPNDTYPE          last_opnd = OP_NONE;
    struct asm_code   *rCode = Code;
@@ -2432,6 +2512,27 @@ int AsmParse( void )
                   in_epilogue = 0;
                   rCode->info.token = AsmBuffer[i]->value;
                   break;
+               case T_CALL:
+                  for( n = i + 1; n < Token_Count; n++ )
+                  {
+                     if( AsmBuffer[n]->token == T_RES_ID )
+                     {
+                        switch( AsmBuffer[n]->value )
+                        {
+                           case T_NOLANGUAGE:
+                           case T_C:
+                           case T_SYSCALL:
+                           case T_STDCALL:
+                           case T_PASCAL:
+                           case T_FORTRAN:
+                           case T_BASIC:
+                           case T_WATCOM_C:
+                              return( expand_call( n ) );
+                           default:
+                              break;
+                        }
+                     }
+                  }
 #endif
                default:
                   rCode->info.token = AsmBuffer[i]->value;
@@ -2499,9 +2600,9 @@ int AsmParse( void )
          case T_ID:
 #if defined( _STANDALONE_ )
             if( !( ( AsmBuffer[i+1]->token == T_DIRECTIVE )
-                && ( ( AsmBuffer[i+1]->value == T_EQU )
-                || ( AsmBuffer[i+1]->value == T_EQU2 )
-                || ( AsmBuffer[i+1]->value == T_TEXTEQU ) ) ) )
+                && ( ( AsmBuffer[i+1]->value == T_EQU ) ||
+                     ( AsmBuffer[i+1]->value == T_EQU2 ) ||
+                     ( AsmBuffer[i+1]->value == T_TEXTEQU ) ) ) )
             {
                switch( ExpandSymbol( i, FALSE ) )
                {
@@ -2646,7 +2747,7 @@ int AsmParse( void )
             i--;
             break;
          case T_COLON:
-            if ( last_opnd == OP_LABEL )
+            if( last_opnd == OP_LABEL )
             {
                if( AsmBuffer[i+1]->token != T_RES_ID )
                {
@@ -3081,7 +3182,8 @@ static int check_size( void )
 #if defined( _STANDALONE_ )
                      if( Parse_Pass == PASS_1 )
                      {
-                        AsmWarn( 1, ASSUMING_DWORD );
+                        if( Options.ideal == 0 )
+                           AsmWarn( 1, ASSUMING_DWORD );
                      }
 #endif
                   }
@@ -3093,7 +3195,8 @@ static int check_size( void )
 #if defined( _STANDALONE_ )
                      if( Parse_Pass == PASS_1 )
                      {
-                        AsmWarn( 1, ASSUMING_WORD );
+                        if( Options.ideal == 0 )
+                           AsmWarn( 1, ASSUMING_WORD );
                      }
 #endif
                   }
@@ -3104,7 +3207,8 @@ static int check_size( void )
 #if defined( _STANDALONE_ )
                      if( Parse_Pass == PASS_1 )
                      {
-                        AsmWarn( 1, ASSUMING_BYTE );
+                        if( Options.ideal == 0 )
+                           AsmWarn( 1, ASSUMING_BYTE );
                      }
 #endif
                   }
@@ -3142,7 +3246,8 @@ static int check_size( void )
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) )
                         {
-                           AsmWarn( 1, ASSUMING_BYTE );
+                           if( Options.ideal == 0 )
+                              AsmWarn( 1, ASSUMING_BYTE );
                         }
 #endif
                         break;
@@ -3152,7 +3257,8 @@ static int check_size( void )
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) )
                         {
-                           AsmWarn( 1, ASSUMING_WORD );
+                           if( Options.ideal == 0 )
+                              AsmWarn( 1, ASSUMING_WORD );
                         }
 #endif
                         if( Code->use32 )
@@ -3164,7 +3270,8 @@ static int check_size( void )
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) )
                         {
-                           AsmWarn( 1, ASSUMING_DWORD );
+                           if( Options.ideal == 0 )
+                              AsmWarn( 1, ASSUMING_DWORD );
                         }
 #endif
                         break;

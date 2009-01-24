@@ -3,6 +3,7 @@ addr
 alias
 align
 .alpha
+arg
 assume
 basic
 .break
@@ -37,6 +38,7 @@ endm
 endp
 ends
 .endw
+enum
 eq
 equ
 equ2
@@ -51,7 +53,6 @@ equ2
 .errnb
 .errndef
 .errnz
-error
 even
 .exit
 exitcode
@@ -122,8 +123,10 @@ name
 ne
 nearstack
 .nocref
+nolanguage
 .nolist
 nothing
+nowarn
 opattr
 option
 org
@@ -200,6 +203,7 @@ use16
 use32
 uses
 vararg
+warn
 watcom_c
 .while
 width
