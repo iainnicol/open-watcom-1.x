@@ -5,7 +5,7 @@
 		P486
 		INCLUDE	'ZDOSDRV.INC'
 		INCLUDE	'SEGMENTS.INC'
-		MODEL	USE32 SMALL
+		DOSSEG
 ;
 ; Driver stack frame
 ;

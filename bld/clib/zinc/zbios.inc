@@ -171,7 +171,7 @@ STRUC		VMODE
 Mode		DB	?				; Current video mode
 Columns		DB	?				; Number of video columns
 Rows		DB	?				; Number of video rows
-Page		DB	?				; Current video page
+PageNr		DB	?				; Current video page
 ENDS
 ;
 ; Disk parameters structure

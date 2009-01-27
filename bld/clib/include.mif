@@ -64,7 +64,7 @@ include_a_qnx      =
 include_a_windows  =
 include_a_winnt    =
 include_a_linux    =
-include_a_zdos     =
-include_a_zdosdrv  =
+include_a_zdos     = -i"$(clib_dir)/zinc"
+include_a_zdosdrv  = -i"$(clib_dir)/zinc"
 
 include_a_path = $(include_default) $(include_a_$(system)) $(include_watcom)

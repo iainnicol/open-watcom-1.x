@@ -240,5 +240,5 @@ CurrencyFormat	DB	?				; Currency format bit field
 Decimals	DB	?				; Number of digits after decimal in currency
 TimeFormat	DB	?				; 12-hour or 24-hour format
 DataSeparator	DB	2 DUP (?)			; Datalist separator
-CaseMap		DD	?				; Address of case mapping routine
+CaseMapping	DD	?				; Address of case mapping routine
 ENDS
