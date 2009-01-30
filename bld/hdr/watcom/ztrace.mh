@@ -56,7 +56,7 @@ enum
    TRACE_THREAD_TERMINATED,
    TRACE_OK,
    TRACE_ERROR
-}
+};
 
 /* Structures */
 
