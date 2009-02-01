@@ -24,46 +24,31 @@
 *
 *  ========================================================================
 *
-* Description:  IPF Input file reader
+* Description:  Process acviewport tag
+*
+*   :ddf
+*       res=[0-9]+
 *
 ****************************************************************************/
 
+#ifndef DDF_INCLUDED
+#define DDF_INCLUDED
 
-#include "ipffile.hpp"
-#include "errors.hpp"
+#include <cstdint>
+#include "element.hpp"
 
-IpfFile::IpfFile( const std::wstring*  fname ) : IpfData(), fileName ( fname )
-{
-    char buffer[ PATH_MAX ];
+class Ddf : public Element {
+public:
+    Ddf( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Element( d, p, f, r, c ), res( 0 ) { };
+    ~Ddf() { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell );
+private:
+    Ddf( const Ddf& rhs );              //no copy
+    Ddf& operator=( const Ddf& rhs );   //no assignment
+    std::uint16_t res;
+    Lexer::Token parseAttributes( Lexer* lexer );
+};
 
-    std::wcstombs( buffer, fname->c_str(), sizeof( buffer ) );
-    if(( stream = std::fopen( buffer, "r" ) ) == 0)
-        throw FatalIOError( ERR_OPEN, *fileName );
-}
-/*****************************************************************************/
-//Read a character
-//Returns EOB if end-of-file reached
-std::wint_t IpfFile::get()
-{
-    wchar_t ch( std::fgetwc( stream ) );
-    incCol();
-    if( ch == L'\n' ) {
-        incLine();
-        resetCol();
-    }
-    else if( ch == WEOF ) {
-        ch = EOB;
-        if( !std::feof( stream ) )
-            throw FatalIOError( ERR_READ, *fileName );
-    }
-    return ch;
-}
-/*****************************************************************************/
-void IpfFile::unget( wchar_t ch )
-{
-    std::ungetwc( ch, stream );
-    decCol();
-    if( ch == L'\n' )
-        decLine();
-}
-
+#endif //DDF_INCLUDED

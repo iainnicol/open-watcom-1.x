@@ -24,46 +24,43 @@
 *
 *  ========================================================================
 *
-* Description:  IPF Input file reader
+* Description:  Process acviewport tag
+*
+*   :acviewport
+*       dll=[a-zA-z][a-zA-z0-9]*
+*       objectname=[a-zA-z][a-zA-z0-9]*
+*       objectinfo=[a-zA-z][a-zA-z0-9]*
+*       objectid=[a-zA-z][a-zA-z0-9]*
+*       vpx=([0-9]+[c|x|p|%]) | (left|center|right)
+*       vpy=([0-9]+[c|x|p|%]) | (top|center|bottom)
+*       vpcx=([0-9]+[c|x|p|%])
+*       vpcy=([0-9]+[c|x|p|%])
 *
 ****************************************************************************/
 
+#ifndef ACVIEWPORT_INCLUDED
+#define ACVIEWPORT_INCLUDED
 
-#include "ipffile.hpp"
-#include "errors.hpp"
+#include "element.hpp"
+#include "toc.hpp"
 
-IpfFile::IpfFile( const std::wstring*  fname ) : IpfData(), fileName ( fname )
-{
-    char buffer[ PATH_MAX ];
+class AcViewport : public Element {
+public:
+    AcViewport( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Element( d, p, f, r, c ) { };
+    ~AcViewport() { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell );
+private:
+    AcViewport( const AcViewport& rhs );              //no copy
+    AcViewport& operator=( const AcViewport& rhs );   //no assignment
+    std::wstring dll;
+    std::wstring objectName;
+    std::wstring objectInfo;
+    std::wstring objectId;
+    PageOrigin origin;
+    PageSize size;
+    Lexer::Token parseAttributes( Lexer* lexer );
+};
 
-    std::wcstombs( buffer, fname->c_str(), sizeof( buffer ) );
-    if(( stream = std::fopen( buffer, "r" ) ) == 0)
-        throw FatalIOError( ERR_OPEN, *fileName );
-}
-/*****************************************************************************/
-//Read a character
-//Returns EOB if end-of-file reached
-std::wint_t IpfFile::get()
-{
-    wchar_t ch( std::fgetwc( stream ) );
-    incCol();
-    if( ch == L'\n' ) {
-        incLine();
-        resetCol();
-    }
-    else if( ch == WEOF ) {
-        ch = EOB;
-        if( !std::feof( stream ) )
-            throw FatalIOError( ERR_READ, *fileName );
-    }
-    return ch;
-}
-/*****************************************************************************/
-void IpfFile::unget( wchar_t ch )
-{
-    std::ungetwc( ch, stream );
-    decCol();
-    if( ch == L'\n' )
-        decLine();
-}
-
+#endif //ACVIEWPORT_INCLUDED

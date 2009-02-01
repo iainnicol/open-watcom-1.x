@@ -163,6 +163,7 @@
 #include "document.hpp"
 #include "bitmap.hpp"
 #include "brcmd.hpp"
+#include "cecmd.hpp"
 #include "cell.hpp"
 #include "ctrldef.hpp"
 #include "docprof.hpp"
@@ -453,7 +454,7 @@ void Document::makeBitmaps()
         tmpName += std::tmpnam( NULL );
         std::FILE* tmp( std::fopen( tmpName.c_str(), "wb" ) );
         if( !tmp )
-            throw FatalError( ERR_OPEN );
+            throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
         //get IPFCARTWORK from env
         std::string env( Environment.value( "IPFCARTWORK" ) );
         std::vector< std::string > paths;
@@ -473,13 +474,15 @@ void Document::makeBitmaps()
             paths.push_back( env.substr( idx1, idx2 - idx1 ) );
         }
         try {
-            char fbuffer[ _MAX_PATH ];
+            char fbuffer[ PATH_MAX ];
+
             for( BitmapNameIter itr = bitmapNames.begin(); itr != bitmapNames.end(); ++itr ) {
-                if( std::wcstombs( fbuffer, itr->first.c_str(), _MAX_PATH ) == -1 )
+                if( std::wcstombs( fbuffer, itr->first.c_str(), sizeof( fbuffer ) ) == -1 )
                     throw FatalError( ERR_T_CONV );
                 for( size_t count = 0; count < paths.size(); ++count ) {
                     std::string fname( paths[ count ] );
-                    fname += slash;
+                    if( !fname.empty() )
+                        fname += slash;
                     fname += fbuffer;
                     try {
 #ifdef CHECKCOMP
@@ -491,12 +494,17 @@ void Document::makeBitmaps()
                     }
                     catch( FatalError& e ) {
                         if( count == paths.size() - 1 )
-                            throw e;
+                            throw FatalIOError( e.code, itr->first );
                     }
                 }
             }
         }
         catch( FatalError& e ) {
+            std::fclose( tmp );
+            std::remove( tmpName.c_str() );
+            throw e;
+        }
+        catch( FatalIOError& e ) {
             std::fclose( tmp );
             std::remove( tmpName.c_str() );
             throw e;
@@ -512,7 +520,7 @@ std::uint32_t Document::writeBitmaps( std::FILE* out )
         offset = std::ftell( out );
         std::FILE* tmp( std::fopen( tmpName.c_str(), "rb" ) );
         if( !tmp )
-            throw FatalError( ERR_OPEN );
+            throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
         std::fseek( tmp, 0L, SEEK_END );
         std::uint32_t length( std::ftell( tmp ) );
         std::fseek( tmp, 0L, SEEK_SET );
@@ -521,19 +529,23 @@ std::uint32_t Document::writeBitmaps( std::FILE* out )
         try {
             while( length > BUFSIZ ) {
                 if( std::fread( &buffer[0], sizeof( std::uint8_t ), BUFSIZ, tmp ) != BUFSIZ )
-                    throw FatalError( ERR_READ );
+                    throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( std::fwrite( &buffer[0], sizeof( std::uint8_t ), BUFSIZ, out ) != BUFSIZ )
                     throw FatalError( ERR_WRITE );
                 length -= BUFSIZ;
             }
             if( length ) {
                 if( std::fread( &buffer[0], sizeof( std::uint8_t ), length, tmp ) != length )
-                    throw FatalError( ERR_READ );
+                    throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( std::fwrite( &buffer[0], sizeof( std::uint8_t ), length, out ) != length )
                     throw FatalError( ERR_WRITE );
             }
         }
         catch( FatalError& e ) {
+            std::fclose( tmp );
+            throw e;
+        }
+        catch( FatalIOError& e ) {
             std::fclose( tmp );
             throw e;
         }
@@ -698,6 +710,11 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         ;//do nothing
     else if( lexer->cmdId() == Lexer::BREAK )
         parent->appendChild( new BrCmd( this, parent, dataName(), dataLine(), dataCol() ) );
+    else if( lexer->cmdId() == Lexer::CENTER ) {
+        CeCmd* cecmd( new CeCmd( this, parent, dataName(), dataLine(), dataCol() ) );
+        parent->appendChild( cecmd );
+        return cecmd->parse( lexer );
+    }
     else if( lexer->cmdId() == Lexer::IMBED ) {
         std::string env( Environment.value( "IPFCIMBED" ) );
         std::vector< std::wstring > paths;
@@ -708,22 +725,24 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         char separator( ':' );
         wchar_t slash( L'/' );
 #endif
-        wchar_t fbuffer[ _MAX_PATH ];
+        wchar_t fbuffer[ PATH_MAX ];
+
         std::string::size_type idx1( 0 );
         std::string::size_type idx2( env.find( separator, idx1 ) );
-        if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), _MAX_PATH ) == -1 )
+        if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), sizeof( fbuffer ) ) == -1 )
             throw FatalError( ERR_T_CONV );
         paths.push_back( std::wstring( fbuffer ) );
         while( idx2 != std::string::npos ) {
             idx1 = idx2 + 1;
             idx2 = env.find( separator, idx1 );
-            if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), _MAX_PATH ) == -1 )
+            if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), sizeof( fbuffer ) ) == -1 )
                 throw FatalError( ERR_T_CONV );
             paths.push_back( std::wstring( fbuffer ) );
         }
         for( size_t count = 0; count < paths.size(); ++count ) {
             std::wstring* fname( new std::wstring( paths[ count ] ) );
-            *fname += slash;
+            if( !fname->empty() )
+                *fname += slash;
             *fname += lexer->text();
             try {
                 IpfFile* ipff( new IpfFile( fname ) );
@@ -732,6 +751,11 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
                 break;
             }
             catch( FatalError& e ) {
+                delete fname;
+                if( count == paths.size() - 1 )
+                    throw e;
+            }
+            catch( FatalIOError& e ) {
                 delete fname;
                 if( count == paths.size() - 1 )
                     throw e;

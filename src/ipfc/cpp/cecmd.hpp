@@ -24,46 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  IPF Input file reader
+* Description:  A .ce command
 *
 ****************************************************************************/
 
+#ifndef CECMD_INCLUDED
+#define CECMD_INCLUDED
 
-#include "ipffile.hpp"
-#include "errors.hpp"
+#include "tag.hpp"
 
-IpfFile::IpfFile( const std::wstring*  fname ) : IpfData(), fileName ( fname )
-{
-    char buffer[ PATH_MAX ];
+class Cell; //forward reference
 
-    std::wcstombs( buffer, fname->c_str(), sizeof( buffer ) );
-    if(( stream = std::fopen( buffer, "r" ) ) == 0)
-        throw FatalIOError( ERR_OPEN, *fileName );
-}
-/*****************************************************************************/
-//Read a character
-//Returns EOB if end-of-file reached
-std::wint_t IpfFile::get()
-{
-    wchar_t ch( std::fgetwc( stream ) );
-    incCol();
-    if( ch == L'\n' ) {
-        incLine();
-        resetCol();
-    }
-    else if( ch == WEOF ) {
-        ch = EOB;
-        if( !std::feof( stream ) )
-            throw FatalIOError( ERR_READ, *fileName );
-    }
-    return ch;
-}
-/*****************************************************************************/
-void IpfFile::unget( wchar_t ch )
-{
-    std::ungetwc( ch, stream );
-    decCol();
-    if( ch == L'\n' )
-        decLine();
-}
+class CeCmd : public Tag {
+public:
+    CeCmd ( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
+        Tag( d, p, f, r, c ) {};
+    ~CeCmd() { };
+    Lexer::Token parse( Lexer* lexer );
+    void buildText( Cell* cell );
+private:
+    static void prepBufferName( std::wstring* buffer, const std::wstring& fname );
+};
 
+#endif
