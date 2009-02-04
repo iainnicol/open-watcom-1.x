@@ -39,6 +39,12 @@ extern "C" {
 #define SEEK_FROM_CURRENT     1     /* Signed offset from current position */
 #define SEEK_FROM_END         2     /* Signed offset from end of file */
 
+/* Execute process priorities */
+
+#define PRIORITY_HIGH         =  0  /* Highest priority level */
+#define PRIORITY_DEFAULT      =  28 /* Default priority level */
+#define PRIORITY_LOW          =  29 /* Lowest priority level */
+
 /* Execute process flags */
 
 #define PROCESS_FORGROUND     0     /* Run new process in forground */
