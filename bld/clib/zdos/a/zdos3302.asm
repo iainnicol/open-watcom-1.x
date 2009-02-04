@@ -7,7 +7,6 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	DosError			: PROC
 		PUBLIC	DosGetAndSetBreakFlag_
 ;
 ; DECLARATION	int DosGetAndSetBreakFlag( int breakflag );

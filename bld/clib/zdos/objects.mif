@@ -40,6 +40,7 @@
 !inject zdos3300.obj zda zdd
 !inject zdos3301.obj zda zdd
 !inject zdos3302.obj zda zdd
+!inject zdos34.obj   zda zdd
 !inject zdos35.obj   zda zdd
 !inject zdos36.obj   zda zdd
 !inject zdos3700.obj zda zdd

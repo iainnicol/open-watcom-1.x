@@ -320,6 +320,7 @@ int      DosExecuteProcess( int priority, char *path, void *env, int flags,
 void     DosExitProcess( int exitcode );
 int      DosGetChildReturnCode( int PID );
 int      DosGetPID( void );
+int      DosAbortProcess( int PID );
 
 /* Miscellaneous system functions */
 
