@@ -59,15 +59,9 @@
 
 void    initialize_globals( void )
 {
-    switch_char     = _dos_switch_char();
-    err_count       = 0;
-    wng_count       = 0;
-    
-    dev_name        = NULL;
-    master_fname    = NULL;
-    opt_fonts       = NULL;
-    out_file        = NULL;
-    out_file_attr   = NULL;
+    switch_char = _dos_switch_char();
+    err_count = 0;
+    wng_count = 0;
 }
 
 /*  Function skip_spaces().
@@ -127,13 +121,6 @@ void * mem_realloc( void * p, size_t size )
 
 void mem_free( void * p )
 {
-
-    /* Not an error, but report for debugging purposes. */
-
-    if( p == NULL ) {
-        out_msg( "NULL pointer freed!\n" );
-    }
-
     free( p );
     p = NULL;
 }

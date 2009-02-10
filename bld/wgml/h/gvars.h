@@ -32,22 +32,14 @@
 #ifndef GVARS_H_INCLUDED
 #define GVARS_H_INCLUDED
 
-#include <time.h>
-
 #ifndef global
     #define global  extern
 #endif
 
-global struct tm        doc_tm;         // document time/date
-
 global  jmp_buf     *   environment;    // var for GSuicide()
 
-global  char        *   scan_start;
-global  char        *   scan_stop;
 global  char        *   scan_char_ptr;  // used by character scanning routines
 global  bool            scan_err;       // used by character scanning routines
-global char         *   tok_start;      // start of scanned token
-global size_t           arg_flen;       // arg length
 global  int             curr_char;
 
 global  int             switch_char;    // DOS switch character
@@ -58,8 +50,6 @@ global  char        *   master_fname;   // Primary input file name
 global  char        *   master_fname_attr;// Primary input file name attributes
 global  ulong           print_from;     // first page to print
 global  ulong           print_to;       // last page to print
-global  char        *   dev_name;       // device defined_name
-global  opt_font    *   opt_fonts;      // option FONT parameters (linked list)
 
 global  inputcb     *   input_cbs;      // GML input stack (files + macros)
 global  char        *   out_file;       // output file name
@@ -70,9 +60,6 @@ global  ulong           line_from;      // starting lineno to process
 global  ulong           line_to;        // ending lineno to process
 #define LINEFROM_DEFAULT    1
 #define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
-
-global  char            gotarget[ MAC_NAME_LENGTH +1 ]; // .go to target name
-global  ulong           gotargetno;     // .go to line no
 
 global  int             err_count;      // Overall Errorcount
 global  int             wng_count;      // Overall warning count
@@ -93,6 +80,8 @@ global  su              bind_even;      // Bind value for even pages
 global  int             passes;         // Max no of passes
 global  int             pass;           // current pass no
 
+global  char        *   scan_start;
+global  char        *   scan_stop;
 
 
 global  symvar      *   global_dict;    // global symbol dictionary
@@ -117,6 +106,7 @@ global  struct GlobalFlags {
     unsigned        freed         : 1;
     unsigned        freee         : 1;
     unsigned        research      : 1;  // research mode, minimal formatting
+                                        // research mode will eventually go away
 } GlobalFlags;                          // Global flags
 
 global struct ProcFlags {
@@ -126,8 +116,8 @@ global struct ProcFlags {
     unsigned        in_macro_define : 1;// macro definition active
     unsigned        suppress_msg    : 1;// suppress error msg (during scanning)
     unsigned        blanks_allowed  : 1;// blanks allowed (during scanning)
-    unsigned        keep_ifstate    : 1;// leave ifstak unchanged for next line
-    unsigned        goto_active     : 1;// processing .go label
+    unsigned        free6           : 1;
+    unsigned        free7           : 1;
 
     unsigned        free8           : 1;
     unsigned        free9           : 1;
@@ -140,11 +130,18 @@ global struct ProcFlags {
 
 } ProcFlags;                            // processing flags
 
+
 global  size_t          buf_size;       // default buffer size
 global  char        *   token_buf;
 
+global char         *   buffout;        // output buffer
+
 global char         *   buff2;          // input buffer
 global size_t           buff2_lg;       // input buffer used length
+global char         *   arg_start;      // start of arg scan
+global char         *   arg_stop;       // end of arg scan area
+global size_t           arg_flen;       // arg length
+global char         *   err_start;      // in case of error
 global char         *   open_paren;     // ( in input
 global char         *   clos_paren;     // ) in input
 

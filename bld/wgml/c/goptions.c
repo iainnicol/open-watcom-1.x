@@ -64,7 +64,6 @@ static char     *   opt_scan_ptr;
 static long         opt_value;
 static cmd_tok  *   tokennext;
 
-static bool         is_option( void ); // used before defined
 
 /***************************************************************************/
 /*  free storage for tokens at specified include level                     */
@@ -156,12 +155,11 @@ static  int     split_tokens( char *str )
 static  char    *bad_cmd_line( char * msg, char *str, char n )
 {
     char    *   p;
-    char    *   pbuff;
+    char        buffer[128];
 
-    pbuff = mem_alloc( strlen( str ) + 1 );
-    p = pbuff;
-
-    for( ; ; ) {
+    p = buffer;
+    split_tokens( p );
+    for( ; p < buffer + sizeof( buffer ) - 1; ) {
         if( *str == '\0' ) break;
         if( *str == '\n' ) break;
         *p++ = *str++;
@@ -172,17 +170,17 @@ static  char    *bad_cmd_line( char * msg, char *str, char n )
     }
     *p = '\0';
     g_banner();
-    out_msg( msg, pbuff );
-    mem_free( pbuff );
+    out_msg( msg, buffer );
     err_count++;
     return( str );
 }
+
 
 /***************************************************************************/
 /*  read an option file into memory                                        */
 /***************************************************************************/
 
-static  char    *read_indirect_file( const char * filename )
+char *read_indirect_file( const char * filename )
 {
     char    *   buf;
     char    *   str;
@@ -225,13 +223,14 @@ static void ign_option( option * opt )
     out_msg( "WNG_IGN_OPTION %s\n", opt->option );
     wng_count++;
     if( opt->parmcount > 0 ) {
+        char    *p = opt_scan_ptr;
         int     k;
 
+        while( *p == ' ' || *p == '\t' ) ++p;
         for( k = 0; k < opt->parmcount; k++ ) {
             if( tokennext == NULL )  break;
             if( tokennext->bol ) break;
             if( tokennext->token[ 0 ] == '(' ) break;
-            if( is_option() == true ) break;
             tokennext = tokennext->nxt;
         }
     }
@@ -249,9 +248,7 @@ static void set_altext( option * opt )
     char    *   p;
     int         len;
 
-    if( tokennext == NULL || tokennext->bol || is_option() == true ) {
-        bad_cmd_line( "ERR_MISSING_OPTION_VALUE %s\n", opt->option, ' ' );
-    } else {
+    if( tokennext != NULL ) {
         len = tokennext->toklen;
         p = tokennext->token;
         if( alt_ext ) {
@@ -281,8 +278,7 @@ static void set_bind( option * opt )
     char    *   p;
     su          bindwork;
 
-    if( tokennext == NULL || tokennext->bol || tokennext->token[ 0 ] == '(' \
-                                            || is_option() == true ) {
+    if( tokennext == NULL || tokennext->bol || tokennext->token[ 0 ] == '(' ) {
         out_msg( "ERR_MISSING_OPTION_VALUE %.*s\n", opt->optionLenM1+1,
                 opt->option );
         err_count++;
@@ -303,7 +299,7 @@ static void set_bind( option * opt )
 
             tokennext = tokennext->nxt; // check for optional bind even val
             if( tokennext == NULL || tokennext->bol ||
-                tokennext->token[ 0 ] == '(' || is_option() == true ) {
+                tokennext->token[ 0 ] == '(' ) {
 
                 memcpy_s( &bind_even, sizeof( bind_even), &bind_odd,
                           sizeof( bind_odd ) );  // use bind_odd
@@ -332,415 +328,40 @@ static void set_bind( option * opt )
 
 static void set_delim( option * opt )
 {
-    if( tokennext == NULL || is_option() == true \
-                          || tokennext->toklen != 1 ) {       // not length 1
+    if( tokennext == NULL || tokennext->toklen != 1 ) {       // not length 1
         out_msg( "ERR_INVALID_MISSING_OPTION_VALUE %s %s\n", opt->option,
                 tokennext == NULL ? " " : tokennext->token );
         err_count++;
         GML_char = GML_CHAR_DEFAULT;    // set default :
     } else {
         GML_char = tokennext->token[0]; // new delimiter
-        tokennext = tokennext->nxt;
     }
-    return;
 }
 
+/* These will be removed once the code is brought back to the real functions. */
+
+extern void set_device2( option * opt, char * opt_scan_ptr, cmd_tok * tokennext );
+extern void set_font2( option * opt, char * opt_scan_ptr, cmd_tok * tokennext );
+
 /***************************************************************************/
-/*  ( device      defined_name                                             */
+/*  ( device      defined_name                   **temporary definition**  */
 /***************************************************************************/
 
 static void set_device( option * opt )
 {
 
-    char    *   pw;
-    char    *   p;
-    int         len;
-
-    if( tokennext == NULL || tokennext->bol || is_option() == true ) {
-        bad_cmd_line( "ERR_MISSING_DEVICE_NAME %s\n", opt->option, ' ' );
-    } else {
-        len = tokennext->toklen;
-        p = tokennext->token;
-
-        out_msg( "INF_RECOGNIZED_DEVICE_NAME %s\n", p );
-        if( dev_name ) {
-            mem_free( dev_name );
-        }
-        dev_name = mem_alloc( len + 1 );
-        pw = dev_name;
-        while( len > 0 ) {
-             len--;
-             *pw++ = *p++;
-        }
-        *pw = '\0';
-        tokennext = tokennext->nxt;
-    }
+    set_device2( opt, opt_scan_ptr, tokennext );
     return;
 }
 
-#define MAX_CENTIPOINTS 7200   // maximum allowed by gendev per Wiki
-
 /***************************************************************************/
-/*  font_points   validates font_space and font_height values              */
-/***************************************************************************/
-
-static bool font_points( cmd_tok * in_tok, char buff[5] )
-{
-    bool        good;
-    bool        has_pt;
-    char    *   p;
-    int         i;
-    int         len;
-    int         post_pt;
-    int         pre_pt;
-
-    good = true;
-    has_pt = false;
-    p = in_tok->token;
-    len = in_tok->toklen;
-    post_pt = 0;
-    pre_pt = 0;
-    for( i = 0; i < len; i++ ) {
-        if( p[i] != '.' ) {
-            if( p[i] < '0' || p[i] > '9' ) {
-                good = false;
-                break;
-            }
-            if( has_pt == true ) post_pt++;
-            else pre_pt++;
-        }
-        else has_pt = true;
-    }
-    if( good == false || pre_pt > 2 || post_pt > 2 ) return( false );
-    i = 0;
-    if( pre_pt > 0 ) {
-        if( pre_pt == 1 ) {
-            buff[0] = '0';
-            buff[1] = p[i];
-            i++;
-        } else {
-            buff[0] = p[i];
-            i++;
-            buff[1] = p[i];
-            i++;
-        }
-    }
-    if( has_pt == true ) i++;
-    if( post_pt > 0 ) {
-        if( post_pt == 1) {
-            buff[2] = p[i];
-            buff[3] = '0';
-        } else {
-            buff[2] = p[i];
-            i++;
-            buff[3] = p[i];
-        }
-    }
-    buff[4] = '\0';
-
-    return( true );
-}
-
-/***************************************************************************/
-/*  ( font        number name style space height                           */
+/*  ( font        number name style space height **temporary definition**  */
 /***************************************************************************/
 
 static void set_font( option * opt )
 {
 
-    bool            good;
-    char            pts[5];
-    char        *   pw;
-    char        *   p;
-    int             i;
-    int             fn;
-    int             len;
-    int             old_errs;
-    int             opts_cnt;
-    opt_font    *   new_font;
-    opt_font    *   f;
-    cmd_tok     *   opts[3];
-
-    old_errs = err_count;
-    new_font = (opt_font *) mem_alloc( sizeof( opt_font ) );
-    new_font->nxt = NULL;
-    new_font->font = 0;
-    new_font->name = NULL;
-    new_font->style = NULL;
-    new_font->space = 0;
-    new_font->height = 0;
-
-    opts_cnt = 0;
-    opts[0] = NULL;
-    opts[1] = NULL;
-    opts[2] = NULL;
-
-    if( tokennext == NULL || tokennext->bol || is_option() == true ) {
-        bad_cmd_line( "ERR_MISSING_FONT_NUMBER %s\n", opt->option, ' ' );
-        mem_free( new_font );
-        new_font = NULL;
-        return;
-    } else {
-        len = tokennext->toklen;
-        p = tokennext->token;
-
-        good = true;
-        for( i = 0; i < len; i++ ) {
-            if( p[i] < '0' || p[i] > '9' ) {
-                good = false;
-                break;
-            }
-        }
-
-        if( good == false ) {
-            bad_cmd_line( "ERR_INVALID_FONT_NUMBER %s\n", p, ' ' );
-            tokennext = tokennext->nxt;
-        } else {
-            fn = atoi( p );
-            if( fn > UINT8_MAX ) {
-                bad_cmd_line( "ERR_INVALID_FONT_NUMBER %s\n", p, ' ' );
-                tokennext = tokennext->nxt;
-            } else {
-                out_msg( "INF_RECOGNIZED_FONT_NUMBER %s\n", p );
-                new_font->font = (uint8_t) fn;
-                tokennext = tokennext->nxt;
-            }
-        }
-    }
-
-    if( tokennext == NULL || tokennext->bol || is_option() == true ) {
-        bad_cmd_line( "ERR_INVALID_MISSING_FONT_NAME %s\n", opt->option, ' ' );
-        mem_free( new_font );
-        new_font = NULL;
-        return;
-    } else {
-        len = tokennext->toklen;
-        p = tokennext->token;
-
-        out_msg( "INF_RECOGNIZED_FONT_NAME %s\n", p );
-        new_font->name = mem_alloc( len + 1 );
-        pw = new_font->name;
-        while( len > 0 ) {
-             len--;
-             *pw++ = *p++;
-        }
-        *pw = '\0';
-        tokennext = tokennext->nxt;
-    }
-
-    if( tokennext != NULL && !tokennext->bol && is_option() == false ) {
-        opts_cnt++;
-        opts[0] = tokennext;
-        tokennext = tokennext->nxt;
-
-        if( tokennext != NULL && !tokennext->bol && is_option() == false ) {
-            opts_cnt++;
-            opts[1] = tokennext;
-            tokennext = tokennext->nxt;
-
-            if( tokennext != NULL && !tokennext->bol && is_option() == false ) {
-                opts_cnt++;
-                opts[2] = tokennext;
-                tokennext = tokennext->nxt;
-            }
-        }
-    }
-
-    switch( opts_cnt ) {
-    case 0:
-        break;
-    case 1:
-        for( i = 0; i < 4; i++ ) pts[i] = '0';
-        pts[4] = '\0';
-        len = opts[0]->toklen;
-        p = opts[0]->token;
-        if( font_points( opts[0], pts ) == true ) {
-            fn = atoi( pts );
-            if( fn > MAX_CENTIPOINTS ) {
-                bad_cmd_line( "ERR_INVALID_FONT_SPACE %s\n", p, ' ' );
-            } else {
-                out_msg( "INF_RECOGNIZED_FONT_SPACE %s\n", pts );
-                new_font->space = (uint32_t) fn;
-            }
-        } else {
-            out_msg( "INF_RECOGNIZED_FONT_STYLE %s\n", p );
-            new_font->style = mem_alloc( len + 1 );
-            pw = new_font->style;
-            while( len > 0 ) {
-                 len--;
-                 *pw++ = *p++;
-            }
-            *pw = '\0';
-        }
-
-        break;
-    case 2:
-        for( i = 0; i < 4; i++ ) pts[i] = '0';
-        pts[4] = '\0';
-        len = opts[0]->toklen;
-        p = opts[0]->token;
-        if( !strcmp( p, "''" ) ) {
-            for( i = 0; i < 4; i++ ) pts[i] = '0';
-            pts[4] = '\0';
-            len = opts[1]->toklen;
-            p = opts[1]->token;
-            if( font_points( opts[1], pts ) == false ) {
-                bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-            } else {
-                fn = atoi( pts );
-                if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-                } else {
-                    out_msg( "INF_RECOGNIZED_FONT_HEIGHT %s\n", pts );
-                    new_font->height = (uint32_t) fn;
-                }
-            }
-        } else {
-            if( font_points( opts[0], pts ) == true ) {
-                fn = atoi( pts );
-                if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( "ERR_INVALID_FONT_SPACE %s\n", p, ' ' );
-                } else {
-                    out_msg( "INF_RECOGNIZED_FONT_SPACE %s\n", pts );
-                    new_font->space = (uint32_t) fn;
-                }
-
-                for( i = 0; i < 4; i++ ) pts[i] = '0';
-                pts[4] = '\0';
-                len = opts[1]->toklen;
-                p = opts[1]->token;
-                if( font_points( opts[1], pts ) == false ) {
-                    bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-                } else {
-                    fn = atoi( pts );
-                    if( fn > MAX_CENTIPOINTS ) {
-                        bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-                    } else {
-                        out_msg( "INF_RECOGNIZED_FONT_HEIGHT %s\n", pts );
-                        new_font->height = (uint32_t) fn;
-                    }
-                }
-            } else {
-                out_msg( "INF_RECOGNIZED_FONT_STYLE %s\n", p );
-                new_font->style = mem_alloc( len + 1 );
-                pw = new_font->style;
-                while( len > 0 ) {
-                     len--;
-                     *pw++ = *p++;
-                }
-                *pw = '\0';
-
-                for( i = 0; i < 4; i++ ) pts[i] = '0';
-                pts[4] = '\0';
-                len = opts[1]->toklen;
-                p = opts[1]->token;
-                if( font_points( opts[1], pts ) == true ) {
-                    fn = atoi( pts );
-                    if( fn > MAX_CENTIPOINTS ) {
-                        bad_cmd_line( "ERR_INVALID_FONT_SPACE %s\n", p, ' ' );
-                    } else {
-                        out_msg( "INF_RECOGNIZED_FONT_SPACE %s\n", pts );
-                        new_font->space = (uint32_t) fn;
-                    }
-                }
-            }
-        }
-
-        break;
-    case 3:
-        len = opts[0]->toklen;
-        p = opts[0]->token;
-        out_msg( "INF_RECOGNIZED_FONT_STYLE %s\n", p );
-        new_font->style = mem_alloc( len + 1 );
-        pw = new_font->style;
-        while( len > 0 ) {
-             len--;
-             *pw++ = *p++;
-        }
-        *pw = '\0';
-
-        if( !strcmp( opts[1]->token, "''" ) ) {
-            for( i = 0; i < 4; i++ ) pts[i] = '0';
-            pts[4] = '\0';
-            len = opts[2]->toklen;
-            p = opts[2]->token;
-            if( font_points( opts[2], pts ) == false ) {
-                bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-            } else {
-                fn = atoi( pts );
-                if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-                } else {
-                    out_msg( "INF_RECOGNIZED_FONT_HEIGHT %s\n", pts );
-                    new_font->height = (uint32_t) fn;
-                }
-            }
-        } else {
-            for( i = 0; i < 4; i++ ) pts[i] = '0';
-            pts[4] = '\0';
-            len = opts[1]->toklen;
-            p = opts[1]->token;
-            if( font_points( opts[1], pts ) == false ) {
-                bad_cmd_line( "ERR_INVALID_FONT_SPACE %s\n", p, ' ' );
-            } else {
-                fn = atoi( pts );
-                if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( "ERR_INVALID_FONT_SPACE %s\n", p, ' ' );
-                } else {
-                    out_msg( "INF_RECOGNIZED_FONT_SPACE %s\n", pts );
-                    new_font->space = (uint32_t) fn;
-                }
-            }
-
-            for( i = 0; i < 4; i++ ) pts[i] = '0';
-            pts[4] = '\0';
-            len = opts[2]->toklen;
-            p = opts[2]->token;
-            if( font_points( opts[2], pts ) == false ) {
-                bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-            } else {
-                fn = atoi( pts );
-                if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( "ERR_INVALID_FONT_HEIGHT %s\n", p, ' ' );
-                } else {
-                    out_msg( "INF_RECOGNIZED_FONT_HEIGHT %s\n", pts );
-                    new_font->height = (uint32_t) fn;
-                }
-            }
-        }
-        break;
-    default:
-        out_msg( "wgml internal error\n" );
-        g_suicide();
-    }
-
-    if( old_errs == err_count ) {
-        if( opt_fonts == NULL ) {
-            opt_fonts = new_font;
-        } else {
-            f = opt_fonts;
-            while( f->nxt != NULL ) {
-                f = f->nxt;
-            }
-            f->nxt = new_font;
-        }
-        out_msg( "Font: %i %s ", new_font->font, new_font->name );
-        if( new_font->style != NULL ) {
-            out_msg( "%s ", new_font->style ); // can't use NULL here
-        }
-        out_msg( "%i %i\n", new_font->space, new_font->height );
-    } else {
-        if( new_font->name !=NULL ) {
-            mem_free( new_font->name );
-            new_font->name = NULL;
-        }
-        if( new_font->style !=NULL ) {
-            mem_free( new_font->style );
-            new_font->style = NULL;
-        }
-        mem_free( new_font );
-        new_font = NULL;
-    }
+    set_font2( opt, opt_scan_ptr, tokennext );
     return;
 }
 
@@ -753,8 +374,8 @@ static void set_outfile( option * opt )
     int     len;
     char    attrwork[ MAX_FILE_ATTR ];
 
-    if( tokennext == NULL || tokennext->bol || is_option() == true ) {
-        out_msg( "ERR_MISSING_OPTION_VALUE %s\n", opt->option );
+    if( tokennext == NULL || tokennext->bol ) {
+        out_msg( "ERR_INVALID_MISSING_OPTION_VALUE %s\n", opt->option );
         err_count++;
         out_file = NULL;
         out_file_attr = NULL;
@@ -811,9 +432,9 @@ static void set_passes( option * opt )
     char    *   p;
 
     if( tokennext == NULL || tokennext->bol ||
-        tokennext->token[ 0 ] == '(' || is_option() == true ) {
+        tokennext->token[ 0 ] == '(' ) {
 
-        out_msg( "ERR_MISSING_OPTION_VALUE %s\n", opt->option );
+        out_msg( "ERR_INVALID_MISSING_OPTION_VALUE %s\n", opt->option );
         err_count++;
         passes = opt->value;            // set default value
     } else {
@@ -842,9 +463,9 @@ static void set_from( option * opt )
     char    *   p;
 
     if( tokennext == NULL || tokennext->bol ||
-        tokennext->token[ 0 ] == '(' || is_option() == true ) {
+        tokennext->token[ 0 ] == '(' ) {
 
-        out_msg( "ERR_MISSING_OPTION_VALUE %s\n", opt->option );
+        out_msg( "ERR_INVALID_MISSING_OPTION_VALUE %s\n", opt->option );
         err_count++;
         print_from = opt->value;        // set default value
     } else {
@@ -863,7 +484,7 @@ static void set_from( option * opt )
 
 
 /***************************************************************************/
-/*  ( setsymbol  x y     set variable x to y                               */
+/*  ( setymbol  x y      set variable x to y                               */
 /***************************************************************************/
 
 static void set_symbol( option * opt )
@@ -873,9 +494,9 @@ static void set_symbol( option * opt )
     int32_t     rc;
 
     if( tokennext == NULL || tokennext->bol ||
-        tokennext->token[ 0 ] == '(' || is_option() == true ) {
+        tokennext->token[ 0 ] == '(' ) {
 
-        out_msg( "ERR_MISSING_SYMBOL_NAME %s\n", opt->option );
+        out_msg( "ERR_INVALID_MISSING_SYMBOL_NAME %s\n", opt->option );
         err_count++;
     } else {
         name = tokennext->token;
@@ -883,9 +504,9 @@ static void set_symbol( option * opt )
         tokennext = tokennext->nxt;
 
         if( tokennext == NULL || tokennext->bol ||
-            tokennext->token[ 0 ] == '(' || is_option() == true ) {
+            tokennext->token[ 0 ] == '(' ) {
 
-            out_msg( "ERR_MISSING_SYMBOL_VALUE %s\n", opt->option );
+            out_msg( "ERR_INVALID_MISSING_SYMBOL_VALUE %s\n", opt->option );
             err_count++;
         } else {
             value = tokennext->token;
@@ -905,9 +526,9 @@ static void set_to( option * opt )
     char    *   p;
 
     if( tokennext == NULL || tokennext->bol ||
-        tokennext->token[ 0 ] == '(' || is_option() == true ) {
+        tokennext->token[ 0 ] == '(' ) {
 
-        out_msg( "ERR_MISSING_OPTION_VALUE %s\n", opt->option );
+        out_msg( "ERR_INVALID_MISSING_OPTION_VALUE %s\n", opt->option );
         err_count++;
         print_to = opt->value;          // set default value
     } else {
@@ -954,10 +575,10 @@ static void set_OPTFile( option * opt )
     char    *   str;
 
 
-    if( tokennext == NULL || tokennext->bol || is_option() == true
+    if( tokennext == NULL || tokennext->bol
         /* || tokennext->token[ 0 ] == '('  allow (t:123)file.opt construct */
                                          ) {
-        out_msg( "ERR_MISSING_OPTION_VALUE %s\n", opt->option );
+        out_msg( "ERR_INVALID_MISSING_OPTION_VALUE %s\n", opt->option );
         err_count++;
     } else {
         len = tokennext->toklen;
@@ -983,7 +604,6 @@ static void set_OPTFile( option * opt )
                 bool  skip = false;
 
                 fclose( try_fp );
-                try_fp = NULL;
                 if( level > 0 ) {
                     int     k;
 
@@ -1385,69 +1005,6 @@ static cmd_tok  *process_option_old( option * op_table, cmd_tok * tok )
     }
     p = bad_cmd_line( "ERR_INVALID_OPTION %s\n", option_start, '(' );
     return( tokennext );
-}
-
-
-/***************************************************************************/
-/*  determine if tokennext is an option                                    */
-/***************************************************************************/
-
-static bool is_option( void )
-{
-    int         i;
-    int         len;
-    char    *   opt;
-    char        c;
-    char    *   p;
-    char    *   option_start;
-
-    if( tokennext == NULL ) return( false );
-    p = tokennext->token;
-    option_start = p;
-    len = tokennext->toklen;
-    c = tolower( *p );
-    if(  c == '(' ) {
-        if( len == 1 ) {            // skip single (
-            tokennext = tokennext->nxt;
-            p = tokennext->token;
-            option_start = p;
-            len = tokennext->toklen;
-            c = tolower( *p );
-        } else {
-            p++;
-            len--;
-            c = tolower( *p );
-        }
-    }
-    for( i = 0; ; i++ ) {
-        opt = GML_old_Options[i].option;
-        if( opt == NULL ) break;    // end of table
-        if( c != *opt )  continue;  // easy disqualifiers: first char & length
-        if( len < GML_old_Options[ i ].minLength ) continue;
-        if( len > GML_old_Options[ i ].optionLenM1 + 1 ) continue;
-        if( strnicmp( opt, p, len ) ) continue; // no match
-        return( true );                         // match found
-    }
-
-    p = tokennext->token;
-    option_start = p;
-    len = tokennext->toklen;
-    c = tolower( *p );
-    if( option_delimiter( c ) ) {
-        p++;
-        c = tolower( *p );
-    }
-    for( i = 0; ; i++ ) {
-        opt = GML_new_Options[i].option;
-        if( opt == NULL ) break;    // end of table
-        if( c != *opt )  continue;  // easy disqualifiers: first char & length
-        if( len < GML_old_Options[ i ].minLength ) continue;
-        if( len > GML_old_Options[ i ].optionLenM1 + 1 ) continue;
-        if( strnicmp( opt, p, len ) ) continue; // no match
-        return( true );                         // match found
-
-    }
-    return( false );
 }
 
 

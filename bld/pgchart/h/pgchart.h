@@ -1,18 +1,50 @@
-/*
- *  pgchart.h   Presentation Graphics functions
- *
-:include crwat.sp
- */
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+*
+****************************************************************************/
+
+
 #ifndef _PGCHART_H_INCLUDED
 #define _PGCHART_H_INCLUDED
-:include readonly.sp
-:include cpluspro.sp
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef _COMDEF_H_INCLUDED
  #include <_comdef.h>
 #endif
 
-:include pshpackl.sp
+#if defined(_M_IX86)
+  #pragma pack(__push,1);
+#else
+  #pragma pack(__push,8);
+#endif
 
 #define _PG_MAXCHARTTYPE        5       /* maximum chart type */
 
@@ -150,35 +182,37 @@ typedef unsigned short  styleset[ _PG_PALETTELEN ];
 
 /* Display functions */
 
-short _WCI86FAR _pg_initchart( void );
-short _WCI86FAR _pg_defaultchart( chartenv _WCI86FAR *, short, short );
-short _WCI86FAR _pg_chart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_chartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_chartscatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_chartscatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_chartpie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
+short _WCI86FAR      _CGRAPH _pg_initchart( void );
+short _WCI86FAR      _CGRAPH _pg_defaultchart( chartenv _WCI86FAR *, short, short );
+short _WCI86FAR      _CGRAPH _pg_chart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
+short _WCI86FAR      _CGRAPH _pg_chartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_chartscatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
+short _WCI86FAR      _CGRAPH _pg_chartscatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_chartpie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
 
 /* Analyze functions */
 
-short _WCI86FAR _pg_analyzechart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_analyzechartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_analyzescatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
-short _WCI86FAR _pg_analyzescatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
-short _WCI86FAR _pg_analyzepie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
+short _WCI86FAR      _CGRAPH _pg_analyzechart( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short );
+short _WCI86FAR      _CGRAPH _pg_analyzechartms( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_analyzescatter( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short );
+short _WCI86FAR      _CGRAPH _pg_analyzescatterms( chartenv _WCI86FAR *, float _WCI86FAR *, float _WCI86FAR *, short, short, short, char _WCI86FAR * _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_analyzepie( chartenv _WCI86FAR *, char _WCI86FAR * _WCI86FAR *, float _WCI86FAR *, short _WCI86FAR *, short );
 
 /* Utility functions */
 
-short _WCI86FAR _pg_hlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
-short _WCI86FAR _pg_vlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
-short _WCI86FAR _pg_getpalette( paletteentry _WCI86FAR * );
-short _WCI86FAR _pg_setpalette( paletteentry _WCI86FAR * );
-short _WCI86FAR _pg_resetpalette( void );
-void _WCI86FAR  _pg_getstyleset( unsigned short _WCI86FAR * );
-void _WCI86FAR  _pg_setstyleset( unsigned short _WCI86FAR * );
-void _WCI86FAR  _pg_resetstyleset( void );
-short _WCI86FAR _pg_getchardef( short, unsigned char _WCI86FAR * );
-short _WCI86FAR _pg_setchardef( short, unsigned char _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_hlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_vlabelchart( chartenv _WCI86FAR *, short, short, short, char _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_getpalette( paletteentry _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_setpalette( paletteentry _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_resetpalette( void );
+void _WCI86FAR       _CGRAPH _pg_getstyleset( unsigned short _WCI86FAR * );
+void _WCI86FAR       _CGRAPH _pg_setstyleset( unsigned short _WCI86FAR * );
+void _WCI86FAR       _CGRAPH _pg_resetstyleset( void );
+short _WCI86FAR      _CGRAPH _pg_getchardef( short, unsigned char _WCI86FAR * );
+short _WCI86FAR      _CGRAPH _pg_setchardef( short, unsigned char _WCI86FAR * );
 
-:include poppack.sp
-:include cplusepi.sp
+#pragma pack(__pop);
+#ifdef __cplusplus
+};
+#endif
 #endif

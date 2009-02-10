@@ -1,5 +1,7 @@
 #pmake: os_qnx
 
-system = qnx
+path    = ..;../quantum;../watcom
+options = -t8 -u
+system  = QNX
 
 !include ../master.mif

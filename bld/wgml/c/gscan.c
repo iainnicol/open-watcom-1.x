@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2008 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,7 +25,7 @@
 *  ========================================================================
 *
 * Description:  utility functions for wgml input line scanning
-*
+*               TBD restructure
 ****************************************************************************/
 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
@@ -36,64 +36,660 @@
 #include "wgml.h"
 #include "gvars.h"
 
+inputcb *   cb;
+
+/***************************************************************************/
+/*  add info about macro   to LIFO input list                              */
+/***************************************************************************/
+
+static  void    add_macro_cb_entry( mac_entry *me )
+{
+    macrocb *   new;
+    inputcb *   nip;
+
+    new = mem_alloc( sizeof( macrocb ) );
+
+    nip = mem_alloc( sizeof( inputcb ) );
+    nip->hidden_head = NULL;
+    nip->hidden_tail = NULL;
+    init_dict( &nip->local_dict );
+
+    nip->fmflags = II_macro;
+    nip->s.m     = new;
+
+    new->lineno  = 0;
+    new->macline = me->macline;
+    new->mac     = me;
+    new->flags   = FF_macro;
+
+    nip->prev = input_cbs;
+    input_cbs = nip;
+    return;
+}
+
+
+/***************************************************************************/
+/*  .im   processing  IMBED                                                */
+/*  format .im filename                                                    */
+/***************************************************************************/
+
+static  void    scr_im( void )
+{
+    char        *   fnstart;
+    char        *   p;
+    char            quote;
+    condcode        cc;
+    getnum_block    gn;
+
+    p = scan_start;
+    while( *p == ' ' ) {
+        p++;
+    }
+
+    gn.argstart = p;
+    gn.argstop  = scan_stop;
+    gn.ignore_blanks = 0;
+    cc = getnum( &gn );
+
+    p = gn.argstart;
+
+    if( *p == '"' || *p == '\'' ) {
+        quote = *p;
+        ++p;
+    } else {
+        quote = ' ';                    // error??
+    }
+    fnstart = p;
+    while( *p && *p != quote ) {
+        ++p;
+    }
+    *p = '\0';
+    strcpy_s( token_buf, buf_size, fnstart );
+
+    ProcFlags.newLevelFile = 1;
+    line_from = LINEFROM_DEFAULT;
+    line_to   = LINETO_DEFAULT;
+
+
+    return;
+}
+
+/***************************************************************************/
+/*  .ap processing APPEND                                                  */
+/*  format  .ap filename                                                   */
+/***************************************************************************/
+
+static  void    scr_ap( void )
+{
+    input_cbs->s.f->flags |= FF_eof;    // simulate EOF for .append
+    input_cbs->fmflags   |= II_eof;     // simulate EOF for .append
+    scr_im();                           // do .imbed processing
+}
+
+
+/*
+ * free storage for the macro lines
+ *
+ */
+
+void    free_lines( inp_line * line )
+{
+    inp_line    *wk;
+    inp_line    *wk1;
+
+    wk = line;
+    while( wk != NULL ) {
+         wk1 = wk->next;
+         mem_free( wk );
+         wk = wk1;
+    }
+    return;
+}
+
+/*
+ * .dm processing define macro
+ */
+static  void    scr_dm( void )
+{
+    char        *   nmstart;
+    char        *   p;
+    char        *   pn;
+    char            save;
+    int             len;
+    int             compbegin;
+    int             compend;
+    char            macname[ MAC_NAME_LENGTH + 1 ];
+    inp_line    *   head;
+    inp_line    *   last;
+    inp_line    *   work;
+    ulong           lineno_start;
+    condcode        cc;
+
+    cb = input_cbs;
+
+    garginit();
+
+    cc = getarg();
+
+    if( cc == omit ) {
+        err_count++;
+        out_msg("ERR_MACRO_NAME_MISSING line %d of file '%s'\n",
+                cb->s.f->lineno,
+                cb->s.f->filename );
+        return;
+    }
+
+    p = err_start;
+
+    pn      = macname;
+    len     = 0;
+
+    /*  truncate name if too long WITHOUT error msg
+     *  this is wgml 4.0 behaviour
+     *
+     */
+    while( *p && *p != ' ' ) {
+        if( len < MAC_NAME_LENGTH ) {
+            *pn++ = *p++;               // copy macroname
+            *pn   = '\0';
+        } else {
+            break;
+        }
+        len++;
+    }
+    macname[ MAC_NAME_LENGTH ] = '\0';
+
+    cc = getarg();
+    if( cc == omit ) {                  // nothing found
+        err_count++;
+        // SC--048 A control word parameter is missing
+        out_msg("ERR_MACRO_DEFINITON '%s'"
+                " expecting BEGIN END /macro/lines/\n"
+                "\t\t\tLine %d of file '%s'\n",
+                macname,
+                cb->s.f->lineno,
+                cb->s.f->filename );
+        return;
+    }
+
+    p = arg_start;
+    head = NULL;
+    last = NULL;
+    save = *p;
+    *p   = '\0';
+
+    compend   = !stricmp( err_start, "end" );
+    compbegin = !stricmp( err_start, "begin" );
+    if( !(compbegin | compend) ) { // only .dm macname /line1/line2/ possible
+        char    sepchar;
+
+        if( ProcFlags.in_macro_define ) {
+            err_count++;
+            out_msg("ERR_NESTED_MACRO_DEFINE '%s' expecting END\n"
+                    "\t\t\tline %d of file '%s'\n",
+                    err_start,
+                    cb->s.f->lineno,
+                    cb->s.f->filename );
+            return;
+        }
+        ProcFlags.in_macro_define = 1;
+
+        *p   = save;
+        lineno_start = cb->s.f->lineno;
+
+
+        p = err_start;
+        sepchar = *p++;
+        nmstart = p;
+        while( *p ) {
+            while( *p && *p != sepchar ) {  // look for seperator
+                ++p;
+            }
+            len = p - nmstart;
+            *p = '\0';
+            work = mem_alloc( sizeof( inp_line ) + len );
+            work->next = NULL;
+            strcpy_s( work->value, len + 1, nmstart );
+            if( last != NULL ) {
+                last->next = work;
+            }
+            last = work;
+            if( head == NULL ) {
+                head = work;
+            }
+            nmstart = ++p;
+        }
+        compend = 1;                    // so the end processing will happen
+    }                                   // BEGIN or END not found
+
+    if( compend && !(ProcFlags.in_macro_define) ) {
+        err_count++;
+        // SC--003: A macro is not being defined
+        out_msg("ERR_MACRO_DEFINE END without BEGIN '%s'\n"
+                "\t\t\tLine %d of file '%s'\n",
+                macname,
+                cb->s.f->lineno,
+                cb->s.f->filename );
+        return;
+    }
+    if( compbegin && (ProcFlags.in_macro_define) ) {
+        err_count++;
+        // SC--002 The control word parameter '%s' is invalid
+        out_msg("ERR_NESTED_MACRO_DEFINE '%s' expecting END\n"
+                "\t\t\tline %d of file '%s'\n",
+                macname,
+                cb->s.f->lineno,
+                cb->s.f->filename );
+    }
+    *p   = save;
+    if( compbegin ) {                   // start new macro define
+
+        ProcFlags.in_macro_define = 1;
+        lineno_start = cb->s.f->lineno;
+
+        while( !(cb->s.f->flags & FF_eof) ) {  // process all macro lines
+
+            get_line();
+
+            if( cb->s.f->flags & (FF_eof | FF_err) ) {
+                break;                  // out of read loop
+            }
+            p = buff2;
+            if( *p == SCR_char ) {      // possible macro end
+                if( tolower( *(p + 1) ) == 'd' &&
+                    tolower( *(p + 2) ) == 'm' &&
+                    (*(p + 3) == ' ' || *(p + 3) == '\0') ) {
+
+                    garginit();
+
+                    cc = getarg();
+                    if( cc == omit ) {  // only .dm  means macro end
+                        compend = 1;
+                        break;          // out of read loop
+                    }
+                    p = arg_start;
+                    save = *p;
+                    *p = '\0';
+                    if( strncmp( macname, err_start, MAC_NAME_LENGTH ) ) {
+                        // macroname from begin different from end
+                        err_count++;
+                        // SC--005 Macro '%s' is not being defined
+                        out_msg( "ERR_MACRO_DEF Macro '%s' is not being defined\n"
+                                "\t\t\tLine %d of file '%s'\n",
+                                err_start,
+                                cb->s.f->lineno,
+                                cb->s.f->filename );
+                        *p = save;
+                        free_lines( head );
+                        return;
+                    }
+                    *p = save;
+                    cc = getarg();
+                    if( cc == omit ) {
+                        err_count++;
+                        // SC--048 A control word parameter is missing
+                        out_msg( "ERR_PARM_MISSING "
+                                 "A control word parameter is missing\n"
+                                 "\t\t\tLine %d of file '%s'\n",
+                                 cb->s.f->lineno,
+                                 cb->s.f->filename );
+                        free_lines( head );
+                        return;
+                    }
+                    p = arg_start;
+                    save = *p;
+                    *p = '\0';
+                    if( strcmp( err_start, "end") ) {
+                        err_count++;
+                        // SC--002 The control word parameter '%s' is invalid
+                        out_msg( "ERR_PARMINVALID "
+                                 "The control word parameter '%s' is invalid\n"
+                                 "\t\t\tLine %d of file '%s'\n",
+                                 cb->s.f->lineno,
+                                 cb->s.f->filename );
+                        free_lines( head );
+                        return;
+                    }
+                    compend = 1;
+                    break;              // out of read loop
+                }
+            }
+            work = mem_alloc( sizeof( inp_line ) + cb->s.f->usedlen );
+            work->next = NULL;
+            strcpy_s( work->value, cb->s.f->usedlen + 1, buff2 );
+            if( last != NULL ) {
+                last->next = work;
+            }
+            last = work;
+            if( head == NULL ) {
+                head = work;
+            }
+        }                               // end read loop
+        if( cb->s.f->flags & (FF_eof | FF_err) ) {
+            err_count++;
+            // error SC--004 End of file reached
+            // macro '%s' is still being defined
+            out_msg( "ERR_MACRO_DEFINE End of file reached"
+                     " line %d of file '%s'\n"
+                     "\t\t\tmacro '%s' is still being defined\n",
+                     cb->s.f->lineno,
+                     cb->s.f->filename,
+                     macname );
+            free_lines( head );
+            return;
+        }
+    }                                   // end compbegin
+
+    if( compend ) {                     // macro END definition processing
+        mac_entry   *   me;
+        mac_entry   *   dict;
+
+        me = find_macro( macro_dict, macname );
+        if( me != NULL ) {              // delete macro with same name
+            free_macro_entry( me, &macro_dict );
+        }
+
+        ProcFlags.in_macro_define = 0;
+
+        len = strlen( cb->s.f->filename );
+        me  = mem_alloc( len + sizeof( mac_entry ) );
+        me->next = NULL;
+        strcpy( me->name, macname );
+        me->macline = head;
+        me->lineno = lineno_start;
+        strcpy( me->mac_file_name, cb->s.f->filename );
+
+        if( macro_dict == NULL ) {
+            macro_dict = me;
+        } else {
+            dict = macro_dict;
+            while( dict->next != NULL ) {
+                dict = dict->next;
+            }
+            dict->next = me;
+        }
+    } else {
+        err_count++;
+        out_msg( "ERR_MACRO_DEFINE_logic error '%s'\n", macname );
+        free_lines( head );
+        show_include_stack();
+        return;
+    }
+    return;
+}
+
+
+
+/***************************************************************************/
+/*  :CMT.                                                                  */
+/*                                                                         */
+/* The information following the comment tag on the input line is treated  */
+/* as a comment. Text data and GML tags following the comment tag are not  */
+/* processed. Except between tag attributes, this tag may appear at any    */
+/* point in the GML sourc                                                  */
+/***************************************************************************/
+
+static  void    gml_cmt( const gmltag * entry )
+{
+    return;
+}
+
+
+/***************************************************************************/
+/*  :IMBED   file='abc.gml'                                                */
+/*  :INCLUDE file="abc.gml"                                                */
+/*                                                                         */
+/* :IMBED and :INCLUDE are eqivalent.                                      */
+/*                                                                         */
+/* The value of the required attribute file is used as the name of the     */
+/* file to include.  The content of the included file is processed by      */
+/* WATCOM Script/GML as if the data was in the original file.  This tag    */
+/* provides the means whereby a document may be specified using a          */
+/* collection of separate files.  Entering the source text into separate   */
+/* files, such as one file for each chapter, may help in managing the      */
+/* document.  if( the specified file does not have a file type, the        */
+/* default document file type is used.  For example, if the main document  */
+/* file is manual.doc, doc is the default document file type.  If the file */
+/* is not found, the alternate extension supplied on the command line is   */
+/* used.  If the file is still not found, the file type GML is used.  When */
+/* working on a PC/DOS system, the DOS environment symbol GMLINC may be    */
+/* set with an include file list.  This symbol is defined in the same way  */
+/* as a library definition list, and provides a list of alternate          */
+/* directories for file inclusion.  If an included file is not defined in  */
+/* the current directory, the directories specified by the include path    */
+/* list are searched for the file.  If the file is still not found, the    */
+/* directories specified by the DOS environment symbol PATH are searched.  */
+/*                                                                         */
+/***************************************************************************/
+
+static  void    gml_include( const gmltag * entry )
+{
+    char    *   p;
+
+    p = scan_start;
+    p++;
+    while( *p == ' ' ) {
+        p++;
+    }
+    *token_buf = '\0';
+    if( !strnicmp( "file=", p, 5 ) ) {
+        char    quote;
+        char    *fnstart;
+
+        p += 5;
+        if( *p == '"' || *p == '\'' ) {
+            quote = *p;
+            ++p;
+        } else {
+            quote = '.';                // error?? filename without quotes
+        }
+        fnstart = p;
+        while( *p && *p != quote ) {
+            ++p;
+        }
+        *p = '\0';
+        strcpy_s( token_buf, buf_size, fnstart );
+        ProcFlags.newLevelFile = 1;     // start new include level
+    }
+    return;
+}
+
+
+/***************************************************************************/
+/*   :SET symbol='symbol-name'                                             */
+/*        value='character-string'                                         */
+/*              delete.                                                    */
+/*                                                                         */
+/* This tag defines and assigns a value to a symbol name.  The symbol      */
+/* attribute must be specified.  The value of this attribute is the name   */
+/* of the symbol being defined, and cannot have a length greater than ten  */
+/* characters.  The symbol name may only contain letters, numbers, and the */
+/* characters @, #, $ and underscore(_).  The value attribute must be      */
+/* specified.  The attribute value delete or a valid character string may  */
+/* be assigned to the symbol name.  If the attribute value delete is used, */
+/* the symbol referred to by the symbol name is deleted.                   */
+/***************************************************************************/
+
+static  void    gml_set( const gmltag * entry )
+{
+    char        *   p;
+    char        *   symstart;
+    char        *   valstart;
+    char            c;
+    bool            symbolthere = false;
+    bool            valuethere = false;
+    symvar          sym;
+    sub_index       subscript;
+    int             rc;
+    symvar      * * working_dict;
+
+    subscript = no_subscript;           // not subscripted
+    scan_err = false;
+
+    p = scan_start;
+    p++;
+
+    for( ;;) {
+        while( *p == ' ' ) {            // over WS to attribute
+            p++;
+        }
+
+        if( !strnicmp( "symbol=", p, 7 ) ) {
+
+            p += 7;
+            symstart = p;
+
+            p = scan_sym( symstart, &sym, &subscript );
+            if( scan_err ) {
+                return;
+            }
+            if( *p == '"' || *p == '\'' ) {
+                p++;                    // skip terminating quote
+            }
+            if( sym.flags & local_var ) {
+                working_dict = &input_cbs->local_dict;
+            } else {
+                working_dict = &global_dict;
+            }
+            symbolthere = true;
+        }
+
+        while( *p == ' ' ) {
+            p++;
+        }
+        if( !strnicmp( "value=", p, 6 ) ) {
+            char    quote;
+
+            p += 6;
+            if( *p == '"' || *p == '\'' ) {
+                quote = *p;
+                ++p;
+            } else {
+                quote = ' ';
+            }
+            valstart = p;
+            while( *p && *p != quote ) {
+                ++p;
+            }
+            c = *p;
+            *p = '\0';
+            strcpy_s( token_buf, buf_size, valstart );
+            *p = c;
+            if( c == '"' || c == '\'' ) {
+                p++;
+            }
+            valuethere = true;
+        }
+        if( symbolthere && valuethere ) {   // both attributes
+
+            if( !strnicmp( token_buf, "delete", 6 ) ) {
+                sym.flags |= deleted;
+            }
+            rc = add_symvar( working_dict, sym.name, token_buf, subscript,
+                             sym.flags );
+        }
+
+        if( symbolthere && valuethere ) {   // tag complete with attributes
+            break;
+        }
+        c = *p;
+        if( p >= scan_stop ) {
+            c = '.';                    // simulate end of tag
+
+            if( !(input_cbs->fmflags & II_eof) ) {
+                if( get_line() ) {      // next line for missing attribute
+
+                    process_line();
+                    scan_start = buff2;
+                    scan_stop  = buff2 + buff2_lg;
+                    if( (*scan_start == SCR_char) ||
+                        (*scan_start == GML_char) ) {
+                                        //  missing attribute not supplied error
+
+                    } else {
+                        p = scan_start;
+                        continue;       // scanning
+                    }
+                }
+            }
+        }
+        if( c == '.' ) {                // end of tag found
+            err_count++;
+            // AT-001 Required attribute not found
+            if( input_cbs->fmflags & II_macro ) {
+                out_msg( "ERR_ATT_missing Required attribute not found\n"
+                         "\t\t\tLine %d of macro '%s'\n",
+                         input_cbs->s.m->mac->name, input_cbs->s.m->lineno );
+            } else {
+                out_msg( "ERR_ATT_missing Required attribute not found\n"
+                         "\t\t\tLine %d of file '%s'\n",
+                         input_cbs->s.f->lineno, input_cbs->s.f->filename );
+            }
+            if( inc_level > 0 ) {
+                show_include_stack();
+            }
+            break;
+        }
+    }
+    return;
+}
+
+
+
+/* the following tables and the processing routines will be split into
+ * different modules later
+ *
+ *
+ */
 
 /***************************************************************************/
 /*    GML tags                                                             */
 /***************************************************************************/
 
-#define pick(name, length, routine, flags) { name, length, routine, flags },
-
 static  const   gmltag  gml_tags[] = {
 
+#define pick(name, length, routine, flags) { name, length, routine, flags },
 #include "gtags.h"
-    { "   ", 0, NULL, 0 }               // end
+#undef pick
+    { "   ", 0, NULL, 0 } // end
 
 };
 
 #define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[ 0 ] ) - 1)
 
-#undef pick
 
 
 /***************************************************************************/
 /*    SCR control words                                                    */
 /***************************************************************************/
-
-#define pick(name, length, routine, flags) { name, routine },
-
 static  const   scrtag  scr_tags[] = {
-
-#include "gscrcws.h"
-
-    { "  ", NULL   }                    // end
+    { "ap", scr_ap },
+    { "dm", scr_dm },
+    { "im", scr_im },
+    { "se", scr_se },
+    { "  ", NULL   }
 };
 
 #define SCR_TAGMAX  (sizeof( scr_tags ) / sizeof( scr_tags[ 0 ] ) - 1)
 
-#undef pick
-
-
-/***************************************************************************/
-/*  scan for gml tags                                                      */
-/***************************************************************************/
 
 static void scan_gml( void )
 {
-    inputcb     *   cb;
-    char        *   p;
-    int             toklen;
-    int             k;
-    char            csave;
+    char    *   p;
+    int         toklen;
+    int         k;
+    char        csave;
 
     cb = input_cbs;
 
     p = scan_start +1;
-    tok_start = scan_start;
-    while( *p != ' ' && *p != '.' && p <= scan_stop ) {// search end of keyword
+    arg_stop = buff2 + buff2_lg - 1;    // store scan stop address
+    while( *p != ' ' && *p != '.' && p <= arg_stop ) {// search end of keyword
         p++;
     }
-    scan_start = p;                      // store argument start address
-    toklen = p - tok_start - 1;
+    arg_start = p;                      // store argument start address
+    err_start = NULL;                   // clear error address
+    toklen = p - scan_start - 1;
     csave = *p;
     *p = '\0';
     if( toklen >= TAG_NAME_LENGTH ) {
@@ -104,44 +700,128 @@ static void scan_gml( void )
             out_msg( "ERR_SYM_NAME_too_long '%s'\n"
                      "\t\tThe length of a symbol cannot exceed ten characters\n"
                      "\t\t\tLine %d of macro '%s'\n",
-                     tok_start + 1, cb->s.m->lineno, cb->s.m->mac->name );
+                     scan_start,
+                     cb->s.m->mac->name, cb->s.m->lineno );
         } else {
             out_msg( "ERR_SYM_NAME_too_long '%s'\n"
                      "\t\tThe length of a symbol cannot exceed ten characters\n"
                      "\t\t\tLine %d of file '%s'\n",
-                     tok_start + 1, cb->s.f->lineno, cb->s.f->filename );
+                     scan_start,
+                     cb->s.f->lineno, cb->s.f->filename );
         }
-        if( inc_level > 0 ) {
-            show_include_stack();
-        }
+        show_include_stack();
         return;
     }
 
     if( GlobalFlags.research && GlobalFlags.firstpass ) {
         if( cb->fmflags & II_macro ) {
             printf_research( "L%d    %c%s found in macro %s(%d)\n\n",
-                             inc_level, GML_char, tok_start + 1,
+                             inc_level, GML_char, scan_start + 1,
                              cb->s.m->mac->name, cb->s.m->lineno );
         } else {
             printf_research( "L%d    %c%s found in file %s(%d)\n\n",
-                             inc_level, GML_char, tok_start + 1,
+                             inc_level, GML_char, scan_start + 1,
                              cb->s.f->filename, cb->s.f->lineno );
         }
-        add_GML_tag_research( tok_start + 1 );
+        add_GML_tag_research( scan_start + 1 );
     }
 
 
     for( k = 0; k < GML_TAGMAX; ++k ) {
         if( toklen == gml_tags[ k].taglen ) {
-            if( !stricmp( gml_tags[ k ].tagname, tok_start + 1 ) ) {
+            if( !stricmp( gml_tags[ k ].tagname, scan_start + 1 ) ) {
                 *p = csave;
+                scan_start = p;         // gml tag found, process
                 gml_tags[ k ].gmlproc( &gml_tags[ k ] );
                 break;
             }
         }
     }
-    *p = csave;
 }
+
+
+/*
+ * add macro parms from input line as local symbolic variables
+ * for non quoted parms try to assign symbolic variables
+ * i.e.  a b c *var="1.8" d "1 + 2"
+ *    will give &* =a b c *var="1.8" d
+ *              &*0=5
+ *              &*1=a
+ *              &*2=b
+ *              &*3=c
+ *              &*4=d
+ *              &*5=1 + 2
+ *       and &*var = 1.8
+ *
+ *  the variable for &* is named _  This can change if this leads to
+ *  conflicts  -> change define MAC_STAR_NAME in gtype.h
+ *
+ */
+
+static void     add_macro_parms( char * p )
+{
+    int             len;
+    condcode        cc;
+
+    while( *p && *p == ' ' ) {
+        ++p;
+    }
+    len   = strlen( p );
+    if( len > 0 ) {
+        char    starbuf[ 12 ];
+        int     star0;
+
+                                        // the macro parameter line
+                                        // the name _ has to change (perhaps)
+        add_symvar( &input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript, local_var );
+
+        star0 = 0;
+        garginit();
+        cc = getarg();
+        while( cc > omit ) {            // as long as there are parms
+            char    c;
+
+            if( cc == pos ) {           // argument not quoted
+                           /* look if it is a symbolic variable definition */
+                scan_start = err_start;
+                c          = *arg_start;// prepare value end
+                *arg_start = '\0';      // terminate string
+                ProcFlags.suppress_msg = true;  // no errmsg please
+                ProcFlags.blanks_allowed = 0;   // no blanks please
+
+                scr_se();               // try to set variable and value
+                if( scan_err ) {        // not valid
+                    cc = quotes;        // treat as positional parm
+                }
+
+                ProcFlags.suppress_msg = false; // reenable err msg
+                ProcFlags.blanks_allowed = 1;   // blanks again
+                *arg_start = c;        // restore original char at string end
+
+
+            }
+            if( cc == quotes ) {       // copy argument as local symbolic var
+                star0++;
+                sprintf( starbuf, "%d", star0 );
+                p = err_start + arg_flen ;
+                c = *p;                 // prepare value end
+                *p = '\0';              // terminate string
+                add_symvar( &input_cbs->local_dict, starbuf, err_start,
+                            no_subscript, local_var );
+                *p = c;                // restore original char at string end
+            }
+            cc = getarg();              // look for next parm
+        }
+                                        // the positional parameter count
+        add_symvar( &input_cbs->local_dict, "0", starbuf,
+                    no_subscript, local_var );
+    }
+
+    if( GlobalFlags.research && GlobalFlags.firstpass ) {
+        print_sym_dict( input_cbs->local_dict );
+    }
+}
+
 
 
 /*
@@ -181,91 +861,91 @@ char    *   search_separator( char * str, char sep )
 
 
 /*
- * Scan line with script control word
+ * Process script control line
  *
  */
 
 static void     scan_script( void)
 {
-    inputcb     *   cb;
     mac_entry   *   me;
     char        *   p;
     char        *   pt;
     int             toklen;
     int             k;
+    char            c;
 
     cb = input_cbs;
-    p = scan_start + 1;
+    p = ++scan_start;
 
     if( *p == '*' ) {
         return;                         // .*   +++ ignore comment up to EOL
     }
-
     if( *p == SCR_char && *(p+1) == SCR_char ) {
-            pt = token_buf;
-            *pt++ = SCR_char;               // special for ...label
-            *pt++ = SCR_char;
-            *pt   = '\0';
-            me = NULL;
-            scan_start = p + 2;
-            toklen = 2;
+        return;                         // ...  +++ ignore label line for now
+    }
+
+    if( *p == '\'' ) {                  // .'
+        p++;
+        ProcFlags.CW_sep_ignore = 1;
     } else {
+        ProcFlags.CW_sep_ignore = 0;
 
-        if( *p == '\'' ) {                  // .'
+        if( *p == SCR_char ) {          // ..
             p++;
-            ProcFlags.CW_sep_ignore = 1;
-        } else {
-            ProcFlags.CW_sep_ignore = 0;
-
-            if( *p == SCR_char ) {          // ..
-                p++;
-                ProcFlags.macro_ignore = 1;
-                me = NULL;
-            } else {
-                ProcFlags.macro_ignore = 0;
-            }
-        }
-
-        if( !ProcFlags.CW_sep_ignore ) { // scan line for CW_sep_char
-            char    *   pchar;
-
-            pchar = search_separator( buff2, CW_sep_char );
-
-            if( pchar != NULL ) {
-                split_input( buff2, pchar + 1 );// ignore CW_sep_char
-                *pchar= '\0';               // delete CW_sep_char
-                buff2_lg = strlen( buff2 ); // new length of first part
-            }
-        }
-
-        scan_start = p;
-
-        token_buf[ 0 ] = '\0';
-        pt = token_buf;
-        while( *p && test_macro_char( *p ) ) {  // end of controlword
-           *pt++ = *p++;                    // copy to TokenBuf
-        }
-
-        toklen = pt - token_buf;
-
-        if( *p && (*p != ' ') || toklen == 0 ) {// no valid script controlword / macro
-
-//         copy_buff2_to_output();    TBD
-
-           return;
-        }
-        *pt = '\0';
-
-        if( toklen >= MAC_NAME_LENGTH ) {
-            *(token_buf + MAC_NAME_LENGTH) = '\0';
-        }
-        if( !ProcFlags.macro_ignore ) {
-            me = find_macro( macro_dict, token_buf );
-        } else {
+            ProcFlags.macro_ignore = 1;
             me = NULL;
+        } else {
+            ProcFlags.macro_ignore = 0;
         }
     }
 
+    if( !ProcFlags.CW_sep_ignore ) { // scan line for CW_sep_char
+        char    *   pchar;
+
+        pchar = search_separator( buff2, CW_sep_char );
+
+        if( pchar != NULL ) {
+            split_input( buff2, pchar + 1 );// ignore CW_sep_char
+            *pchar= '\0';               // delete CW_sep_char
+            buff2_lg = strlen( buff2 ); // new length of first part
+        }
+    }
+
+    /***************************************************/
+    /*  skip over ".  .  .cw"  indentation             */
+    /***************************************************/
+    if( p == scan_start ) {
+        while( *p == SCR_char && *(p+1) == ' ' ) {
+            while( *++p == ' ' ) /* empty */ ;  // skip blanks
+        }
+    }
+    scan_start = p;
+    c = *scan_start;
+
+    token_buf[ 0 ] = '\0';
+    pt = token_buf;
+    while( *p && test_macro_char( *p ) ) {  // end of controlword
+       *pt++ = *p++;                    // copy to TokenBuf
+    }
+    toklen = pt - token_buf;
+    if( *p && (*p != ' ') || toklen == 0 ) {// no valid script controlword / macro
+
+
+//       copy_buff2_to_output();    TBD
+
+
+       return;
+    }
+    *pt = '\0';
+
+    if( toklen >= MAC_NAME_LENGTH ) {
+        *(token_buf + MAC_NAME_LENGTH) = '\0';
+    }
+    if( !ProcFlags.macro_ignore ) {
+        me = find_macro( macro_dict, token_buf );
+    } else {
+        me = NULL;
+    }
     if( me != NULL ) {                  // macro found
         if( GlobalFlags.research && GlobalFlags.firstpass ) {
             if( cb->fmflags & II_macro ) {
@@ -308,152 +988,7 @@ static void     scan_script( void)
     }
 }
 
-/***************************************************************************/
-/*  logic for decision on skipping or processing line depending on         */
-/*  the current state of the .if .th .el .do  controlword encountered      */
-/*                                                                         */
-/*  The //comments refer to labels in the ASM code  see comment in wgml.c  */
-/*  file cbt284.011                                                        */
-/***************************************************************************/
 
-condcode    mainif( void)
-{
-    condcode    cc;
-    ifcb    *   cb;
-
-    cb = input_cbs->if_cb;
-    cc = no;
-//mainif
-    if(  cb->if_flags[ cb->if_level ].iflast// 1. rec after .if
-        && !cb->if_flags[ cb->if_level ].ifcwte) {  // not .th or .el
-
-        cb->if_flags[ cb->if_level ].iflast = false;// reset first switch
-        cb->if_flags[ cb->if_level ].ifthen = true; // treat as then
-    }
-//mnif01
-    if(  cb->if_flags[ cb->if_level ].ifcwif ) {// .if
-//mnif03
-        if( cb->if_flags[ cb->if_level ].ifthen
-            || cb->if_flags[ cb->if_level ].ifelse ) {// object of .th or .el
-
-            cc = pos;
-        } else {
-//mnif03a
-            while( cb->if_level > 0 ) { // pop one level
-                cb->if_level--;
-                if( cb->if_flags[ cb->if_level ].ifdo ) {
-                    break;
-                }
-            }
-            cc = pos;                   // .do or all popped
-        }
-        return( cc );
-    } else {                            // not .if
-//mnif01 cont.
-        if( cb->if_flags[ cb->if_level ].ifcwdo ) { // if  .do
-            cc = pos;
-            return( cc );
-        }
-        if( cb->if_flags[ cb->if_level ].ifthen
-            || cb->if_flags[ cb->if_level ].ifelse ) {// object of .th or .el
-//mnif05
-            if( cb->if_flags[ cb->if_level ].ifelse ) { // object of .el
-//mnif06
-                if( cb->if_flags[ cb->if_level ].iftrue ) {// omit if true for .el
-//mnif08
-                    cc = neg;
-                } else {
-                    cc = pos;
-                }
-            } else {
-                if( cb->if_flags[ cb->if_level ].iffalse ) {// omit false for .th
-                    cc = neg;
-                } else {
-                    cc = pos;
-                }
-            }
-        } else {
-            if( cb->if_flags[ cb->if_level ].ifcwte ) {
-                cc = pos;
-            } else {
-//mnif02
-                while( cb->if_level > 0 ) {
-                    cb->if_level--;
-                    if( cb->if_flags[ cb->if_level ].ifdo ) {
-//mnif05
-                        if( cb->if_flags[ cb->if_level ].ifelse ) {// object of .el
-//mnif06
-                            if( cb->if_flags[ cb->if_level ].iftrue ) {
-//mnif08
-                                cc = neg;   // omit if true for .el
-                            } else {
-                                cc = pos;
-                            }
-                        } else {
-                            if( cb->if_flags[ cb->if_level ].iffalse ) {
-                                cc = neg;   // omit false for .th
-                            } else {
-                                cc = pos;
-                            }
-                        }
-                        break;
-                    }
-                }
-                if( cc == no ) {        // not set then process record
-                    cc = pos;
-                }
-            }
-        }
-    }
-    if( cc == no ) {
-        if( input_cbs->fmflags & II_macro ) {
-            out_msg( "ERR_IF internal logic error\n"
-                     "\t\t\tLine %d of macro '%s'\n",
-                     input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-        } else {
-            out_msg( "ERR_IF internal logic error\n"
-                     "\t\t\tLine %d of file '%s'\n",
-                     input_cbs->s.f->lineno, input_cbs->s.f->filename );
-        }
-        if( inc_level > 1 ) {
-            show_include_stack();
-        }
-        err_count++;
-    }
-    return( cc );
-
-}
-
-
-/***************************************************************************/
-/*  first pass at script control words .if .th .el .do                     */
-/*                                                                         */
-/*  This is needed for routine mainif() above                              */
-/*                                                                         */
-/***************************************************************************/
-
-static void set_if_then_do( void )
-{
-    char        cw[3];
-    ifcb    *   cb = input_cbs->if_cb;
-
-    if( *(buff2 + 1) == SCR_char ) {    // ..CW
-        cw[0] = tolower( *(buff2 + 2) );// copy possible controlword
-        cw[1] = tolower( *(buff2 + 3) );
-    } else {                            // .CW
-        cw[0] = tolower( *(buff2 + 1) );// copy possible controlword
-        cw[1] = tolower( *(buff2 + 2) );
-    }
-    cw[2] = '\0';
-
-    if( !strcmp( cw, "if" ) ) {
-        cb->if_flags[ cb->if_level ].ifcwif = true;
-    } else if( !strcmp( cw, "do" ) ) {
-        cb->if_flags[ cb->if_level ].ifcwdo = true;
-    } else if( !strcmp( cw, "th" ) || !strcmp( cw, "el" ) ) {
-        cb->if_flags[ cb->if_level ].ifcwte = true;
-    }
-}
 
 
 /*
@@ -463,35 +998,17 @@ static void set_if_then_do( void )
 
 void    scan_line( void )
 {
-    condcode    cc;
-    ifcb    *   cb;
 
-    cb         = input_cbs->if_cb;
     scan_start = buff2;
     scan_stop  = buff2 + buff2_lg;
 
-    cb->if_flags[ cb->if_level ].ifcwte = false;// reset
-    cb->if_flags[ cb->if_level ].ifcwdo = false;// .. current
-    cb->if_flags[ cb->if_level ].ifcwif = false;// .... if, then, else, do
 
     if( *scan_start == SCR_char ) {
-        set_if_then_do();
-        cc = mainif();
-        if( cc == pos ) {
-            scan_script();              // script control line
-        } else {
-            out_msg( "skip control line\n" );
-        }
+        scan_script();                  // script control line
     } else if( *scan_start == GML_char ) {
         scan_gml();                     // gml tags
     } else {
-        cc = mainif();
-        if( cc == pos ) {
-            // process text     TBD
-        } else {
-
-            out_msg( "skip text\n" );   // skip text
-        }
+                                        // textline
     }
 }
 

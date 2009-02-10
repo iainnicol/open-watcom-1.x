@@ -38,7 +38,6 @@
 
 #include "copdir.h"
 #include "copfiles.h"
-#include "cophdr.h"
 #include "findfile.h"
 #include "gtype.h" // Required (but not included) by gvars.h.
 #include "gvars.h"

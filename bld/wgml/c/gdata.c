@@ -56,8 +56,6 @@ void init_global_vars( void )
     master_fname_attr   = NULL;         // Master input file name attributes
     line_from           = 1;            // default first line to process
     line_to             = ULONG_MAX -1; // default last line to process
-    dev_name            = NULL;         // device defined_name
-    opt_fonts           = NULL;         // option FONT parameters (linked list)
 
     input_cbs           = NULL;         // list of active input sources
     inc_level           = 0;            // include nesting level
@@ -70,9 +68,6 @@ void init_global_vars( void )
     *alt_ext            = '\0';
     def_ext             = mem_alloc( sizeof( GML_EXT ) );
     strcpy_s( def_ext, sizeof( GML_EXT ), GML_EXT );
-
-    gotarget[ 0 ]       = '\0';         // no .go to target yet
-    gotargetno          = 0;            // no .go to target lineno
 
     err_count           = 0;            // total error count
     wng_count           = 0;            // total warnig count
@@ -99,5 +94,6 @@ void init_global_vars( void )
     init_macro_dict( &macro_dict );
 
     buf_size            = BUF_SIZE;
+    buffout             = NULL;
     buff2               = mem_alloc( buf_size );
 }

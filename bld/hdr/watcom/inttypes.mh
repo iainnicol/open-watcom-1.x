@@ -9,6 +9,7 @@
 #ifndef _INTTYPES_H_INCLUDED
 #define _INTTYPES_H_INCLUDED
 :include readonly.sp
+:include cpluspro.sp
 
 #ifndef _COMDEF_H_INCLUDED
  #include <_comdef.h>
@@ -17,8 +18,6 @@
 #ifndef _STDINT_H_INCLUDED
   #include <stdint.h>
 #endif
-
-:include cpluspro.sp
 
 :include wchar_t.sp
 

@@ -25,25 +25,25 @@ time_deps   = ../watcom/time.mh ../readonly.sp $(cplus) ../crwat.sp ../ext.sp ..
 wchar_deps  = ../watcom/wchar.mh ../readonly.sp $(cplus) ../crwat.sp ../ext.sp ../mbmax.sp ../null.sp ../sizet.sp ../wchar_t.sp ../wctypet.sp $(saferc)
 wctype_deps = ../watcom/wctype.mh ../readonly.sp $(cplus) ../crwat.sp ../wchar_t.sp ../wctypet.sp
 
-cassert      : ../watcom/cassert.mh $(assert_deps)
-cctype       : ../watcom/cctype.mh $(ctype_deps)
-cerrno       : ../watcom/cerrno.mh $(errno_deps)
-cfloat       : ../watcom/cfloat.mh $(float_deps)
-ciso646      : ../watcom/ciso646.mh $(iso646_deps)
-climits      : ../watcom/climits.mh $(limits_deps)
-clocale      : ../watcom/clocale.mh $(locale_deps)
-cmath        : ../watcom/cmath.mh $(math_deps)
-csetjmp      : ../watcom/csetjmp.mh $(setjmp_deps)
-csignal      : ../watcom/csignal.mh $(signal_deps)
-cstdarg      : ../watcom/cstdarg.mh $(stdarg_deps)
-cstddef      : ../watcom/cstddef.mh $(stddef_deps)
-cstdint      : ../watcom/cstdint.mh $(stdint_deps)
-cstdio       : ../watcom/cstdio.mh $(stdio_deps)
-cstdlib      : ../watcom/cstdlib.mh $(stdlib_deps)
-cstring      : ../watcom/cstring.mh $(string_deps)
-ctime        : ../watcom/ctime.mh $(time_deps)
-cwchar       : ../watcom/cwchar.mh $(wchar_deps)
-cwctype      : ../watcom/cwctype.mh $(wctype_deps)
+cassert      : $(assert_deps)
+cctype       : $(ctype_deps)
+cerrno       : $(errno_deps)
+cfloat       : $(float_deps)
+ciso646      : $(iso646_deps)
+climits      : $(limits_deps)
+clocale      : $(locale_deps)
+cmath        : $(math_deps)
+csetjmp      : $(setjmp_deps)
+csignal      : $(signal_deps)
+cstdarg      : $(stdarg_deps)
+cstddef      : $(stddef_deps)
+cstdint      : $(stdint_deps)
+cstdio       : $(stdio_deps)
+cstdlib      : $(stdlib_deps)
+cstring      : $(string_deps)
+ctime        : $(time_deps)
+cwchar       : $(wchar_deps)
+cwctype      : $(wctype_deps)
 
 # These dependency lists are for the IOStreams headers.
 
@@ -126,16 +126,11 @@ vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
-graph_deps     = ../watcom/graph.mh ../readonly.sp $(cplus) ../crwat.sp ../poppack.sp ../pshpackl.sp
-pgchart_deps   = ../watcom/pgchart.mh ../readonly.sp $(cplus) ../crwat.sp ../poppack.sp ../pshpackl.sp
-
 _algmut.h       : ../watcom/_algmut.mh ../readonly.sp ../crwatcnt.sp
 _algnmod.h      : ../watcom/_algnmod.mh ../readonly.sp ../crwatcnt.sp
 _algsort.h      : ../watcom/_algsort.mh ../readonly.sp ../crwatcnt.sp
 _comdef.h       : ../watcom/_comdef.mh ../readonly.sp ../crwat.sp
-_graph.h        : ../watcom/_graph.mh $(graph_deps)
 _hash.h         : ../watcom/_hash.mh ../readonly.sp ../crwatcnt.sp
-_pgchart.h      : ../watcom/_pgchart.mh $(pgchart_deps)
 _rbtree.h       : ../watcom/_rbtree.mh ../readonly.sp ../crwatcnt.sp
 _strdef.h       : ../watcom/_strdef.mh ../readonly.sp ../crwatcnt.sp
 alloca.h        : ../watcom/alloca.mh ../readonly.sp $(cplus) ../crwat.sp ../null.sp ../alloca.sp
@@ -146,6 +141,7 @@ common.cnv      : ../watcom/common.mh ../crwat.sp
 complex.h       : $(complex_deps)
 conio.h         : ../watcom/conio.mh ../readonly.sp $(cplus) ../crwat.sp ../valist.sp
 crtdbg.h        : ../watcom/crtdbg.mh ../readonly.sp $(cplus) ../crwat.sp
+cstdlib.h       : ../watcom/cstdlib.mh ../readonly.sp ../crwat.sp
 ctype.h         : $(ctype_deps)
 direct.h        : ../watcom/direct.mh ../readonly.sp $(cplus) ../crwat.sp ../dskfreet.sp ../poppack.sp ../pshpackl.sp ../wchar_t.sp
 dos.h           : ../watcom/dos.mh ../readonly.sp $(cplus) ../crwat.sp ../dskfreet.sp ../poppack.sp ../pshpackl.sp ../wchar_t.sp
@@ -160,7 +156,8 @@ fenv.h          : ../watcom/fenv.mh ../readonly.sp ../crwat.sp ../pshpackl.sp ..
 float.h         : $(float_deps)
 fstream.h       : $(fstream_deps)
 generic.h       : ../watcom/generic.mh ../readonly.sp ../crwat.sp
-graph.h         : $(graph_deps)
+graph.h         : ../watcom/graph.mh ../readonly.sp $(cplus) ../crwat.sp ../poppack.sp ../pshpackl.sp
+graph98.h       : ../watcom/graph98.mh ../watcom/graph.mh
 i86.h           : ../watcom/i86.mh ../readonly.sp $(cplus) ../crwat.sp ../poppack.sp ../pshpackl.sp
 inttypes.h      : ../watcom/inttypes.mh ../readonly.sp ../crwat.sp
 io.h            : ../watcom/io.mh ../readonly.sp $(cplus) ../crwat.sp ../maxpath.sp ../wchar_t.sp
@@ -184,7 +181,7 @@ memory.h        : $(memory_deps)
 mmintrin.h      : ../watcom/mmintrin.mh ../readonly.sp ../crwat.sp $(cplus)
 new.h           : $(new_deps)
 ostream.h       : $(ostream_deps)
-pgchart.h       : $(pgchart_deps)
+pgchart.h       : ../watcom/pgchart.mh ../readonly.sp $(cplus) ../crwat.sp ../poppack.sp ../pshpackl.sp
 process.h       : ../watcom/process.mh ../readonly.sp $(cplus) ../crwatqnx.sp ../wchar_t.sp
 search.h        : ../watcom/search.mh ../readonly.sp $(cplus) ../crwat.sp
 setjmp.h        : $(setjmp_deps)
@@ -206,7 +203,7 @@ string.hpp      : ../watcom/string.mhp ../readonly.sp ../crwat.sp
 strings.h       : ../watcom/strings.mh ../readonly.sp $(cplus) ../crwat.sp ../sizet.sp
 strstrea.h      : $(strstrea_deps)
 sys/locking.h   : ../watcom/locking.mh ../readonly.sp $(cplus) ../crwat.sp
-!ifeq system qnx
+!ifeq system QNX
 dirent.h        : ../quantum/dirent.mh ../poppack.sp ../pshpackl.sp
 cdrom.h         : ../quantum/cdrom.mh ../poppack.sp ../pshpackl.sp
 grp.h           : ../quantum/grp.mh ../poppack.sp ../pshpackl.sp
@@ -262,7 +259,7 @@ ustat.h         : ../quantum/ustat.mh ../poppack.sp ../pshpackl.sp
 !else
 sys/stat.h      : ../watcom/stat.mh ../readonly.sp $(cplus) ../crwat.sp ../poppack.sp ../pshpackl.sp
 !endif
-!ifeq system linux
+!ifeq system LINUX
 dirent.h        : ../watcom/linux/dirent.mh ../poppack.sp ../pshpackl.sp ../lnxkpack.sp
 termios.h       : ../watcom/linux/termios.mh ../readonly.sp $(cplus) ../crwat.sp ../lnxkpack.sp
 sys/ioctl.h     : ../watcom/linux/ioctl.mh ../readonly.sp $(cplus) ../crwat.sp ../lnxkpack.sp ../incdir.sp

@@ -14,48 +14,41 @@ inc_dirs = -I"../h;../../h"
 
 .c: ../c;../../c;../../../watcom/c
 
-common_objs = &
-            common.obj    &
-	    dfinterp.obj  &
-	    heapchk.obj   &
-            research.obj  &
-            cmdlhelp.obj  &
-            swchar.obj
-
 cf_common_objs = &
-	    $(common_objs) &
 	    cfdir.obj     &
 	    cfdev.obj     &
 	    cfdrv.obj     &
 	    cffon.obj     &
 	    cffunc.obj    &
             cfheader.obj  &
-            lhdirect.obj
+            cmdlhelp.obj  &
+            common.obj    &
+	    dfinterp.obj  &
+	    heapchk.obj   &
+            lhdirect.obj  &
+            research.obj  &
+            swchar.obj
 
 cfc_objs = &
             cfcheck.obj   &
             cfcutils.obj
 
-cop_common_objs = &
-	    $(common_objs) &
+copp_objs = &
+            copparse.obj  &
             copdev.obj    &
 	    copdir.obj    &
 	    copdrv.obj    &
             copfiles.obj  &
 	    copfon.obj    &
 	    copfunc.obj   &
-	    cophdr.obj    &
+            common.obj    &
+	    dfinterp.obj  &
 	    findfile.obj  &
-	    outbuff.obj
-	    
-copp_objs = &
-            $(cop_common_objs) &
-            copparse.obj
+	    heapchk.obj   &
+            research.obj  &
+            cmdlhelp.obj  &
+            swchar.obj
 
-devld_objs = &
-            $(cop_common_objs) &
-	    devldchk.obj
-	    
 ff_objs = &
             common.obj    &
 	    findfunc.obj  &
@@ -63,17 +56,12 @@ ff_objs = &
             cmdlhelp.obj  &
             swchar.obj
 
-outc_objs = &
-            $(cop_common_objs) &
-	    outcheck.obj
-
 objs = &
             $(cf_common_objs) &
             cfparse.obj       &
             cfputils.obj
 
-nwgml : cfcheck.exe cfparse.exe copparse.exe devldchk.exe findfunc.exe outcheck.exe .SYMBOLIC
-
+nwgml : cfcheck.exe cfparse.exe copparse.exe findfunc.exe .SYMBOLIC
 !include exetarg.mif
 
 cfcheck.exe : $(cfc_objs) $(cf_common_objs) $(libs)
@@ -92,14 +80,6 @@ copparse.exe : $(copp_objs) $(libs)
         @$(cl) $(clflags) $< $(cl_libs)
 !endif
 
-devldchk.exe : $(devld_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
-
 findfunc.exe : $(ff_objs) $(libs)
 !ifeq verbose 1
         $(cl) $(clflags) $< $(cl_libs)
@@ -107,13 +87,4 @@ findfunc.exe : $(ff_objs) $(libs)
         @echo cl $@
         @$(cl) $(clflags) $< $(cl_libs)
 !endif
-
-outcheck.exe : $(outc_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
-
 

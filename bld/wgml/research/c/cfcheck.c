@@ -33,6 +33,7 @@
 
 #include "cfcheck.h"
 #include "common.h"
+#include "heapchk.h"
 #include "research.h"
 
 /*  Function main().
