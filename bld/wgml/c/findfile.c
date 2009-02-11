@@ -360,7 +360,6 @@ static int try_open( char * prefix, char * filename )
     try_file_name = mem_alloc( filename_length );
     strcpy_s( try_file_name, filename_length, buff );
     try_fp = fp;
-
     return( 1 );
 }
 
@@ -452,36 +451,32 @@ void ff_setup( void )
 }
 
 /* Function ff_teardown().
- * Releases the memory allocated by functions in this module.
+ * Releases the memory allocated by ff_setup().
  */
 
 void ff_teardown( void )
 {
+
     if( try_file_name != NULL ) {
         mem_free( try_file_name );
-        try_file_name = NULL;
     }
 
     if( try_fp != NULL) {
         fclose( try_fp );
-        try_fp = NULL;
     }
 
     /* directories points to a single block of allocated memory. */
 
     if( gml_inc_dirs.directories != NULL ) {
         mem_free( gml_inc_dirs.directories );
-        gml_inc_dirs.directories = NULL;
     }
 
     if( gml_lib_dirs.directories != NULL) {
         mem_free( gml_lib_dirs.directories );
-        gml_lib_dirs.directories = NULL;
     }
 
     if( path_dirs.directories != NULL ) {
         mem_free( path_dirs.directories );
-        path_dirs.directories = NULL;
     }
 
     return;
@@ -685,7 +680,6 @@ int search_file_in_dirs( char * filename, char * defext, char * altext,
                             out_msg( "Member name is too long and will not be" \
                                         " searched for:\n%s.cop\n", member_name );
                             mem_free( member_name );
-                            member_name = NULL;
                             err_count++;
                             g_suicide();
                         }
@@ -693,7 +687,6 @@ int search_file_in_dirs( char * filename, char * defext, char * altext,
                         out_msg( "Member name is too long and will not be" \
                                             " searched for:\n%s\n", member_name );
                         mem_free( member_name );
-                        member_name = NULL;
                         err_count++;
                         g_suicide();
                     }
@@ -706,7 +699,7 @@ int search_file_in_dirs( char * filename, char * defext, char * altext,
 
             if( sequence == ds_bin_lib ) {
                 out_msg( "Member file not found in same directory as directory" \
-                                        " file:\n%s%s\n", dir_ptr, primary_file );
+                                        " file:\n%s%s\n", dir_ptr, member_name );
                 err_count++;
                 g_suicide();
             }

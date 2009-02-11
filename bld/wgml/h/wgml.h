@@ -59,7 +59,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 /* wgml.c                              */
 extern  bool    free_resources( errno_t in_errno );
 extern  void    g_banner( void );
-// extern  char  * get_filename_full_path( char * buff, char const * name, size_t max );
+extern  char  * get_filename_full_path( char * buff, char const * name, size_t max );
 extern  bool    get_line( void );
 extern  void    inc_inc_level( void );
 
@@ -71,8 +71,6 @@ extern  void    show_include_stack( void );
 extern  void        garginit( void );
 extern  void        garginitdot( void );
 extern  condcode    getarg( void );
-extern  condcode    getqst( void );
-extern  bool        test_function_char( char c );
 extern  bool        test_identifier_char( char c );
 extern  bool        test_macro_char( char c );
 extern  bool        test_symbol_char( char c );
@@ -93,14 +91,11 @@ extern  void    g_info( int, ... );
 
 extern  void    g_suicide( void );
 
-/* getnum.c                             */
-extern condcode     getnum( getnum_block * gn );
 
 /* gmacdict.c                         */
-extern  void        add_macro_entry( mac_entry * * dict, mac_entry * me );
 extern  void        init_macro_dict( mac_entry * * dict );
 extern  void        free_macro_dict( mac_entry * * dict );
-extern  void        free_macro_entry( mac_entry * * dict, mac_entry * me );
+extern  void        free_macro_entry( mac_entry * me, mac_entry * * dict );
 extern  void        print_macro_dict( mac_entry * dict );
 extern  mac_entry * find_macro( mac_entry * dict, char const * name );
 
@@ -134,76 +129,34 @@ extern  void    printf_research( char * msg, ... );
 
 
 /* gscan.c                            */
+extern  void    free_lines( inp_line * line );
 extern  void    scan_line( void );
 
 
-/* gsfuncs.c                          */
-extern  char    *   scr_multi_funcs( char * in, char * end, char * * ppval );
-
-
-/* gsfunelu.c                         */
-extern  char    *   scr_single_funcs( char * in, char * end, char * * result );
-extern  char    *   scr_single_func_e( char * in, char * end, char * * result );
-extern  char    *   scr_single_func_l( char * in, char * end, char * * result );
-extern  char    *   scr_single_func_u( char * in, char * end, char * * result );
-
-
-/* gsgoto.c                           */
-extern  void    print_labels( labelcb * lb );
-extern  bool    gotarget_reached( void );
-
-
 /* gsetvar.c                          */
-extern char *   scan_sym( char * p, symvar * sym, sub_index * subscript );
-
-
-/* gsmacro.c                          */
-extern  void        add_macro_cb_entry( mac_entry * me );
-extern  void        add_macro_parms( char * p );
-extern  void        free_lines( inp_line * line );
-
+extern condcode     getnum( getnum_block * gn );
+extern void         scr_se( void );
+extern char     *   scan_sym( char * p, symvar * sym, sub_index * subscript );
 
 /* gsymvar.c                          */
+extern bool     check_subscript( sub_index sub );
 extern void     init_dict( symvar * * dict );
 extern void     free_dict( symvar * * dict );
+extern void     print_sym_dict( symvar * dict );
 extern int      find_symvar( symvar * * dict, char * name, sub_index subscript, symsub * * symsubval );
 extern int      add_symvar( symvar * * dict, char * name, char * val, sub_index subscript, sym_flags f );
-extern void     print_sym_dict( symvar * dict );
-extern void     reset_auto_inc_dict( symvar * dict );
 
 
 /* gutils.c                           */
 extern  bool    to_internal_SU( char * * scaninput, su * spaceunit );
 
 /*
- * prototypes for the gml processing routines
+ * protoypes for the gml processing routines
  */
 
-#define pick( name, length, routine, flags )  extern void routine( const gmltag * entry );
+#define pick(name, length, routine, flags)  static void routine( const gmltag * entry );
 
 #include "gtags.h"
-
-#undef pick
-
-/*
- * prototypes for the script control word processing routines
- */
-
-#define pick( name, length, routine, flags )  extern void routine( void );
-
-#include "gscrcws.h"
-
-#undef pick
-
-/*
- * prototypes for the script string function routines , ie. &'substr( ,..
- */
-
-#define pick( name, length, parms, optparms, routine ) \
-    extern char * routine( char * in, const char * end, char * * ppval, \
-                           const int parm_cnt );
-
-#include "gsfuncs.h"
 
 #undef pick
 

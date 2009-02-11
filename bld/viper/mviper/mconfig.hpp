@@ -41,14 +41,25 @@
 #include "wwindow.hpp"
 #include "wkeydefs.hpp"
 
+#define DEFAULT_EDITOR_NAME             "weditviw"
+#define DEFAULT_EDITOR_IS_DLL           TRUE
+#define DEFAULT_EDITOR_PARMS            ""
+
+#define DBCS_DEFAULT_EDITOR_NAME        "notepad"
+#define DBCS_DEFAULT_EDITOR_IS_DLL      FALSE
+#define DBCS_DEFAULT_EDITOR_PARMS       "%f"
+
+#define OS2_DEFAULT_EDITOR_NAME         "epmlink"
+#define OS2_DEFAULT_EDITOR_IS_DLL       TRUE
+#define OS2_DEFAULT_EDITOR_PARMS        ""
+
 #define LOG_HELP_WIDTH 3
 
 //these are used for indexing by MConfig::zapTargetMasks()
 typedef enum HostType {
     #undef pick
-    #define pick(enum,type,batchserv,editor,DLL,parms) enum,
+    #define pick(a,b) a,
     #include "hosttype.h"
-    HOST_UNDEFINED
 } HostType;
 
 WCLASS MTool;
@@ -57,7 +68,7 @@ WCLASS MConfig : public WObject
 {
     Declare( MConfig )
     public:
-        MConfig( WFileName& filename, bool debug=FALSE, HostType host=HOST_UNDEFINED );
+        MConfig( WFileName& filename, bool debug=FALSE );
         ~MConfig();
         bool ok() { return _ok; }
         const WString& errMsg() { return _errMsg; }

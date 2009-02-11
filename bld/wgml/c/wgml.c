@@ -26,12 +26,7 @@
 *
 * Description:  WGML top level driver module and file I/O.
 *               not yet functional
-*
-*
-*
 *   some logic / ideas adopted from Watcom Script 3.2 IBM S/360 Assembler
-*   as found on www.cbttape.org files 280 - 288
-*
 ****************************************************************************/
 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
@@ -102,7 +97,7 @@ static void usage( void )
     my_exit( 4 );
 }
 
-#if 0                                   // not used for the moment
+
 char *get_filename_full_path( char *buff, char const * name, size_t max )
 {
     char    *   p;
@@ -125,14 +120,13 @@ char *get_filename_full_path( char *buff, char const * name, size_t max )
 #endif
     return( p );
 }
-#endif
 
 
 /***************************************************************************/
 /*  Try to close an opened include file                                    */
 /***************************************************************************/
 
-static  bool    free_inc_fp( void )
+bool    free_inc_fp( void )
 {
     inputcb *   ip;
     filecb  *   cb;
@@ -145,15 +139,13 @@ static  bool    free_inc_fp( void )
                 if( (cb->flags & FF_open) ) {   // and file is open
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
-                        strerror_s( buff2, buf_size, errno );
-                        out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+                        out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                         err_count++;
                         g_suicide();
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
-                        strerror_s( buff2, buf_size, errno );
-                        out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+                        out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                         err_count++;
                         g_suicide();
                     }
@@ -184,15 +176,13 @@ static void reopen_inc_fp( filecb *cb )
         if( erc == 0 ) {
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
-                strerror_s( buff2, buf_size, errno );
-                out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+                out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                 err_count++;
                 g_suicide();
             }
             cb->flags |= FF_open;
         } else {
-            strerror_s( buff2, buf_size, erc2 );
-            out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
+            out_msg( "ERR_FILE_IO %d %s\n", erc2, cb->filename );
             err_count++;
             g_suicide();
         }
@@ -204,7 +194,7 @@ static void reopen_inc_fp( filecb *cb )
 /*  Report resource exhaustion: may eventually try to correct the problem  */
 /***************************************************************************/
 
-bool    free_resources( errno_t in_errno )
+bool free_resources( errno_t in_errno )
 {
     if( in_errno == ENOMEM) out_msg( "Out of memory!\n" );
     else out_msg( "Out of file handles!\n" );
@@ -216,7 +206,7 @@ bool    free_resources( errno_t in_errno )
 /*  Set the extension of the Master input file as default extension        */
 /***************************************************************************/
 
-static  void    set_default_extension( const char * masterfname )
+void set_default_extension( const char * masterfname )
 {
     char        buff[ FILENAME_MAX ];
     char    *   ext;
@@ -247,18 +237,16 @@ static  void    add_file_cb_entry( void )
     new = mem_alloc( sizeof( filecb ) + fnlen );// count for terminating \0
                                                 //  is in filecb structure
     nip = mem_alloc( sizeof( inputcb ) );
+    nip->prev   = NULL;
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
-    nip->if_cb       = mem_alloc( sizeof( ifcb) );
-    memset( nip->if_cb, '\0', sizeof( ifcb ) );
     nip->fmflags = II_file;
     nip->s.f    = new;
     init_dict( &nip->local_dict );
 
-    new->lineno   = 0;
-    new->linemin  = line_from;
-    new->linemax  = line_to;
-    new->label_cb = NULL;
+    new->lineno  = 0;
+    new->linemin = line_from;
+    new->linemax = line_to;
     strcpy_s( new->filename, fnlen + 1, try_file_name );
     mem_free( try_file_name );
     try_file_name = NULL;
@@ -266,13 +254,14 @@ static  void    add_file_cb_entry( void )
     if( try_fp ) {
         new->flags = FF_open;
         new->fp    = try_fp;
-        try_fp     = NULL;
     } else {
         new->flags = FF_clear;
         new->fp    = NULL;
     }
 
-    nip->prev = input_cbs;
+    if( input_cbs != NULL ) {
+        nip->prev = input_cbs;
+    }
     input_cbs = nip;
     return;
 }
@@ -285,7 +274,6 @@ static  void    add_file_cb_entry( void )
 static  void    del_input_cb_entry( void )
 {
     inputcb     *   wk;
-    labelcb     *   lw;
 
     wk = input_cbs;
     if( wk == NULL ) {
@@ -294,14 +282,6 @@ static  void    del_input_cb_entry( void )
     free_lines( wk->hidden_head );
 
     free_dict( &wk->local_dict );
-    if( wk->if_cb != NULL ) {
-        if( wk->if_cb->if_level > 0 ) {
-            out_msg( "ERR_IF_level not zero at EOF %d\n", wk->if_cb->if_level );
-            show_include_stack();
-            err_count++;
-        }
-        mem_free( wk->if_cb );
-    }
 
     if( wk->fmflags & II_macro ) {
 /*
@@ -312,15 +292,6 @@ static  void    del_input_cb_entry( void )
     } else {
         if( wk->s.f->flags & FF_open ) {// close file if neccessary
             fclose( wk->s.f->fp );
-        }
-        lw = wk->s.f->label_cb;         // free labels
-        if( GlobalFlags.research ) {
-            print_labels( lw );         // print labels
-        }
-        while( lw != NULL ) {
-           wk->s.f->label_cb = lw->prev;
-           mem_free( lw );
-           lw = wk->s.f->label_cb;
         }
         mem_free( wk->s.f );
     }
@@ -337,12 +308,6 @@ static  void    get_macro_line( void )
 {
     macrocb *   cb;
 
-    if( input_cbs->fmflags & II_file ) {
-        out_msg( "ERR_logic get_macroline() for file\n");
-        show_include_stack();
-        err_count++;
-        g_suicide();
-    }
     cb = input_cbs->s.m;
 
     if( cb->macline == NULL ) {         // no more macrolines
@@ -353,8 +318,6 @@ static  void    get_macro_line( void )
     } else {
         cb->lineno++;
         cb->flags          |= FF_startofline;
-        cb->flags          &= ~FF_eof;
-        input_cbs->fmflags &= ~II_eof;
         strcpy_s( buff2, buf_size, cb->macline->value );
         cb->macline         = cb->macline->next;
     }
@@ -390,7 +353,6 @@ bool    get_line( void )
                 reopen_inc_fp( cb );
             }
             do {
-                fgetpos( cb->fp, &cb->pos );// remember position for label
                 p = fgets( buff2, buf_size, cb->fp );
                 if( p != NULL ) {
                     if( cb->lineno >= cb->linemax ) {
@@ -425,9 +387,7 @@ bool    get_line( void )
                         *buff2 = '\0';
                         break;
                     } else {
-                        strerror_s( buff2, buf_size, errno );
-                        out_msg( "ERR_FILE_IO %s %s\n", buff2, cb->filename );
-
+                        out_msg( "ERR_FILE_IO %d %s\n", errno, cb->filename );
                         err_count++;
                         g_suicide();
                     }
@@ -449,44 +409,33 @@ bool    get_line( void )
 }
 
 
-/***************************************************************************/
-/*  output the filenames + lines which were included                       */
-/***************************************************************************/
-
 void    show_include_stack( void )
 {
     inputcb *   ip;
 
-    if( inc_level > 1 ) {
-        ip = input_cbs;
-        while( ip != NULL ) {
-            switch( ip->fmflags ) {
-            case    II_file:
-                out_msg( "\tIncluded from line %d of file '%s'\n",
-                         ip->s.f->lineno,
-                         ip->s.f->filename );
-                break;
-            case    II_macro :
-                out_msg( "\tLine %d of macro '%s' defined at line %d of file '%s'\n",
-                         ip->s.m->lineno,
-                         ip->s.m->mac->name,
-                         ip->s.m->mac->lineno,
-                         ip->s.m->mac->mac_file_name);
-                break;
-            default:
-                out_msg( "\tERR Included from unknown ( master document? )\n" );
-                break;
-            }
-            ip = ip->prev;
+    ip = input_cbs;
+    while( ip != NULL ) {
+        switch( ip->fmflags ) {
+        case    II_file:
+            out_msg( "\tIncluded from line %d of file '%s'\n",
+                     ip->s.f->lineno,
+                     ip->s.f->filename );
+            break;
+        case    II_macro :
+            out_msg( "\tLine %d of macro '%s' defined at line %d of file '%s'\n",
+                     ip->s.m->lineno,
+                     ip->s.m->mac->name,
+                     ip->s.m->mac->lineno,
+                     ip->s.m->mac->mac_file_name);
+            break;
+        default:
+            out_msg( "\tERR Included from unknown ( master document? )\n" );
+            break;
         }
+        ip = ip->prev;
     }
     return;
 }
-
-
-/***************************************************************************/
-/*  increment include level                                                */
-/***************************************************************************/
 
 void    inc_inc_level( void )
 {
@@ -496,43 +445,13 @@ void    inc_inc_level( void )
     }
 }
 
-
-/***************************************************************************/
-/* remove leading  .  from input                                           */
-/***************************************************************************/
-
-static void remove_indentation( void )
-{
-    char    *   p;
-
-    p = buff2;
-    while( *p == SCR_char && *(p+1) == ' ' ) {
-        while( *++p == ' ' ) /* empty */ ;  // skip blanks
-    }
-    if( p != buff2 ) {                  // found some blanks now copy buffer
-        char *   pb = buff2;
-
-        while( *p ) {
-            *pb++ = *p++;
-        }
-        *pb = '\0';
-        buff2_lg = strnlen_s( buff2, buf_size );
-//      if( GlobalFlags.research && GlobalFlags.firstpass ) {
-//          out_msg( "%s<< Indentremoved\n", buff2 );
-//      }
-    }
-}
-
-
 /***************************************************************************/
 /*  process the input file                                                 */
 /***************************************************************************/
 
 static  void    proc_GML( char * filename )
 {
-    ifcb    *   ic;
     filecb  *   cb;
-
     char        attrwork[ 32 ];
 
     ProcFlags.newLevelFile = 1;
@@ -593,38 +512,12 @@ static  void    proc_GML( char * filename )
         /*******************************************************************/
 
         while( !(input_cbs->fmflags & II_eof) ) {
-            ic = input_cbs->if_cb;      // .if .th .el controlblock
-
-            if( !ProcFlags.keep_ifstate ) {
-                if( ic->if_level > 0 ) {// if .if active
-                    if( ic->if_flags[ ic->if_level ].ifelse // after else
-                        && !ic->if_flags[ ic->if_level ].ifdo ) {// no do group
-                        ic->if_level--; // pop .if stack one level
-                    }
-                }
-            }
 
             if( !get_line() ) {
                 break;                  // eof
             }
-            if( !ProcFlags.keep_ifstate ) {
-                if( !ic->if_flags[ ic->if_level ].ifdo ) {  // no do group
-                    ic->if_flags[ ic->if_level ].ifthen = false;// not in then
-                    ic->if_flags[ ic->if_level ].ifelse = false;// not in else
-                }
-            } else {
-                ProcFlags.keep_ifstate = false;
-            }
 
-            remove_indentation();       // ".  .  .  .cw"  becomes ".cw"
-
-            if( ProcFlags.goto_active ) {
-                if( !gotarget_reached() ) {
-                    continue;           // skip processing
-                }
-                ProcFlags.goto_active = false;
-            }
-            process_line();             // substitute variables
+            process_line();
             scan_line();
 
             if( ProcFlags.newLevelFile ) {
@@ -634,34 +527,7 @@ static  void    proc_GML( char * filename )
         if( ProcFlags.newLevelFile ) {
             continue;
         }
-        if( ProcFlags.goto_active ) {
-            err_count++;
-            if( input_cbs->fmflags & II_macro ) {
-                out_msg( "ERR_GOTO Label not found %s\n"
-                         "\t\t\tLine %d of macro '%s'\n",
-                         gotarget,
-                         input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-            } else {
-                out_msg( "ERR_GOTO Label not found %s\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         gotarget,
-                         input_cbs->s.f->lineno, input_cbs->s.f->filename );
-            }
-            show_include_stack();
-        }
-        if( ic->if_level > 0 ) {        // if .if active
-            err_count++;
-            if( input_cbs->fmflags & II_macro ) {
-                out_msg( "ERR_IFlevel nesting\n"
-                         "\t\t\tLine %d of macro '%s'\n",
-                         input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-            } else {
-                out_msg( "ERR_IFlevel nesting\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         input_cbs->s.f->lineno, input_cbs->s.f->filename );
-            }
-            show_include_stack();
-        }
+
         del_input_cb_entry();           // one level finished
         inc_level--;
         if( inc_level == 0 ) {          // EOF master document file
@@ -680,7 +546,6 @@ static  void    proc_GML( char * filename )
     }
 }
 
-
 /***************************************************************************/
 /*  printStats show statistics at program end                              */
 /***************************************************************************/
@@ -695,7 +560,6 @@ static  void    print_stats( void )
 
 }
 
-
 /***************************************************************************/
 /*  initPass                                                               */
 /***************************************************************************/
@@ -704,16 +568,8 @@ static  void    init_pass( void )
 
     if( pass > 1 ) {
         GlobalFlags.firstpass = 0;
-
-/*
- * design question: free dictionaries or not                            TBD
- *                  setsymbol defines from cmdline must not be deleted
- */
-
-    reset_auto_inc_dict( global_dict ); // let auto inc start with 1 again
-
-//      free_dict( &global_dict );      // free dictionaries
-//      free_macro_dict( &macro_dict );
+        free_dict( &global_dict );      // free dictionaries
+        free_macro_dict( &macro_dict );
     } else {
         GlobalFlags.firstpass = 1;
     }
@@ -726,25 +582,6 @@ static  void    init_pass( void )
     line_from   = 1;                  // processing line range Masterdocument
     line_to     = ULONG_MAX - 1;
 
-}
-
-/***************************************************************************/
-/*  get_systime   gets system time and initializes symbols date and time   */
-/***************************************************************************/
-
-static void get_systime( void )
-{
-    char        date_str[80];
-    char        time_str[80];
-    time_t      gtime;
-
-    gtime = time( NULL );
-    localtime_s( &gtime, &doc_tm );
-    strftime( date_str, 80, "%B %d, %Y", &doc_tm );
-    strftime( time_str, 80, "%H:%M:%S", &doc_tm );
-    printf( "%s %s\n", date_str, time_str );
-    add_symvar( &global_dict, "date", date_str, no_subscript, 0 );
-    add_symvar( &global_dict, "time", time_str, no_subscript, 0 );
 }
 
 /***************************************************************************/
@@ -764,12 +601,14 @@ int main( int argc, char * argv[] )
 
     g_trmem_init();                     // init memory tracker if necessary
 
-    init_global_vars();
     get_systime();                      // initialize symbols date and time
+
+    init_global_vars();
 
     token_buf = mem_alloc( buf_size );
 
     ff_setup();                         // init findfile
+    cop_setup();                        // init copfiles
 
     cmdlen = _bgetcmd( NULL, 0 ) + 1;
     cmdline = mem_alloc( cmdlen );
@@ -778,7 +617,6 @@ int main( int argc, char * argv[] )
     out_msg( "cmdline=%s\n", cmdline );
 
     proc_options( cmdline );
-    cop_setup();                        // init copfiles
     g_banner();
 
     if( master_fname != NULL ) {        // filename specified
@@ -797,9 +635,6 @@ int main( int argc, char * argv[] )
 
 //            g_trmem_prt_list();       // show allocated memory at pass end
 
-            if( GlobalFlags.research && (pass < passes) ) {
-                print_sym_dict( global_dict );
-            }
             out_msg( "\n  End of pass %d of %d ( %s mode ) \n", pass, passes,
                      GlobalFlags.research ? "research" : "normal" );
         }
@@ -839,9 +674,6 @@ int main( int argc, char * argv[] )
     }
     if( master_fname_attr != NULL ) {
         mem_free( master_fname_attr );
-    }
-    if( dev_name != NULL ) {
-        mem_free( dev_name );
     }
     if( out_file != NULL ) {
         mem_free( out_file );

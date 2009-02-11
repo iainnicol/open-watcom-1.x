@@ -52,7 +52,6 @@
 #define BUF_SIZE        512             // default buffersize for filecb e.a.
 #define MAX_FILE_ATTR   15              // max size for fileattr (T:xxxx)
 #define SCR_KW_LENGTH   2               // script control word length
-#define FUN_NAME_LENGTH 11              // &'function name max length
 #define TAG_NAME_LENGTH 15              // :tag name length
 #define ATT_NAME_LENGTH 9               // :tag attr name len
 #define SYM_NAME_LENGTH 10              // symbol name length
@@ -61,7 +60,6 @@
                                         // arbitrary value, not found in docu!!!
 #define MAC_STAR_NAME   "_"             // local variable name for &*
 
-#define MAX_IF_LEVEL    10              // maximum nested .if s
 
 /* default filename extensions */
 #define DEF_EXT         ".def"
@@ -113,13 +111,12 @@ typedef enum {
     min_subscript = -1000000L,          // smallest valid subscript
     max_subscript =  1000000L,          // largest  valid subscript
     no_subscript  = 0x11223344          // value if not subscripted
-                // must be outside of range min_subscript,max_subscript
+                // must be outside of range min_scubscript,max_subscript
 } sub_index;
 
 typedef enum {
     local_var   = 1,
     subscripted = 2,
-    auto_inc    = 4,
     deleted     = 0x100
 } sym_flags;
 
@@ -141,10 +138,8 @@ typedef struct symsub {
 typedef struct symvar {
     struct symvar   *   next;           // next base entry
     char                name[ SYM_NAME_LENGTH + 1];
-    long                last_auto_inc;// last autoincremented subscript value
-    long                subscript_used; // count of used subscripts
+    sub_index           subscript_used; // count of used subscript
     symsub          *   subscripts;     // subscript entries
-    symsub          *   sub_0;          // special subscript 0 entry
     sym_flags           flags;
 } symvar;
 
@@ -171,18 +166,6 @@ typedef struct inp_line {
     char                value[ 1 ];     // line content variable length
 } inp_line;
 
-
-/***************************************************************************/
-/*  label control block                                                    */
-/***************************************************************************/
-typedef struct labelcb {
-    struct labelcb  *   prev;
-    fpos_t              pos;            // file position for label if file
-    ulong               lineno;         // lineno of label
-    char                label_name[ MAC_NAME_LENGTH + 1 ];
-} labelcb;
-
-
 /***************************************************************************/
 /*  macro definition entry  for macro dictionary                           */
 /***************************************************************************/
@@ -191,7 +174,6 @@ typedef struct mac_entry {
     char                    name[ MAC_NAME_LENGTH + 1 ];
     inp_line            *   macline;    // macro definition lines
     ulong                   lineno;     // lineno start of macro definition
-    labelcb             *   label_cb;   // controlling label definitions
     char                    mac_file_name[ 1 ]; // file name macro definition
                                             // var length
 } mac_entry;
@@ -209,7 +191,6 @@ typedef struct filecb {
     ulong           linemax;            // last line number to process
     size_t          usedlen;            // used data of filebuf
     fpos_t          pos;                // position for reopen
-    labelcb     *   label_cb;           // controlling label definitions
     char            fileattr[ MAX_FILE_ATTR + 1];  // T:xxxx
     char            filename[ 1 ];      // full filename var length
 } filecb;
@@ -224,7 +205,6 @@ typedef struct mac_parms {
 
 } mac_parms;
 
-
 /***************************************************************************/
 /*  Entry for an included macro                                            */
 /***************************************************************************/
@@ -235,38 +215,6 @@ typedef struct  macrocb {
     inp_line    *   macline;            // list of macro lines
     mac_entry   *   mac;                // macro definition entry
 } macrocb;
-
-
-/***************************************************************************/
-/*  Stack for .if .th .el .do processing                                   */
-/***************************************************************************/
-
-typedef struct ifflags {
-
-    unsigned    iflast  : 1;            // .if was last line
-    unsigned    iftrue  : 1;            // last .if was true
-    unsigned    iffalse : 1;            // last .if was false
-
-    unsigned    ifthen  : 1;            // processing object of then
-    unsigned    ifelse  : 1;            // processing object of else
-    unsigned    ifdo    : 1;            // processing object of do group
-
-    unsigned    ifcwte  : 1;            // .th or .el control word
-    unsigned    ifcwdo  : 1;            // .do control word
-    unsigned    ifcwif  : 1;            // .if control word
-
-} ifflags;
-
-
-typedef struct ifcb {
-    int             if_level;           // nesting level
-    ifflags         if_flags[ MAX_IF_LEVEL + 1];// index 0 not used
-} ifcb;
-
-
-/***************************************************************************/
-/*  Flags for input                                                        */
-/***************************************************************************/
 
 typedef enum {
     II_file     = 0x01,                 // inputcb is file
@@ -283,7 +231,6 @@ typedef struct  inputcb {
     inp_line        *   hidden_head;    // manage split lines at ; or :
     inp_line        *   hidden_tail;    // manage split lines at ; or :
     symvar          *   local_dict;     // local symbol dictionary
-    ifcb            *   if_cb;          // for controlling .if .th .el
     union  {
         filecb      *   f;              // used if input is from file
         macrocb     *   m;              // used if input is from macro
@@ -322,24 +269,9 @@ typedef struct gmltag {
    gmlflags         tagflags;
 } gmltag;
 
-
-/***************************************************************************/
-/*  scr string functions                                                   */
-/***************************************************************************/
-
-typedef struct scrfunc {
-    const   char    fname[ FUN_NAME_LENGTH + 1 ];   // function name
-    const   size_t  length;             // actual length of fname
-    const   size_t  parm_cnt;           // mandatory parms
-    const   size_t  opt_parm_cnt;       // optional parms
-    char        *   (*fun)( char * in, const char * end, char * * ppval,
-                            const int parm_cnt );
-} scrfunc;
-
-
 /***************************************************************************/
 /*  condcode  returncode for several conditions during parameterchecking   */
-/*            loosely adapted from wgml 88.1 IBM S/360 ASM code            */
+/*            loosely adapted from wgml 88.1 on  IBM S/360 code            */
 /***************************************************************************/
 
 typedef enum condcode {            // return code for some scanning functions
@@ -377,25 +309,9 @@ typedef struct getnum_block {
     char    *   errstart;
     char    *   first;
     long        length;
-    long        result;                 // result as long
-    char        resultstr[12];          // result in char format
+    long        res;
     getnumrc    error;
-    char        num_sign;              // remember absolute or relative value
+    char        resc[5];
 } getnum_block;
-
-/***************************************************************************/
-/*  struct used to hold parameters of option FONT                          */
-/***************************************************************************/
-
-typedef struct opt_font {
-    struct opt_font *   nxt;
-    uint8_t             font;
-    char *              name;
-    char *              style;
-    uint32_t            space;
-    uint32_t            height;
-} opt_font;
-
-
 
 #endif                                  // GTYPE_H_INCLUDED

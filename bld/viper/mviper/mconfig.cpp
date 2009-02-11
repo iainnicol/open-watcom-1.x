@@ -57,11 +57,15 @@ extern "C" {
 
 #define CUR_CFG_VERSION         4
 
+#define DOS_BATSERV "BATCHBOX.PIF"
+#define OS2_BATSERV "BATSERV.EXE"
+#define NT_BATSERV "BATSERV.EXE"
+
 Define( MConfig )
 
 MConfig* MConfig::_configPtr;
 
-MConfig::MConfig( WFileName& filename, bool debug, HostType host )
+MConfig::MConfig( WFileName& filename, bool debug )
     : _filename( filename )
     , _fileFilters( NULL )
     , _fileFilterSize( 0 )
@@ -70,85 +74,84 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host )
     , _debug( debug )
     , _version( 0 )
     , _kludge( 0 )
-    , _hostType( HOST_UNDEFINED )
+#if defined( __WINDOWS__ )
+    , _hostType( HOST_WINDOWS )
+    , _batserv( DOS_BATSERV )
+#elif defined( __OS2__ )
+    , _hostType( HOST_PM )
+    , _batserv( OS2_BATSERV )
+#elif defined( __NT__ )
+  #ifdef __AXP
+    , _hostType( HOST_AXP_NT )
+  #else
+    , _hostType( HOST_NT )
+  #endif
+    , _batserv( NT_BATSERV )
+#elif defined( __DOS__ )
+    , _hostType( HOST_DOS )
+    , _batserv( NULL )
+#elif defined( __LINUX__ )
+    , _hostType( HOST_LINUX )
+    , _batserv( NULL )
+#endif
 {
-    struct {
-        char    *batserv;
-        char    *editor;
-        bool    editorIsDLL;
-        char    *editorParms;
-    } host_info[] = {
-        #undef pick
-        #define pick(enum,type,batchserv,editor,DLL,parms) { batchserv, editor, DLL, parms },
-        #include "hosttype.h"
-    };
-
     _configPtr = this;
-    if( host < 0 || host >= HOST_UNDEFINED ) {
 #ifdef __WINDOWS__
-        _hostType = HOST_WINDOWS;
-        if( __IsDBCS ) {
-            if( __NonIBM ) {
-                /* japanese windows on a nec 98 pc */
-                _hostType = HOST_NEC_WIN;
-            } else {
-                /* japanese windows on an IBM */
-                _hostType = HOST_J_WIN;
-            }
+    if( __IsDBCS ) {
+        if( __NonIBM ) {
+            /* japanese windows on a nec 98 pc */
+            _hostType = HOST_NEC_WIN;
         } else {
-            /* assume no DBCS win-os/2 */
-            union {
-                DWORD dVersion;
-                struct {
-                    char winMajor;
-                    char winMinor;
-                    char dosMinor;
-                    char dosMajor;
-                } v;
-            } v;
-            v.dVersion = GetVersion();
-            if( v.v.dosMajor >= 20 ) {
-                _hostType = HOST_WINOS2;
-            }
+            /* japanese windows on an IBM */
+            _hostType = HOST_J_WIN;
         }
+    } else {
+        /* assume no DBCS win-os/2 */
+        union {
+            DWORD dVersion;
+            struct {
+                char winMajor;
+                char winMinor;
+                char dosMinor;
+                char dosMajor;
+            } v;
+        } v;
+        v.dVersion = GetVersion();
+        if( v.v.dosMajor >= 20 ) {
+            _hostType = HOST_WINOS2;
+            _batserv = OS2_BATSERV;
+        }
+    }
 #elif defined( __NT__ )
     /* -------------------------------------------------------- */
-    #ifdef __AXP__
-        _hostType = HOST_NT_AXP;
-    #else
-        DWORD ver;
-        bool is_chicago = FALSE;
+    DWORD ver;
+    bool is_chicago = FALSE;
 
-        _hostType = HOST_NT;
-        ver = GetVersion();
-        if( !( ver < 0x80000000 ) && !( LOBYTE( LOWORD( ver ) ) < 4 ) ) {
-            _hostType = HOST_WIN95;
-        }
-    #endif
+    ver = GetVersion();
+    if( !( ver < 0x80000000 ) && !( LOBYTE( LOWORD( ver ) ) < 4 ) ) {
+        _hostType = HOST_WIN95;
+    }
     /* -------------------------------------------------------- */
-#elif defined( __OS2__ )
-        _hostType = HOST_PM;
-#elif defined( __DOS__ )
-        _hostType = HOST_DOS;
-#elif defined( __LINUX__ )
-        _hostType = HOST_LINUX;
 #endif
-    } else {
-        _hostType = host;
-    }
-
-    if( _hostType == HOST_UNDEFINED ) {
-        return;
-    }
-    _batserv = host_info[ _hostType ].batserv;
-    // set editor to default values
-    _editor = host_info[ _hostType ].editor;
-    _editorIsDLL = host_info[ _hostType ].editorIsDLL;
-    _editorParms = host_info[ _hostType ].editorParms;
-
     if( _filename.size() == 0 ) {
         _filename = "ide.cfg";
     }
+    // set editor to default values
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+    if( __IsDBCS ) {
+        _editor = DBCS_DEFAULT_EDITOR_NAME;
+        _editorIsDLL = DBCS_DEFAULT_EDITOR_IS_DLL;
+        _editorParms = DBCS_DEFAULT_EDITOR_PARMS;
+    } else {
+        _editor = DEFAULT_EDITOR_NAME;
+        _editorIsDLL = DEFAULT_EDITOR_IS_DLL;
+        _editorParms = DEFAULT_EDITOR_PARMS;
+    }
+#elif defined( __OS2__ )
+    _editor = OS2_DEFAULT_EDITOR_NAME;
+    _editorIsDLL = OS2_DEFAULT_EDITOR_IS_DLL;
+    _editorParms = OS2_DEFAULT_EDITOR_PARMS;
+#endif
     readConfig();
 }
 
@@ -180,7 +183,7 @@ void MConfig::zapTargetMasks()
 {
     static char hostChars[] = {
         #undef pick
-        #define pick(enum,type,batchserv,editor,DLL,parms) type,
+        #define pick(a,b) b,
         #include "hosttype.h"
     };
     int     i;
@@ -369,6 +372,23 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
             // read all the stuff
             fil.flushLine( tok );
             fil.token( tok );
+
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+            if( __IsDBCS ) {
+                _editor = DBCS_DEFAULT_EDITOR_NAME;
+                _editorIsDLL = DBCS_DEFAULT_EDITOR_IS_DLL;
+                _editorParms = DBCS_DEFAULT_EDITOR_PARMS;
+            } else {
+                _editor = DEFAULT_EDITOR_NAME;
+                _editorIsDLL = DEFAULT_EDITOR_IS_DLL;
+                _editorParms = DEFAULT_EDITOR_PARMS;
+            }
+#elif defined( __OS2__ )
+            _editor = OS2_DEFAULT_EDITOR_NAME;
+            _editorIsDLL = OS2_DEFAULT_EDITOR_IS_DLL;
+            _editorParms = OS2_DEFAULT_EDITOR_PARMS;
+#endif
+
         } else if( tok == "Browse" ) {
             fil.token( _browseMerge );
             expandMacroes( _browseMerge );

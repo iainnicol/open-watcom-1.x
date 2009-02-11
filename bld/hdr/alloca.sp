@@ -9,7 +9,7 @@
   #define __ALLOCA_ALIGN( s )   (((s)+(sizeof(int)-1))&~(sizeof(int)-1))
   #define __alloca( s )         __doalloca(__ALLOCA_ALIGN(s))
 
-:segment DOS
+:segment !QNX | !LINUX
   #if defined(__386__)
    extern void __GRO(_w_size_t __size);
    #pragma aux __GRO "*" __parm __routine [];
@@ -19,7 +19,7 @@
 :endsegment
    #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s):NULL)
    #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s):NULL)
-:segment DOS
+:segment !QNX | !LINUX
   #endif
 :endsegment
 
