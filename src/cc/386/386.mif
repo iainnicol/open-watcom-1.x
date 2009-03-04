@@ -1,4 +1,0 @@
-target_cpu  = 386
-target_objs = cpragx86.obj prag386.obj
-
-!include ../../master.mif

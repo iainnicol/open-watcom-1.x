@@ -1,7 +1,0 @@
-Build system todo/ideas:
-
-- Remove as many environment variables as possible.
-- Remove the vestiges of old build system(s).
-- Remove unused macros.
-- Remove all dependencies on bvi/vi during builds, use sed/awk instead.
-- Kill off lang.ctl and boot.ctl files, probably prereq.ctl as well.
