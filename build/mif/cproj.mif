@@ -11,7 +11,7 @@ bootstrapmode = 1
 !endif
 
 # define OW build windows version for Win32 platform
-# Now it is setup to 0x400 
+# Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
 #
 !ifdef $(proj_name)_win32ver
@@ -121,6 +121,7 @@ memory_model_i86 = l
 model_switch_i86 = -m$(memory_model_i86)
 
 default_memory_model_386_dos   = s
+default_memory_model_386_zdos  = s
 default_memory_model_386_qnx   = s
 default_memory_model_386_nov   = s
 default_memory_model_386_osi   = s
@@ -158,6 +159,7 @@ cflags_os2      = -bt=os2
 cflags_qnx      = -bt=qnx
 cflags_osi      = -bt=osi
 cflags_dos      = -bt=dos
+cflags_zdos     = -bt=zdos
 cflags_nov      = -bt=netware
 cflags_linux    = -bt=linux
 
@@ -223,6 +225,8 @@ def_fpu_flags_nov_386   = -fpc
   # I ignore Novell seting
   # I think Novell doesn't use any OSI objects
 def_fpu_flags_osi_386   = -fpi
+  # ZDOS doesn't have emulator support
+ def_fpu_flags_zdos_386   = -fpi87
   ######
 def_fpu_flags_nto_386   = -fpi
 
@@ -244,6 +248,7 @@ clflags_osi_386    = -l=osi
 clflags_dos_i86    = -l=dos
 clflags_dos_386    = -l=dos4g
 #clflags_dos_386    = -l=causeway
+clflags_zdos_386   = -l=zdos
 clflags_nov_386    = -l=netware
 clflags_linux_386  = -l=linux
 clflags_linux_ppc  = -l=linuxppc
@@ -284,6 +289,7 @@ aflags_os2      = -bt=os2
 aflags_qnx      = -bt=qnx
 aflags_osi      = -bt=osi
 aflags_dos      = -bt=dos
+aflags_zdos     = -bt=zdos
 aflags_nov      = -bt=netware
 aflags_linux    = -bt=linux
 
@@ -297,6 +303,7 @@ lflags_os2_386   = sys os2v2
 lflags_os2_i86   = sys os2 pmc
 lflags_dos_386   = sys dos4g
 #lflags_dos_386   = sys causeway
+lflags_zdos_386  = sys zdos
 lflags_qnx_386   = sys qnx386 flat
 lflags_qnx_i86   = sys qnx
 lflags_win_386   = sys win386
@@ -414,6 +421,7 @@ inc_dirs_sys_nov   =
 inc_dirs_sys_qnx   =
 inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
+inc_dirs_sys_zdos  = -I$(lang_root)\h\zdos
 
 inc_dirs_lang_qnx     = -I$(lang_root)\qh
 inc_dirs_lang_linux   = -I$(lang_root)\lh

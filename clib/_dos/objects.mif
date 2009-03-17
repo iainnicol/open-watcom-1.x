@@ -1,5 +1,5 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32
-#==========================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 zda zdd
+#==================================================================================================
 !inject allocos2.obj                                        o16 o32
 !inject allocwnt.obj                     nt nta ntp
 !inject attr086.obj  d16     dpm                                            w16
@@ -72,8 +72,42 @@
 !inject stime386.obj     d32                                                    w32 osi
 !inject stimeos2.obj                                        o16 o32
 !inject stimewnt.obj                     nt nta ntp
-!inject ufind.obj    d16 d32             nt nta ntp         o16 o32         w16 w32 osi
+!inject ufind.obj    d16 d32             nt nta ntp         o16 o32         w16 w32 osi     zda zdd
 !inject writeos2.obj                                        o16 o32
 !inject writewnt.obj                     nt nta ntp
+!inject bdosz.obj                                                                           zda zdd
+!inject brkoffz.obj                                                                         zda zdd
+!inject brkonz.obj                                                                          zda zdd
+!inject dallocz.obj                                                                         zda zdd
+!inject dclosez.obj                                                                         zda zdd
+!inject dcommitz.obj                                                                        zda zdd
+!inject dcreatez.obj                                                                        zda zdd
+!inject dcrtnewz.obj                                                                        zda zdd
+!inject derrorz.obj                                                                         zda zdd
+!inject dexterrz.obj                                                                        zda zdd
+!inject dfindfz.obj                                                                         zda zdd
+!inject dfindnz.obj                                                                         zda zdd
+!inject dfreez.obj                                                                          zda zdd
+!inject dgetdatz.obj                                                                        zda zdd
+!inject dgetdfz.obj                                                                         zda zdd
+!inject dgetdrvz.obj                                                                        zda zdd
+!inject dgetfaz.obj                                                                         zda zdd
+!inject dgetftz.obj                                                                         zda zdd
+!inject dgettimz.obj                                                                        zda zdd
+!inject dgetvecz.obj                                                                        zda zdd
+!inject dkeepz.obj                                                                          zda zdd
+!inject dopenz.obj                                                                          zda zdd
+!inject dreadz.obj                                                                          zda zdd
+!inject dretz.obj                                                                           zda zdd
+!inject dsetblkz.obj                                                                        zda zdd
+!inject dsetdatz.obj                                                                        zda zdd
+!inject dsetdrvz.obj                                                                        zda zdd
+!inject dsetfaz.obj                                                                         zda zdd
+!inject dsetftz.obj                                                                         zda zdd
+!inject dsettimz.obj                                                                        zda zdd
+!inject dsetvecz.obj                                                                        zda zdd
+!inject dwritez.obj                                                                         zda zdd
+!inject intdosxz.obj                                                                        zda zdd
+!inject intdosz.obj                                                                         zda zdd
 
 !include ../../../../objlist.mif
