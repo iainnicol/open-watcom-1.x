@@ -223,6 +223,17 @@
 !inject sys/utsname.h                    hlnx hqnx
 !inject sys/vc.h                              hqnx
 !inject sys/wait.h                       hlnx hqnx
+!inject	zdos/zbios.h                hdos
+!inject	zdos/zdos.h                 hdos
+!inject	zdos/zdosdrv.h              hdos
+!inject	zdos/zipc.h                 hdos
+!inject	zdos/zthread.h              hdos
+!inject	zdos/zpktdrv.h              hdos
+!inject	zdos/zipv4.h                hdos
+!inject	zdos/zsocket.h              hdos
+!inject	zdos/ztrace.h               hdos
+!inject	zdos/zframe.h               hdos
+!inject	zdos/zapi.h                 hdos
 !inject syslog.h                              hqnx
 !inject tar.h                                 hqnx
 !inject term.h                                hqnx

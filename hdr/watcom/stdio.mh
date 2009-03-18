@@ -244,7 +244,7 @@ _WCRTDATA extern FILE _WCNEAR __iob[];
 :endsegment
 :segment DOS
 :include ext.sp
-#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__)
+#if defined(__DOS__) || defined(__WINDOWS__) || defined(__OSI__) || defined(__ZDOS__)
 :segment CNAME
 #define stdaux  ((std::FILE *)&__iob[3])     /* standard auxiliary file  */
 #define stdprn  ((std::FILE *)&__iob[4])     /* standard printer file  */
@@ -269,7 +269,7 @@ _WCRTLINK extern FILE *__get_std_file(unsigned handle);
 #define stderr  (__get_std_file(2))     /* standard error file  */
 :segment DOS
 :include ext.sp
-#if defined(__DOS__) || defined(__WINDOWS__)
+#if defined(__DOS__) || defined(__WINDOWS__) || defined(__ZDOS__)
 #define stdaux  (__get_std_file(3))     /* standard auxiliary file  */
 #define stdprn  (__get_std_file(4))     /* standard printer file  */
 #endif
