@@ -231,6 +231,19 @@ void __chk8087( void )
     _fpreset();
 }
 
+#elif defined( __ZDOS__ )
+
+void __chk8087()
+{
+    if( _RWD_8087 == 0 ) {                /* Coprocessor or emulator present? */
+        __init_8087( );                   /* Yes, initialize it */
+        if( _RWD_no87 )                   /* If NO87 environment var is set*/
+            _RWD_real87 = 0;              /* pretend that no coprocessor exist */
+        else
+            _RWD_8087 = _RWD_real87 = 3;  /* Set coprocessor type */
+    }
+}
+
 #elif defined( __LINUX__ )
 
 void __chk8087( void )

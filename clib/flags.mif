@@ -131,6 +131,8 @@ sw_c_winnt_ppc    = -oaxt-bm-DWIN32-D_WIN32 $(def_windowing)
 sw_c_linux_386    = -oaxt
 sw_c_linux_ppc    = -oaxt
 sw_c_linux_mps    = -oaxt -eoe
+sw_c_zdos_386     = -oaxt
+sw_c_zdosdrv_386  = -oaxt
 
 # sw_a_(system)_(processor)
 sw_a_generic_086  =
@@ -157,6 +159,8 @@ sw_a_winnt_ppc    = -oc -D__MT__ -DWIN32 -D_WIN32
 sw_a_linux_386    =
 sw_a_linux_ppc    =
 sw_a_linux_mps    =
+sw_a_zdos_386     =
+sw_a_zdosdrv_386  =
 
 #make bug
 !ifndef extra_c_flags

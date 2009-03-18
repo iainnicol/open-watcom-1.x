@@ -1,0 +1,44 @@
+;
+; _errno codes
+;
+EZERO		=	0		; No error
+ENOENT		=	1		; No such file or directory
+E2BIG		=	2		; Arg list too big
+ENOEXEC		=	3		; Exec format error 
+EBADF		=	4		; Bad file number
+ENOMEM		=	5		; Not enough memory
+EACCES		=	6		; Access denied
+EEXIST		=	7		; File exists
+EXDEV		=	8		; Cross-device link
+EINVAL		=	9		; Invalid argument
+ENFILE		=	10		; File table overflow
+EMFILE		=	11		; Too many open files
+ENOSPC		=	12		; No space left on device
+EDOM		=	13		; Argument too large
+ERANGE		=	14		; Result too large
+EDEADLK		=	15		; Resource deadlock would occur
+EINTR		=	16		; System call interrupted
+ECHILD		=	17		; Child does not exist
+EAGAIN		=	18		; Resource unavailable, try again
+EBUSY		=	19		; Device or resource busy
+EFBIG		=	20		; File too large
+EIO		=	21 		; I/O error
+EISDIR		=	22		; Is a directory
+ENOTDIR		=	23		; Not a directory
+EMLINK		=	24		; Too many links
+ENOTBLK		=	25		; Block device required
+ENOTTY		=	26		; Not a character device
+ENXIO		=	27		; No such device or address
+EPERM		=	28		; Not owner
+EPIPE		=	29		; Broken pipe
+EROFS		=	30		; Read-only file system
+ESPIPE		=	31		; Illegal seek
+ESRCH		=	32		; No such process
+ETXTBSY		=	33		; Text file busy
+EFAULT		=	34		; Bad address
+ENAMETOOLONG	=	35		; Filename too long
+ENODEV		=	36		; No such device
+ENOLCK		=	37		; No locks available in system
+ENOSYS		=	38		; Unknown system call
+ENOTEMPTY	=	39		; Directory not empty
+EILSEQ		=	40		; Illegal multibyte sequence
