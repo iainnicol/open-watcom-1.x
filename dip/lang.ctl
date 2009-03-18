@@ -30,7 +30,19 @@ cdsay .
         <CPCMD> <DEVDIR>/dip/mapsym/dos386/mapsym.dip       <RELROOT>/binw/
 #        <CPCMD> <DEVDIR>/dip/mapsym/dos386/mapsym.sym       <RELROOT>/binw/watcom.dsy
 
-  [ IFDEF (os_win "") <2*> ]
+  [ IFDEF (os_zdos "") <2*> ]
+        <CPCMD> <DEVDIR>/dip/dwarf/zdos386/dwarf.dip        <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/dwarf/zdos386/dwarf.sym        <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/codeview/zdos386/codeview.dip  <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/codeview/zdos386/codeview.sym  <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/export/zdos386/export.dip      <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/export/zdos386/export.sym      <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/watcom/zdos386/watcom.dip      <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/watcom/zdos386/watcom.sym      <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/mapsym/zdos386/mapsym.dip      <RELROOT>/rel2/binz/
+        <CPCMD> <DEVDIR>/dip/mapsym/zdos386/mapsym.sym      <RELROOT>/rel2/binz/
+
+[ IFDEF (os_win "") <2*> ]
         <CPCMD> <DEVDIR>/dip/dwarf/wini86/dwarf.dll         <RELROOT>/binw/
 #        <CPCMD> <DEVDIR>/dip/dwarf/wini86/dwarf.sym         <RELROOT>/binw/
         <CPCMD> <DEVDIR>/dip/codeview/wini86/codeview.dll   <RELROOT>/binw/
