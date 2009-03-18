@@ -144,14 +144,13 @@ _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx,
 _WCRTLINK extern void     _chain_intr( register void
                                        (__cdecl *h)(struct context_t) );
 #else
-_WCRTLINK extern void     _chain_intr( register void
+_WCRTLINK extern void     _chain_intr( void
                                       (_WCINTERRUPT _DOSFAR *__handler)() );
 #endif
 #if defined(__NT__) || defined(__ZDOS__) || ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) )
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, void **__storage );
 #else
-_WCRTLINK extern unsigned _dos_allocmem( unsigned __size,
-                                         unsigned short *__seg );
+_WCRTLINK extern unsigned _dos_allocmem( unsigned __size, unsigned *__seg );
 #endif
 _WCRTLINK extern unsigned _dos_close( int __handle );
 _WCRTLINK extern unsigned _dos_commit( int __handle );

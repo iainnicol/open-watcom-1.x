@@ -17,7 +17,7 @@
 #elif defined(__AXP__)
  typedef double         jmp_buf[24];
 #elif defined(__ZDOS__)
- typedef unsigned int jmp_buf[8];
+ typedef unsigned int   jmp_buf[8];
 #elif defined(__MIPS__)
  typedef unsigned long  jmp_buf[26];
 #else
