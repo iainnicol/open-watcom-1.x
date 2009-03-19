@@ -44,6 +44,13 @@ cdsay .
     <CPCMD> <DEVDIR>/trap/win/dos.trp/win.trp                       <RELROOT>/binw/
     <CPCMD> <DEVDIR>/trap/win/dos.srv/winserv.exe                   <RELROOT>/binw/
 
+  [ IFDEF (os_zdos "") <2*> ]
+    <CPCMD> <DEVDIR>/trap/lcl/zdos/std/std.trp                      <RELROOT>/rel2/binz/
+    <CPCMD> <DEVDIR>/trap/tcp/zdos.trp/ser.trp                      <RELROOT>/rel2/binz/
+    <CPCMD> <DEVDIR>/trap/tcp/zdos.srv/tcpserv.exe                  <RELROOT>/rel2/binz/
+    <CPCMD> <DEVDIR>/trap/ser/zdos.trp/ser.trp                      <RELROOT>/rel2/binz/
+    <CPCMD> <DEVDIR>/trap/ser/zdos.srv/serserv.exe                  <RELROOT>/rel2/binz/
+
   [ IFDEF (os_os2 "") <2*> ]
     <CPCMD> <DEVDIR>/trap/lcl/os2v2/std/std.d32                     <RELROOT>/binp/
     <CPCMD> <DEVDIR>/trap/net/os2v2.trp/net.d32                     <RELROOT>/binp/

@@ -89,6 +89,10 @@
     #include <tcp.h>
 #endif
 
+#if defined(__ZDOS__)
+    #include <zsocket.h>
+#endif
+
 #if defined ( __NETWARE__ )
     #include "novhax.h"
 #endif
@@ -133,7 +137,7 @@ extern void     ServMessage( char * );
 
 #if defined(__UNIX__)
     #define soclose( s )        close( s )
-#elif defined(__NT__) || defined(__WINDOWS__)
+#elif defined(__NT__) || defined(__WINDOWS__) || defined(__ZDOS__)
     #define soclose( s )        closesocket( s )
 #elif defined(__NETWARE__)
     #define soclose( s)         close( s )
@@ -215,13 +219,19 @@ unsigned RemotePut( char *rec, unsigned len )
 
 static void nodelay( void )
 {
+#if !defined( __ZDOS__ )
     struct protoent     *proto;
+#endif
     int                 delayoff;
     int                 p;
 
     delayoff = 1;
+#if defined( __ZDOS__ )
+   p = IPPROTO_TCP;
+#else
     proto = getprotobyname( "tcp" );
     p = proto ? proto->p_proto : IPPROTO_TCP;
+#endif
     setsockopt( data_socket, p, TCP_NODELAY, (void *)&delayoff, sizeof( delayoff ) );
 }
 
@@ -267,12 +277,14 @@ void RemoteDisco( void )
 
 char *RemoteLink( char *name, char server )
 {
+#if !defined( __ZDOS__ )
     struct servent      *sp;
+#endif
     unsigned            port;
 
 #ifdef SERVER
     socklen_t           length;
-#if !defined(__LINUX__)   /* FIXME */
+#if !defined(__LINUX__) && !defined(__ZDOS__)   /* FIXME */
     struct ifi_info     *ifi, *ifihead;
     struct sockaddr     *sa;
 #endif
@@ -295,6 +307,15 @@ char *RemoteLink( char *name, char server )
         return( TRP_ERR_unable_to_open_stream_socket );
     }
     port = 0;
+#if defined( __ZDOS__ )
+    while( isdigit( *name ) ) {
+        port = port * 10 + (*name - '0');
+        ++name;
+    }
+    if( port == 0 )
+        port = DEFAULT_PORT;
+    port = htons( port );
+#else
     if( name == NULL || name[0] == '\0' )
         name = "tcplink";
     sp = getservbyname( name, "tcp" );
@@ -308,6 +329,7 @@ char *RemoteLink( char *name, char server )
         if( port == 0 ) port = DEFAULT_PORT;
         port = htons( port );
     }
+#endif
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -329,7 +351,7 @@ char *RemoteLink( char *name, char server )
     _DBG_NET((buff2));
     _DBG_NET(("\r\n"));
 
-#if !defined(__LINUX__)   /* FIXME */
+#if !defined(__LINUX__) && !defined(__ZDOS__)   /* FIXME */
     /* Find and print TCP/IP interface addresses, ignore aliases */
     ifihead = get_ifi_info(AF_INET, FALSE);
     for( ifi = ifihead; ifi != NULL; ifi = ifi->ifi_next ) {
@@ -372,6 +394,15 @@ char *RemoteLink( char *name, char server )
         }
         ++sock;
     }
+#if defined( __ZDOS__ )
+    while( isdigit( *sock ) ) {
+        port = port * 10 + (*sock - '0');
+        ++sock;
+    }
+    if( port == 0 )
+        port = DEFAULT_PORT;
+    port = htons( port );
+#else
     if( sock[0] == '\0' )
         sp = getservbyname( "tcplink", "tcp" );
     else
@@ -390,8 +421,10 @@ char *RemoteLink( char *name, char server )
         if( port == 0 ) port = DEFAULT_PORT;
         port = htons( port );
     }
+#endif
     /* Setup for socket connect using name specified by command line. */
     socket_address.sin_family = AF_INET;
+#if !defined( __ZDOS__ )
     /* OS/2's TCP/IP gethostbyname doesn't handle numeric addresses */
     socket_address.sin_addr.s_addr = inet_addr( name );
     if( socket_address.sin_addr.s_addr == -1UL ) {
@@ -402,6 +435,7 @@ char *RemoteLink( char *name, char server )
             return( TRP_ERR_unknown_host );
         }
     }
+#endif
     socket_address.sin_port = port;
 #endif
     server = server;
