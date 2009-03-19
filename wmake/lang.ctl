@@ -22,6 +22,9 @@ cdsay .
     <CPCMD> <DEVDIR>/wmake/dosi86/wmk.exe    <RELROOT>/binw/wmaker.exe
     <CPCMD> <DEVDIR>/wmake/dos386/wmk.exe    <RELROOT>/binw/wmake.exe
 
+  [ IFDEF (os_zdos "") <2*> ]
+    <CPCMD> <DEVDIR>/wmake/zdos386/wmk.exe   <RELROOT>/binz/wmake.exe
+
   [ IFDEF (os_os2 "") <2*> ]
     <CPCMD> <DEVDIR>/wmake/os2386/wmk.exe    <RELROOT>/binp/wmake.exe
     <CPCMD> <DEVDIR>/wmake/os2386/wmk.sym    <RELROOT>/binp/wmake.sym
