@@ -89,6 +89,13 @@ cdsay .
     <CPCMD> <PROJDIR>/dos386.386/wcpp386.exe   <RELROOT>/binw/wpp386.exe
     <CPCMD> <PROJDIR>/dos386.386/wcpp386.sym   <RELROOT>/binw/wpp386.sym
     <CPCMD> <PROJDIR>/dos386.386/wpp38601.int  <RELROOT>/binw/wpp38601.int
+
+#
+# 386 ZDOS hosted compilers
+#
+  [ IFDEF (os_zdos "") <2*> ]
+    <CPCMD> <PROJDIR>/zdos386.386/wcpp386.exe <RELROOT>/rel2/binz/wpp386.exe
+
 #
 # 386 QNX hosted compilers
 #

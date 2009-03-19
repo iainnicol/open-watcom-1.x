@@ -74,7 +74,7 @@ static unsigned outFileChecked; // mask for checking output files
 static char  workFile[] =       // template for work file
     "__wrk0__";
 
-#if defined(__OS2__) || defined(__DOS__) || defined(__NT__)
+#if defined(__OS2__) || defined(__DOS__) || defined(__NT__) || defined(__ZDOS__)
 
 static char* pathSrc[] =        // paths for source file
     {   "..\\cpp"
@@ -236,7 +236,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         if( !(path = SrcDepFileName ) ) {
             path = WholeFName;
         }
-        else 
+        else
         {
             auto char buff[ _MAX_PATH2 ];
             char *drive;

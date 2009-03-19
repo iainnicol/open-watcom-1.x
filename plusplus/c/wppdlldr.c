@@ -54,7 +54,7 @@
 
 #ifndef NO_MO_COMPILING
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__ZDOS__)
 #if ! defined(wpp_drv)
 #define RAW_CMDLINE
 #endif

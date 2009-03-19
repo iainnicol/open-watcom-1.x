@@ -222,6 +222,8 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         SetTargetLiteral( &target_name, "NT" );
 #elif defined( __DOS__ )
         SetTargetLiteral( &target_name, "DOS" );
+#elif defined( __ZDOS__ )
+        SetTargetLiteral( &target_name, "ZDOS" );
 #else
         #error "Target System not defined"
 #endif
@@ -232,6 +234,9 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         PreDefineStringMacro( "__DOS__" );
         PreDefineStringMacro( "_DOS" );
 #if _CPU == 386
+    } else if( 0 == strcmp( target_name, "ZDOS" ) ) {
+        PreDefineStringMacro( "__ZDOS__" );
+        TargetSystem = TS_ZDOS;
     } else if( 0 == strcmp( target_name, "NETWARE" ) ) {
         TargetSystem = TS_NETWARE;
         PreDefineStringMacro( "__NETWARE_386__" );

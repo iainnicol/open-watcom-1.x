@@ -138,6 +138,7 @@ enum {
     TS_QNX,
     TS_NETWARE5,
     TS_LINUX,
+    TS_ZDOS,
     TS_MAX
 };
 

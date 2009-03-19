@@ -40,7 +40,7 @@
 #include "sysdep.h"
 #include "watcom.h"
 
-#if defined(__DOS__)
+#if defined(__DOS__) || defined(__ZDOS__)
 
 #include "tinyio.h"
 

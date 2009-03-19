@@ -452,7 +452,7 @@ static int front_end(           // FRONT-END PROCESSING
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );
             IoSuppSetLineBuffering( errout, 256 );
-            #if defined(__DOS__)
+            #if defined(__DOS__) || defined(__ZDOS__)
             if( ! CompFlags.dll_subsequent ) {
                 SrcFileFClose( stdaux );
                 SrcFileFClose( stdprn );
