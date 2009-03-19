@@ -34,6 +34,7 @@ cdsay .
 #    <CPCMD> cfg/idemfca.cfg      <RELROOT>/binw/
     <CPCMD> cfg/ideaxp.cfg       <RELROOT>/binw/
     <CPCMD> cfg/idelnx.cfg       <RELROOT>/binw/
+    <CPCMD> viper/idezdos.cfg    <RELROOT>/binw/
 
   [ IFDEF (os_dos "") <2*> ]
     <CPCMD> bviper/dos386/ide2make.exe <RELROOT>/binw/
@@ -68,8 +69,9 @@ cdsay .
     <CPCMD> cfg/idew386.cfg      <RELROOT>/binl/
     <CPCMD> cfg/idenlm.cfg       <RELROOT>/binl/
     <CPCMD> cfg/idelnx.cfg       <RELROOT>/binl/
+    <CPCMD> viper/idezdos.cfg    <RELROOT>/binl/
 
-  [ IFDEF (cpu_axp) <2*> ] 
+  [ IFDEF (cpu_axp) <2*> ]
     <CPCMD> viper/ntaxp/ide.exe  <RELROOT>/axpnt/
     <CPCMD> cfg/ntaxp/idex.cfg   <RELROOT>/axpnt/
     <CPCMD> bviper/ntaxp/ide2make.exe <RELROOT>/axpnt/
