@@ -80,6 +80,9 @@ const char FAR *BuiltIns = {
 #if defined( __DOS__ )
     "__MSDOS__=\n"
 
+#elif defined( __ZDOS__ )
+    "__ZDOS__=\n"
+
 #elif defined( __NT__ )
     "__NT__=\n"
     #if defined(__386__)
