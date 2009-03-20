@@ -235,6 +235,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
         PreDefineStringMacro( "_DOS" );
 #if _CPU == 386
     } else if( 0 == strcmp( target_name, "ZDOS" ) ) {
+        PreDefineStringMacro( "_ZDOS" );
         PreDefineStringMacro( "__ZDOS__" );
         TargetSystem = TS_ZDOS;
     } else if( 0 == strcmp( target_name, "NETWARE" ) ) {
