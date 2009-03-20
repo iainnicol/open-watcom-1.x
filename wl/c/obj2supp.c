@@ -396,7 +396,7 @@ static void BuildReloc( save_fixup *save, frame_spec *targ, frame_spec *frame )
     }
     if( FmtData.type & MK_OVERLAYS ) {
         if( ( targ->type == FIX_FRAME_EXT )
-            && ( (fix.type & FIX_REL) == 0 || FmtData.u.dos.ovl_short ) 
+            && ( (fix.type & FIX_REL) == 0 || FmtData.u.dos.ovl_short )
             && targ->u.sym->u.d.ovlref
             && ( (targ->u.sym->u.d.ovlstate & OVL_VEC_MASK) == OVL_MAKE_VECTOR ) ) {
             // redirect target to appropriate vector entry
@@ -1034,8 +1034,8 @@ static void PatchData( fix_data *fix )
     if( !( fix->type & FIX_BASE ) ) {     // it's offset only
         if( !( ( FmtData.type & MK_WINDOWS ) && ( fix->type & FIX_LOADER_RES ) ) ) {
             PatchOffset( fix, FindRealAddr( fix ), FALSE );
-            if( !( FmtData.type & ( MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_NOVELL | MK_PHAR_REX ) )
-                || ( FmtData.type & MK_OS2_LX ) && !FmtData.u.os2.gen_int_relocs ){
+            if( !( FmtData.type & ( MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_NOVELL | MK_PHAR_REX | MK_ZDOS | MK_RAW ) )
+                || ( FmtData.type & MK_OS2_LX ) && !FmtData.u.os2.gen_int_relocs ) {
                 fix->done = TRUE;
             }
         }
@@ -1251,8 +1251,8 @@ static void FmtReloc( fix_data *fix, frame_spec *tthread )
         || (FmtData.type & MK_ELF) && !(LinkState & HAVE_I86_CODE)
             && (ftype & (FIX_BASE | FIX_OFFSET_8))
         || (FmtData.type & MK_PE) && (ftype & (FIX_BASE | FIX_OFFSET_8))
-        || (FmtData.type & MK_PHAR_REX) && (ftype != FIX_OFFSET_16)
-            && (ftype != FIX_OFFSET_32) ) {
+        || ((FmtData.type & (MK_PHAR_REX | MK_ZDOS | MK_RAW)) && (ftype != FIX_OFFSET_16)
+            && (ftype != FIX_OFFSET_32)) ) {
         LnkMsg( LOC+ERR+MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
         return;
     }
@@ -1591,6 +1591,8 @@ static void FmtReloc( fix_data *fix, frame_spec *tthread )
             off |= 0x80000000;
         }
         new_reloc.item.rex.reloc_offset = off;
+    } else if( FmtData.type & MK_ZDOS ) {
+        new_reloc.item.zdos.reloc_offset = off;
     } else if( FmtData.type & MK_COM ) {
         save = FALSE;
         LnkMsg( LOC+WRN+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );

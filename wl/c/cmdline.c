@@ -46,6 +46,8 @@
 #include "cmdelf.h"
 #include "cmdphar.h"
 #include "cmddos.h"
+#include "cmdzdos.h"
+#include "cmdraw.h"
 #include "cmdline.h"
 #include "overlays.h"
 #include "fileio.h"
@@ -76,6 +78,8 @@ static bool             ProcELFHelp( void );
 static bool             ProcWindowsHelp( void );
 static bool             ProcWinVxdHelp( void );
 static bool             ProcNTHelp( void );
+static bool             ProcZdosHelp( void );
+static bool             ProcRawHelp( void );
 static void             WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt );
 static void             GetExtraCommands( void );
 
@@ -101,6 +105,12 @@ static  parse_entry   FormatHelp[] = {
 #endif
 #ifdef _ELF
     "ELF",          ProcELFHelp,            MK_ALL,     0,
+#endif
+#ifdef _ZDOS
+    "ZDOS",         ProcZdosHelp,           MK_ALL,     0,
+#endif
+#ifdef _RAW
+    "RAW",          ProcRawHelp,            MK_ALL,     0,
 #endif
     NULL
 };
@@ -439,6 +449,12 @@ static void DisplayOptions( void )
 #ifdef _ELF
     WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, isout );
 #endif
+#ifdef _ZDOS
+    WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, isout );
+#endif
+#ifdef _RAW
+    WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, isout );
+#endif
 }
 
 #ifdef _EXE
@@ -529,6 +545,26 @@ static bool ProcELFHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, CmdFlags & CF_TO_STDOUT );
+    return( TRUE );
+}
+#endif
+
+#ifdef _ZDOS
+static bool ProcZdosHelp( void )
+/*****************************/
+{
+    WriteGenHelp();
+    WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
+    return( TRUE );
+}
+#endif
+
+#ifdef _RAW
+static bool ProcRawHelp( void )
+/*****************************/
+{
+    WriteGenHelp();
+    WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, CmdFlags & CF_TO_STDOUT );
     return( TRUE );
 }
 #endif
@@ -1022,13 +1058,13 @@ bool ProcHeapSize( void )
     return( TRUE );
 }
 
-#if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2)
+#if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2) || defined(_RAW)
 bool ProcOffset( void )
 /****************************/
 {
     if( !GetLong( &FmtData.base ) )
         return( FALSE );
-    if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT)) ) {
+    if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT)|MK_RAW) ) {
         ChkBase( 64 * 1024 );
     } else if( !(FmtData.type & (MK_OS2_FLAT|MK_PE)) ) {
         ChkBase( 4 * 1024 );

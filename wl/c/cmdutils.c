@@ -66,7 +66,7 @@ static void     StartNewFile( void );
 static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 /**********************************************************/
 {
-#if defined( __UNIX__ )
+#if defined( __UNIX__ ) || defined( __ZDOS__ )
     //opendir - readdir wildcarding not supported here.
     ctrl = ctrl;
     return( rtn() );
