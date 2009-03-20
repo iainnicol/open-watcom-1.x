@@ -1064,7 +1064,7 @@ bool ProcOffset( void )
 {
     if( !GetLong( &FmtData.base ) )
         return( FALSE );
-    if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT)|MK_RAW) ) {
+    if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) ) {
         ChkBase( 64 * 1024 );
     } else if( !(FmtData.type & (MK_OS2_FLAT|MK_PE)) ) {
         ChkBase( 4 * 1024 );
