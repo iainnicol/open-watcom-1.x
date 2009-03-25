@@ -70,7 +70,7 @@ static int              check_size( void );
 static int              segm_override_jumps( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
-
+extern global_options   Options;
 extern int              directive( int , long );
 extern int              SymIs32( struct asm_sym *sym );
 
@@ -574,53 +574,102 @@ static int comp_opt( uint direct )
   Compare function for CPU directive
 */
 {
-    // follow Microsoft MASM
-    switch( direct ) {
-    case T_DOT_NO87:
-        return( P_NO87 );
-    case T_DOT_8086:
-        return( P_86 );
-    case T_DOT_8087:
-        return( P_87 );
-    case T_DOT_186:
-        return( P_186 );
-    case T_DOT_286:
-        return( P_286 );
-    case T_DOT_287:
-        return( P_287 );
-    case T_DOT_286P:
-        return( P_286p );
-    case T_DOT_386:
-        return( P_386 );
-    case T_DOT_387:
-        return( P_387 );
-    case T_DOT_386P:
-        return( P_386p );
-    case T_DOT_486:
-        return( P_486 );
-    case T_DOT_486P:
-        return( P_486p );
-    case T_DOT_586:
-        return( P_586 );
-    case T_DOT_586P:
-        return( P_586p );
-    case T_DOT_686:
-        return( P_686 );
-    case T_DOT_686P:
-        return( P_686p );
-    case T_DOT_MMX:
-        return( P_MMX );
-    case T_DOT_K3D:
-        return( P_K3D | P_MMX );
-    case T_DOT_XMM:
-        return( P_SSE | P_MMX );
-    case T_DOT_XMM2:
-        return( P_SSE2 | P_SSE | P_MMX );
-    case T_DOT_XMM3:
-        return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
-    default:
-        // not found
-        return( EMPTY );
+    if( Options.ideal ) {
+        // Borland TASM ideal mode
+        switch( direct ) {
+        case T_P8086:
+            return( P_86 );
+        case T_P8087:
+            return( P_87 );
+        case T_P186:
+            return( P_186 );
+        case T_P286:
+            return( P_286 );
+        case T_P287:
+            return( P_287 );
+        case T_P286P:
+            return( P_286p );
+        case T_P386:
+            return( P_386 );
+        case T_P387:
+            return( P_387 );
+        case T_P386P:
+            return( P_386p );
+        case T_P486:
+            return( P_486 );
+        case T_P486P:
+            return( P_486p );
+        case T_P586:
+            return( P_586 );
+        case T_P586P:
+            return( P_586p );
+        case T_P686:
+            return( P_686 );
+        case T_P686P:
+            return( P_686p );
+        case T_PMMX:
+            return( P_MMX );
+        case T_PK3D:
+            return( P_K3D | P_MMX );
+        case T_PXMM:
+            return( P_SSE | P_MMX );
+        case T_PXMM2:
+            return( P_SSE2 | P_SSE | P_MMX );
+        case T_PXMM3:
+            return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
+        default:
+            // not found
+            return( EMPTY );
+        }
+    } else {
+        // follow Microsoft MASM
+        switch( direct ) {
+        case T_DOT_NO87:
+            return( P_NO87 );
+        case T_DOT_8086:
+            return( P_86 );
+        case T_DOT_8087:
+            return( P_87 );
+        case T_DOT_186:
+            return( P_186 );
+        case T_DOT_286:
+            return( P_286 );
+        case T_DOT_287:
+            return( P_287 );
+        case T_DOT_286P:
+            return( P_286p );
+        case T_DOT_386:
+            return( P_386 );
+        case T_DOT_387:
+            return( P_387 );
+        case T_DOT_386P:
+            return( P_386p );
+        case T_DOT_486:
+            return( P_486 );
+        case T_DOT_486P:
+            return( P_486p );
+        case T_DOT_586:
+            return( P_586 );
+        case T_DOT_586P:
+            return( P_586p );
+        case T_DOT_686:
+            return( P_686 );
+        case T_DOT_686P:
+            return( P_686p );
+        case T_DOT_MMX:
+            return( P_MMX );
+        case T_DOT_K3D:
+            return( P_K3D | P_MMX );
+        case T_DOT_XMM:
+            return( P_SSE | P_MMX );
+        case T_DOT_XMM2:
+            return( P_SSE2 | P_SSE | P_MMX );
+        case T_DOT_XMM3:
+            return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
+        default:
+            // not found
+            return( EMPTY );
+        }
     }
 }
 
@@ -633,9 +682,13 @@ static int def_fpu( uint direct )
     switch( direct ) {
     case T_DOT_8086:
     case T_DOT_186:
+    case T_P8086:
+    case T_P186:
         return( P_87 );
     case T_DOT_286:
     case T_DOT_286P:
+    case T_P286:
+    case T_P286P:
         return( P_287 );
     case T_DOT_386:
     case T_DOT_386P:
@@ -645,6 +698,14 @@ static int def_fpu( uint direct )
     case T_DOT_586P:
     case T_DOT_686:
     case T_DOT_686P:
+    case T_P386:
+    case T_P386P:
+    case T_P486:
+    case T_P486P:
+    case T_P586:
+    case T_P586P:
+    case T_P686:
+    case T_P686P:
         return( P_387 );
     default:
         return( 0 );
@@ -661,19 +722,29 @@ static void MakeCPUConstant( int i )
     // fall right through
     case T_DOT_686P:
     case T_DOT_686:
+    case T_P686P:
+    case T_P686:
         MakeConstantUnderscored( T_DOT_686 );
     case T_DOT_586P:
     case T_DOT_586:
+    case T_P586P:
+    case T_P586:
         MakeConstantUnderscored( T_DOT_586 );
     case T_DOT_486P:
     case T_DOT_486:
+    case T_P486P:
+    case T_P486:
         MakeConstantUnderscored( T_DOT_486 );
     case T_DOT_386P:
     case T_DOT_386:
+    case T_P386P:
+    case T_P386:
         MakeConstantUnderscored( T_DOT_386 );
         break;
     case T_DOT_286P:
     case T_DOT_286:
+    case T_P286P:
+    case T_P286:
         MakeConstantUnderscored( T_DOT_286 );
     }
     return;
@@ -715,12 +786,26 @@ int cpu_directive( int i )
     case T_DOT_486:
     case T_DOT_386P:
     case T_DOT_386:
+    case T_P686P:
+    case T_P686:
+    case T_P586P:
+    case T_P586:
+    case T_P486P:
+    case T_P486:
+    case T_P386P:
+    case T_P386:
         SetUse32Def( TRUE );
         break;
     case T_DOT_286P:
+    case T_DOT_286C:
     case T_DOT_286:
     case T_DOT_186:
     case T_DOT_8086:
+    case T_P286P:
+    case T_P286N:
+    case T_P286:
+    case T_P186:
+    case T_P8086:
         SetUse32Def( FALSE );
         break;
     default:
@@ -728,7 +813,6 @@ int cpu_directive( int i )
         break;
     }
 #endif
-
     return( NOT_ERROR );
 }
 
@@ -828,6 +912,76 @@ static int proc_check( void )
         return( ERROR );
     DefineProc = FALSE;
     return( TRUE );
+}
+
+int expand_call( int index )
+{
+    int     i = index + 1;
+    char    *arglist[16];
+    int     argindex, argcount, cleanup, reversed, regs;
+    char    buffer[ MAX_LINE_LEN ];
+
+    argcount = argindex = cleanup = reversed = regs = 0;
+    switch( AsmBuffer[index]->u.value ) {
+    case T_C:
+    case T_SYSCALL:
+        cleanup++;
+    case T_STDCALL:
+    case T_WATCOM_C:
+        reversed++;
+    case T_PASCAL:
+        for( ; ; ) {
+            if( AsmBuffer[i]->token == T_FINAL )
+                break;
+            if( ( AsmBuffer[i]->token != T_COMMA ) ||
+                ( AsmBuffer[i+1]->token == T_FINAL ) ) {
+                AsmError( SYNTAX_ERROR );
+                return ( ERROR );
+            }
+            i++;
+            arglist[argcount] = AsmBuffer[i++]->string_ptr;
+            if( ++argcount > 16 ) {
+                AsmError( TOO_MANY_ARGS );
+                return( ERROR );
+            }
+        }
+        break;
+    case T_NOLANGUAGE:
+        if( AsmBuffer[i]->token == T_FINAL )
+            return( NOT_ERROR );
+    default:
+        AsmError( SYNTAX_ERROR );   /* Maybe implemented later */
+        return( ERROR );
+    }
+    /* put parameters on top of stack */
+    if( reversed ) {    /* Reversed order (right to left)*/
+        i = argcount;
+        if( AsmBuffer[index]->u.value == T_WATCOM_C )
+            regs = 4;
+        while( i > regs ) {
+            sprintf( buffer, "push %s", arglist[--i] );
+            InputQueueLine( buffer );
+        }
+    } else {
+        for( i = 0; i < argcount; i++ ) {
+            sprintf( buffer, "push %s", arglist[i] );
+            InputQueueLine( buffer );
+        }
+    }
+    *buffer = 0;
+    /* add original line up to before language */
+    for( i = 0; i < index; i++ )
+        sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i]->string_ptr );
+    InputQueueLine( buffer );
+    /* add cleanup after call */
+    if( cleanup && argcount ) {
+        if( Code->use32 )
+            sprintf( buffer, "add esp,%d", argcount << 2 );
+        else
+            sprintf( buffer, "add sp,%d", argcount << 1 );
+        InputQueueLine( buffer );
+    }
+    return( NOT_ERROR );
 }
 
 #endif
@@ -1796,7 +1950,7 @@ int AsmParse( void )
   with the switch statement;
 */
 {
-    int                 i;
+    int                 i, n;
     OPNDTYPE            cur_opnd = OP_NONE;
     OPNDTYPE            last_opnd = OP_NONE;
     struct asm_code     *rCode = Code;
@@ -1904,6 +2058,24 @@ int AsmParse( void )
                 in_epilogue = 0;
                 rCode->info.token = AsmBuffer[i]->u.value;
                 break;
+            case T_CALL:
+                for( n = i + 1; n < Token_Count; n++ ) {
+                    if( AsmBuffer[n]->token == T_RES_ID ) {
+                        switch( AsmBuffer[n]->u.value ) {
+                        case T_NOLANGUAGE:
+                        case T_C:
+                        case T_SYSCALL:
+                        case T_STDCALL:
+                        case T_PASCAL:
+                        case T_FORTRAN:
+                        case T_BASIC:
+                        case T_WATCOM_C:
+                            return( expand_call( n ) );
+                        default:
+                            break;
+                        }
+                    }
+                }
 #endif
             default:
                 rCode->info.token = AsmBuffer[i]->u.value;
@@ -2461,7 +2633,8 @@ static int check_size( void )
                          Code->info.opnd_type[OPND2] = OP_I32;
 #if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
-                             AsmWarn( 1, ASSUMING_DWORD );
+                             if( Options.ideal == 0 )
+                                 AsmWarn( 1, ASSUMING_DWORD );
                          }
 #endif
                     } else if( (unsigned long)Code->data[OPND2] > UCHAR_MAX ) {
@@ -2470,7 +2643,8 @@ static int check_size( void )
                          Code->info.opnd_type[OPND2] = OP_I16;
 #if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
-                             AsmWarn( 1, ASSUMING_WORD );
+                             if( Options.ideal == 0 )
+                                 AsmWarn( 1, ASSUMING_WORD );
                          }
 #endif
                     } else {
@@ -2478,7 +2652,8 @@ static int check_size( void )
                          Code->info.opnd_type[OPND2] = OP_I8;
 #if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
-                             AsmWarn( 1, ASSUMING_BYTE );
+                             if( Options.ideal == 0 )
+                                 AsmWarn( 1, ASSUMING_BYTE );
                          }
 #endif
                     }
@@ -2501,7 +2676,8 @@ static int check_size( void )
                         Code->mem_type = MT_BYTE;
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
-                            AsmWarn( 1, ASSUMING_BYTE );
+                            if( Options.ideal == 0 )
+                                AsmWarn( 1, ASSUMING_BYTE );
                         }
 #endif
                         break;
@@ -2510,7 +2686,8 @@ static int check_size( void )
                         Code->info.opcode |= W_BIT;
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
-                            AsmWarn( 1, ASSUMING_WORD );
+                            if( Options.ideal == 0 )
+                                AsmWarn( 1, ASSUMING_WORD );
                         }
 #endif
                         if( Code->use32 )
@@ -2521,7 +2698,8 @@ static int check_size( void )
                         Code->info.opcode |= W_BIT;
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
-                            AsmWarn( 1, ASSUMING_DWORD );
+                            if( Options.ideal )
+                                AsmWarn( 1, ASSUMING_DWORD );
                         }
 #endif
                         break;

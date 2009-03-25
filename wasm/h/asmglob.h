@@ -186,6 +186,7 @@ typedef struct global_options {
     bool        use_stdcall_at_number;
     bool        mangle_stdcall;
     bool        write_listing;
+    bool        ideal;
 } global_options;
 
 extern global_options Options;

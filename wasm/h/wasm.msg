@@ -331,3 +331,18 @@ pick( INVALID_USE_OF_LENGTH_SIZE_OPERATOR,
 pick( SYMBOL_TYPE_DIFF,
                                 "Symbol '%s' type conflict." ,
                                 "Symbol '%s' type conflict." )
+ pick( ARG_MUST_FOLLOW_PROC,
+                                "ARG may only be used within a PROC and before the first instruction" ,
+                                "ARG may only be used within a PROC and before the first instruction" )
+pick( USES_MUST_FOLLOW_PROC,
+                                "USES may only be used within a PROC and before the first instruction" ,
+                                "USES may only be used within a PROC and before the first instruction" )
+pick( ENUM_NAME_MISSING,
+                                "Enum name is missing" ,
+                                "Enum name is missing" )
+pick( TOO_MANY_ARGS,
+                                "Too many args" ,
+                                "Too many args" )
+pick( LOCAL_LABEL_OUTSIDE_PROC,
+                                "Local labels may only be used within a PROC" ,
+                                "Local labels may only be used within a PROC" )

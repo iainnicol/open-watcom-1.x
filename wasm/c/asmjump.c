@@ -162,7 +162,10 @@ static void FarCallToNear( void )
     if( Parse_Pass == PASS_2 )
         AsmWarn( 4, CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
-    strcpy( buffer, "CALL NEAR PTR " );
+    if( Options.ideal )
+        strcpy( buffer, "CALL NEAR " );
+    else
+        strcpy( buffer, "CALL NEAR PTR " );
     for( i++; AsmBuffer[i]->token != T_FINAL; i++ ) {
         switch( AsmBuffer[i]->token ) {
         case T_NUM:

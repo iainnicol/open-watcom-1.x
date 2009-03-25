@@ -29,9 +29,10 @@
 ****************************************************************************/
 
 #include "asmglob.h"
-
+#include "asmins.h"
 #include "asmeval.h"
 #include "asmexpnd.h"
+#include "asmdefs.h"
 
 #if defined( _STANDALONE_ )
 
@@ -293,6 +294,48 @@ static void FreeConstData( const_info *constinfo )
         DebugMsg(( "\n" ));
         AsmFree( constinfo->data );
     }
+}
+
+int StoreConstantNumber( char *name, long value, bool redefine )
+{
+    struct asm_tok  *new;
+    dir_node        *dir;
+    struct asm_sym  *sym;
+
+    sym = AsmGetSymbol( name );
+
+    /* if we've never seen it before, put it in */
+    if( sym == NULL ) {
+        dir = dir_insert( name, TAB_CONST );
+        if( dir == NULL ) {
+            return( ERROR );
+        }
+        dir->e.constinfo->redefine = redefine;
+        dir->e.constinfo->expand_early = FALSE;
+    } else {
+        /* check if it can be redefined */
+        dir = (dir_node *)sym;
+        if( sym->state == SYM_UNDEFINED ) {
+            dir_change( dir, TAB_CONST );
+            dir->e.constinfo->redefine = redefine;
+            dir->e.constinfo->expand_early = FALSE;
+        } else if( ( sym->state != SYM_CONST ) ||
+                   ( ( dir->e.constinfo->redefine == FALSE ) &&
+                   ( Parse_Pass == PASS_1 ) ) ) {
+            /* error */
+            AsmError( LABEL_ALREADY_DEFINED );
+            return( ERROR );
+        }
+    }
+    new = AsmAlloc( sizeof( struct asm_tok ) );
+    memset( new[0].u.bytes, 0, sizeof( new[0].u.bytes ) );
+    new[0].token = T_NUM;
+    new[0].u.value = value;
+    new[0].string_ptr = NULL;
+    FreeConstData( dir->e.constinfo );
+    dir->e.constinfo->count = 1;
+    dir->e.constinfo->data = new;
+    return( NOT_ERROR );
 }
 
 static int createconstant( char *name, bool value, int start, bool redefine, bool expand_early )

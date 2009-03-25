@@ -124,7 +124,9 @@ global_options Options = {
     /* emit_dependencies */         TRUE,
     /* Watcom C name mangler */     TRUE,
     /* stdcall at number */         TRUE,
-    /* mangle stdcall   */          TRUE
+    /* mangle stdcall   */          TRUE,
+    /* write listing */             FALSE,
+    /* tasm ideal mode syntax */    FALSE
 };
 
 static char *CopyOfParm( void )
@@ -329,7 +331,10 @@ static void SetMemoryModel( void )
         return;
     }
 
-    strcpy( buffer, ".MODEL " );
+    if( Options.ideal )
+        strcpy( buffer, "MODEL " );
+    else
+        strcpy( buffer, ".MODEL " );
     strcat( buffer, model );
     InputQueueLine( buffer );
 }
@@ -1064,6 +1069,8 @@ static int set_build_target( void )
         strcpy( Options.build_target, "OS2" );
 #elif defined(__NT__)
         strcpy( Options.build_target, "NT" );
+#elif defined(__ZDOS__)
+        strcpy( Options.build_target, "ZDOS" );
 #else
         #error unknown host OS
 #endif

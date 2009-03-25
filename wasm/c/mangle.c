@@ -97,7 +97,7 @@ static char *UScoreMangler( struct asm_sym *sym, char *buffer )
 static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
 /****************************************************************/
 {
-    if( !Options.mangle_stdcall )
+    if( ( !Options.mangle_stdcall ) || ( Options.ideal ) )
         return( AsmMangler( sym, buffer ) );
 
     if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) ) {
@@ -210,7 +210,7 @@ char *Mangle( struct asm_sym *sym, char *buffer )
         mangler = WatcomCMangler;
         break;
     case LANG_C:                 // stack passing parameters
-        if( Options.watcom_c_mangler ) {
+        if( ( Options.watcom_c_mangler ) && ( Options.ideal ) == 0  ) {
             mangler = AsmMangler;
         } else {
             mangler = UScoreMangler;

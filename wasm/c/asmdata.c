@@ -30,7 +30,9 @@
 
 
 #include "asmglob.h"
-
+#include "asmdefs.h"
+#include "asmsym.h"
+#include "asmins.h"
 #include "asmexpnd.h"
 #include "tbyte.h"
 #include "asmfixup.h"
@@ -754,6 +756,12 @@ int data_init( int sym_loc, int initializer_loc )
         if( sym == NULL ) {
             return( ERROR );
         }
+#if defined( _STANDALONE_ )
+        if( ( Parse_Pass == PASS_1 ) && ( sym->state != SYM_UNDEFINED ) ) {
+            AsmError( SYMBOL_ALREADY_DEFINED );
+            return( ERROR );
+        }
+#endif
     }
 
     switch( AsmBuffer[initializer_loc]->u.value ) {
@@ -789,6 +797,8 @@ int data_init( int sym_loc, int initializer_loc )
         mem_type = MT_STRUCT;
         struct_sym = AsmLookup( AsmBuffer[initializer_loc]->string_ptr );
         no_of_bytes = GetStructSize( struct_sym );
+        if( Options.ideal )
+            sym->structure = struct_sym;
         break;
 #endif
     case T_DB:
@@ -830,7 +840,7 @@ int data_init( int sym_loc, int initializer_loc )
     if( sym_loc < 0 ) {
         if( Definition.struct_depth != 0 ) {
             if( Parse_Pass == PASS_1 ) {
-                AddFieldToStruct( initializer_loc );
+                AddFieldToStruct( sym, initializer_loc );
                 struct_field = TRUE;
             } else {
                 return( NOT_ERROR );
@@ -846,7 +856,7 @@ int data_init( int sym_loc, int initializer_loc )
         /* defining a field in a structure */
         if( Definition.struct_depth != 0 ) {
             if( Parse_Pass == PASS_1 ) {
-                sym->offset = AddFieldToStruct( initializer_loc );
+                sym->offset = AddFieldToStruct( sym, initializer_loc );
                 struct_field = TRUE;
                 sym->state = SYM_STRUCT_FIELD;
                 sym->mem_type = mem_type;

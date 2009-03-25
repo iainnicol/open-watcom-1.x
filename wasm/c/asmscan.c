@@ -31,6 +31,7 @@
 
 
 #include "asmglob.h"
+#include "directiv.h"
 #include <ctype.h>
 
 char                    *CurrString; // Current Input Line
@@ -40,6 +41,7 @@ extern int              get_instruction_position( char *string );
 #if defined( _STANDALONE_ )
 
 extern global_options   Options;
+bool                    EnumDirective;
 
 void GetInsString( enum asm_token token, char *string, int len )
 /**************************************************************/
@@ -450,6 +452,16 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             buf->token = T_QUESTION_MARK;
         }
     } else {
+        if( Options.ideal ) {
+            int i = *buf_index;
+
+            if( ( ( i == 0 ) && ( Definition.struct_depth != 0 )  &&
+                  !( AsmOpTable[count].rm_byte & ( OP_DIRECTIVE|OP_RES_ID ) ) ) ||
+                ( ( i > 0 ) && ( AsmBuffer[--i]->token == T_DOT ) ) ) {
+                buf->token = T_ID;
+                return( NOT_ERROR );
+            }
+        }
         buf->u.value = AsmOpTable[count].token;
         // count = AsmOpcode[count].position;
 
@@ -466,6 +478,11 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             } else if( AsmOpTable[count].rm_byte & OP_UNARY_OPERATOR ) {
                 buf->token = T_UNARY_OPERATOR;
             } else if( AsmOpTable[count].rm_byte & OP_DIRECTIVE ) {
+                if( ( AsmOpTable[count].rm_byte & OP_IDEAL ) &&
+                    ( Options.ideal == 0 ) ) {
+                    buf->token = T_ID;
+                    return( NOT_ERROR );
+                }
                 buf->token = T_DIRECTIVE;
 #if defined( _STANDALONE_ )
                 switch( AsmOpTable[count].token ) {
@@ -485,6 +502,9 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
                     (*input) += strlen( *input );
                     buf->token = T_STRING;
                     buf->u.value = 0;
+                    break;
+                case T_ENUM:
+                    EnumDirective = TRUE;
                     break;
                 } /* default do nothing */
 #endif
@@ -509,6 +529,12 @@ static int get_special_symbol( asm_tok *buf, char **input, char **output )
 
     symbol = **input;
     switch( symbol ) {
+#if defined( _STANDALONE_ )
+    case '{' :
+        if( EnumDirective == FALSE )    /* String delimiter? */
+            return( get_string( buf, input, output ) );
+    case '}' :
+#endif
     case '.' :
     case ',' :
     case '+' :
@@ -541,11 +567,12 @@ static int get_special_symbol( asm_tok *buf, char **input, char **output )
         *(*output)++ = *(*input)++;
         *(*output)++ = '\0';
         break;
+#else
+    case '{' :
 #endif
     case '\'' :
     case '"' :
     case '<' :
-    case '{' :
         /* string delimiters */
         /* fall through */
     default:
@@ -609,6 +636,7 @@ int AsmScan( char *string )
 
     CurrString = string;
     output_ptr = stringbuf;
+    EnumDirective = FALSE;
 
     ptr = string;
 // FIXME !!
