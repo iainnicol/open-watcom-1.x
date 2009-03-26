@@ -190,7 +190,7 @@ bool GUIClearList( gui_window *wnd, unsigned id )
  * GUISetText - Set the text of the given control to the given text
  */
 
-bool GUISetText( gui_window *wnd, unsigned control, char *text )
+bool GUISetText( gui_window *wnd, unsigned control, const char *text )
 {
     char                *new_text;
     gui_control_class   control_class;
@@ -243,13 +243,14 @@ char *GUIGetText( gui_window *wnd, unsigned control )
             if( text != NULL ) {
                 _wpi_getwindowtext( hwnd, (LPSTR)text, length + 1 );
                 switch( control_class ) {
-                    case GUI_PUSH_BUTTON:
-                    case GUI_DEFPUSH_BUTTON:
-                    case GUI_RADIO_BUTTON:
-                    case GUI_CHECK_BOX:
-                    case GUI_STATIC:
-                    case GUI_GROUPBOX:
-                        _wpi_menutext2win( text );
+                case GUI_PUSH_BUTTON:
+                case GUI_DEFPUSH_BUTTON:
+                case GUI_RADIO_BUTTON:
+                case GUI_CHECK_BOX:
+                case GUI_STATIC:
+                case GUI_GROUPBOX:
+                    _wpi_menutext2win( text );
+                    break;
                 }
             }
             return( text );

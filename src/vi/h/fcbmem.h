@@ -31,8 +31,8 @@
 
 
 /* fcbblock.c */
-void GiveBackBlock( long, char * );
-bool GetNewBlock( long *, char *, int );
+void GiveBackBlock( long, unsigned char * );
+bool GetNewBlock( long *, unsigned char *, int );
 int MakeWriteBlock( fcb * );
 
 /* fcbdisk.c */

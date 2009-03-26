@@ -1196,14 +1196,13 @@ STATIC RET_T handleIf( char *cmd )
         *p = NULLCHAR;
         condition = ( lastErrorLevel >= atoi( tmp2 ) );
     } else if( stricmp( tmp1, "EXIST" ) == 0 ) {
-        char    tmp3[_MAX_PATH];
 
         *p = NULLCHAR;
 
         // handle long filenames
-        RemoveDoubleQuotes( tmp3, sizeof( tmp3 ), tmp2 );
+        RemoveDoubleQuotes( (char *)tmp2, strlen( tmp2 ) + 1, tmp2 );
 
-        file = DoWildCard( tmp3 );
+        file = DoWildCard( tmp2 );
         condition = ( ( file != NULL ) && CacheExists( file ) );
         /* abandon rest of entries if any */
         DoWildCardClose();
@@ -1513,6 +1512,9 @@ STATIC RET_T handleCD( char *cmd )
         }
     }
 
+    // handle long filenames
+    RemoveDoubleQuotes( (char *)p, strlen( p ) + 1, p );
+
     if( chdir( p ) != 0 ) {         /* an error changing path */
         PrtMsg( ERR | CHANGING_DIR, p );
         return( RET_ERROR );
@@ -1650,7 +1652,6 @@ STATIC RET_T handleRM( char *cmd )
  * -v   Verbose operation.
  */
 {
-    char        buffer[_MAX_PATH];
     rm_flags    flags;
     RET_T       rt;
     const char  *pfname;
@@ -1665,8 +1666,7 @@ STATIC RET_T handleRM( char *cmd )
     rt = getRMArgs( cmd, &flags, &pfname );
 
     while( RET_SUCCESS == rt ) {
-        RemoveDoubleQuotes( buffer, sizeof( buffer ), pfname );
-        pfname = buffer;
+        RemoveDoubleQuotes( (char *)pfname, strlen( pfname ) + 1, pfname );
 
         if( strpbrk( pfname, WILD_METAS ) == NULL ) {
             if( !doRM( pfname, &flags ) ) {

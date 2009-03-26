@@ -37,10 +37,10 @@
 #endif
 
 #if defined(__DOS__)
-extern char In61( void );
-extern void Out61( char );
-extern void Out43( char );
-extern void Out42( char );
+extern unsigned char In61( void );
+extern void Out61( unsigned char );
+extern void Out43( unsigned char );
+extern void Out42( unsigned char );
 extern U_INT DosMaxAlloc( void );
 extern void (interrupt _FAR *DosGetVect( char ))( void );
 extern void DosSetVect( char, void (interrupt _FAR *)( void ));
@@ -139,12 +139,12 @@ extern char IsWindows( void );
 
 #if !defined(__386__)
 #pragma aux DosSetVect = \
-        0xb4 0x25     /* mov    ah,25H */ \
+        0xb4 0x25     /* mov    ah, 25h */ \
         0xcd 0x21     /* int    21h */ \
         parm [al] [ds dx];
 
 #pragma aux DosGetVect = \
-        0xb4 0x35     /* mov    ah,35H */ \
+        0xb4 0x35     /* mov    ah, 35h */ \
         0xcd 0x21     /* int    21h */ \
         0x89 0xd8     /* mov     ax,bx */ \
         0x8c 0xc2     /* mov     dx,es */ \
@@ -152,7 +152,7 @@ extern char IsWindows( void );
 
 #ifndef __WINDOWS__
 #pragma aux DosGetFullPath = \
-        0xb4 0x60     /* mov    ah,60H */ \
+        0xb4 0x60     /* mov    ah, 60h */ \
         0xcd 0x21     /* int    21h */ \
         0x1b 0xd2     /* sbb    dx,dx */ \
         parm [ds si] [es di] value [dx ax];
@@ -243,14 +243,14 @@ extern void DosSetVect( char, void (interrupt _FAR *)( void ) );
         0x1e            /* push ds */ \
         0x0f 0xa0       /* push fs */ \
         0x1f            /* pop  ds */ \
-        0xb4 0x25       /* mov    ah,25H */ \
+        0xb4 0x25           /* mov      ah, 25h */ \
         0xcd 0x21       /* int    21h */ \
         0x1f            /* pop  ds */ \
         parm [al] [fs edx];
 
 #pragma aux DosGetVect = \
         0x06          /* push   es */ \
-        0xb4 0x35     /* mov    ah,35H */ \
+        0xb4 0x35           /* mov      ah, 35h */ \
         0xcd 0x21     /* int    21h */ \
         0x89 0xd8     /* mov    eax,ebx */ \
         0x8c 0xc2     /* mov    dx,es */ \
@@ -258,7 +258,7 @@ extern void DosSetVect( char, void (interrupt _FAR *)( void ) );
         parm [al] value[dx eax] modify [ebx];
 
 #pragma aux DosGetFullPath = \
-        0xb4 0x60     /* mov    ah,60H */ \
+        0xb4 0x60           /* mov      ah, 60h */ \
         0xcd 0x21     /* int    21h */ \
         parm [esi] [edi];
 
