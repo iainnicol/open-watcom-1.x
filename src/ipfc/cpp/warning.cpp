@@ -86,7 +86,7 @@ Lexer::Token Warning::parse( Lexer* lexer )
     tok = document->getNextToken(); //first token from buffer
     while( tok != Lexer::END ) {
         if( parseInline( lexer, tok ) )
-            parseCleanup( tok );
+            parseCleanup( lexer, tok );
     }
     whiteSpace = Tag::NONE;
     document->setBlockParsing( oldBlockParsing );
@@ -113,10 +113,10 @@ Lexer::Token Warning::parse( Lexer* lexer )
                 lexer->tagId() == Lexer::ENT ||
                 lexer->tagId() == Lexer::WARNING ||
                 lexer->tagId() == Lexer::EWARNING )
-                    parseCleanup( tok );
+                    parseCleanup( lexer, tok );
             else if( parseBlock( lexer, tok ) ) {
                 if( parseListBlock( lexer, tok ) )
-                    parseCleanup( tok );
+                    parseCleanup( lexer, tok );
             }
         }
     }
@@ -126,6 +126,8 @@ Lexer::Token Warning::parse( Lexer* lexer )
 void EWarning::buildText( Cell* cell )
 {
     cell->addByte( 0xFA );  //line break
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 /*****************************************************************************/
 static void Warning::prepBufferName( std::wstring* buffer, const std::wstring& fname )

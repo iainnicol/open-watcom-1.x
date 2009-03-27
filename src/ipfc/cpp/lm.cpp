@@ -52,6 +52,7 @@ Lexer::Token Lm::parse( Lexer* lexer )
             splitAttribute( lexer->text(), key, value );
             if( key == L"margin" ) {
                 margin = static_cast< std::uint8_t >( _wtoi( value.c_str() ) );
+                document->setLeftMargin( margin > 0 ? margin : 1 );
             }
             else
                 printError( ERR1_ATTRNOTDEF );
@@ -75,5 +76,7 @@ void Lm::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( margin );
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 

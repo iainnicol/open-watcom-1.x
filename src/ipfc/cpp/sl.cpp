@@ -33,6 +33,7 @@
 ****************************************************************************/
 
 #include "sl.hpp"
+#include "brcmd.hpp"
 #include "dl.hpp"
 #include "cell.hpp"
 #include "document.hpp"
@@ -54,7 +55,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
             case Lexer::DL:
                 {
                     Element* elt( new Dl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
+                        document->dataLine(), document->dataCol(), nestLevel + 1,
                         indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
@@ -89,7 +90,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
             case Lexer::PARML:
                 {
                     Element* elt( new Parml( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
+                        document->dataLine(), document->dataCol(), nestLevel + 1,
                         indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
@@ -109,7 +110,11 @@ Lexer::Token Sl::parse( Lexer* lexer )
                     Element* elt( new ESl( document, this, document->dataName(),
                         document->dataLine(), document->dataCol() ) );
                     appendChild( elt );
-                    return elt->parse( lexer );
+                    tok = elt->parse( lexer );
+                    if( !nestLevel )
+                        appendChild( new BrCmd( document, this, document->dataName(),
+                            document->dataLine(), document->dataCol() ) );
+                    return tok;
                 }
             case Lexer::UL:
                 {
@@ -122,9 +127,7 @@ Lexer::Token Sl::parse( Lexer* lexer )
                 break;
             default:
                 document->printError( ERR1_NOENDLIST );
-                while( tok != Lexer::TAGEND )
-                    tok = document->getNextToken();
-                tok = document->getNextToken();
+                return tok;
             }
         }
     }
@@ -161,6 +164,8 @@ void ESl::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( 1 );
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 /***************************************************************************/
 Lexer::Token SlLi::parse( Lexer* lexer )
@@ -168,23 +173,14 @@ Lexer::Token SlLi::parse( Lexer* lexer )
     Lexer::Token tok( parseAttributes( lexer ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::DL ||
-                lexer->tagId() == Lexer::OL ||
-                lexer->tagId() == Lexer::LI ||
-                lexer->tagId() == Lexer::PARML ||
-                lexer->tagId() == Lexer::SL ||
-                lexer->tagId() == Lexer::ESL ||
-                lexer->tagId() == Lexer::UL ) {
-                break;
-            }
-            else if( lexer->tagId() == Lexer::LP ) {
+            if( lexer->tagId() == Lexer::LP ) {
                 Element* elt( new P( document, this, document->dataName(),
                     document->dataLine(), document->dataCol() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
             else
-                parseCleanup( tok );
+                break;
         }
     }
     return tok;
@@ -200,5 +196,7 @@ void SlLi::buildText( Cell* cell )
         cell->addByte( 0xFD );
     else
         cell->addByte( 0xFA );
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 

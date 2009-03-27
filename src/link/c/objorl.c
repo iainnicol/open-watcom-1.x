@@ -30,12 +30,13 @@
 
 
 #include <unistd.h>
+#include <sys/stat.h>
 #include <string.h>
 #include "linkstd.h"
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "alloc.h"
-#include <orl.h>
+#include "orl.h"
 #include "specials.h"
 #include "obj2supp.h"
 #include "objnode.h"
@@ -57,8 +58,10 @@
 #include "objstrip.h"
 #include "toc.h"
 
+
 static orl_handle       ORLHandle;
 static long             ORLFilePos;
+static long             ORLPos;
 
 static long             ORLSeek( void *, long, int );
 static void             *ORLRead( void *, size_t );
@@ -95,19 +98,35 @@ void ObjORLFini( void )
     ORLFini( ORLHandle );
 }
 
+static long ORLFileSeek( void *_list, long pos, int where )
+/*********************************************************/
+{
+    file_list *list = _list;
+
+    if( where == SEEK_SET ) {
+        ORLFilePos = pos;
+        ORLPos = 0;
+    } else if( where == SEEK_CUR ) {
+        ORLFilePos += pos;
+    } else {
+        ORLFilePos = list->file->len - pos;
+    }
+    return( ORLFilePos + ORLPos );
+}
+
 static long ORLSeek( void *_list, long pos, int where )
 /*****************************************************/
 {
     file_list *list = _list;
 
     if( where == SEEK_SET ) {
-        ORLFilePos = pos;
+        ORLPos = pos;
     } else if( where == SEEK_CUR ) {
-        ORLFilePos += pos;
+        ORLPos += pos;
     } else {
-        ORLFilePos = list->file->len - pos;
+        ORLPos = list->file->len - ORLFilePos - pos;
     }
-    return( ORLFilePos );
+    return( ORLPos );
 }
 
 static void *ORLRead( void *_list, size_t len )
@@ -117,9 +136,9 @@ static void *ORLRead( void *_list, size_t len )
     void        *result;
     readcache   *cache;
 
-    result = CachePermRead( list, ORLFilePos, len );
-    ORLFilePos += len;
-    _ChkAlloc( cache, sizeof(readcache) );
+    result = CachePermRead( list, ORLFilePos + ORLPos, len );
+    ORLPos += len;
+    _ChkAlloc( cache, sizeof( readcache ) );
     cache->next = ReadCacheList;
     ReadCacheList = cache;
     cache->data = result;
@@ -134,7 +153,7 @@ bool IsORL( file_list *list, unsigned loc )
     bool                isOK;
 
     isOK = TRUE;
-    ORLSeek( list, loc, SEEK_SET );
+    ORLFileSeek( list, loc, SEEK_SET );
     type = ORLFileIdentify( ORLHandle, list );
     if( type == ORL_ELF ) {
         ObjFormat |= FMT_ELF;
@@ -197,9 +216,9 @@ void ORLSkipObj( file_list *list, unsigned long *loc )
 {
     orl_file_handle     filehdl;
 
-    ORLSeek( list, *loc, SEEK_SET );
+    ORLFileSeek( list, *loc, SEEK_SET );
     filehdl = InitFile();               // assumes that entire file is read!
-    *loc = ORLSeek( list, 0, SEEK_CUR );
+    *loc = ORLFileSeek( list, 0, SEEK_CUR );
     FiniFile( filehdl, list );
 }
 
@@ -501,7 +520,7 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
 
 static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
-                           int namelen )
+                           size_t namelen )
 /***************************************************************************/
 {
     if( type & ORL_SYM_TYPE_UNDEFINED ) {
@@ -932,5 +951,5 @@ unsigned long ORLPass1( void )
         IterateNodelist( SegNodes, DefNosymComdats, NULL );
     }
     FiniFile( filehdl, CurrMod->f.source );
-    return( ORLSeek( CurrMod->f.source, 0, SEEK_CUR ) );
+    return( ORLFileSeek( CurrMod->f.source, 0, SEEK_CUR ) );
 }

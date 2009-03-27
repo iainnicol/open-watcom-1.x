@@ -59,7 +59,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
             case Lexer::DL:
                 {
                     Element* elt( new Dl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
+                        document->dataLine(), document->dataCol(), nestLevel + 1,
                         indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
@@ -96,12 +96,16 @@ Lexer::Token Ol::parse( Lexer* lexer )
                     Element* elt( new EOl( document, this, document->dataName(),
                         document->dataLine(), document->dataCol() ) );
                     appendChild( elt );
-                    return elt->parse( lexer );
+                    tok = elt->parse( lexer );
+                    if( !nestLevel )
+                        appendChild( new BrCmd( document, this, document->dataName(),
+                            document->dataLine(), document->dataCol() ) );
+                    return tok;
                 }
             case Lexer::PARML:
                 {
                     Element* elt( new Parml( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
+                        document->dataLine(), document->dataCol(), nestLevel + 1,
                         indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
@@ -127,9 +131,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
                 break;
             default:
                 document->printError( ERR1_NOENDLIST );
-                while( tok != Lexer::TAGEND )
-                    tok = document->getNextToken();
-                tok = document->getNextToken();
+                return tok;
             }
         }
     }
@@ -166,6 +168,8 @@ void EOl::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( 1 );
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 /***************************************************************************/
 Lexer::Token OlLi::parse( Lexer* lexer )
@@ -187,7 +191,7 @@ Lexer::Token OlLi::parse( Lexer* lexer )
         appendChild( new Word( document, this, document->dataName(),
             document->dataLine(), document->dataCol(), txt, false ) );
         appendChild( new Punctuation( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), document->olClose( 0 ), true ) );
+            document->dataLine(), document->dataCol(), document->olClose( nestLevel ), true ) );
     }
     else {
         wchar_t tmp[ 4 ];
@@ -199,29 +203,20 @@ Lexer::Token OlLi::parse( Lexer* lexer )
         appendChild( new Word( document, this, document->dataName(),
             document->dataLine(), document->dataCol(), txt, itemNumber >= 9 ) );
         appendChild( new Punctuation( document, this, document->dataName(),
-            document->dataLine(), document->dataCol(), document->olClose( 0 ), true ) );
+            document->dataLine(), document->dataCol(), document->olClose( nestLevel ), true ) );
     }
     appendChild( new Lm( document, this, document->dataName(), document->dataLine(),
         document->dataCol(), indent + 3 ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::DL ||
-                lexer->tagId() == Lexer::PARML ||
-                lexer->tagId() == Lexer::OL ||
-                lexer->tagId() == Lexer::LI ||
-                lexer->tagId() == Lexer::EOL ||
-                lexer->tagId() == Lexer::SL ||
-                lexer->tagId() == Lexer::UL ) {
-                break;
-            }
-            else if( lexer->tagId() == Lexer::LP ) {
+            if( lexer->tagId() == Lexer::LP ) {
                 Element* elt( new P( document, this, document->dataName(),
                     document->dataLine(), document->dataCol() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
             else
-                parseCleanup( tok );
+                break;
         }
     }
     return tok;

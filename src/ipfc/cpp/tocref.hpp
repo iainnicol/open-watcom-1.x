@@ -24,28 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  Defines for Linux specific system calls. We maintain this
-*               separately from the Linux kernel source code, so it may
-*               need updating from time to time. We need to do this so that
-*               the runtime library can be built on any platform without
-*               needing the Linux kernel headers to be installed.
+* Description:  A reference to a panel (TOC entry) used in resource number
+*   and name/id mapping, and to track cross-references
 *
 ****************************************************************************/
 
-#ifndef _SYSLINUX_H_INCLUDED
-#define _SYSLINUX_H_INCLUDED
+#ifndef TOCREF_INCLUDED
+#define TOCREF_INCLUDED
 
-#ifndef __TYPES_H_INCLUDED
-    #include <sys/types.h>
-#endif
+#include <cstdio>
+#include <cstdint>
+#include <set>
+#include "xref.hpp"
 
-/* Include architecture specific definitions */
-#if defined( __386__ )
-    #include "sys386.h"
-#elif defined( __PPC__ )
-    #include "sysppc.h"
-#elif defined( __MIPS__ )
-    #include "sysmips.h"
-#endif
+class TocRef {
+public:
+    TocRef( const std::wstring* f, unsigned int r, std::uint16_t i ) :
+        fileName( f ), lineNumber( r ), tocIndex( i ) { };
+    ~TocRef() { };
+    std::uint16_t index() const { return tocIndex; };
+    void addXRef( XRef& ref ) { xref.insert( ref ); };
+    void write( std::FILE* out ) const;
+private:
+    const std::wstring* fileName;
+    std::set< XRef > xref;
+    typedef std::set< XRef >::iterator XRefIter;
+    typedef std::set< XRef >::const_iterator ConstXRefIter;
+    unsigned int lineNumber;
+    std::uint16_t tocIndex;
+};
 
-#endif  /* _SYSLINUX_H_INCLUDED */
+#endif //TOCREF_INCLUDED

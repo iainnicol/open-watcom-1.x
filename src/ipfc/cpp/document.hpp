@@ -50,6 +50,7 @@
 #include "lexer.hpp"
 #include "nls.hpp"
 #include "strings.hpp"
+#include "tocref.hpp"
 
 class Cell; //forward reference
 class Page;
@@ -66,6 +67,7 @@ public:
     void parse( Lexer* lexer );
     void build();
     void write( std::FILE* out );
+    void summary( std::FILE* out );
 
     //set the output file type
     void setOutputType( Compiler::OutputType t )
@@ -74,6 +76,9 @@ public:
     //set the lowest header level for which new pages are made
     void setHeaderCutOff( unsigned int co ) { maxHeaderLevel = co; };
     unsigned int headerCutOff() const { return maxHeaderLevel; };
+    //track the current left margin
+    void setLeftMargin( unsigned char lm ) { currentLeftMargin = lm; } ;
+    unsigned char leftMargin() const { return currentLeftMargin; };
     //store a graphics file name
     void addBitmap( std::wstring& bmn );
     std::uint32_t bitmapByName( std::wstring& bmn );
@@ -84,9 +89,12 @@ public:
     Text* lastText() { return lastPrintableItem; };
     Lexer::Token lastToken() const { return lastPrintableToken; };
     //add a resource number to TOC index mapping
-    void addRes( std::uint16_t key, std::uint16_t value );
+    void addRes( std::uint16_t key, TocRef& value );
     //add a name/id to TOC index mapping
-    void addNameOrId( GlobalDictionaryWord* key, std::uint16_t value );
+    void addNameOrId( GlobalDictionaryWord* key, TocRef& value );
+    //add a cross-reference to an identifier
+    void addXRef( std::uint16_t res, XRef& xref );
+    void addXRef( GlobalDictionaryWord* id, XRef& xref );
     //add a page to the page collection
     void addPage( Page* page );
     //add a cell to the cell collection
@@ -114,16 +122,19 @@ public:
     std::uint16_t tocIndexByRes( std::uint16_t res );
     //get a TOC index from the id or name to TOC index map
     std::uint16_t tocIndexById( GlobalDictionaryWord* id );
+    //get a .nameit expansion
+    const std::wstring* nameit( const std::wstring& key );
+    std::wstring* Document::prepNameitName( const std::wstring& key );
 
     //Forwarding functions
 
     //To Controls
-    void addControlButton( ControlButton& btn ) { controls->addButton( btn ); };
-    void addControlGroup( ControlGroup& grp ) { controls->addGroup( grp ); };
+    std::uint16_t getGroupById( const std::wstring& i ) { return controls->getGroupById( i )->index() + 1; };
 
     //To Compiler
     std::wstring* addFileName( std::wstring* name ) { return compiler.addFileName( name ); };
     void printError( ErrCode c ) const { compiler.printError( c ); };
+    void printError( ErrCode c, const std::wstring& txt ) const { compiler.printError( c, txt ); };
     void printError( ErrCode c, const std::wstring* name, unsigned int row, unsigned int col ) const
         { compiler.printError( c, name, row, col ); };
     Lexer::Token getNextToken() { return compiler.getNextToken(); };
@@ -157,6 +168,7 @@ public:
     const std::wstring& note() const { return nls->note(); };
     const std::wstring& warning() const { return nls->warning(); };
     const std::wstring& caution() const { return nls->caution(); };
+    const std::wstring& reference() const { return nls->reference(); };
     //const std::wstring& grammer() const { return nls->grammer(); };
     const std::wstring& cgraphicFontFaceName() const { return nls->cgraphicFontFaceName(); };
     int cgraphicFontWidth() const { return nls->cgraphicFontWidth(); };
@@ -195,17 +207,21 @@ private:
     typedef std::map< std::wstring, std::uint32_t >::iterator BitmapNameIter;
     typedef std::map< std::wstring, std::uint32_t >::const_iterator ConstBitmapNameIter;
 
-    std::map< std::uint16_t, std::uint16_t > resMap;
-    typedef std::map< std::uint16_t, std::uint16_t >::iterator ResMapIter;
-    typedef std::map< std::uint16_t, std::uint16_t >::const_iterator ConstResMapIter;
+    std::map< std::uint16_t, TocRef > resMap;
+    typedef std::map< std::uint16_t, TocRef >::iterator ResMapIter;
+    typedef std::map< std::uint16_t, TocRef >::const_iterator ConstResMapIter;
 
-    std::map< GlobalDictionaryWord*, std::uint16_t, ptrLess< GlobalDictionaryWord* > > nameMap;
-    typedef std::map< GlobalDictionaryWord*, std::uint16_t, ptrLess< GlobalDictionaryWord* > >::iterator NameMapIter;
-    typedef std::map< GlobalDictionaryWord*, std::uint16_t, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameMapIter;
+    std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > > nameMap;
+    typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::iterator NameMapIter;
+    typedef std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::const_iterator ConstNameMapIter;
 
     std::map< std::wstring, Synonym* > synonyms;    //each Synonym is owned by an ISym tag
     typedef std::map< std::wstring, Synonym* >::iterator SynIter;
     typedef std::map< std::wstring, Synonym* >::const_iterator ConstSynIter;
+
+    std::map< std::wstring, std::wstring > nameIts;
+    typedef std::map< std::wstring, std::wstring >::iterator NameItIter;
+    typedef std::map< std::wstring, std::wstring >::const_iterator ConstNameItIter;
 
     std::vector< I1* > index;
     typedef std::vector< I1* >::iterator IndexIter;
@@ -230,6 +246,7 @@ private:
     Text* lastPrintableItem;
     unsigned int maxHeaderLevel;
     unsigned int headerLevel;
+    unsigned char currentLeftMargin;
     Lexer::Token lastPrintableToken;
     bool inDoc;             //true if parsing between userdoc and euserdoc
     bool spacing;           //true if automatically inserting spaces

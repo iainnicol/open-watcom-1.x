@@ -36,6 +36,7 @@
 #include "document.hpp"
 #include "errors.hpp"
 #include "util.hpp"
+#include "xref.hpp"
 
 Lexer::Token Ddf::parse( Lexer* lexer )
 {
@@ -77,11 +78,15 @@ void Ddf::buildText( Cell* cell )
 {
     try {
         std::uint16_t tocIndex( document->tocIndexByRes( res ) );
+        XRef xref( fileName, row );
+        document->addXRef( res, xref );
         cell->addByte( 0xFF );  //ESC
         cell->addByte( 0x04 );  //size
         cell->addByte( 0x20 );  //ddf
         cell->addByte( static_cast< std::uint8_t >( res ) );
         cell->addByte( static_cast< std::uint8_t >( res >> 8 ) );
+        if( cell->textFull() )
+            printError( ERR1_LARGEPAGE );
     }
     catch( Class1Error& e ) {
         printError( e.code );

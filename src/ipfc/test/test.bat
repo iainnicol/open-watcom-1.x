@@ -15,6 +15,10 @@ echo Test pos7
 wipfc -i .\pos\pos7.ipf
 echo Test pos8
 wipfc -i .\pos\pos8.ipf
+echo Test pos9
+wipfc -i .\pos\pos9.ipf
+echo Test pos10
+wipfc -i .\pos\pos10.ipf
 echo Test neg1
 wipfc -i .\neg\neg1.ipf
 echo Test neg2
@@ -23,3 +27,16 @@ echo Test neg3
 wipfc -i .\neg\neg3.ipf
 echo Test neg4
 wipfc -i .\neg\neg4.ipf
+echo Test neg5
+wipfc -i .\neg\neg5.ipf
+echo Test neg6
+wipfc -i .\neg\neg6.ipf
+echo Test neg7
+wipfc -i .\neg\neg7.ipf
+echo Test neg8
+wipfc -i .\neg\neg8.ipf
+echo Test neg9
+wipfc -i .\neg\neg9.ipf
+echo Test neg10
+wipfc -i .\neg\neg10.ipf
+

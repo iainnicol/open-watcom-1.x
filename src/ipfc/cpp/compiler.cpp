@@ -100,6 +100,27 @@ int Compiler::compile()
         printError( e.code, e.fname );
     }
     std::fclose( out );
+    if( xref ) {
+        std::string fname( outFileName );
+        fname.erase( fname.rfind( '.' ) );
+        fname += ".log";
+        out = std::fopen( fname.c_str(), "w" );
+        if( !out )
+            throw FatalIOError( ERR_OPEN, L"for log output" );
+        try {
+            std::fprintf( out, "Summary for %s\n\n", outFileName.c_str() );
+            doc->summary( out );
+        }
+        catch( FatalError& e ) {
+            retval = EXIT_FAILURE;
+            printError( e.code );
+        }
+        catch( FatalIOError& e ) {
+            retval = EXIT_FAILURE;
+            printError( e.code, e.fname );
+        }
+        std::fclose( out );
+    }
     return retval;
 }
 /*****************************************************************************/
@@ -131,7 +152,7 @@ void Compiler::printError( ErrCode c ) const
 }
 /*****************************************************************************/
 //Error message format is <fullfilename:line:col> errnum: text [optional info]
-void Compiler::printError( ErrCode c, std::wstring& txt ) const
+void Compiler::printError( ErrCode c, const std::wstring& txt ) const
 {
     if( c <= ERR_LAST || warningLevel > 2 ||
        ( c <= ERR1_LAST && warningLevel > 0 ) ||

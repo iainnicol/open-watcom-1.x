@@ -54,7 +54,6 @@
 
 typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
 typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
-typedef const char  *MPTR_T;    /* first parm to MacroCopy */
 typedef void        *VOIDPTR;
 
 #include "macro.h"
@@ -108,7 +107,9 @@ global  char    *SrcFName;      /* source file name without suffix */
 global  char    *DefFName;      /* .def file name (prototypes) */
 global  char    *WholeFName;    /* whole file name with suffix */
 global  char    *ForceInclude;
+#if _CPU == 370
 global  char    *AuxName;
+#endif
 global  struct  fname_list *FNames;     /* list of file names processed */
 global  struct  rdir_list *RDirNames;  /* list of read only directorys */
 global  struct  ialias_list *IAliasNames;  /* list of include aliases */
@@ -399,7 +400,7 @@ global  unsigned DefDataSegment;  /* #pragma data_seg("segname","class") */
 global  struct textsegment *DefCodeSegment; /* #pragma code_seg("seg","c") */
 
 global  unsigned        UnrollCount;    /* #pragma unroll(#); */
-global  unsigned char   InitialMacroFlag;
+global  macro_flags     InitialMacroFlag;
 global  unsigned char   Stack87;
 global  char            *ErrorFileName;
 
@@ -433,13 +434,13 @@ extern  void    FrontEndInit( bool reuse );
 extern  int     FrontEnd(char **);
 extern  void    FrontEndFini( void );
 extern  void    CppComment(int);
-extern  int     CppPrinting(void);
+extern  bool    CppPrinting(void);
 extern  void    CppPutc(int);
 extern  void    CppPrtf(char *,...);
 extern  void    SetCppWidth(unsigned);
-extern  void    PrtChar(int);
-extern  void    PrtToken(void);
-extern  int     OpenSrcFile(char *,int);
+extern  void    CppPrtChar(int);
+extern  void    CppPrtToken(void);
+extern  bool    OpenSrcFile(const char *,bool);
 extern  void    OpenDefFile(void);
 extern  FILE    *OpenBrowseFile(void);
 extern  void    CloseFiles(void);
@@ -461,14 +462,14 @@ extern  int     FListSrcQue(void);
 extern  void    SrcFileReadOnlyDir( char const *dir );
 extern  void    SrcFileReadOnlyFile( char const *file );
 extern  bool    SrcFileInRDir( FNAMEPTR flist );
-extern  void    SrcFileIncludeAlias( const char *alias_name, const char *real_name, int delimiter );
+extern  void    SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is_lib );
 extern  int     SrcFileTime(char const *,time_t *);
 extern  void    SetSrcFNameOnce( void );
 extern  void    GetNextToken(void);
-extern  void    EmitLine(unsigned,char *);
-extern  void    EmitPoundLine(unsigned,char *,int);
+extern  void    EmitLine(unsigned,const char *);
+extern  void    EmitPoundLine(unsigned,const char *,int);
 
-extern  void    AddIncFileList( char *filename );
+extern  void    AddIncFileList( const char *filename );
 extern  void    FreeIncFileList( void );
 
 // cdata.c
@@ -518,7 +519,7 @@ extern  void    FreeEnums(void);                /* cenum */
 //cerror.c
 extern  void    CErr1(int);
 extern  void    CErr2(int,int);
-extern  void    CErr2p(int,char *);
+extern  void    CErr2p(int,const char *);
 extern  void    CErr(int,...);
 extern  void    SetErrLoc(source_loc *);
 extern  void    InitErrLoc(void);
@@ -643,10 +644,10 @@ extern  void    CppStackFini(void);
 //cmacadd.c
 extern  void    AllocMacroSegment(unsigned);
 extern  void    FreeMacroSegments(void);
-extern  void    MacLkAdd( MEPTR mentry, int len, enum macro_flags flags );
-extern  void    MacroAdd( MEPTR mentry, char *buf, int len, enum macro_flags flags );
+extern  void    MacLkAdd( MEPTR mentry, int len, macro_flags flags );
+extern  void    MacroAdd( MEPTR mentry, char *buf, int len, macro_flags flags );
 extern  int     MacroCompare(MEPTR,MEPTR);
-extern  void    MacroCopy(MPTR_T,MACADDR_T,unsigned);
+extern  void    MacroCopy(void *,MACADDR_T,unsigned);
 extern  MEPTR   MacroLookup(const char *);
 extern  void    MacroOverflow(unsigned,unsigned);
 extern  SYM_HASHPTR SymHashAlloc(unsigned);
@@ -830,9 +831,9 @@ extern  char    *ftoa( FLOATVAL * );                    /* ftoa */
 extern  unsigned int JIS2Unicode( unsigned );           /* jis2unic */
 
 // pchdr.c
-extern  int     UsePreCompiledHeader( char * );
+extern  int     UsePreCompiledHeader( const char * );
 extern  void    InitBuildPreCompiledHeader( void );
-extern  void    BuildPreCompiledHeader( char * );
+extern  void    BuildPreCompiledHeader( const char * );
 extern  void    FreePreCompiledHeader( void );
 
 extern  void    CBanner( void );                        /* watcom */

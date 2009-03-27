@@ -45,6 +45,7 @@
 #include "entity.hpp"
 #include "fig.hpp"
 #include "font.hpp"
+#include "hdref.hpp"
 #include "hide.hpp"
 #include "hn.hpp"
 #include "hpn.hpp"
@@ -84,9 +85,9 @@ Lexer::Token Tag::parseAttributes( Lexer* lexer )
     lexer = lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
-            document->printError( ERR1_ATTRNOTDEF );
+            document->printError( ERR1_NOATTR );
         else if( tok == Lexer::FLAG )
-            document->printError( ERR1_ATTRNOTDEF );
+            document->printError( ERR1_NOATTR );
         else if( tok == Lexer::ERROR_TAG )
             throw FatalError( ERR_SYNTAX );
         else if( tok == Lexer::END )
@@ -166,6 +167,14 @@ bool Tag::parseInline( Lexer* lexer, Lexer::Token& tok )
         case Lexer::FONT:
             {
                 Element* elt( new Font( document, this, document->dataName(),
+                    document->lexerLine(), document->lexerCol() ) );
+                appendChild( elt );
+                tok = elt->parse( lexer );
+            }
+            break;
+        case Lexer::HDREF:
+            {
+                Element* elt( new Hdref( document, this, document->dataName(),
                     document->lexerLine(), document->lexerCol() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
@@ -388,14 +397,6 @@ bool Tag::parseBlock( Lexer* lexer, Lexer::Token& tok )
         switch( lexer->tagId() ) {
         //make new tag
         //append pointer to this tag's list
-        case Lexer::H1:
-        case Lexer::H2:
-        case Lexer::H3:
-        case Lexer::H4:
-        case Lexer::H5:
-        case Lexer::H6:
-        case Lexer::FN:
-            break;
         case Lexer::ACVIEWPORT:
             {
                 Element* elt( new AcViewport( document, this, document->dataName(),
@@ -506,6 +507,7 @@ bool Tag::parseBlock( Lexer* lexer, Lexer::Token& tok )
             while( tok != Lexer::TAGEND )
                 tok = document->getNextToken();
             tok = document->getNextToken();
+            break;
         case Lexer::P:
             {
                 Element* elt( new P( document, this, document->dataName(),
@@ -583,7 +585,7 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
         case Lexer::DL:
             {
                 Element* elt( new Dl( document, this, document->dataName(),
-                    document->lexerLine(), document->lexerCol(), 1 ) );
+                    document->lexerLine(), document->lexerCol(), 0, document->leftMargin() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
@@ -591,7 +593,7 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
         case Lexer::OL:
             {
                 Element* elt( new Ol( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol(), 0, 1 ) );
+                    document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
@@ -599,7 +601,7 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
         case Lexer::PARML:
                 {
                     Element* elt( new Parml( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(), 1 ) );
+                        document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
                 }
@@ -607,7 +609,7 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
         case Lexer::SL:
             {
                 Element* elt( new Sl( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol(), 0, 1 ) );
+                    document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
@@ -615,7 +617,7 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
         case Lexer::UL:
             {
                 Element* elt( new Ul( document, this, document->dataName(),
-                    document->dataLine(), document->dataCol(), 0, 1 ) );
+                    document->dataLine(), document->dataCol(), 0, document->leftMargin() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
@@ -628,9 +630,12 @@ bool Tag::parseListBlock( Lexer* lexer, Lexer::Token& tok )
     return notHandled;
 }
 /***************************************************************************/
-void Tag::parseCleanup( Lexer::Token& tok )
+void Tag::parseCleanup( Lexer* lexer, Lexer::Token& tok )
 {
-    document->printError( ERR1_TAGCONTEXT );
+    if( lexer->tagId() == Lexer::BADTAG )
+        document->printError( ERR1_TAGNOTDEF );
+    else
+        document->printError( ERR1_TAGCONTEXT );
     while( tok != Lexer::TAGEND )
         tok = document->getNextToken();
     tok = document->getNextToken();

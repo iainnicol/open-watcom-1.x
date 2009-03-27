@@ -42,6 +42,7 @@
 #include "i1.hpp"
 #include "ptrops.hpp"
 #include "util.hpp"
+#include "xref.hpp"
 
 Lexer::Token I2::parse( Lexer* lexer )
 {
@@ -51,12 +52,17 @@ Lexer::Token I2::parse( Lexer* lexer )
         if( tok == Lexer::WORD )
             txt += lexer->text();
         else if( tok == Lexer::ENTITY ) {
-            try {
-                wchar_t ch( document->entity( lexer->text() ) );
-                txt += ch;
-            }
-            catch( Class2Error& e ) {
-                document->printError( e.code );
+            const std::wstring* exp( document->nameit( lexer->text() ) );
+            if( exp )
+                txt += *exp;
+            else {
+                try {
+                    wchar_t ch( document->entity( lexer->text() ) );
+                    txt += ch;
+                }
+                catch( Class2Error& e ) {
+                    document->printError( e.code );
+                }
             }
         }
         else if( tok == Lexer::PUNCTUATION )
@@ -115,10 +121,15 @@ Lexer::Token I2::parseAttributes( Lexer* lexer )
 void I2::buildIndex()
 {
     try {
-        if( parentRes )
+        XRef xref( fileName, row );
+        if( parentRes ) {
             index->setTOC( document->tocIndexByRes( parentRes ) );
-        else if( parentId )
+            document->addXRef( parentRes, xref );
+        }
+        else if( parentId ) {
             index->setTOC( document->tocIndexById( parentId ) );
+            document->addXRef( parentId, xref );
+        }
         I1* i1( document->indexById( refid ) );
         i1->addSecondary( index.get() );
     }

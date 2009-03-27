@@ -37,7 +37,7 @@ libfile: .PROCEDURE
 !ifdef bootstrap
 protos_opts = -E
 !else
-protos_opts = -p -fo=$@
+protos_opts = -p
 !endif
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
@@ -53,15 +53,7 @@ dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(dbit_size) _DBit dom_bit_set $@
 
 cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
-!ifdef bootstrap
     $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h" > $@
-!else
-    $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h"
-!endif
 
 feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
-!ifdef bootstrap
     $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h" > $@
-!else
-    $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h"
-!endif

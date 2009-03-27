@@ -44,6 +44,7 @@
 #include "cell.hpp"
 #include "document.hpp"
 #include "errors.hpp"
+#include "ipfbuffer.hpp"
 #include "lexer.hpp"
 #include "lm.hpp"
 #include "ol.hpp"
@@ -58,80 +59,75 @@ Lexer::Token Parml::parse( Lexer* lexer )
     bool notFirst( false );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
-            switch( lexer->tagId() ) {
-            case Lexer::DL:
-                {
-                    Element* elt( new Dl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        indent == 1 ? 4 : indent + 3 ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                }
-                break;
-            case Lexer::PD:
-                document->printError( ERR1_DLDTDDMATCH );
-                while( tok != Lexer::TAGEND )
+            if( parseBlock( lexer, tok ) ) {
+                switch( lexer->tagId() ) {
+                case Lexer::DL:
+                    {
+                        Element* elt( new Dl( document, this, document->dataName(),
+                            document->dataLine(), document->dataCol(), nestLevel + 1,
+                            indent == 1 ? 4 : indent + 3 ) );
+                        appendChild( elt );
+                        tok = elt->parse( lexer );
+                    }
+                    break;
+                case Lexer::OL:
+                    {
+                        Element* elt( new Ol( document, this, document->dataName(),
+                            document->dataLine(), document->dataCol(),
+                            nestLevel + 1, indent == 1 ? 4 : indent + 3 ) );
+                        appendChild( elt );
+                        tok = elt->parse( lexer );
+                    }
+                    break;
+                case Lexer::PD:
+                    document->printError( ERR1_DLDTDDMATCH );
+                    while( tok != Lexer::TAGEND )
+                        tok = document->getNextToken();
                     tok = document->getNextToken();
-                tok = document->getNextToken();
-                break;
-            case Lexer::PT:
-                {
-                    Element* elt( new Pt( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), indent,
-                        tabSize, breakage, compact && notFirst ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                    notFirst = true;
+                    break;
+                case Lexer::PT:
+                    {
+                        Element* elt( new Pt( document, this, document->dataName(),
+                            document->lexerLine(), document->lexerCol(), indent,
+                            tabSize, breakage, compact && notFirst ) );
+                        appendChild( elt );
+                        tok = elt->parse( lexer );
+                        notFirst = true;
+                    }
+                    break;
+                case Lexer::EPARML:
+                    {
+                        Element* elt( new EParml( document, this, document->dataName(),
+                            document->lexerLine(), document->lexerCol() ) );
+                        appendChild( elt );
+                        tok = elt->parse( lexer );
+                        if( !nestLevel )
+                            appendChild( new BrCmd( document, this, document->dataName(),
+                                document->dataLine(), document->dataCol() ) );
+                        return tok;
+                    }
+                case Lexer::SL:
+                    {
+                        Element* elt( new Sl( document, this, document->dataName(),
+                            document->dataLine(), document->dataCol(),
+                            0, indent == 1 ? 4 : indent + 3 ) );
+                        appendChild( elt );
+                        tok = elt->parse( lexer );
+                    }
+                    break;
+                case Lexer::UL:
+                    {
+                        Element* elt( new Ul( document, this, document->dataName(),
+                            document->dataLine(), document->dataCol(),
+                            nestLevel + 1, indent == 1 ? 4 : indent + 3 ) );
+                        appendChild( elt );
+                        tok = elt->parse( lexer );
+                    }
+                    break;
+                default:
+                    document->printError( ERR1_NOENDLIST );
+                    return tok;
                 }
-                break;
-            case Lexer::EPARML:
-                {
-                    Element* elt( new EParml( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol() ) );
-                    appendChild( elt );
-                    return elt->parse( lexer );
-                }
-            case Lexer::OL:
-                {
-                    Element* elt( new Ol( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        0, indent == 1 ? tabSize + 1 : indent + tabSize ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                }
-                break;
-            case Lexer::PARML:
-                {
-                    Element* elt( new Parml( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        indent == 1 ? tabSize + 1 : indent + tabSize ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                }
-                break;
-            case Lexer::SL:
-                {
-                    Element* elt( new Sl( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        0, indent == 1 ? tabSize + 1 : indent + tabSize ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                }
-                break;
-            case Lexer::UL:
-                {
-                    Element* elt( new Ul( document, this, document->dataName(),
-                        document->dataLine(), document->dataCol(),
-                        0, indent == 1 ? tabSize + 1 : indent + tabSize ) );
-                    appendChild( elt );
-                    tok = elt->parse( lexer );
-                }
-                break;
-            default:
-                document->printError( ERR1_NOENDLIST );
-                while( tok != Lexer::TAGEND )
-                    tok = document->getNextToken();
-                tok = document->getNextToken();
             }
         }
     }
@@ -185,6 +181,8 @@ void EParml::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x02 );  //set left margin
     cell->addByte( 1 );
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 /***************************************************************************/
 Lexer::Token Pt::parse( Lexer* lexer )
@@ -204,9 +202,25 @@ Lexer::Token Pt::parse( Lexer* lexer )
             textLength += static_cast< unsigned char >( lexer->text().size() );
             break;
         case Lexer::ENTITY:
+            {
+                const std::wstring* txt( document->nameit( lexer->text() ) );
+                if( txt ) {
+                    std::wstring* name( document->prepNameitName( lexer->text() ) );
+                    IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *txt ) );
+                    document->pushInput( buffer );
+                    tok = document->getNextToken();
+                }
+                else
+                    ++textLength;
+            }
+            break;
         case Lexer::PUNCTUATION:
-        case Lexer::WHITESPACE:
             ++textLength;
+            break;
+        case Lexer::WHITESPACE:
+            if( lexer->text()[0] != L'\n' )
+                ++textLength;
+            break;
         default:
             break;
         }
@@ -244,7 +258,7 @@ Lexer::Token Pd::parse( Lexer* lexer )
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
             if( lexer->tagId() == Lexer::PD )
-                parseCleanup( tok );
+                parseCleanup( lexer, tok );
             break;
         }
     }

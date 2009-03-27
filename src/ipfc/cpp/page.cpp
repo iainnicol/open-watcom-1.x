@@ -41,18 +41,24 @@ void Page::buildTOC()
 /***************************************************************************/
 void Page::buildLocalDictionary()
 {
+    bool autoSpacing( true );
     currentCell = new Cell( document->maxLocalDictionarySize() );
     document->addCell( currentCell );
     cells.push_back( currentCell->index() );
     ++toc.cellCount;
     for( ElementIter itr = elements.begin(); itr != elements.end(); ++itr ) {
-        if( ( *itr )->buildLocalDict( this ) ) {
+        std::pair< bool, bool > flags( ( *itr )->buildLocalDict( this ) );
+        if( flags.first ) {
             currentCell = new Cell( document->maxLocalDictionarySize() );
             document->addCell( currentCell );
             cells.push_back( currentCell->index() );
             ++toc.cellCount;
-            ( *itr )->buildLocalDict( this );
+            if( !autoSpacing )          //autoSpacing can't cross a cell boundry
+                currentCell->addByte( 0xFC );   //so turn it off so we can turn 
+            flags = ( *itr )->buildLocalDict( this ); //it back on later
         }
+        if( flags.second )
+            autoSpacing = !autoSpacing;
         currentCell->addElement( *itr );
     }
 }
@@ -60,7 +66,7 @@ void Page::buildLocalDictionary()
 bool Page::addWord( GlobalDictionaryWord* word )
 {
     if( word ) {    //can be 0 for unrecognized entity references
-        if( currentCell->full() )
+        if( currentCell->dictFull() )
             return true;
         currentCell->addWord( word->index() );
         word->onPage( idx );

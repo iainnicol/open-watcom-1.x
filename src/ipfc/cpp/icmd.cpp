@@ -37,6 +37,7 @@
 #include "errors.hpp"
 #include "gdword.hpp"
 #include "util.hpp"
+#include "xref.hpp"
 
 ICmd::ICmd( Document* d, Element* p, const std::wstring* f, unsigned int r, unsigned int c ) :
     Element( d, p, f, r, c ), index( new IndexItem( IndexItem::CMD ) ),
@@ -68,12 +69,17 @@ Lexer::Token ICmd::parse( Lexer* lexer )
         if( tok == Lexer::WORD )
             txt += lexer->text();
         else if( tok == Lexer::ENTITY ) {
-            try {
-                wchar_t ch( document->entity( lexer->text() ) );
-                txt += ch;
-            }
-            catch( Class2Error& e ) {
-                document->printError( e.code );
+            const std::wstring* exp( document->nameit( lexer->text() ) );
+            if( exp )
+                txt += *exp;
+            else {
+                try {
+                    wchar_t ch( document->entity( lexer->text() ) );
+                    txt += ch;
+                }
+                catch( Class2Error& e ) {
+                    document->printError( e.code );
+                }
             }
         }
         else if( tok == Lexer::PUNCTUATION )
@@ -98,10 +104,15 @@ Lexer::Token ICmd::parse( Lexer* lexer )
 void ICmd::buildIndex()
 {
     try {
-        if( parentRes )
+        XRef xref( fileName, row );
+        if( parentRes ) {
             index->setTOC( document->tocIndexByRes( parentRes ) );
-        else if( parentId )
+            document->addXRef( parentRes, xref );
+        }
+        else if( parentId ) {
             index->setTOC( document->tocIndexById( parentId ) );
+            document->addXRef( parentId, xref );
+        }
     }
     catch( Class1Error& e ) {
         printError( e.code );

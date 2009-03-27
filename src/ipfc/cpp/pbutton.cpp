@@ -55,17 +55,18 @@ Lexer::Token PButton::parse( Lexer* lexer )
                 document->printError( ERR1_ATTRNOTDEF );
         }
         else if ( tok == Lexer::FLAG )
-            document->printError( ERR2_ATTRIB );
+            document->printError( ERR1_ATTRNOTDEF );
         else if( tok == Lexer::END )
             throw FatalError( ERR_EOF );
         else
             document->printError( ERR1_TAGSYNTAX );
+        tok = document->getNextToken();
     }
     return document->getNextToken();
 }
 /***************************************************************************/
 void PButton::build( Controls* ctrls)
 {
-    ControlButton btn( id, static_cast< unsigned short int>( res ), text);
+    ControlButton btn( id, static_cast< std::uint16_t >( res ), text);
     ctrls->addButton( btn );
 }

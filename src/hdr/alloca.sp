@@ -2,15 +2,15 @@
  _WCRTLINK extern void  *alloca(_w_size_t __size);
  _WCRTLINK extern void  *_alloca(_w_size_t __size);
  _WCRTLINK extern unsigned stackavail( void );
- #if defined(__X86__)
+ #ifdef _M_IX86
   extern void  *__doalloca(_w_size_t __size);
   #pragma aux stackavail __modify __nomemory;
 
   #define __ALLOCA_ALIGN( s )   (((s)+(sizeof(int)-1))&~(sizeof(int)-1))
   #define __alloca( s )         __doalloca(__ALLOCA_ALIGN(s))
 
-:segment !QNX | !LINUX
-  #if defined(__386__)
+:segment DOS
+  #ifdef __386__
    extern void __GRO(_w_size_t __size);
    #pragma aux __GRO "*" __parm __routine [];
    #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?(__GRO(__ALLOCA_ALIGN(s)),__alloca(s)):NULL)
@@ -19,13 +19,13 @@
 :endsegment
    #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s):NULL)
    #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s):NULL)
-:segment !QNX | !LINUX
+:segment DOS
   #endif
 :endsegment
 
   #if defined(__386__)
-   #pragma aux     __doalloca =              \
-            "sub esp,eax"                    \
+   #pragma aux __doalloca = \
+            "sub esp,eax"   \
             __parm __nomemory [__eax] __value [__esp] __modify __exact __nomemory [__esp];
   #elif defined(__SMALL__) || defined(__MEDIUM__) /* small data models */
    #pragma aux __doalloca = \
@@ -43,7 +43,7 @@
   extern void *__builtin_alloca(_w_size_t __size);
   #pragma intrinsic(__builtin_alloca);
 
-  #define __alloca( s )  (__builtin_alloca(s))
+  #define __alloca( s ) (__builtin_alloca(s))
 
   #define alloca( s )   ((s<stackavail())?__alloca(s):NULL)
   #define _alloca( s )  ((s<stackavail())?__alloca(s):NULL)

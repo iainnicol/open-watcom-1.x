@@ -69,6 +69,7 @@ Fatal errors
 PICK( ERR1_CMDNOTDEF, "This command is not defined" )
 PICK( ERR1_TAGNOTDEF, "This tag is not defined" )
 PICK( ERR1_ATTRNOTDEF, "This attribute is not defined for this tag" )
+PICK( ERR1_NOATTR, "Attributtes are not allowed for this tag--probably missing '.' to end the tag" )
 PICK( ERR1_TAGCONTEXT, "The tag, word, or command is not allowed in this context" )
 PICK( ERR1_TAGSYNTAX, "Syntax error in tag" )
 PICK( ERR1_HEADTEXT, "Ignoring text before the :h1. tag" )
@@ -76,6 +77,7 @@ PICK( ERR1_TAILTEXT, "Ignoring text after the :euserdoc. tag" )
 PICK( ERR1_HEADNEST, "Heading levels are not in consecutive order" )
 PICK( ERR1_NOREFID, "The required refid attribute is missing" )
 PICK( ERR1_NORES, "Unable to find the resource identifier for this reference" )
+PICK( ERR1_NODDFRES, "The required resource identifier is missing" )
 PICK( ERR1_NOID, "Unable to find the id or name for this reference" )
 PICK( ERR1_NOFNID, "The required id for this footnote is missing" )
 PICK( ERR1_NOLIST, "Ignoring an :li. that is not part of a list" )
@@ -91,7 +93,10 @@ PICK( ERR1_TABLEWIDTH, "The total width of the table is >250 characters" )
 PICK( ERR1_TABLETEXT, "Ignoring text before :c. tag" )
 PICK( ERR1_TABLECELLTAG, "Ignoring invalid tag in table cell" )
 PICK( ERR1_TABLECELLTEXTWIDTH, "Text in this table column is too long, truncating" )
-PICK( ERR1_TABLECELLCOUNT, "Ignoring extra table columns in this row" )
+PICK( ERR1_TABLECELLCOUNTHIGH, "Ignoring extra table columns in this row" )
+PICK( ERR1_TABLECELLCOUNTLOW, "Not enough columns have been specified for this row" )
+PICK( ERR1_TABLEELINK, "The required :elink. tag is missing, but has been appended to this column" )
+PICK( ERR1_LARGEPAGE, "This page has too many elements (words, punctuation, etc.)" )
 PICK( ERR1_LAST, "Last level 1 error code" )
 /*
 Class1 Errors
@@ -130,15 +135,13 @@ Class1 Errors
 */
 
 //Class 2 Errors
-PICK( ERR2_ATTRIB, "Invalid attribute" )
 PICK( ERR2_VALUE, "Invalid or missing attribute value" )
-PICK( ERR2_SYMBOL, "Invalid symbol (entity reference)" )
-PICK( ERR2_MACRO, "Invalid .nameit or expansion" )
+PICK( ERR2_SYMBOL, "Invalid symbol (entity reference or .nameit expansion)" )
 PICK( ERR2_NEST, "Invalid tag nesting" )
 PICK( ERR2_FNIDX, "Footnote cannot be indexed" )
 PICK( ERR2_FONTS, "Too many (> 14) fonts have been used" )
 PICK( ERR2_TEXTTOOLONG, "Title or index text is too long" )
-PICK( ERR2_SUBNOTGLOBAL, "Subindexes of a global index mustbe global, too" )
+PICK( ERR2_SUBNOTGLOBAL, "Subindexes of a global index must be global, too" )
 PICK( ERR2_INOTEXT, "An index entry requires text" )
 PICK( ERR2_LAST, "Last level 2 error code" )
 /*
@@ -168,7 +171,6 @@ PICK( ERR3_NOBUTTON, "Control group references an undefined button" )
 PICK( ERR3_MIXEDUNITS, "Cannot mix dynamic and absolute units" )
 PICK( ERR3_FNNOAUTO, "Footnotes cannot be opened automatically" )
 PICK( ERR3_FNNOSPLIT, "Footnote cannot be opened from a split window" )
-PICK( ERR3_NOTSUPPORTED, "This tag is not supported by wipfc. If you know how it is encoded, contact us.")
 PICK( ERR3_LAST, "Last level 3 error code" )
 /*
 Class3 Errors

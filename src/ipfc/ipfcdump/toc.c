@@ -29,7 +29,7 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
     size_t textSize;
     uint16_t cellIndex;
     char text[ 256 ];
-    wchar_t wtext[ 256 ];
+    wchar_t wtext[ WSTRING_MAX_LEN ];
     //long int nextPos = ftell(in);
     fread( &toc, sizeof(TocEntry), 1, in );
     fprintf( out, "  TOC Entry #%u at offset %8.8x (%lu)\n", count1, offset, offset );
@@ -53,14 +53,15 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
         fprintf( out, "      ExtTocEntry.setSize:  %s\n", etoc.setSize ? "yes" : "no" );
         fprintf( out, "      ExtTocEntry.setView:  %s\n", etoc.setView ? "yes" : "no" );
         fprintf( out, "      ExtTocEntry.setStyle: %s\n", etoc.setStyle ? "yes" : "no" );
-        fprintf( out, "      ExtTocEntry.unknown1: %1.1x\n", etoc.unknown1);
+        fprintf( out, "      ExtTocEntry.noSearch: %s\n", etoc.noSearch ? "yes" : "no" );
+        fprintf( out, "      ExtTocEntry.noPrint:  %s\n", etoc.noPrint ? "yes" : "no" );
         fprintf( out, "      ExtTocEntry.setCtrl:  %s\n", etoc.setCtrl ? "yes" : "no" );
-        fprintf( out, "      ExtTocEntry.unknown2: %1.1x\n", etoc.unknown2);
+        fprintf( out, "      ExtTocEntry.setTutor: %s\n", etoc.setTutor ? "yes" : "no" );
         fprintf( out, "      ExtTocEntry.clear:    %s\n", etoc.clear ? "clear" : "set" );
-        fprintf( out, "      ExtTocEntry.unknown3: %1.1x\n", etoc.unknown3);
+        fprintf( out, "      ExtTocEntry.unknown1: %1.1x\n", etoc.unknown1);
         fprintf( out, "      ExtTocEntry.setGroup: %s\n", etoc.setGroup ? "yes" : "no");
         fprintf( out, "      ExtTocEntry.isParent: %s\n", etoc.isParent ? "yes" : "no");
-        fprintf( out, "      ExtTocEntry.unknown4: %1.1x\n", etoc.unknown4);
+        fprintf( out, "      ExtTocEntry.unknown2: %1.1x\n", etoc.unknown2);
         if( etoc.setPos ) {
             PanelOrigin p;
             textSize -= sizeof( PanelOrigin );
@@ -125,7 +126,7 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
     fputc( '\n', out);
     fread( text, sizeof( char ), textSize, in );
     text[ textSize ] = '\0';
-    mbstowcs(wtext, text, sizeof( wtext ) / sizeof( wchar_t ) );
+    mbstowcs( wtext, text, WSTRING_MAX_LEN );
     fprintf( out, "    TocEntry.title:       %ls\n", wtext );
     fflush( out );
     //fseek(in, nextPos, SEEK_SET);

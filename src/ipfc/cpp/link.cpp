@@ -135,6 +135,10 @@ Lexer::Token Link::parse( Lexer* lexer )
 Lexer::Token Link::parseAttributes( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
+    bool xorg( false );
+    bool yorg( false );
+    bool dx( false );
+    bool dy( false );
     while( tok != Lexer::TAGEND ) {
         //parse attributes
         if( tok == Lexer::ATTRIBUTE ) {
@@ -162,10 +166,10 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
             else if( key == L"res" )
                 res = static_cast< std::uint16_t >( ::_wtol( value.c_str() ) );
             else if( key == L"refid" ) {
-                if( document->isInf() )
-                    refid = new GlobalDictionaryWord( value );
-                else
-                    refid = document->addWord( new GlobalDictionaryWord( value ) );
+                refid = new GlobalDictionaryWord( value );
+                refid->toUpper();           //to uppercase
+                if( !document->isInf() )
+                    refid = document->addWord( refid );
             }
             else if( key == L"database" ) {
                 database = value;
@@ -186,6 +190,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
             }
             else if( key == L"vpx" ) {
                 doOrigin = true;
+                xorg = true;
                 if( value == L"left" ) {
                     origin.xPosType = ExtTocEntry::DYNAMIC;
                     origin.xpos = ExtTocEntry::DYNAMIC_LEFT;
@@ -215,11 +220,12 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"vpy" ) {
                 doOrigin = true;
+                yorg = true;
                 if( value == L"top" ) {
                     origin.yPosType = ExtTocEntry::DYNAMIC;
                     origin.ypos = ExtTocEntry::DYNAMIC_TOP;
@@ -249,11 +255,12 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"vpcx" ) {
                 doSize = true;
+                dx = true;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
@@ -275,11 +282,12 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"vpcy" ) {
                 doSize = true;
+                dy = true;
                 if( value == L"left" ||
                     value == L"center" ||
                     value == L"right" ||
@@ -301,7 +309,7 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"x" ) {
@@ -369,8 +377,10 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
             if( lexer->text() == L"auto" ) {
                 if( type == FOOTNOTE )
                     document->printError( ERR3_FNNOAUTO );
-                else
+                else {
                     automatic = true;
+                    noElink = true;
+                }
             }
             else if( lexer->text() == L"viewport" )
                 viewport = true;
@@ -417,11 +427,16 @@ void Link::doTopic( Cell* cell )
     if( refid || res ) {                    //either refid or res is required
         if( database.empty() ) {            //jump to internal link
             try {
+                XRef xref( fileName, row );
                 std::uint16_t tocIndex;
-                if( refid )
+                if( refid ) {
                     tocIndex = document->tocIndexById( refid );
-                else
+                    document->addXRef( refid, xref );
+                }
+                else {
                     tocIndex = document->tocIndexByRes( res );
+                    document->addXRef( res, xref );
+                }
                 std::vector< std::uint8_t > esc;
                 esc.reserve( 7 + sizeof( PageOrigin ) + sizeof( PageSize ) + \
                     sizeof( PageStyle ) + sizeof( PageGroup ) );
@@ -500,6 +515,8 @@ void Link::doTopic( Cell* cell )
                 }
                 esc[ 1 ] = static_cast< std::uint8_t >( esc.size() - 1 );
                 cell->addEsc( esc );
+                if( cell->textFull() )
+                    printError( ERR1_LARGEPAGE );
             }
             catch( Class1Error& e ) {
                 printError( e.code );
@@ -541,6 +558,8 @@ void Link::doTopic( Cell* cell )
                 esc.push_back( static_cast< std::uint8_t >( tmp[ count1 ] ) );
             esc[ 1 ] = static_cast< std::uint8_t >( esc.size() - 1 );
             cell->addEsc( esc );
+            if( cell->textFull() )
+                printError( ERR1_LARGEPAGE );
         }
     }
     else
@@ -551,11 +570,16 @@ void Link::doFootnote( Cell* cell )
 {
     if( refid || res ) {                    //refid is required
         try {
+            XRef xref( fileName, row );
             size_t tocIndex;
-            if( refid )
+            if( refid ) {
                 tocIndex = document->tocIndexById( refid );
-            else
+                document->addXRef( refid, xref );
+            }
+            else {
                 tocIndex = document->tocIndexByRes( res );
+                document->addXRef( res, xref );
+            }
             std::vector< std::uint8_t > esc;
             esc.reserve( 5 );
             esc.push_back( 0xFF );          //ESC
@@ -582,6 +606,8 @@ void Link::doFootnote( Cell* cell )
             }
             esc[ 1 ] = static_cast< std::uint8_t >( esc.size() - 1 );
             cell->addEsc( esc );
+            if( cell->textFull() )
+                printError( ERR1_LARGEPAGE );
         }
         catch( Class1Error& e ) {
             printError( e.code );
@@ -619,19 +645,21 @@ void Link::doLaunch( Cell* cell )
             esc.push_back( static_cast< std::uint8_t >( cy >> 8 ) );
         }
         char buffer[ 256 ];
-        size_t bytes( std::wcstombs( buffer, object.c_str(), 256 ) );
+        size_t bytes( std::wcstombs( buffer, object.c_str(), sizeof( buffer ) ) );
         if( bytes == -1 )
             throw FatalError( ERR_T_CONV );
         for( size_t count1 = 0; count1 < bytes; ++count1 )
             esc.push_back( static_cast< std::uint8_t >( buffer[ count1 ] ) );
         esc.push_back( ' ' );
-        bytes = std::wcstombs( buffer, data.c_str(), 256 );
+        bytes = std::wcstombs( buffer, data.c_str(), sizeof( buffer ) );
         if( bytes == -1 )
             throw FatalError( ERR_T_CONV );
         for( size_t count1 = 0; count1 < bytes; ++count1 )
             esc.push_back( static_cast< std::uint8_t >( buffer[ count1 ] ) );
             esc[ 1 ] = static_cast< std::uint8_t >( esc.size() - 1 );
         cell->addEsc( esc );
+        if( cell->textFull() )
+            printError( ERR1_LARGEPAGE );
     }
     else
         printError( ERR2_VALUE );
@@ -667,6 +695,8 @@ void Link::doInform( Cell* cell )
         }
         esc[ 1 ] = static_cast< std::uint8_t >( esc.size() - 1 );
         cell->addEsc( esc );
+        if( cell->textFull() )
+            printError( ERR1_LARGEPAGE );
     }
     else
         printError( ERR2_VALUE );
@@ -677,4 +707,6 @@ void ELink::buildText( Cell* cell )
     cell->addByte( 0xFF );
     cell->addByte( 0x02 );
     cell->addByte( 0x08 );
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }

@@ -44,7 +44,7 @@ public:
     Cell( size_t m) : maxDictSize( m ) { };
     ~Cell() { };
     //add a word to the local dictionary
-    bool addWord( std::uint16_t word );
+    void addWord( std::uint16_t word );
     //add a word to the encoded text
     void addText( std::uint16_t word );
     //add a byte code to the encoded text
@@ -57,7 +57,9 @@ public:
     //is this cell empty?
     bool empty() const { return text.empty(); }
     //is the local dictionary full (time for a new cell)?
-    bool full() const { return localDictionary.size() == maxDictSize; };
+    bool dictFull() const { return localDictionary.size() == maxDictSize; };
+    //is the text block full?
+    bool textFull() const {return text.size() > 64000; };
     //add an element to this cell's list
     void addElement( Element* element ) { elements.push_back( element ); };
     //build the encoded text
@@ -356,7 +358,22 @@ Type    Meaning
             std::uint16_t res;
                 value of res attribute
 
-    };
+0x21:   :acviewport.
+        Arguments:
+            std::uint8_t    reserved, always 0
+            std::uint8_t    bytes of text
+            std::uint16_t   objectid
+            std::uint8_t    length of objectname + 1
+            char            length - 1 bytes of objectname
+            std::uint8_t    length of dll name + 1
+            char            length - 1 bytes of dll name
+            std::uint8_t    length of objectinfo + 1
+            char            length - 1 bytes of objectinfo
+        Optional (if position or size specified):
+            std::uint8_t    flag1 (bit1: origin, bit2: size) upper nibble always 0xC?
+            std::uint8_t    flag2 always 0
+            PanelOrigin     if flag1:bit1
+            PanelSize       if flag1:bit2
 */
 
 #endif //CELL_INCLUDED

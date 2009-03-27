@@ -286,17 +286,17 @@ static int tryOSTimeZone( const char *tz )
             if( tz_info.DaylightBias == 0 )
                 _RWD_daylight = 0;  // daylight savings not supported
 
-            rc = wcstombs( stzone, tz_info.StandardName, TZNAME_MAX );
-            if( rc == ( size_t ) - 1 )  // cannot convert string
-                stzone[0] = '\0';
+            rc = wcstombs( stzone, tz_info.StandardName, sizeof( stzone ) - 1 );
+            if( rc == (size_t)-1 )  // cannot convert string
+                stzone[ 0 ] = '\0';
             else  // ensure null-terminated
-                stzone[TZNAME_MAX] = '\0';
+                stzone[ rc ] = '\0';
 
-            rc = wcstombs( dtzone, tz_info.DaylightName, TZNAME_MAX );
-            if( rc == ( size_t ) - 1 )  // cannot convert string
-                dtzone[0] = '\0';
+            rc = wcstombs( dtzone, tz_info.DaylightName, sizeof( dtzone ) - 1 );
+            if( rc == (size_t)-1 )  // cannot convert string
+                dtzone[ 0 ] = '\0';
             else  // ensure null-terminated
-                dtzone[TZNAME_MAX] = '\0';
+                dtzone[ rc ] = '\0';
 		
 	    /*
 	    StandardDate for Eastern

@@ -8,6 +8,8 @@
 
 :include readonly.sp
 
+:include owrtlink.sp
+
 #define FNM_NOMATCH     1           /* Failed to match. */
 
 #define FNM_NOESCAPE    0x01        /* No backslash escaping. */
@@ -20,11 +22,11 @@
 #define FNM_IGNORECASE  0x08        /* Case insensitive matching. */
 #define FNM_LEADING_DIR 0x10        /* Ignore final path component. */
 #define FNM_CASEFOLD    FNM_IGNORECASE
-#endif
+:include extepi.sp
 
 :include cpluspro.sp
 
-extern  int fnmatch( const char *__pattern, const char *__string, int __flags );
+_WCRTLINK extern int    fnmatch( const char *__pattern, const char *__string, int __flags );
 
 :include cplusepi.sp
 

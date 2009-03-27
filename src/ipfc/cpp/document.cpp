@@ -176,6 +176,7 @@
 #include "ptrops.hpp"
 #include "synonym.hpp"
 #include "title.hpp"
+#include "util.hpp"
 
 extern Env Environment;
 
@@ -184,6 +185,7 @@ Document::Document( Compiler& c, const char* loc ) :
     lastPrintableItem( 0 ),
     maxHeaderLevel( 3 ),
     headerLevel( 1 ),
+    currentLeftMargin( 1 ),
     lastPrintableToken( Lexer::END ),
     inDoc( false ),
     spacing( true ),
@@ -199,7 +201,7 @@ Document::Document( Compiler& c, const char* loc ) :
     fonts.reset( new FontCollection( codePage() ) );
     FontEntry fnt;
     char buffer[ sizeof( fnt.faceName ) ];
-    size_t size( std::wcstombs( buffer, cgraphicFontFaceName().c_str(), sizeof( fnt.faceName ) - 1 ) );
+    size_t size( std::wcstombs( buffer, cgraphicFontFaceName().c_str(), sizeof( fnt.faceName ) ) );
     if( size == -1 )
         throw FatalError( ERR_T_CONV );
     std::strncpy( fnt.faceName, buffer, sizeof( fnt.faceName ) );
@@ -223,16 +225,38 @@ void Document::parse( Lexer* lexer )
 {
     Lexer::Token tok( getNextToken() );
     while( tok != Lexer::END && !inDoc ) {
-        //only comments are allowed before :userdoc tag
-        if( tok == Lexer::TAG && lexer->tagId() == Lexer::USERDOC )
+        //only comments and whitespace are allowed before :userdoc tag
+        if( tok == Lexer::TAG && lexer->tagId() == Lexer::USERDOC ) {
             inDoc = true;
-        else if( tok != Lexer::COMMAND && lexer->cmdId() != Lexer::COMMENT )
+            tok = getNextToken();
+            while( tok != Lexer::TAGEND ) {
+                if( tok == Lexer::ATTRIBUTE )
+                    printError( ERR1_ATTRNOTDEF );
+                else if( tok == Lexer::FLAG )
+                    printError( ERR1_ATTRNOTDEF );
+                else if( tok == Lexer::ERROR_TAG )
+                    throw FatalError( ERR_SYNTAX );
+                else if( tok == Lexer::END )
+                    throw FatalError( ERR_EOF );
+                else
+                    printError( ERR1_TAGSYNTAX );
+                tok = getNextToken();
+            }
+        }
+        else if( tok == Lexer::COMMAND ) {
+            if( lexer->cmdId() == Lexer::NAMEIT || lexer->cmdId() == Lexer::COMMENT ) {
+                tok = processCommand( lexer, 0 );
+                continue;
+            }
+            else
+                printError( ERR1_TAGCONTEXT );
+        }
+        else if( tok != Lexer::WHITESPACE )
             printError( ERR1_HEADTEXT );
         tok = getNextToken();
     }
     if( tok == Lexer::END )                 //:userdoc tag not found
         throw FatalError( ERR_DOCBODY );
-    tok = getNextToken();                   //consume TAGEND
     //process tokens until first :h1 or :fn tag
     while( tok != Lexer::END ) {
         //instructions for the document
@@ -271,7 +295,7 @@ void Document::parse( Lexer* lexer )
         }
         else {
             if( tok != Lexer::WHITESPACE )
-                printError( ERR1_TAGCONTEXT );
+                printError( ERR1_HEADTEXT );
             tok = getNextToken();
         }
     }
@@ -294,8 +318,22 @@ void Document::parse( Lexer* lexer )
             }
             else if( lexer->tagId() == Lexer::EUSERDOC ) {
                 inDoc = false;
-                tok = getNextToken(); //Lexer::TAGEND
-                tok = getNextToken(); //Lexer::WHITESPACE
+                tok = getNextToken();   //should be Lexer::TAGEND
+                while( tok != Lexer::TAGEND ) {
+                    if( tok == Lexer::ATTRIBUTE )
+                        printError( ERR1_ATTRNOTDEF );
+                    else if( tok == Lexer::FLAG )
+                        printError( ERR1_ATTRNOTDEF );
+                    else if( tok == Lexer::ERROR_TAG )
+                        throw FatalError( ERR_SYNTAX );
+                    else if( tok == Lexer::END )
+                        throw FatalError( ERR_EOF );
+                    else
+                        printError( ERR1_TAGSYNTAX );
+                    tok = getNextToken();
+                }
+                if( tok == Lexer::TAGEND )
+                    tok = getNextToken();   //should be Lexer::WHITESPACE
                 break;
             }
             else {
@@ -305,14 +343,15 @@ void Document::parse( Lexer* lexer )
         }
         else if( tok == Lexer::COMMAND ) {
             if( lexer->cmdId() == Lexer::COMMENT || lexer->cmdId() == Lexer::IMBED )
-                processCommand( lexer, NULL );
-            else
+                tok = processCommand( lexer, NULL );
+            else {
                 printError( ERR1_TAGCONTEXT );
-            tok = getNextToken();
+                tok = getNextToken();
+            }
         }
         else {
             if( tok != Lexer::WHITESPACE )
-                printError( ERR1_TAGCONTEXT );
+                printError( ERR1_HEADTEXT );
             tok = getNextToken();
         }
     }
@@ -399,6 +438,27 @@ void Document::write( std::FILE *out )
     hdr->write( out );   //rewrite the header to update the offsets
 }
 /***************************************************************************/
+void Document::summary( std::FILE* out )
+{
+    std::fprintf( out, "Number of pages:          %u\n", pages.size() );
+    std::fprintf( out, "Pages defined by name:    %u\n", nameMap.size() );
+    std::fprintf( out, "Pages defined by number:  %u\n", resMap.size() );
+    std::fprintf( out, "Words in dictionary:      %u\n", dict->size() );
+    std::fprintf( out, "Number of index entries:  %u\n", index.size() ); 
+    std::fprintf( out, "Global index entries:     %u\n", eHdr->gIndexCount );
+    std::fprintf( out, "Number of fonts used:     %u\n", fonts->size() );
+    std::fprintf( out, "Number of External files: %u\n", extfiles->size() );
+    std::fprintf( out, "\nIdentifier Cross-reference\n" );
+    for( ConstResMapIter itr( resMap.begin() ); itr != resMap.end(); ++itr ) {
+        std::fprintf( out, "%5u:", itr->first );
+        itr->second.write( out );
+    }
+    for( ConstNameMapIter itr( nameMap.begin() ); itr != nameMap.end(); ++itr ) {
+        std::fprintf( out, "%ls:\n      ", itr->first->getText().c_str() );
+        itr->second.write( out );
+    }
+}
+/***************************************************************************/
 void Document::addBitmap( std::wstring& bmn )
 {
     bitmapNames.insert( std::map< std::wstring, unsigned long int >::value_type( bmn, 0 ) );
@@ -412,20 +472,36 @@ std::uint32_t Document::bitmapByName( std::wstring& bmn )
     return itr->second;
 }
 /***************************************************************************/
-void Document::addRes( std::uint16_t key, std::uint16_t value )
+void Document::addRes( std::uint16_t key, TocRef& value )
 {
     if( resMap.find( key ) == resMap.end() )    //add it to the list
-        resMap.insert( std::map< std::uint16_t, std::uint16_t >::value_type( key, value ) );
+        resMap.insert( std::map< std::uint16_t, TocRef >::value_type( key, value ) );
     else
         throw Class3Error( ERR3_DUPRES );
 }
 /***************************************************************************/
-void Document::addNameOrId( GlobalDictionaryWord* key, std::uint16_t value )
+void Document::addNameOrId( GlobalDictionaryWord* key, TocRef& value )
 {
     if( nameMap.find( key ) == nameMap.end() )  //add it to the list
-        nameMap.insert( std::map< GlobalDictionaryWord*, std::uint16_t, ptrLess< GlobalDictionaryWord* > >::value_type( key, value ) );
+        nameMap.insert( std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::value_type( key, value ) );
     else
         throw Class3Error( ERR3_DUPID );
+}
+/***************************************************************************/
+void Document::addXRef( std::uint16_t res, XRef& xref )
+{
+    ResMapIter itr( resMap.find( res ) );
+    if( itr == resMap.end() )
+        throw Class1Error( ERR1_NORES );
+    itr->second.addXRef( xref );
+}
+/***************************************************************************/
+void Document::addXRef( GlobalDictionaryWord* id, XRef& xref )
+{
+    NameMapIter itr( nameMap.find( id ) );
+    if( itr == nameMap.end() )
+        throw Class1Error( ERR1_NOID );
+    itr->second.addXRef( xref );
 }
 /***************************************************************************/
 void Document::addPage( Page* page )
@@ -458,7 +534,7 @@ void Document::makeBitmaps()
         //get IPFCARTWORK from env
         std::string env( Environment.value( "IPFCARTWORK" ) );
         std::vector< std::string > paths;
-#ifndef __LINUX__
+#ifndef __UNIX__
         char separator( ';' );
         char slash( '\\' );
 #else
@@ -475,7 +551,6 @@ void Document::makeBitmaps()
         }
         try {
             char fbuffer[ PATH_MAX ];
-
             for( BitmapNameIter itr = bitmapNames.begin(); itr != bitmapNames.end(); ++itr ) {
                 if( std::wcstombs( fbuffer, itr->first.c_str(), sizeof( fbuffer ) ) == -1 )
                     throw FatalError( ERR_T_CONV );
@@ -495,6 +570,9 @@ void Document::makeBitmaps()
                     catch( FatalError& e ) {
                         if( count == paths.size() - 1 )
                             throw FatalIOError( e.code, itr->first );
+                    }
+                    catch( Class1Error& e ) {
+                        printError( e.code, itr->first );
                     }
                 }
             }
@@ -565,7 +643,8 @@ std::uint32_t Document::writeResMap( std::FILE* out )
                 throw FatalError( ERR_WRITE );
         }
         for( itr = resMap.begin(); itr != resMap.end(); ++itr ) {
-            if( std::fwrite( &itr->second, sizeof( std::uint16_t ), 1, out ) != 1 )
+            std::uint16_t idx( itr->second.index() );
+            if( std::fwrite( &idx, sizeof( std::uint16_t ), 1, out ) != 1 )
                 throw FatalError( ERR_WRITE );
         }
     }
@@ -584,7 +663,8 @@ std::uint32_t Document::writeNameMap( std::FILE* out )
                 throw FatalError( ERR_WRITE );
         }
         for( itr = nameMap.begin(); itr != nameMap.end(); ++itr ) {
-            if( std::fwrite( &itr->second, sizeof( std::uint16_t ), 1, out ) != 1 )
+            std::uint16_t idx( itr->second.index() );
+            if( std::fwrite( &idx, sizeof( std::uint16_t ), 1, out ) != 1 )
                 throw FatalError( ERR_WRITE );
         }
     }
@@ -718,7 +798,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
     else if( lexer->cmdId() == Lexer::IMBED ) {
         std::string env( Environment.value( "IPFCIMBED" ) );
         std::vector< std::wstring > paths;
-#ifndef __LINUX__
+#ifndef __UNIX__
         char separator( ';' );
         wchar_t slash( L'\\' );
 #else
@@ -726,16 +806,15 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         wchar_t slash( L'/' );
 #endif
         wchar_t fbuffer[ PATH_MAX ];
-
         std::string::size_type idx1( 0 );
         std::string::size_type idx2( env.find( separator, idx1 ) );
-        if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), sizeof( fbuffer ) ) == -1 )
+        if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), sizeof( fbuffer ) / sizeof( wchar_t ) ) == -1 )
             throw FatalError( ERR_T_CONV );
         paths.push_back( std::wstring( fbuffer ) );
         while( idx2 != std::string::npos ) {
             idx1 = idx2 + 1;
             idx2 = env.find( separator, idx1 );
-            if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), sizeof( fbuffer ) ) == -1 )
+            if( std::mbstowcs( fbuffer, env.substr( idx1, idx2 - idx1 ).c_str(), sizeof( fbuffer ) / sizeof( wchar_t ) ) == -1 )
                 throw FatalError( ERR_T_CONV );
             paths.push_back( std::wstring( fbuffer ) );
         }
@@ -762,6 +841,22 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             }
         }
     }
+    else if( lexer->cmdId() == Lexer::NAMEIT ) {
+        std::wstring::size_type idx1( lexer->text().find( L"symbol=" ) );
+        std::wstring::size_type idx2( lexer->text().find( L' ', idx1 ) );
+        std::wstring sym( lexer->text().substr( idx1 + 7, idx2 - idx1 - 7 ) );
+        killQuotes( sym );
+        sym.insert( sym.begin(), L'&' );
+        sym += L'.';
+        idx1 = lexer->text().find( L"text=" );
+        idx2 = lexer->text().find( L' ', idx1 );
+        std::wstring txt( lexer->text().substr( idx1 + 5, idx2 - idx1 - 5 ) );
+        killQuotes( txt );
+        if( !nls->isEntity( sym ) && nameIts.find( sym ) == nameIts.end() ) //add it to the list
+            nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, txt ) );
+        else
+            printError( ERR3_DUPSYMBOL );
+    }
     else
         printError( ERR1_CMDNOTDEF );
     return getNextToken();
@@ -773,7 +868,7 @@ std::uint16_t Document::tocIndexByRes( std::uint16_t res )
     ResMapIter itr( resMap.find( res ) );
     if( itr == resMap.end() )
         throw Class1Error( ERR1_NORES );
-    return itr->second;
+    return itr->second.index();
 }
 /***************************************************************************/
 //get a TOC index from the id or name to TOC index map
@@ -782,7 +877,7 @@ std::uint16_t Document::tocIndexById( GlobalDictionaryWord* id )
     NameMapIter itr( nameMap.find( id ) );
     if( itr == nameMap.end() )
         throw Class1Error( ERR1_NOID );
-    return itr->second;
+    return itr->second.index();
 }
 /***************************************************************************/
 void Document::addSynonym( std::wstring& key, Synonym* value )
@@ -816,4 +911,19 @@ I1* Document::indexById( const std::wstring& key )
         throw Class1Error( ERR1_NOID );
     return itr->second;
 }
-
+/***************************************************************************/
+const std::wstring* Document::nameit( const std::wstring& key )
+{
+    NameItIter itr( nameIts.find( key ) );
+    if( itr == nameIts.end() )
+        return 0;
+    return &(itr->second);
+}
+/***************************************************************************/
+std::wstring* Document::prepNameitName( const std::wstring& key )
+{
+    std::wstring* name( new std::wstring( L"Expansion of .nameit " ) );
+    name->append( key );
+    name = addFileName( name );
+    return name;
+}

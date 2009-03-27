@@ -5,9 +5,17 @@
  */
 #ifndef _SYS_TIME_H_INCLUDED
 #define _SYS_TIME_H_INCLUDED
-#include <time.h>
+
 :include readonly.sp
+
+:include owrtlink.sp
+
+#ifndef _TIME_H_INCLUDED
+ #include <time.h>
+#endif
+
 :include cpluspro.sp
+
 :include lnxkpack.sp
 
 /* I am not sure where this should go, so I am putting it here for now.
@@ -32,12 +40,12 @@ typedef struct {
 /* We don't use `memset' because this would require a prototype and
  * the array isn't too big.
  */
-# define FD_ZERO(set)                                                       \
-    do {                                                                                                        \
-        unsigned int __i;                                                                               \
-        fd_set *__arr = (set);                                                                  \
-        for (__i = 0; __i < sizeof (fd_set) / sizeof (fd_mask); ++__i)      \
-            __FDS_BITS (__arr)[__i] = 0;                                                        \
+#define FD_ZERO(set) \
+    do { \
+        unsigned int __i; \
+        fd_set *__arr = (set); \
+        for (__i = 0; __i < sizeof (fd_set) / sizeof (fd_mask); ++__i) \
+            __FDS_BITS (__arr)[__i] = 0; \
     } while (0)
 #define FD_SET(d, set)      (__FDS_BITS (set)[__FDELT (d)] |= __FDMASK (d))
 #define FD_CLR(d, set)      (__FDS_BITS (set)[__FDELT (d)] &= ~__FDMASK (d))
@@ -101,6 +109,7 @@ _WCRTLINK extern int setitimer( int __which, const struct itimerval *__value, st
 //_WCRTLINK extern int utimes( char *__path, struct timeval *tvp );
 
 :include poppack.sp
-:include cplusepi.sp
-#endif /* !_SYS_TIME_H_INCLUDED */
 
+:include cplusepi.sp
+
+#endif /* !_SYS_TIME_H_INCLUDED */

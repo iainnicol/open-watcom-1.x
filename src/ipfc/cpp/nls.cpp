@@ -30,7 +30,7 @@
 
 #include <cstdlib>
 #include <cstring>
-#ifdef __LINUX__
+#ifdef __UNIX__
     #include <clocale>
 #else
     #include <mbctype.h>
@@ -53,12 +53,12 @@ Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
 /*****************************************************************************/
 void Nls::setCodePage( int cp )
 {
-#ifndef __LINUX__
+#ifndef __UNIX__
     _setmbcp( cp ); //doesn't do much of anything in OW
 #endif
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-#ifndef __LINUX__
+#ifndef __UNIX__
         path += '\\';
 #else
         path += '/';
@@ -106,7 +106,7 @@ void Nls::setLocalization( const char *loc)
 {
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-#ifndef __LINUX__
+#ifndef __UNIX__
         path += '\\';
 #else
         path += '/';
@@ -118,7 +118,7 @@ void Nls::setLocalization( const char *loc)
         throw FatalError( ERR_LANG );
     readNLS( nls );
     std::fclose( nls );
-#ifdef __LINUX__
+#ifdef __UNIX__
     std::setlocale( LC_ALL, loc );  //this doesn't really do anything either
 #endif
     setCodePage( country.codePage );
@@ -170,6 +170,11 @@ void Nls::readNLS( std::FILE *nls )
             std::wstring text( value );
             killQuotes( text );
             warningText = text;
+        }
+        else if( std::wcscmp( buffer, L"Reference" ) == 0 ) {
+            std::wstring text( value );
+            killQuotes( text );
+            referenceText = text;
         }
         else if( std::wcscmp( buffer, L"olChars" ) == 0 ) {
             std::wstring text( value );
@@ -263,7 +268,7 @@ std::uint32_t Nls::write( std::FILE *out )
     }
     else {
         sbcsT.write( out );
-        bytes = sbcsT.size;
+        bytes += sbcsT.size;
         sbcsG.write( out );
         bytes += sbcsG.size;
     }

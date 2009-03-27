@@ -39,6 +39,7 @@
 #include "document.hpp"
 #include "lexer.hpp"
 #include "page.hpp"
+#include "tocref.hpp"
 #include "util.hpp"
 
 Lexer::Token Fn::parse( Lexer* lexer )
@@ -52,7 +53,7 @@ Lexer::Token Fn::parse( Lexer* lexer )
                 break;
             }
             else if( parseBlock( lexer, tok ) )
-                parseCleanup( tok );
+                parseCleanup( lexer, tok );
         }
     }
     return tok;
@@ -67,10 +68,10 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
             std::wstring value;
             splitAttribute( lexer->text(), key, value );
             if( key == L"id" ) {
-                if( document->isInf() )
-                    id = new GlobalDictionaryWord( value );
-                else
-                    id = document->addWord( new GlobalDictionaryWord( value ) );
+                id = new GlobalDictionaryWord( value );
+                id->toUpper();          //to uppercase
+                if( !document->isInf() )
+                    id = document->addWord( id );
             }
             else
                 document->printError( ERR1_ATTRNOTDEF );
@@ -93,7 +94,9 @@ Lexer::Token Fn::parseAttributes( Lexer* lexer )
 void Fn::buildTOC( Page* page )
 {
     page->setTOC( toc );
-    if( id )
-        document->addNameOrId( id, page->index() );
+    if( id ) {
+        TocRef tr( fileName, row, page->index() ); 
+        document->addNameOrId( id, tr );
+    }
 }
 

@@ -38,6 +38,7 @@
 #include "cell.hpp"
 #include "document.hpp"
 #include "figcap.hpp"
+#include "p.hpp"
 #include "page.hpp"
 #include "util.hpp"
 
@@ -55,7 +56,7 @@ Lexer::Token Fig::parse( Lexer* lexer )
                 tok = elt->parse( lexer );
             }
             else
-                parseCleanup( tok );
+                parseCleanup( lexer, tok );
         }
     }
     return tok;
@@ -67,6 +68,8 @@ void Fig::buildText( Cell* cell )
     cell->addByte( 0x03 );  //size
     cell->addByte( 0x1A );  //begin fig sequence
     cell->addByte( 0x01 );  //left align
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 /*****************************************************************************/
 void EFig::buildText( Cell* cell )
@@ -75,6 +78,8 @@ void EFig::buildText( Cell* cell )
     cell->addByte( 0x02 );  //size
     cell->addByte( 0x1B );  //end fig sequence
     cell->addByte( 0xFA );  //end paragraph
+    if( cell->textFull() )
+        printError( ERR1_LARGEPAGE );
 }
 
 

@@ -60,6 +60,7 @@
 #include "icmd.hpp"
 #include "isyn.hpp"
 #include "page.hpp"
+#include "tocref.hpp"
 #include "util.hpp"
 
 Hn::~Hn()
@@ -85,12 +86,17 @@ Lexer::Token Hn::parse( Lexer* lexer )
             tmp += lexer->text();
         }
         else if( tok == Lexer::ENTITY ) {
-            try {
-                wchar_t entity( document->entity( lexer->text() ) ); //lookup entity
-                tmp += entity;
-            }
-            catch( Class2Error& e ) {
-                document->printError( e.code );
+            const std::wstring* exp( document->nameit( lexer->text() ) );
+            if( exp )
+                tmp += *exp;
+            else {
+                try {
+                    wchar_t ch( document->entity( lexer->text() ) );
+                    tmp += ch;
+                }
+                catch( Class2Error& e ) {
+                    document->printError( e.code );
+                }
             }
         }
         else if( tok == Lexer::END )
@@ -268,7 +274,7 @@ Lexer::Token Hn::parse( Lexer* lexer )
             default:
                 if( parseBlock( lexer, tok ) ) {
                     if( parseListBlock( lexer, tok ) )
-                        parseCleanup( tok );
+                        parseCleanup( lexer, tok );
                 }
             }
         }
@@ -279,9 +285,12 @@ Lexer::Token Hn::parse( Lexer* lexer )
 Lexer::Token Hn::parseAttributes( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
+    bool xorg( false );
+    bool yorg( false );
+    bool dx( false );
+    bool dy( false );
     while( tok != Lexer::TAGEND ) {
         //parse attributes
-        // FIXME: Don't know what to do with nosearch, noprint, tutorial, ctrlarea
         if( tok == Lexer::ATTRIBUTE ) {
             std::wstring key;
             std::wstring value;
@@ -294,22 +303,24 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     document->printError( ERR1_HIDERES );
             }
             else if( key == L"id" ) {
-                if( document->isInf() ) {
-                    id = new GlobalDictionaryWord( value );
-                }
-                else
-                    id = document->addWord( new GlobalDictionaryWord( value ) );
+                id = new GlobalDictionaryWord( value );
+                id->toUpper();              //convert to upper case
+                if( !document->isInf() )
+                    id = document->addWord( id );
             }
             else if( key == L"name" ) {
-                if( document->isInf() ) {
-                    name = new GlobalDictionaryWord( value );
-                }
-                else
-                    name = document->addWord( new GlobalDictionaryWord( value ) );
+                name = new GlobalDictionaryWord( value );
+                name->toUpper();            //convert to upper case
+                if( !document->isInf() )
+                    name = document->addWord( name );
             }
-            else if( key == L"tutorial" )
+            else if( key == L"tutorial" ) {
+                toc.extended = 1;
+                etoc.setTutor = 1;
                 tutorial = value;
+            }
             else if( key == L"x" ) {
+                xorg = true;
                 toc.extended = 1;
                 if( value == L"left" ) {
                     origin.xPosType = ExtTocEntry::DYNAMIC;
@@ -340,10 +351,11 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dx && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"y" ) {
+                yorg = true;
                 toc.extended = 1;
                 if( value == L"top" ) {
                     origin.yPosType = ExtTocEntry::DYNAMIC;
@@ -374,10 +386,11 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( dy && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"width" ) {
+                dx = true;
                 toc.extended = 1;
                 if( value == L"left" ||
                     value == L"center" ||
@@ -400,10 +413,11 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
+                if( xorg && origin.xPosType == ExtTocEntry::DYNAMIC && size.widthType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"height" ) {
+                dy = true;
                 toc.extended = 1;
                 if( value == L"left" ||
                     value == L"center" ||
@@ -426,7 +440,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     else
                         document->printError( ERR2_VALUE );
                 }
-                if( origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
+                if( yorg && origin.yPosType == ExtTocEntry::DYNAMIC && size.heightType != ExtTocEntry::RELATIVE_PERCENT )
                     document->printError( ERR3_MIXEDUNITS );
             }
             else if( key == L"group" ) {
@@ -486,13 +500,16 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                     document->setHeaderCutOff( static_cast< unsigned int >( tmp ) );
             }
             else if( key == L"ctrlarea" ) {
-                toc.extended = 1;
-                //page|none
-                //FIXME: Don't know how to encode this
+                if( value == L"page" ) {
+                    toc.extended = 1;
+                    etoc.setCtrl = 1;
+                }
+                else
+                    etoc.setCtrl = 0;
             }
             else if( key == L"ctrlrefid" ) {
                 toc.extended = 1;
-                controls.word |= static_cast< std::uint16_t >( ::_wtol( value.c_str() ) );
+                controls.word |= document->getGroupById( value );
             }
             else
                 document->printError( ERR1_ATTRNOTDEF );
@@ -508,10 +525,14 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
                 toc.extended = 1;
                 etoc.clear = 1;
             }
-            else if( lexer->text() == L"nosearch" )
-                nosearch = true;
-            else if( lexer->text() == L"noprint" )
-                noprint = true;
+            else if( lexer->text() == L"nosearch" ) {
+                toc.extended = 1;
+                etoc.noSearch = 1;
+            }
+            else if( lexer->text() == L"noprint" ) {
+                toc.extended = 1;
+                etoc.noPrint = 1;
+            }
             else if( lexer->text() == L"hide" )
                 toc.hidden = 1;
             else
@@ -542,15 +563,18 @@ void Hn::buildTOC( Page* page )
         page->SetControls( controls );
         //FIXME: need the index of the parent?
         //page->setSearchable( !nosearch );
-        try {
-            document->addRes( res, page->index() );
-        }
-        catch ( Class3Error& e ) {
-            printError( e.code );
+        TocRef tr( fileName, row, page->index() );
+        if( res || !document->isInf() ) {
+            try {
+                document->addRes( res, tr );
+            }
+            catch ( Class3Error& e ) {
+                printError( e.code );
+            }
         }
         if( id ) {
             try {
-                document->addNameOrId( id, page->index() );
+                document->addNameOrId( id, tr );
             }
             catch( Class3Error& e ) {
                 printError( e.code );
@@ -558,7 +582,7 @@ void Hn::buildTOC( Page* page )
         }
         if( name ) {
             try {
-                document->addNameOrId( name, page->index() );
+                document->addNameOrId( name, tr );
             }
             catch( Class3Error& e ) {
                 printError( e.code );
@@ -582,6 +606,27 @@ void Hn::buildTOC( Page* page )
                 }
             }
         }
+    }
+}
+/***************************************************************************/
+void Hn::buildText( Cell* cell )
+{
+    if( etoc.setTutor ) {
+        char tmp[ 256 ];
+        size_t size( std::wcstombs( tmp, tutorial.c_str(), sizeof( tmp ) / sizeof( char ) ) );
+        if( size == -1 )
+            throw FatalError( ERR_T_CONV );
+        std::vector< std::uint8_t > esc;
+        esc.reserve( size + 3 );
+        esc.push_back( 0xFF );  //esc
+        esc.push_back( 0x02 );  //size
+        esc.push_back( 0x15 );  //begin hide
+        for( unsigned int count1 = 0; count1 < size; count1++ )
+            esc.push_back( static_cast< std::uint8_t >( tmp[ count1 ] ) );
+        esc[1] = static_cast< std::uint8_t >( esc.size() - 1 );
+        cell->addEsc( esc );
+        if( cell->textFull() )
+            printError( ERR1_LARGEPAGE );
     }
 }
 /***************************************************************************/

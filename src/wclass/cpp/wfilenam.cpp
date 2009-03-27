@@ -52,8 +52,6 @@ extern "C" {
 #endif
 };
 
-#define MAX_BUFFER 500
-
 typedef struct fullName {
     char        path[ _MAX_PATH + 1 ];
     char        drive[ _MAX_DRIVE + 1 ];
@@ -488,63 +486,42 @@ static bool isLongDirName( char* dirNames )
     return FALSE;
 }
 
-bool WEXPORT WFileName::needQuotes() const
+bool WEXPORT WFileName::needQuotes( char ch ) const
 {
     if( !isMask() ) {
         int len = size();
-        if( len > 0 ) {
-            if( (*this)[0] == '"' && (*this)[ len-1 ] == '"' ) {
-                return FALSE;
-            } else {
-                _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
-                if( isLongDirName( _x.dir ) ) {
-                    return TRUE;
-                } else {
-                    return isLongName( _x.fname );
-                }
+        if( len > 0 && ( (*this)[0] != ch || (*this)[ len-1 ] != ch ) ) {
+            _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
+            if( isLongDirName( _x.dir ) || isLongName( _x.fname ) ) {
+                return TRUE;
             }
         }
     }
     return FALSE;
 }
 
-void WEXPORT WFileName::removeQuotes()
+void WEXPORT WFileName::removeQuotes( char ch )
 {
     int len = size()-1;
-    if( (*this)[0] == '"' && (*this)[len] == '"' ) {
+    if( (*this)[0] == ch && (*this)[len] == ch ) {
+        deleteChar( len );
         deleteChar( 0 );
-        deleteChar( len-1 );
     }
 }
 
-void WEXPORT WFileName::addQuotes()
+void WEXPORT WFileName::addQuotes( char ch )
 {
     int len = size();
-    char* quotedName = new char[ MAX_BUFFER+1 ];
-    quotedName[0] = '\"';
+    char* quotedName = new char[ len + 3 ];
+    quotedName[0] = ch;
     for( int i=0; i<len; i++ ) {
         quotedName[ i+1 ] = (*this)[i];
     }
-    quotedName[ len+1 ] = '\"';
+    quotedName[ len+1 ] = ch;
     quotedName[ len+2 ] = '\0';
     (*this) = quotedName;
     delete [] quotedName;
 }
-
-void WEXPORT WFileName::addSQuotes()
-{
-    int len = size();
-    char* quotedName = new char[ MAX_BUFFER+1 ];
-    quotedName[0] = '\'';
-    for( int i=0; i<len; i++ ) {
-        quotedName[ i+1 ] = (*this)[i];
-    }
-    quotedName[ len+1 ] = '\'';
-    quotedName[ len+2 ] = '\0';
-    (*this) = quotedName;
-    delete [] quotedName;
-}
-
 
 bool WEXPORT WFileName::legal() const
 {
