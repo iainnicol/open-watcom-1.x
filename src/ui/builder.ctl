@@ -11,8 +11,8 @@ set BOOTSUBDIR=unix/
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
-[ BLOCK <1> rel2 cprel2 ]
-#========================
+[ BLOCK <1> rel cprel ]
+#======================
   [ IFDEF (os_qnx) <2*> ]
     <CPCMD> <PROJDIR>/qnx/tix/*.tix <RELROOT>/qnx/tix/
 

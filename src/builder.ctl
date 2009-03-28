@@ -62,6 +62,12 @@ cdsay .
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
 
+# User interface libs and some tools that use them
+[ INCLUDE <SRCDIR>/ui/builder.ctl ]
+[ INCLUDE <SRCDIR>/gui/builder.ctl ]
+[ INCLUDE <SRCDIR>/aui/builder.ctl ]
+[ INCLUDE <SRCDIR>/profiler/builder.ctl ]
+
 [ IFDEF <BLD_HOST> UNIX ]
 #========================
 # Build UNIX specific utilities using native tools.
