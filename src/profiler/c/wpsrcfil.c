@@ -78,10 +78,10 @@ extern char * WPSourceGetLine( a_window * wnd, int line )
                                         wp_src->src_buff_len );
     }
     if( buff_len < 0 ) {
-        wp_src->src_eof = B_TRUE;
+        wp_src->src_eof = P_TRUE;
         return( NULL );
     }
-    wp_src->src_eof = B_FALSE;
+    wp_src->src_eof = P_FALSE;
     wp_src->src_buff[buff_len] = NULLCHAR;
     return( wp_src->src_buff );
 }
