@@ -1275,7 +1275,7 @@ bool CnvAddr( address addr, char *buff, unsigned max )
     search_result   sr;
     int             name_len;
 
-    sym = __alloca( DIPHandleSize( HK_SYM ) );
+    sym = alloca( DIPHandleSize( HK_SYM ) );
 //    MapAddressToActual( exeImage, &addr.mach );
     sr = AddrSym( NO_MOD, addr, sym );
     switch( sr ) {

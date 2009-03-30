@@ -24,21 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  DIP module loader.
+* Description:  Debugger trap file module loader.
 *
 ****************************************************************************/
 
 
 #ifdef __WATCOMC__
 
-/* At this point OS X is sharing the DIP loader with 32-bit DOS. This is
- * not the final solution (should be real dylib).
+/* At this point UNIX is using trap files which are PE DLLs. This is
+ * not the final solution (should be real shared lib).
  */
-#include "../dsx/dipld.c"
+#include "../linux/trpld_pe.c"
 
 #else
 
-/* Use real shared libs when building with GCC */
-#include "../linux/dipld_so.c"
+/* Use real shared libs when building with native compiler. */
+#include "../linux/trpld_so.c"
 
 #endif

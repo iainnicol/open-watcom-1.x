@@ -24,21 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  MAD module loader.
+* Description:  DIP module loader.
 *
 ****************************************************************************/
 
 
 #ifdef __WATCOMC__
 
-/* At this point OS X is sharing the DIP loader with 32-bit DOS. This is
- * not the final solution (should be real dylib).
+/* At this point UNIX is sharing the DIP loader with 32-bit DOS. This is
+ * not the final solution (should be real shared lib).
  */
-#include "../dsx/madld.c"
+#include "../dsx/dipld.c"
 
 #else
 
-/* Use real shared libs when building with GCC */
-#include "../linux/madld_so.c"
+/* Use real shared libs when building with native compiler. */
+#include "../linux/dipld_so.c"
 
 #endif

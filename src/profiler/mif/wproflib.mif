@@ -53,6 +53,7 @@ extra_lib_qnx   = $(ui_dir)/qnx/qnx386/ui.lib
 extra_lib_linux = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
 extra_lib_bsd   = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
 extra_lib_osx   = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+extra_lib_sol   = $(ui_dir)/unix/$(%OBJDIR)/ui.lib $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
 !else
 extra_lib_linux = $(ui_dir)/unix/linux386/ui.lib $(ncurses_dir)/linux386/ncurses.lib
 !endif

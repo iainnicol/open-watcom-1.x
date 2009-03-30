@@ -64,7 +64,7 @@ notes:
 #define SAMP_MINOR_VER          2
 #define SAMP_LARGEST_BLOCK      (0xfe00)
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 typedef struct samp_address {
     uint_32             offset;
@@ -253,4 +253,4 @@ typedef struct samp_block {
 } samp_block;
 #define SIZE_BLOCK      (sizeof( samp_block ))
 
-#pragma pack( pop )
+#include "poppck.h"

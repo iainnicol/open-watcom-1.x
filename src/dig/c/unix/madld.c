@@ -24,9 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  Debugger trap file module loader.
+* Description:  MAD module loader.
 *
 ****************************************************************************/
 
 
-#include "../linux/trpld_so.c"
+#ifdef __WATCOMC__
+
+/* At this point UNIX is sharing the DIP loader with 32-bit DOS. This is
+ * not the final solution (should be real shared lib).
+ */
+#include "../dsx/madld.c"
+
+#else
+
+/* Use real shared libs when building with native compiler. */
+#include "../linux/madld_so.c"
+
+#endif

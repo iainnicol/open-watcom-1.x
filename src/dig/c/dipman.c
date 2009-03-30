@@ -606,7 +606,7 @@ walk_result WalkTypeList( mod_handle mh, TYPE_WALKER *tw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    type_handle         *th = __alloca( DIPHandleSize( HK_TYPE ) );
+    type_handle         *th = alloca( DIPHandleSize( HK_TYPE ) );
     walk_result         wr;
 
     wr = WR_CONTINUE;
@@ -644,7 +644,7 @@ static walk_result GblSymWalk( mod_handle mh, void *d )
 static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
 {
     image_handle        *ih;
-    sym_handle          *sh = __alloca( DIPHandleSize( HK_SYM ) );
+    sym_handle          *sh = alloca( DIPHandleSize( HK_SYM ) );
     image_idx           ii = 0;
     imp_mod_handle      im;
     mod_handle          mh;
@@ -730,7 +730,7 @@ walk_result WalkFileList( mod_handle mh, CUE_WALKER *cw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    cue_handle          *ch = __alloca( DIPHandleSize( HK_CUE ) );
+    cue_handle          *ch = alloca( DIPHandleSize( HK_CUE ) );
 
     ih = MH2IH( mh );
     if( ih == NULL ) return( WR_CONTINUE );

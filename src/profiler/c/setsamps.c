@@ -274,7 +274,7 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     if( SymLocation( sym, NULL, &ll ) != DS_OK ) {
         return( curr_mod->mod_file[0] );
     }
-    ch = __alloca( DIPHandleSize( HK_CUE ) );
+    ch = alloca( DIPHandleSize( HK_CUE ) );
     switch( AddrCue( curr_mod->mh, ll.e[0].u.addr, ch ) ) {
     case    SR_NONE:
     case    SR_FAIL:
@@ -536,7 +536,7 @@ STATIC void resolveImageSamples( void )
     int                 index;
     int                 index2;
 
-    sh = __alloca( DIPHandleSize( HK_SYM ) );
+    sh = alloca( DIPHandleSize( HK_SYM ) );
     massgd_data = CurrSIOData->massaged_sample;
     tick_index = 1;
     index = 0;

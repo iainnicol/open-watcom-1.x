@@ -280,7 +280,7 @@ STATIC void *sampleCreateWin( void )
 
 #define TITLE_LEN       255
 
-    title = __alloca( TITLE_LEN );
+    title = alloca( TITLE_LEN );
     if( title == NULL ) return( NULL );
     WndInitCreateStruct( &info );
     snprintf( title, TITLE_LEN, LIT( Sample_Data ), CurrSIOData->samp_file_name );
@@ -1042,13 +1042,13 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
     address             addr;
 
     index = 0;
-    ch = __alloca( DIPHandleSize( HK_CUE ) );
+    ch = alloca( DIPHandleSize( HK_CUE ) );
     curr_file = curr_sio->curr_file;
     mh = curr_sio->curr_mod->mh;
     if( LineCue( mh, curr_sio->curr_file->fid, row, 0, ch ) == SR_NONE ) {
         if( LineCue( mh, curr_sio->curr_file->fid, 0, 0, ch ) == SR_NONE ) return;
     }
-    sh = __alloca( DIPHandleSize( HK_SYM ) );
+    sh = alloca( DIPHandleSize( HK_SYM ) );
     addr = CueAddr( ch );
     if( AddrSym( mh, addr, sh ) == SR_NONE ) return;
     while( index < curr_file->rtn_count ) {
