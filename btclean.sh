@@ -3,9 +3,9 @@
 # Script to clean a bootstrap build of Open Watcom tools.
 
 if [ -f setvars ]; then
-    . setvars
+    source setvars
 else
-    . setvars.sh
+    source setvars.sh
 fi
 if [ ! -f $OWBINDIR/builder ]; then
     echo Cannot find builder - did you run boot.sh?
