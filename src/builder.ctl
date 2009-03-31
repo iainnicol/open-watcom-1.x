@@ -62,12 +62,6 @@ cdsay .
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
 
-# User interface libs and some tools that use them
-[ INCLUDE <SRCDIR>/ui/builder.ctl ]
-[ INCLUDE <SRCDIR>/gui/builder.ctl ]
-[ INCLUDE <SRCDIR>/aui/builder.ctl ]
-[ INCLUDE <SRCDIR>/profiler/builder.ctl ]
-
 [ IFDEF <BLD_HOST> UNIX ]
 #========================
 # Build UNIX specific utilities using native tools.
@@ -77,6 +71,10 @@ cdsay .
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/builder.ctl ]
 [ INCLUDE <SRCDIR>/hlpview/builder.ctl ]
+# Build gui/aui lib and the profiler
+[ INCLUDE <SRCDIR>/gui/builder.ctl ]
+[ INCLUDE <SRCDIR>/aui/builder.ctl ]
+[ INCLUDE <SRCDIR>/profiler/builder.ctl ]
 [ ENDIF ]
 
 [ BLOCK <1> build rel clean ]
