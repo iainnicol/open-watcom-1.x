@@ -1,4 +1,0 @@
-target_cpu  = axp
-target_objs = cpragaxp.obj pragaxp.obj
-
-!include ../../master.mif
