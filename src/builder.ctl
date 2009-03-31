@@ -130,6 +130,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/dump/builder.ctl ]
 [ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
 [ INCLUDE <SRCDIR>/cl/builder.ctl ]
+[ INCLUDE <SRCDIR>/strip/builder.ctl ]
 # User interface libs
 [ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
 [ INCLUDE <SRCDIR>/ui/builder.ctl ]
