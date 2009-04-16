@@ -27,6 +27,7 @@ objs_winnt_ppc    = $(ntp)
 objs_linux_386    = $(l32)
 objs_linux_ppc    = $(lpc)
 objs_linux_mps    = $(lmp)
+objs_rdos_386     = $(r32)
 
 !ifeq objsuffix files
 objfiles = $+ $(objs_$(system)_$(processor)) $-
