@@ -9,11 +9,11 @@
 		DOSSEG
 SEGMENT		BEGTEXT
 		ASSUME	cs:BEGTEXT,ds:DGROUP,es:DGROUP,ss:DGROUP
-		PUBLIC	___begtext
+		PUBLIC	WATCOM_C __begtext
 		PUBLIC	MemoryStart
-		PUBLIC	C cstart_
+		PUBLIC	WATCOM_C cstart_
 		ORG	3
-LABEL		___begtext		BYTE
+LABEL		__begtext		BYTE
 		DB	13 DUP (90h)			; Fill unused part of segment with NOPs
 		ORG	0
 LABEL		cstart_			BYTE
@@ -22,16 +22,16 @@ LABEL		MemoryStart		BYTE
 		jmp	Abort				; Display message and terminate application
 ENDS
 SEGMENT		_NULL
-		PUBLIC	__nullarea
-__nullarea	DB	01h,01h,01h,00h			; Needed by WATCOM debugger
+		PUBLIC	WATCOM_C _nullarea
+_nullarea	DB	01h,01h,01h,00h			; Needed by WATCOM debugger
 ENDS
 SEGMENT		_TEXT
 		ASSUME	cs:_TEXT,ds:DGROUP,es:DGROUP,ss:DGROUP
-		EXTRN	__CMain				: PROC
-		EXTRN	__InitRtns			: PROC
-		EXTRN	__FiniRtns			: PROC
-		PUBLIC	__exit_
-		PUBLIC	__do_exit_with_msg__
+		EXTRN	C _CMain			: PROC
+		EXTRN	C _InitRtns			: PROC
+		EXTRN	C _FiniRtns			: PROC
+		PUBLIC	WATCOM_C __exit
+		PUBLIC	WATCOM_C __do_exit_with_msg_
 		PUBLIC	InitializeEnvironment
 ;
 ; PROCEDURE	Start
@@ -80,21 +80,21 @@ PROC		Start
 		mov	[_osminor],al
 		call	InitializeEnvironment		; Copy environment and initialize pointer array
 		mov	eax,0ffh			; Run all initializers
-		call	__InitRtns			; Call initializer routines
+		call	_InitRtns			; Call initializer routines
 		xor	ebp,ebp				; EBP = 0 indicates end of EBP chain
-		call	__CMain				; Invoke main
-LABEL		__exit_			PROC
+		call	_CMain				; Invoke main
+LABEL		__exit			PROC
 		push	eax				; Save exit code
 		xor	eax,eax				; Run finalizers
 		mov	edx,0fh				; Less than exit
-		call	__FiniRtns			; Call finalizer routines
+		call	_FiniRtns			; Call finalizer routines
 LABEL		Exit			PROC
-		pop	eax				; EAX = exit code
+		pop	eax				; AL = exit code
 		mov	ah,DOS_EXIT_PROCESS		; Exit to DOS
 		int	DOS
 LABEL		Abort			PROC
 		mov	dl,4				; DL = error code
-LABEL		__do_exit_with_msg__	PROC
+LABEL		__do_exit_with_msg_	PROC
 		push	edx				; Save error code
 		push	eax				; Save pointer to message
 		mov	edx,OFFSET ConsoleName		; EDX points to DOS console device name
@@ -154,16 +154,16 @@ ENDP
 ENDS
 
 SEGMENT		_DATA
-		EXTRN	C _curbrk			: DWORD
-	        EXTRN	C _STACKLOW			: DWORD
-        	EXTRN	C _STACKTOP			: DWORD
-		EXTRN	C _LpCmdLine			: DWORD
-		EXTRN	C _LpPgmName			: DWORD
-		EXTRN	C _Envptr			: DWORD
-		EXTRN	C _osmajor			: BYTE
-        	EXTRN	C _osminor			: BYTE
-		PUBLIC	C environ
-		PUBLIC	C _init_387_emulator
+		EXTRN	WATCOM_C _curbrk		: DWORD
+	        EXTRN	WATCOM_C _STACKLOW		: DWORD
+        	EXTRN	WATCOM_C _STACKTOP		: DWORD
+		EXTRN	WATCOM_C _LpCmdLine		: DWORD
+		EXTRN	WATCOM_C _LpPgmName		: DWORD
+		EXTRN	WATCOM_C _Envptr		: DWORD
+		EXTRN	WATCOM_C _osmajor		: BYTE
+        	EXTRN	WATCOM_C _osminor		: BYTE
+		PUBLIC	WATCOM_C environ
+		PUBLIC	WATCOM_C _init_387_emulator
 environ		DD	0				; Holds first pointer in environment pointer array
 ConsoleName	DB	'CON'				; DOS console name
 LABEL		_init_387_emulator	BYTE
@@ -172,9 +172,9 @@ NullCodeMessage	DB	13,10,'Null code pointer called',0
 ENDS
 
 SEGMENT		_BSS
-		PUBLIC	C _Envsize
-		PUBLIC	C _Envlength
-		PUBLIC	C _PID
+		PUBLIC	WATCOM_C _Envsize
+		PUBLIC	WATCOM_C _Envlength
+		PUBLIC	WATCOM_C _PID
 LABEL		StartOfBSS		BYTE
 _Envsize	DD	?				; Environment size
 _Envlength	DD	?				; Environment length

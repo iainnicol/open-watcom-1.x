@@ -7,13 +7,13 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_creatnew_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_creatnew
 ;
 ; DECLARATION	unsigned _dos_creatnew( char * path, unsigned attribute,
 ;		                        int *handle );
 ;
-PROC		_dos_creatnew_		STDCALL
+PROC		_dos_creatnew		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = attribute
 		mov	edx,eax				; EDX points to path
@@ -27,7 +27,7 @@ ELSE
 		int	DOS
 ENDIF
 		pop	ecx				; Restore context
-		jc	__doserror_			; Success ?
+		jc	__doserror			; Success ?
 		mov	[ebx],eax			; Yes, save handle
 		xor	eax,eax				; Clear EAX
 		ret

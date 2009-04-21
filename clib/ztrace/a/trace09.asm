@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosTraceSetCpuContext_
+		PUBLIC	DosTraceSetCpuContext
 ;
 ; DECLARATION	int DosTraceSetCpuContext( TCPU *context );
 ;
-PROC		DosTraceSetCpuContext_	STDCALL
+PROC		DosTraceSetCpuContext	WATCOM_C
 		push	esi				; Save context
 		mov	esi,eax				; ESI points to context buffer
 		mov	ah,TRACE_SET_CPU_CONTEXT	; Set CPU context

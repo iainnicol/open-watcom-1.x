@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosDeleteFile_
+		PUBLIC	DosDeleteFile
 ;
 ; DECLARATION	int DosDeleteFile( char *path );
 ;
-PROC		DosDeleteFile_		STDCALL
+PROC		DosDeleteFile		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to path
 		mov	ah,DOS_DELETE_FILE		; AH = DOS function number

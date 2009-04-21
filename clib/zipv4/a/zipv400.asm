@@ -9,12 +9,12 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSocketOpen_
+		PUBLIC	DosSocketOpen
 ;
 ; DECLARATION	int DosSocketOpen( int sockettype, int protocol,
 ;                                  unsigned *handle );
 ;
-PROC		DosSocketOpen_		STDCALL
+PROC		DosSocketOpen		WATCOM_C
 		push	ebx				; Save context
 		mov	bl,dl				; BL = protocol
 		mov	ah,SOCKET_OPEN			; AH = function number

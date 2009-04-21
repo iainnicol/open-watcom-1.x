@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosError			: PROC
-		PUBLIC	BiosSetModemControl_
+		PUBLIC	BiosSetModemControl
 ;
 ; DECLARATION	int BiosSetModemControl( int control, int portnumber );
 ;
-PROC		BiosSetModemControl_	STDCALL
+PROC		BiosSetModemControl	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = control value
 		;

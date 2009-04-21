@@ -12,13 +12,15 @@ Handler		DD	?				; Pointer to receive handler
 ENDS
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvOpenSession_
+		PUBLIC	DosPktDrvOpenSession
 ;
 ; DECLARATION	int DosPktDrvOpenSession( int InterfaceClass, unsigned ReceiveParameter, int InterfaceNumber,
 ;                                         int InterfaceTypeLength, char *InterfaceType, PKTDRV_RECEIVE_CALLBACK );
 ;
-PROC		DosPktDrvOpenSession_	STDCALL
-		ARG	InterfaceType : DWORD, Receiver : DWORD
+PROC		DosPktDrvOpenSession	WATCOM_C
+		ARG	InterfaceClass : DWORD, ReceiveParameter : DWORD, \
+			InterfaceNumber : DWORD, InterfaceTypeLength : DWORD, \
+			InterfaceType : DWORD, Receiver : DWORD
 		USES	edi, esi
 		mov	edi,[Receiver]			; EDI points to receive handler
 		push	edx				; Save context

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetCursorType_
+		PUBLIC	BiosSetCursorType
 ;
 ; DECLARATION	int BiosSetCursorType( int startingline, int endingline );
 ;
-PROC		BiosSetCursorType_	STDCALL
+PROC		BiosSetCursorType	WATCOM_C
 		push	ecx				; Save context
 IFDEF _ZDOSDRV__
 		push	ebx				; Save EBX
@@ -35,6 +35,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

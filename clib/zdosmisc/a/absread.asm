@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosAbsoluteDiskRead_
+		PUBLIC	DosAbsoluteDiskRead
 ;
 ; DECLARATION	int DosAbsoluteDiskRead( int drive, unsigned sector,
 ;		                         void *buffer, int count );
 ;
-PROC		DosAbsoluteDiskRead_	STDCALL
+PROC		DosAbsoluteDiskRead	WATCOM_C
 		;
 		; Read sectors from disk
 		;

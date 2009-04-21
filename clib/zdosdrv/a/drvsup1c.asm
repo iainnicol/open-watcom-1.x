@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosShareIrq_
+		PUBLIC	DosShareIrq
 ;
 ; DECLARATION	int DosShareIrq( int irq, void ( *handler )(),
 ;                                void ( **OldHandler )() );
 ;
-PROC		DosShareIrq_		STDCALL
+PROC		DosShareIrq		WATCOM_C
 		call	[DWORD ShareIrq]		; Install shared IRQ handler
 		jmp	DosReturnZero			; Process return code
 ENDP

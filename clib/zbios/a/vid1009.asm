@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosGetColors_
+		PUBLIC	BiosGetColors
 ;
 ; DECLARATION	int BiosGetColors( unsigned char *colorlist );
 ;
-PROC		BiosGetColors_		STDCALL
+PROC		BiosGetColors		WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	edx,eax				; EDX points to list of colors
@@ -32,6 +32,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

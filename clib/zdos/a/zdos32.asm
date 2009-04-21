@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosGetDriveInfo_
+		PUBLIC	DosGetDriveInfo
 ;
 ; DECLARATION	int DosGetDriveInfo( int drive, DRVINFO *info );
 ;
-PROC		DosGetDriveInfo_	STDCALL
+PROC		DosGetDriveInfo		WATCOM_C
 		push	edi				; Save context
 		mov	edi,edx				; EDI points to DRVINFO buffer
 		mov	dl,al				; DL = logical drive number

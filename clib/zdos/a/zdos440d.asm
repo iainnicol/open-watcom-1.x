@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlGenericBlockIO_
+		PUBLIC	DosIoctlGenericBlockIO
 ;
 ; DECLARATION	int DosIoctlGenericBlockIO( int category, void *buffer,
 ;		                            int drive, int function );
 ;
-PROC		DosIoctlGenericBlockIO_	STDCALL
+PROC		DosIoctlGenericBlockIO	WATCOM_C
 		mov	ch,al				; CH = category
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number
 			    IOCTL_GENERIC_BLOCK_IO	; AL = subfunction number

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosInitializePrinter_
+		PUBLIC	BiosInitializePrinter
 ;
 ; DECLARATION	int BiosInitializePrinter( int printerport );
 ;
-PROC		BiosInitializePrinter_	STDCALL
+PROC		BiosInitializePrinter	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = printer port number
 		mov	ah,PRINTER_INITIALIZE		; AH = function number

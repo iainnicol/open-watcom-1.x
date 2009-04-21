@@ -8,14 +8,15 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosExtendedCountryInfo_
+		PUBLIC	DosExtendedCountryInfo
 ;
 ; DECLARATION	int DosExtendedCountryInfo( int subfunction, int country,
 ;		                            int codepage, int length,
 ;		                            void *buffer );
 ;
-PROC		DosExtendedCountryInfo_	STDCALL
-		ARG	Buffer : DWORD
+PROC		DosExtendedCountryInfo	WATCOM_C
+		ARG	SubFunction : DWORD, Country : DWORD, CodePage : DWORD, \
+			BufferLength : DWORD, Buffer : DWORD
 		USES	edi
 		mov	edi,[Buffer]			; EDI points to buffer
 		mov	ah,DOS_EXTENDED_COUNTRY_INFO	; AH = DOS function

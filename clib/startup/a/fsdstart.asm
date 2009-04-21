@@ -23,21 +23,21 @@ ENDS
 SEGMENT		_TEXT
 		ASSUME	cs:_TEXT,ds:DGROUP,es:DGROUP,ss:DGROUP
 		EXTRN	InitializeDriver		: PROC
-		EXTRN	DriverCreateDirectory_		: PROC
-		EXTRN	DriverDeleteDirectory_		: PROC
-		EXTRN	DriverCreateFile_		: PROC
-		EXTRN	DriverOpenFile_			: PROC
-		EXTRN	DriverCloseFile_		: PROC
-		EXTRN	DriverReadFile_			: PROC
-		EXTRN	DriverWriteFile_		: PROC
-		EXTRN	DriverDeleteFile_		: PROC
-		EXTRN	DriverGetFileAttributes_	: PROC
-		EXTRN	DriverSetFileAttributes_	: PROC
-		EXTRN	DriverFindFirstFile_		: PROC
-		EXTRN	DriverFindNextFile_		: PROC
-		EXTRN	DriverRenameFile_		: PROC
-		EXTRN	DriverGetFreeSpace_		: PROC
-		PUBLIC	C cstart_
+		EXTRN	WATCOM_C DriverCreateDirectory	: PROC
+		EXTRN	WATCOM_C DriverDeleteDirectory	: PROC
+		EXTRN	WATCOM_C DriverCreateFile	: PROC
+		EXTRN	WATCOM_C DriverOpenFile		: PROC
+		EXTRN	WATCOM_C DriverCloseFile	: PROC
+		EXTRN	WATCOM_C DriverReadFile		: PROC
+		EXTRN	WATCOM_C DriverWriteFile	: PROC
+		EXTRN	WATCOM_C DriverDeleteFile	: PROC
+		EXTRN	WATCOM_C DriverGetFileAttributes: PROC
+		EXTRN	WATCOM_C DriverSetFileAttributes: PROC
+		EXTRN	WATCOM_C DriverFindFirstFile	: PROC
+		EXTRN	WATCOM_C DriverFindNextFile	: PROC
+		EXTRN	WATCOM_C DriverRenameFile	: PROC
+		EXTRN	WATCOM_C DriverGetFreeSpace	: PROC
+		PUBLIC	WATCOM_C cstart_
 LABEL		cstart_			BYTE
 Header		FSD	<0, FileSystemEntry, '_NONAME_'>
 ;
@@ -96,7 +96,7 @@ PROC		CreateDirectory
 		; DriverCreateDirectory( char *path, unsigned cluster,
 		;                        DPB *dpb, int nameoffset )
 		;
-		call	DriverCreateDirectory_
+		call	DriverCreateDirectory WATCOM_C,?,?,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -121,7 +121,7 @@ PROC		DeleteDirectory
 		; DriverDeleteDirectory( char *path, unsigned cluster,
 		;                        DPB *dpb, int nameoffset )
 		;
-		call	DriverDeleteDirectory_
+		call	DriverDeleteDirectory WATCOM_C,?,?,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -149,7 +149,7 @@ PROC		CreateFile
 		;                   DPB *dpb, int nameoffset,
 		;                   SFT *handle, char *path )
 		;
-		call	DriverCreateFile_ STDCALL,esi,edi
+		call	DriverCreateFile WATCOM_C,?,?,?,?,esi,edi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -176,7 +176,7 @@ PROC		OpenFile
 		; DriverOpenFile( int flags, unsigned cluster, DPB *dpb,
 		;                 int nameoffset, SFT *handle, char *path )
 		;
-		call	DriverOpenFile_ STDCALL,esi,edi
+		call	DriverOpenFile WATCOM_C,?,?,?,?,esi,edi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -199,7 +199,7 @@ PROC		CloseFile
 		;
 		; DriverCloseFile( DPB *dpb, SFT *handle )
 		;
-		call	DriverCloseFile_
+		call	DriverCloseFile WATCOM_C,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -225,7 +225,7 @@ PROC		ReadFile
 		; DriverReadFile( unsigned *bytes, void *buffer, DBP *dpb,
 		;                 unsigned count, SFT *handle )
 		;
-		call	DriverReadFile_ STDCALL,esi
+		call	DriverReadFile WATCOM_C,?,?,?,?,esi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -250,7 +250,7 @@ PROC		WriteFile
 		; DriverWriteFile( unsigned *bytes, void *buffer, DBP *dpb,
 		;                  unsigned count, SFT *handle )
 		;
-		call	DriverWriteFile_ STDCALL,esi
+		call	DriverWriteFile WATCOM_C,?,?,?,?,esi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -275,7 +275,7 @@ PROC		DeleteFile
 		; DriverDeleteFile( char *path, unsigned cluster,
 		;                   DPB *dpb, int nameoffset )
 		;
-		call	DriverDeleteFile_
+		call	DriverDeleteFile WATCOM_C,?,?,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -301,7 +301,7 @@ PROC		GetFileAttributes
 		;                          DPB *dpb, int nameoffset,
 		;                          char *path )
 		;
-		call	DriverGetFileAttributes_ STDCALL,edi
+		call	DriverGetFileAttributes WATCOM_C,?,?,?,?,edi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -329,7 +329,7 @@ PROC		SetFileAttributes
 		;                          DPB *dpb, int nameoffset,
 		;                          char *path )
 		;
-		call	DriverSetFileAttributes_ STDCALL,edi
+		call	DriverSetFileAttributes WATCOM_C,?,?,?,?,edi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -357,7 +357,7 @@ PROC		FindFirstFile
 		;                      DPB *dpb, int nameoffset,
 		;                      FIND *find, char *path )
 		;
-		call	DriverFindFirstFile_ STDCALL,esi,edi
+		call	DriverFindFirstFile WATCOM_C,?,?,?,?,esi,edi
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -380,7 +380,7 @@ PROC		FindNextFile
 		;
 		; DriverFindNextFile( DPB *dpb, FIND *find )
 		;
-		call	DriverFindNextFile_
+		call	DriverFindNextFile WATCOM_C,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -404,7 +404,7 @@ PROC		RenameFile
 		;
 		; DriverRenameFile( char *oldpath, char *newpath, DPB *dpb )
 		;
-		call	DriverRenameFile_
+		call	DriverRenameFile WATCOM_C,?,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear
@@ -426,7 +426,7 @@ PROC		GetFreeSpace
 		;
 		; DriverGetFreeSpace( DPB *dpb, unsigned *clusters )
 		;
-		call	DriverGetFreeSpace_
+		call	DriverGetFreeSpace WATCOM_C,?,?
 		or	eax,eax				; Success ?
 		jnz	FileSystemError			; No, exit with carry flag set and error code in EAX
 		jmp	FileSystemExit			; Yes, exit with carry flag clear

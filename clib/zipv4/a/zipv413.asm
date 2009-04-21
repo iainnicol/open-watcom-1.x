@@ -9,11 +9,11 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosLinkInformation_
+		PUBLIC	DosLinkInformation
 ;
 ; DECLARATION	int DosLinkInformation( int linkno, LINKINFO *linkinfo );
 ;
-PROC		DosLinkInformation_	STDCALL
+PROC		DosLinkInformation	WATCOM_C
 		mov	ah,LINK_INFORMATION		; AH = function number
 		;
 		; Get link information

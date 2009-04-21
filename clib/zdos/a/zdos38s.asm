@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetCountryInformation_
+		PUBLIC	DosSetCountryInformation
 ;
 ; DECLARATION	int DosSetCountryInformation( int code );
 ;
-PROC		DosSetCountryInformation_ STDCALL
+PROC		DosSetCountryInformation WATCOM_C
 		push	edx				; Save context
 		push	ebx
 		mov	edx,-1				; EDX = -1

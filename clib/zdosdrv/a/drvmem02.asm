@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreeHeapBlock_
+		PUBLIC	DosFreeHeapBlock
 ;
 ; DECLARATION	int DosFreeHeapBlock( void *block );
 ;
-PROC		DosFreeHeapBlock_	STDCALL
+PROC		DosFreeHeapBlock	WATCOM_C
 		call	[DWORD FreeBlock]		; Free heap block
 		jmp	DosReturnZero			; Process return code
 ENDP

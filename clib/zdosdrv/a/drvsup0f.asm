@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosHookPageFaultTrap_
+		PUBLIC	DosHookPageFaultTrap
 ;
 ; DECLARATION	void ( *DosHookPageFaultTrap( ( void *handler )() ) )();
 ;
-PROC		DosHookPageFaultTrap_	STDCALL
+PROC		DosHookPageFaultTrap	WATCOM_C
 		jmp	[DWORD TrapPageFault]		; Install new handler and return pointer to previous handler
 ENDP
 		END

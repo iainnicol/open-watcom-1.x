@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosEnableMouse_
+		PUBLIC	BiosEnableMouse
 ;
 ; DECLARATION	int BiosEnableMouse( void );
 ;
-PROC		BiosEnableMouse_	STDCALL
+PROC		BiosEnableMouse		WATCOM_C
 		push	ebx				; Save context
 		mov	bh,1				; BH = enable flag
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number

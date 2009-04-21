@@ -6,12 +6,12 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosStartDmaTransfer_
+		PUBLIC	DosStartDmaTransfer
 ;
 ; DECLARATION	int DosStartDmaTransfer( int channel, int type, int mode,
 ;		                         int count, void *buffer );
 ;
-PROC		DosStartDmaTransfer_	STDCALL
+PROC		DosStartDmaTransfer	WATCOM_C
 		ARG	Buffer : DWORD
 		USES	esi
 		mov	dh,bl				; DH = transfer mode

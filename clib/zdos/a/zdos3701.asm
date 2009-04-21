@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSetSwitchCharacter_
+		PUBLIC	DosSetSwitchCharacter
 ;
 ; DECLARATION	int DosSetSwitchCharacter( int character );
 ;
-PROC		DosSetSwitchCharacter_	STDCALL
+PROC		DosSetSwitchCharacter	WATCOM_C
 		USES	edx
 		mov	dl,al				; DL = new switch character
 		;

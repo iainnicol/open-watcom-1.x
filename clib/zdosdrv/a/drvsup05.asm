@@ -6,12 +6,12 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSetKernelVector_
+		PUBLIC	DosSetKernelVector
 ;
 ; DECLARATION	void DosSetKernelVector( int intnum,
 ;		                         void (__cdecl *h)(struct context_t) );
 ;
-PROC		DosSetKernelVector_	STDCALL
+PROC		DosSetKernelVector	WATCOM_C
 		USES	ecx,ebx
 		mov	ebx,edx				; EBX points to ISR
 		xor	edx,edx				; Clear EDX

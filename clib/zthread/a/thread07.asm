@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosDelayTime_
+		PUBLIC	DosDelayTime
 ;
 ; DECLARATION	int DosDelayTime( int hours, int seconds,
 ;		                  int minutes, int hundredths );
 ;
-PROC		DosDelayTime_		STDCALL
+PROC		DosDelayTime		WATCOM_C
 		mov	bh,al				; BH = hours
 		mov	ch,dl				; CH = seconds
 		;

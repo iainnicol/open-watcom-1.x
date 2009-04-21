@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_DosConsolePrint
+		PUBLIC	DosConsolePrint
 ;
-; DECLARATION	void __cdecl DosConsolePrint( const char *message, ... );
+; DECLARATION	void DosConsolePrint( const char *message, ... );
 ;
-PROC		_DosConsolePrint
+PROC		DosConsolePrint		WATCOM_C
 		jmp	[DWORD ConsolePrint]		; Display message
 ENDP
 		END

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosCloseDmaChannel_
+		PUBLIC	DosCloseDmaChannel
 ;
 ; DECLARATION	int DosCloseDmaChannel( int channel );
 ;
-PROC		DosCloseDmaChannel_	STDCALL
+PROC		DosCloseDmaChannel	WATCOM_C
 		call	[DWORD DmaCloseChannel]		; Close DMA channel
 		jmp	DosReturnZero			; Process return code
 ENDP

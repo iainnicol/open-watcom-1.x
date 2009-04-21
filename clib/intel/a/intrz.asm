@@ -23,11 +23,11 @@ FLAGS		DD	?
 ENDS
 		CODESEG
 		EXTRN	C _do_interrupt			: PROC
-		PUBLIC	intr_
+		PUBLIC	intr
 ;
 ; DECLARATION	void intr( int n, union REGPACK *r );
 ;
-PROC		intr_			STDCALL
+PROC		intr			WATCOM_C
 		USES	edi,esi,ecx,ebx,ebp
 		xor	ecx,ecx				; Clear ECX
 		push	edx				; Save pointer to registers

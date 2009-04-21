@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosConsoleDisplayString_
+		PUBLIC	DosConsoleDisplayString
 ;
 ; DECLARATION	int DosConsoleDisplayString( char *dos_message );
 ;
-PROC		DosConsoleDisplayString_ STDCALL
+PROC		DosConsoleDisplayString WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to string
 		mov	ah,DOS_CONSOLE_DISPLAY_STRING	; AH = DOS function

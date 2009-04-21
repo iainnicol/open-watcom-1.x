@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosCopyWords_
+		PUBLIC	DosCopyWords
 ;
 ; DECLARATION	int DosCopyWords( void *dst, void *src, size_t length );
 ;
-PROC		DosCopyWords_		STDCALL
+PROC		DosCopyWords		WATCOM_C
 		xor	eax,eax				; Clear EAX
 		shr	ecx,2				; ECX = number of dwords to copy
 		call	[DWORD CopyWords]		; Copy words

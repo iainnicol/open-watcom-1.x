@@ -8,11 +8,11 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferSetPalette_
+		PUBLIC	DosFrameBufferSetPalette
 ;
 ; DECLARATION	int DosFrameBufferSetPalette( int index, int blue, int red, int green );
 ;
-PROC		DosFrameBufferSetPalette_	STDCALL
+PROC		DosFrameBufferSetPalette	WATCOM_C
 		;
 		; Set palette register
 		;

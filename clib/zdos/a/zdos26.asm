@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosEnvironmentLength_
+		PUBLIC	DosEnvironmentLength
 ;
 ; DECLARATION	int DosEnvironmentLength( void );
 ;
-PROC		DosEnvironmentLength_	STDCALL
+PROC		DosEnvironmentLength	WATCOM_C
 		mov	ah,DOS_ENVIRONMENT_LENGTH	; AH = DOS function
 		;
 		; Call DOS services

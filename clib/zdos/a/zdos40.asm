@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWriteFile_
+		PUBLIC	DosWriteFile
 ;
 ; DECLARATION	int DosWriteFile( int bytes, void *buffer, int handle );
 ;
-PROC		DosWriteFile_		STDCALL
+PROC		DosWriteFile		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of bytes to write
 		mov	ah,DOS_WRITE_FILE		; AH = DOS function number

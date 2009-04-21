@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosIoctlWriteBlockDevice_
+		PUBLIC	DosIoctlWriteBlockDevice
 ;
 ; DECLARATION	int DosIoctlWriteBlockDevice( int bytes, void *buffer,
 ;		                              int drive );
 ;
-PROC		DosIoctlWriteBlockDevice_ STDCALL
+PROC		DosIoctlWriteBlockDevice WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of bytes to read
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number

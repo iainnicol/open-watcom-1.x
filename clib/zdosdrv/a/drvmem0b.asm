@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosCopyBytes_
+		PUBLIC	DosCopyBytes
 ;
 ; DECLARATION	int DosCopyBytes( void *dst, void *src, size_t length );
 ;
-PROC		DosCopyBytes_		STDCALL
+PROC		DosCopyBytes		WATCOM_C
 		xor	eax,eax				; Clear EAX
 		call	[DWORD CopyBytes]		; Copy bytes
 		sbb	eax,0				; EAX = return value (-1 on error, 0 on success)

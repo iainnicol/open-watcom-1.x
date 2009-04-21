@@ -17,11 +17,12 @@ Sectors		DD	?				; Number of sectors to transfer
 Buffer		DD	?				; Pointer to buffer
 ENDS
 		CODESEG
+		PUBLIC	_biosdisk
 ;
 ; DECLARATION	unsigned _bios_disk( unsigned service,
 ;		                     struct diskinfo_t * diskinfo );
 ;
-PROC		_bios_disk_		STDCALL
+PROC		_bios_disk		WATCOM_C
 		USES	ebx,ecx,edx,esi
 		mov	ah,al				; AH = BIOS function
 		cmp	ah,2				; Reset or status function ?

@@ -10,7 +10,7 @@
 ;
 ; DECLARATION	void BiosBootStrap( void );
 ;
-PROC		BiosBootStrap_		STDCALL
+PROC		BiosBootStrap_
 		;
 		; Call BIOS
 		;

@@ -12,7 +12,7 @@
 ;
 ; DECLARATION	void DosCommand( char *commandline );
 ;
-PROC		DosCommand_		STDCALL
+PROC		DosCommand_
 		push	esi				; Save context
 		mov	esi,eax				; ESI points to command line
 		;

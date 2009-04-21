@@ -9,11 +9,11 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDeviceParameters_
+		PUBLIC	BiosDeviceParameters
 ;
 ; DECLARATION	int BiosDeviceParameters( EDPT *buffer, int drive );
 ;
-PROC		BiosDeviceParameters_	STDCALL
+PROC		BiosDeviceParameters	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to buffer
 		xor	eax,eax				; Clear EAX

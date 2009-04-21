@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosDiskParameters_
+		PUBLIC	BiosDiskParameters
 ;
 ; DECLARATION	int BiosDiskParameters( DISK *disk, int drive );
 ;
-PROC		BiosDiskParameters_	STDCALL
+PROC		BiosDiskParameters	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx

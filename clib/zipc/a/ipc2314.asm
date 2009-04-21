@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosOpenGlobalPipe_
+		PUBLIC	DosOpenGlobalPipe
 ;
 ; DECLARATION	int DosOpenGlobalPipe( char *name );
 ;
-PROC		DosOpenGlobalPipe_	STDCALL
+PROC		DosOpenGlobalPipe	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to pipes name
 		mov	ah,IPC_OPEN_PIPE		; Open pipe

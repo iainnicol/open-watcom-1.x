@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	sleep_
+		PUBLIC	sleep
 ;
 ; DECLARATION	void sleep( unsigned seconds );
 ;
-PROC		sleep_			STDCALL
+PROC		sleep			WATCOM_C
 		shl	eax,10				; Convert seconds to periodic ticks
 IFDEF __ZDOSDRV__
 		call	[DWORD ThreadSleep]		; Sleep

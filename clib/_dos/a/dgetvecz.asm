@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_dos_getvect_
+		PUBLIC	_dos_getvect
 ;
 ; DECLARATION	void ( __cdecl *_dos_getvect( int i ) ) ( struct context_t );
 ;
-PROC		_dos_getvect_		STDCALL
+PROC		_dos_getvect		WATCOM_C
 		USES	ebx
 		mov	ah,DOS_GET_VECTOR		; AH = DOS function
 		;

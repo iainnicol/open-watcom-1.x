@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvWaitPacket_
+		PUBLIC	DosPktDrvWaitPacket
 ;
 ; DECLARATION	int DosPktDrvWaitPacket( int Handle, void *Buffer );
 ;
-PROC		DosPktDrvWaitPacket_	STDCALL
+PROC		DosPktDrvWaitPacket	WATCOM_C
 		push	ebx				; Save context
 		lea	ebx,[eax + eax]			; EBX = handle
 		mov	ah,PKTDRV_WAIT_PACKET		; Wait for a packet

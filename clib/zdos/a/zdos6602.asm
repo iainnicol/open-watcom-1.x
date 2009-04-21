@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetActiveCodePage_
+		PUBLIC	DosSetActiveCodePage
 ;
 ; DECLARATION	int DosSetActiveCodePage( int codepage );
 ;
-PROC		DosSetActiveCodePage_	STDCALL
+PROC		DosSetActiveCodePage	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = new active code page
 		;

@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosAllocateUserTrap_
+		PUBLIC	DosAllocateUserTrap
 ;
 ; DECLARATION	int DosAllocateUserTrap( void ( *handler )( EXCEPTION * ),
 ;                                        unsigned *callback );
 ;
-PROC		DosAllocateUserTrap_	STDCALL
+PROC		DosAllocateUserTrap	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to service routine
 		call	[DWORD AllocUserTrap]		; Allocate callback trap

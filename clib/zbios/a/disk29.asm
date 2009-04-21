@@ -9,11 +9,11 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosResetAtapiDevice_
+		PUBLIC	BiosResetAtapiDevice
 ;
 ; DECLARATION	int BiosResetAtapiDevice( int device );
 ;
-PROC		BiosResetAtapiDevice_	STDCALL
+PROC		BiosResetAtapiDevice	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = device
 		mov	ah,DISK_DEVICE_RESET		; AH = disk function

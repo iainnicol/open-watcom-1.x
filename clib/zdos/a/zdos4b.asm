@@ -7,13 +7,14 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosExecuteProcess_
+		PUBLIC	DosExecuteProcess
 ;
 ; DECLARATION	int DosExecuteProcess( int priority, char *path, void *env,
 ;		                       int flags, int trace, char *cmdline );
 ;
-PROC		DosExecuteProcess_	STDCALL
-		ARG	Trace : DWORD, CommandLine : DWORD
+PROC		DosExecuteProcess	WATCOM_C
+		ARG	Priority : DWORD, Path : DWORD, Environment : DWORD, \
+			Flags : DWORD, Trace : DWORD, CommandLine : DWORD
 		USES	esi
 		mov	ch,[BYTE Trace]			; CH = trace flag
 		mov	esi,[CommandLine]		; ESI points to command line

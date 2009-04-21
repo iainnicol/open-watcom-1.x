@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosElapsedPeriodicTicks_
+		PUBLIC	DosElapsedPeriodicTicks
 ;
 ; DECLARATION	unsigned DosElapsedPeriodicTicks( unsigned referencetime );
 ;
-PROC		DosElapsedPeriodicTicks_ STDCALL
+PROC		DosElapsedPeriodicTicks WATCOM_C
 		USES	edx
 		mov	edx,eax				; EDX = reference time
 		mov	ah,DOS_ELAPSED_PERIODIC_TICKS	; AH = DOS function

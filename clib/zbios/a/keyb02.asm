@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosKeyboardFlags_
+		PUBLIC	BiosKeyboardFlags
 ;
 ; DECLARATION	int BiosKeyboardFlags( void );
 ;
-PROC		BiosKeyboardFlags_	STDCALL
+PROC		BiosKeyboardFlags	WATCOM_C
 		mov	ah,KEYBOARD_FLAGS		; AH = function number
 		;
 		; Call BIOS

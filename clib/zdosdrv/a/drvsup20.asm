@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosUnlockCpu_
+		PUBLIC	DosUnlockCpu
 ;
 ; DECLARATION	int DosUnlockCpu( MUTEX *mutex );
 ;
-PROC		DosUnlockCpu_		STDCALL
+PROC		DosUnlockCpu		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to mutex
 		clc					; Clear carry flag

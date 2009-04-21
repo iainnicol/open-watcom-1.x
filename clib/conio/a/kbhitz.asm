@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	kbhit_
+		PUBLIC	kbhit
 ;
 ; DECLARATION	int kbhit( void );
 ;
-PROC		kbhit_			STDCALL
+PROC		kbhit			WATCOM_C
 		xor	eax,eax				; Clear EAX
 		xchg	eax,[_cbyte]			; Clear and get buffered byte
 		or	eax,eax				; Character available ?
@@ -29,5 +29,5 @@ ENDIF
 @@Exit:		ret
 ENDP
 		UDATASEG
-		EXTRN	C _cbyte			: DWORD
+		EXTRN	WATCOM_C _cbyte			: DWORD
 		END

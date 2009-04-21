@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	socket_
+		PUBLIC	socket
 ;
 ; DECLARATION	int socket( int af, int type, int protocol );
 ;
-PROC		socket_			STDCALL
+PROC		socket			WATCOM_C
 		cmp	al,AF_INET			; Valid family ?
 		jnz	SHORT @@BadValue		; No, error
 		dec	dl				; Yes, convert to our type

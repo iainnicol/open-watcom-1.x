@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	listen_
+		PUBLIC	listen
 ;
 ; DECLARATION	int listen( int s, int backlog );
 ;
-PROC		listen_			STDCALL
+PROC		listen			WATCOM_C
 		shl	eax,2				; EAX = socket handle
 		mov	ebx,eax				; EBX = socket handle
 		mov	ah,SOCKET_LISTEN		; AH = function number

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosKeyboardPutKey_
+		PUBLIC	BiosKeyboardPutKey
 ;
 ; DECLARATION	int BiosKeyboardPutKey( int character, int scancode );
 ;
-PROC		BiosKeyboardPutKey_	STDCALL
+PROC		BiosKeyboardPutKey	WATCOM_C
 		push	ecx				; Save context
 		mov	cl,al				; CL = character code
 		mov	ch,dl				; CH = scan code

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosGetVideoMode_
+		PUBLIC	BiosGetVideoMode
 ;
 ; DECLARATION	int BiosGetVideoMode( VMODE *vmode );
 ;
-PROC		BiosGetVideoMode_	STDCALL
+PROC		BiosGetVideoMode	WATCOM_C
 		push	edx				; Save context
 		push	ebx
 		mov	edx,eax				; EDX points to VMODE block

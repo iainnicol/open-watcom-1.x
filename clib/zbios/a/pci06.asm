@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosGeneratePciCycle_
+		PUBLIC	BiosGeneratePciCycle
 ;
 ; DECLARATION	int BiosGeneratePciCycle( int bus, unsigned cycledata );
 ;
-PROC		BiosGeneratePciCycle_	STDCALL
+PROC		BiosGeneratePciCycle	WATCOM_C
 		push	ebx				; Save context
 		mov	bh,al				; BH = bus number
 		mov	eax,PCI_SERVICES SHL 8 + \	; AH = function number

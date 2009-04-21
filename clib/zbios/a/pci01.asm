@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosPciInformation_
+		PUBLIC	BiosPciInformation
 ;
 ; DECLARATION	int BiosPciInformation( PCIDATA *pcidata );
 ;
-PROC		BiosPciInformation_	STDCALL
+PROC		BiosPciInformation	WATCOM_C
 		push	esi				; Save context
 		push	edx
 		push	ecx

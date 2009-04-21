@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvSetMulticastList_
+		PUBLIC	DosPktDrvSetMulticastList
 ;
 ; DECLARATION	int DosPktDrvSetMulticastList( int NumberOfEntries, void *Buffer, int InterfaceNumber );
 ;
-PROC		DosPktDrvSetMulticastList_ STDCALL
+PROC		DosPktDrvSetMulticastList WATCOM_C
 		push	esi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = number of multicast entries

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosEnhancedMemorySize_
+		PUBLIC	BiosEnhancedMemorySize
 ;
 ; DECLARATION	int BiosEnhancedMemorySize( unsigned *isa, unsigned *above );
 ;
-PROC		BiosEnhancedMemorySize_	STDCALL
+PROC		BiosEnhancedMemorySize	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	edx

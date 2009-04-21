@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreeDeviceBlock_
+		PUBLIC	DosFreeDeviceBlock
 ;
 ; DECLARATION	int DosFreeDeviceBlock( void *block );
 ;
-PROC		DosFreeDeviceBlock_	STDCALL
+PROC		DosFreeDeviceBlock	WATCOM_C
 		call	[DWORD DeviceUnmap]		; Unmap device block
 		jmp	DosReturnZero			; Process return code
 ENDP

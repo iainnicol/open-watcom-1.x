@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosDelayMicroSeconds_
+		PUBLIC	DosDelayMicroSeconds
 ;
 ; DECLARATION	int DosDelayMicroSeconds( unsigned microseconds );
 ;
-PROC		DosDelayMicroSeconds_	STDCALL
+PROC		DosDelayMicroSeconds	WATCOM_C
 IFDEF __ZDOSDRV__
 		call	[DWORD ThreadDelayMS]		; Sleep
 ELSE

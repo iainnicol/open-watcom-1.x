@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSignalGlobalMutex_
+		PUBLIC	DosSignalGlobalMutex
 ;
 ; DECLARATION	int DosSignalGlobalMutex( int handle );
 ;
-PROC		DosSignalGlobalMutex_	STDCALL
+PROC		DosSignalGlobalMutex	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = mutex handle
 		mov	ah,IPC_SIGNAL_MUTEX		; Signal mutex

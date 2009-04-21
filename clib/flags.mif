@@ -159,8 +159,8 @@ sw_a_winnt_ppc    = -oc -D__MT__ -DWIN32 -D_WIN32
 sw_a_linux_386    =
 sw_a_linux_ppc    =
 sw_a_linux_mps    =
-sw_a_zdos_386     =
-sw_a_zdosdrv_386  =
+sw_a_zdos_386     = -zzo -zcm
+sw_a_zdosdrv_386  = -zzo -zcm
 
 #make bug
 !ifndef extra_c_flags

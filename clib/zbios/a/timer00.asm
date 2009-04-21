@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosGetTickCount_
+		PUBLIC	BiosGetTickCount
 ;
 ; DECLARATION	int BiosGetTickCount( unsigned *tickcount );
 ;
-PROC		BiosGetTickCount_	STDCALL
+PROC		BiosGetTickCount	WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = pointer to tickcount variable

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosDiskEmulatorPresent_
+		PUBLIC	BiosDiskEmulatorPresent
 ;
 ; DECLARATION	int BiosDiskEmulatorPresent( int drive );
 ;
-PROC		BiosDiskEmulatorPresent_ STDCALL
+PROC		BiosDiskEmulatorPresent WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = drive
 		mov	ah,DISK_EMULATOR_PRESENT	; AH = disk function

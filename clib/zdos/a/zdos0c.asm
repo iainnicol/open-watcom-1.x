@@ -9,11 +9,11 @@
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFlushBeforeInput_
+		PUBLIC	DosFlushBeforeInput
 ;
 ; DECLARATION	int DosFlushBeforeInput( int function, char *buffer );
 ;
-PROC		DosFlushBeforeInput_	STDCALL
+PROC		DosFlushBeforeInput	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,OFFSET DosReturnZero	; Assume buffered input
 		cmp	al,DOS_CONSOLE_BUFFERED_INPUT	; Buffered input ?

@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosAllocatePciBuffer_
+		PUBLIC	DosAllocatePciBuffer
 ;
 ; DECLARATION	int DosAllocatePciBuffer( int numpages, unsigned *physical,
 ;                                         void **linear );
 ;
-PROC		DosAllocatePciBuffer_	STDCALL
+PROC		DosAllocatePciBuffer	WATCOM_C
 		push	esi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = size of block

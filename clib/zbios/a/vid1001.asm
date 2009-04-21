@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetBorder_
+		PUBLIC	BiosSetBorder
 ;
 ; DECLARATION	int BiosSetBorder( int color );
 ;
-PROC		BiosSetBorder_		STDCALL
+PROC		BiosSetBorder		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	bh,al				; BH = color
@@ -32,6 +32,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

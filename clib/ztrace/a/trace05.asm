@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosTraceClearBreakPoints_
+		PUBLIC	DosTraceClearBreakPoints
 ;
 ; DECLARATION	int DosTraceClearBreakPoints( int count,unsigned char *values,
 ;		                              void *locations);
 ;
-PROC		DosTraceClearBreakPoints_ STDCALL
+PROC		DosTraceClearBreakPoints WATCOM_C
 		push	edi				; Save context
 		push	ecx
 		mov	edi,ebx				; EDI points to location list

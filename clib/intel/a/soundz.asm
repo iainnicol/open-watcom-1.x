@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	sound_
-		PUBLIC	nosound_
+		PUBLIC	sound
+		PUBLIC	nosound
 ;
 ; DECLARATION	void sound( unsigned frequency );
 ;
-PROC		sound_			STDCALL
+PROC		sound			WATCOM_C
 		USES	edx,eax
 		mov	[Frequency],eax			; Save frequency
 		xor	edx,edx				; EDX = reference time
@@ -28,7 +28,7 @@ ENDP
 ;
 ; DECLARATION	void nosound( void );
 ;
-PROC		nosound_		STDCALL
+PROC		nosound			WATCOM_C
 		USES	edx,ecx,eax
 		mov	edx,[ReferenceTime]		; EDX = reference time
 		mov	ah,DOS_ELAPSED_PERIODIC_TICKS	; Get elapsed time

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosReadFile_
+		PUBLIC	DosReadFile
 ;
 ; DECLARATION	int DosReadFile( int bytes, void *buffer, int handle );
 ;
-PROC		DosReadFile_		STDCALL
+PROC		DosReadFile		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of bytes to read
 		mov	ah,DOS_READ_FILE		; AH = DOS function number

@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosSetDate_
+		PUBLIC	BiosSetDate
 ;
 ; DECLARATION	void BiosSetDate( DATE *date );
 ;
-PROC		BiosSetDate_		STDCALL
+PROC		BiosSetDate		WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	ch,[(DATE eax).Century]		; CH = new century

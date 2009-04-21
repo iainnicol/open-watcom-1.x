@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosOpenMutex_
+		PUBLIC	DosOpenMutex
 ;
 ; DECLARATION	int DosOpenMutex( MUTEX *mutex );
 ;
-PROC		DosOpenMutex_		STDCALL
+PROC		DosOpenMutex		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to mutex
 		;

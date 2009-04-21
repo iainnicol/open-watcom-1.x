@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosIoctlDeviceRemote_
+		PUBLIC	DosIoctlDeviceRemote
 ;
 ; DECLARATION	int DosIoctlDeviceRemote( int drive );
 ;
-PROC		DosIoctlDeviceRemote_	STDCALL
+PROC		DosIoctlDeviceRemote	WATCOM_C
 		USES	edx,ebx
 		mov	ebx,eax				; EBX = logical drive number
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number

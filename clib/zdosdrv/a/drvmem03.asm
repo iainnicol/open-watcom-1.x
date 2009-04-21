@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosReallocateHeapBlock_
+		PUBLIC	DosReallocateHeapBlock
 ;
 ; DECLARATION	int DosReallocateHeapBlock( void *oldblock, int newsize,
 ;		                            void **newblock );
 ;
-PROC		DosReallocateHeapBlock_	STDCALL
+PROC		DosReallocateHeapBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = new size of block
 		call	[DWORD ReallocateBlock]		; Reallocate heap block

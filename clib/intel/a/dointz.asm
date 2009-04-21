@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	C _do_interrupt
+		PUBLIC	_do_interrupt
 ;
 ; DECLARATION	void __cdecl _do_interrupt( int intno );
 ;
-PROC		_do_interrupt
+PROC		_do_interrupt		C
 		push	eax				; Save context
 		mov	eax,[esp + 8]			; EAX = interrupt number
 IFDEF __ZDOSDRV__

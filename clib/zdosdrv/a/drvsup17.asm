@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosAllocateDeviceBlock_
+		PUBLIC	DosAllocateDeviceBlock
 ;
 ; DECLARATION	int DosAllocateDeviceBlock( unsigned physical, int pages,
 ;                                           void **block );
 ;
-PROC		DosAllocateDeviceBlock_	STDCALL
+PROC		DosAllocateDeviceBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = number of pages to map
 		call	[DWORD DeviceMap]		; Map device block

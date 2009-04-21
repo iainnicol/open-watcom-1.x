@@ -9,12 +9,12 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSocketGetOption_
+		PUBLIC	DosSocketGetOption
 ;
 ; DECLARATION	int DosSocketGetOption( int level, unsigned *value,
 ;		                        unsigned handle, int option );
 ;
-PROC		DosSocketGetOption_	STDCALL
+PROC		DosSocketGetOption	WATCOM_C
 		mov	ah,SOCKET_GET_OPTION		; AH = function number
 		;
 		; Get socket option

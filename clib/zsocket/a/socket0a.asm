@@ -9,13 +9,14 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	recvfrom_
+		PUBLIC	recvfrom
 ;
 ; DECLARATION	int recvfrom( int s, char *buf, int len, int flags,
 ;                             struct sockaddr *addr, int *fromlen );
 ;
-PROC		recvfrom_		STDCALL
-		ARG	ipaddr : DWORD, fromlen : DWORD
+PROC		recvfrom		WATCOM_C
+		ARG	s : DWORD, buf : DWORD, len : DWORD, \
+			flags : DWORD, ipaddr : DWORD, fromlen : DWORD
 		shl	eax,2				; EAX = socket handle
 		xchg	ebx,ecx				; EBX = flags, ECX = len
 		xchg	eax,ebx				; EAX = flags, EBX = socket handle

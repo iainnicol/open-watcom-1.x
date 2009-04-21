@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetDriveFreeSpace_
+		PUBLIC	DosGetDriveFreeSpace
 ;
 ; DECLARATION	int DosGetDriveFreeSpace( DRVSPACE *drvspace, int drive );
 ;
-PROC		DosGetDriveFreeSpace_	STDCALL
+PROC		DosGetDriveFreeSpace	WATCOM_C
 		USES	esi,edx,ecx,ebx
 		mov	esi,eax				; ESI points to DRVSPACE block
 		mov	ah,DOS_GET_DRIVE_FREE_SPACE	; AH = DOS function

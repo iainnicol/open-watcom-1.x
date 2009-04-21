@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetTID_
+		PUBLIC	DosGetTID
 ;
 ; DECLARATION	int DosGetTID( void );
 ;
-PROC		DosGetTID_		STDCALL
+PROC		DosGetTID		WATCOM_C
 		;
 		; Return TID
 		;

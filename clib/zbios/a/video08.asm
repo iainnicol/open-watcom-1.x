@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosReadCharAndAttribute_
+		PUBLIC	BiosReadCharAndAttribute
 ;
 ; DECLARATION	int BiosReadCharAndAttribute( int *character, int *attribute );
 ;
-PROC		BiosReadCharAndAttribute_ STDCALL
+PROC		BiosReadCharAndAttribute WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,eax				; ECX points to character variable
@@ -37,6 +37,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

@@ -9,11 +9,11 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSocketClose_
+		PUBLIC	DosSocketClose
 ;
 ; DECLARATION	int DosSocketClose( unsigned handle );
 ;
-PROC		DosSocketClose_		STDCALL
+PROC		DosSocketClose		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = handle
 		mov	ah,SOCKET_CLOSE			; AH = function number

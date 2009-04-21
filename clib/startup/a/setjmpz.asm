@@ -5,12 +5,12 @@
 		P486
 		MODEL	USE32 SMALL
 		CODESEG
-		PUBLIC	_setjmp_
-		PUBLIC	longjmp_
+		PUBLIC	_setjmp
+		PUBLIC	longjmp
 ;
 ; DECLARATION	int _setjmp( jmp_buf env );
 ;
-PROC		_setjmp_		STDCALL
+PROC		_setjmp			WATCOM_C
 		pop	[DWORD eax]			; Save return address
 		push	[DWORD eax]			; Put return address on top of stack
 		mov	[eax + 4],ebx			; Save registers
@@ -26,7 +26,7 @@ ENDP
 ;
 ; DECLARATION	void longjmp( jmp_buf env, int returnvalue );
 ;
-PROC		longjmp_		STDCALL
+PROC		longjmp			WATCOM_C
 		xchg	eax,edx				; EAX = return value, EDX = pointer to jmp_buf
 		mov	ebx,[edx]			; EBX = return address
 		mov	ecx,[edx + 8]			; Restore registers

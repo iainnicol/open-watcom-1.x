@@ -9,12 +9,12 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSocketReceive_
+		PUBLIC	DosSocketReceive
 ;
 ; DECLARATION	int DosSocketReceive( int flags, void *buffer,
 ;		                      unsigned handle, int length );
 ;
-PROC		DosSocketReceive_	STDCALL
+PROC		DosSocketReceive	WATCOM_C
 		mov	ah,SOCKET_RECEIVE		; AH = function number
 		;
 		; Receive data

@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_getfileattr_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_getfileattr
 ;
 ; DECLARATION	unsigned _dos_getfileattr( char * path, unsigned *attr );
 ;
-PROC		_dos_getfileattr_	STDCALL
+PROC		_dos_getfileattr	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,edx				; EBX points to attribute variable
 		mov	edx,eax				; EDX points to path
@@ -31,6 +31,6 @@ ENDIF
 		jc	SHORT @@Exit			; Success ?
 		mov	[ebx],ecx			; Yes, store file attributes
 @@Exit:		pop	ebx				; No, restore context
-		jmp	__doserror_			; Process return code
+		jmp	__doserror			; Process return code
 ENDP
 		END

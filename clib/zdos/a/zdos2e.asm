@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetVerifyFlag_
+		PUBLIC	DosSetVerifyFlag
 ;
 ; DECLARATION	int DosSetVerifyFlag( int onoff );
 ;
-PROC		DosSetVerifyFlag_	STDCALL
+PROC		DosSetVerifyFlag	WATCOM_C
 		mov	ah,DOS_SET_VERIFY_FLAG		; AH = DOS function
 		;
 		; Call DOS services

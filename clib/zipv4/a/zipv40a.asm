@@ -9,14 +9,15 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSocketSendTo_
+		PUBLIC	DosSocketSendTo
 ;
 ; DECLARATION	int DosSocketSendTo( int flags, void *buffer,
 ;		                     unsigned handle, int length,
 ;		                     unsigned ip, int port );
 ;
-PROC		DosSocketSendTo_	STDCALL
-		ARG	ip : DWORD, port : DWORD
+PROC		DosSocketSendTo		WATCOM_C
+		ARG	flags : DWORD, buffer : DWORD, handle : DWORD, \
+			len : DWORD, ip : DWORD, port : DWORD
 		push	edi				; Save context
 		push	esi
 		mov	esi,[ip]			; ESI = IP address

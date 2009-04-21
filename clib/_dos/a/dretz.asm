@@ -6,30 +6,30 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ERRNO.INC'
 		CODESEG
-		PUBLIC	_dosret0_
-		PUBLIC	_dosretax_
-		PUBLIC	__set_errno_dos_
+		PUBLIC	_dosret0
+		PUBLIC	_dosretax
+		PUBLIC	__set_errno_dos
 ;
 ; DECLARATION	int _dosret0( int ax, int carry );
 ;
-PROC		_dosret0_		STDCALL
+PROC		_dosret0		WATCOM_C
 		or	edx,edx				; Carry set ?
-		jnz	SHORT __set_errno_dos_		; Yes, translate and save error code
+		jnz	SHORT __set_errno_dos		; Yes, translate and save error code
 		xor	eax,eax				; No, clear EAX
 		ret
 ENDP
 ;
 ; DECLARATION	int _dosretax( int ax, int carry );
 ;
-PROC		_dosretax_		STDCALL
+PROC		_dosretax		WATCOM_C
 		or	edx,edx				; Carry set ?
-		jnz	SHORT __set_errno_dos_		; Yes, translate and save error code
+		jnz	SHORT __set_errno_dos		; Yes, translate and save error code
 		ret					; No, return value in EAX
 ENDP
 ;
 ; DECLARATION	int __set_errno_dos( unsigned int errorcode );
 ;
-PROC		__set_errno_dos_	STDCALL
+PROC		__set_errno_dos		WATCOM_C
 		mov	[BYTE _doserrno],al		; Update _doserrno
 		or	ah,ah				; Error code above 256 ?
 		jnz	SHORT @@BigErrorCode		; Yes, translate it
@@ -70,6 +70,6 @@ ErrorTable	DD	EZERO				; 00h
 		DD	ENOENT				; 12h
 		DD	16 DUP (-1)			; 13h - 22h
 		UDATASEG
-		EXTRN	C _doserrno			: DWORD
-		EXTRN	C errno				: DWORD
+		EXTRN	WATCOM_C _doserrno		: DWORD
+		EXTRN	WATCOM_C errno			: DWORD
 		END

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosTraceSetDebugContext_
+		PUBLIC	DosTraceSetDebugContext
 ;
 ; DECLARATION	int DosTraceSetDebugContext( TDEBUG *debug );
 ;
-PROC		DosTraceSetDebugContext_ STDCALL
+PROC		DosTraceSetDebugContext WATCOM_C
 		push	esi				; Save context
 		mov	esi,eax				; ESI points to context buffer
 		mov	ah,TRACE_SET_DEBUG_CONTEXT	; Set debug context

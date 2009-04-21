@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCreateTemporaryFile_
+		PUBLIC	DosCreateTemporaryFile
 ;
 ; DECLARATION	int DosCreateTemporaryFile( int attributes, char *path );
 ;
-PROC		DosCreateTemporaryFile_	STDCALL
+PROC		DosCreateTemporaryFile	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = file attributes
 		mov	ah,DOS_CREATE_TEMPORARY_FILE	; AH = DOS function

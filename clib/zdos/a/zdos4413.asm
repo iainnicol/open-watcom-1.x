@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlFormatTrack_
+		PUBLIC	DosIoctlFormatTrack
 ;
 ; DECLARATION	int DosIoctlFormatTrack( int head, int track, int drive );
 ;
-PROC		DosIoctlFormatTrack_	STDCALL
+PROC		DosIoctlFormatTrack	WATCOM_C
 		mov	bh,al				; BH = head number
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number
 			    IOCTL_FORMAT_TRACK		; AL = subfunction number

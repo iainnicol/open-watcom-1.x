@@ -6,7 +6,7 @@
 		MODEL	USE32 SMALL
 		CODESEG
 		EXTRN	C _do_interrupt			: PROC
-		PUBLIC	int386x_
+		PUBLIC	int386x
 ;
 ; Assembler variant of REGS structure
 ;
@@ -23,7 +23,7 @@ ENDS
 ; DECLARATION	int int386x( int n, const union REGS *i, union REGS *o,
 ;		             struct SREGS *s );
 ;
-PROC		int386x_		STDCALL
+PROC		int386x			WATCOM_C
 		USES	edi,esi,ebp
 		xor	ecx,ecx				; Clear ECX
 		mov	ebp,ebx				; Save pointer to out registers in EBP

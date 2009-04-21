@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosReadGlobalPipe_
+		PUBLIC	DosReadGlobalPipe
 ;
 ; DECLARATION	int DosReadGlobalPipe( int bytes, void *buffer, int handle );
 ;
-PROC		DosReadGlobalPipe_	STDCALL
+PROC		DosReadGlobalPipe	WATCOM_C
 		push	edi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX number of bytes to read

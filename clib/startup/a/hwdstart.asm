@@ -23,7 +23,7 @@ ENDS
 SEGMENT		_TEXT
 		ASSUME	cs:_TEXT,ds:DGROUP,es:DGROUP,ss:DGROUP
 		EXTRN	InitializeDriver		: PROC
-		PUBLIC	C cstart_
+		PUBLIC	WATCOM_C cstart_
 LABEL		cstart_			BYTE
 Header		HWD	<0, '_NONAME_'>
 ;

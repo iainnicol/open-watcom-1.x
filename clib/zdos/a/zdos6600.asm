@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetDefaultCodePage_
+		PUBLIC	DosGetDefaultCodePage
 ;
 ; DECLARATION	int DosGetDefaultCodePage( void );
 ;
-PROC		DosGetDefaultCodePage_	STDCALL
+PROC		DosGetDefaultCodePage	WATCOM_C
 		USES	edx,ebx
 		;
 		; Get function numbers in AH and AL

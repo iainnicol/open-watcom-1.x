@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosBaseMemorySize_
+		PUBLIC	BiosBaseMemorySize
 ;
 ; DECLARATION	int BiosBaseMemorySize( void );
 ;
-PROC		BiosBaseMemorySize_	STDCALL
+PROC		BiosBaseMemorySize	WATCOM_C
 		;
 		; Call BIOS memsize service
 		;

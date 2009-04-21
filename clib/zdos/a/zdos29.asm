@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosGetCommandLine_
+		PUBLIC	DosGetCommandLine
 ;
 ; DECLARATION	int DosGetCommandLine( char *buffer );
 ;
-PROC		DosGetCommandLine_	STDCALL
+PROC		DosGetCommandLine	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to buffer
 		mov	ah,DOS_GET_COMMAND_LINE		; AH = DOS function

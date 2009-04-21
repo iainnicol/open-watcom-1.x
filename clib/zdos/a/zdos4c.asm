@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosExitProcess_
+		PUBLIC	DosExitProcess
 ;
 ; DECLARATION	void DosExitProcess( int exitcode );
 ;
-PROC		DosExitProcess_		STDCALL
+PROC		DosExitProcess		WATCOM_C
 IFDEF __ZDOSDRV__
 		ret
 ELSE

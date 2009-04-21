@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSystemConfiguration_
+		PUBLIC	BiosSystemConfiguration
 ;
 ; DECLARATION	int BiosSystemConfiguration( BIOSINFO **biosinfo );
 ;
-PROC		BiosSystemConfiguration_ STDCALL
+PROC		BiosSystemConfiguration	WATCOM_C
 		push	edx				; Save context
 		push	ebx
 		mov	edx,eax				; EDX points to pointer variable

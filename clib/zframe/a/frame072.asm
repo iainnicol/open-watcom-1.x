@@ -8,12 +8,12 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferCursorShape_
+		PUBLIC	DosFrameBufferCursorShape
 ;
 ;		#pragma aux DosFrameBufferCursorShape parm [EBX][EAX][ECX][EDX][ESI][EDI];
 ; DECLARATION	int DosFrameBufferCursorShape( int hotspotX, int hotspotY, int color0, int color1, void *bitmap, int size );
 ;
-PROC		DosFrameBufferCursorShape_	STDCALL
+PROC		DosFrameBufferCursorShape	WATCOM_C
 		mov	bh,al				; BH = hot spot Y
 		;
 		; Set cursor shape and hot spots

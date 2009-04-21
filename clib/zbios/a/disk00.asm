@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDiskReset_
+		PUBLIC	BiosDiskReset
 ;
 ; DECLARATION	int BiosDiskReset( int drive );
 ;
-PROC		BiosDiskReset_		STDCALL
+PROC		BiosDiskReset		WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = drive
 		mov	ah,DISK_RESET			; AH = disk function

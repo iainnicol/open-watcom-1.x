@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosTraceOpenSession_
+		PUBLIC	DosTraceOpenSession
 ;
 ; DECLARATION	int DosTraceOpenSession( TCPU *context );
 ;
-PROC		DosTraceOpenSession_	STDCALL
+PROC		DosTraceOpenSession	WATCOM_C
 		push	edi				; Save context
 		mov	edi,eax				; EDI points to context buffer
 		mov	ah,TRACE_OPEN_SESSION		; Open trace session

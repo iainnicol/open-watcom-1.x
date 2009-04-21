@@ -8,14 +8,15 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosScrollWindowDown_
+		PUBLIC	BiosScrollWindowDown
 ;
 ; DECLARATION	int BiosScrollWindowDown( int lowerY, int lowerX,
 ;                                         int upperY, int upperX,
 ;                                         int rows, int blankingattr );
 ;
-PROC		BiosScrollWindowDown_	STDCALL
-		ARG	Rows : DWORD, Attribute : DWORD
+PROC		BiosScrollWindowDown	WATCOM_C
+		ARG	LowerY : DWORD, LowerX : DWORD, UpperY : DWORD, \
+			UpperX : DWORD, Rows : DWORD, Attribute : DWORD
 		mov	dh,al				; DH = lower Y
 		mov	ch,bl				; CH = upper Y
 		mov	al,[BYTE Rows]			; AL = number of rows to scroll
@@ -35,6 +36,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

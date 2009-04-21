@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSeekDisk_
+		PUBLIC	BiosSeekDisk
 ;
 ; DECLARATION	int BiosSeekDisk( int head, int drive, int track );
 ;
-PROC		BiosSeekDisk_		STDCALL
+PROC		BiosSeekDisk		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,ebx				; ECX = track
 		shl	ch,6				; Convert track number to BIOS format

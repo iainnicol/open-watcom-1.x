@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosError			: PROC
-		PUBLIC	BiosUartOutput_
+		PUBLIC	BiosUartOutput
 ;
 ; DECLARATION	int BiosUartOutput( int byte, int portnumber );
 ;
-PROC		BiosUartOutput_		STDCALL
+PROC		BiosUartOutput		WATCOM_C
 		mov	ah,UART_OUTPUT			; AH = function number
 		;
 		; Call BIOS

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosIoctlHandleRemote_
+		PUBLIC	DosIoctlHandleRemote
 ;
 ; DECLARATION	int DosIoctlHandleRemote( int handle );
 ;
-PROC		DosIoctlHandleRemote_	STDCALL
+PROC		DosIoctlHandleRemote	WATCOM_C
 		USES	edx,ebx
 		mov	ebx,eax				; EBX = file handle
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number

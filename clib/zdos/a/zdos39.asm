@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosCreateDirectory_
+		PUBLIC	DosCreateDirectory
 ;
 ; DECLARATION	int DosCreateDirectory( char *path );
 ;
-PROC		DosCreateDirectory_	STDCALL
+PROC		DosCreateDirectory	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to path
 		mov	ah,DOS_CREATE_DIRECTORY		; AH = DOS function number

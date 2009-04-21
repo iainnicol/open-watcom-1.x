@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetCurrentDriveData_
+		PUBLIC	DosGetCurrentDriveData
 ;
 ; DECLARATION	int DosGetCurrentDriveData( DRVDATA *data );
 ;
-PROC		DosGetCurrentDriveData_	STDCALL
+PROC		DosGetCurrentDriveData	WATCOM_C
 		USES	esi,edx,ecx,ebx
 		mov	esi,eax				; ESI points to buffer
 		mov	ah,DOS_GET_CURRENT_DRIVE_DATA	; AH = DOS function

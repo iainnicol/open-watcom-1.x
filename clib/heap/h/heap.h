@@ -42,7 +42,8 @@
    !defined(__OS2__) &&                 \
    !defined(__NT__) &&                  \
    !defined(__OSI__) &&                 \
-   !defined(__UNIX__)
+   !defined(__UNIX__) &&                \
+   !defined(__ZDOS__)
 #define __DOS_EXT__
 #endif
 #endif

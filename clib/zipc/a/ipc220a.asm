@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWaitSemaphoreTimeOut_
+		PUBLIC	DosWaitSemaphoreTimeOut
 ;
 ; DECLARATION	int DosWaitSemaphoreTimeOut( SEMAPHORE *semaphore,
 ;		                             unsigned timeout );
 ;
-PROC		DosWaitSemaphoreTimeOut_ STDCALL
+PROC		DosWaitSemaphoreTimeOut WATCOM_C
 IFDEF __ZDOSDRV__
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to semaphore

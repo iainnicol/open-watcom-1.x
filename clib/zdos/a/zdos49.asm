@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreeMemoryBlock_
+		PUBLIC	DosFreeMemoryBlock
 
 ;
 ; DECLARATION	int DosFreeMemoryBlock( void *block );
 ;
-PROC		DosFreeMemoryBlock_	STDCALL
+PROC		DosFreeMemoryBlock	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to block
 		mov	ah,DOS_FREE_MEMORY_BLOCK	; AH = DOS function

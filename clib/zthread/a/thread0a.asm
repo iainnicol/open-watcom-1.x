@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCloneThread_
+		PUBLIC	DosCloneThread
 ;
 ; DECLARATION	int DosCloneThread( int priority, unsigned ESP );
 ;
-PROC		DosCloneThread_		STDCALL
+PROC		DosCloneThread		WATCOM_C
 		sub	edx,4				; Make room for return address
 		xchg	eax,[esp]			; EAX = return address, [ESP] = priority
 		mov	[edx],eax			; Put return address on top of new threads stack

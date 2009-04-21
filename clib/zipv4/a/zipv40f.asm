@@ -9,12 +9,12 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSocketRemoteAddress_
+		PUBLIC	DosSocketRemoteAddress
 ;
 ; DECLARATION	int DosSocketRemoteAddress( unsigned *ip, int *port,
 ;                                           unsigned handle );
 ;
-PROC		DosSocketRemoteAddress_	STDCALL
+PROC		DosSocketRemoteAddress	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx

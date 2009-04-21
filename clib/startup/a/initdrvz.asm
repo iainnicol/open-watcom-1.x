@@ -8,13 +8,13 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__CMain				: PROC
-		EXTRN	__InitRtns			: PROC
-		EXTRN	__FiniRtns			: PROC
-		EXTRN	_Not_Enough_Memory_		: PROC
+		EXTRN	C _CMain			: PROC
+		EXTRN	C _InitRtns			: PROC
+		EXTRN	C _FiniRtns			: PROC
+		EXTRN	WATCOM_C _Not_Enough_Memory	: PROC
 		PUBLIC	InitializeDriver
-		PUBLIC	__exit_
-		PUBLIC	__do_exit_with_msg__
+		PUBLIC	WATCOM_C __exit
+		PUBLIC	WATCOM_C __do_exit_with_msg_
 		PUBLIC	InitializeEnvironment
 ;
 ; PROCEDURE	InitializeDriver
@@ -59,7 +59,7 @@ PROC		InitializeDriver
 		call	[DWORD DosApi]
 		mov	ecx,eax				; ECX = size of environment
 		call	[DWORD AllocateBlock]		; Allocate buffer
-		jc	_Not_Enough_Memory_		; Success ?
+		jc	_Not_Enough_Memory		; Success ?
 		mov	[_Envptr],eax			; Yes, save pointer to environment
 		mov	[_Envsize],ecx			; Save environment size
 		mov	eax,OFFSET StartOfStack		; EAX points past _BSS segment
@@ -75,15 +75,15 @@ PROC		InitializeDriver
 		mov	[WORD VideoRows],bx		; Save rows and page number
 		call	InitializeEnvironment		; Copy environment and initialize pointer array
 		mov	eax,0ffh			; Run all initializers
-		call	__InitRtns			; Call initializer routines
+		call	_InitRtns			; Call initializer routines
 		xor	ebp,ebp				; EBP = 0 indicates end of EBP chain
 		mov	[ExitESP],esp			; Save ESP
-		call	__CMain				; Invoke main
-LABEL		__exit_			PROC
+		call	_CMain				; Invoke main
+LABEL		__exit			PROC
 		push	eax				; Save exit code
 		xor	eax,eax				; Run finalizers
 		mov	edx,0fh				; Less than exit
-		call	__FiniRtns			; Call finalizer routines
+		call	_FiniRtns			; Call finalizer routines
 LABEL		Exit			PROC
 		xor	eax,eax				; Clear EAX
 		xchg	eax,[_Envptr]			; Get and clear pointer to environment block
@@ -91,7 +91,7 @@ LABEL		Exit			PROC
 		pop	eax				; EAX = exit code
 		mov	esp,[ExitESP]			; Restore ESP
 		ret
-LABEL		__do_exit_with_msg__	PROC
+LABEL		__do_exit_with_msg_	PROC
 		push	edx				; Save context
 		push	eax
 		mov	edx,OFFSET ConsoleName		; EDX points to DOS console device name
@@ -149,17 +149,17 @@ PROC		InitializeEnvironment
 		ret
 ENDP
 		DATASEG
-		EXTRN	C _curbrk			: DWORD
-	        EXTRN	C _STACKLOW			: DWORD
-        	EXTRN	C _STACKTOP			: DWORD
-		EXTRN	C _LpCmdLine			: DWORD
-		EXTRN	C _LpPgmName			: DWORD
-		EXTRN	C _Envptr			: DWORD
-		EXTRN	C _osmajor			: BYTE
-        	EXTRN	C _osminor			: BYTE
-		EXTRN	C DriverName			: BYTE
-		PUBLIC	C environ
-		PUBLIC	C _init_387_emulator
+		EXTRN	WATCOM_C _curbrk		: DWORD
+	        EXTRN	WATCOM_C _STACKLOW		: DWORD
+        	EXTRN	WATCOM_C _STACKTOP		: DWORD
+		EXTRN	WATCOM_C _LpCmdLine		: DWORD
+		EXTRN	WATCOM_C _LpPgmName		: DWORD
+		EXTRN	WATCOM_C _Envptr		: DWORD
+		EXTRN	WATCOM_C _osmajor		: BYTE
+        	EXTRN	WATCOM_C _osminor		: BYTE
+		EXTRN	WATCOM_C DriverName		: BYTE
+		PUBLIC	WATCOM_C environ
+		PUBLIC	WATCOM_C _init_387_emulator
 environ		DD	0				; Holds first pointer in environment pointer array
 ConsoleName	DB	'CON'				; DOS console name
 LABEL		_init_387_emulator	BYTE
@@ -167,13 +167,13 @@ LABEL		_init_387_emulator	BYTE
 
 		UDATASEG
 		EXTRN	StartOfBSS			: BYTE
-		PUBLIC	C _Envsize
-		PUBLIC	C _Envlength
-		PUBLIC	C _PID
-		PUBLIC	C VideoMode
-		PUBLIC	C VideoColumns
-		PUBLIC	C VideoRows
-		PUBLIC	C VideoPage
+		PUBLIC	WATCOM_C _Envsize
+		PUBLIC	WATCOM_C _Envlength
+		PUBLIC	WATCOM_C _PID
+		PUBLIC	WATCOM_C VideoMode
+		PUBLIC	WATCOM_C VideoColumns
+		PUBLIC	WATCOM_C VideoRows
+		PUBLIC	WATCOM_C VideoPage
 _Envsize	DD	?				; Environment size
 _Envlength	DD	?				; Environment length
 _PID		DD	?				; Process ID

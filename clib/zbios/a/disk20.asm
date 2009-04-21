@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosDiskExtensions_
+		PUBLIC	BiosDiskExtensions
 ;
 ; DECLARATION	int BiosDiskExtensions( int drive, unsigned *support );
 ;
-PROC		BiosDiskExtensions_	STDCALL
+PROC		BiosDiskExtensions	WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,55aah			; EBX = signature

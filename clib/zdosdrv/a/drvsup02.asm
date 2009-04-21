@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosHookPciPorts_
+		PUBLIC	DosHookPciPorts
 ;
 ; DECLARATION	int DosHookPciPorts( IOTRAP *iotrap, unsigned iobase );
 ;
-PROC		DosHookPciPorts_	STDCALL
+PROC		DosHookPciPorts		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX points to I/O trap block

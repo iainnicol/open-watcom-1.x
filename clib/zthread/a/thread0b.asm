@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWaitThread_
+		PUBLIC	DosWaitThread
 ;
 ; DECLARATION	int DosWaitThread( int TID );
 ;
-PROC		DosWaitThread_		STDCALL
+PROC		DosWaitThread		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = thread ID
 		;

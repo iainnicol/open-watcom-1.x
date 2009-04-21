@@ -16,11 +16,11 @@ Second		DB	?
 Hundredth	DB	?
 ENDS
 		CODESEG
-		PUBLIC	_dos_gettime_
+		PUBLIC	_dos_gettime
 ;
 ; DECLARATION	void _dos_gettime( struct dostime_t *time );
 ;
-PROC		_dos_gettime_		STDCALL
+PROC		_dos_gettime		WATCOM_C
 		USES	edx,ecx,ebx
 		mov	ebx,eax				; EBX points to buffer
 		mov	ah,DOS_GET_TIME			; AH = DOS function

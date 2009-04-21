@@ -10,7 +10,7 @@
 ;
 ; DECLARATION	void BiosRomBasic( void );
 ;
-PROC		BiosRomBasic_		STDCALL
+PROC		BiosRomBasic_
 		;
 		; Call BIOS
 		;

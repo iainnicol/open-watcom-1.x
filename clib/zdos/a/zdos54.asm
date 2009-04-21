@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		PUBLIC	DosGetVerifyFlag_
+		PUBLIC	DosGetVerifyFlag
 ;
 ; DECLARATION	int DosGetVerifyFlag( void );
 ;
-PROC		DosGetVerifyFlag_	STDCALL
+PROC		DosGetVerifyFlag	WATCOM_C
 		mov	ah,DOS_GET_VERIFY_FLAG		; AH = DOS function number
 		;
 		; Call DOS services

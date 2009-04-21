@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvGetReceiveMode_
+		PUBLIC	DosPktDrvGetReceiveMode
 ;
 ; DECLARATION	int DosPktDrvGetReceiveMode( int InterfaceNumber );
 ;
-PROC		DosPktDrvGetReceiveMode_ STDCALL
+PROC		DosPktDrvGetReceiveMode	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = interface number
 		mov	edi,edx				; EDI points to buffer

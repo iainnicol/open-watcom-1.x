@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDeviceBusy_
+		PUBLIC	BiosDeviceBusy
 ;
 ; DECLARATION	int BiosDeviceBusy( void );
 ;
-PROC		BiosDeviceBusy_		STDCALL
+PROC		BiosDeviceBusy		WATCOM_C
 		mov	ah,MISC_DEVICE_BUSY		; AH = function number
 		;
 		; Call BIOS

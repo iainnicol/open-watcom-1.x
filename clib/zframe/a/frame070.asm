@@ -8,11 +8,11 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferEnableCursor_
+		PUBLIC	DosFrameBufferEnableCursor
 ;
 ; DECLARATION	int DosFrameBufferEnableCursor( void );
 ;
-PROC		DosFrameBufferEnableCursor_	STDCALL
+PROC		DosFrameBufferEnableCursor	WATCOM_C
 		;
 		; Enable cursor
 		;

@@ -6,8 +6,8 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	_dosretax_			: PROC
-		PUBLIC	intdosx_
+		EXTRN	WATCOM_C _dosretax		: PROC
+		PUBLIC	intdosx
 ;
 ; Assembler variant of REGS structure
 ;
@@ -24,7 +24,7 @@ ENDS
 ; DECLARATION	unsigned intdosx( const union REGS *i, union REGS *o,
 ;		                  struct SREGS *s );
 ;
-PROC		intdosx_		STDCALL
+PROC		intdosx			WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx
@@ -59,6 +59,6 @@ ENDIF
 		pop	ecx
 		pop	esi
 		pop	edi
-		jmp	_dosretax_			; Set _errno and _doserrno if error
+		jmp	_dosretax			; Set _errno and _doserrno if error
 ENDP
 		END

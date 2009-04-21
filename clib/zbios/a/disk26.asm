@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosAtapiPacketCommand_
+		PUBLIC	BiosAtapiPacketCommand
 ;
 ; DECLARATION	int BiosAtapiPacketCommand( void *command, int drive,
 ;                                           void *buffer, int count );
 ;
-PROC		BiosAtapiPacketCommand_	STDCALL
+PROC		BiosAtapiPacketCommand	WATCOM_C
 		push	esi				; Save context
 		mov	esi,eax				; ESI points to command packet
 		mov	ah,DISK_PACKET_COMMAND		; AH = disk function

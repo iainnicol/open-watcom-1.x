@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSeekDiskBlock_
+		PUBLIC	BiosSeekDiskBlock
 ;
 ; DECLARATION	int BiosSeekDiskBlock( unsigned LBA, int drive );
 ;
-PROC		BiosSeekDiskBlock_	STDCALL
+PROC		BiosSeekDiskBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = LBA
 		mov	ah,DISK_SEEK_LBA		; AH = disk function

@@ -8,11 +8,11 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferWaitEngine2D_
+		PUBLIC	DosFrameBufferWaitEngine2D
 ;
 ; DECLARATION	int DosFrameBufferWaitEngine2D( void );
 ;
-PROC		DosFrameBufferWaitEngine2D_	STDCALL
+PROC		DosFrameBufferWaitEngine2D	WATCOM_C
 		;
 		; Set palette register
 		;

@@ -18,12 +18,12 @@ EDI		DD	?
 CFLAG		DD	?
 ENDS
 		CODESEG
-		EXTRN	_dosretax_			: PROC
-		PUBLIC	intdos_
+		EXTRN	WATCOM_C _dosretax		: PROC
+		PUBLIC	intdos
 ;
 ; DECLARATION	unsigned intdos( const union REGS *i, union REGS *o );
 ;
-PROC		intdos_			STDCALL
+PROC		intdos			WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx
@@ -60,6 +60,6 @@ ENDIF
 		pop	ecx
 		pop	esi
 		pop	edi
-		jmp	_dosretax_			; Set _errno and _doserrno if error
+		jmp	_dosretax			; Set _errno and _doserrno if error
 ENDP
 		END

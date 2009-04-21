@@ -48,5 +48,5 @@ ErrorTable	DB	EZERO				; 00h = ?
 		DB	EFAULT				; 11h = SOCKET_INVALID_POINTER
 		DB	ENOMEM				; 12h = any error
 		UDATASEG
-		EXTRN	C errno				: DWORD
+		EXTRN	WATCOM_C errno			: DWORD
 		END

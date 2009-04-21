@@ -22,7 +22,7 @@ ENDS
 ;
 ; DECLARATION	int int386( int n, const union REGS *i, union REGS *o );
 ;
-PROC		int386_			STDCALL
+PROC		int386			WATCOM_C
 		USES	edi,esi,ecx,ebp
 		xor	ecx,ecx				; Clear ECX
 		mov	ebp,ebx				; Save pointer to out registers in EBP

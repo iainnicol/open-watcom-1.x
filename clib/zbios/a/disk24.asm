@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosVerifyDiskBlock_
+		PUBLIC	BiosVerifyDiskBlock
 ;
 ; DECLARATION	int BiosVerifyDiskBlock(int count, int drive, unsigned LBA);
 ;
-PROC		BiosVerifyDiskBlock_	STDCALL
+PROC		BiosVerifyDiskBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,ebx				; ECX = LBA
 		mov	ah,DISK_VERIFY_SECTOR_LBA	; AH = disk function

@@ -64,7 +64,7 @@
         return cmd;
     }
 
-#elif defined(_NETWARE_CLIB) || defined(__OSI__)
+#elif defined(_NETWARE_CLIB) || defined(__OSI__) || defined(__ZDOS__)
 
     extern char *_LpCmdLine;
     #define OS_GET_CMD_LINE()    _LpCmdLine

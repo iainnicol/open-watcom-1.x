@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosTerminateProcess_
+		PUBLIC	DosTerminateProcess
 ;
 ; DECLARATION	void DosTerminateProcess( void );
 ;
-PROC		DosTerminateProcess_	STDCALL
+PROC		DosTerminateProcess	WATCOM_C
 IFDEF __ZDOSDRV__
 		ret
 ELSE

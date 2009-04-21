@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWaitEvent_
+		PUBLIC	DosWaitEvent
 ;
 ; DECLARATION	int DosWaitEvent(int flags, unsigned bitmask, EVENT *event);
 ;
-PROC		DosWaitEvent_		STDCALL
+PROC		DosWaitEvent		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = bitmask
 		;

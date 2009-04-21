@@ -6,32 +6,32 @@
 		INCLUDE	'REGS.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		EXTRN	PktDrvInformation_		: PROC
-		EXTRN	PktDrvOpenSession_		: PROC
-		EXTRN	PktDrvCloseSession_		: PROC
-		EXTRN	PktDrvSendPacket_		: PROC
-		EXTRN	PktDrvGetAddress_		: PROC
-		EXTRN	PktDrvSetAddress_		: PROC
-		EXTRN	PktDrvGetReceiveMode_		: PROC
-		EXTRN	PktDrvSetReceiveMode_		: PROC
-		EXTRN	PktDrvGetMulticastList_		: PROC
-		EXTRN	PktDrvSetMulticastList_		: PROC
-		EXTRN	PktDrvGetParameters_		: PROC
-		EXTRN	PktDrvGetStatistics_		: PROC
-		PUBLIC	DosPktDrvInstallInterface_
+		EXTRN	WATCOM_C PktDrvInformation	: PROC
+		EXTRN	WATCOM_C PktDrvOpenSession	: PROC
+		EXTRN	WATCOM_C PktDrvCloseSession	: PROC
+		EXTRN	WATCOM_C PktDrvSendPacket	: PROC
+		EXTRN	WATCOM_C PktDrvGetAddress	: PROC
+		EXTRN	WATCOM_C PktDrvSetAddress	: PROC
+		EXTRN	WATCOM_C PktDrvGetReceiveMode	: PROC
+		EXTRN	WATCOM_C PktDrvSetReceiveMode	: PROC
+		EXTRN	WATCOM_C PktDrvGetMulticastList	: PROC
+		EXTRN	WATCOM_C PktDrvSetMulticastList	: PROC
+		EXTRN	WATCOM_C PktDrvGetParameters	: PROC
+		EXTRN	WATCOM_C PktDrvGetStatistics	: PROC
+		PUBLIC	DosPktDrvInstallInterface
 ;
 ; DECLARATION	int DosPktDrvInstallInterface( void );
 ;
-PROC		DosPktDrvInstallInterface_	STDCALL
+PROC		DosPktDrvInstallInterface WATCOM_C
 		push	ebx				; Save context
-		mov	ebx,OFFSET PktDrvDispatcher	; EBX = pointer to function dispatcher
+		mov	ebx,OFFSET DriverDispatcher	; EBX = pointer to function dispatcher
 		mov	ah,PKTDRV_INSTALL_INTERFACE	; Install packet driver interface
 		call	[DWORD DosPacketDriver]
 		pop	ebx				; Restore context
 		jmp	DosReturnAL			; Process return code
 ENDP
 ;
-; PROCEDURE	PktDrvDispatcher
+; PROCEDURE	DriverDispatcher
 ;
 ; INPUT		 AH = function number
 ;	        EBX = interface number
@@ -42,12 +42,12 @@ ENDP
 ;
 ; DESCRIPTION	Packet driver services function dispatcher.
 ;
-PROC		PktDrvDispatcher
+PROC		DriverDispatcher
 		movzx	eax,ah				; EAX = function number
-		jmp	[PktDrvFunctions + eax * 4]	; Invoke function handler
+		jmp	[DriverFunctions + eax * 4]	; Invoke function handler
 ENDP
 ;
-; PROCEDURE	PktDrvInformation
+; PROCEDURE	DriverInformation
 ;
 ; INPUT		EBX = interface number
 ;		EDX = handle
@@ -60,10 +60,10 @@ ENDP
 ;
 ; DESCRIPTION	Returns packet driver information.
 ;
-PROC		PktDrvInformation
+PROC		DriverInformation
 		sub	esp,12				; Make room for packet driver information
 		mov	eax,esp                 	; EAX points to packet driver information structure
-		call	PktDrvInformation_		; Invoke handler
+		call	PktDrvInformation WATCOM_C,?,?;?; Invoke handler
 		or	eax,eax				; Success ?
 		jnz	SHORT @@Error			; No, error
 		pop	[(REGS ebp).ECX]		; Yes, ECX = interface class
@@ -71,14 +71,14 @@ PROC		PktDrvInformation
 		pop	[(REGS ebp).EAX]		; EAX = version number
 		ret
 @@Error:	add     esp,12				; Restore ESP
-LABEL		PktDrvError		PROC
+LABEL		DriverError		PROC
 		neg	eax				; Invert error code
 		mov	[(REGS ebp).EAX],eax		; Update callers EAX
 		stc					; Set carry flag
 		ret
 ENDP
 ;
-; PROCEDURE	PktDrvOpenSession
+; PROCEDURE	DriverOpenSession
 ;
 ; INPUT		 AL = interface class (on stack)
 ;		EBX = interface number
@@ -94,19 +94,19 @@ ENDP
 ; DESCRIPTION	Starts receiving packets with the specified interface class
 ;		and type.
 ;
-PROC		PktDrvOpenSession
+PROC		DriverOpenSession
 		movzx	eax,[BYTE (REGS ebp).EAX]	; EAX = interface class
 		;
 		; Invoke handler
 		;
-		call	PktDrvOpenSession_ STDCALL,esi,edi
+		call	PktDrvOpenSession WATCOM_C,?,?,?,?,esi,edi
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		mov	[(REGS ebp).EAX],eax		; Yes, callers EAX = session handle
 		ret
 ENDP
 ;
-; PROCEDURE	PktDrvCloseSession
+; PROCEDURE	DriverCloseSession
 ;
 ; INPUT		EBX = interface number
 ;               EDX = session handle
@@ -118,15 +118,15 @@ ENDP
 ; DESCRIPTION	Ends receiving packets with the interface class	and type
 ;		specified by session handle.
 ;
-PROC		PktDrvCloseSession
+PROC		DriverCloseSession
 		mov	eax,ebx				; EAX = interface number
-		call	PktDrvCloseSession_		; Invoke handler
+		call	PktDrvCloseSession WATCOM_C,?,?	; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 ;
-; PROCEDURE	PktDrvSendPacket
+; PROCEDURE	DriverSendPacket
 ;
 ; INPUT		EBX = interface number
 ;               ECX = number of bytes to send
@@ -138,16 +138,16 @@ ENDP
 ;
 ; DESCRIPTION	Sends a packet.
 ;
-PROC		PktDrvSendPacket
+PROC		DriverSendPacket
 		mov	eax,ecx				; EAX = packet length
 		mov	edx,esi				; EDX = pointer to packet
-		call	PktDrvSendPacket_		; Invoke handler
+		call	PktDrvSendPacket WATCOM_C,?,?,?	; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 ;
-; PROCEDURE	PktDrvGetAddress
+; PROCEDURE	DriverGetAddress
 ;
 ; INPUT		EBX = interface number
 ;		ECX = length of buffer
@@ -160,17 +160,17 @@ ENDP
 ; DESCRIPTION	Copies the current local address of the interface to callers
 ;		buffer.
 ;
-PROC		PktDrvGetAddress
+PROC		DriverGetAddress
 		mov	eax,ecx				; EAX = packet length
 		mov	edx,edi				; EDX = pointer to buffer
-		call	PktDrvGetAddress_		; Invoke handler
+		call	PktDrvGetAddress WATCOM_C,?,?,?	; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		mov	[(REGS ebp).EAX],eax		; Yes, callers EAX = number of bytes copied
 		ret
 ENDP
 ;
-; PROCEDURE	PktDrvSetAddress
+; PROCEDURE	DriverSetAddress
 ;
 ; INPUT		EBX = interface number
 ;		ECX = length of buffer
@@ -183,16 +183,16 @@ ENDP
 ; DESCRIPTION	Sets the current local address of the interface to the address
 ;		in callers buffer.
 ;
-PROC		PktDrvSetAddress
+PROC		DriverSetAddress
 		mov	eax,ecx				; EAX = packet length
 		mov	edx,esi				; EDX = pointer to buffer
-		call	PktDrvSetAddress_		; Invoke handler
+		call	PktDrvSetAddress WATCOM_C,?,?,?	; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 ;
-; PROCEDURE	PktDrvGetReceiveMode
+; PROCEDURE	DriverGetReceiveMode
 ;
 ; INPUT		EBX = interface number
 ;		EBP = pointer to stack frame
@@ -202,16 +202,16 @@ ENDP
 ;
 ; DESCRIPTION	Returns current receive mode.
 ;
-PROC		PktDrvGetReceiveMode
+PROC		DriverGetReceiveMode
 		mov	eax,ebx				; EAX = interface number
-		call	PktDrvGetReceiveMode_		; Invoke handler
+		call	PktDrvGetReceiveMode WATCOM_C,?	; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		mov	[(REGS ebp).EAX],eax		; Yes, callers EAX = receive mode
 		ret
 ENDP
 ;
-; PROCEDURE	PktDrvSetReceiveMode
+; PROCEDURE	DriverSetReceiveMode
 ;
 ; INPUT		EBX = interface number
 ;		ECX = new receive mode
@@ -222,15 +222,18 @@ ENDP
 ;
 ; DESCRIPTION	Sets the receive mode.
 ;
-PROC		PktDrvSetReceiveMode
+PROC		DriverSetReceiveMode
 		mov	eax,ecx				; EAX = receive mode
-		call	PktDrvSetReceiveMode_		; Invoke handler
+		;
+		; Invoke handler
+		;
+		call	PktDrvSetReceiveMode WATCOM_C,?,?
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 ;
-; PROCEDURE	PktDrvGetMulticastList
+; PROCEDURE	DriverGetMulticastList
 ;
 ; INPUT		EBX = interface number
 ;		EDI = pointer to buffer
@@ -241,17 +244,20 @@ ENDP
 ;
 ; DESCRIPTION	Returns current multicast list.
 ;
-PROC		PktDrvGetMulticastList
+PROC		DriverGetMulticastList
 		mov	eax,ebx				; EAX = interface number
 		mov	edx,edi				; EDX = pointer to buffer
-		call	PktDrvGetMulticastList_		; Invoke handler
+		;
+		; Invoke handler
+		;
+		call	PktDrvGetMulticastList WATCOM_C,?,?
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		mov	[(REGS ebp).EAX],eax		; Yes, callers EAX = number of multicast list entries
 		ret
 ENDP
 ;
-; PROCEDURE	PktDrvSetMulticastList
+; PROCEDURE	DriverSetMulticastList
 ;
 ; INPUT		EBX = interface number
 ;		ECX = number of addresses in multicast list
@@ -263,16 +269,19 @@ ENDP
 ;
 ; DESCRIPTION	Updates multicast list.
 ;
-PROC		PktDrvSetMulticastList
+PROC		DriverSetMulticastList
 		mov	eax,ecx				; EAX = number of multicast entries
 		mov	edx,esi				; EDX = pointer to buffer
-		call	PktDrvSetMulticastList_		; Invoke handler
+		;
+		; Invoke handler
+		;
+		call	PktDrvSetMulticastList WATCOM_C,?,?,?
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 ;
-; PROCEDURE	PktDrvGetParameters
+; PROCEDURE	DriverGetParameters
 ;
 ; INPUT		EBX = interface number
 ;		EBP = pointer to stack frame
@@ -282,12 +291,12 @@ ENDP
 ;
 ; DESCRIPTION	Returns pointer to parameter structure.
 ;
-PROC		PktDrvGetParameters
+PROC		DriverGetParameters
 		mov	eax,ebx				; EAX = interface number
 		lea	edx,[(REGS ebp).EAX]		; EDX points to buffer variable
-		call	PktDrvGetParameters_		; Invoke handler
+		call	PktDrvGetParameters WATCOM_C,?,?; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 ;
@@ -302,25 +311,25 @@ ENDP
 ;
 ; DESCRIPTION	Returns copy of statistics structure.
 ;
-PROC		PktDrvGetStatistics
+PROC		DriverGetStatistics
 		mov	eax,ebx				; EAX = interface number
 		mov	edx,edi				; EDX = pointer to buffer
-		call	PktDrvGetStatistics_		; Invoke handler
+		call	PktDrvGetStatistics WATCOM_C,?,?; Invoke handler
 		or	eax,eax				; Success ?
-		js	PktDrvError			; No, exit with carry flag set
+		js	DriverError			; No, exit with carry flag set
 		ret					; Yes, exit with carry flag clear
 ENDP
 		DATASEG
-PktDrvFunctions	DD	PktDrvInformation
-		DD	PktDrvOpenSession
-		DD	PktDrvCloseSession
-		DD	PktDrvSendPacket
-		DD	PktDrvGetAddress
-		DD	PktDrvSetAddress
-		DD	PktDrvGetReceiveMode
-		DD	PktDrvSetReceiveMode
-		DD	PktDrvGetMulticastList
-		DD	PktDrvSetMulticastList
-		DD	PktDrvGetParameters
-		DD	PktDrvGetStatistics
+DriverFunctions	DD	DriverInformation
+		DD	DriverOpenSession
+		DD	DriverCloseSession
+		DD	DriverSendPacket
+		DD	DriverGetAddress
+		DD	DriverSetAddress
+		DD	DriverGetReceiveMode
+		DD	DriverSetReceiveMode
+		DD	DriverGetMulticastList
+		DD	DriverSetMulticastList
+		DD	DriverGetParameters
+		DD	DriverGetStatistics
 		END

@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosUnlockDevice_
+		PUBLIC	DosUnlockDevice
 ;
 ; DECLARATION	void DosUnlockDevice( DEVLOCK *devicelock );
 ;
-PROC		DosUnlockDevice_	STDCALL
+PROC		DosUnlockDevice		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to DEVLOCK block
 		call	[DWORD UnlockDevice]		; Unlock device

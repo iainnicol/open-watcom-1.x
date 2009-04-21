@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosRenameFile_
+		PUBLIC	DosRenameFile
 ;
 ; DECLARATION	int DosRenameFile( char *current, char *new );
 ;
-PROC		DosRenameFile_		STDCALL
+PROC		DosRenameFile		WATCOM_C
 		push	edi				; Save context
 		push	edx
 		mov	edi,edx				; EDI points to new name

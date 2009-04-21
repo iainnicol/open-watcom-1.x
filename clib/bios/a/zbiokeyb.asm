@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_bios_keybrd_
+		PUBLIC	_bios_keybrd
 ;
 ; DECLARATION	unsigned _bios_keybrd( unsigned service );
 ;
-PROC		_bios_keybrd_		STDCALL
+PROC		_bios_keybrd		WATCOM_C
 		USES	edx
 		mov	ah,al				; AH = BIOS function
 		mov	dl,al				; Save copy in DL

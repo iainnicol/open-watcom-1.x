@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetMouseSampleRate_
+		PUBLIC	BiosSetMouseSampleRate
 ;
 ; DECLARATION	int BiosSetMouseSampleRate( int rate );
 ;
-PROC		BiosSetMouseSampleRate_	STDCALL
+PROC		BiosSetMouseSampleRate	WATCOM_C
 		push	ebx				; Save context
 		mov	bh,al				; BH = sample rate
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number

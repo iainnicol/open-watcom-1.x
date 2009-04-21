@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetMouseHandler_
+		PUBLIC	BiosSetMouseHandler
 ;
 ; DECLARATION	int BiosSetMouseHandler( void (__cdecl *h)(MOUSE_PACKET) );
 ;
-PROC		BiosSetMouseHandler_	STDCALL
+PROC		BiosSetMouseHandler	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to mouse packet handler
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number

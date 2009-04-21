@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosWriteCharAndAttribute_
+		PUBLIC	BiosWriteCharAndAttribute
 ;
 ; DECLARATION	int BiosWriteCharAndAttribute( int character, int attribute,
 ;		                               int count );
 ;
-PROC		BiosWriteCharAndAttribute_ STDCALL
+PROC		BiosWriteCharAndAttribute WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,ebx				; ECX = replication count
@@ -35,6 +35,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

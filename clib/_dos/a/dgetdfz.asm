@@ -16,13 +16,13 @@ SPC		DD	?				; Sectors per cluster
 BPS		DD	?				; Bytes per sector
 ENDS
 		CODESEG
-		EXTRN	C __set_EINVAL			: PROC
-		PUBLIC	_dos_getdiskfree_
+		EXTRN	WATCOM_C __set_EINVAL		: PROC
+		PUBLIC	_dos_getdiskfree
 ;
 ; DECLARATION	unsigned _dos_getdiskfree( unsigned drive,
 ;		                           struct diskfree_t *diskspace );
 ;
-PROC		_dos_getdiskfree_	STDCALL
+PROC		_dos_getdiskfree	WATCOM_C
 		USES	esi,ecx,ebx
 		mov	esi,edx				; ESI points to buffer
 		mov	dl,al				; DL = drive

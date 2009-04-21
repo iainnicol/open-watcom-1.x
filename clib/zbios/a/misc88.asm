@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosExtendedMemorySize_
+		PUBLIC	BiosExtendedMemorySize
 ;
 ; DECLARATION	int BiosExtendedMemorySize( void );
 ;
-PROC		BiosExtendedMemorySize_	STDCALL
+PROC		BiosExtendedMemorySize	WATCOM_C
 		mov	ah,MISC_EXTENDED_MEMSIZE	; AH = function number
 		;
 		; Call BIOS

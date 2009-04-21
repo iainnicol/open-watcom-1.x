@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosDeviceType_
+		PUBLIC	BiosDeviceType
 ;
 ; DECLARATION	int BiosDeviceType( int *numdevices, int drive );
 ;
-PROC		BiosDeviceType_		STDCALL
+PROC		BiosDeviceType		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,eax				; ECX points to variable

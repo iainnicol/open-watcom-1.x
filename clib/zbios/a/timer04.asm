@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosGetDate_
+		PUBLIC	BiosGetDate
 ;
 ; DECLARATION	void BiosGetDate( DATE *date );
 ;
-PROC		BiosGetDate_		STDCALL
+PROC		BiosGetDate		WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		push	ebx

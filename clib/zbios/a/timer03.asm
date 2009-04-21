@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosSetTime_
+		PUBLIC	BiosSetTime
 ;
 ; DECLARATION	void BiosSetTime( TIME *time );
 ;
-PROC		BiosSetTime_		STDCALL
+PROC		BiosSetTime		WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	ch,[(TIME eax).Hour]		; CH = new hour

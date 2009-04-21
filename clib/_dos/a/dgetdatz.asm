@@ -16,11 +16,11 @@ Year		DW	?
 DayOfWeek	DB	?
 ENDS
 		CODESEG
-		PUBLIC	_dos_getdate_
+		PUBLIC	_dos_getdate
 ;
 ; DECLARATION	void _dos_getdate( struct dosdate_t *date );
 ;
-PROC		_dos_getdate_		STDCALL
+PROC		_dos_getdate		WATCOM_C
 		USES	edx,ecx,ebx
 		mov	ebx,eax				; EBX points to buffer
 		mov	ah,DOS_GET_DATE			; AH = DOS function

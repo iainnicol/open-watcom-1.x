@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCreateThread_
+		PUBLIC	DosCreateThread
 ;
 ; DECLARATION	int DosCreateThread(int priority,unsigned ESP,unsigned EIP);
 ;
-PROC		DosCreateThread_	STDCALL
+PROC		DosCreateThread		WATCOM_C
 IFDEF __ZDOSDRV__
 		call	[DWORD ThreadCreate]		; Create thread
 ELSE

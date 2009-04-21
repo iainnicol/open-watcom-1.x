@@ -9,12 +9,12 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSocketIoctl_
+		PUBLIC	DosSocketIoctl
 ;
 ; DECLARATION	int DosSocketIoctl( unsigned command, unsigned *argument,
 ;		                    unsigned handle );
 ;
-PROC		DosSocketIoctl_		STDCALL
+PROC		DosSocketIoctl		WATCOM_C
 		push	esi				; Save context
 		push	ecx
 		mov	esi,edx				; ESI points to argument

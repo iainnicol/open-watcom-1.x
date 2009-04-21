@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetCurrentDrive_
+		PUBLIC	DosSetCurrentDrive
 ;
 ; DECLARATION	int DosSetCurrentDrive( int drive );
 ;
-PROC		DosSetCurrentDrive_	STDCALL
+PROC		DosSetCurrentDrive	WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = drive number
 		mov	ah,DOS_SET_CURRENT_DRIVE	; AH = DOS function

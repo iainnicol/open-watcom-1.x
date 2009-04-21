@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	accept_
+		PUBLIC	accept
 ;
 ; DECLARATION	int accept( int s, struct sockaddr *addr, int *len );
 ;
-PROC		accept_			STDCALL
+PROC		accept			WATCOM_C
 		mov	[DWORD edx],SIZE INET		; Store the length
 		shl	eax,2				; EAX = socket handle
 		mov	ebx,eax				; EBX = socket handle

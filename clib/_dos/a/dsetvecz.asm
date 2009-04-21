@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_dos_setvect_
+		PUBLIC	_dos_setvect
 ;
 ; DECLARATION	void _dos_setvect( int intnum,
 ;		                   void (__cdecl *h)(struct context_t) );
 ;
-PROC		_dos_setvect_		STDCALL
+PROC		_dos_setvect		WATCOM_C
 		USES	ebx
 		xor	ebx,ebx				; Clear EBX
 		;

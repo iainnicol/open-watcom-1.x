@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvInformation_
+		PUBLIC	DosPktDrvInformation
 ;
 ; DECLARATION	int DosPktDrvInformation( PKTDRV_INFO *info, int handle, int interfacenumber );
 ;
-PROC		DosPktDrvInformation_	STDCALL
+PROC		DosPktDrvInformation	WATCOM_C
 		push	edi				; Save context
 		push	ecx
 		mov	edi,eax				; EDI points to PKTDRV_INFO block

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosCommitFile_
+		PUBLIC	DosCommitFile
 ;
 ; DECLARATION	int DosCommitFile( int handle );
 ;
-PROC		DosCommitFile_		STDCALL
+PROC		DosCommitFile		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = file handle
 		mov	ah,DOS_COMMIT_FILE		; AH = DOS fucntion

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetDate_
+		PUBLIC	DosGetDate
 ;
 ; DECLARATION	int DosGetDate( DATE *date );
 ;
-PROC		DosGetDate_		STDCALL
+PROC		DosGetDate		WATCOM_C
 		USES	edx,ecx,ebx
 		mov	ebx,eax				; EBX points to DATE block
 		mov	ah,DOS_GET_DATE			; AH = DOS function

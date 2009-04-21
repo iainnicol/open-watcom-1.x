@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosForceDuplicateHandle_
+		PUBLIC	DosForceDuplicateHandle
 ;
 ; DECLARATION	int DosForceDuplicateHandle( int filehandle, int redirecthandle );
 ;
-PROC		DosForceDuplicateHandle_ STDCALL
+PROC		DosForceDuplicateHandle WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX = file or device handle

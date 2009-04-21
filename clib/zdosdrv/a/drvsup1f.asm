@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosLockCpu_
+		PUBLIC	DosLockCpu
 ;
 ; DECLARATION	int DosLockCpu( MUTEX *mutex );
 ;
-PROC		DosLockCpu_		STDCALL
+PROC		DosLockCpu		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to mutex
 		call	[DWORD LockCpu]			; Lock CPU

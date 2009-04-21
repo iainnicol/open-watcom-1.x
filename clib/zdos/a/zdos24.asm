@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetEnvVariable_
+		PUBLIC	DosSetEnvVariable
 ;
 ; DECLARATION	int DosSetEnvVariable( char *string );
 ;
-PROC		DosSetEnvVariable_	STDCALL
+PROC		DosSetEnvVariable	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to string
 		mov	ah,DOS_SET_ENVIRONMENT_VARIABLE	; AH = DOS function

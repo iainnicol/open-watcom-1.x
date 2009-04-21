@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_bios_timeofday_
+		PUBLIC	_bios_timeofday
 ;
 ; DECLARATION	int _bios_timeofday( unsigned service, long *timeval );
 ;
-PROC		_bios_timeofday_	STDCALL
+PROC		_bios_timeofday		WATCOM_C
 		USES	ecx,edx
 		mov	ah,al				; AH = BIOS function
 		mov	ecx,edx				; Assume get time of day function

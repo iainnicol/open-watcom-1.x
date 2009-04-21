@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosKeyboardCapabilities_
+		PUBLIC	BiosKeyboardCapabilities
 ;
 ; DECLARATION	int BiosKeyboardCapabilities( void );
 ;
-PROC		BiosKeyboardCapabilities_ STDCALL
+PROC		BiosKeyboardCapabilities WATCOM_C
 		mov	ah,KEYBOARD_CAPABILITIES	; AH = function number
 		;
 		; Call BIOS

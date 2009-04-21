@@ -9,13 +9,14 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	setsockopt_
+		PUBLIC	setsockopt
 ;
 ; DECLARATION	int setsockopt( int s, int level, int optname, char *optval,
 ;                               int optlen );
 ;
-PROC		setsockopt_		STDCALL
-		ARG	optlen : DWORD
+PROC		setsockopt		WATCOM_C
+		ARG	s : DWORD, level : DWORD, optname : DWORD, \
+			optval : DWORD, optlen : DWORD
 		USES	edi
 		cmp	[optlen],4			; Valid option length ?
 		jnz	SHORT @@BadValue		; No, error

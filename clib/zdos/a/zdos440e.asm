@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		PUBLIC	DosIoctlGetDriveMapping_
+		PUBLIC	DosIoctlGetDriveMapping
 ;
 ; DECLARATION	int DosIoctlGetDriveMapping( int drive );
 ;
-PROC		DosIoctlGetDriveMapping_ STDCALL
+PROC		DosIoctlGetDriveMapping WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = logical drive
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number, AL = subfunction number

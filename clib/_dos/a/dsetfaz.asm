@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_setfileattr_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_setfileattr
 ;
 ; DECLARATION	unsigned _dos_setfileattr( char * path, unsigned attr );
 ;
-PROC		_dos_setfileattr_	STDCALL
+PROC		_dos_setfileattr	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = file attributes
 		mov	edx,eax				; EDX points to path
@@ -29,6 +29,6 @@ ELSE
 		int	DOS
 ENDIF
 		pop	ecx				; Restore context
-		jmp	__doserror_			; Process return code
+		jmp	__doserror			; Process return code
 ENDP
 		END

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFindFirstFile_
+		PUBLIC	DosFindFirstFile
 ;
 ; DECLARATION	int DosFindFirstFile( int attr, char *path, FIND *find );
 ;
-PROC		DosFindFirstFile_	STDCALL
+PROC		DosFindFirstFile	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = search attributes
 		mov	ah,DOS_FIND_FIRST_FILE		; AH = DOS function number

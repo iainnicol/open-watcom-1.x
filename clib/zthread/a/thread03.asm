@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSleepThread_
+		PUBLIC	DosSleepThread
 ;
 ; DECLARATION	int DosSleepThread( unsigned ticks );
 ;
-PROC		DosSleepThread_		STDCALL
+PROC		DosSleepThread		WATCOM_C
 IFDEF __ZDOSDRV__
 		call	[DWORD ThreadSleep]		; Sleep
 ELSE

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosConsoleBufferedInput_
+		PUBLIC	DosConsoleBufferedInput
 ;
 ; DECLARATION	int DosConsoleBufferedInput( char * buffer );
 ;
-PROC		DosConsoleBufferedInput_ STDCALL
+PROC		DosConsoleBufferedInput	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to string
 		mov	ah,DOS_CONSOLE_BUFFERED_INPUT	; AH = DOS function

@@ -8,12 +8,12 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferDrawImage_
+		PUBLIC	DosFrameBufferDrawImage
 ;
 ;		#pragma aux DosFrameBufferDrawImage parm [EAX][ECX][EDX][ESI][EDI][EBX];
 ; DECLARATION	int DosFrameBufferDrawImage( int rop, int X, int Y, int height, int width, FRAMEBUF_IMAGE *image );
 ;
-PROC		DosFrameBufferDrawImage_	STDCALL
+PROC		DosFrameBufferDrawImage	WATCOM_C
 		;
 		; Draw image
 		;

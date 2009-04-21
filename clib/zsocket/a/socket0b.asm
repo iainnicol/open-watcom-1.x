@@ -9,13 +9,14 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	select_
+		PUBLIC	select
 ;
 ; DECLARATION	int select( int ndfs, fd_set *readfds, fd_set *writefds,
 ;                           fd_set *exceptfds, const struct timeval *timeout );
 ;
-PROC		select_			STDCALL
-		ARG	timeout : DWORD
+PROC		select			WATCOM_C
+		ARG	ndfs : DWORD, readfds : DWORD, writefds : DWORD, \
+			exceptfds : DWORD, timeout : DWORD
 		USES	esi
 		mov	eax,[timeout]			; EAX points to timeout structure
 		mov	esi,[eax]			; EAX = seconds

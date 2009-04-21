@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosError			: PROC
-		PUBLIC	BiosFullKeyboardFlags_
+		PUBLIC	BiosFullKeyboardFlags
 ;
 ; DECLARATION	int BiosFullKeyboardFlags( void );
 ;
-PROC		BiosFullKeyboardFlags_	STDCALL
+PROC		BiosFullKeyboardFlags	WATCOM_C
 		mov	ah,KEYBOARD_FULL_FLAGS		; AH = function number
 		;
 		; Call BIOS

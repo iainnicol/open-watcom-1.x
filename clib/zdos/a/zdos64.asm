@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSound_
+		PUBLIC	DosSound
 ;
 ; DECLARATION	void DosSound( int frequency, int periodic ticks );
 ;
-PROC		DosSound_		STDCALL
+PROC		DosSound		WATCOM_C
 		USES	ecx
 		mov	ecx,eax				; ECX = frequency in Hz
 		mov	ah,DOS_SOUND			; AH = DOS function

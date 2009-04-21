@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDiskDiagnostics_
+		PUBLIC	BiosDiskDiagnostics
 ;
 ; DECLARATION	int BiosDiskDiagnostics( void );
 ;
-PROC		BiosDiskDiagnostics_	STDCALL
+PROC		BiosDiskDiagnostics	WATCOM_C
 		push	edx				; Save context
 		mov	dl,80h				; DL = fixed disk drive
 		mov	ah,DISK_DIAGNOSTICS		; AH = disk function

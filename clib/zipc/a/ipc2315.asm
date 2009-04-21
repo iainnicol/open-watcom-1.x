@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCloseGlobalPipe_
+		PUBLIC	DosCloseGlobalPipe
 ;
 ; DECLARATION	int DosCloseGlobalPipe( int handle );
 ;
-PROC		DosCloseGlobalPipe_	STDCALL
+PROC		DosCloseGlobalPipe	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = message buffer handle
 		mov	ah,IPC_CLOSE_PIPE		; Close message buffer

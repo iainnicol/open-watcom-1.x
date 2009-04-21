@@ -10,12 +10,12 @@
 		INCLUDE	'HEAP.INC'
 		CODESEG
 		EXTRN	MemoryStart			: BYTE
-		PUBLIC	sbrk_
-		PUBLIC	__brk_
+		PUBLIC	sbrk
+		PUBLIC	WATCOM_C __brk
 ;
 ; DECLARATION	void *sbrk( int increment );
 ;
-PROC		sbrk_			STDCALL
+PROC		sbrk			WATCOM_C
 		or	eax,eax				; Valid increment ?
 		jnz	SHORT @@GrowMemory		; Yes, grow memory
 		mov	eax,EINVAL			; No, EAX = errno
@@ -26,7 +26,7 @@ PROC		sbrk_			STDCALL
 ;
 ; DECLARATION	void *__brk ( unsigned breakvalue );
 ;
-LABEL		__brk_			PROC
+LABEL		__brk			PROC
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,OFFSET MemoryStart		; EDX points to memory start
@@ -50,6 +50,6 @@ LABEL		__brk_			PROC
 		jmp	@@Error				; Set errno and return -1
 ENDP
 		UDATASEG
-		EXTRN	C errno				: DWORD
-		EXTRN	C _curbrk			: DWORD
+		EXTRN	WATCOM_C errno			: DWORD
+		EXTRN	WATCOM_C _curbrk		: DWORD
 		END

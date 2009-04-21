@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosQueryFileSystemName_
+		PUBLIC	DosQueryFileSystemName
 ;
 ; DECLARATION	int DosQueryFileSystemName( int id, char **name );
 ;
-PROC		DosQueryFileSystemName_ STDCALL
+PROC		DosQueryFileSystemName	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,edx				; EBX points to name pointer
 		mov	edx,eax				; EDX = file system ID

@@ -8,11 +8,11 @@
 		CODESEG
 		EXTRN	DosError			: PROC
 		EXTRN	BuildFileSystemName_		: PROC
-		PUBLIC	DosQueryFileSystemID_
+		PUBLIC	DosQueryFileSystemID
 ;
 ; DECLARATION	int DosQueryFileSystemID( char *name );
 ;
-PROC		DosQueryFileSystemID_	STDCALL
+PROC		DosQueryFileSystemID	WATCOM_C
 		push	ebx				; Save context
 		push	eax				; Create 8 character wide buffer
 		push	eax

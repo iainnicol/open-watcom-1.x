@@ -43,7 +43,7 @@
 !inject ismbdspa.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi     zda zdd
 !inject ismbdupp.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi     zda zdd
 !inject ismbdxdi.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi     zda zdd
-!inject jasctime.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi #l32  zda zdd
+!inject jasctime.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi     zda zdd
 !inject jctime.obj   d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 zda zdd
 !inject jgetmoji.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 zda zdd
 !inject jisalpha.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 zda zdd

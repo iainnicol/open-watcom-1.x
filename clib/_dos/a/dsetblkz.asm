@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_setblock_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_setblock
 ;
 ; DECLARATION	unsigned _dos_setblock( unsigned pages, void *block );
 ;
-PROC		_dos_setblock_		STDCALL
+PROC		_dos_setblock		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,eax				; ECX = size of block
@@ -28,6 +28,6 @@ ELSE
 ENDIF
 		pop	ebx				; Restore context
 		pop	ecx
-		jmp	__doserror_			; Process return code
+		jmp	__doserror			; Process return code
 ENDP
 		END

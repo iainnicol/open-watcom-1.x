@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosGetCountryInformation_
+		PUBLIC	DosGetCountryInformation
 ;
 ; DECLARATION	int DosGetCountryInformation( int code, COUNTRY *data );
 ;
-PROC		DosGetCountryInformation_ STDCALL
+PROC		DosGetCountryInformation WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; Assume code > 255
 		test	ebx,NOT 255			; Code < 255 ?

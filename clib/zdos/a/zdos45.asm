@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosDuplicateHandle_
+		PUBLIC	DosDuplicateHandle
 ;
 ; DECLARATION	int DosDuplicateHandle( int handle );
 ;
-PROC		DosDuplicateHandle_	STDCALL
+PROC		DosDuplicateHandle	WATCOM_C
 		push	ebx				; Save context
 		mov	ah,DOS_DUPLICATE_HANDLE		; AH = DOS function number
 		;

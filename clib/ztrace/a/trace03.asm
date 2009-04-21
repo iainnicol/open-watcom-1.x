@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosTraceRun_
+		PUBLIC	DosTraceRun
 ;
 ; DECLARATION	int DosTraceRun( int *event, TCPU *context );
 ;
-PROC		DosTraceRun_		STDCALL
+PROC		DosTraceRun		WATCOM_C
 		push	edi				; Save context
 		push	edx
 		push	ebx

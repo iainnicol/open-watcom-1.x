@@ -9,13 +9,14 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	sendto_
+		PUBLIC	sendto
 ;
 ; DECLARATION	int sendto( int s, char *buf, int len, int flags,
 ;                           const struct sockaddr *addr, int tolen );
 ;
-PROC		sendto_			STDCALL
-		ARG	ipaddr : DWORD, tolen : DWORD
+PROC		sendto			WATCOM_C
+		ARG	s : DWORD, buf : DWORD, len : DWORD, \
+			flags : DWORD, ipaddr : DWORD, tolen : DWORD
 		USES	edi,esi
 		shl	eax,2				; EAX = socket handle
 		xchg	ebx,ecx				; EBX = flags, ECX = len

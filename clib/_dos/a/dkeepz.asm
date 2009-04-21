@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_dos_keep_
+		PUBLIC	_dos_keep
 ;
 ; DECLARATION	void _dos_keep( unsigned retcode, unsigned memsize );
 ;
-PROC		_dos_keep_		STDCALL
+PROC		_dos_keep		WATCOM_C
 		;
 		; Get DOS function number in AH
 		;

@@ -9,11 +9,11 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSocketBind_
+		PUBLIC	DosSocketBind
 ;
 ; DECLARATION	int DosSocketBind( int port, unsigned ip, unsigned handle );
 ;
-PROC		DosSocketBind_		STDCALL
+PROC		DosSocketBind		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = port number
 		mov	ah,SOCKET_BIND			; AH = function number

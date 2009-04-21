@@ -8,12 +8,12 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFrameBufferInformation_
+		PUBLIC	DosFrameBufferInformation
 ;
 ;		#pragma aux DosFrameBufferInformation parm [EDI];
 ; DECLARATION	int DosFrameBufferInformation( FRAMEBUF_INFO *info );
 ;
-PROC		DosFrameBufferInformation_	STDCALL
+PROC		DosFrameBufferInformation	WATCOM_C
 		;
 		; Get frame buffer information
 		;

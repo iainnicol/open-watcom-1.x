@@ -10,11 +10,11 @@
 IFNDEF __ZDOSDRV__
 		EXTRN	DosError			: PROC
 ENDIF
-		PUBLIC	DosGetChildReturnCode_
+		PUBLIC	DosGetChildReturnCode
 ;
 ; DECLARATION	int DosGetChildReturnCode( int PID );
 ;
-PROC		DosGetChildReturnCode_	STDCALL
+PROC		DosGetChildReturnCode	WATCOM_C
 IFDEF __ZDOSDRV__
 		xor	eax,eax				; Clear EAX
 ELSE

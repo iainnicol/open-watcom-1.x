@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_freemem_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_freemem
 ;
 ; DECLARATION	unsigned _dos_freemem( void *block );
 ;
-PROC		_dos_freemem_		STDCALL
+PROC		_dos_freemem		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to block
 		mov	ah,DOS_FREE_MEMORY_BLOCK	; AH = DOS function
@@ -25,6 +25,6 @@ ELSE
 		int	DOS
 ENDIF
 		pop	ebx				; Restore context
-		jmp	__doserror_			; Process return code
+		jmp	__doserror			; Process return code
 ENDP
 		END

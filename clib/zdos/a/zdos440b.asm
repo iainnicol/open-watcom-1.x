@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlSetRetryCount_
+		PUBLIC	DosIoctlSetRetryCount
 ;
 ; DECLARATION	int DosIoctlSetRetryCount( int pause, int retries );
 ;
-PROC		DosIoctlSetRetryCount_	STDCALL
+PROC		DosIoctlSetRetryCount	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = pause between retries
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number, AL = subfunction number

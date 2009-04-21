@@ -7,13 +7,13 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_setftime_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_setftime
 ;
 ; DECLARATION	unsigned _dos_setftime( int handle, unsigned short date,
 ;		                        unsigned short time );
 ;
-PROC		_dos_setftime_		STDCALL
+PROC		_dos_setftime		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = date
 		shl	ecx,16				; Make room for time
@@ -32,6 +32,6 @@ ELSE
 		int	DOS
 ENDIF
 		pop	ecx				; Restore context
-		jmp	__doserror_			; Process return code
+		jmp	__doserror			; Process return code
 ENDP
 		END

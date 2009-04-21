@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosRemovableMediaEject_
+		PUBLIC	BiosRemovableMediaEject
 ;
 ; DECLARATION	int BiosRemovableMediaEject( void );
 ;
-PROC		BiosRemovableMediaEject_ STDCALL
+PROC		BiosRemovableMediaEject WATCOM_C
 		mov	ah,MISC_MEDIA_EJECT		; AH = function number
 		;
 		; Call BIOS

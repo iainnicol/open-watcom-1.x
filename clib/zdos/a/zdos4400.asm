@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosIoctlGetDeviceInfo_
+		PUBLIC	DosIoctlGetDeviceInfo
 ;
 ; DECLARATION	int DosIoctlGetDeviceInfo( int handle );
 ;
-PROC		DosIoctlGetDeviceInfo_	STDCALL
+PROC		DosIoctlGetDeviceInfo	WATCOM_C
 		USES	edx,ebx
 		mov	ebx,eax				; EBX = file handle
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number

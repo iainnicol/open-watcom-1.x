@@ -29,13 +29,13 @@ DayOfYear	DD	?
 DayLightFlag	DD	?
 ENDS
 		CODESEG
-		EXTRN	__set_errno_			: PROC
-		EXTRN	_localtime_			: PROC
-		PUBLIC	utime_
+		EXTRN	WATCOM_C __set_errno		: PROC
+		EXTRN	WATCOM_C _localtime		: PROC
+		PUBLIC	utime
 ;
 ; DECLARATION	int utime( char * path, struct utimbuf *times );
 ;
-PROC		utime_		STDCALL
+PROC		utime			WATCOM_C
 		USES	esi,ecx,ebx
 		LOCAL	CurrentTime : DWORD, Time : TM
 		mov	esi,edx				; ESI points to buffer
@@ -57,7 +57,7 @@ ENDIF
 		mov	[CurrentTime],esi		; Yes, reset current time
 		lea	eax,[CurrentTime]		; EAX points to current time
 @@GetTime:	lea	edx,[Time]			; EDX points to TIME structure
-		call	_localtime_			; Get local time
+		call	_localtime			; Get local time
 		cmp	[Time.Years],80			; Before 1980 ?
 		jc	SHORT @@BadValue		; Yes, error
 		xor	ecx,ecx				; No, clear ECX
@@ -118,7 +118,7 @@ ENDIF
 		cmp	cl,4				; Too many open files ?
 		jz	SHORT @@Error			; Yes, error
 @@AccessError:	mov	eax,EACCES			; No, EAX = error code
-@@Error:	call	__set_errno_			; Set _errno
+@@Error:	call	__set_errno			; Set _errno
 		mov	eax,-1				; EAX = return code
 		jmp	@@Exit				; Restore ESP and exit
 ENDP

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosError			: PROC
-		PUBLIC	BiosKeyboardWait_
+		PUBLIC	BiosKeyboardWait
 ;
 ; DECLARATION	int BiosKeyboardWait( void );
 ;
-PROC		BiosKeyboardWait_	STDCALL
+PROC		BiosKeyboardWait	WATCOM_C
 		mov	ah,KEYBOARD_WAIT_KEY		; AH = function number
 		;
 		; Call BIOS

@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosWriteDiskBlock_
+		PUBLIC	BiosWriteDiskBlock
 ;
 ; DECLARATION	int BiosWriteDiskBlock( int count, int drive, void *buffer,
 ;		                        unsigned LBA );
 ;
-PROC		BiosWriteDiskBlock_	STDCALL
+PROC		BiosWriteDiskBlock	WATCOM_C
 		mov	ah,DISK_WRITE_SECTOR_LBA	; AH = disk function
 		;
 		; Call BIOS

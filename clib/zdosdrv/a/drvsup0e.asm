@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreeUserTrap_
+		PUBLIC	DosFreeUserTrap
 ;
 ; DECLARATION	int DosFreeUserTrap( int handle );
 ;
-PROC		DosFreeUserTrap_	STDCALL
+PROC		DosFreeUserTrap		WATCOM_C
 		call	[DWORD FreeUserTrap]		; Free callback trap
 		jmp	DosReturnZero			; Process return code
 ENDP

@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvGetStatistics_
+		PUBLIC	DosPktDrvGetStatistics
 ;
 ; DECLARATION	int DosPktDrvGetStatistics( int InterfaceNumber, PKTDRV_STATS *Buffer );
 ;
-PROC		DosPktDrvGetStatistics_	STDCALL
+PROC		DosPktDrvGetStatistics	WATCOM_C
 		push	edi				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX = interface number

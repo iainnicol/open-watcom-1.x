@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosTraceCopyFromClient_
+		PUBLIC	DosTraceCopyFromClient
 ;
 ; DECLARATION	int DosTraceCopyFromClient( int count, unsigned from,
 ;                                           void *to );
 ;
-PROC		DosTraceCopyFromClient_	STDCALL
+PROC		DosTraceCopyFromClient	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx

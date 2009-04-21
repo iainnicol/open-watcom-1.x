@@ -8,13 +8,13 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	ConvertOpenFlags		: PROC
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_open_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_open
 ;
 ; DECLARATION	unsigned _dos_open( char * path, unsigned mode,
 ;		                    int *handle );
 ;
-PROC		_dos_open_		STDCALL
+PROC		_dos_open		WATCOM_C
 		xchg	eax,edx				; EAX = mode, EDX points to path
 		call	ConvertOpenFlags		; Convert open flags to ZDOS convention
 		mov	ah,DOS_OPEN_FILE		; AH = DOS function
@@ -26,7 +26,7 @@ IFDEF __ZDOSDRV__
 ELSE
 		int	DOS
 ENDIF
-		jc	__doserror_			; Success ?
+		jc	__doserror			; Success ?
 		mov	[ebx],eax			; Yes, save handle
 		xor	eax,eax				; Clear EAX
 		ret

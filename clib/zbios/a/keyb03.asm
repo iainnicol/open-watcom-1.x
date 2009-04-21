@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosKeyboardRate_
+		PUBLIC	BiosKeyboardRate
 ;
 ; DECLARATION	int BiosKeyboardRate( int rate, int delay );
 ;
-PROC		BiosKeyboardRate_	STDCALL
+PROC		BiosKeyboardRate	WATCOM_C
 		push	ebx				; Save context
 		mov	bl,al				; BL = repeat rate
 		mov	bh,dl				; BH = repeat delay

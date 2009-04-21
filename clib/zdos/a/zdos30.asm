@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetVersion_
+		PUBLIC	DosGetVersion
 ;
 ; DECLARATION	int DosGetVersion( void );
 ;
-PROC		DosGetVersion_		STDCALL
+PROC		DosGetVersion		WATCOM_C
 		mov	ah,DOS_GET_VERSION		; AH = DOS function
 		;
 		; Call DOS services

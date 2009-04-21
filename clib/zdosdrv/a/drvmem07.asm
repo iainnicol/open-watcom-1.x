@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosValidateUserBlock_
+		PUBLIC	DosValidateUserBlock
 ;
 ; DECLARATION	int DosValidateUserBlock( void *block, unsigned size );
 ;
-PROC		DosValidateUserBlock_	STDCALL
+PROC		DosValidateUserBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = size of block
 		call	[DWORD ValidateBlock]		; Validate block

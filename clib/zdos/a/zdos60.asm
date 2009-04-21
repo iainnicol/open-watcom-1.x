@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosGetActualFileName_
+		PUBLIC	DosGetActualFileName
 ;
 ; DECLARATION	int DosGetActualFileName( char *path, char *buffer );
 ;
-PROC		DosGetActualFileName_	STDCALL
+PROC		DosGetActualFileName	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		mov	esi,eax				; ESI points to path to expand

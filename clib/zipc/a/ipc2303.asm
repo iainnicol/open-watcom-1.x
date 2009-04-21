@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWaitGlobalMutex_
+		PUBLIC	DosWaitGlobalMutex
 ;
 ; DECLARATION	int DosWaitGlobalMutex( int handle );
 ;
-PROC		DosWaitGlobalMutex_	STDCALL
+PROC		DosWaitGlobalMutex	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = mutex handle
 		mov	ah,IPC_WAIT_MUTEX		; Wait mutex

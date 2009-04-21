@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosMouseStatus_
+		PUBLIC	BiosMouseStatus
 ;
 ; DECLARATION	int BiosMouseStatus( MOUSE_INFO *info );
 ;
-PROC		BiosMouseStatus_	STDCALL
+PROC		BiosMouseStatus		WATCOM_C
 		push	esi				; Save context
 		push	edx
 		push	ecx

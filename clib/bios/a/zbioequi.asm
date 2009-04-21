@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_bios_equiplist_
+		PUBLIC	_bios_equiplist
 ;
 ; DECLARATION	unsigned _bios_equiplist( void );
 ;
-PROC		_bios_equiplist_		STDCALL
+PROC		_bios_equiplist		WATCOM_C
 		;
 		; Call BIOS get equipment list service
 		;

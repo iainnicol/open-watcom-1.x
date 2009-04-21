@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosAbsoluteDiskWrite_
+		PUBLIC	DosAbsoluteDiskWrite
 ;
 ; DECLARATION	int DosAbsoluteDiskWrite( int drive, unsigned sector,
 ;		                          void *buffer, int count );
 ;
-PROC		DosAbsoluteDiskWrite_ 	STDCALL
+PROC		DosAbsoluteDiskWrite 	WATCOM_C
 		;
 		; Write sector(s) to disk
 		;

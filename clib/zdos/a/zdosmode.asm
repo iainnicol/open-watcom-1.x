@@ -12,11 +12,11 @@ ALLOW_WRITE	=	2				; Allow writing for owner
 DENY_READ	=	4				; Others can't read
 DENY_WRITE	=	8				; Others can't write
 		CODESEG
-		PUBLIC	ConvertOpenFlags_
+		PUBLIC	ConvertOpenFlags
 ;
 ; DECLARATION	int ConvertOpenFlags( int modeflags );
 ;
-PROC		ConvertOpenFlags_	STDCALL
+PROC		ConvertOpenFlags	WATCOM_C
 		push	ebx				; Save context
 		movzx	ebx,al				; Get copy of flags in EBX
 		and	al,11110000b			; Clear bits to modify

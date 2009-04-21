@@ -9,28 +9,29 @@
 SEGMENT		_TEXT
 		ASSUME	cs:_TEXT,ds:DGROUP,es:DGROUP,ss:DGROUP
 		EXTRN	InitializeDriver		: PROC
-		EXTRN	DeviceInitialization_		: PROC
-		EXTRN	DeviceMediaCheck_		: PROC
-		EXTRN	DeviceBuildBPB_			: PROC
-		EXTRN	DeviceIoctlInput_		: PROC
-		EXTRN	DeviceInput_			: PROC
-		EXTRN	DeviceNonDestructiveInput_	: PROC
-		EXTRN	DeviceInputStatus_		: PROC
-		EXTRN	DeviceInputFlush_		: PROC
-		EXTRN	DeviceOutput_			: PROC
-		EXTRN	DeviceOutputWithVerify_		: PROC
-		EXTRN	DeviceOutputStatus_		: PROC
-		EXTRN	DeviceOutputFlush_		: PROC
-		EXTRN	DeviceIoctlOutput_		: PROC
-		EXTRN	DeviceOpen_			: PROC
-		EXTRN	DeviceClose_			: PROC
-		EXTRN	DeviceRemovableMedia_		: PROC
-		EXTRN	DeviceOutputUntilBusy_		: PROC
-		EXTRN	DeviceGenericIoctl_		: PROC
-		EXTRN	DeviceGetLogicalUnit_		: PROC
-		EXTRN	DeviceSetLogicalUnit_		: PROC
-		EXTRN	DeviceIoctlQuery_		: PROC
-		PUBLIC	C cstart_
+		EXTRN	WATCOM_C DeviceInitialization	: PROC
+		EXTRN	WATCOM_C DeviceMediaCheck	: PROC
+		EXTRN	WATCOM_C DeviceBuildBPB		: PROC
+		EXTRN	WATCOM_C DeviceIoctlInput	: PROC
+		EXTRN	WATCOM_C DeviceInput		: PROC
+		EXTRN	WATCOM_C \
+			DeviceNonDestructiveInput	: PROC
+		EXTRN	WATCOM_C DeviceInputStatus	: PROC
+		EXTRN	WATCOM_C DeviceInputFlush	: PROC
+		EXTRN	WATCOM_C DeviceOutput		: PROC
+		EXTRN	WATCOM_C DeviceOutputWithVerify	: PROC
+		EXTRN	WATCOM_C DeviceOutputStatus	: PROC
+		EXTRN	WATCOM_C DeviceOutputFlush	: PROC
+		EXTRN	WATCOM_C DeviceIoctlOutput	: PROC
+		EXTRN	WATCOM_C DeviceOpen		: PROC
+		EXTRN	WATCOM_C DeviceClose		: PROC
+		EXTRN	WATCOM_C DeviceRemovableMedia	: PROC
+		EXTRN	WATCOM_C DeviceOutputUntilBusy	: PROC
+		EXTRN	WATCOM_C DeviceGenericIoctl	: PROC
+		EXTRN	WATCOM_C DeviceGetLogicalUnit	: PROC
+		EXTRN	WATCOM_C DeviceSetLogicalUnit	: PROC
+		EXTRN	WATCOM_C DeviceIoctlQuery	: PROC
+		PUBLIC	WATCOM_C cstart_
 LABEL		cstart_			BYTE
 Header		DEVICE	<0, 0, InterruptHandler, '_NONAME_'>
 ;
@@ -54,7 +55,7 @@ PROC		InterruptHandler
 		ret
 ENDP
 ;
-; PROCEDURE	DeviceInitialization
+; PROCEDURE	InitializeDevice
 ;
 ; INPUT		EAX = pointer to IO_INIT request block
 ;		EBX = pointer to IO_INIT request block
@@ -64,7 +65,7 @@ ENDP
 ;
 ; DESCRIPTION	Initializes a device.
 ;
-PROC		DeviceInitialization
+PROC		InitializeDevice
 		mov	edx,OFFSET StartOfStack		; EDX = break address on success
 		push	edx				; Save context
 		push	ebx
@@ -76,8 +77,8 @@ PROC		DeviceInitialization
 		pop	edx
 		or	eax,eax				; Success ?
 		jnz	SHORT @@Error			; No, release memory and exit
-		mov	eax,ebx				; Yes, EBX points to IO_INIT request block
-		call	DeviceInitialization_		; Initialize device
+		mov	eax,ebx				; Yes, EAX points to IO_INIT request block
+		call	DeviceInitialization WATCOM_C,?	; Initialize device
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, set device driver break address and exit
 @@Error:	mov	edx,OFFSET cstart_		; No, EDX = break address
@@ -89,27 +90,27 @@ ENDS
 
 SEGMENT		_DATA
 		EXTRN	DeviceAttributes		: DWORD
-DeviceCommands	DD	DeviceInitialization		; 00h
-		DD	DeviceMediaCheck_		; 01h
-		DD	DeviceBuildBPB_			; 02h
-		DD	DeviceIoctlInput_		; 03h
-		DD	DeviceInput_			; 04h
-		DD	DeviceNonDestructiveInput_	; 05h
-		DD	DeviceInputStatus_		; 06h
-		DD	DeviceInputFlush_		; 07h
-		DD	DeviceOutput_			; 08h
-		DD	DeviceOutputWithVerify_		; 09h
-		DD	DeviceOutputStatus_		; 0ah
-		DD	DeviceOutputFlush_		; 0bh
-		DD	DeviceIoctlOutput_		; 0ch
-		DD	DeviceOpen_			; 0dh
-		DD	DeviceClose_			; 0eh
-		DD	DeviceRemovableMedia_		; 0fh
-		DD	DeviceOutputUntilBusy_		; 10h
-		DD	DeviceGenericIoctl_		; 11h
-		DD	DeviceGetLogicalUnit_		; 12h
-		DD	DeviceSetLogicalUnit_		; 13h
-		DD	DeviceIoctlQuery_		; 14h
+DeviceCommands	DD	InitializeDevice		; 00h
+		DD	DeviceMediaCheck		; 01h
+		DD	DeviceBuildBPB			; 02h
+		DD	DeviceIoctlInput		; 03h
+		DD	DeviceInput			; 04h
+		DD	DeviceNonDestructiveInput	; 05h
+		DD	DeviceInputStatus		; 06h
+		DD	DeviceInputFlush		; 07h
+		DD	DeviceOutput			; 08h
+		DD	DeviceOutputWithVerify		; 09h
+		DD	DeviceOutputStatus		; 0ah
+		DD	DeviceOutputFlush		; 0bh
+		DD	DeviceIoctlOutput		; 0ch
+		DD	DeviceOpen			; 0dh
+		DD	DeviceClose			; 0eh
+		DD	DeviceRemovableMedia		; 0fh
+		DD	DeviceOutputUntilBusy		; 10h
+		DD	DeviceGenericIoctl		; 11h
+		DD	DeviceGetLogicalUnit		; 12h
+		DD	DeviceSetLogicalUnit		; 13h
+		DD	DeviceIoctlQuery		; 14h
 ENDS
 
 SEGMENT		_BSS

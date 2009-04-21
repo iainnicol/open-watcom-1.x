@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosGetTime_
+		PUBLIC	BiosGetTime
 ;
 ; DECLARATION	void BiosGetTime( TIME *time );
 ;
-PROC		BiosGetTime_		STDCALL
+PROC		BiosGetTime		WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		push	ebx

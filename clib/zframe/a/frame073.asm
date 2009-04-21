@@ -8,12 +8,12 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferCursorPosition_
+		PUBLIC	DosFrameBufferCursorPosition
 ;
 ;		#pragma aux DosFrameBufferCursorPosition parm [ECX][EDX];
 ; DECLARATION	int DosFrameBufferCursorPosition( int X, int Y );
 ;
-PROC		DosFrameBufferCursorPosition_	STDCALL
+PROC		DosFrameBufferCursorPosition	WATCOM_C
 		;
 		; Set cursor position
 		;

@@ -8,14 +8,15 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosReadPciRegisterWORD_
+		PUBLIC	BiosReadPciRegisterWORD
 ;
 ; DECLARATION	int BiosReadPciRegisterWORD( int bus, int device,
 ;                                            int function, int register,
 ;		                             unsigned short *value );
 ;
-PROC		BiosReadPciRegisterWORD_ STDCALL
-		ARG	Value : DWORD
+PROC		BiosReadPciRegisterWORD	WATCOM_C
+		ARG	Bus : DWORD, Device : DWORD, Function : DWORD, \
+			Register : DWORD, Value : DWORD
 		USES	edi,esi
 		mov	bh,al				; BH = bus number
 		shl	dl,3				; Get device bits in proper position

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	cgets_
+		PUBLIC	cgets
 ;
 ; DECLARATION	char *cgets( char * buffer );
 ;
-PROC		cgets_			STDCALL
+PROC		cgets			WATCOM_C
 		USES	edx
 		mov	edx,eax				; EDX points to buffer
 		mov	ah,DOS_CONSOLE_BUFFERED_INPUT	; AH = DOS function

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCreateGlobalEvent_
+		PUBLIC	DosCreateGlobalEvent
 ;
 ; DECLARATION	int DosCreateGlobalEvent( char *name, unsigned value );
 ;
-PROC		DosCreateGlobalEvent_	STDCALL
+PROC		DosCreateGlobalEvent	WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	ecx,edx				; ECX = initial value

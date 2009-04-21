@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	shutdown_
+		PUBLIC	shutdown
 ;
 ; DECLARATION	int shutdown( int s, int how );
 ;
-PROC		shutdown_		STDCALL
+PROC		shutdown		WATCOM_C
 		shl	eax,2				; EAX = socket handle
 		mov	ebx,eax				; EBX = socket handle
 		mov	al,dl				; AL = socket operation(s) to shutdown

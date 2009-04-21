@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvSetReceiveMode_
+		PUBLIC	DosPktDrvSetReceiveMode
 ;
 ; DECLARATION	int DosPktDrvSetReceiveMode( int mode, int InterfaceNumber );
 ;
-PROC		DosPktDrvSetReceiveMode_ STDCALL
+PROC		DosPktDrvSetReceiveMode	WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,eax				; ECX = receive mode

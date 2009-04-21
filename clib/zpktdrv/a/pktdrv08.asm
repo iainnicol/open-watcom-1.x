@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvGetMulticastList_
+		PUBLIC	DosPktDrvGetMulticastList
 ;
 ; DECLARATION	int DosPktDrvGetMulticastList( int InterfaceNumber, void *Buffer );
 ;
-PROC		DosPktDrvGetMulticastList_ STDCALL
+PROC		DosPktDrvGetMulticastList WATCOM_C
 		push	edi				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX = interface number

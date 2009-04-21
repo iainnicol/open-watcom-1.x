@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosDirectConsoleOutput_
+		PUBLIC	DosDirectConsoleOutput
 ;
 ; DECLARATION	int DosDirectConsoleOutput( int character );
 ;
-PROC		DosDirectConsoleOutput_	STDCALL
+PROC		DosDirectConsoleOutput	WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = character to write
 		mov	ah,DOS_DIRECT_CONSOLEIO		; AH = DOS function

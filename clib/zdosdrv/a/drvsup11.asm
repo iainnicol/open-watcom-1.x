@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosFreeDmaBuffer_
+		PUBLIC	DosFreeDmaBuffer
 ;
 ; DECLARATION	int DosFreeDmaBuffer( int handle );
 ;
-PROC		DosFreeDmaBuffer_	STDCALL
+PROC		DosFreeDmaBuffer	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = handle
 		call	[DWORD DmaFreeBuffer]		; Free DMA buffer

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreePages_
+		PUBLIC	DosFreePages
 ;
 ; DECLARATION	int DosFreePages( void *block );
 ;
-PROC		DosFreePages_		STDCALL
+PROC		DosFreePages		WATCOM_C
 		call	[DWORD ReallocatePages]		; Reallocate block
 		jmp	DosReturnZero			; Process return code
 ENDP

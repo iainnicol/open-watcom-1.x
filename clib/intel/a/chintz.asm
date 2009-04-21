@@ -6,7 +6,7 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSINT.INC'
 		CODESEG
-		PUBLIC	_chain_intr_
+		PUBLIC	_chain_intr
 ;
 ; DECLARATION	void _chain_intr( register void
 ;		                  (__cdecl *h) (struct context_t) );
@@ -41,7 +41,7 @@
 ;		[EBP + 64]	= CS
 ;		[EBP + 68]	= EFLAGS
 ;
-PROC		_chain_intr_		STDCALL
+PROC		_chain_intr		WATCOM_C
 		lea	esp,[ebp + 8]			; Restore ESP
 IFDEF __ZDOSDRV__
 		pop	ebx				; Remove flags

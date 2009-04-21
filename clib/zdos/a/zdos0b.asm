@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		PUBLIC	DosCheckInputStatus_
+		PUBLIC	DosCheckInputStatus
 ;
 ; DECLARATION	int DosCheckInputStatus( void );
 ;
-PROC		DosCheckInputStatus_	STDCALL
+PROC		DosCheckInputStatus	WATCOM_C
 		mov	ah,DOS_CHECK_INPUT_STATUS	; AH = DOS function
 		;
 		; Call DOS services

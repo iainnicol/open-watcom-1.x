@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetBlinkBit_
+		PUBLIC	BiosSetBlinkBit
 ;
 ; DECLARATION	int BiosSetBlinkBit( int blinkbit );
 ;
-PROC		BiosSetBlinkBit_	STDCALL
+PROC		BiosSetBlinkBit		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		movzx	ebx,al				; EBX = blink bit
@@ -31,5 +31,5 @@ ENDIF
 		jmp	BiosReturnZero			; Process return code
 ENDP
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 		END

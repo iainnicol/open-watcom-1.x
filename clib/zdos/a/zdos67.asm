@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosElapsedTimerTicks_
+		PUBLIC	DosElapsedTimerTicks
 ;
 ; DECLARATION	unsigned int DosElapsedTimerTicks( unsigned referencetime );
 ;
-PROC		DosElapsedTimerTicks_	STDCALL
+PROC		DosElapsedTimerTicks	WATCOM_C
 		USES	edx
 		mov	edx,eax				; EDX = reference time
 		mov	ah,DOS_ELAPSED_TIMER_TICKS	; AH = DOS function

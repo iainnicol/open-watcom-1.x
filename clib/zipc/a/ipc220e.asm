@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCloseEvent_
+		PUBLIC	DosCloseEvent
 ;
 ; DECLARATION	int DosCloseEvent( EVENT *event );
 ;
-PROC		DosCloseEvent_		STDCALL
+PROC		DosCloseEvent		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to event
 		;

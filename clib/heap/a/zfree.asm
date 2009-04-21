@@ -6,13 +6,13 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	free_
-		PUBLIC	_nfree_
+		PUBLIC	free
+		PUBLIC	WATCOM_C _nfree
 ;
 ; DECLARATION	void free( void *ptr );
 ;
-PROC		free_			STDCALL
-LABEL		_nfree_			PROC
+PROC		free			WATCOM_C
+LABEL		_nfree			PROC
 		jmp	[DWORD FreeBlock]		; Free block
 ENDP
 		END

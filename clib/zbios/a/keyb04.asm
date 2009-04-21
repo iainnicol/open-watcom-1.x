@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosKeyboardFlush_
+		PUBLIC	BiosKeyboardFlush
 ;
 ; DECLARATION	int BiosKeyboardFlush( void );
 ;
-PROC		BiosKeyboardFlush_	STDCALL
+PROC		BiosKeyboardFlush	WATCOM_C
 		mov	ah,KEYBOARD_FLUSH		; AH = function number
 		;
 		; Call BIOS

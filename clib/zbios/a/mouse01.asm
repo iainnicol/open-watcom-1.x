@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosResetMouse_
+		PUBLIC	BiosResetMouse
 ;
 ; DECLARATION	int BiosResetMouse( void );
 ;
-PROC		BiosResetMouse_		STDCALL
+PROC		BiosResetMouse		WATCOM_C
 		push	ebx				; Save context
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number
 			    MOUSE_RESET			; AL = subfunction number

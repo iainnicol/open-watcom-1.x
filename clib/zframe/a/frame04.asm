@@ -8,12 +8,12 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferFillRectangle_
+		PUBLIC	DosFrameBufferFillRectangle
 ;
 ;		#pragma aux DosFrameBufferFillRectangle parm [EAX][EBX][ECX][EDX][ESI][EDI];
 ; DECLARATION	int DosFrameBufferFillRectangle( int rop, int color, int x, int y, int height, int width );
 ;
-PROC		DosFrameBufferFillRectangle_	STDCALL
+PROC		DosFrameBufferFillRectangle WATCOM_C
 		;
 		; Fill rectangle
 		;

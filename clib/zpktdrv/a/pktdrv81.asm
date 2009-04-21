@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvRemoveInterface_
+		PUBLIC	DosPktDrvRemoveInterface
 ;
 ; DECLARATION	int DosPktDrvRemoveInterface( int InterfaceNumber );
 ;
-PROC		DosPktDrvRemoveInterface_	STDCALL
+PROC		DosPktDrvRemoveInterface	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = interface number
 		mov	ah,PKTDRV_REMOVE_INTERFACE	; Remove packet driver interface

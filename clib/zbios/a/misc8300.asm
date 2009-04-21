@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosStartEventWait_
+		PUBLIC	BiosStartEventWait
 ;
 ; DECLARATION	int BiosStartEventWait( int *flag, unsigned microseconds );
 ;
-PROC		BiosStartEventWait_	STDCALL
+PROC		BiosStartEventWait	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to flag
 		mov	eax,MISC_EVENT_WAIT SHL 8	; AH = function number, AL = subfunction number

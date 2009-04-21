@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvGetParameters_
+		PUBLIC	DosPktDrvGetParameters
 ;
 ; DECLARATION	int DosPktDrvGetParameters( int InterfaceNumber, PKTDRV_PARAM **Buffer );
 ;
-PROC		DosPktDrvGetParameters_	STDCALL
+PROC		DosPktDrvGetParameters	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = interface number
 		mov	ah,PKTDRV_GET_PARAMETERS	; Get pointer to parameters

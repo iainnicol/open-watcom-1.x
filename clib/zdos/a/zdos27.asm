@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosGetEnvironment_
+		PUBLIC	DosGetEnvironment
 ;
 ; DECLARATION	int DosGetEnvironment( char *buffer );
 ;
-PROC		DosGetEnvironment_	STDCALL
+PROC		DosGetEnvironment	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to buffer
 		mov	ah,DOS_GET_ENVIRONMENT		; AH = DOS function

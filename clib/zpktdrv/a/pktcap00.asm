@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvOpenCapture_
+		PUBLIC	DosPktDrvOpenCapture
 ;
 ; DECLARATION	int DosPktDrvOpenCapture( int InterfaceNumber );
 ;
-PROC		DosPktDrvOpenCapture_	STDCALL
+PROC		DosPktDrvOpenCapture	WATCOM_C
 		mov	ah,PKTDRV_OPEN_CAPTURE		; Open capture session
 		int	PKTDRV_CAPTURE
 		jc	DosError			; Success ?

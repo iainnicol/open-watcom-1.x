@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosConsoleMessage_
+		PUBLIC	DosConsoleMessage
 ;
 ; DECLARATION	void DosConsoleMessage( const char *message );
 ;
-PROC		DosConsoleMessage_	STDCALL
+PROC		DosConsoleMessage	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to message
 		call	[DWORD ConsoleMessage]		; Display message

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSystemRequest_
+		PUBLIC	BiosSystemRequest
 ;
 ; DECLARATION	int BiosSystemRequest( int flag );
 ;
-PROC		BiosSystemRequest_	STDCALL
+PROC		BiosSystemRequest	WATCOM_C
 		mov	ah,MISC_SYSTEM_REQUEST		; AH = function number
 		;
 		; Call BIOS

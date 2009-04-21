@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlVerifyTrack_
+		PUBLIC	DosIoctlVerifyTrack
 ;
 ; DECLARATION	int DosIoctlVerifyTrack( int head, int track, int drive );
 ;
-PROC		DosIoctlVerifyTrack_	STDCALL
+PROC		DosIoctlVerifyTrack	WATCOM_C
 		mov	bh,al				; BH = head number
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number
 			    IOCTL_VERIFY_TRACK		; AL = subfunction number

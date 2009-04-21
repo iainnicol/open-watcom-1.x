@@ -9,12 +9,12 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosSocketSelect_
+		PUBLIC	DosSocketSelect
 ;
 ; DECLARATION	int DosSocketSelect( unsigned ticks, unsigned *readset,
 ;                                    unsigned *writeset, unsigned *exceptset );
 ;
-PROC		DosSocketSelect_	STDCALL
+PROC		DosSocketSelect		WATCOM_C
 		push	esi				; Save context
 		mov	esi,eax				; ESI = time to wait
 		mov	ah,SOCKET_SELECT		; AH = function number

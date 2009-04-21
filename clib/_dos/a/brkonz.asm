@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	break_on_
+		PUBLIC	break_on
 ;
 ; DECLARATION	void break_on( void );
 ;
-PROC		break_on_		STDCALL
+PROC		break_on		WATCOM_C
 		USES	edx,eax
 		;
 		; Get function numbers in AH and AL

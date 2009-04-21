@@ -9,12 +9,12 @@
 		INCLUDE	'ERRNO.INC'
 		CODESEG
 		EXTRN	InitializeEnvironment		: PROC
-		EXTRN	__set_errno_			: PROC
-		PUBLIC	putenv_
+		EXTRN	WATCOM_C __set_errno		: PROC
+		PUBLIC	putenv
 ;
 ; DECLARATION	int putenv( const char * string );
 ;
-PROC		putenv_			STDCALL
+PROC		putenv			WATCOM_C
 		USES	edi,esi,edx,ecx
 		test	[_Envptr],-1			; Environment buffer available ?
 		jz	SHORT @@Error			; No, error
@@ -33,10 +33,10 @@ ENDIF
 		xor	eax,eax				; Clear EAX
 		ret
 @@Error:	mov	eax,ENOMEM			; EAX = error code
-		call	__set_errno_			; Set _errno
+		call	__set_errno			; Set _errno
 		mov	eax,-1				; EAX = return value
 		ret
 ENDP
 		UDATASEG
-	     	EXTRN	C _Envptr			: DWORD
+	     	EXTRN	WATCOM_C _Envptr		: DWORD
 		END

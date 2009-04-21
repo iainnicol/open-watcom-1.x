@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvNumberOfInterfaces_
+		PUBLIC	DosPktDrvNumberOfInterfaces
 ;
 ; DECLARATION	int DosPktDrvNumberOfInterfaces( void );
 ;
-PROC		DosPktDrvNumberOfInterfaces_	STDCALL
+PROC		DosPktDrvNumberOfInterfaces	WATCOM_C
 		mov	ah,PKTDRV_NUMBER_OF_INTERFACES	; Get number of installed packet driver interfaces
 		call	[DWORD DosPacketDriver]
 		jc	DosError			; Success ?

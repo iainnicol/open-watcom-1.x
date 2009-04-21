@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCreateFile_
+		PUBLIC	DosCreateFile
 ;
 ; DECLARATION	int DosCreateFile( int attributes, char *path );
 ;
-PROC		DosCreateFile_		STDCALL
+PROC		DosCreateFile		WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = file attributes
 		mov	ah,DOS_CREATE_FILE		; AH = DOS function number

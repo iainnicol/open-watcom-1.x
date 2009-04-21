@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_dos_getdrive_
+		PUBLIC	_dos_getdrive
 ;
 ; DECLARATION	void _dos_getdrive( unsigned *drive );
 ;
-PROC		_dos_getdrive_		STDCALL
+PROC		_dos_getdrive		WATCOM_C
 		USES	edx
 		mov	edx,eax				; EDX points to drive variable
 		mov	ah,DOS_GET_CURRENT_DRIVE	; AH = DOS function

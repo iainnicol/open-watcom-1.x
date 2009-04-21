@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		PUBLIC	DosGetCurrentDrive_
+		PUBLIC	DosGetCurrentDrive
 ;
 ; DECLARATION	int DosGetCurrentDrive( void );
 ;
-PROC		DosGetCurrentDrive_	STDCALL
+PROC		DosGetCurrentDrive	WATCOM_C
 		mov	ah,DOS_GET_CURRENT_DRIVE	; AH = DOS function
 		;
 		; Call DOS services

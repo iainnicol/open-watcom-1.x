@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetBreakFlag_
+		PUBLIC	DosGetBreakFlag
 ;
 ; DECLARATION	int DosGetBreakFlag( void );
 ;
-PROC		DosGetBreakFlag_		STDCALL
+PROC		DosGetBreakFlag		WATCOM_C
 		push	edx				; Save context
 		mov	eax,DOS_GET_SET_BREAK_FLAG SHL 8; AH = DOS function, AL = subfunction
 		;

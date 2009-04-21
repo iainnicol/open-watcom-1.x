@@ -9,11 +9,11 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosMediaLockStatus_
+		PUBLIC	BiosMediaLockStatus
 ;
 ; DECLARATION	int BiosMediaLockStatus( int device );
 ;
-PROC		BiosMediaLockStatus_	STDCALL
+PROC		BiosMediaLockStatus	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = device
 		mov	ah,DISK_MEDIA_LOCK_STATUS	; AH = disk function

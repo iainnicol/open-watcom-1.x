@@ -10,7 +10,7 @@
 ;
 ; DECLARATION	unsigned BiosEquipment( void );
 ;
-PROC		BiosEquipment_		STDCALL
+PROC		BiosEquipment_
 		;
 		; Call BIOS get equipment list service
 		;

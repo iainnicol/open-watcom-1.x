@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSignalSemaphore_
+		PUBLIC	DosSignalSemaphore
 ;
 ; DECLARATION	int DosSignalSemaphore( SEMAPHORE *semaphore );
 ;
-PROC		DosSignalSemaphore_	STDCALL
+PROC		DosSignalSemaphore	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to semaphore
 IFDEF __ZDOSDRV__

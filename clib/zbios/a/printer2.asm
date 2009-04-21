@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosPrinterStatus_
+		PUBLIC	BiosPrinterStatus
 ;
 ; DECLARATION	int BiosPrinterStatus( int printerport );
 ;
-PROC		BiosPrinterStatus_	STDCALL
+PROC		BiosPrinterStatus	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = printer port number
 		mov	ah,PRINTER_STATUS		; AH = function number

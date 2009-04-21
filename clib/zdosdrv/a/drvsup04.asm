@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetKernelVector_
+		PUBLIC	DosGetKernelVector
 ;
 ; DECLARATION	void ( __cdecl *DosGetKernelVector( int i ) )(struct context_t);
 ;
-PROC		DosGetKernelVector_	STDCALL
+PROC		DosGetKernelVector	WATCOM_C
 		USES	ecx,ebx
 		movzx	ecx,al				; ECX = vector number
 		call	[DWORD GetVector]		; Get vector

@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosError			: PROC
-		PUBLIC	BiosBufferedUartInput_
+		PUBLIC	BiosBufferedUartInput
 ;
 ; DECLARATION	int BiosBufferedUartInput( int count, int portnumber,
 ;                                          void *buffer );
 ;
-PROC		BiosBufferedUartInput_	STDCALL
+PROC		BiosBufferedUartInput	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of bytes to read
 		mov	ah,UART_BUFFERED_INPUT		; AH = function number

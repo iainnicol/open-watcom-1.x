@@ -6,14 +6,14 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
-		PUBLIC	fdclr_
-		PUBLIC	fdset_
-		PUBLIC	fdzero_
-		PUBLIC	fdisset_
+		PUBLIC	fdclr
+		PUBLIC	fdset
+		PUBLIC	fdzero
+		PUBLIC	fdisset
 ;
 ; DECLARATION	fdclr( int fd, fd_set *set );
 ;
-PROC		fdclr_			STDCALL
+PROC		fdclr			WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx
@@ -39,7 +39,7 @@ ENDP
 ;
 ; DECLARATION	fdset( int fd, fd_set *set, int maxcount );
 ;
-PROC		fdset_			STDCALL
+PROC		fdset			WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,[(FDSET edx).Count]		; ECX = number of handles installed
 		cmp	ecx,ebx				; Array full ?
@@ -55,14 +55,14 @@ ENDP
 ;
 ; DECLARATION	fdzero( fd_set *set );
 ;
-PROC		fdzero_			STDCALL
+PROC		fdzero			WATCOM_C
 		mov	[(FDSET eax).Count],0		; Reset handle count
 		ret
 ENDP
 ;
 ; DECLARATION	fdisset( int fd, fd_set *set );
 ;
-PROC		fdisset_		STDCALL
+PROC		fdisset			WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	ecx,[(FDSET edx).Count]		; ECX = number of handles installed

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosAllocateDmaBuffer_
+		PUBLIC	DosAllocateDmaBuffer
 ;
 ; DECLARATION	int DosAllocateDmaBuffer( int pages );
 ;
-PROC		DosAllocateDmaBuffer_	STDCALL
+PROC		DosAllocateDmaBuffer	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of pages to allocate
 		call	[DWORD DmaAllocBuffer]		; Allocate DMA buffer

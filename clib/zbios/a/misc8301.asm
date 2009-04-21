@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosCancelEventWait_
+		PUBLIC	BiosCancelEventWait
 ;
 ; DECLARATION	int BiosCancelEventWait( void );
 ;
-PROC		BiosCancelEventWait_	STDCALL
+PROC		BiosCancelEventWait	WATCOM_C
 		mov	eax,MISC_EVENT_WAIT SHL 8 + 1	; AH = function number, AL = subfunction number
 		;
 		; Call BIOS

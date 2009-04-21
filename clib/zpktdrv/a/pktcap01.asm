@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvCloseCapture_
+		PUBLIC	DosPktDrvCloseCapture
 ;
 ; DECLARATION	int DosPktDrvCloseCapture( int Handle );
 ;
-PROC		DosPktDrvCloseCapture_	STDCALL
+PROC		DosPktDrvCloseCapture	WATCOM_C
 		push	ebx				; Save context
 		lea	ebx,[eax + eax]			; EBX = handle
 		mov	ah,PKTDRV_CLOSE_CAPTURE		; Close capture session

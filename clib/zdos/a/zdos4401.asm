@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlSetDeviceInfo_
+		PUBLIC	DosIoctlSetDeviceInfo
 ;
 ; DECLARATION	int DosIoctlSetDeviceInfo( int handle, int deviceinfo );
 ;
-PROC		DosIoctlSetDeviceInfo_	STDCALL
+PROC		DosIoctlSetDeviceInfo	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = file handle
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number

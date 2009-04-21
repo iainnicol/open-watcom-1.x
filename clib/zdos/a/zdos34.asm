@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosAbortProcess_
+		PUBLIC	DosAbortProcess
 ;
 ; DECLARATION	int DosAbortProcess( int PID );
 ;
-PROC		DosAbortProcess_	STDCALL
+PROC		DosAbortProcess		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = PID
 		mov	ah,DOS_ABORT_PROCESS		; AH = DOS function

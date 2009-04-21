@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosGetBorder_
+		PUBLIC	BiosGetBorder
 ;
 ; DECLARATION	int BiosGetBorder( void );
 ;
-PROC		BiosGetBorder_		STDCALL
+PROC		BiosGetBorder		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	eax,VIDEO_GET_OVERSCAN		; AH = video function, AL = subfunction
@@ -32,6 +32,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

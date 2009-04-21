@@ -8,11 +8,11 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferDisableConsole_
+		PUBLIC	DosFrameBufferDisableConsole
 ;
 ; DECLARATION	int DosFrameBufferDisableConsole( void );
 ;
-PROC		DosFrameBufferDisableConsole_	STDCALL
+PROC		DosFrameBufferDisableConsole	WATCOM_C
 		;
 		; Disable console emulator
 		;

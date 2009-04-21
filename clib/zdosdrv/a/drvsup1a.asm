@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreeIrq_
+		PUBLIC	DosFreeIrq
 ;
 ; DECLARATION	int DosFreeIrq( int irq );
 ;
-PROC		DosFreeIrq_		STDCALL
+PROC		DosFreeIrq		WATCOM_C
 		call	[DWORD FreeIrq]			; Free IRQ
 		jmp	DosReturnZero			; Process return code
 ENDP

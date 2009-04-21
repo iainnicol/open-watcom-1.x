@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDiskEmulatorConnect_
+		PUBLIC	BiosDiskEmulatorConnect
 ;
 ; DECLARATION	int BiosDiskEmulatorConnect( void **dispatch, int drive );
 ;
-PROC		BiosDiskEmulatorConnect_ STDCALL
+PROC		BiosDiskEmulatorConnect WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to dispatcher table
 		mov	ah,DISK_EMULATOR_CONNECT	; AH = disk function

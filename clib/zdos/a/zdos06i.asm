@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosDirectConsoleInput_
+		PUBLIC	DosDirectConsoleInput
 ;
 ; DECLARATION	int DosDirectConsoleInput( void );
 ;
-PROC		DosDirectConsoleInput_	STDCALL
+PROC		DosDirectConsoleInput	WATCOM_C
 		push	edx				; Save context
 		mov	dl,-1				; DL = direct input flag
 		mov	ah,DOS_DIRECT_CONSOLEIO		; AH = DOS function

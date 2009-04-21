@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWaitGlobalEvent_
+		PUBLIC	DosWaitGlobalEvent
 ;
 ; DECLARATION	int DosWaitGlobalEvent( int flags, unsigned bitmask,
 ;		                        int handle );
 ;
-PROC		DosWaitGlobalEvent_	STDCALL
+PROC		DosWaitGlobalEvent	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = bitmask
 		mov	ah,IPC_WAIT_EVENT		; Wait event

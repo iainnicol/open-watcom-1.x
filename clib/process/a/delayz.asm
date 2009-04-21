@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	delay_
+		PUBLIC	delay
 ;
 ; DECLARATION	void delay( unsigned milliseconds );
 ;
-PROC		delay_			STDCALL
+PROC		delay			WATCOM_C
 		push	edx				; Save context
 		mov	edx,1000			; EDX = number of milliseconds in one second
 		mul	edx				; EDX:EAX = number of milliseconds * 1000

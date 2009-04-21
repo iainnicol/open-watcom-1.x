@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	clearenv_
+		PUBLIC	clearenv
 ;
 ; DECLARATION	int clearenv( void );
 ;
-PROC		clearenv_		STDCALL
+PROC		clearenv		WATCOM_C
 		push	edi				; Save context
 		xor	eax,eax				; Clear EAX
 		or	eax,[_Envptr]			; Environment buffer available ?
@@ -36,8 +36,8 @@ ENDIF
 		ret
 ENDP
 		UDATASEG
-		EXTRN	C _Envptr			: DWORD
-		EXTRN	C _Envlength			: DWORD
-		EXTRN	C environ			: DWORD
-		EXTRN	C _STACKLOW			: DWORD
+		EXTRN	WATCOM_C _Envptr		: DWORD
+		EXTRN	WATCOM_C _Envlength		: DWORD
+		EXTRN	WATCOM_C environ		: DWORD
+		EXTRN	WATCOM_C _STACKLOW		: DWORD
 		END

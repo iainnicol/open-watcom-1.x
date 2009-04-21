@@ -5,19 +5,19 @@
 		P486
 		MODEL	USE32 SMALL
 		CODESEG
-		EXTRN	strlen_				: PROC
-		EXTRN	strnicmp_			: PROC
-		PUBLIC	getenv_
+		EXTRN	WATCOM_C strlen			: PROC
+		EXTRN	WATCOM_C strnicmp		: PROC
+		PUBLIC	getenv
 ;
 ; DECLARATION	char *getenv ( const char *name );
 ;
-PROC		getenv_			STDCALL
+PROC		getenv			WATCOM_C
 		USES	edi,esi,edx,ecx,ebx
 		mov	edi,[_Envptr]			; EDI points to environment
 		or	edi,edi				; Environment block available ?
 		jz	SHORT @@Exit			; No, we are done
 		mov	esi,eax				; Yes, save pointer to string in ESI
-		call	strlen_				; Get string length
+		call	strlen				; Get string length
 		mov	ebx,eax				; EBX = string length
 		mov	ecx,[environ]			; ECX points to environment pointer array
 @@GetString:	mov	edi,[ecx]			; EDI = pointer to next environment string
@@ -27,7 +27,7 @@ PROC		getenv_			STDCALL
 		mov	edx,edi				; EDX points to environment string
 		push	ecx				; Save context
 		push	ebx
-		call	strnicmp_			; Compare strings
+		call	strnicmp			; Compare strings
 		pop	ebx				; Restore context
 		pop	ecx
 		or	eax,eax				; Equal ?
@@ -41,6 +41,6 @@ PROC		getenv_			STDCALL
 		ret
 ENDP
 		UDATASEG
-		EXTRN	C environ			: DWORD
-		EXTRN	C _Envptr			: DWORD
+		EXTRN	WATCOM_C environ		: DWORD
+		EXTRN	WATCOM_C _Envptr		: DWORD
 		END

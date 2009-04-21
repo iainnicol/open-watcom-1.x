@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosAllocateMemoryBlock_
+		PUBLIC	DosAllocateMemoryBlock
 
 ;
 ; DECLARATION	int DosAllocateMemoryBlock( int pages, void **block );
 ;
-PROC		DosAllocateMemoryBlock_	STDCALL
+PROC		DosAllocateMemoryBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = size of block
 		mov	ah,DOS_ALLOCATE_MEMORY_BLOCK	; AH = DOS function

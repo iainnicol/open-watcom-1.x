@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosTraceGetFpuContext_
+		PUBLIC	DosTraceGetFpuContext
 ;
 ; DECLARATION	int DosTraceGetFpuContext( TFPU *context );
 ;
-PROC		DosTraceGetFpuContext_	STDCALL
+PROC		DosTraceGetFpuContext	WATCOM_C
 		push	edi				; Save context
 		mov	edi,eax				; EDI points to context buffer
 		mov	ah,TRACE_GET_FPU_CONTEXT	; Get FPU context

@@ -16,12 +16,12 @@ Year		DW	?
 DayOfWeek	DB	?
 ENDS
 		CODESEG
-		EXTRN	C __set_EINVAL			: PROC
-		PUBLIC	_dos_setdate_
+		EXTRN	WATCOM_C __set_EINVAL		: PROC
+		PUBLIC	_dos_setdate
 ;
 ; DECLARATION	unsigned _dos_getdate( struct dosdate_t *date );
 ;
-PROC		_dos_setdate_		STDCALL
+PROC		_dos_setdate		WATCOM_C
 		USES	edx,ecx,ebx
 		mov	ebx,eax				; EBX points to buffer
 		mov	al,[(DOSDATE ebx).DayOfWeek]	; AL = day of week

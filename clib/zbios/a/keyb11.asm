@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosFullKeyboardStatus_
+		PUBLIC	BiosFullKeyboardStatus
 ;
 ; DECLARATION	int BiosFullKeyboardStatus( void );
 ;
-PROC		BiosFullKeyboardStatus_	STDCALL
+PROC		BiosFullKeyboardStatus	WATCOM_C
 		mov	ah,KEYBOARD_FULL_STATUS		; AH = function number
 		;
 		; Call BIOS

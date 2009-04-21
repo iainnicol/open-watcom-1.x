@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosGetFileTimeStamp_
+		PUBLIC	DosGetFileTimeStamp
 ;
 ; DECLARATION	int DosGetFileTimeStamp( int handle, unsigned int *time );
 ;
-PROC		DosGetFileTimeStamp_	STDCALL
+PROC		DosGetFileTimeStamp	WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX = file handle

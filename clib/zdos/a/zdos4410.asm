@@ -8,13 +8,14 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlReadTrack_
+		PUBLIC	DosIoctlReadTrack
 ;
 ; DECLARATION	int DosIoctlReadTrack( void *buffer, int track, int drive,
 ;		                       int startsector, int head, int count);
 ;
-PROC		DosIoctlReadTrack_	STDCALL
-		ARG	Head : DWORD, Count : DWORD
+PROC		DosIoctlReadTrack	WATCOM_C
+		ARG	Buffer : DWORD, Track : DWORD, Drive : DWORD, \
+			StartSector : DWORD, Head : DWORD, Count : DWORD
 		USES	edi
 		mov	edi,eax				; EDI points to buffer
 		mov	ch,[BYTE Count]			; CH = number of sectors to read

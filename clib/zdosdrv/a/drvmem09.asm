@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFreePciBuffer_
+		PUBLIC	DosFreePciBuffer
 ;
 ; DECLARATION	int DosFreePciBuffer( void *linear );
 ;
-PROC		DosFreePciBuffer_	STDCALL
+PROC		DosFreePciBuffer	WATCOM_C
 		call	[DWORD FreePciBlock]		; Free block
 		jmp	DosReturnZero			; Process return code
 ENDP

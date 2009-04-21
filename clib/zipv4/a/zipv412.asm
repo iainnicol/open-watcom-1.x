@@ -9,11 +9,11 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosLinkClose_
+		PUBLIC	DosLinkClose
 ;
 ; DECLARATION	int DosLinkClose( int linkno );
 ;
-PROC		DosLinkClose_		STDCALL
+PROC		DosLinkClose		WATCOM_C
 		mov	ah,LINK_CLOSE			; AH = function number
 		;
 		; Close the link to packet driver

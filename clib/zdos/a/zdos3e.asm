@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosCloseFile_
+		PUBLIC	DosCloseFile
 ;
 ; DECLARATION	int DosCloseFile( int handle );
 ;
-PROC		DosCloseFile_		STDCALL
+PROC		DosCloseFile		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = file handle
 		mov	ah,DOS_CLOSE_FILE		; AH = DOS function number

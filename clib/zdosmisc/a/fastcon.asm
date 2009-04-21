@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosFastConsoleOutput_
+		PUBLIC	DosFastConsoleOutput
 ;
 ; DECLARATION	void DosConsoleFastOutput( char ch );
 ;
-PROC		DosFastConsoleOutput_	STDCALL
+PROC		DosFastConsoleOutput	WATCOM_C
 		;
 		; Write character to console device
 		;

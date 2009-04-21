@@ -11,7 +11,7 @@
 ;
 ; DECLARATION	void DosIdle( void );
 ;
-PROC		DosIdle_		STDCALL
+PROC		DosIdle_
 		;
 		; Let others run
 		;

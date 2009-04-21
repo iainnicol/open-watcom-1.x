@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosLinearToPhysical_
+		PUBLIC	DosLinearToPhysical
 ;
 ; DECLARATION	int DosLinearToPhysical( void *linear, unsigned *physical );
 ;
-PROC		DosLinearToPhysical_	STDCALL
+PROC		DosLinearToPhysical	WATCOM_C
 		call	[DWORD PhysicalAddress]		; Get physical address
 		mov	[edx],eax			; Assume success
 		jmp	DosReturnZero			; Process return code

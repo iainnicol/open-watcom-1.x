@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	send_
+		PUBLIC	send
 ;
 ; DECLARATION	int send( int s, char *buf, int len, int flags );
 ;
-PROC		send_			STDCALL
+PROC		send			WATCOM_C
 		shl	eax,2				; EAX = socket handle
 		xchg	ebx,ecx				; EBX = flags, ECX = len
 		xchg	eax,ebx				; EAX = flags, EBX = socket handle

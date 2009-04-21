@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosFindPciClass_
+		PUBLIC	BiosFindPciClass
 ;
 ; DECLARATION	int BiosFindPciClass (int index, int class,
 ;                                     PCIFIND *pcifind );
 ;
-PROC		BiosFindPciClass_	STDCALL
+PROC		BiosFindPciClass	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx

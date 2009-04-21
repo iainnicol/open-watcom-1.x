@@ -7,14 +7,14 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		EXTRN	__doserror_			: PROC
-		PUBLIC	_dos_findfirst_
+		EXTRN	WATCOM_C __doserror		: PROC
+		PUBLIC	_dos_findfirst
 ;
 ; DECLARATION	unsigned int _dos_findfirst( char * path,
 ;		                             unsigned attributes,
 ;		                             struct find_t *buffer );
 ;
-PROC		_dos_findfirst_		STDCALL
+PROC		_dos_findfirst		WATCOM_C
 		mov	ecx,edx				; ECX = attributes
 		mov	edx,eax				; EDX points to path
 		mov	ah,DOS_FIND_FIRST_FILE		; AH = DOS function
@@ -26,6 +26,6 @@ IFDEF __ZDOSDRV__
 ELSE
 		int	DOS
 ENDIF
-		jmp	__doserror_			; Process return code
+		jmp	__doserror			; Process return code
 ENDP
 		END

@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosSetAlarm_
+		PUBLIC	BiosSetAlarm
 ;
 ; DECLARATION	int BiosSetAlarm( TIME *time );
 ;
-PROC		BiosSetAlarm_		STDCALL
+PROC		BiosSetAlarm		WATCOM_C
 		xor	eax,eax				; Clear EAX
 		push	edx				; Save context
 		push	ecx

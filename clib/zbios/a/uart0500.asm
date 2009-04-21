@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosGetModemControl_
+		PUBLIC	BiosGetModemControl
 ;
 ; DECLARATION	int BiosGetModemControl( int portnumber );
 ;
-PROC		BiosGetModemControl_	STDCALL
+PROC		BiosGetModemControl	WATCOM_C
 		push	edx				; Save context
 		push	ebx
 		mov	edx,eax				; EDX = port number

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosGetDiskType_
+		PUBLIC	BiosGetDiskType
 ;
 ; DECLARATION	int BiosGetDiskType( int drive, unsigned long long *sectors );
 ;
-PROC		BiosGetDiskType_	STDCALL
+PROC		BiosGetDiskType		WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		push	ebx

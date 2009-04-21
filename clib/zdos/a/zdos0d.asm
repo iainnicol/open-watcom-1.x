@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosDiskReset_
+		PUBLIC	DosDiskReset
 ;
 ; DECLARATION	int DosDiskReset( void );
 ;
-PROC		DosDiskReset_		STDCALL
+PROC		DosDiskReset		WATCOM_C
 		mov	ah,DOS_DISK_RESET		; AH = DOS function
 		;
 		; Call DOS services

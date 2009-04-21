@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosOpenFile_
+		PUBLIC	DosOpenFile
 ;
 ; DECLARATION	int DosOpenFile( int mode, char *path );
 ;
-PROC		DosOpenFile_		STDCALL
+PROC		DosOpenFile		WATCOM_C
 		mov	ah,DOS_OPEN_FILE		; AH = DOS function number
 		;
 		; Call DOS services

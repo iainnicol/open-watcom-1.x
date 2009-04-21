@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetSwitchCharacter_
+		PUBLIC	DosGetSwitchCharacter
 ;
 ; DECLARATION	int DosGetSwitchCharacter( void );
 ;
-PROC		DosGetSwitchCharacter_	STDCALL
+PROC		DosGetSwitchCharacter	WATCOM_C
 		USES	edx
 		;
 		; Get DOS function numbers in AH and AL

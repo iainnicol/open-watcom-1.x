@@ -8,13 +8,14 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosVerifySector_
+		PUBLIC	BiosVerifySector
 ;
 ; DECLARATION	int BiosVerifySector( int sectors, int drive, void *buffer,
 ;		                      int track, int sector, int head );
 ;
-PROC		BiosVerifySector_	STDCALL
-		ARG	Sector : DWORD, Head : DWORD
+PROC		BiosVerifySector	WATCOM_C
+		ARG	Sectors : DWORD, Drive : DWORD, Buffer : DWORD, \
+			Track : DWORD, Sector : DWORD, Head : DWORD
 		shl	ch,6				; Convert track and sector number to BIOS format
 		xchg	cl,ch
 		or	cl,[BYTE Sector]		; ECX = track and sector number in BIOS format

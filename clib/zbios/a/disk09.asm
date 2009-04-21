@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosInitializeDisk_
+		PUBLIC	BiosInitializeDisk
 ;
 ; DECLARATION	int BiosInitializeDisk( int drive );
 ;
-PROC		BiosInitializeDisk_	STDCALL
+PROC		BiosInitializeDisk	WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = drive
 		mov	ah,DISK_INITIALIZE		; AH = disk function

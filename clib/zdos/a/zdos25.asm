@@ -7,12 +7,12 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSetVector_
+		PUBLIC	DosSetVector
 ;
 ; DECLARATION	void DosSetVector( int intnum,
 ;		                   void ( __cdecl *handler )( CONTEXT ) );
 ;
-PROC		DosSetVector_		STDCALL
+PROC		DosSetVector		WATCOM_C
 		USES	ebx
 		xor	ebx,ebx				; Clear EBX
 		;

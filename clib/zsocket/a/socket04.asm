@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	getpeername_
+		PUBLIC	getpeername
 ;
 ; DECLARATION	int getpeername( int s, struct sockaddr *addr, int *len );
 ;
-PROC		getpeername_		STDCALL
+PROC		getpeername		WATCOM_C
 		push	ecx				; Save context
 		push	edx				; Save pointer to INET block
 		mov	[DWORD ebx],SIZE INET		; Store the length

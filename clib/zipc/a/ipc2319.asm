@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWriteGlobalPipeTimeOut_
+		PUBLIC	DosWriteGlobalPipeTimeOut
 ;
 ; DECLARATION	int DosWriteGlobalPipeTimeOut( int bytes, void *buffer,
 ;		                               int handle, unsigned timeout);
 ;
-PROC		DosWriteGlobalPipeTimeOut_ STDCALL
+PROC		DosWriteGlobalPipeTimeOut WATCOM_C
 		push	esi				; Save context
 		mov	esi,edx				; ESI points to buffer
 		mov	edx,ecx				; EDX = timeout

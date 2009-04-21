@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosClearEvent_
+		PUBLIC	DosClearEvent
 ;
 ; DECLARATION	int DosClearEvent( unsigned bitmask, EVENT *event );
 ;
-PROC		DosClearEvent_		STDCALL
+PROC		DosClearEvent		WATCOM_C
 IFDEF __ZDOSDRV__
 		push	ebx				; Save context
 		mov	ebx,edx				; EBX points to event

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosProcessTermination_
+		PUBLIC	BiosProcessTermination
 ;
 ; DECLARATION	int BiosProcessTermination( int process );
 ;
-PROC		BiosProcessTermination_	STDCALL
+PROC		BiosProcessTermination	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = process ID
 		mov	ah,MISC_PROCESS_TERMINATE	; AH = function number

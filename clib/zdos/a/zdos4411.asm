@@ -8,13 +8,14 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosIoctlWriteTrack_
+		PUBLIC	DosIoctlWriteTrack
 ;
 ; DECLARATION	int DosIoctlWriteTrack( void *buffer, int track, int drive,
 ;		                        int startsector, int head, int count);
 ;
-PROC		DosIoctlWriteTrack_	STDCALL
-		ARG	Head : DWORD, Count : DWORD
+PROC		DosIoctlWriteTrack	WATCOM_C
+		ARG	Buffer : DWORD, Track : DWORD, Drive : DWORD, \
+			StartSector : DWORD, Head : DWORD, Count : DWORD
 		USES	edi
 		mov	edi,eax				; EDI points to buffer
 		mov	ch,[BYTE Count]			; CH = number of sectors to write

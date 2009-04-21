@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosGetCurrentDirectory_
+		PUBLIC	DosGetCurrentDirectory
 ;
 ; DECLARATION	int DosGetCurrentDirectory( int drive, char *buffer );
 ;
-PROC		DosGetCurrentDirectory_	STDCALL
+PROC		DosGetCurrentDirectory	WATCOM_C
 		push	esi				; Save context
 		push	edx
 		mov	esi,edx				; ESI points to buffer

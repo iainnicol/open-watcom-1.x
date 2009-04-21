@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosDeleteThread_
+		PUBLIC	DosDeleteThread
 ;
 ; DECLARATION	int DosDeleteThread( int TID );
 ;
-PROC		DosDeleteThread_	STDCALL
+PROC		DosDeleteThread		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = thread ID
 		;

@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	closesocket_
+		PUBLIC	closesocket
 ;
 ; DECLARATION	int closesocket( int s );
 ;
-PROC		closesocket_		STDCALL
+PROC		closesocket		WATCOM_C
 		shl	eax,2				; EAX = socket handle
 		mov	ebx,eax				; EBX = socket handle
 		mov	ah,SOCKET_CLOSE			; AH = function number

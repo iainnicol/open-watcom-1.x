@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosGetMouseID_
+		PUBLIC	BiosGetMouseID
 ;
 ; DECLARATION	int BiosGetMouseID( void );
 ;
-PROC		BiosGetMouseID_		STDCALL
+PROC		BiosGetMouseID		WATCOM_C
 		push	ebx				; Save context
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number
 			    MOUSE_GET_DEVICE_ID		; AL = subfunction number

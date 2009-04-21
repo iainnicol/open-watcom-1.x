@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosGetProcessPath_
+		PUBLIC	DosGetProcessPath
 ;
 ; DECLARATION	int DosGetProcessPath( char *buffer );
 ;
-PROC		DosGetProcessPath_	STDCALL
+PROC		DosGetProcessPath	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to buffer
 		mov	ah,DOS_GET_PROCESS_PATH		; AH = DOS function

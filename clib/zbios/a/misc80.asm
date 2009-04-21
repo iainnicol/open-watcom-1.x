@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDeviceOpen_
+		PUBLIC	BiosDeviceOpen
 ;
 ; DECLARATION	int BiosDeviceOpen( int device, int process );
 ;
-PROC		BiosDeviceOpen_		STDCALL
+PROC		BiosDeviceOpen		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX = device ID

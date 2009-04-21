@@ -7,11 +7,11 @@
 		INCLUDE	'ZBIOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BiosResetAlarm_
+		PUBLIC	BiosResetAlarm
 ;
 ; DECLARATION	int BiosResetAlarm( void );
 ;
-PROC		BiosResetAlarm_		STDCALL
+PROC		BiosResetAlarm		WATCOM_C
 		xor	eax,eax				; Clear EAX
 		push	eax				; Save context
 		mov	ah,TIMER_RESET_CMOS_ALARM	; AH = function number

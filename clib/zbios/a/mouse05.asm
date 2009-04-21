@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosInitializeMouse_
+		PUBLIC	BiosInitializeMouse
 ;
 ; DECLARATION	int BiosInitializeMouse( int packetsize );
 ;
-PROC		BiosInitializeMouse_	STDCALL
+PROC		BiosInitializeMouse	WATCOM_C
 		push	ebx				; Save context
 		mov	bh,al				; BH = packet size
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetTime_
+		PUBLIC	DosGetTime
 ;
 ; DECLARATION	int DosGetTime( TIME *time );
 ;
-PROC		DosGetTime_		STDCALL
+PROC		DosGetTime		WATCOM_C
 		USES	edx,ecx,ebx
 		mov	ebx,eax				; EBX points to TIME block
 		mov	ah,DOS_GET_TIME			; AH = DOS function

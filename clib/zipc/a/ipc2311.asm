@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetGlobalEvent_
+		PUBLIC	DosSetGlobalEvent
 ;
 ; DECLARATION	int DosSetGlobalEvent( unsigned bitmask, int handle );
 ;
-PROC		DosSetGlobalEvent_	STDCALL
+PROC		DosSetGlobalEvent	WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,eax				; ECX = bitmask

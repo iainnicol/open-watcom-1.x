@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetFileAttributes_
+		PUBLIC	DosSetFileAttributes
 ;
 ; DECLARATION	int DosSetFileAttributes( int attributes, char *path );
 ;
-PROC		DosSetFileAttributes_	STDCALL
+PROC		DosSetFileAttributes	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = new file attributes
 		;

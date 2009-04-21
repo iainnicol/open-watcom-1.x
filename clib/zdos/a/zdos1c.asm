@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetDriveData_
+		PUBLIC	DosGetDriveData
 ;
 ; DECLARATION	int DosGetDriveData( int drive, DRVDATA *data );
 ;
-PROC		DosGetDriveData_	STDCALL
+PROC		DosGetDriveData		WATCOM_C
 		USES	esi,ecx,ebx
 		mov	esi,edx				; ESI points to buffer
 		mov	dl,al				; DL = drive number

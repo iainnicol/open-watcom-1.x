@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosEnvVariableLength_
+		PUBLIC	DosEnvVariableLength
 ;
 ; DECLARATION	int DosEnvVariableLength( char *name );
 ;
-PROC		DosEnvVariableLength_	STDCALL
+PROC		DosEnvVariableLength	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to variable name
 		;

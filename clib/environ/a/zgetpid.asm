@@ -5,14 +5,14 @@
 		P486
 		MODEL	USE32 SMALL
 		CODESEG
-		PUBLIC	getpid_
+		PUBLIC	getpid
 ;
 ; DECLARATION	int getpid( void );
 ;
-PROC		getpid_			STDCALL
+PROC		getpid			WATCOM_C
 		mov	eax,[_PID]			; Return process ID
 		ret
 ENDP
 		UDATASEG
-		EXTRN	C _PID				: DWORD
+		EXTRN	WATCOM_C _PID			: DWORD
 		END

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCreateUniqueFile_
+		PUBLIC	DosCreateUniqueFile
 ;
 ; DECLARATION	int DosCreateUniqueFile(int attr, char *path, char *buffer);
 ;
-PROC		DosCreateUniqueFile_	STDCALL
+PROC		DosCreateUniqueFile	WATCOM_C
 		push	edi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = file attributes

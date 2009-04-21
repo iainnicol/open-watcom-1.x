@@ -9,11 +9,11 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosEjectMedia_
+		PUBLIC	BiosEjectMedia
 ;
 ; DECLARATION	int BiosEjectMedia( int device );
 ;
-PROC		BiosEjectMedia_		STDCALL
+PROC		BiosEjectMedia		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = device
 		mov	ah,DISK_EJECT_MEDIA		; AH = disk function

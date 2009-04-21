@@ -5,11 +5,11 @@
 		P486
 		MODEL	USE32 SMALL
 		CODESEG
-		PUBLIC	ungetch_
+		PUBLIC	ungetch
 ;
 ; DECLARATION	int ungetch( int c );
 ;
-PROC		ungetch_		STDCALL
+PROC		ungetch			WATCOM_C
 		movzx	eax,al				; EAX = character
 		test	[_cbyte],-1			; Character buffer full ?
 		jnz	SHORT @@EndOfFile		; Yes, we are at end of file
@@ -19,5 +19,5 @@ PROC		ungetch_		STDCALL
 		ret
 ENDP
 		UDATASEG
-		EXTRN	C _cbyte			: DWORD
+		EXTRN	WATCOM_C _cbyte			: DWORD
 		END

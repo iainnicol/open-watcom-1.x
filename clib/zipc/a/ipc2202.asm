@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCloseMutex_
+		PUBLIC	DosCloseMutex
 ;
 ; DECLARATION	int DosCloseMutex( MUTEX *mutex );
 ;
-PROC		DosCloseMutex_		STDCALL
+PROC		DosCloseMutex		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to mutex
 		;

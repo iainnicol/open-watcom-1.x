@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosOpenGlobalMutex_
+		PUBLIC	DosOpenGlobalMutex
 ;
 ; DECLARATION	int DosOpenGlobalMutex( char *name );
 ;
-PROC		DosOpenGlobalMutex_	STDCALL
+PROC		DosOpenGlobalMutex	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to mutex name
 		mov	ah,IPC_OPEN_MUTEX		; Open mutex

@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosWaitGlobalSemaphoreTimeOut_
+		PUBLIC	DosWaitGlobalSemaphoreTimeOut
 ;
 ; DECLARATION	int DosWaitGlobalSemaphoreTimeOut( int handle,
 ;		                                   unsigned timeout );
 ;
-PROC		DosWaitGlobalSemaphoreTimeOut_ STDCALL
+PROC		DosWaitGlobalSemaphoreTimeOut WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX = semaphore handle

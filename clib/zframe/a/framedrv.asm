@@ -4,20 +4,23 @@
 		INCLUDE	'ZDOSAPI.INC'
 		INCLUDE	'REGS.INC'
 		CODESEG
- 		EXTRN	FrameBufferFillRectangle_	: PROC
-		EXTRN	FrameBufferCopyRectangle_	: PROC
-		EXTRN	FrameBufferDrawImage_		: PROC
-		EXTRN	FrameBufferCursorOn_		: PROC
-		EXTRN	FrameBufferCursorOff_		: PROC
-		EXTRN	FrameBufferCursorShape_		: PROC
-		EXTRN	FrameBufferCursorPosition_	: PROC
-		EXTRN	FrameBufferSetPalette_		: PROC
-		EXTRN	FrameBufferWaitEngine2D_	: PROC
-		PUBLIC	DosFrameBufferInstallDriver_
+ 		EXTRN	WATCOM_C \
+			FrameBufferFillRectangle: PROC
+		EXTRN	WATCOM_C \
+			FrameBufferCopyRectangle	: PROC
+		EXTRN	WATCOM_C FrameBufferDrawImage	: PROC
+		EXTRN	WATCOM_C FrameBufferCursorOn	: PROC
+		EXTRN	WATCOM_C FrameBufferCursorOff	: PROC
+		EXTRN	WATCOM_C FrameBufferCursorShape	: PROC
+		EXTRN	WATCOM_C \
+			FrameBufferCursorPosition	: PROC
+		EXTRN	WATCOM_C FrameBufferSetPalette	: PROC
+		EXTRN	WATCOM_C FrameBufferWaitEngine2D: PROC
+		PUBLIC	DosFrameBufferInstallDriver
 ;
 ; DECLARATION	int DosFrameBufferInstallDriver( void );
 ;
-PROC		DosFrameBufferInstallDriver_	STDCALL
+PROC		DosFrameBufferInstallDriver WATCOM_C
 		mov	eax,[Fill]			; EAX = pointer to fill rectangle function
 		xchg	eax,[DWORD FillRectangle]	; Replace handler and get pointer to default handler
 		mov	[Fill],eax			; Save pointer to default handler
@@ -49,7 +52,7 @@ PROC		DosFrameBufferInstallDriver_	STDCALL
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferFillRectangle
+; PROCEDURE	DriverFillRectangle
 ;
 ; INPUT		EAX = color
 ;		EBX = raster operation
@@ -63,7 +66,7 @@ ENDP
 ;
 ; DESCRIPTION	Fills a rectangle.
 ;
-PROC		FrameBufferFillRectangle
+PROC		DriverFillRectangle
 		pushad					; Save context
 		mov	ecx,edx				; ECX = X coordinate
 		mov	edx,eax				; EDX = color
@@ -72,7 +75,7 @@ PROC		FrameBufferFillRectangle
 		;
 		; Invoke function handler
 		;
-		call	FrameBufferFillRectangle_ STDCALL,esi,edi
+		call	FrameBufferFillRectangle WATCOM_C,?,?,?,?,esi,edi
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -86,7 +89,7 @@ PROC		FrameBufferFillRectangle
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferCopyRectangle
+; PROCEDURE	DriverCopyRectangle
 ;
 ; INPUT		EAX = destination X coordinate
 ;		EBX = destination Y coordinate
@@ -101,7 +104,7 @@ ENDP
 ;
 ; DESCRIPTION	Copies a rectangle from one area to another area.
 ;
-PROC		FrameBufferCopyRectangle
+PROC		DriverCopyRectangle
 		pushad					; Save context
 		xchg	eax,ebp				; EAX = raster operation, EBP = destination X coordinate
 		mov	ebx,edx				; EBX = source Y coordinate
@@ -111,7 +114,7 @@ PROC		FrameBufferCopyRectangle
 		;
 		; Invoke function handler
 		;
-		call	FrameBufferCopyRectangle_ STDCALL,edi,ebp,esi
+		call	FrameBufferCopyRectangle WATCOM_C,?,?,?,?,edi,ebp,esi
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -125,7 +128,7 @@ PROC		FrameBufferCopyRectangle
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferDrawImage
+; PROCEDURE	DriverDrawImage
 ;
 ; INPUT		EAX = raster operation
 ;		EBX = pointer to image
@@ -139,7 +142,7 @@ ENDP
 ;
 ; DESCRIPTION	Draws an image.
 ;
-PROC		FrameBufferDrawImage
+PROC		DriverDrawImage
 		pushad					; Save context
 		mov	ebx,edx				; EBX = Y coordinate
 		mov	edx,ecx				; EDX = X coodinate
@@ -148,7 +151,7 @@ PROC		FrameBufferDrawImage
 		;
 		; Invoke function handler
 		;
-		call	FrameBufferDrawImage_ STDCALL,edi,esi
+		call	FrameBufferDrawImage WATCOM_C,?,?,?,?,edi,esi
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -162,7 +165,7 @@ PROC		FrameBufferDrawImage
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferCursorOn
+; PROCEDURE	DriverCursorOn
 ;
 ; INPUT		NONE
 ;
@@ -171,9 +174,9 @@ ENDP
 ;
 ; DESCRIPTION	Enables the cursor.
 ;
-PROC		FrameBufferCursorOn
+PROC		DriverCursorOn
 		pushad					; Save context
-		call	FrameBufferCursorOn_		; Invoke function handler
+		call	FrameBufferCursorOn WATCOM_C	; Invoke function handler
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -187,7 +190,7 @@ PROC		FrameBufferCursorOn
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferCursorOff
+; PROCEDURE	DriverCursorOff
 ;
 ; INPUT		NONE
 ;
@@ -196,9 +199,9 @@ ENDP
 ;
 ; DESCRIPTION	Disables the cursor.
 ;
-PROC		FrameBufferCursorOff
+PROC		DriverCursorOff
 		pushad					; Save context
-		call	FrameBufferCursorOff_		; Invoke function handler
+		call	FrameBufferCursorOff WATCOM_C	; Invoke function handler
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -212,7 +215,7 @@ PROC		FrameBufferCursorOff
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferCursorShape
+; PROCEDURE	DriverCursorShape
 ;
 ; INPUT		 BL = X hotspot
 ;		 BH = Y hotspot
@@ -226,7 +229,7 @@ ENDP
 ;
 ; DESCRIPTION	Sets cursor shape and hot spots.
 ;
-PROC		FrameBufferCursorShape
+PROC		DriverCursorShape
 		pushad					; Save context
 		movzx	edx,bh				; EDX = hotspot Y
 		movzx	eax,bl				; EAX = hotspot X
@@ -235,7 +238,7 @@ PROC		FrameBufferCursorShape
 		;
 		; Invoke function handler
 		;
-		call	FrameBufferCursorShape_ STDCALL,esi,edi
+		call	FrameBufferCursorShape WATCOM_C,?,?,?,?,esi,edi
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -249,7 +252,7 @@ PROC		FrameBufferCursorShape
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferCursorPosition
+; PROCEDURE	DriverCursorPosition
 ;
 ; INPUT		ECX = X coordinate
 ;		EDX = Y coordinate
@@ -259,10 +262,13 @@ ENDP
 ;
 ; DESCRIPTION	Sets cursor position.
 ;
-PROC		FrameBufferCursorPosition
+PROC		DriverCursorPosition
 		pushad					; Save context
 		mov	eax,ecx				; EAX = X coordinate
-		call	FrameBufferCursorPosition_	; Invoke function handler
+		;
+		; Invoke function handler
+		;
+		call	FrameBufferCursorPosition WATCOM_C,?,?
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -276,7 +282,7 @@ PROC		FrameBufferCursorPosition
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferSetPalette
+; PROCEDURE	DriverSetPalette
 ;
 ; INPUT		EAX = register index
 ;               EBX = red color
@@ -288,9 +294,12 @@ ENDP
 ;
 ; DESCRIPTION	Sets a single palette register.
 ;
-PROC		FrameBufferSetPalette
+PROC		DriverSetPalette
 		pushad					; Save context
-		call	FrameBufferSetPalette_		; Invoke function handler
+		;
+		; Invoke function handler
+		;
+		call	FrameBufferSetPalette WATCOM_C,?,?,?,?
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -304,7 +313,7 @@ PROC		FrameBufferSetPalette
 		ret
 ENDP
 ;
-; PROCEDURE	FrameBufferWaitEngine2D
+; PROCEDURE	DriverWaitEngine2D
 ;
 ; INPUT		NONE
 ;
@@ -313,9 +322,9 @@ ENDP
 ;
 ; DESCRIPTION	Waits for 2D engine to go ready.
 ;
-PROC		FrameBufferWaitEngine2D
+PROC		DriverWaitEngine2D
 		pushad					; Save context
-		call	FrameBufferWaitEngine2D_	; Invoke function handler
+		call	FrameBufferWaitEngine2D WATCOM_C; Invoke function handler
 		or	eax,eax				; Success ?
 		jz	SHORT @@Exit			; Yes, we are done
 		cmp	eax,-1				; Function supported ?
@@ -329,13 +338,13 @@ PROC		FrameBufferWaitEngine2D
 		ret
 ENDP
 		DATASEG
-Fill		DD	FrameBufferFillRectangle
-Copy		DD	FrameBufferCopyRectangle
-Draw		DD	FrameBufferDrawImage
-Enable		DD	FrameBufferCursorOn
-Disable		DD	FrameBufferCursorOff
-Shape		DD	FrameBufferCursorShape
-Position	DD	FrameBufferCursorPosition
-Palette		DD	FrameBufferSetPalette
-Engine2D	DD	FrameBufferWaitEngine2D
+Fill		DD	DriverFillRectangle
+Copy		DD	DriverCopyRectangle
+Draw		DD	DriverDrawImage
+Enable		DD	DriverCursorOn
+Disable		DD	DriverCursorOff
+Shape		DD	DriverCursorShape
+Position	DD	DriverCursorPosition
+Palette		DD	DriverSetPalette
+Engine2D	DD	DriverWaitEngine2D
 		END

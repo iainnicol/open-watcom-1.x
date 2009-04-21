@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosAllocateIrq_
+		PUBLIC	DosAllocateIrq
 ;
 ; DECLARATION	int DosAllocateIrq( int irq, void ( *handler )() );
 ;
-PROC		DosAllocateIrq_		STDCALL
+PROC		DosAllocateIrq		WATCOM_C
 		call	[DWORD AllocateIrq]		; Allocate IRQ and install handler
 		jmp	DosReturnZero			; Process return code
 ENDP

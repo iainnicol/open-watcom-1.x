@@ -6,14 +6,14 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	realloc_
-		PUBLIC	_nrealloc_
+		PUBLIC	realloc
+		PUBLIC	WATCOM_C _nrealloc
 		EXTRN	remalloc			: PROC
 ;
 ; DECLARATION	void *realloc( void *oldblock, size_t size );
 ;
-PROC		realloc_		STDCALL
-LABEL		_nrealloc_		PROC
+PROC		realloc		WATCOM_C
+LABEL		_nrealloc	PROC
 		push	ecx				; Save context
 		mov	ecx,edx				; ECX = number of bytes to allocate
 		or	eax,eax				; Allocate new block ?

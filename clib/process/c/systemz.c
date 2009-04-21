@@ -39,24 +39,21 @@
 #include "rtdata.h"
 #include "seterrno.h"
 
-_WCRTLINK int system ( const CHAR_TYPE *cmd )
+_WCRTLINK int system( const CHAR_TYPE *cmd )
 {
-   register CHAR_TYPE   *name;
+    register CHAR_TYPE  *name;
 
-   name = getenv ( "COMSPEC" );
-   if ( cmd == NULL )
-   {
-      if ( name != NULL )
-      {
-         if ( access ( name, 0 ) == 0 )
-            return ( 1 );     /* COMMAND.COM/COMMAND.EXE is available */
-         name = NULL;
-      }
-   }
-   if ( name == NULL )
-   {
-      __set_errno ( ENOENT ); /* Set errno */
-      return ( 0 );           /* COMMAND.COM/COMMAND.EXE not available */
-   }
-   return ( spawnlp ( P_WAIT, "COMMAND", "COMMAND", "/C", cmd, NULL ) );
+    name = getenv( "COMSPEC" );
+    if( cmd == NULL ) {
+        if( name != NULL ) {
+            if( access( name, 0 ) == 0 )
+                return( 1 );    /* COMMAND.COM/COMMAND.EXE is available */
+            name = NULL;
+        }
+    }
+    if( name == NULL ) {
+        __set_errno( ENOENT );  /* Set errno */
+        return( 0 );            /* COMMAND.COM/COMMAND.EXE not available */
+    }
+    return( spawnlp( P_WAIT, "COMMAND", "COMMAND", "/C", cmd, NULL ) );
 }

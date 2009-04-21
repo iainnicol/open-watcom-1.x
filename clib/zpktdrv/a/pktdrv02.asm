@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvCloseSession_
+		PUBLIC	DosPktDrvCloseSession
 ;
 ; DECLARATION	int DosPktDrvCloseSession( int InterfaceNumber, int Handle );
 ;
-PROC		DosPktDrvCloseSession_	STDCALL
+PROC		DosPktDrvCloseSession	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = interface number
 		mov	ah,PKTDRV_CLOSE_SESSION		; Close session

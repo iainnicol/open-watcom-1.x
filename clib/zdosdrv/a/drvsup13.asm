@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosOpenDmaChannel_
+		PUBLIC	DosOpenDmaChannel
 ;
 ; DECLARATION	int DosOpenDmaChannel(int channel,DMABUF **dmabuf,int size);
 ;
-PROC		DosOpenDmaChannel_	STDCALL
+PROC		DosOpenDmaChannel	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,ebx				; ECX = size of DMA buffer
 		call	[DWORD DmaOpenChannel]		; Open DMA channel

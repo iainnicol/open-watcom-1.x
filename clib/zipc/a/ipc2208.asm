@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCloseSemaphore_
+		PUBLIC	DosCloseSemaphore
 ;
 ; DECLARATION	int DosCloseSemaphore( SEMAPHORE *semaphore );
 ;
-PROC		DosCloseSemaphore_	STDCALL
+PROC		DosCloseSemaphore	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to semaphore
 		;

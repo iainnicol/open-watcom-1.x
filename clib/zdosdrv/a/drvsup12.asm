@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosLockDmaBuffer_
+		PUBLIC	DosLockDmaBuffer
 ;
 ; DECLARATION	int DosLockDmaBuffer( int handle, DMABUF *dmabuf );
 ;
-PROC		DosLockDmaBuffer_	STDCALL
+PROC		DosLockDmaBuffer	WATCOM_C
 		push	esi				; Save context
 		push	ecx
 		push	ebx

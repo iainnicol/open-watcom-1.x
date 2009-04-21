@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetIvtVector_
+		PUBLIC	DosGetIvtVector
 ;
 ; DECLARATION	unsigned DosGetIvtVector( int i );
 ;
-PROC		DosGetIvtVector_	STDCALL
+PROC		DosGetIvtVector		WATCOM_C
 		USES	ecx,ebx
 		movzx	ecx,al				; ECX = vector number
 		call	[DWORD GetIvtVector]		; Get vector

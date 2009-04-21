@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosChangeLineStatus_
+		PUBLIC	BiosChangeLineStatus
 ;
 ; DECLARATION	int BiosChangeLineStatus( int drive );
 ;
-PROC		BiosChangeLineStatus_	STDCALL
+PROC		BiosChangeLineStatus	WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = drive
 		mov	ah,DISK_CHANGE_LINE_STATUS	; AH = disk function

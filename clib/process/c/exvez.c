@@ -31,8 +31,8 @@
 
 #include <process.h>
 
-_WCRTLINK int execve ( const char *path, const char *const argv[],
-                       const char *const envp[] )
+_WCRTLINK int execve( const char *path, const char *const argv[],
+                      const char *const envp[] )
 {
-    return ( spawnve ( P_OVERLAY, path, argv, envp ) );
+    return( spawnve( P_OVERLAY, path, argv, envp ) );
 }

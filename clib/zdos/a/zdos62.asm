@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetPID_
+		PUBLIC	DosGetPID
 ;
 ; DECLARATION	int DosGetPID( void );
 ;
-PROC		DosGetPID_		STDCALL
+PROC		DosGetPID		WATCOM_C
 		mov	ah,DOS_GET_PID			; AH = DOS function
 		;
 		; Call DOS services

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosAllocateHeapBlock_
+		PUBLIC	DosAllocateHeapBlock
 ;
 ; DECLARATION	int DosAllocateHeapBlock( int size, void **block );
 ;
-PROC		DosAllocateHeapBlock_	STDCALL
+PROC		DosAllocateHeapBlock	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = size of block
 		call	[DWORD AllocateBlock]		; Allocate heap block

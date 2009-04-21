@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosReadPipeTimeOut_
+		PUBLIC	DosReadPipeTimeOut
 ;
 ; DECLARATION	int DosReadPipeTimeOut( int bytes, void *buffer,
 ; 		                        PIPE *pipe, unsigned timeout );
 ;
-PROC		DosReadPipeTimeOut_	STDCALL
+PROC		DosReadPipeTimeOut	WATCOM_C
 		push	edi				; Save context
 		mov	edi,edx				; EDI points to buffer
 IFDEF __ZDOSDRV__

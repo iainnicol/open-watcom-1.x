@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosGetPalette_
+		PUBLIC	BiosGetPalette
 ;
 ; DECLARATION	int BiosGetPalette( int index );
 ;
-PROC		BiosGetPalette_		STDCALL
+PROC		BiosGetPalette		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	bl,al				; BL = register index
@@ -33,6 +33,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

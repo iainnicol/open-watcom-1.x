@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_bios_memsize_
+		PUBLIC	_bios_memsize
 ;
 ; DECLARATION	unsigned _bios_memsize( void );
 ;
-PROC		_bios_memsize_		STDCALL
+PROC		_bios_memsize		WATCOM_C
 		;
 		; Call BIOS memsize service
 		;

@@ -5,15 +5,15 @@
 		P486
 		MODEL	USE32 SMALL
 		CODESEG
-		EXTRN	getcwd_				: PROC
-		EXTRN	strlen_				: PROC
-		EXTRN	access_				: PROC
-		EXTRN	getenv_				: PROC
-		PUBLIC	_searchenv_
+		EXTRN	WATCOM_C getcwd			: PROC
+		EXTRN	WATCOM_C strlen			: PROC
+		EXTRN	WATCOM_C access			: PROC
+		EXTRN	WATCOM_C getenv			: PROC
+		PUBLIC	_searchenv
 ;
 ; DECLARATION	void _searchenv( char *name, char *envname, char *path );
 ;
-PROC		_searchenv_		STDCALL
+PROC		_searchenv		WATCOM_C
 		USES	edi,esi,ecx
 		test	[_Envptr],-1			; Environment buffer available ?
 		jnz	SHORT @@Error			; No, we are done
@@ -21,8 +21,8 @@ PROC		_searchenv_		STDCALL
 		mov	edi,edx				; Save pointer to envname in EDI
 		call	CheckName			; Check name
 		jc	SHORT @@Error			; Valid name ?
-		call	getcwd_				; Yes, get working directory
-		call	strlen_				; Get string length
+		call	getcwd				; Yes, get working directory
+		call	strlen				; Get string length
 		cmp	[BYTE ebx + eax - 1],'\'	; Path ends with backslash ?
 		jz	SHORT @@AddName			; Yes, proceed
 		mov	[BYTE ebx + eax],'\'		; No, add one
@@ -31,18 +31,18 @@ PROC		_searchenv_		STDCALL
 		push	esi
 		lea	edi,[ebx + eax]			; EDI points past last backslash
 		mov	eax,esi				; EAX points to name
-		call	strlen_				; Get string length
+		call	strlen				; Get string length
 		lea	ecx,[eax + 1]			; ECX = number of characters to copy
 		rep	movsb				; Append name to path
 		pop	esi				; Restore context
 		pop	edi
 		mov	eax,ebx				; EAX points to path
 		xor	edx,edx				; EDX = mode
-		call	access_				; Try to access the file
+		call	access				; Try to access the file
 		or	eax,eax				; File exist ?
 		jz	SHORT @@Exit			; Yes, we are done
 		mov	eax,edi				; No, EAX points to environment name
-		call	getenv_				; Get pointer to environment string
+		call	getenv				; Get pointer to environment string
 		or	eax,eax				; Environment variable found ?
 		jz	SHORT @@ProcessPaths		; Yes, process paths
 @@Error:	mov	[BYTE ebx],0			; No, reset path pointer
@@ -52,7 +52,7 @@ PROC		_searchenv_		STDCALL
 		jc	@@Error				; Success ?
 		mov	eax,ebx				; Yes, EAX points to path
 		xor	edx,edx				; EDX = mode
-		call	access_				; Try to access the file
+		call	access				; Try to access the file
 		or	eax,eax				; File exist ?
 		jz	@@Exit				; Yes, we are done
 		jmp	@@NextPath			; No, build next path and try again
@@ -71,7 +71,7 @@ PROC		CheckName
 		push	edi				; Save context
 		push	esi
 		mov	eax,esi				; EAX points to filename
-		call	strlen_				; Get length of string
+		call	strlen				; Get length of string
 		or	eax,eax				; Length = 0 ?
 		jz	SHORT @@Error			; Yes, invalid name
 		mov	edx,eax				; No, save length in EDX
@@ -161,5 +161,5 @@ PROC		BuildPath
 		ret
 ENDP
 		UDATASEG
-		EXTRN	C _Envptr			: DWORD
+		EXTRN	WATCOM_C _Envptr		: DWORD
 		END

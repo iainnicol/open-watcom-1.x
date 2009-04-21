@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosWriteTeletype_
+		PUBLIC	BiosWriteTeletype
 ;
 ; DECLARATION	int BiosWriteTeletype( int character );
 ;
-PROC		BiosWriteTeletype_	STDCALL
+PROC		BiosWriteTeletype	WATCOM_C
 		push	ebx				; Save context
 		mov	ah,VIDEO_WRITE_TELETYPE		; AH = video function
 		;
@@ -30,6 +30,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

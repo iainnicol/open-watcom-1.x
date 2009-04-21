@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosFindNextFile_
+		PUBLIC	DosFindNextFile
 ;
 ; DECLARATION	int DosFindNextFile( FIND *find );
 ;
-PROC		DosFindNextFile_	STDCALL
+PROC		DosFindNextFile		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to FIND block
 		mov	ah,DOS_FIND_NEXT_FILE		; AH = DOS function number

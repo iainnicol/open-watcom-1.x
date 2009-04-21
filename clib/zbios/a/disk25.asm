@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosDeviceInformation_
+		PUBLIC	BiosDeviceInformation
 ;
 ; DECLARATION	int BiosDeviceInformation( IDEINFO *buffer, int drive );
 ;
-PROC		BiosDeviceInformation_	STDCALL
+PROC		BiosDeviceInformation	WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to buffer
 		mov	ah,DISK_DEVICE_INFORMATION	; AH = disk function

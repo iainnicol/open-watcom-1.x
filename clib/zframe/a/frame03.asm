@@ -8,11 +8,11 @@
 		INCLUDE	'FRAMEBUF.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	DosFrameBufferSetConsoleWindow_
+		PUBLIC	DosFrameBufferSetConsoleWindow
 ;
 ; DECLARATION	int DosFrameBufferSetConsoleWindow( int LowerY, LowerX, UpperY, UpperX );
 ;
-PROC		DosFrameBufferSetConsoleWindow_	STDCALL
+PROC		DosFrameBufferSetConsoleWindow WATCOM_C
 		mov	ch,bl				; CH = upper Y coordinate
 		mov	dh,al				; DH = lower Y coordinate
 		;

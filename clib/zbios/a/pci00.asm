@@ -8,14 +8,15 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosGetPciResourceSize_
+		PUBLIC	BiosGetPciResourceSize
 ;
 ; DECLARATION	int BiosGetPciResourceSize( int bus, int device,
 ;                                           int function, int register,
 ;		                            unsigned *value );
 ;
-PROC		BiosGetPciResourceSize_	STDCALL
-		ARG	Value : DWORD
+PROC		BiosGetPciResourceSize	WATCOM_C
+		ARG	Bus : DWORD, Device : DWORD, Function : DWORD, \
+			Register : DWORD, Value : DWORD
 		USES	edi,esi
 		mov	bh,al				; BH = bus number
 		shl	dl,3				; Get device bits in proper position

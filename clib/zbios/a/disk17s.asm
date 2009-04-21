@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetMedia_
+		PUBLIC	BiosSetMedia
 ;
 ; DECLARATION	int BiosSetMedia( int type, int drive );
 ;
-PROC		BiosSetMedia_		STDCALL
+PROC		BiosSetMedia		WATCOM_C
 		push	edx				; Save context
 		mov	ah,DISK_GET_SET_DRIVE_TYPE	; AH = disk function
 		;

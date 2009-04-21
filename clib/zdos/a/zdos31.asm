@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosTerminateResident_
+		PUBLIC	DosTerminateResident
 ;
 ; DECLARATION	void DosTerminateResident( int retcode, int memsize );
 ;
-PROC		DosTerminateResident_	STDCALL
+PROC		DosTerminateResident	WATCOM_C
 		;
 		; Get function number in AH
 		;

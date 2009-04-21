@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetBreakFlag_
+		PUBLIC	DosSetBreakFlag
 ;
 ; DECLARATION	int DosSetBreakFlag( int newflag );
 ;
-PROC		DosSetBreakFlag_	STDCALL
+PROC		DosSetBreakFlag		WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = new flag
 		;

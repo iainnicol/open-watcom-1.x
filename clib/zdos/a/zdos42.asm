@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetFilePosition_
+		PUBLIC	DosSetFilePosition
 ;
 ; DECLARATION	int DosSetFilePosition( int method, unsigned long offset,
 ;		                        int handle, unsigned long *position );
 ;
-PROC		DosSetFilePosition_	STDCALL
+PROC		DosSetFilePosition	WATCOM_C
 		mov	ah,DOS_SET_FILE_POSITION	; AH = DOS function number
 		;
 		; Call DOS services

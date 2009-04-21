@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetMouseScalingOne_
+		PUBLIC	BiosSetMouseScalingOne
 ;
 ; DECLARATION	int BiosSetMouseScalingOne( void );
 ;
-PROC		BiosSetMouseScalingOne_	STDCALL
+PROC		BiosSetMouseScalingOne	WATCOM_C
 		push	ebx				; Save context
 		mov	bh,1				; BH = set scaling factor to 1:1 indicator
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number

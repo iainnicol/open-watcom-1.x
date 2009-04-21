@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSetCurrentDirectory_
+		PUBLIC	DosSetCurrentDirectory
 ;
 ; DECLARATION	int DosSetCurrentDirectory( char *path );
 ;
-PROC		DosSetCurrentDirectory_	STDCALL
+PROC		DosSetCurrentDirectory	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX points to path
 		mov	ah,DOS_SET_CURRENT_DIRECTORY	; AH = DOS function number

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosGetMedia_
+		PUBLIC	BiosGetMedia
 ;
 ; DECLARATION	int BiosGetMedia( int drive );
 ;
-PROC		BiosGetMedia_		STDCALL
+PROC		BiosGetMedia		WATCOM_C
 		push	edx				; Save context
 		mov	dl,al				; DL = drive
 		xor	al,al				; Clear AL

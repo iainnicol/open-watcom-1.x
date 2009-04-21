@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSetTime_
+		PUBLIC	DosSetTime
 ;
 ; DECLARATION	int DosSetTime( TIME *time );
 ;
-PROC		DosSetTime_		STDCALL
+PROC		DosSetTime		WATCOM_C
 		USES	edx,ecx
 		mov	ch,[(TIME eax).Hours]		; CH = hours
 		mov	cl,[(TIME eax).Minutes]		; CL = minutes

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosFinishDmaTransfer_
+		PUBLIC	DosFinishDmaTransfer
 ;
 ; DECLARATION	int DosFinishDmaTransfer( int channel );
 ;
-PROC		DosFinishDmaTransfer_	STDCALL
+PROC		DosFinishDmaTransfer	WATCOM_C
 		call	[DWORD DmaFinish]		; Finish DMA transfer
 		jc	DosError			; Success ?
 		ret					; Yes, return 0

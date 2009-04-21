@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosUnhookIsaPorts_
+		PUBLIC	DosUnhookIsaPorts
 ;
 ; DECLARATION	int DosUnhookIsaPorts( unsigned iobase );
 ;
-PROC		DosUnhookIsaPorts_	STDCALL
+PROC		DosUnhookIsaPorts	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = I/O base address
 		call	[DWORD UnhookIsaPorts]		; Unhook ISA I/O ports

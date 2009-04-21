@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetMouseResolution_
+		PUBLIC	BiosSetMouseResolution
 ;
 ; DECLARATION	int BiosSetMouseResolution( int resolution );
 ;
-PROC		BiosSetMouseResolution_	STDCALL
+PROC		BiosSetMouseResolution	WATCOM_C
 		push	ebx				; Save context
 		mov	bh,al				; BH = resolution
 		mov	eax,MISC_MOUSE_SERVICES SHL 8 +\; AH = function number

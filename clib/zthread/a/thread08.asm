@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosGetPriority_
+		PUBLIC	DosGetPriority
 ;
 ; DECLARATION	int DosGetPriority( int TID );
 ;
-PROC		DosGetPriority_		STDCALL
+PROC		DosGetPriority		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = TID
 		;

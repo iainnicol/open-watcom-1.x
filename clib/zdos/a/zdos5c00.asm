@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosLockFileRegion_
+		PUBLIC	DosLockFileRegion
 ;
 ; DECLARATION	int DosLockFileRegion( unsigned length, unsigned offset,
 ;		                       int handle );
 ;
-PROC		DosLockFileRegion_	STDCALL
+PROC		DosLockFileRegion	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = region length
 		;

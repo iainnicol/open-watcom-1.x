@@ -6,11 +6,11 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	BuildFileSystemName_
+		PUBLIC	BuildFileSystemName
 ;
 ; DECLARATION	int BuildFileSystemName( void *buffer, char *name );
 ;
-PROC		BuildFileSystemName_	STDCALL
+PROC		BuildFileSystemName	WATCOM_C
 		push	edi				; Save context
 		push	esi
 		push	ecx

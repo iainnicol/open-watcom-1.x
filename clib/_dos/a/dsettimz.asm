@@ -16,12 +16,12 @@ Second		DB	?
 Hundredth	DB	?
 ENDS
 		CODESEG
-		EXTRN	C __set_EINVAL			: PROC
-		PUBLIC	_dos_settime_
+		EXTRN	WATCOM_C __set_EINVAL		: PROC
+		PUBLIC	_dos_settime
 ;
 ; DECLARATION	unsigned _dos_settime( struct dostime_t *time );
 ;
-PROC		_dos_settime_		STDCALL
+PROC		_dos_settime		WATCOM_C
 		USES	edx,ecx,ebx
 		mov	ebx,eax				; EBX points to buffer
 		mov	ch,[(DOSTIME ebx).Hour]		; CH = hour

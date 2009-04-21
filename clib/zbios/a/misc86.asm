@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosWait_
+		PUBLIC	BiosWait
 ;
 ; DECLARATION	int BiosWait( unsigned microseconds );
 ;
-PROC		BiosWait_		STDCALL
+PROC		BiosWait		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = number of micro seconds to wait
 		mov	ah,MISC_WAIT			; AH = function number

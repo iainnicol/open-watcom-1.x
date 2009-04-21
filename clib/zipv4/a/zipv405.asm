@@ -9,11 +9,11 @@
 		INCLUDE	'ZIPV4.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosSocketListen_
+		PUBLIC	DosSocketListen
 ;
 ; DECLARATION	int DosSocketListen( unsigned handle );
 ;
-PROC		DosSocketListen_	STDCALL
+PROC		DosSocketListen		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = handle
 		mov	ah,SOCKET_LISTEN		; AH = function number

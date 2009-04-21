@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosTraceCloseSession_
+		PUBLIC	DosTraceCloseSession
 ;
 ; DECLARATION	int DosTraceCloseSession( void );
 ;
-PROC		DosTraceCloseSession_	STDCALL
+PROC		DosTraceCloseSession	WATCOM_C
 		mov	ah,TRACE_CLOSE_SESSION		; Close trace session
 		int	TRACE
 		jmp	DosReturnZero			; Process return code

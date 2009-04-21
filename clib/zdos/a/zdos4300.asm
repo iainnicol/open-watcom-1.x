@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosGetFileAttributes_
+		PUBLIC	DosGetFileAttributes
 ;
 ; DECLARATION	int DosGetFileAttributes( char *path );
 ;
-PROC		DosGetFileAttributes_	STDCALL
+PROC		DosGetFileAttributes	WATCOM_C
 		USES	edx,ecx
 		mov	edx,eax				; EDX points to path
 		;

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		PUBLIC	DosIoctlDeviceRemovable_
+		PUBLIC	DosIoctlDeviceRemovable
 ;
 ; DECLARATION	int DosIoctlDeviceRemovable( int drive );
 ;
-PROC		DosIoctlDeviceRemovable_ STDCALL
+PROC		DosIoctlDeviceRemovable WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX = logical drive number
 		mov	eax,DOS_DEVICE_CONTROL SHL 8 + \; AH = DOS function number

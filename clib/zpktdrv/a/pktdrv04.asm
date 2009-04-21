@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosPktDrvGetAddress_
+		PUBLIC	DosPktDrvGetAddress
 ;
 ; DECLARATION	int DosPktDrvGetAddress( int Length, void *Buffer, int InterfaceNumber );
 ;
-PROC		DosPktDrvGetAddress_	STDCALL
+PROC		DosPktDrvGetAddress	WATCOM_C
 		push	edi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = length

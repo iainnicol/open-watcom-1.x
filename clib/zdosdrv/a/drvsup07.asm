@@ -6,12 +6,12 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSetUserVector_
+		PUBLIC	DosSetUserVector
 ;
 ; DECLARATION	void DosSetUserVector( int intnum,
 ;                                      void ( *h ) (EXCEPTION *) );
 ;
-PROC		DosSetUserVector_	STDCALL
+PROC		DosSetUserVector	WATCOM_C
 		USES	ecx,ebx
 		mov	ebx,edx				; EBX points to ISR
 		xor	edx,edx				; Clear EDX

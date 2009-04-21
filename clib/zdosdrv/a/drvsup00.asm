@@ -8,12 +8,12 @@
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosHookIsaPorts_
+		PUBLIC	DosHookIsaPorts
 ;
 ; DECLARATION	int DosHookIsaPorts( unsigned ioend, unsigned iobase,
 ;                                    IOTRAP *iotrap );
 ;
-PROC		DosHookIsaPorts_	STDCALL
+PROC		DosHookIsaPorts		WATCOM_C
 		push	esi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = ending I/O address

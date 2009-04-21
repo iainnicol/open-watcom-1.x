@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosResetEnvironment_
+		PUBLIC	DosResetEnvironment
 ;
 ; DECLARATION	void DosResetEnvironment( void );
 ;
-PROC		DosResetEnvironment_	STDCALL
+PROC		DosResetEnvironment	WATCOM_C
 		USES	eax
 		mov	ah,DOS_RESET_ENVIRONMENT	; AH = DOS function
 		;

@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	DosSetDate_
+		PUBLIC	DosSetDate
 ;
 ; DECLARATION	int DosSetDate( DATE *date );
 ;
-PROC		DosSetDate_		STDCALL
+PROC		DosSetDate		WATCOM_C
 		USES	edx,ecx
 		mov	ecx,[(DATE eax).Year]		; ECX = year
 		mov	dh,[(DATE eax).Month]		; DH = month

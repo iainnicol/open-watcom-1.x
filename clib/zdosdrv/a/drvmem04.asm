@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosAllocatePages_
+		PUBLIC	DosAllocatePages
 ;
 ; DECLARATION	int DosAllocatePages( int pages, void **block );
 ;
-PROC		DosAllocatePages_	STDCALL
+PROC		DosAllocatePages	WATCOM_C
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of pages to allocate
 		call	[DWORD AllocatePages]		; Allocate block

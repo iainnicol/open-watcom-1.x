@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnAL			: PROC
-		PUBLIC	DosConsoleInputNoEcho_
+		PUBLIC	DosConsoleInputNoEcho
 ;
 ; DECLARATION	int DosConsoleInputNoEcho( void );
 ;
-PROC		DosConsoleInputNoEcho_	STDCALL
+PROC		DosConsoleInputNoEcho	WATCOM_C
 		mov	ah,DOS_CONSOLE_INPUT_NO_ECHO	; AH = DOS function
 		;
 		; Call DOS services

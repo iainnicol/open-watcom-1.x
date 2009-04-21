@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosCpuInformation_
+		PUBLIC	BiosCpuInformation
 ;
 ; DECLARATION	int BiosCpuInformation( CPU *cpu );
 ;
-PROC		BiosCpuInformation_	STDCALL
+PROC		BiosCpuInformation	WATCOM_C
 		push	edx				; Save context
 		push	ebx
 		mov	ebx,eax				; EBX points to CPU block

@@ -6,14 +6,14 @@
 		MODEL	USE32 SMALL
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	malloc_
-		PUBLIC	_nmalloc_
+		PUBLIC	malloc
+		PUBLIC	WATCOM_C _nmalloc
 		PUBLIC	remalloc
 ;
 ; DECLARATION	void *malloc( size_t size );
 ;
-PROC		malloc_			STDCALL
-LABEL		_nmalloc_		PROC
+PROC		malloc			WATCOM_C
+LABEL		_nmalloc		PROC
 		push	ecx				; Save context
 		mov	ecx,eax				; ECX = number of bytes to allocate
 LABEL		remalloc		PROC

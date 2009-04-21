@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosError			: PROC
-		PUBLIC	DosCreateGlobalSemaphore_
+		PUBLIC	DosCreateGlobalSemaphore
 ;
 ; DECLARATION	int DosCreateGlobalSemaphore( char *name, unsigned value );
 ;
-PROC		DosCreateGlobalSemaphore_ STDCALL
+PROC		DosCreateGlobalSemaphore WATCOM_C
 		push	edx				; Save context
 		push	ecx
 		mov	ecx,edx				; ECX = initial semaphore count

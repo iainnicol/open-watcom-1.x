@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnAL			: PROC
-		PUBLIC	BiosClosePrinter_
+		PUBLIC	BiosClosePrinter
 ;
 ; DECLARATION	int BiosClosePrinter( int printerport );
 ;
-PROC		BiosClosePrinter_	STDCALL
+PROC		BiosClosePrinter	WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = printer port number
 		mov	ah,PRINTER_CLOSE		; AH = function number

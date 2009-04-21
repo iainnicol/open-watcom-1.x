@@ -9,11 +9,11 @@
 		INCLUDE	'ZSOCKET.INC'
 		CODESEG
 		EXTRN	SocketError			: PROC
-		PUBLIC	ioctlsocket_
+		PUBLIC	ioctlsocket
 ;
 ; DECLARATION	int ioctlsocket( int s, long cmd, unsigned long *argp );
 ;
-PROC		ioctlsocket_		STDCALL
+PROC		ioctlsocket		WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		shl	eax,2				; EAX = socket handle

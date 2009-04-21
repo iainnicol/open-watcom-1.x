@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		INCLUDE	'ZDOSDRV.INC'
 		CODESEG
-		PUBLIC	DosEndOfInterrupt_
+		PUBLIC	DosEndOfInterrupt
 ;
 ; DECLARATION	int DosEndOfInterrupt( int irq );
 ;
-PROC		DosEndOfInterrupt_	STDCALL
+PROC		DosEndOfInterrupt	WATCOM_C
 		call	[DWORD DosEOI]			; Acknowledge interrupt(s)
 		xor	eax,eax				; Clear EAX
 		ret

@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosReturnZero			: PROC
-		PUBLIC	BiosSetVideoMode_
+		PUBLIC	BiosSetVideoMode
 ;
 ; DECLARATION	int BiosSetVideoMode( int mode );
 ;
-PROC		BiosSetVideoMode_	STDCALL
+PROC		BiosSetVideoMode	WATCOM_C
 IFDEF __ZDOSDRV__
 		push	ebx				; Save context
 		mov	bh,[VideoPage]			; BH = console number
@@ -31,6 +31,6 @@ ENDIF
 ENDP
 IFDEF __ZDOSDRV__
 		UDATASEG
-		EXTRN	C VideoPage			: BYTE
+		EXTRN	WATCOM_C VideoPage		: BYTE
 ENDIF
 		END

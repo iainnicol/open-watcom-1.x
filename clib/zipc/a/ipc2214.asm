@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosOpenPipe_
+		PUBLIC	DosOpenPipe
 ;
 ; DECLARATION	int DosOpenPipe( PIPE *pipe );
 ;
-PROC		DosOpenPipe_		STDCALL
+PROC		DosOpenPipe		WATCOM_C
 		push	ebx				; Save context
 		mov	ebx,eax				; EBX points to pipe
 		;

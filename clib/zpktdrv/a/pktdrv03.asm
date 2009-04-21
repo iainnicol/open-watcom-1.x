@@ -5,11 +5,11 @@
 		INCLUDE	'ZPKTDRV.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosPktDrvSendPacket_
+		PUBLIC	DosPktDrvSendPacket
 ;
 ; DECLARATION	int DosPktDrvSendPacket( int Length, void *Buffer, int InterfaceNumber );
 ;
-PROC		DosPktDrvSendPacket_	STDCALL
+PROC		DosPktDrvSendPacket	WATCOM_C
 		push	esi				; Save context
 		push	ecx
 		mov	ecx,eax				; ECX = length

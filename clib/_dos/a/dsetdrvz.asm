@@ -7,11 +7,11 @@
 		INCLUDE	'ZDOS.INC'
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
-		PUBLIC	_dos_setdrive_
+		PUBLIC	_dos_setdrive
 ;
 ; DECLARATION	void _dos_setdrive( unsigned drive, unsigned *drives );
 ;
-PROC		_dos_setdrive_		STDCALL
+PROC		_dos_setdrive		WATCOM_C
 		USES	ebx
 		mov	ebx,edx				; EBX points to drives variable
 		mov	dl,al				; DL = drive number

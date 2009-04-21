@@ -46,12 +46,12 @@ cdsay .
     <CPCMD> startup/library/msdos.386/ms_s/dllstart.obj     <RELROOT>/lib386/dos/dllstrts.obj
 
   [ IFDEF (os_zdos) <2*> ]
-    <CPCMD> library/zdos.386/ms_r/clib3r.lib                <RELROOT>/rel2/lib386/zdos/clib3r.lib
-    <CPCMD> library/zdosdrv.386/ms_r/clib3r.lib             <RELROOT>/rel2/lib386/zdosdrv/clib3r.lib
-    <CPCMD> startup/library/zdos.386/ms_r/appstart.obj      <RELROOT>/rel2/lib386/zdos/appstart.obj
-    <CPCMD> startup/library/zdosdrv.386/ms_r/devstart.obj   <RELROOT>/rel2/lib386/zdosdrv/devstart.obj
-    <CPCMD> startup/library/zdosdrv.386/ms_r/hwdstart.obj   <RELROOT>/rel2/lib386/zdosdrv/hwdstart.obj
-    <CPCMD> startup/library/zdosdrv.386/ms_r/fsdstart.obj   <RELROOT>/rel2/lib386/zdosdrv/fsdstart.obj
+    <CPCMD> library/zdos.386/ms_r/clib3r.lib                <RELROOT>/lib386/zdos/clib3r.lib
+    <CPCMD> library/zdosdrv.386/ms_r/clib3r.lib             <RELROOT>/lib386/zdosdrv/clib3r.lib
+    <CPCMD> startup/library/zdos.386/ms_r/appstart.obj      <RELROOT>/lib386/zdos/appstart.obj
+    <CPCMD> startup/library/zdosdrv.386/ms_r/devstart.obj   <RELROOT>/lib386/zdosdrv/devstart.obj
+    <CPCMD> startup/library/zdosdrv.386/ms_r/hwdstart.obj   <RELROOT>/lib386/zdosdrv/hwdstart.obj
+    <CPCMD> startup/library/zdosdrv.386/ms_r/fsdstart.obj   <RELROOT>/lib386/zdosdrv/fsdstart.obj
 
   [ IFDEF (os_dos os_os2 "") <2*> ]
     <CPCMD> library/msdos.286/mc/clibc.lib                  <RELROOT>/lib286/os2/dospmc.lib

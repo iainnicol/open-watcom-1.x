@@ -8,14 +8,15 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	BiosError			: PROC
-		PUBLIC	BiosExtendedUartSetup_
+		PUBLIC	BiosExtendedUartSetup
 ;
 ; DECLARATION	int BiosExtendedUartSetup( int break, int portnumber,
 ;		                           int stopbits, int baudrate,
 ;		                           int parity, int databits );
 ;
-PROC		BiosExtendedUartSetup_	STDCALL
-		ARG	Parity : DWORD, DataBits : DWORD
+PROC		BiosExtendedUartSetup	WATCOM_C
+		ARG	Break : DWORD, PortNumber : DWORD, StopBits : DWORD, \
+			BaudRate : DWORD, Parity : DWORD, DataBits : DWORD
 		mov	bh,[BYTE Parity]		; BH = parity
 		mov	ch,[BYTE DataBits]		; CH = data bits
 		mov	ah,UART_EXTENDED_SETUP		; AH = function number

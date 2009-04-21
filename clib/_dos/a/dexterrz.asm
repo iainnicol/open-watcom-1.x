@@ -5,7 +5,7 @@
 		P486
 		MODEL	USE32 SMALL
 		CODESEG
-		PUBLIC	dosexterr_
+		PUBLIC	dosexterr
 ;
 ; Assembly variant of _DOSERROR structure
 ;
@@ -18,7 +18,7 @@ ENDS
 ;
 ; DECLARATION	int dosexterr( struct _DOSERROR *doserr );
 ;
-PROC		dosexterr_		STDCALL
+PROC		dosexterr		WATCOM_C
 		USES	edx
 		mov	edx,eax				; EDX points to ERROR structure
 		mov	[(DOSERROR edx).ClassCode],13	; Unknown class
@@ -29,5 +29,5 @@ PROC		dosexterr_		STDCALL
 		ret
 ENDP
 		UDATASEG
-		EXTRN	C doserrno			: DWORD
+		EXTRN	WATCOM_C doserrno		: DWORD
 		END

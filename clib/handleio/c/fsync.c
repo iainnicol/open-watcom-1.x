@@ -32,7 +32,7 @@
 
 #include "variety.h"
 #include <errno.h>
-#if defined(__DOS__) || defined(__WINDOWS__)
+#if defined(__DOS__) || defined(__WINDOWS__) || defined(__ZDOS__)
     #include <dos.h>
 #elif defined(__NT__)
     #include <windows.h>
@@ -60,23 +60,23 @@ _WCRTLINK int fsync( int handle )
 
     __handle_check( handle, -1 );
 
-    #if defined(__DOS__) || defined(__WINDOWS__)
+    #if defined(__DOS__) || defined(__WINDOWS__) || defined(__ZDOS__)
     ret = _dos_commit( handle );
     #elif defined(__NT__)
-    if( !FlushFileBuffers( __getOSHandle( handle ) ) ) 
+    if( !FlushFileBuffers( __getOSHandle( handle ) ) )
     {
         __set_errno_nt();
         ret = -1;
     }
     #elif defined(__OS2__)
-    if( DosBufReset( handle ) != 0 ) 
+    if( DosBufReset( handle ) != 0 )
     {
         __set_errno( EBADF );
         ret = -1;
     }
     #elif defined(__NETWARE__)
 
-    if( FEFlushWrite( handle ) != 0 ) 
+    if( FEFlushWrite( handle ) != 0 )
     {
         __set_errno( EBADF );
         ret = -1;

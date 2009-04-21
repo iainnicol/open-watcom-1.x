@@ -8,11 +8,11 @@
 		INCLUDE	'ZDOSAPI.INC'
 		CODESEG
 		EXTRN	DosReturnZero			: PROC
-		PUBLIC	DosResizeMemoryBlock_
+		PUBLIC	DosResizeMemoryBlock
 ;
 ; DECLARATION	int DosResizeMemoryBlock( int numpages, void *block );
 ;
-PROC		DosResizeMemoryBlock_	STDCALL
+PROC		DosResizeMemoryBlock	WATCOM_C
 		push	ecx				; Save context
 		push	ebx
 		mov	ecx,eax				; ECX = size of block
