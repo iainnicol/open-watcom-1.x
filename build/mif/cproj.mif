@@ -247,7 +247,7 @@ clflags_qnx_386    = -l=qnx
 clflags_osi_386    = -l=osi
 clflags_dos_i86    = -l=dos
 clflags_dos_386    = -l=dos4g
-#clflags_dos_386    = -l=causeway
+#clflags_dos_386   = -l=causeway
 clflags_zdos_386   = -l=zdos
 clflags_nov_386    = -l=netware
 clflags_linux_386  = -l=linux
