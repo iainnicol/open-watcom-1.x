@@ -181,6 +181,7 @@ typedef struct label_list {
     struct asm_sym      *sym;           // structure definition or local label symbol
     int                 size;           // size of parameter
     int                 factor;         // for local var only
+    int                 is_register;    // for arguments only
     union {
         unsigned        is_vararg   :1; // if it is a vararg
         int             count;          // number of element in this label
@@ -287,7 +288,9 @@ extern a_definition_struct      Definition;
 typedef struct {
     dist_type           distance;        // stack distance;
     mod_type            model;           // memory model;
+#if defined( _STANDALONE_ )
     lang_type           langtype;        // language;
+#endif
     os_type             ostype;          // operating system;
     unsigned            use32       :1;  // If 32-bit segment is used
     unsigned            cmdline     :1;

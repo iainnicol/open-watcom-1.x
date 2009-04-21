@@ -77,7 +77,7 @@ int StructDef( int i )
         }
     }
     name = AsmBuffer[n]->string_ptr;
-    switch( AsmBuffer[i+1]->u.value ) {
+    switch( AsmBuffer[i]->u.value ) {
     case T_STRUC:
     case T_STRUCT:
         dir = (dir_node *)AsmGetSymbol( name );

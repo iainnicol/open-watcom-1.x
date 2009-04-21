@@ -452,6 +452,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             buf->token = T_QUESTION_MARK;
         }
     } else {
+#if defined( _STANDALONE_ )
         if( Options.ideal ) {
             int i = *buf_index;
 
@@ -462,6 +463,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
                 return( NOT_ERROR );
             }
         }
+#endif
         buf->u.value = AsmOpTable[count].token;
         // count = AsmOpcode[count].position;
 
@@ -478,11 +480,13 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             } else if( AsmOpTable[count].rm_byte & OP_UNARY_OPERATOR ) {
                 buf->token = T_UNARY_OPERATOR;
             } else if( AsmOpTable[count].rm_byte & OP_DIRECTIVE ) {
+#if defined( _STANDALONE_ )
                 if( ( AsmOpTable[count].rm_byte & OP_IDEAL ) &&
                     ( Options.ideal == 0 ) ) {
                     buf->token = T_ID;
                     return( NOT_ERROR );
                 }
+#endif
                 buf->token = T_DIRECTIVE;
 #if defined( _STANDALONE_ )
                 switch( AsmOpTable[count].token ) {
@@ -636,7 +640,9 @@ int AsmScan( char *string )
 
     CurrString = string;
     output_ptr = stringbuf;
+#if defined( _STANDALONE_ )
     EnumDirective = FALSE;
+#endif
 
     ptr = string;
 // FIXME !!

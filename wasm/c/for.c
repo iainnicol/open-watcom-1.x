@@ -104,7 +104,7 @@ int ForDirective( int i, enum irp_type type )
     AsmBuffer[i]->token = T_DIRECTIVE;
     AsmBuffer[i]->u.value = T_MACRO;
 
-    if( MacroDef( start, TRUE ) == ERROR ) return( ERROR );
+    if( MacroDef( i, TRUE ) == ERROR ) return( ERROR );
 
     /* now call the above macro with each of the given parms */
 

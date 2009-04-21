@@ -150,6 +150,7 @@ static struct asm_sym **AsmFind( const char *name )
     sym = &AsmSymHead;
 #endif
     for( ; *sym; sym = &((*sym)->next) ) {
+#if defined( _STANDALONE_ )
         if( Options.ideal ) {
             if( strcmp( name, (*sym)->name ) == 0 )
                 break;
@@ -157,6 +158,10 @@ static struct asm_sym **AsmFind( const char *name )
             if( stricmp( name, (*sym)->name ) == 0 )
                 break;
         }
+#else
+        if( stricmp( name, (*sym)->name ) == 0 )
+            break;
+#endif
     }
     return( sym );
 }
@@ -165,8 +170,10 @@ struct asm_sym *AsmLookup( const char *name )
 /*******************************************/
 {
     struct asm_sym      **sym_ptr;
-    struct asm_sym      *sym, *structure;
-
+    struct asm_sym      *sym;
+#if defined( _STANDALONE_ )
+    struct asm_sym      *structure;
+#endif
     if( strlen( name ) > MAX_ID_LEN ) {
         AsmError( LABEL_TOO_LONG );
         return NULL;

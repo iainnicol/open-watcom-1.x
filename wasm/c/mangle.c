@@ -97,7 +97,7 @@ static char *UScoreMangler( struct asm_sym *sym, char *buffer )
 static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
 /****************************************************************/
 {
-    if( ( !Options.mangle_stdcall ) || ( Options.ideal ) )
+    if( !Options.mangle_stdcall )
         return( AsmMangler( sym, buffer ) );
 
     if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) ) {
@@ -136,6 +136,7 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
         case MT_NEAR:
         case MT_FAR:
         case MT_EMPTY:
+        case MT_PROC:
             changes |= USCORE_BACK;
             break;
         default:
@@ -161,16 +162,6 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
     return( name );
 }
 
-static char *CMangler( struct asm_sym *sym, char *buffer )
-/********************************************************/
-{
-    if( Options.naming_convention == ADD_USCORES ) {
-        return( WatcomCMangler( sym, buffer ) );
-    } else {
-        return( AsmMangler( sym, buffer ) );
-    }
-}
-
 static mangle_func GetMangler( char *mangle_type )
 /************************************************/
 {
@@ -179,7 +170,10 @@ static mangle_func GetMangler( char *mangle_type )
     mangler = NULL;
     if( mangle_type != NULL ) {
         if( stricmp( mangle_type, "C" ) == 0 ) {
-            mangler = CMangler;
+            if( Use32 && ( Options.register_parameters == FALSE ) ) /* stack */
+                mangler = AsmMangler;
+            else
+                mangler = WatcomCMangler;                           /* registers */
         } else if( stricmp( mangle_type, "N" ) == 0 ) {
             mangler = AsmMangler;
         } else {
@@ -206,15 +200,14 @@ char *Mangle( struct asm_sym *sym, char *buffer )
     case LANG_PASCAL:
         mangler = UCaseMangler;
         break;
-    case LANG_WATCOM_C:          // registers passing parameters, only Open Watcom
-        mangler = WatcomCMangler;
-        break;
-    case LANG_C:                 // stack passing parameters
-        if( ( Options.watcom_c_mangler ) && ( Options.ideal ) == 0  ) {
+    case LANG_WATCOM_C:
+        if( Use32 && ( Options.register_parameters == FALSE ) ) /* stack */
             mangler = AsmMangler;
-        } else {
-            mangler = UScoreMangler;
-        }
+        else
+            mangler = WatcomCMangler;                           /* registers */
+        break;
+    case LANG_C:
+        mangler = UScoreMangler;
         break;
     case LANG_NONE:
         mangler = sym->mangler;

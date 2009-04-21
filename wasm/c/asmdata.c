@@ -756,14 +756,7 @@ int data_init( int sym_loc, int initializer_loc )
         if( sym == NULL ) {
             return( ERROR );
         }
-#if defined( _STANDALONE_ )
-        if( ( Parse_Pass == PASS_1 ) && ( sym->state != SYM_UNDEFINED ) ) {
-            AsmError( SYMBOL_ALREADY_DEFINED );
-            return( ERROR );
-        }
-#endif
     }
-
     switch( AsmBuffer[initializer_loc]->u.value ) {
 #if defined( _STANDALONE_ )
     case T_SBYTE:                       // 20-Aug-92

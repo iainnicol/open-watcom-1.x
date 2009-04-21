@@ -75,6 +75,7 @@ int AddLocalLabel( asm_sym *sym ) {
     label->factor = 0;
     label->next = NULL;
     label->sym = sym;
+    label->is_register = 0;
     if( info->labellist == NULL ) {
         info->labellist = label;
     } else {
@@ -141,7 +142,7 @@ int MakeLabel( char *symbol_name, memtype mem_type )
             BackPatch( sym );
             return( NOT_ERROR );
         } else {
-            if( strcmp( symbol_name, "@@" ) == 0 ) {
+            if( symbol_name[2] == 0 ) {
                 /* anonymous label */
                 /* find any references to @F and mark them to here as @B */
                 /* find the old @B */
@@ -184,10 +185,10 @@ int MakeLabel( char *symbol_name, memtype mem_type )
                 AsmErr( SYMBOL_TYPE_DIFF, sym->name );
                 return( ERROR );
             }
+        } else if( sym->state != SYM_UNDEFINED ) {
+            AsmErr( SYMBOL_PREVIOUSLY_DEFINED, symbol_name );
+            return( ERROR );
         }
-    } else if( sym->state != SYM_UNDEFINED ) {
-        AsmErr( SYMBOL_PREVIOUSLY_DEFINED, symbol_name );
-        return( ERROR );
     } else {
         /* save old offset */
         addr = sym->offset;
@@ -245,27 +246,29 @@ int LabelDirective( int i )
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );
     }
-    switch( AsmBuffer[i+1]->u.value ) {
+    switch( AsmBuffer[i]->u.value ) {
     case T_NEAR:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_NEAR ));
     case T_FAR:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_FAR ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_FAR ));
     case T_BYTE:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_BYTE ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_BYTE ));
     case T_WORD:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_WORD ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_WORD ));
     case T_DWORD:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_DWORD ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_DWORD ));
     case T_FWORD:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_FWORD ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_FWORD ));
     case T_PWORD:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_FWORD ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_FWORD ));
     case T_QWORD:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_QWORD ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_QWORD ));
     case T_TBYTE:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_TBYTE ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_TBYTE ));
     case T_OWORD:
-        return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_OWORD ));
+        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_OWORD ));
+    case T_PROC:
+        return( MakeLabel( AsmBuffer[n]->string_ptr, CurrProc->e.procinfo->mem_type ));
     default:
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );

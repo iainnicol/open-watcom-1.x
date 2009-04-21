@@ -69,11 +69,11 @@ static void             SizeString( unsigned op_size );
 static int              check_size( void );
 static int              segm_override_jumps( expr_list *opndx );
 
+
 #if defined( _STANDALONE_ )
 extern global_options   Options;
 extern int              directive( int , long );
 extern int              SymIs32( struct asm_sym *sym );
-
 static void             check_assume( struct asm_sym *, enum prefix_reg );
 
 extern int_8            DefineProc;     // TRUE if the definition of procedure
@@ -574,6 +574,8 @@ static int comp_opt( uint direct )
   Compare function for CPU directive
 */
 {
+
+#if defined( _STANDALONE_ )
     if( Options.ideal ) {
         // Borland TASM ideal mode
         switch( direct ) {
@@ -622,6 +624,7 @@ static int comp_opt( uint direct )
             return( EMPTY );
         }
     } else {
+#endif
         // follow Microsoft MASM
         switch( direct ) {
         case T_DOT_NO87:
@@ -670,7 +673,9 @@ static int comp_opt( uint direct )
             // not found
             return( EMPTY );
         }
+#if defined( _STANDALONE_ )
     }
+#endif
 }
 
 static int def_fpu( uint direct )
@@ -682,13 +687,17 @@ static int def_fpu( uint direct )
     switch( direct ) {
     case T_DOT_8086:
     case T_DOT_186:
+#if defined( _STANDALONE_ )
     case T_P8086:
     case T_P186:
+#endif
         return( P_87 );
     case T_DOT_286:
     case T_DOT_286P:
+#if defined( _STANDALONE_ )
     case T_P286:
     case T_P286P:
+#endif
         return( P_287 );
     case T_DOT_386:
     case T_DOT_386P:
@@ -698,6 +707,7 @@ static int def_fpu( uint direct )
     case T_DOT_586P:
     case T_DOT_686:
     case T_DOT_686P:
+#if defined( _STANDALONE_ )
     case T_P386:
     case T_P386P:
     case T_P486:
@@ -706,6 +716,7 @@ static int def_fpu( uint direct )
     case T_P586P:
     case T_P686:
     case T_P686P:
+#endif
         return( P_387 );
     default:
         return( 0 );
@@ -722,29 +733,39 @@ static void MakeCPUConstant( int i )
     // fall right through
     case T_DOT_686P:
     case T_DOT_686:
+#if defined( _STANDALONE_ )
     case T_P686P:
     case T_P686:
+#endif
         MakeConstantUnderscored( T_DOT_686 );
     case T_DOT_586P:
     case T_DOT_586:
+#if defined( _STANDALONE_ )
     case T_P586P:
     case T_P586:
+#endif
         MakeConstantUnderscored( T_DOT_586 );
     case T_DOT_486P:
     case T_DOT_486:
+#if defined( _STANDALONE_ )
     case T_P486P:
     case T_P486:
+#endif
         MakeConstantUnderscored( T_DOT_486 );
     case T_DOT_386P:
     case T_DOT_386:
+#if defined( _STANDALONE_ )
     case T_P386P:
     case T_P386:
+#endif
         MakeConstantUnderscored( T_DOT_386 );
         break;
     case T_DOT_286P:
     case T_DOT_286:
+#if defined( _STANDALONE_ )
     case T_P286P:
     case T_P286:
+#endif
         MakeConstantUnderscored( T_DOT_286 );
     }
     return;
@@ -786,6 +807,7 @@ int cpu_directive( int i )
     case T_DOT_486:
     case T_DOT_386P:
     case T_DOT_386:
+#if defined( _STANDALONE_ )
     case T_P686P:
     case T_P686:
     case T_P586P:
@@ -794,6 +816,7 @@ int cpu_directive( int i )
     case T_P486:
     case T_P386P:
     case T_P386:
+#endif
         SetUse32Def( TRUE );
         break;
     case T_DOT_286P:
@@ -801,11 +824,13 @@ int cpu_directive( int i )
     case T_DOT_286:
     case T_DOT_186:
     case T_DOT_8086:
+#if defined( _STANDALONE_ )
     case T_P286P:
     case T_P286N:
     case T_P286:
     case T_P186:
     case T_P8086:
+#endif
         SetUse32Def( FALSE );
         break;
     default:
@@ -914,64 +939,407 @@ static int proc_check( void )
     return( TRUE );
 }
 
+char *regs[4] = { "ax",  "dx",  "bx",  "cx" };
+
+int get_register_argument( int index, char *buffer, int *register_count )
+{
+    int     size, i, j;
+    char    ch;
+
+    i = index;
+    j = *register_count;
+    if( j > 3 )
+        return( TRUE );
+    if( Use32 )
+        size = 4;
+    else
+        size = 2;
+    if( AsmBuffer[i]->token == T_OP_SQ_BRACKET ) {
+        i++;
+        if( AsmBuffer[i]->token == T_RES_ID ) {
+            switch( AsmBuffer[i]->u.value ) {
+            case T_BYTE:
+                size = 1;
+                break;
+            case T_WORD:
+                size = 2;
+                break;
+            case T_DWORD:
+                size = 4;
+                break;
+            case T_FWORD:
+                if( Use32 ) {
+                    size = 6;
+                    break;
+                }
+            case T_QWORD:
+                if( Use32 ) {
+                    size = 8;
+                    break;
+                }
+            default:
+                AsmError( STRANGE_PARM_TYPE );
+                return( ERROR );
+            }
+            i++;
+        }
+        if( ( AsmBuffer[i]->token != T_ID ) &&
+            ( AsmBuffer[i+1]->token != T_CL_SQ_BRACKET ) ) {
+            AsmError( SYNTAX_ERROR );
+            return( ERROR );
+        }
+        if( Use32 ) {
+            switch( size ) {
+            case 1:
+                sprintf( buffer, "movzx e%s,[byte %s]", regs[j], AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( FALSE );
+            case 2:
+                sprintf( buffer, "movzx e%s,[word %s]", regs[j], AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( FALSE );
+            case 4:
+                sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( FALSE );
+            case 6:
+                if( j > 2 ) {
+                    return( TRUE );
+                } else {
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i]->string_ptr );
+                    InputQueueLine( buffer );
+                    j++;
+                    sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i]->string_ptr );
+                    InputQueueLine( buffer );
+                    *register_count = j;
+                    return( FALSE );
+                }
+            case 8:
+                if( j > 2 ) {
+                    return( TRUE );
+                } else {
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i]->string_ptr );
+                    InputQueueLine( buffer );
+                    j++;
+                    sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i]->string_ptr );
+                    InputQueueLine( buffer );
+                    *register_count = j;
+                    return( FALSE );
+                }
+            }
+        } else {
+            switch( size ) {
+            case 1:
+                ch = regs[j][0];
+                sprintf( buffer, "xor %ch,%ch", ch, ch );
+                InputQueueLine( buffer );
+                sprintf( buffer, "mov %cl,[byte %s]", ch, AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( FALSE );
+            case 2:
+                sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( FALSE );
+            case 4:
+                if( j > 2 ) {
+                    return( TRUE );
+                } else {
+                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i]->string_ptr );
+                    InputQueueLine( buffer );
+                    j++;
+                    sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i]->string_ptr );
+                    InputQueueLine( buffer );
+                    *register_count = j;
+                    return( FALSE );
+                }
+            }
+        }
+    } else if( ( AsmBuffer[i]->token == T_REG ) &&
+               ( ( AsmBuffer[i+1]->token == T_COMMA ) ||
+                 ( AsmBuffer[i+1]->token == T_FINAL ) ) ) {
+        switch( AsmBuffer[i]->u.value ) {
+        case T_EAX:
+        case T_EBX:
+        case T_ECX:
+        case T_EDX:
+        case T_EDI:
+        case T_ESI:
+        case T_EBP:
+        case T_ESP:
+            if( Use32 )
+                size = 4;
+            break;
+        case T_AX:
+        case T_BX:
+        case T_CX:
+        case T_DX:
+        case T_DI:
+        case T_SI:
+        case T_BP:
+        case T_SP:
+            size = 2;
+            break;
+        case T_DS:
+        case T_CS:
+        case T_ES:
+        case T_SS:
+        case T_FS:
+        case T_GS:
+            if( Use32 )
+                size = 4;
+            else
+                size = 2;
+            break;
+        case T_AL:
+        case T_AH:
+        case T_BL:
+        case T_BH:
+        case T_CL:
+        case T_CH:
+        case T_DL:
+        case T_DH:
+            size = 1;
+            break;
+        }
+        switch( size ) {
+        case 1:
+            if( Use32 ) {
+                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i]->string_ptr );
+            } else {
+                ch = regs[j][0];
+                sprintf( buffer, "mov %cl,%s", ch, AsmBuffer[i]->string_ptr );
+            }
+            InputQueueLine( buffer );
+            return( FALSE );
+        case 2:
+            if( Use32 ) {
+                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i]->string_ptr );
+            } else {
+                sprintf( buffer, "mov %s,%s", regs[j], AsmBuffer[i]->string_ptr );
+            }
+            InputQueueLine( buffer );
+            return( FALSE );
+        case 4:
+            if( Use32 ) {
+                sprintf( buffer, "mov e%s,%s", regs[j], AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( FALSE );
+            }
+            break;
+        }
+    } else if( AsmBuffer[i]->token == T_QUESTION_MARK ) {
+        return FALSE;
+    } else {
+        if( Use32 )
+            sprintf( buffer, "mov e%s,", regs[j] );
+        else
+            sprintf( buffer, "mov %s,", regs[j] );
+        while( ( AsmBuffer[i]->token != T_FINAL ) &&
+               ( AsmBuffer[i]->token != T_COMMA ) ) {
+            strcat( buffer, AsmBuffer[i++]->string_ptr );
+        }
+        InputQueueLine( buffer );
+        return( FALSE );
+    }
+    AsmError( SYNTAX_ERROR );
+    return( ERROR );
+}
+
+int get_stack_argument( int index, char *buffer )
+{
+    int     size, i = index;
+
+    if( Use32 )
+        size = 4;
+    else
+        size = 2;
+    if( AsmBuffer[i]->token == T_OP_SQ_BRACKET ) {
+        i++;
+        if( AsmBuffer[i]->token == T_RES_ID ) {
+            switch( AsmBuffer[i]->u.value ) {
+            case T_BYTE:
+                size = 1;
+                break;
+            case T_WORD:
+                size = 2;
+                break;
+            case T_DWORD:
+                size = 4;
+                break;
+            case T_FWORD:
+                if( Use32 ) {
+                    size = 6;
+                    break;
+                }
+            case T_QWORD:
+                if( Use32 ) {
+                    size = 8;
+                    break;
+                }
+            default:
+                AsmError( STRANGE_PARM_TYPE );
+                return( ERROR );
+            }
+            i++;
+        }
+        if( ( AsmBuffer[i]->token != T_ID ) ||
+            ( AsmBuffer[i + 1]->token != T_CL_SQ_BRACKET ) ) {
+            AsmError( SYNTAX_ERROR );
+            return( ERROR );
+        }
+        if( Use32 ) {
+            switch( size ) {
+            case 1:
+                sprintf( buffer, "movzx eax,[byte %s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push eax" );
+                InputQueueLine( buffer );
+                return( 0 );
+            case 2:
+                sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push eax" );
+                InputQueueLine( buffer );
+                return( 0 );
+            case 4:
+                sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( 0 );
+            case 6:
+                sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push eax" );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( 0 );
+            case 8:
+                sprintf( buffer, "push [dword %s+4]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( 0 );
+            }
+        } else {
+            switch( size ) {
+            case 1:
+                sprintf( buffer, "xor ah,ah" );
+                InputQueueLine( buffer );
+                sprintf( buffer, "mov al,[%s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push ax" );
+                InputQueueLine( buffer );
+                return( 0 );
+            case 2:
+                sprintf( buffer, "push [%s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( 0 );
+            case 4:
+                sprintf( buffer, "push [word %s+2]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                sprintf( buffer, "push [word %s]", AsmBuffer[i]->string_ptr );
+                InputQueueLine( buffer );
+                return( 0 );
+            }
+        }
+    }
+    sprintf( buffer, "push " );
+    while( ( AsmBuffer[i]->token != T_FINAL ) &&
+           ( AsmBuffer[i]->token != T_COMMA ) ) {
+        strcat( buffer, AsmBuffer[i++]->string_ptr );
+    }
+    InputQueueLine( buffer );
+    return( 0 );
+}
+
 int expand_call( int index )
 {
-    int     i = index + 1;
-    char    *arglist[16];
-    int     argindex, argcount, cleanup, reversed, regs;
-    char    buffer[ MAX_LINE_LEN ];
+    int         i, j;
+    int         arglist[16];
+    int         argcount, cleanup, reversed, register_count, register_arguments, parameter_on_stack;
+    char        buffer[ MAX_LINE_LEN ];
 
-    argcount = argindex = cleanup = reversed = regs = 0;
+    argcount = cleanup = reversed = register_count = register_arguments = 0;
+    parameter_on_stack = TRUE;
     switch( AsmBuffer[index]->u.value ) {
     case T_C:
     case T_SYSCALL:
         cleanup++;
-    case T_STDCALL:
-    case T_WATCOM_C:
         reversed++;
+        break;
+    case T_WATCOM_C:
+        if( Options.register_parameters  == FALSE )
+            cleanup++;
+        else
+            parameter_on_stack = FALSE;
+        /*fall into T_STDCALL */
+    case T_STDCALL:
+        reversed++;
+        break;
     case T_PASCAL:
-        for( ; ; ) {
-            if( AsmBuffer[i]->token == T_FINAL )
-                break;
-            if( ( AsmBuffer[i]->token != T_COMMA ) ||
-                ( AsmBuffer[i+1]->token == T_FINAL ) ) {
-                AsmError( SYNTAX_ERROR );
-                return ( ERROR );
-            }
-            i++;
-            arglist[argcount] = AsmBuffer[i++]->string_ptr;
-            if( ++argcount > 16 ) {
-                AsmError( TOO_MANY_ARGS );
-                return( ERROR );
-            }
-        }
+    case T_FORTRAN:
+    case T_BASIC:
         break;
     case T_NOLANGUAGE:
+        if( AsmBuffer[index + 1]->token == T_FINAL )
+            break;
+        AsmError( SYNTAX_ERROR );
+        return ( ERROR );
+    }
+    i = index + 1;
+    for( ; ; ) {
         if( AsmBuffer[i]->token == T_FINAL )
-            return( NOT_ERROR );
-    default:
-        AsmError( SYNTAX_ERROR );   /* Maybe implemented later */
-        return( ERROR );
+            break;
+        if( ( AsmBuffer[i]->token != T_COMMA ) ||
+            ( AsmBuffer[i+1]->token == T_FINAL ) ) {
+            AsmError( SYNTAX_ERROR );
+            return ( ERROR );
+        }
+        if( argcount == 16 ) {
+            AsmError( TOO_MANY_ARGS );
+            return( ERROR );
+        }
+        for( j = ++i; ; j++ ) {
+            if( ( AsmBuffer[j]->token == T_FINAL ) ||
+                ( AsmBuffer[j]->token == T_COMMA ) )
+                break;
+        }
+        arglist[argcount++] = i;
+        i = j;
+    }
+    if( parameter_on_stack == FALSE ) {
+        for( i = 0; i < argcount; i++ ) {
+            parameter_on_stack = get_register_argument( arglist[i], buffer,
+                                                        &register_count );
+            if( parameter_on_stack == ERROR )
+                return( ERROR );
+            if( parameter_on_stack )
+                break;
+            register_count++;
+            register_arguments++;
+        }
     }
     /* put parameters on top of stack */
     if( reversed ) {    /* Reversed order (right to left)*/
+
         i = argcount;
-        if( AsmBuffer[index]->u.value == T_WATCOM_C )
-            regs = 4;
-        while( i > regs ) {
-            sprintf( buffer, "push %s", arglist[--i] );
-            InputQueueLine( buffer );
+        while( i > register_arguments ) {
+            j = arglist[--i];
+            if( get_stack_argument( j, buffer ) )
+                return( ERROR );
         }
     } else {
         for( i = 0; i < argcount; i++ ) {
-            sprintf( buffer, "push %s", arglist[i] );
-            InputQueueLine( buffer );
+            j = arglist[i];
+            if( get_stack_argument( j, buffer ) )
+                return( ERROR );
         }
     }
     *buffer = 0;
     /* add original line up to before language */
-    for( i = 0; i < index; i++ )
+    for( i = 0; i < index; i++ ) {
         sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i]->string_ptr );
+    }
     InputQueueLine( buffer );
     /* add cleanup after call */
     if( cleanup && argcount ) {
@@ -1950,7 +2318,7 @@ int AsmParse( void )
   with the switch statement;
 */
 {
-    int                 i, n;
+    int                 i;
     OPNDTYPE            cur_opnd = OP_NONE;
     OPNDTYPE            last_opnd = OP_NONE;
     struct asm_code     *rCode = Code;
@@ -2059,23 +2427,25 @@ int AsmParse( void )
                 rCode->info.token = AsmBuffer[i]->u.value;
                 break;
             case T_CALL:
-                for( n = i + 1; n < Token_Count; n++ ) {
-                    if( AsmBuffer[n]->token == T_RES_ID ) {
-                        switch( AsmBuffer[n]->u.value ) {
-                        case T_NOLANGUAGE:
-                        case T_C:
-                        case T_SYSCALL:
-                        case T_STDCALL:
-                        case T_PASCAL:
-                        case T_FORTRAN:
-                        case T_BASIC:
-                        case T_WATCOM_C:
-                            return( expand_call( n ) );
-                        default:
-                            break;
+                if( Options.ideal ) {
+                    int n;
+                    for( n = i + 2; n < Token_Count; n++ ) {
+                        if( AsmBuffer[n]->token == T_RES_ID ) {
+                            switch( AsmBuffer[n]->u.value ) {
+                            case T_NOLANGUAGE:
+                            case T_C:
+                            case T_SYSCALL:
+                            case T_STDCALL:
+                            case T_PASCAL:
+                            case T_FORTRAN:
+                            case T_BASIC:
+                            case T_WATCOM_C:
+                                return( expand_call( n ) );
+                            }
                         }
                     }
                 }
+                /* fall into default */
 #endif
             default:
                 rCode->info.token = AsmBuffer[i]->u.value;

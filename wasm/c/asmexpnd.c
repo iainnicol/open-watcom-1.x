@@ -131,11 +131,13 @@ int ExpandProcString( int index )
     int_8               i;
     int_8               cnt;
     int_8               count = 0; /* number of words in the name string */
+    int                 offset, left_bracket, right_bracket;
     char                *string;
     char                *word;
     char                *replace = NULL;
     char                buffer[MAX_LINE_LEN];
     label_list          *label;
+    proc_info           *info = CurrProc->e.procinfo;
 
     string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
     strcpy( string, AsmBuffer[index]->string_ptr );
@@ -145,9 +147,9 @@ int ExpandProcString( int index )
         count++;
 
         /**/myassert( CurrProc != NULL );
-        label = label_cmp( word, CurrProc->e.procinfo->paralist );
+        label = label_cmp( word, info->paralist );
         if( label == NULL ) {
-            label = label_cmp( word, CurrProc->e.procinfo->locallist );
+            label = label_cmp( word, info->locallist );
         }
         if( label != NULL ) {
             if( label->replace != NULL ) {
@@ -157,8 +159,47 @@ int ExpandProcString( int index )
 
         if( replace != NULL ) {
             if( *replace == '\0' ) {
-                AsmErr( CANT_ACCESS_MULTI_REG_PARMS, replace+1 );
-                return( ERROR );
+                replace++;  /* point to first register string */
+                if( ( AsmBuffer[index + 1]->token == T_PLUS ) &&
+                    ( AsmBuffer[index + 2]->token == T_NUM ) ) {
+                    offset = AsmBuffer[index + 2]->u.value;
+                    if( ( ( Use32 ) && ( offset != 4 ) ) ||
+                        ( ( !Use32 ) && ( offset != 2 ) ) ) {
+                        AsmErr( CANT_ACCESS_MULTI_REG_PARMS, replace );
+                        return( ERROR );
+                    }
+                    /* Point to second register string */
+                    if( Use32 )
+                        replace += 4;
+                    else
+                        replace += 3;
+                }
+            }
+            if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
+                left_bracket = right_bracket = 0;   /* reset bracket indexes */
+                for( i = 0; i < index; i++ ) {
+                    if( AsmBuffer[i]->token == T_OP_SQ_BRACKET )
+                        break;
+                }
+                if( i < index ) {
+                    left_bracket = i;
+                    for( i = index + 1; i < Token_Count; i++ ) {
+                        if( AsmBuffer[i]->token == T_CL_SQ_BRACKET ) {
+                            right_bracket = i;
+                            break;
+                        }
+                    }
+                    if( right_bracket < left_bracket ) {
+                        AsmError( SYNTAX_ERROR );
+                        return( ERROR );
+                    }
+                }
+                if( ( Options.ideal == 0 ) &&
+                    ( left_bracket == 0 ) &&
+                    ( right_bracket == 0 ) ) {
+                    left_bracket = index;
+                    right_bracket = index;
+                }
             }
             if( index > 0 && AsmBuffer[index-1]->token == T_DIRECTIVE ) {
                 switch( AsmBuffer[index-1]->u.value ) {
@@ -192,6 +233,12 @@ int ExpandProcString( int index )
     /* NOTE: if we have a T_DIRECTIVE, token_count is always set to 1 !??! */
     for( i=0; i < Token_Count; i++ ) {
         if( i != index ) {
+            /* register parameter ? */
+            if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
+                /* token within brackets ? */
+                if( ( i >= left_bracket ) && ( i <= right_bracket ) )
+                    continue;   /*yes, skip it */
+            }
             // if( expand_directive_string( buffer, i ) == ERROR ) return( ERROR );
             if( AsmBuffer[i]->token == T_STRING &&
                 *AsmBuffer[i]->string_ptr == '\0' ) {

@@ -331,7 +331,7 @@ pick( INVALID_USE_OF_LENGTH_SIZE_OPERATOR,
 pick( SYMBOL_TYPE_DIFF,
                                 "Symbol '%s' type conflict." ,
                                 "Symbol '%s' type conflict." )
- pick( ARG_MUST_FOLLOW_PROC,
+pick( ARG_MUST_FOLLOW_PROC,
                                 "ARG may only be used within a PROC and before the first instruction" ,
                                 "ARG may only be used within a PROC and before the first instruction" )
 pick( USES_MUST_FOLLOW_PROC,
@@ -346,3 +346,9 @@ pick( TOO_MANY_ARGS,
 pick( LOCAL_LABEL_OUTSIDE_PROC,
                                 "Local labels may only be used within a PROC" ,
                                 "Local labels may only be used within a PROC" )
+pick( ARGUMENT_SIZE_NOT_SUPPORTED,
+				"Argument size not supported" ,
+				"Argument size not supported" )
+pick( USES_MEANINGLESS_WITHOUT_LANGUAGE,
+				"USES is meaningless without language" ,
+				"USES is meaningless without language" )
