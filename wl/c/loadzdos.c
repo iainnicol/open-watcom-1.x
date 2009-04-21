@@ -46,8 +46,9 @@
 static unsigned_32  WriteZdosData( unsigned file_pos );
 static unsigned_32  WriteZdosRelocs( void );
 
-extern void FiniZdosLoadFile( void ) {
+extern void FiniZdosLoadFile( void )
 /*************************************/
+{
     zdos_exe_header header;
     unsigned_32     position;
     unsigned_32     size;
@@ -88,8 +89,9 @@ extern void FiniZdosLoadFile( void ) {
     WriteLoad( &header, sizeof ( zdos_exe_header ) );
 }
 
-static unsigned_32 WriteZdosData( unsigned file_pos ) {
+static unsigned_32 WriteZdosData( unsigned file_pos )
 /***************************************************/
+{
     group_entry         *group;
     outfilelist *       fnode;
     bool                repos;
@@ -112,8 +114,9 @@ static unsigned_32 WriteZdosData( unsigned file_pos ) {
     return( fnode->file_loc - file_pos );
 }
 
-static unsigned_32 WriteZdosRelocs( void ) {
+static unsigned_32 WriteZdosRelocs( void )
 /****************************************/
+{
     RELOC_INFO  *temp;
 
     temp = Root->reloclist;                 // don't want to modify original

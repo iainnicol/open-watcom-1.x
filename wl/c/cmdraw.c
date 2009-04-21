@@ -29,7 +29,6 @@
 *
 ****************************************************************************/
 
-
 /*
  *  CMDRAW : command line parsing for the RAW load file format.
  *
@@ -48,16 +47,18 @@
 #include "cmdline.h"
 #include "cmdraw.h"
 
-extern bool ProcRaw( void ) {
+extern bool ProcRaw( void )
 /*************************/
+{
     FmtData.base = 0;                           // Default offset
     LinkState |= MAKE_RELOCS + FMT_DECIDED;     // Make relocations;
     ProcOne( RawOptions, SEP_NO, TRUE );
     return( TRUE );
 }
 
-extern bool ProcRawBIN( void ) {
+extern bool ProcRawBIN( void )
 /*************************/
+{
     Extension = E_BIN;
     FmtData.raw_hex_output = 0;
     if( FmtData.osname == NULL )
@@ -65,8 +66,9 @@ extern bool ProcRawBIN( void ) {
     return( TRUE );
 }
 
-extern bool ProcRawHEX( void ) {
+extern bool ProcRawHEX( void )
 /*************************/
+{
     Extension = E_HEX;
     FmtData.raw_hex_output = 1;
     if( FmtData.osname == NULL )

@@ -47,8 +47,9 @@
 #include "cmdline.h"
 #include "cmdzdos.h"
 
-extern bool ProcZdos( void ) {
+extern bool ProcZdos( void )
 /*************************/
+{
     FmtData.base = 0x1000;                      // assume user application
     LinkState |= MAKE_RELOCS + FMT_DECIDED;     // make relocations;
     ProcOne( ZdosOptions, SEP_NO, FALSE );
@@ -57,8 +58,9 @@ extern bool ProcZdos( void ) {
     return( TRUE );
 }
 
-extern bool ProcZdosSYS( void ) {
+extern bool ProcZdosSYS( void )
 /*************************/
+{
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_SYS;
     if( FmtData.osname == NULL )
@@ -66,8 +68,9 @@ extern bool ProcZdosSYS( void ) {
     return( TRUE );
 }
 
-extern bool ProcZdosHWD( void ) {
+extern bool ProcZdosHWD( void )
 /*************************/
+{
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_HWD;
     if( FmtData.osname == NULL )
@@ -75,8 +78,9 @@ extern bool ProcZdosHWD( void ) {
     return( TRUE );
 }
 
-extern bool ProcZdosFSD( void ) {
+extern bool ProcZdosFSD( void )
 /*************************/
+{
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_FSD;
     if( FmtData.osname == NULL )

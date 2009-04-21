@@ -61,7 +61,7 @@ system begin x32r
     option osname='FlashTek (register calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile cstrtx3r.obj
+    libfile cstrtx3r
     option stack=4k,align=4k,internalrelocs
     library x32b.lib
     format os2 lx ^
@@ -74,7 +74,7 @@ system begin x32rv
     option osname='FlashTek Virtual Memory (register calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile cstrtx3r.obj
+    libfile cstrtx3r
     option stack=4k,align=4k,internalrelocs
     library x32vb.lib
     format os2 lx ^
@@ -87,7 +87,7 @@ system begin x32s
     option osname='FlashTek (stack calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile cstrtx3s.obj
+    libfile cstrtx3s
     option stack=4k,align=4k,internalrelocs
     library x32b.lib
     format os2 lx ^
@@ -100,7 +100,7 @@ system begin x32sv
     option osname='FlashTek Virtual Memory (stack calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile cstrtx3s.obj
+    libfile cstrtx3s
     option stack=4k,align=4k,internalrelocs
     library x32vb.lib
     format os2 lx ^
@@ -247,6 +247,7 @@ system begin netware_libc
     option osname='NetWare LibC NLM (Full-RTL)'
     format novell ^
     option nodefault
+    option caseexact
     option start=_LibCPrelude
     option exit=_LibCPostlude
     option pseudopreemption
@@ -265,6 +266,7 @@ system begin netware_libc_lite
     option osname='NetWare LibC NLM (Lite-RTL)'
     format novell ^
     option nodefault
+    option caseexact
     option start=_LibCPrelude
     option exit=_LibCPostlude
     option pseudopreemption
@@ -283,6 +285,7 @@ system begin netware_clib
     option osname='NetWare CLIB NLM (Full-RTL)'
     format novell ^
     option nodefault
+    option caseexact
     option start=_Prelude
     option exit=_Stop
     library %WATCOM%/lib386/netware/clib3s.lib
@@ -296,6 +299,7 @@ system begin netware_clib_lite
     option osname='NetWare CLIB NLM (Lite-RTL)'
     format novell ^
     option nodefault
+    option caseexact
     option start=_Prelude
     option exit=_Stop
     file %NOVELLNDK%/imports/clibpre.obj
@@ -310,7 +314,7 @@ system begin ads
     option osname='AutoCAD Development System'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile adsstart.obj
+    libfile adsstart
     format phar ext ^
 :endsegment
 end
@@ -321,7 +325,7 @@ system begin eadi
     option osname='emulation AutoCAD Device Interface'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile adiestrt.obj
+    libfile adiestrt
     format phar ext ^
 :endsegment
 end
@@ -332,7 +336,7 @@ system begin fadi
     option osname='floating point AutoCAD Device Interface'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    libfile adifstrt.obj
+    libfile adifstrt
     format phar ext ^
 :endsegment
 end
@@ -534,7 +538,7 @@ system begin cwdlls
     libpath %WATCOM%/lib386/dos
     op stub=cwdstub.exe
     format os2 le dll ^
-    libfile dllstrts.obj
+    libfile dllstrts
 :endsegment
 end
 system begin cwdllr
@@ -547,7 +551,7 @@ system begin cwdllr
     libpath %WATCOM%/lib386/dos
     op stub=cwdstub.exe
     format os2 le dll ^
-    libfile dllstrtr.obj
+    libfile dllstrtr
 :endsegment
 end
 system begin dos32a
@@ -662,14 +666,12 @@ system begin dos16m
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
-    libfile dos16m.obj
-    libfile d16msels.obj
     format dos16m runtime auto ^
 :endsegment
 end
- system begin zdos
+system begin zdos
 :segment Pspecs
-    wcc -bt=zdos
+    wcc386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS User Application'
     libpath %WATCOM%/lib386
@@ -680,7 +682,7 @@ end
 end
 system begin zdosfsd
 :segment Pspecs
-    wcc -bt=zdos
+    wcc386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS File System Driver'
     libpath %WATCOM%/lib386
@@ -691,7 +693,7 @@ system begin zdosfsd
 end
 system begin zdoshwd
 :segment Pspecs
-    wcc -bt=zdos
+    wcc386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS Hardware Driver'
     libpath %WATCOM%/lib386
@@ -702,7 +704,7 @@ system begin zdoshwd
 end
 system begin zdosdev
 :segment Pspecs
-    wcc -bt=zdos
+    wcc386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS Device Driver'
     libpath %WATCOM%/lib386

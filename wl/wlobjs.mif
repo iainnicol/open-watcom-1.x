@@ -34,8 +34,8 @@ common_objs = &
     cmdnov.obj &
     cmdos2.obj &
     cmdphar.obj &
-    cmdraw.obj &
     cmdzdos.obj &
+    cmdraw.obj &
     cmdtable.obj &
     cmdutils.obj &
     cmdqnx.obj &
