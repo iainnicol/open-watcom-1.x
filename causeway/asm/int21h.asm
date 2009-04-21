@@ -1906,7 +1906,7 @@ Int21hAL2Carry  endp
 ;
 Int21hTable     label dword
 ;       dd 8 dup (Int21hNotOurs)        ;00-07
-        IRP     arg,<1,2,3,4,5,6,7,8>
+        IRP     _arg,<1,2,3,4,5,6,7,8>
         DD      Int21hNotOurs
         ENDM
 
@@ -1915,61 +1915,61 @@ Int21hTable     label dword
         dd Int21hGetString              ;0A
 
 ;       dd 4 dup (Int21hNotOurs)        ;0B-0E
-        IRP     arg,<1,2,3,4>
+        IRP     _arg,<1,2,3,4>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hInvalid                ;0F
 
 ;       dd 8 dup (Int21hInvalid)        ;10-17
-        IRP     arg,<1,2,3,4,5,6,7,8>
+        IRP     _arg,<1,2,3,4,5,6,7,8>
         DD      Int21hInvalid
         ENDM
 
 ;       dd 2 dup (Int21hNotOurs)        ;18-19
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hSetDTA         ;1A
 ;       dd 5 dup (Int21hNotOurs)        ;1B-1F
-        IRP     arg,<1,2,3,4,5>
+        IRP     _arg,<1,2,3,4,5>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hNotOurs                ;20
 
 ;       dd 4 dup (Int21hInvalid)        ;21-24
-        IRP     arg,<1,2,3,4>
+        IRP     _arg,<1,2,3,4>
         DD      Int21hInvalid
         ENDM
 
         dd Int21hSetVect                ;25
 ;       dd 2 dup (Int21hInvalid)        ;26-27
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hInvalid
         ENDM
 
 ;       dd 2 dup (Int21hInvalid)        ;28-29
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hInvalid
         ENDM
 
 ;       dd 5 dup (Int21hNotOurs)        ;2A-2E
-        IRP     arg,<1,2,3,4,5>
+        IRP     _arg,<1,2,3,4,5>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hGetDTA         ;2F
 
 ;       dd 5 dup (Int21hNotOurs)        ;30-34
-        IRP     arg,<1,2,3,4,5>
+        IRP     _arg,<1,2,3,4,5>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hGetVect                ;35
 ;       dd 2 dup (Int21hNotOurs)        ;36-37
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hNotOurs
         ENDM
 
@@ -1988,7 +1988,7 @@ Int21hTable     label dword
         dd Int21hCreateFile     ;43
         dd Int21hIOCTLDispatch  ;44
 ;       dd 2 dup (Int21hNotOurs)        ;45-46
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hNotOurs
         ENDM
 
@@ -2000,7 +2000,7 @@ Int21hTable     label dword
         dd Int21hExecFile               ;4B
 
 ;       dd 2 dup (Int21hNotOurs)        ;4C-4D
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hNotOurs
         ENDM
 
@@ -2010,7 +2010,7 @@ Int21hTable     label dword
         dd Int21hSetPSP         ;50
         dd Int21hGetPSP         ;51
 ;       dd 4 dup (Int21hNotOurs)        ;52-55
-        IRP     arg,<1,2,3,4>
+        IRP     _arg,<1,2,3,4>
         DD      Int21hNotOurs
         ENDM
 
@@ -2022,7 +2022,7 @@ Int21hTable     label dword
         dd Int21hCreateTemp     ;5A
         dd Int21hCreateFile     ;5B
 ;       dd 2 dup (Int21hNotOurs)        ;5C-5D
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hNotOurs
         ENDM
 
@@ -2030,36 +2030,36 @@ Int21hTable     label dword
         dd Int21hNotOurs                ;5F
 
 ;       dd 2 dup (Int21hNotOurs)        ;60-61
-        IRP     arg,<1,2>
+        IRP     _arg,<1,2>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hGetPSP                 ;62
 ;       dd 4 dup (Int21hNotOurs)        ;63-66
-        IRP     arg,<1,2,3,4>
+        IRP     _arg,<1,2,3,4>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hSetHandles             ;67
 
 ;       dd 4 dup (Int21hNotOurs)        ;68-6B
-        IRP     arg,<1,2,3,4>
+        IRP     _arg,<1,2,3,4>
         DD      Int21hNotOurs
         ENDM
 
         dd Int21hExtendOpen             ;6C
 ;       dd 3 dup (Int21hNotOurs)        ;6D-6F
-        IRP     arg,<1,2,3>
+        IRP     _arg,<1,2,3>
         DD      Int21hNotOurs
         ENDM
 
 ;       dd (16*9)-1 dup (Int21hNotOurs) ;70-FE
-        IRP     arg,<1,2,3,4,5,6,7,8>
-        IRP     arg2,<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16>
+        IRP     _arg,<1,2,3,4,5,6,7,8>
+        IRP     _arg2,<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16>
         DD      Int21hNotOurs
         ENDM
         ENDM
-        IRP     arg,<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15>
+        IRP     _arg,<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15>
         DD      Int21hNotOurs
         ENDM
 
