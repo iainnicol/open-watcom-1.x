@@ -41,7 +41,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
     #include <dos.h>
     #include <limits.h>
     #include "tinyio.h"
@@ -86,7 +86,7 @@ int SwitchChar( void )
 {
 #if defined( __DOS__ )
     return( DOSSwitchChar() );
-#elif   defined( __OS2__ ) || defined( __NT__ )
+#elif   defined( __OS2__ ) || defined( __NT__ ) || defined( __ZDOS__ )
     return( '/' );
 #elif   defined( __UNIX__ )
     return( '-' );
@@ -148,7 +148,7 @@ int OSCorrupted( void )
 }
 #endif
 
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
 RET_T TouchFile( const char *name )
 /****************************************/
 {

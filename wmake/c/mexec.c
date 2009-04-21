@@ -88,7 +88,7 @@ enum {
 
 STATIC const char * const   dosInternals[] = {   /* COMMAND.COM commands */
 
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
 
     "BREAK",            /* this list must be in alpha order */
     "CALL",
@@ -1662,7 +1662,7 @@ STATIC RET_T handleRM( char *cmd )
 
     if( Glob.noexec )
         return RET_SUCCESS;
-        
+
     rt = getRMArgs( cmd, &flags, &pfname );
 
     while( RET_SUCCESS == rt ) {
@@ -1702,7 +1702,7 @@ STATIC BOOLEAN hasMetas( const char *cmd )
  * determine whether a command line has meta characters in it or not
  */
 {
-#if defined( __DOS__ ) || defined( __NT__ )
+#if defined( __DOS__ ) || defined( __NT__ ) || defined( __ZDOS__ )
     return( strpbrk( cmd, SHELL_METAS ) != NULL );
 
 #elif defined( __OS2__ ) || defined( __UNIX__ )
@@ -1747,7 +1747,7 @@ static void dumpCommand( char *cmd )
     }
 }
 
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
 STATIC UINT16 makeTmpEnv( char *arg )
 /************************************
  * Copy arg into an environment var if possible.
@@ -1856,7 +1856,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
         arg++;
     }
 
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
     {
         char    ext[_MAX_EXT];
 

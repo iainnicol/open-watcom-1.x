@@ -72,7 +72,7 @@
     #define USE_SCARCE  1
 #endif
 
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
 # define PATH_SPLIT         ';'     /* path seperator                       */
 # define PATH_SPLIT_S       ";"     /* path seperator in string form        */
 # define SHELL_METAS        "<>|"   /* characters that force use of shell   */
@@ -85,7 +85,11 @@
 # define EXIT_FATAL         4       /* return after fatal error             */
 # define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
 # define MAX_TOK_SIZE       130     /* Maximum token size                   */
+#if defined( __ZDOS__ )
+# define LINE_BUFF          255     /* length of one-line user input buffer */
+#else
 # define LINE_BUFF          80      /* length of one-line user input buffer */
+#endif
 #if !defined( __386__ )
 # define USE_FAR            1       /* use far memory for some things       */
 # define USE_SCARCE         1       /* use scarce memory management         */

@@ -31,7 +31,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#if defined(__OS2__) || defined(__DOS__)
+#if defined(__OS2__) || defined(__DOS__) || defined( __ZDOS__ )
    #include <stdio.h>
 #endif
 #if defined( __WATCOMC__ )

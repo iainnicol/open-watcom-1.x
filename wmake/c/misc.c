@@ -162,7 +162,7 @@ char *RemoveDoubleQuotes( char *dst, int maxlen, const char *src )
 
 char *FixName( char *name )
 {
-#if defined( __DOS__ )
+#if defined( __DOS__ ) || defined( __ZDOS__ )
 /*********************************
  * Down case all filenames, converting fwd-slash to back-slash
  */
@@ -233,7 +233,7 @@ char *FixName( char *name )
 int FNameCmp( const char *a, const char *b )
 /*************************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __ZDOS__ )
     return( stricmp( a, b ) );
 #else
     return( strcmp( a, b ) );
@@ -244,7 +244,7 @@ int FNameCmp( const char *a, const char *b )
 static int FNameCmpChr( char a, char b )
 /**************************************/
 {
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
+#if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ ) || defined( __ZDOS__ )
     return( tolower( a ) - tolower( b ) );
 #else
     return( a - b );
