@@ -42,7 +42,8 @@ extern long Fork(char *, unsigned);
 extern char *DOSEnvFind( char * );
 extern char *GetExeExtensions(void);
 
-unsigned ReqFile_get_config( void ) {
+unsigned ReqFile_get_config( void )
+{
     file_get_config_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -55,7 +56,8 @@ unsigned ReqFile_get_config( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_open( void ) {
+unsigned ReqFile_open( void )
+{
     int             rc;
     char            *filename;
     file_open_req   *acc;
@@ -74,7 +76,8 @@ unsigned ReqFile_open( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_seek( void ) {
+unsigned ReqFile_seek( void )
+{
     file_seek_req   *acc;
     file_seek_ret   *ret;
 
@@ -85,7 +88,8 @@ unsigned ReqFile_seek( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_read( void ) {
+unsigned ReqFile_read( void )
+{
     file_read_req   *acc;
     file_read_ret   *ret;
     char            *buff;
@@ -104,7 +108,8 @@ unsigned ReqFile_read( void ) {
     return( sizeof( *ret ) + len );
 }
 
-unsigned ReqFile_write( void ) {
+unsigned ReqFile_write( void )
+{
     file_write_req  *acc;
     file_write_ret  *ret;
 
@@ -121,7 +126,8 @@ unsigned ReqFile_write( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_write_console( void ) {
+unsigned ReqFile_write_console( void )
+{
     file_write_console_ret  *ret;
 
     ret = GetOutPtr( 0 );
@@ -137,7 +143,8 @@ unsigned ReqFile_write_console( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_close( void ) {
+unsigned ReqFile_close( void )
+{
     file_close_req  *acc;
     file_close_ret *ret;
 
@@ -147,7 +154,8 @@ unsigned ReqFile_close( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqFile_erase( void ) {
+unsigned ReqFile_erase( void )
+{
     file_erase_ret  *ret;
 
     ret = GetOutPtr( 0 );
@@ -174,7 +182,8 @@ int TryPath( char *name, char *end, char *ext_list ) {
     return( rc );
 }
 
-int FindFilePath( char *pgm, char *buffer, char *ext_list ) {
+int FindFilePath( char *pgm, char *buffer, char *ext_list )
+{
     char    *p, *p2, *p3;
     int     rc, have_ext, have_path, size;
 
@@ -229,7 +238,8 @@ int FindFilePath( char *pgm, char *buffer, char *ext_list ) {
     return( rc );
 }
 
-unsigned ReqFile_string_to_fullpath( void ) {
+unsigned ReqFile_string_to_fullpath( void )
+{
     char                        *name;
     char                        *fullname;
     char                        *ext_list;
@@ -252,7 +262,8 @@ unsigned ReqFile_string_to_fullpath( void ) {
     return( sizeof( *ret ) + 1 + strlen( fullname ) );
 }
 
-unsigned ReqFile_run_cmd( void ) {
+unsigned ReqFile_run_cmd( void )
+{
     file_run_cmd_ret    *ret;
     file_run_cmd_req    *acc;
     int                 i, len, pid;

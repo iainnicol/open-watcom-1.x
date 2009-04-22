@@ -40,40 +40,49 @@ extern  void    NothingToDo( void );
 static int      CurrentBaud, Break, Port, Stop, BaudRate, Parity, Data;
 unsigned int    Ticks;
 
-void ZeroWaitCount( void ) {
+void ZeroWaitCount( void )
+{
     Ticks = DosElapsedPeriodicTicks( 0 );
 }
 
-unsigned WaitCount( void ) {
+unsigned WaitCount( void )
+{
     return( DosElapsedPeriodicTicks( Ticks ) );
 }
 
-char *InitSys( void ) {
+char *InitSys( void )
+{
 
     if( BiosOpenUart( Port ) < 0 )
         return( "BiosOpenUart() failed" );
     return( NULL );
 }
 
-void ResetSys( void ) {
+void ResetSys( void )
+{
     BiosCloseUart( Port );
 }
 
-void SendByte( int value ) {
+void SendByte( int value )
+{
     BiosUartOutput( value, Port );
 }
 
-void StartBlockTrans( void ) {
+void StartBlockTrans( void )
+{
 }
 
-void StopBlockTrans( void ) {
+void StopBlockTrans( void )
+{
 }
 
-int GetByte( void ) {
+int GetByte( void )
+{
     return( BiosUartInput( Port ) );
 }
 
-void ClearCom( void ) {
+void ClearCom( void )
+{
     BiosCloseUart( Port );
     BiosOpenUart( Port );
     BiosExtendedUartSetup( Break, Port, Stop, BaudRate, Parity, Data );
@@ -91,7 +100,8 @@ int BaudRates[] = {
     X_BAUDRATE_600
 };
 
-bool Baud( int index ) {
+bool Baud( int index )
+{
     if( index == CurrentBaud )
         return( TRUE );
     CurrentBaud = index;
@@ -100,7 +110,8 @@ bool Baud( int index ) {
     return( TRUE );
 }
 
-char *ParsePortSpec( char **spec ) {
+char *ParsePortSpec( char **spec )
+{
     char    *parm;
 
     parm = ( spec == NULL ) ? "" : *spec;
@@ -127,21 +138,26 @@ char *ParsePortSpec( char **spec ) {
     return( NULL );
 }
 
-void DonePort( void ) {
+void DonePort( void )
+{
 }
 
-bool CheckPendingError( void ) {
+bool CheckPendingError( void )
+{
     return( FALSE );
 }
 
-void ClearLastChar( void ) {
+void ClearLastChar( void )
+{
 }
 
-void Wait( unsigned timer_ticks ) {
+void Wait( unsigned timer_ticks )
+{
     DosSleepThread( timer_ticks );
 }
 
-int WaitByte( unsigned int ticks ) {
+int WaitByte( unsigned int ticks )
+{
     unsigned int    wait_time;  /* timer variable for testing timeout */
     int             data;       /* storing data from receive buffer */
 

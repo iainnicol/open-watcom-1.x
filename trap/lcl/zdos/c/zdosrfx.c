@@ -34,7 +34,8 @@
 #include <zdos.h>
 #include "trpimp.h"
 
-unsigned ReqRfx_rename() {
+unsigned ReqRfx_rename()
+{
     char            *old_name;
     char            *new_name;
     rfx_rename_ret  *ret;
@@ -46,7 +47,8 @@ unsigned ReqRfx_rename() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_mkdir() {
+unsigned ReqRfx_mkdir()
+{
     rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
@@ -54,7 +56,8 @@ unsigned ReqRfx_mkdir() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_rmdir() {
+unsigned ReqRfx_rmdir()
+{
     rfx_mkdir_ret   *ret;
 
     ret = GetOutPtr( 0 );
@@ -62,7 +65,8 @@ unsigned ReqRfx_rmdir() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_setdrive() {
+unsigned ReqRfx_setdrive()
+{
     rfx_setdrive_req    *acc;
     rfx_setdrive_ret    *ret;
 
@@ -73,7 +77,8 @@ unsigned ReqRfx_setdrive() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getdrive() {
+unsigned ReqRfx_getdrive()
+{
     rfx_getdrive_ret    *ret;
 
     ret = GetOutPtr( 0 );
@@ -81,7 +86,8 @@ unsigned ReqRfx_getdrive() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_setcwd() {
+unsigned ReqRfx_setcwd()
+{
     rfx_setcwd_ret  *ret;
 
     ret = GetOutPtr( 0 );
@@ -89,7 +95,8 @@ unsigned ReqRfx_setcwd() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getcwd() {
+unsigned ReqRfx_getcwd()
+{
     rfx_getcwd_req  *acc;
     rfx_getcwd_ret  *ret;
     char            *cwd;
@@ -102,7 +109,8 @@ unsigned ReqRfx_getcwd() {
     return( sizeof( *ret ) + 1 + strlen( cwd ) );
 }
 
-unsigned ReqRfx_setfileattr() {
+unsigned ReqRfx_setfileattr()
+{
     rfx_setfileattr_req *acc;
     rfx_setfileattr_ret *ret;
 
@@ -112,7 +120,8 @@ unsigned ReqRfx_setfileattr() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getfileattr() {
+unsigned ReqRfx_getfileattr()
+{
     rfx_getfileattr_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -120,7 +129,8 @@ unsigned ReqRfx_getfileattr() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_getfreespace() {
+unsigned ReqRfx_getfreespace()
+{
     rfx_getfreespace_req    *acc;
     rfx_getfreespace_ret    *ret;
     DRVSPACE                space;
@@ -134,7 +144,8 @@ unsigned ReqRfx_getfreespace() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_setdatetime() {
+unsigned ReqRfx_setdatetime()
+{
     rfx_setdatetime_req *acc;
     unsigned            num_yr_since_1970;
     unsigned            num_leap_since_1970;
@@ -178,7 +189,8 @@ unsigned ReqRfx_setdatetime() {
     return( 0 );
 }
 
-unsigned ReqRfx_getdatetime() {
+unsigned ReqRfx_getdatetime()
+{
     rfx_getdatetime_req *acc;
     rfx_getdatetime_ret *ret;
     unsigned            day_since_jan[] = { 0,31,59,90,120,151,181,212,243,273,304,334 };
@@ -212,7 +224,8 @@ unsigned ReqRfx_getdatetime() {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRfx_findfirst() {
+unsigned ReqRfx_findfirst()
+{
     rfx_findfirst_req   *acc;
     rfx_findfirst_ret   *ret;
     FIND                *find;
@@ -225,7 +238,8 @@ unsigned ReqRfx_findfirst() {
     return( sizeof( *ret ) + sizeof( FIND ) );
 }
 
-unsigned ReqRfx_findnext() {
+unsigned ReqRfx_findnext()
+{
     rfx_findnext_ret    *ret;
     FIND                *find;
 
@@ -237,11 +251,13 @@ unsigned ReqRfx_findnext() {
     return( sizeof( *ret ) + sizeof( FIND ) );
 }
 
-unsigned ReqRfx_findclose() {
+unsigned ReqRfx_findclose()
+{
     return( 0 );
 }
 
-unsigned ReqRfx_nametocannonical() {
+unsigned ReqRfx_nametocannonical()
+{
     rfx_nametocannonical_ret    *ret;
     char                        *name;
     char                        *fullname;

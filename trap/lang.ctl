@@ -46,7 +46,7 @@ cdsay .
 
   [ IFDEF (os_zdos "") <2*> ]
     <CPCMD> <DEVDIR>/trap/lcl/zdos/std/std.trp                      <RELROOT>/binz/
-    <CPCMD> <DEVDIR>/trap/tcp/zdos.trp/ser.trp                      <RELROOT>/binz/
+    <CPCMD> <DEVDIR>/trap/tcp/zdos.trp/tcp.trp                      <RELROOT>/binz/
     <CPCMD> <DEVDIR>/trap/tcp/zdos.srv/tcpserv.exe                  <RELROOT>/binz/
     <CPCMD> <DEVDIR>/trap/ser/zdos.trp/ser.trp                      <RELROOT>/binz/
     <CPCMD> <DEVDIR>/trap/ser/zdos.srv/serserv.exe                  <RELROOT>/binz/

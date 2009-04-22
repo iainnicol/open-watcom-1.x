@@ -10,6 +10,7 @@ sys_x86_os2v2 = sys os2v2
 sys_x86_win   = sys windows
 sys_x86_nt    = sys nt
 sys_x86_dos   = sys dos
+sys_x86_zdos  = sys zdos
 sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 
@@ -21,6 +22,7 @@ targ_x86_qnx   = $(name)cli.qnx
 targ_x86_linux = $(name)cli.exe
 targ_x86_win   = $(name)cliw.exe
 targ_x86_dos   = $(name)cli.exe
+targ_x86_zdos  = $(name)cli.exe
 targ_x86_nt    = $(name)cli.exe
 targ_x86_nto   = $(name)cli.exe
 
@@ -78,6 +80,9 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 !endif
 
 sys_x86_dos  = sys dos
+sys_x86_zdos = libpath %WATCOM%/lib386 &
+    	       libpath %WATCOM%/lib386/zdos &
+               format zdos
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
 # For now Linux is linked as a PE DLL file since we have code to load
@@ -117,6 +122,7 @@ targ_x86_linux  = $(name).trp
 !endif
 targ_x86_win    = $(name).dll
 targ_x86_dos    = $(name).trp
+targ_x86_zdos   = $(name).trp
 targ_x86_nt     = $(name).dll
 !ifdef bootstrap
 targ_x86_nto    = $(name).so

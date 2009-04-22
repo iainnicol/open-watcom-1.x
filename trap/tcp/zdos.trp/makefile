@@ -1,4 +1,4 @@
-#pmake: trap remote os_zdos cpu_i86 cpu_386 tcp x86
+#pmake: build trap remote os_zdos cpu_i86 cpu_386 tcp x86
 host_CPU = 386
 host_OS = zdos
 

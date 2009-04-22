@@ -57,13 +57,15 @@ TCPU    Context;
 TDEBUG  Debug;
 int     ProcessPID, ProcessTID, CurrentTID;
 
-unsigned int GetLinearAddress( unsigned int offset, unsigned int segment ) {
+unsigned int GetLinearAddress( unsigned int offset, unsigned int segment )
+{
     if( Context.EFLAGS & 0x20000 )  /* V86 task ? */
         return( ( segment << 4 ) + offset );
     return( offset );
 }
 
-unsigned ReqGet_sys_config( void ) {
+unsigned ReqGet_sys_config( void )
+{
     get_sys_config_ret  *ret;
     int                 version;
     CPU                 cpu;
@@ -81,7 +83,8 @@ unsigned ReqGet_sys_config( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqMap_addr( void ) {  /* obsolete */
+unsigned ReqMap_addr( void )    /* obsolete */
+{
     map_addr_req    *acc;
     map_addr_ret    *ret;
 
@@ -97,7 +100,8 @@ unsigned ReqMap_addr( void ) {  /* obsolete */
     return( sizeof( *ret ) );
 }
 
-unsigned ReqAddr_info( void ) {
+unsigned ReqAddr_info( void )
+{
     addr_info_ret   *ret = GetOutPtr( 0 );
 
     if( Context.EFLAGS & 0x20000 )  /* V86 task ? */
@@ -107,7 +111,8 @@ unsigned ReqAddr_info( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqChecksum_mem( void ) {
+unsigned ReqChecksum_mem( void )
+{
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
     char                buffer[512];
@@ -133,7 +138,8 @@ unsigned ReqChecksum_mem( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_mem( void ) {
+unsigned ReqRead_mem( void )
+{
     read_mem_req    *acc;
 
     acc = GetInPtr( 0 );
@@ -143,7 +149,8 @@ unsigned ReqRead_mem( void ) {
     return( acc->len );
 }
 
-unsigned ReqWrite_mem( void ) {
+unsigned ReqWrite_mem( void )
+{
     write_mem_req   *acc;
     write_mem_ret   *ret;
     int             len;
@@ -158,7 +165,8 @@ unsigned ReqWrite_mem( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_io( void ) {
+unsigned ReqRead_io( void )
+{
     read_io_req     *acc;
     void            *data;
 
@@ -179,7 +187,8 @@ unsigned ReqRead_io( void ) {
     }
 }
 
-unsigned ReqWrite_io( void ) {
+unsigned ReqWrite_io( void )
+{
     write_io_req    *acc;
     write_io_ret    *ret;
     void            *data;
@@ -204,7 +213,8 @@ unsigned ReqWrite_io( void ) {
     }
 }
 
-unsigned ReqRead_cpu( void ) {  /* obsolete */
+unsigned ReqRead_cpu( void )    /* obsolete */
+{
     struct x86_cpu  *data;
 
     data = GetOutPtr( 0 );
@@ -228,7 +238,8 @@ unsigned ReqRead_cpu( void ) {  /* obsolete */
     return( sizeof( struct x86_cpu ) );
 }
 
-unsigned ReqRead_fpu( void ) {  /* obsolete */
+unsigned ReqRead_fpu( void )    /* obsolete */
+{
     struct x86_fpu  *data = GetOutPtr( 0 );
 
     if( DosTraceGetFpuContext( ( TFPU * ) data ) )
@@ -236,7 +247,8 @@ unsigned ReqRead_fpu( void ) {  /* obsolete */
     return( sizeof( struct x86_fpu ) );
 }
 
-unsigned ReqWrite_cpu( void ) { /* obsolete */
+unsigned ReqWrite_cpu( void )   /* obsolete */
+{
     struct x86_cpu  *data = GetInPtr( sizeof( write_cpu_req ) );
 
     Context.EDI    = data->edi;
@@ -259,14 +271,16 @@ unsigned ReqWrite_cpu( void ) { /* obsolete */
     return( 0 );
 }
 
-unsigned ReqWrite_fpu( void ) { /* obsolete */
+unsigned ReqWrite_fpu( void )   /* obsolete */
+{
     struct x86_cpu  *data = GetInPtr( sizeof( write_fpu_req ) );
 
     DosTraceSetFpuContext( ( TFPU * ) data );
     return( 0 );
 }
 
-unsigned SetDRn( int i, unsigned linear, int type ) {
+unsigned SetDRn( int i, unsigned linear, int type )
+{
     switch( i ) {
     case 0:
         Debug.DR0 = linear;
@@ -285,12 +299,14 @@ unsigned SetDRn( int i, unsigned linear, int type ) {
             ( DR7_LEMASK << DR7_GLSHIFT(i) ) | DR7_LE );
 }
 
-void ClearDebugRegs( void ) {
+void ClearDebugRegs( void )
+{
     Debug.DR7 = 0;
     DosTraceSetDebugContext( &Debug );
 }
 
-int SetDebugRegs( void ) {
+int SetDebugRegs( void )
+{
     int         i, needed, dr;
     watch       *wp;
     unsigned    dr7;
@@ -316,7 +332,8 @@ int SetDebugRegs( void ) {
     return( 1 );
 }
 
-unsigned DoRun( int step ) {
+unsigned DoRun( int step )
+{
     int event;
 
     if( step )
@@ -342,7 +359,8 @@ unsigned DoRun( int step ) {
     }
 }
 
-int CheckWatchPoints( void ) {
+int CheckWatchPoints( void )
+{
     unsigned int    value;
     watch           *wp;
 
@@ -355,7 +373,8 @@ int CheckWatchPoints( void ) {
     return( 0 );
 }
 
-unsigned ProgRun( int step ) {
+unsigned ProgRun( int step )
+{
     prog_go_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -390,15 +409,18 @@ unsigned ProgRun( int step ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_go( void ) {
+unsigned ReqProg_go( void )
+{
     return( ProgRun( 0 ) );
 }
 
-unsigned ReqProg_step( void ) {
+unsigned ReqProg_step( void )
+{
     return( ProgRun( 1 ) );
 }
 
-unsigned ReqProg_load( void ) {
+unsigned ReqProg_load( void )
+{
     char            *src, *dst, *name, ch, buffer[256];
     prog_load_ret   *ret;
     unsigned        len;
@@ -439,7 +461,8 @@ unsigned ReqProg_load( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqProg_kill( void ) {
+unsigned ReqProg_kill( void )
+{
     prog_kill_ret   *ret;
 
     if( ProcessPID != 0 )
@@ -449,7 +472,8 @@ unsigned ReqProg_kill( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_watch( void ) {
+unsigned ReqSet_watch( void )
+{
     watch           *curr;
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -475,12 +499,14 @@ unsigned ReqSet_watch( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_watch( void ) {
+unsigned ReqClear_watch( void )
+{
     WatchCount = 0;
     return( 0 );
 }
 
-unsigned ReqSet_break( void ) {
+unsigned ReqSet_break( void )
+{
     set_break_req   *acc;
     set_break_ret   *ret;
     unsigned int    linear;
@@ -493,7 +519,8 @@ unsigned ReqSet_break( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqClear_break( void ) {
+unsigned ReqClear_break( void )
+{
     clear_break_req *acc;
     unsigned int    linear;
 
@@ -504,7 +531,8 @@ unsigned ReqClear_break( void ) {
     return( 0 );
 }
 
-unsigned ReqGet_next_alias( void ) {
+unsigned ReqGet_next_alias( void )
+{
     get_next_alias_ret  *ret;
 
     ret = GetOutPtr( 0 );
@@ -513,15 +541,18 @@ unsigned ReqGet_next_alias( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSet_user_screen( void ) {
+unsigned ReqSet_user_screen( void )
+{
     return( 0 );
 }
 
-unsigned ReqSet_debug_screen( void ) {
+unsigned ReqSet_debug_screen( void )
+{
     return( 0 );
 }
 
-unsigned ReqRead_user_keyboard( void ) {
+unsigned ReqRead_user_keyboard( void )
+{
     read_user_keyboard_req  *acc;
     read_user_keyboard_ret  *ret;
 
@@ -531,7 +562,8 @@ unsigned ReqRead_user_keyboard( void ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqGet_lib_name( void ) {
+unsigned ReqGet_lib_name( void )
+{
     char                *name;
     get_lib_name_ret    *ret;
 
@@ -542,7 +574,8 @@ unsigned ReqGet_lib_name( void ) {
     return( sizeof( *ret ) + 1 );
 }
 
-unsigned ReqGet_err_text( void ) {
+unsigned ReqGet_err_text( void )
+{
     get_err_text_req    *acc;
     char                *err_txt;
 
@@ -572,7 +605,8 @@ const char * const ExceptionMsgs[] = {
     TRP_EXC_coprocessor_error
 };
 
-unsigned ReqGet_message_text( void ) {
+unsigned ReqGet_message_text( void )
+{
     get_message_text_ret    *ret;
     char                    *err_txt;
 
@@ -586,7 +620,8 @@ unsigned ReqGet_message_text( void ) {
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-unsigned ReqRedirect_stdin( void  ) {
+unsigned ReqRedirect_stdin( void  )
+{
     redirect_stdin_ret  *ret;
 
     ret = GetOutPtr( 0 );
@@ -594,7 +629,8 @@ unsigned ReqRedirect_stdin( void  ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRedirect_stdout( void  ) {
+unsigned ReqRedirect_stdout( void  )
+{
     redirect_stdout_ret *ret;
 
     ret = GetOutPtr( 0 );
@@ -602,7 +638,8 @@ unsigned ReqRedirect_stdout( void  ) {
     return( sizeof( *ret ) );
 }
 
-unsigned ReqSplit_cmd( void ) {
+unsigned ReqSplit_cmd( void )
+{
     char            *cmd;
     char            *start;
     split_cmd_ret   *ret;
@@ -638,7 +675,8 @@ done:
     return( sizeof( *ret ) );
 }
 
-unsigned ReqRead_regs( void ) {
+unsigned ReqRead_regs( void )
+{
     mad_registers   *mr;
     struct x86_cpu  *cpu;
 
@@ -666,7 +704,8 @@ unsigned ReqRead_regs( void ) {
     return( sizeof( mr->x86 ) );
 }
 
-unsigned ReqWrite_regs( void ) {
+unsigned ReqWrite_regs( void )
+{
     mad_registers   *mr;
     struct x86_cpu  *cpu;
 
@@ -693,7 +732,8 @@ unsigned ReqWrite_regs( void ) {
     return( 0 );
 }
 
-unsigned ReqMachine_data( void ) {
+unsigned ReqMachine_data( void )
+{
     machine_data_req    *acc;
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -710,7 +750,8 @@ unsigned ReqMachine_data( void ) {
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote ) {
+trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
+{
     trap_version    ver;
 
     parm = parm;
@@ -722,7 +763,8 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote ) {
     return( ver );
 }
 
-void TRAPENTRY TrapFini( void ) {
+void TRAPENTRY TrapFini( void )
+{
     if( ProcessPID != 0 )
         DosTraceCloseSession( );
 }

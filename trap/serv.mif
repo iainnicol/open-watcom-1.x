@@ -10,6 +10,7 @@ sys_x86_qnx     = sys qnx386 flat op st=16k, offset=20k, res=$(srv).use
 sys_x86_linux   = sys linux
 sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
 sys_x86_dos     = sys dos op st=4k
+sys_x86_zdos    = sys zdos
 sys_x86_rsi     = stub
 sys_x86_cw      = sys causeway
 sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
@@ -66,6 +67,7 @@ targ_x86_qnx    = $(name).qnx
 targ_x86_linux  = $(name).elf
 targ_x86_win    = $(name).exe
 targ_x86_dos    = $(name).exe
+targ_x86_zdos   = $(name).exe
 targ_x86_rsi    = $(name).exp
 targ_x86_cw     = $(name).exe
 targ_x86_ads    = $(name).exp

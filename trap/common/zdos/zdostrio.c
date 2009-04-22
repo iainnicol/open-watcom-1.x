@@ -36,31 +36,37 @@
 
 extern char RWBuff[];
 
-void StartupErr( char *err ) {
+void Output( char *str )
+{
+    DosWriteFile( strlen( str), str, STDERR );
+}
+
+void SayGNiteGracey( int return_code )
+{
+    DosExitProcess( return_code );
+}
+
+void StartupErr( char *err )
+{
     Output( err );
     Output( "\r\n" );
     SayGNiteGracey( 1 );
 }
 
-void Output( char *str ) {
-    DosWriteFile( strlen( str), str, STDERR );
-}
-
-void SayGNiteGracey( int return_code ) {
-    DosExitProcess( return_code );
-}
-
-int KeyPress( void ) {
+int KeyPress( void )
+{
     if( BiosFullKeyboardStatus( ) )
         return( 1 );
     return( 0 );
 }
 
-int KeyGet( void ) {
+int KeyGet( void )
+{
     return( BiosFullKeyboardWait( ) );
 }
 
-int PathOpen( char *name, unsigned name_len, char *exts ) {
+int PathOpen( char *name, unsigned name_len, char *exts )
+{
     bool    has_ext;
     bool    has_path;
     char    *ptr;
@@ -101,7 +107,8 @@ int PathOpen( char *name, unsigned name_len, char *exts ) {
     return( ( handle < 0 ) ? ( -1 ) : handle );
 }
 
-int WantUsage( char *ptr ) {
+int WantUsage( char *ptr )
+{
     if( (*ptr == '-') || (*ptr == '/') )
         ++ptr;
     return( *ptr == '?' );

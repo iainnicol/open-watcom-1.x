@@ -64,13 +64,13 @@
         #include <sys/types.h>
     #endif
     #include <unistd.h>
-#if !defined ( __NETWARE__ )
+#if !defined ( __NETWARE__ ) && !defined( __ZDOS__ )
     #include <sys/socket.h>
 #endif
-#if !defined ( __LINUX__ ) && !defined ( __NETWARE__ )
+#if !defined ( __LINUX__ ) && !defined ( __NETWARE__ ) && !defined( __ZDOS__ )
     #include <sys/select.h>
 #endif
-#if !defined ( __NETWARE__ )
+#if !defined ( __NETWARE__ ) && !defined( __ZDOS__ )
     #include <sys/time.h>
     #include <netinet/in.h>
     #include <netinet/tcp.h>

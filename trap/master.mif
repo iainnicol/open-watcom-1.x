@@ -54,6 +54,7 @@ fpu_flags_os2_386   = -fpc
 fpu_flags_win_i86   = -fpc
 fpu_flags_nt_386    = -fpc
 fpu_flags_linux_386 = -fpc
+fpu_flags_zdos_386  = -fpc
 
 additional_cleanup = *.d32 *.trp
 
@@ -115,6 +116,7 @@ libs_x86_ads            = clib3s
 libs_x86_pls            = clib3r
 libs_x86_nt             = clib3r
 libs_x86_nlm            = math3s
+libs_x86_zdos		= clib3r
 
 libs_axp_nt             = clib
 
@@ -246,7 +248,7 @@ $(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__
         @for %i in ($(objs)) do @%append $^&.lnk file %i
         @for %i in ($(libs_$(cpu)_$(os)) $(extra_libs)) do @%append $^&.lnk library %i
         @%append $^&.lnk $(extra_linker)
-        $(linker) @$^&.lnk 
+        $(linker) @$^&.lnk
 !ifdef resource_file
         $(rc) $(resource_file) $^@
 !endif
@@ -259,10 +261,10 @@ $(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__
 dbgstr.lib : dbgstr.obj
         $(librarian) $(libflags) +$[@
 
-inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)" 
+inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(os)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
 !ifeq host_os nov
-inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/h" 
+inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/h"
 inc_dirs += -I"$(ow_nwoss_root)/nw$(nlm_ver)/src" -I"$(ow_nwoss_root)/common/h"
 !endif
 

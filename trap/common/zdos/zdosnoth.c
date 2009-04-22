@@ -30,6 +30,7 @@
 
 #include <zdos.h>
 
-void NothingToDo( void ) {
+void NothingToDo( void )
+{
     DosIdle( );
 }
