@@ -12,7 +12,7 @@
 ;
 ; DECLARATION	int BiosCloseUart( int portnumber );
 ;
-PROC		BiosCloseUart		STDCALL
+PROC		BiosCloseUart		WATCOM_C
 		push	edx				; Save context
 		mov	edx,eax				; EDX = port number
 		mov	ah,UART_CLOSE			; AH = function number

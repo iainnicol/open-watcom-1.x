@@ -135,6 +135,13 @@
     #else
         #error unrecognized processor for DOS
     #endif
+#elif defined(__ZDOS__)
+    #if defined(__386__)
+        #define __PROTECT_MODE__
+        #define __ZDOS_386__
+    #else
+        #error unrecognized processor for ZDOS
+    #endif
 #elif defined(__OSI__)
     #if defined(__386__)
         #define __PROTECT_MODE__

@@ -50,7 +50,8 @@ extern unsigned     ( TRAPENTRY *ReqFunc )( unsigned, mx_entry *,
 extern  int         PathOpen( char *, unsigned, char * );
 extern trap_version TrapVer;
 
-void KillTrap( void ) {
+void KillTrap( void )
+{
     void ( TRAPENTRY *fini )( ) = header->fini;
 
     fini( );
@@ -58,7 +59,8 @@ void KillTrap( void ) {
     free( header );
 }
 
-char *ReadInTrap( int handle ) {
+char *ReadInTrap( int handle )
+{
     char            buffer[512];
     zdos_exe_header *hdr;
     unsigned int    **relocation, base;
@@ -96,7 +98,8 @@ char *ReadInTrap( int handle ) {
     return( NULL );
 }
 
-char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver ) {
+char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
+{
     char            init_error[256];
     int             handle;
     char            *ptr;
