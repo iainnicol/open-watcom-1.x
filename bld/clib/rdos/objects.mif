@@ -1,0 +1,5 @@
+#                    rdu
+#===========================
+!inject test.obj     rdu
+
+!include ../../../../objlist.mif
