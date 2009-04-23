@@ -27,6 +27,10 @@ cdsay .
     <CPCMD> dos386.i86/wcci8601.int   <RELROOT>/binw/wcci8601.int
 #    <CPCMD> dos386.axp/wccaxpc.exe    <RELROOT>/binnt/wccaxp.exe
 
+  [ IFDEF (os_zdos "") <2*> ]
+    <CPCMD> zdos386.386/wcc386c.exe   <RELROOT>/binz/wcc386.exe
+    <CPCMD> zdos386.386/wcc386c.sym   <RELROOT>/binz/wcc386.sym
+
 #  [ IFDEF (os_osi "") <2*> ]    #osi stuff
 #    <CPCMD> osi386.386/wcc386c.exe    <RELROOT>/binw/wcc386.exe
 #    <CPCMD> osi386.386/wcc386c.sym    <RELROOT>/binw/wcc386.sym
@@ -125,7 +129,7 @@ cdsay .
 #    <CPCMD> ntppc.ppc/wccdppcc.sym    <RELROOT>/ppcnt/wccdppc.sym
 #    <CPCMD> ntppc.ppc/wccppc01.int    <RELROOT>/ppcnt/wccppc01.int
   [ ENDIF ]
-  
+
   # MIPS target from 386 hosts
     <CCCMD> nt386.mps/wccmpsc.exe     <RELROOT>/binnt/wccmps.exe
     <CCCMD> nt386.mps/wccmpsc.sym     <RELROOT>/binnt/wccmps.sym

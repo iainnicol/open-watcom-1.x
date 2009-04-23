@@ -288,6 +288,8 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
                 _SetConstTarg( "nt" );
             #elif defined( __DOS__ )
                 _SetConstTarg( "dos" );
+            #elif defined( __ZDOS__ )
+                _SetConstTarg( "zdos" );
             #else
                 #error "Target OS not defined"
             #endif
@@ -345,6 +347,10 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
     case TS_DOS:
         PreDefine_Macro( "MSDOS" );
         PreDefine_Macro( "_DOS" );
+    break;
+
+    case TS_ZDOS:
+        PreDefine_Macro( "_ZDOS" );
     break;
 
 #if _CPU == 386

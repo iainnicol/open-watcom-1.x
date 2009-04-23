@@ -34,7 +34,7 @@
  #define PATH_SEP       "/"
  #define INCLUDE_SEP    ':'
  #define OBJ_EXT        ".o"
-#elif defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__)
+#elif defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__) || defined(__ZDOS__)
  #define C_PATH         "..\\c"
  #define H_PATH         "..\\h"
  #define PATH_SEP       "\\"

@@ -32,7 +32,7 @@
 #include "cvars.h"
 #include <unistd.h>
 #include <limits.h>
-#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __ZDOS__ )
   #include <process.h>
 #endif
 #ifdef __OSI__
@@ -47,7 +47,7 @@ void ResetHandlers( void )
     CloseFiles();                       /* 09-may-89 */
 }
 
-#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
+#if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __ZDOS__ )
 int main( void )
     {
         char       *argv[2];
@@ -70,7 +70,7 @@ int main( int argc, char **argv )
         /* skip command name at the start */
         argv[0] = strchr( argv[0], ' ' );
         ret = FrontEnd( &argv[0] );
-#elif defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
+#elif defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ ) || defined( __ZDOS__ )
   #ifdef __DOS__
         fclose( stdaux );                   /* 15-dec-92 */
         fclose( stdprn );

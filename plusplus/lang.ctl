@@ -94,7 +94,7 @@ cdsay .
 # 386 ZDOS hosted compilers
 #
   [ IFDEF (os_zdos "") <2*> ]
-    <CPCMD> <PROJDIR>/zdos386.386/wcpp386.exe <RELROOT>/rel2/binz/wpp386.exe
+    <CPCMD> <PROJDIR>/zdos386.386/wcpp386.exe <RELROOT>/binz/wpp386.exe
 
 #
 # 386 QNX hosted compilers
