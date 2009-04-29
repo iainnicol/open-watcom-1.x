@@ -53,6 +53,10 @@
     #include "mbwcconv.h"
 #endif
 
+#ifdef __ZDOS__
+extern int              ConvertOpenFlags( int flags );
+#endif
+
 /* file attributes */
 
 _WCRTLINK extern char   *_lfntosfn( char *orgname, char *shortname );
@@ -138,14 +142,28 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode,
     #ifdef __WIDECHAR__
         __filename_from_wide( mbName, name );
     #endif
-                                                    /* 05-sep-91 */
-    rwmode = mode & ( O_RDONLY | O_WRONLY | O_RDWR | O_NOINHERIT );
 
-    #ifdef __WIDECHAR__
-        rc = TinyOpen( mbName, rwmode | shflag );
+    #ifdef __ZDOS__
+        rwmode = ConvertOpenFlags( ( mode &
+                                   ( O_RDONLY | O_WRONLY | O_RDWR | O_NOINHERIT ) )
+                                   | shflag );
+        #ifdef __WIDECHAR__
+        rc = TinyOpen( mbName, rwmode );
+        #else
+        rc = TinyOpen( name, rwmode );
+        #endif
+        rwmode = mode & ( O_RDONLY | O_WRONLY | O_RDWR | O_NOINHERIT );
     #else
+                                                    /* 05-sep-91 */
+        rwmode = mode & ( O_RDONLY | O_WRONLY | O_RDWR | O_NOINHERIT );
+
+        #ifdef __WIDECHAR__
+        rc = TinyOpen( mbName, rwmode | shflag );
+        #else
         rc = TinyOpen( name, rwmode | shflag );
+        #endif
     #endif
+
     if( TINY_OK( rc ) ) {
         handle = TINY_INFO( rc );
         if (handle >= __NFiles) {

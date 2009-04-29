@@ -45,6 +45,31 @@
  * miscellaneous definitions
  */
 
+#if defined(__ZDOS__)
+/*
+  open access mask
+
+  bits  use
+  ====  ===
+  7     inheritance flag
+  3     deny writing for others
+  2     deny reading for others
+  1     allow writing for owner
+  0     allow reading for owner
+*/
+typedef enum {
+    TIO_DENY_NONE               = 0x00,
+    TIO_READ                    = 0x01,
+    TIO_WRITE                   = 0x02,
+    TIO_DENY_READ               = 0x04,
+    TIO_DENY_WRITE              = 0x08,
+    TIO_INHERITANCE             = 0x80,
+    TIO_DENY_READ_WRITE         = TIO_DENY_READ | TIO_DENY_WRITE,
+    TIO_DENY_COMPATIBILITY      = TIO_DENY_READ_WRITE,
+    TIO_READ_DENY_WRITE         = TIO_READ | TIO_DENY_READ_WRITE,
+    TIO_NULL_ATTR               = TIO_READ
+} open_attr;
+#else
 /*
   open access mask
 
@@ -68,6 +93,7 @@ typedef enum {
     TIO_READ_DENY_WRITE         = TIO_READ | TIO_DENY_WRITE,
     TIO_NULL_ATTR               = 0x00
 } open_attr;
+#endif
 
 typedef enum {
     TIO_SEEK_START              = 0,
@@ -215,6 +241,10 @@ typedef struct {
     tiny_fdate_t        date;
     uint_32             size;
     char                name[ TIO_NAME_MAX ];
+#if defined(__ZDOS__)
+    char                unused;         /* for alignment */
+    uint_32             zdos;           /* used by ZDOS */
+#endif
 } tiny_find_t;
 
 /*
@@ -421,7 +451,7 @@ typedef int_32          tiny_ret_t;
 #define TINY_ERROR( h )         ((int_32)(h)<0)
 #define TINY_OK( h )            ((int_32)(h)>=0)
 #define TINY_INFO( h )          ((uint_16)(h))
-#define TINY_LINFO( h )          ((uint_32)(h))
+#define TINY_LINFO( h )         ((uint_32)(h))
 /* 5-nov-90 AFS TinySeek returns a 31-bit offset that must be sign extended */
 #define TINY_INFO_SEEK( h )     (((int_32)(h)^0xc0000000L)-0xc0000000L)
 
@@ -826,7 +856,11 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
  extern  void   __Int21();
  #define _INT_21        "call __Int21"
 #else
- #define _INT_21        _INT 0x21
+ #if defined(__ZDOSDRV__)
+  #define _INT_21       0xff 0x15 0x84 0x00 0x00 0xc0   /* CALL [DWORD 0xc0000084] */
+ #else
+  #define _INT_21       _INT 0x21
+ #endif
 #endif
 #define _GET_           0x00
 #define _SET_           0x01
@@ -1255,6 +1289,396 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [bl] [cx] [dx] \
         value           [eax] \
         modify exact    [eax ebx ecx edx];
+
+  #if defined(__ZDOS__)
+#pragma aux             _nTinyAccess = \
+          "xor eax,eax"   \
+          "mov ah,43h " \
+          _INT_21         \
+          "jc short L1"   \
+          "test bl,2"     \
+          "jz short L1"   \
+          "test cl,1"     \
+          "jz short L1"   \
+          "xor al,al"     \
+          "mov ah,6"      \
+          "stc"           \
+          "L1:"           \
+          "sbb ecx,ecx"   \
+          "mov cx,ax"     \
+          "mov eax,ecx"   \
+        parm caller     [edx] [ebx] \
+        value           [eax] \
+        modify          [ecx];
+
+#pragma aux             _nTinyOpen = \
+        "mov ah,3Dh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] [al] \
+        value           [eax];
+
+#pragma aux             _nTinyCreate = \
+        "mov ah,3Ch"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] [ecx] \
+        value           [eax];
+
+#pragma aux             _nTinyCreateEx = \
+        "mov ax,6C00h"  \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [esi] [ebx] [ecx] [edx]\
+        value           [eax];
+
+#pragma aux             _nTinyCreateNew = \
+        "mov ah,5Bh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] [ecx] \
+        value           [eax];
+
+#pragma aux             _nTinyCreateTemp = \
+        "mov ah,5Ah"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] [ecx] \
+        value           [eax];
+
+#pragma aux             _TinyClose = \
+        "mov ah,3Eh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] \
+        value           [eax];
+
+#pragma aux             _TinyCommitFile = \
+        "mov ah,68h"    \
+        "clc"           \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] \
+        value           [eax];
+
+#pragma aux             _nTinyWrite = \
+        "mov ah,40h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [edx] [ecx] \
+        value           [eax];
+
+#pragma aux             _nTinyRead = \
+        "mov ah,3Fh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [edx] [ecx] \
+        value           [eax];
+
+#pragma aux             _TinyLSeek = \
+        "mov ah,42h"    \
+        _INT_21         \
+        "mov [edi],eax" \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [edx] [al] [edi] \
+        value           [eax] \
+        modify exact    [eax ebx edx];
+
+#pragma aux             _TinySeek = \
+        "mov ah,42h"    \
+        _INT_21         \
+        "rcl eax,1"      \
+        "ror eax,1"      \
+        parm caller     [ebx] [edx] [al] \
+        value           [edx] \
+        modify exact    [eax ebx edx];
+
+#pragma aux             _nTinyDelete = \
+        "mov ah,41h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] \
+        value           [eax];
+
+#pragma aux             _nTinyRename = \
+        "mov ah,56h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] [edi]\
+        value           [eax];
+
+#pragma aux             _nTinyMakeDir = \
+        "mov ah,39h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] \
+        value           [eax];
+
+#pragma aux             _nTinyRemoveDir = \
+        "mov ah,3Ah"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] \
+        value           [eax];
+
+#pragma aux             _nTinyChangeDir = \
+        "mov ah,3Bh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] \
+        value           [eax];
+
+#pragma aux             _nTinyGetCWDir = \
+        "mov ah,47h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [esi] [dl] \
+        value           [eax];
+
+#pragma aux             _TinyDup = \
+        "mov ah,45h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] \
+        value           [eax];
+
+#pragma aux             _TinyDup2 = \
+        "mov ah,46h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [ecx]\
+        value           [eax];
+
+     #if defined(__ZDOSDRV__)
+#pragma aux             _TinyAllocBlock = \
+        "mov eax,0x80000008" \
+        parm caller     [ecx]\
+        value           [eax];
+
+#pragma aux             _TinyFreeBlock = \
+        "mov eax,0x80000001" \
+        parm caller     [eax]\
+        value           [eax];
+
+#pragma aux             _TinySetBlock = \
+        "mov eax,0x80000009" \
+        parm caller     [ebx] [ecx] \
+        value           [eax];
+
+     #else
+#pragma aux             _TinyAllocBlock = \
+        "mov ah,48h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ecx]\
+        value           [eax];
+
+#pragma aux             _TinyFreeBlock = \
+        "push ebx"      \
+        "mov ebx,eax"   \
+        "mov ah,49h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        "pop ebx"       \
+        parm caller     [eax] \
+        value           [eax];
+
+#pragma aux             _TinySetBlock = \
+        "mov ah,4Ah"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [ecx] \
+        value           [eax];
+     #endif
+
+#pragma aux             _TinyTestAllocBlock = \
+        "mov eax,0x80000000" \
+        parm caller     [ebx]\
+        value           [eax];
+
+#pragma aux             _TinyMaxAlloc = \
+        "mov ebx,0x80000000" \
+        parm caller     [] \
+        value           [ebx];
+
+#pragma aux             _TinyMaxSet = \
+        "mov ebx,0x80000000" \
+        parm caller     [] \
+        value           [ebx];
+
+#pragma aux             _TinyGetDeviceInfo = \
+        "mov al,0"      \
+        "mov ah,44h"    \
+        _INT_21         \
+        "rcl edx,1"     \
+        "ror edx,1"     \
+        parm caller     [ebx] \
+        value           [edx] \
+        modify          [eax ebx ecx edx];
+
+#pragma aux             _TinySetDeviceInfo = \
+        "mov dh,0"      \
+        "mov al,1"      \
+        "mov ah,44h"    \
+        _INT_21         \
+        "rcl edx,1"     \
+        "ror edx,1"     \
+        parm caller     [ebx] [dl] \
+        value           [edx] \
+        modify          [eax ebx ecx edx];
+
+#pragma aux             _TinyGetCtrlBreak = \
+        "mov al,0"      \
+        "mov ah,33h"    \
+        _INT_21         \
+        parm caller     [] \
+        value           [dl] \
+        modify          [eax dl];
+
+#pragma aux             _TinySetCtrlBreak = \
+        "mov al,1"      \
+        "mov ah,33h"    \
+        _INT_21         \
+        parm caller     [dl] \
+        modify          [eax dl];
+
+#pragma aux             _TinyTerminateProcess = \
+        "mov ah,4Ch"    \
+        _INT_21         \
+        parm caller     [al] \
+        aborts;
+
+#pragma aux             _TinyGetDate = \
+        "mov ah,2Ah"    \
+        _INT_21         \
+        "sub ecx,1900"   \
+        "mov ch,al"     \
+        "shl ecx,16"    \
+        "mov cx,dx"     \
+        parm caller     [] \
+        value           [ecx] \
+        modify          [eax ecx edx];
+
+#pragma aux             _TinyGetTime = \
+        "mov ah,2Ch"    \
+        _INT_21         \
+        "shl ecx,16"    \
+        "mov cx,dx"     \
+        parm caller     [] \
+        value           [ecx] \
+        modify          [eax ecx edx];
+
+#pragma aux             _TinyGetCurrDrive = \
+        "mov ah,19h"    \
+        _INT_21         \
+        parm caller     [] \
+        value           [al] \
+        modify          [eax];
+
+#pragma aux             _TinySetCurrDrive = \
+        "mov ah,0Eh"    \
+        _INT_21         \
+        parm caller     [dl] \
+        modify          [eax];
+
+#pragma aux             _nTinySetDTA = \
+        "or edx,edx"    \
+        parm caller     [edx];
+
+#pragma aux             _nTinyFindFirst = \
+        "mov eax,0x80000001" \
+        parm caller     [edx] [ecx] \
+        value           [eax];
+
+#pragma aux             _nTinyFindFirstDTA = \
+        "mov ah,4Eh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [edx] [ecx] [ebx] \
+        value           [eax];
+
+#pragma aux             _TinyFindNext = \
+        "mov eax,0x80000001" \
+        value           [eax];
+
+#pragma aux             _TinyFindNextDTA = \
+        "mov ah,4Fh"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] \
+        value           [eax];
+
+#pragma aux             _TinyFindCloseDTA = \
+        "xor eax,eax"   \
+        parm caller     [ebx] \
+        value           [eax];
+
+#pragma aux             _TinyGetFileStamp = \
+        "mov al,0"      \
+        "mov ah,57h"    \
+        _INT_21         \
+        "rcl ecx,1"     \
+        "ror ecx,1"     \
+        parm caller     [ebx] \
+        value           [ecx] \
+        modify          [eax ecx];
+
+#pragma aux             _TinySetFileStamp = \
+          "shl edx,16"    \
+          "or  ecx,edx"   \
+          "shr edx,16"    \
+        "mov al,1"      \
+        "mov ah,57h"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [ecx] [edx] \
+        value           [eax] \
+        modify          [eax];
+
+#pragma aux             _TinyLock = \
+        "mov al,0"      \
+        "mov ah,5Ch"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [edx] [ecx] \
+        value           [eax] \
+        modify          [eax];
+
+#pragma aux             _TinyUnlock = \
+        "mov al,1"      \
+        "mov ah,5Ch"    \
+        _INT_21         \
+        "rcl eax,1"     \
+        "ror eax,1"     \
+        parm caller     [ebx] [edx] [ecx] \
+        value           [eax] \
+        modify          [eax];
+  #else /* #if defined( __ZDOS__ ) */
 
 #pragma aux             _nTinyAccess = \
         _MOV_AL _GET_   \
@@ -1849,6 +2273,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [bx] [ecx] [esi] \
         value           [eax] \
         modify          [edx edi];
+  #endif /* #if defined(__ZDOS__) */
 
 #elif defined( _M_I86 )
 

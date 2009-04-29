@@ -39,7 +39,7 @@
 
 _WCRTLINK int (clearenv)( void )
 {
-#ifndef __NETWARE__
+#if !(defined(__NETWARE__) || defined(__ZDOS__))
     char    **envp;
     char    *env_str;
     int     index;
