@@ -29,14 +29,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
-#include "pragmas.h"
 #define INCL_BASE
 #define INCL_VIO
 #include "os2.h"
+#include "vibios.h"
 
 #ifdef __386__
     #define SEG16 _Seg16
@@ -64,7 +61,7 @@ long BIOSGetColorRegister( short reg )
     vcr.numcolorregs = 1;
     vcr.colorregaddr = (ptr_16)&data;
     VioGetState( &vcr, 0 );
-    return( ( (long)data.r << 8 ) | ( (long)data.g << 24 ) | ( (long)data.b << 16 ) );
+    return( ((long)data.r << 8) | ((long)data.g << 24) | ((long)data.b << 16) );
 }
 
 void BIOSSetColorRegister( short reg, char r, char g, char b )
@@ -89,14 +86,14 @@ void BIOSGetColorPalette( void _FAR *palette )
     USHORT              size, i;
     char _FAR           *pal = palette;
 
-    size = sizeof( VIOPALSTATE ) + sizeof( USHORT )*(MAX_COLOR_REGISTERS - 1);
+    size = sizeof( VIOPALSTATE ) + sizeof( USHORT ) * (MAX_COLOR_REGISTERS - 1);
     pal_state = MemAlloc( size );
     pal_state->cb = size;
     pal_state->type = 0;
     pal_state->iFirst = 0;
     VioGetState( pal_state, 0 );
     for( i = 0; i <= MAX_COLOR_REGISTERS; i++ ) {
-        pal[ i ] = pal_state->acolor[ i ];
+        pal[i] = pal_state->acolor[i];
     }
     MemFree( pal_state );
 }
@@ -130,7 +127,7 @@ void BIOSSetCursor( char page, char row, char col )
 
 short BIOSGetCursor( char page )
 {
-    USHORT      r,c;
+    USHORT      r, c;
     short       res;
 
     page = page;
@@ -151,45 +148,47 @@ void BIOSNewCursor( char ch, char notused )
 
 } /* BIOSNewCursor */
 
-extern short BIOSGetKeyboard( char x)
+/*
+ * BIOSGetKeyboard - get a keyboard char
+ */
+extern vi_key BIOSGetKeyboard( int *scan )
 {
-    KBDKEYINFO  info;
-    short       res;
+    KBDKEYINFO      info;
 
-    x = x;
     KbdCharIn( &info, 0, 0 );
-    res = (info.chScan << 8) + info.chChar;
-    return( res );
+    if( scan != NULL ) {
+        *scan = info.chScan;
+    }
+    if( info.chChar == 0xe0 && info.chScan != 0 ) {
+        return( 0 );
+    }
+    return( info.chChar );
 
 } /* BIOSGetKeyboard */
 
-extern short BIOSKeyboardHit( char x )
+/*
+ * BIOSKeyboardHit - test for keyboard hit
+ */
+extern bool BIOSKeyboardHit( void )
 {
     KBDKEYINFO  info;
 
-    x = x;
     KbdPeek( &info, 0 );
-    return( ( info.fbStatus & 0xe0 ) != 0 );
+    return( (info.fbStatus & 0xe0) != 0 );
 
 } /* BIOSKeyboardHit */
 
-void MyVioShowBuf( unsigned offset, int length )
+/*
+ * BIOSUpdateScreen - update the screen
+ */
+void  BIOSUpdateScreen( unsigned offset, unsigned length )
 {
     extern int  PageCnt;
 
     if( PageCnt > 0 ) {
         return;
     }
-    VioShowBuf( (unsigned short)offset, (unsigned short)(length*2), 0 );
+    VioShowBuf( (unsigned short)offset, (unsigned short)(length * 2), 0 );
 
-} /* MyVioShowBuf */
+} /* BIOSUpdateScreen */
 
-extern long DosGetFullPath( char *old, char *full )
-{
-#ifdef __386__
-    DosQueryPathInfo( old, FIL_QUERYFULLNAME, full, _MAX_PATH );
-#else
-    strcpy( full, old );
-#endif
-    return( 0L );
-} /* DosGetFullPath */

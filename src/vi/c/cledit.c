@@ -30,15 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
 #include "posix.h"
-#include "keys.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "winvi.h"
     #include "utils.h"
 #endif
 
@@ -122,10 +117,10 @@ static int NextWordNT( char *buff, char *res )
 /*
  * EditFile - read a file into text
  */
-int EditFile( char *name, int dammit )
+vi_rc EditFile( char *name, int dammit )
 {
     char        *fn, **list, *currfn;
-    int         rc = ERR_NO_ERR, i, cnt, ocnt;
+    int         i, cnt, ocnt;
     int         j, len;
     window_id   wn;
     char        cdir[FILENAME_MAX];
@@ -135,6 +130,7 @@ int EditFile( char *name, int dammit )
     bool        reset_dir;
     int         index;
     char        *altname = NULL;
+    vi_rc       rc;
 
     fn = MemAlloc( FILENAME_MAX );
 
@@ -178,37 +174,38 @@ int EditFile( char *name, int dammit )
             fn[cnt] = 0;
         }
         if( fn[0] != 0 ) {
-            i = SelectFileOpen( fn, &fn, mask, TRUE );
+            rc = SelectFileOpen( fn, &fn, mask, TRUE );
         } else {
 #ifdef __WIN__
             if( name[0] == '\0' ) {
                 altname = MemAlloc( 1000 );
-                i = SelectFileOpen( CurrentDirectory, &altname, mask, TRUE );
+                rc = SelectFileOpen( CurrentDirectory, &altname, mask, TRUE );
                 NextWord1( altname, fn );  // if multiple, kill path
                 if( isMultipleFiles( altname ) ) {
                     NextWord1( altname, fn ); // get 1st name
                 }
             } else {
-                i = SelectFileOpen( CurrentDirectory, &fn, mask, TRUE );
+                rc = SelectFileOpen( CurrentDirectory, &fn, mask, TRUE );
             }
 #else
-            i = SelectFileOpen( CurrentDirectory, &fn, mask, TRUE );
+            rc = SelectFileOpen( CurrentDirectory, &fn, mask, TRUE );
 #endif
         }
         if( altname ) {
             name = altname;
         }
 
-        if( i || fn[0] == 0 ) {
+        if( rc != ERR_NO_ERR || fn[0] == 0 ) {
             MemFree( fn );
             SetCWD( cdir );
-            return( i );
+            return( rc );
         }
     }
 
     /*
      * loop through all files
      */
+    rc = ERR_NO_ERR;
     EditFlags.WatchForBreak = TRUE;
 #ifdef __WIN__
     ToggleHourglass( TRUE );
@@ -221,7 +218,7 @@ int EditFile( char *name, int dammit )
                 break;
             }
             rc = SelectFileOpen( fn, &fn, "*", FALSE );
-            if( rc ) {
+            if( rc != ERR_NO_ERR ) {
                 reset_dir = TRUE;
                 break;
             }
@@ -255,7 +252,11 @@ int EditFile( char *name, int dammit )
                     ci = ci->next;
                 }
                 RemoveFromAutoSaveList();
+#ifdef __WIN__
+                CloseAChildWindow( CurrentWindow );
+#else
                 CloseAWindow( CurrentWindow );
+#endif
                 FreeUndoStacks();
                 FreeMarkList();
                 FreeEntireFile( CurrentFile );
@@ -316,7 +317,7 @@ int EditFile( char *name, int dammit )
              * file not edited, go get it
              */
             rc = NewFile( currfn, FALSE );
-            if( rc && rc != NEW_FILE ) {
+            if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
                 RestoreInfo( ci );
                 DCDisplayAllLines();
                 break;
@@ -380,17 +381,18 @@ static char _NEAR *_NEAR fileOpts[] =  {
 /*
  * EditFileFromList - edit from file in current active list
  */
-int EditFileFromList( void )
+vi_rc EditFileFromList( void )
 {
-    int         i, tmp, j, n = 0, rc, fcnt;
+    int         i, tmp, j, n = 0, fcnt;
     window_id   optwin;
     bool        repeat = TRUE;
     info        *cinfo;
     char        **list, modchar;
-    int         evlist[4] = { VI_KEY( F1 ), VI_KEY( F2 ), VI_KEY( F3 ), -1 };
+    vi_key      evlist[4] = { VI_KEY( F1 ), VI_KEY( F2 ), VI_KEY( F3 ), VI_KEY( DUMMY ) };
     bool        show_lineno;
     window_info wi;
     selectitem  si;
+    vi_rc       rc;
 
     /*
      * set up options for file list
@@ -398,9 +400,9 @@ int EditFileFromList( void )
     memcpy( &wi, &extraw_info, sizeof( window_info ) );
     wi.x1 = 2;
     wi.x2 = 19;
-    i = DisplayExtraInfo( &wi, &optwin, fileOpts, NUM_OPTS );
-    if( i ) {
-        return( i );
+    rc = DisplayExtraInfo( &wi, &optwin, fileOpts, NUM_OPTS );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     while( repeat ) {
@@ -452,13 +454,13 @@ int EditFileFromList( void )
         si.maxlist = j;
         si.num = n;
         si.retevents = evlist;
-        si.event = -1;
+        si.event = VI_KEY( DUMMY );
         si.show_lineno = show_lineno;
         si.cln = n + 1;
         si.eiw = optwin;
         rc = SelectItem( &si );
         n = si.num;
-        if( !rc ) {
+        if( rc == ERR_NO_ERR ) {
             if( n >= 0 ) {
                 j = 0;
                 cinfo = InfoHead;
@@ -468,18 +470,18 @@ int EditFileFromList( void )
                 }
                 BringUpFile( cinfo, TRUE );
                 switch( si.event ) {
-                case -1:
+                case VI_KEY( DUMMY ):
                 case VI_KEY( F1 ):
                     break;
                 case VI_KEY( F2 ):
                     rc = NextFile();
-                    if( rc <= 0 ) {
+                    if( rc <= ERR_NO_ERR ) {
                         repeat = TRUE;
                     }
                     break;
                 case VI_KEY( F3 ):
                     rc = SaveAndExit( NULL );
-                    if( rc <= 0 ) {
+                    if( rc <= ERR_NO_ERR ) {
                         repeat = TRUE;
                     }
                     break;
@@ -504,10 +506,10 @@ int EditFileFromList( void )
 /*
  * OpenWindowOnFile - open a window on a file
  */
-int OpenWindowOnFile( char *data )
+vi_rc OpenWindowOnFile( char *data )
 {
     char        *name;
-    int         rc;
+    vi_rc       rc;
     window_id   wn;
 
     RemoveLeadingSpaces( data );
@@ -517,7 +519,7 @@ int OpenWindowOnFile( char *data )
     }
     wn = CurrentWindow;
     rc = NewFile( name, TRUE );
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
         InactiveWindow( wn );
         DCDisplayAllLines();
     }

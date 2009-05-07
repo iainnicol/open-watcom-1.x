@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include "vi.h"
+#include <time.h>
 #include "win.h"
 
 #define MAX_CSTATUS_STRLEN      10
@@ -70,9 +67,9 @@ void GetModeString( char *st )
 /*
  * UpdateCurrentStatus - maintain current status info
  */
-int UpdateCurrentStatus( status_type st )
+status_type UpdateCurrentStatus( status_type st )
 {
-    int         ost;
+    status_type ost;
 
     ost = lastStatus;
     lastStatus = st;

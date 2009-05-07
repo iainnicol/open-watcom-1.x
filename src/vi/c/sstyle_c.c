@@ -29,10 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
 #include "vi.h"
 #include "sstyle.h"
 #include "lang.h"
@@ -479,7 +475,7 @@ void InitCFlags( linenum line_no )
     line    *thisline;
     line    *topline;
     char    topChar;
-    int     rc;
+    vi_rc   rc;
     int     withinQuotes = 0;
     line    *line;
     bool    inBlock = FALSE;

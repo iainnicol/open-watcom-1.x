@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "win.h"
 
@@ -49,7 +47,7 @@ void GetCurrentLine( void )
 /*
  * ReplaceCurrentLine - replace current line with work line
  */
-int ReplaceCurrentLine( void )
+vi_rc ReplaceCurrentLine( void )
 {
     int         extra;
     line        *tmp;
@@ -89,7 +87,7 @@ void DisplayWorkLine( bool killsFlags )
         DCDisplayAllLines();
     } else {
         // could speed up a little by calling directly
-        i = (int)( CurrentLineNumber - TopOfPage );
+        i = (int)( CurrentPos.line - LeftTopPos.line );
         DCDisplaySomeLines( i, i );
     }
 

@@ -29,16 +29,13 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "vi.h"
 #ifdef __WATCOMC__
     #include <malloc.h>
     #include <process.h>
 #else
     #include "clibext.h"
 #endif
-#include "vi.h"
 #include "source.h"
 #include "stack.h"
 
@@ -50,7 +47,7 @@ void main( int argc, char *argv[] )
     _argc = argc;
     _argv = argv;
 #endif
-    EXEName = _cmdname(buffer);
+    EXEName = _cmdname( buffer );
 #ifdef __WATCOMC__
     InitialStack();
 #endif

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 static char     usName[] = "undo stack";
@@ -40,7 +38,7 @@ static char     uusName[] = "undo-undo stack";
 /*
  * validateUndo - make sure an undo has the correct number of open/closes
  */
-static int validateUndo( undo *cundo )
+static vi_rc validateUndo( undo *cundo )
 {
     bool        done = FALSE;
     int         depth = 0;
@@ -80,11 +78,11 @@ static int validateUndo( undo *cundo )
 /*
  * realUndo - perform an undo
  */
-static int realUndo( undo_stack *stack, undo_stack *us )
+static vi_rc realUndo( undo_stack *stack, undo_stack *us )
 {
     undo                *cundo, *tundo;
     bool                done = FALSE;
-    int                 rc = ERR_NO_ERR;
+    vi_rc               rc = ERR_NO_ERR;
     int                 col, depth = 0;
     linenum             lne, top;
     char                *name;
@@ -132,9 +130,9 @@ static int realUndo( undo_stack *stack, undo_stack *us )
                 done = TRUE;
             }
             if( cundo->data.sdata.depth == 1 ) {
-                lne = cundo->data.sdata.line;
+                lne = cundo->data.sdata.p.line;
                 top = cundo->data.sdata.top;
-                col = cundo->data.sdata.col;
+                col = cundo->data.sdata.p.column;
             }
             break;
 
@@ -152,7 +150,7 @@ static int realUndo( undo_stack *stack, undo_stack *us )
                               cundo->data.fcbs.fcb_head,cundo->data.fcbs.fcb_tail, us );
             break;
         }
-        if( rc > 0 ) {
+        if( rc > ERR_NO_ERR ) {
             break;
         }
         cundo = cundo->next;
@@ -172,14 +170,14 @@ static int realUndo( undo_stack *stack, undo_stack *us )
 
     CMergeAllFcbs();
     EditFlags.DisplayHold = FALSE;
-    TopOfPage = top;
+    LeftTopPos.line = top;
     SetCurrentLineNumber( lne );
-    CurrentColumn = 1;
+    CurrentPos.column = 1;
     CGimmeLinePtr( lne, &CurrentFcb, &CurrentLine );
     GoToColumnOK( col );
     UpdateStatusWindow();
     DCDisplayAllLines();
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
         if( stack == UndoStack ) {
             name = usName;
         } else {
@@ -204,7 +202,7 @@ static int realUndo( undo_stack *stack, undo_stack *us )
 /*
  * DoUndo - do an undo
  */
-int DoUndo( void )
+vi_rc DoUndo( void )
 {
     return( realUndo( UndoStack, UndoUndoStack ) );
 
@@ -213,9 +211,9 @@ int DoUndo( void )
 /*
  * DoUndoUndo - do an undo
  */
-int DoUndoUndo( void )
+vi_rc DoUndoUndo( void )
 {
-    int rc;
+    vi_rc   rc;
 
     EditFlags.UndoInProg = TRUE;
     rc = realUndo( UndoUndoStack, UndoStack );

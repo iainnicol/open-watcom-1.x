@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <assert.h>
 #include "vi.h"
 #include "sstyle.h"
 #include "lang.h"
@@ -293,7 +288,7 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
     line    *line;
     fcb     *fcb;
     char    *data;
-    int     rc;
+    vi_rc   rc;
 squashed:
     while( *text && *text != '\'' ) {
         empty = FALSE;
@@ -431,7 +426,7 @@ void InitFORTRANFlags( linenum line_no )
     char    *start;
     line    *line;
     fcb     *fcb;
-    int     rc;
+    vi_rc   rc;
     int     numQuotes = 0;
 
     flags.inString = 0;

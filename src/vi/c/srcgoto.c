@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "source.h"
 
@@ -40,7 +38,7 @@ static int findLabel( labels *, char * );
 /*
  * SrcGoTo - goto processor
  */
-int SrcGoTo( sfile **sf, char *data, labels *lab )
+vi_rc SrcGoTo( sfile **sf, char *data, labels *lab )
 {
     int         i;
     char        dest[MAX_SRC_LINE];
@@ -66,7 +64,7 @@ int SrcGoTo( sfile **sf, char *data, labels *lab )
 /*
  * AddLabel - add a label in the file
  */
-int AddLabel( sfile *sf, labels *lab, char *data )
+vi_rc AddLabel( sfile *sf, labels *lab, char *data )
 {
     int         j, i;
     char        tmp[MAX_SRC_LINE];

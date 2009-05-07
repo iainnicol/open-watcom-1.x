@@ -30,19 +30,17 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 /*
  * AbandonHopeAllYeWhoEnterHere - death for the masses
  */
-void AbandonHopeAllYeWhoEnterHere( int rc )
+void AbandonHopeAllYeWhoEnterHere( vi_rc rc )
 {
 
     AutoSaveInterval = 0;
     ClearScreen();
-    SetCursorOnScreen( (int)WindMaxHeight - 1, 0 );
+    SetPosToMessageLine();
     if( rc == ERR_NO_MEMORY )  {
         MyPrintf( "Out of memory\n" );
     } else {

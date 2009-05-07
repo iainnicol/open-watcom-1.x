@@ -30,24 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "win.h"
 #ifdef __WIN__
-    #include "winvi.h"
     #include "statwnd.h"
 #endif
 
 /*
  * NewStatusWindow - create a new status window
  */
-int NewStatusWindow( void )
+vi_rc NewStatusWindow( void )
 {
-    int rc = ERR_NO_ERR;
+    vi_rc   rc = ERR_NO_ERR;
 
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
@@ -167,7 +161,7 @@ void UpdateStatusWindow( void )
                 line++;
                 break;
             case 'L':
-                num = CurrentLineNumber;
+                num = CurrentPos.line;
                 use_num = TRUE;
                 break;
             case 'C':

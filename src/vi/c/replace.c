@@ -30,23 +30,21 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
-#include "keys.h"
 
 /*
  * ReplaceChar - replace an individual character
  */
-int ReplaceChar( void )
+vi_rc ReplaceChar( void )
 {
-    int         key, start, end, i, ai, rc;
+    int         start, end, i, ai;
     char        *buff;
     bool        redrawAll;
+    vi_rc       rc;
+    vi_key      key;
 
-    if( i = ModificationTest() ) {
-        return( i );
+    if( rc = ModificationTest() ) {
+        return( rc );
     }
     UpdateCurrentStatus( CSTATUS_REPLACECHAR );
     key = GetNextEvent( FALSE );
@@ -63,12 +61,12 @@ int ReplaceChar( void )
 
         buff = StaticAlloc();
         GetAutoIndentAmount( buff, 0, FALSE );
-        CurrentLine->data[CurrentColumn - 1] = (char) 1;
+        CurrentLine->data[CurrentPos.column - 1] = (char) 1;
         SaveCurrentFilePos();
-        SplitUpLine( CurrentLineNumber );
+        SplitUpLine( CurrentPos.line );
         RestoreCurrentFilePos();
         EndUndoGroup( UndoStack );
-        GoToLineNoRelCurs( CurrentLineNumber + 1 );
+        GoToLineNoRelCurs( CurrentPos.line + 1 );
         GoToColumnOnCurrentLine( 1 );
         if( EditFlags.AutoIndent ) {
             ai = strlen( buff );
@@ -97,7 +95,7 @@ int ReplaceChar( void )
             key = '\t';
         }
         GetCurrentLine();
-        start = CurrentColumn - 1;
+        start = CurrentPos.column - 1;
         end = start + (int) GetRepeatCount();
         if( end > WorkLine->len ) {
             end = WorkLine->len;
@@ -112,7 +110,7 @@ int ReplaceChar( void )
         redrawAll |= SSKillsFlags( key );
         DisplayWorkLine( redrawAll );
         ReplaceCurrentLine();
-        GoToColumnOK( CurrentColumn );
+        GoToColumnOK( CurrentPos.column );
 
     }
 

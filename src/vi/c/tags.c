@@ -29,13 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include "posix.h"
 #include "vi.h"
-#include "keys.h"
+#include "posix.h"
 #include "rxsupp.h"
 #ifdef __WIN__
     #include "winrtns.h"
@@ -44,30 +39,31 @@
 /*
  * GetCurrentTag - get current tag word and hunt for it
  */
-int GetCurrentTag( void )
+vi_rc GetCurrentTag( void )
 {
-    int         i;
+    vi_rc       rc;
     char        tag[MAX_STR];
 
-    i = GimmeCurrentWord( tag, sizeof( tag ) - 1, FALSE );
-    if( i ) {
-        return( i );
+    rc = GimmeCurrentWord( tag, sizeof( tag ) - 1, FALSE );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    i = TagHunt( tag );
-    return( i );
+    rc = TagHunt( tag );
+    return( rc );
 
 } /* GetCurrentTag */
 
 /*
  * TagHunt - hunt for a specified tag
  */
-int TagHunt( char *str )
+vi_rc TagHunt( char *str )
 {
     char        buff[MAX_STR], file[FILENAME_MAX];
-    int         num, rc = ERR_NO_ERR;
+    int         num;
+    vi_rc       rc;
 
     rc = LocateTag( str, file, buff );
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
 
         PushFileStack();
         rc = EditFile( file, FALSE );
@@ -77,7 +73,7 @@ int TagHunt( char *str )
                 rc = GoToLineNoRelCurs( num );
             } else {
                 rc = FindTag( buff );
-                if( rc < 0 ) {
+                if( rc < ERR_NO_ERR ) {
                     strcpy( buff, str );
                     ColorFind( buff, 0 );
                     rc = ERR_TAG_NOT_FOUND;
@@ -100,21 +96,21 @@ int TagHunt( char *str )
 /*
  * FindTag - locate a given tag
  */
-int FindTag( char *tag )
+vi_rc FindTag( char *tag )
 {
     extern char _NEAR   META[];
-    int                 rc, omag;
+    bool                oldmagic;
     char                *oldms;
+    vi_rc               rc;
 
-    omag = EditFlags.Magic;
-    EditFlags.Magic = FALSE;
     oldms = Majick;
     Majick = &META[3];
 
+    oldmagic = SetMagicFlag( FALSE );
     rc = ColorFind( tag, 0 );
+    SetMagicFlag( oldmagic );
 
     Majick = oldms;
-    EditFlags.Magic = omag;
     return( rc );
 
 } /* FindTag */
@@ -129,7 +125,7 @@ int PickATag( int clist, char **list, char *tagname )
     int         i;
     bool        show_lineno;
     selectitem  si;
-    int         rc;
+    vi_rc       rc;
     char        title[MAX_STR];
 
     memcpy( &tw, &dirw_info, sizeof( window_info ) );
@@ -156,13 +152,13 @@ int PickATag( int clist, char **list, char *tagname )
     si.maxlist = clist;
     si.num = 0;
     si.retevents = NULL;
-    si.event = -1;
+    si.event = VI_KEY( DUMMY );
     si.show_lineno = show_lineno;
     si.cln = 1;
     si.eiw = NO_WINDOW;
 
     rc = SelectItem( &si );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         return( -1 );
     }
     return( si.num );
@@ -173,7 +169,7 @@ int PickATag( int clist, char **list, char *tagname )
 /*
  * selectTag - select a tag from a list of possible tags
  */
-static int selectTag( FILE *f, char *str, char *buff, char *fname )
+static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
 {
     int         tagcnt;
     char        **taglist;
@@ -285,7 +281,7 @@ FILE *SearchForTags( void )
 /*
  * LocateTag - locate a tag in the tag file
  */
-int LocateTag( char *str, char *fname, char *buff )
+vi_rc LocateTag( char *str, char *fname, char *buff )
 {
     char        tag[MAX_STR];
     int         i;
@@ -301,7 +297,7 @@ int LocateTag( char *str, char *fname, char *buff )
         }
 
         if( !f ) {
-            return ERR_FILE_NOT_FOUND;
+            return( ERR_FILE_NOT_FOUND );
         }
     }
 

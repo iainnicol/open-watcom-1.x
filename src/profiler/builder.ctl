@@ -16,6 +16,7 @@ set PROJNAME=wprof
     <CCCMD> <PROJDIR>/os2386pm/wprof.exe   <RELROOT>/binp/wprof.exe
     <CCCMD> <PROJDIR>/os2386/wprof.exe     <RELROOT>/binp/wprofc.exe
     <CCCMD> <PROJDIR>/nt386/wprof.exe      <RELROOT>/binnt/wprof.exe
+    <CCCMD> <PROJDIR>/nt386c/wprof.exe     <RELROOT>/binnt/wprofc.exe
     <CCCMD> <PROJDIR>/ntaxp/wprof.exe      <RELROOT>/axpnt/wprof.exe
     <CCCMD> <PROJDIR>/linux386/wprof.exe   <RELROOT>/binl/wprof
     <CCCMD> <PROJDIR>/linux386/wprof.sym   <RELROOT>/binl/wprof.sym

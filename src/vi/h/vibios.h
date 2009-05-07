@@ -24,30 +24,29 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  BIOS Low-level function prototypes for vi.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "vi.h"
-#include "win.h"
-#include "pragmas.h"
-#include "keys.h"
-#define _WINSOCKAPI_
-#include <windows.h>
+// screen color/attrib functions
+extern void             BIOSSetColorRegister( short, char, char, char );
+extern long             BIOSGetColorRegister( short );
+extern void             BIOSGetColorPalette( void _FAR * );
+extern void             BIOSSetBlinkAttr( void );
+extern void             BIOSSetNoBlinkAttr( void );
+// screen cursor functions
+extern short            BIOSGetCursor( char );
+extern void             BIOSSetCursor( char, char, char );
+extern void             BIOSNewCursor( char, char );
+// screen info functions
+extern char             BIOSGetRowCount( void );
+extern unsigned long    BIOSGetVideoMode( void );
+// screen update functions
+extern void             BIOSUpdateScreen( unsigned, unsigned );
+// keyboard functions
+extern int              BIOSKeyboardInit( void );
+extern unsigned short   BIOSTestKeyboard( void );
+extern vi_key           BIOSGetKeyboard( int * );
+extern bool             BIOSKeyboardHit( void );
 
-/*
- * DosGetFullPath - expand file name to full path
- */
-long DosGetFullPath( char *old, char *full )
-{
-    LPTSTR      fp;
-
-    GetFullPathName( old, MAX_PATH, full, &fp );
-    return( 0L );
-
-} /* DosGetFullPath */

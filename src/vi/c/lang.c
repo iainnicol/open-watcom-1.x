@@ -29,16 +29,13 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
-#include <assert.h>
-#include <stdio.h>
 #include "vi.h"
 #include "sstyle.h"
 #include "lang.h"
+#include <assert.h>
 
-static lang_info    langInfo[ LANG_MAX ] = {
-    //table,  entries , ref_count ,read_buf
+static lang_info    langInfo[LANG_MAX] = {
+    //table,  entries, ref_count, read_buf
     { NULL,        0,          0,    NULL },  // C            1
     { NULL,        0,          0,    NULL },  // C++          2
     { NULL,        0,          0,    NULL },  // Fortran      3
@@ -166,13 +163,25 @@ void addTable( hash_entry *table, char *Keyword, int NumKeyword )
     MemFree( tmpValue );
 }
 
+static int nkeywords = 0;
+
+static bool lang_alloc( int cnt )
+{
+    nkeywords = cnt;
+    return( FALSE );
+}
+
+static bool lang_save( int i, char *buff )
+{
+    return( TRUE );
+}
+
 /*
  * LangInit - build hash table based on current language
  */
 void LangInit( int newLanguage )
 {
-    int         *dummy;
-    int         rc, nkeywords;
+    vi_rc       rc;
     char        *buff;
     char        *fname[] = { NULL, "c.dat", "cpp.dat", "fortran.dat", "java.dat", "sql.dat",
                              "bat.dat", "basic.dat", "perl.dat", "html.dat", "wml.dat",
@@ -186,9 +195,8 @@ void LangInit( int newLanguage )
     }
 
     if( langInfo[newLanguage].ref_count == 0 ) {
-        rc = ReadDataFile( fname[newLanguage], &nkeywords,
-                           &buff, &dummy, FALSE );
-        if( rc ) {
+        rc = ReadDataFile( fname[newLanguage], &buff, lang_alloc, lang_save );
+        if( rc != ERR_NO_ERR ) {
             Error( GetErrorMsg( rc ) );
             CurrentInfo->Language = LANG_NONE;
             return;
@@ -199,7 +207,6 @@ void LangInit( int newLanguage )
             createTable( NextBiggestPrime( nkeywords ) );
         addTable( langInfo[newLanguage].keyword_table, buff, nkeywords );
         langInfo[newLanguage].read_buf = buff;
-        MemFree( dummy );
     }
     langInfo[newLanguage].ref_count++;
 

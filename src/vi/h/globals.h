@@ -46,8 +46,8 @@ extern char _NEAR   CONFIG_FILE[];
 extern char _NEAR   MEMORIZE_MODE[];
 extern char _NEAR   SingleBlank[];
 extern char _NEAR   SingleSlash[];
-extern char * _NEAR EditOpts[];
-extern char * _NEAR BoolStr[];
+extern char         * _NEAR EditOpts[];
+extern char         * _NEAR BoolStr[];
 extern int          NumEditOpts;
 
 /* mouse data */
@@ -62,7 +62,7 @@ extern int              MouseStatus;
 #endif
 extern int              MouseSpeed;
 extern int              MouseDoubleClickSpeed;
-extern int              LastMouseEvent;
+extern vi_mouse_event   LastMouseEvent;
 extern int              MouseRepeatStartDelay;
 extern int              MouseRepeatDelay;
 
@@ -79,7 +79,7 @@ extern long         NextAutoSave;
 extern int          HalfPageLines;
 extern int          PageLinesExposed;
 extern char         *GrepDefault;
-extern int          LastEvent;
+extern vi_key       LastEvent;
 extern int          StackK;
 extern int          SpinCount;
 extern char _NEAR   SpinData[];
@@ -98,12 +98,11 @@ extern file         *CurrentFile;
 extern fcb          *CurrentFcb;
 extern line         *WorkLine;
 extern line         *CurrentLine;
-extern linenum      CurrentLineNumber, TopOfPage;
-extern int          CurrentColumn, LeftColumn;
+extern i_mark       CurrentPos;
+extern i_mark       LeftTopPos;
 extern int          ColumnDesired;
 extern window_id    CurrentWindow, MessageWindow, StatusWindow, CurrNumWindow;
 extern window_id    MenuWindow;
-extern int          LastEvent;
 extern char         *Comspec;
 extern select_rgn   SelRgn;
 extern int          CursorBlinkRate;
@@ -133,9 +132,8 @@ extern undo_stack   *UndoStack, *UndoUndoStack;
 
 /* bound key data */
 extern event _NEAR  EventList[];
-extern int          EventCount;
 extern int          MaxKeysBound;
-extern int _NEAR    SavebufBound[];
+extern vi_key _NEAR SavebufBound[];
 extern char         *ScriptBound;
 extern char         *InputScriptBound;
 
@@ -158,14 +156,15 @@ extern short            *StatusSections;
 extern int              NumStatusSections;
 extern int              SystemRC;
 extern char             *CommandBuffer;
-extern int              LastRetCode;
-extern long             LastRC;
+extern vi_rc            LastRetCode;
+extern vi_rc            LastRC;
 extern long             MaxMemFree, MemoryLeft, MaxMemFreeAfterInit;
 extern cursor_type      OverstrikeCursorType, InsertCursorType, NormalCursorType;
 extern int              RegExpError;
 extern eflags           EditFlags;
 extern char _NEAR       crlf[];
-extern int              LastError, TabAmount, ShiftWidth, HardTab;
+extern vi_rc            LastError;
+extern int              TabAmount, ShiftWidth, HardTab;
 extern int              LineNumWinWidth;
 extern int              maxdotbuffer;
 extern vi_key           *DotBuffer, *DotCmd, *AltDotBuffer;
@@ -178,29 +177,31 @@ extern int              SourceErrCount;
 extern char _NEAR       SpawnPrompt[];
 
 /* file io globals */
-extern int  SwapBlocksInUse;
-extern int  MaxLine, MaxLinem1;
-extern int  SwapFileHandle, MaxSwapBlocks, SwapBlockArraySize, XMemBlockArraySize;
-extern char *ReadBuffer, *WriteBuffer, *XMemBlocks;
-extern unsigned char *SwapBlocks;
-extern char *HomeDirectory, *CurrentDirectory, *TmpDir;
-extern int  TotalEMSBlocks, MaxEMSBlocks, EMSBlocksInUse;
-extern int  TotalXMSBlocks, MaxXMSBlocks, XMSBlocksInUse;
+extern int              SwapBlocksInUse;
+extern int              MaxLine, MaxLinem1;
+extern int              SwapFileHandle, MaxSwapBlocks;
+extern int              SwapBlockArraySize, XMemBlockArraySize;
+extern char             *ReadBuffer, *WriteBuffer;
+extern unsigned char    *XMemBlocks;
+extern unsigned char    *SwapBlocks;
+extern char             *HomeDirectory, *CurrentDirectory, *TmpDir;
+extern int              TotalEMSBlocks, MaxEMSBlocks, EMSBlocksInUse;
+extern int              TotalXMSBlocks, MaxXMSBlocks, XMSBlocksInUse;
 
 /* windowing globals */
-extern char *TileColors;
-extern int  MaxTileColors;
-extern int  MoveColor, ResizeColor, MaxWindowTileX, MaxWindowTileY;
-extern int  SelectColor;
-extern int  InactiveWindowColor;
-extern char ScrollBarChar;
-extern int  ScrollBarCharColor;
-extern int  ClockX, ClockY;
-extern int  SpinX, SpinY;
-extern short WindMaxWidth, WindMaxHeight;
-extern int  CurrentStatusColumn;
-extern char EndOfLineChar;
-extern int  GreyedMenuColour;
+extern char     *TileColors;
+extern int      MaxTileColors;
+extern int      MaxWindowTileX, MaxWindowTileY;
+extern vi_color MoveColor, ResizeColor;
+extern vi_color SelectColor;
+extern vi_color InactiveWindowColor;
+extern char     ScrollBarChar;
+extern int      ScrollBarCharColor;
+extern int      ClockX, ClockY;
+extern int      SpinX, SpinY;
+extern short    WindMaxWidth, WindMaxHeight;
+extern int      CurrentStatusColumn;
+extern char     EndOfLineChar;
 
 /* parse constants */
 extern int          MaxColorTokens, ColorTokensSize;
@@ -210,8 +211,8 @@ extern char _NEAR   SetTokens2[];
 extern char _NEAR   SetTokens2a[];
 
 /* Toolbar constants */
-extern int  ToolBarButtonHeight;
-extern int  ToolBarButtonWidth;
-extern int  ToolBarColor;
+extern int      ToolBarButtonHeight;
+extern int      ToolBarButtonWidth;
+extern vi_color ToolBarColor;
 
 #endif

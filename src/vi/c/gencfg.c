@@ -30,15 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "menu.h"
 #include "parsecl.h"
 #include "source.h"
-#ifdef __WIN__
-    #include "winvi.h"
-#endif
 #include "sstyle.h"
 #include "fts.h"
 
@@ -64,10 +59,11 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
 {
     char        *map;
     vi_key      *str;
-    int         i, j;
+    int         i;
+    int         j;
     int         len;
 
-    for( i = 0; i < EventCount; i++ ) {
+    for( i = 0; i < MAX_EVENTS; i++ ) {
         if( maps[i].data != NULL ) {
             MyFprintf( f, "map%s ", extra_str );
             map = LookUpCharToken( i, FALSE );
@@ -199,7 +195,7 @@ static void doHookAssign( FILE *f, hooktype num )
 /*
  * GenerateConfiguration - write out a config file
  */
-int GenerateConfiguration( char *fname, bool is_cmdline )
+vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
 {
     FILE        *f;
     int         i;

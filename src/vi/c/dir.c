@@ -29,16 +29,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include "vi.h"
 #ifdef __WATCOMC__
     #include <conio.h>
 #endif
 #include <sys/types.h>
 #include "posix.h"
-#include "vi.h"
 
 /*
  * GetCWD1 - get current working directory, then allocate space for it
@@ -68,23 +64,24 @@ void GetCWD2( char *str, int maxlen )
 /*
  * ChangeDirectory - change to given drive/directory
  */
-int ChangeDirectory( char *dir )
+vi_rc ChangeDirectory( char *dir )
 {
-    int         rc;
+    vi_rc       rc;
     int         shift;
     char        *tmp;
+    int         i;
 
     shift = 0;
     if( dir[1] == ':' ) {
         rc = ChangeDrive( dir[0] );
-        if( rc || dir[2] == 0 ) {
+        if( rc != ERR_NO_ERR || dir[2] == 0 ) {
             return( rc );
         }
         shift = 2;
     }
     tmp = &(dir[shift]);
-    rc = chdir( tmp );
-    if( rc != 0 ) {
+    i = chdir( tmp );
+    if( i != 0 ) {
         return( ERR_DIRECTORY_OP_FAILED );
     }
     return( ERR_NO_ERR );
@@ -94,7 +91,7 @@ int ChangeDirectory( char *dir )
 /*
  * ConditionalChangeDirectory - change dir only if needed
  */
-int ConditionalChangeDirectory( char *where )
+vi_rc ConditionalChangeDirectory( char *where )
 {
     if( CurrentDirectory != NULL ) {
         if( !stricmp( CurrentDirectory, where ) ) {
@@ -108,13 +105,13 @@ int ConditionalChangeDirectory( char *where )
 /*
  * SetCWD - set current working directory
  */
-int SetCWD( char *str )
+vi_rc SetCWD( char *str )
 {
-    int i;
+    vi_rc   rc;
 
-    i = ChangeDirectory( str );
-    if( i ) {
-        return( i );
+    rc = ChangeDirectory( str );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     MemFree2( &CurrentDirectory );
     GetCWD1( &CurrentDirectory );

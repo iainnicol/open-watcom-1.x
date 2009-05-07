@@ -29,26 +29,26 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include "walloca.h"
 #include "vi.h"
+#include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
 
 /*
  * Global - perform global command
  */
-int Global( linenum n1, linenum n2, char *data, int dmt )
+vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
 {
     char        *sstr, *cmd, *linedata;
     int         i, todo;
-    int         ccol, rc;
+    vi_rc       rc;
+    vi_rc       rc1;
     long        changecnt = 0;
-    linenum     clineno, llineno, ll;
+    linenum     llineno, ll;
     fcb         *cfcb;
     line        *cline;
     regexp      crx;
+    i_mark      pos;
 
     /*
      * get search string and command
@@ -72,9 +72,9 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
      * verify last line
      */
     if( n2 > CurrentFile->fcb_tail->end_line ) {
-        i = CFindLastLine( &ll );
-        if( i ) {
-            return( i );
+        rc = CFindLastLine( &ll );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
         if( n2 > ll ) {
             return( ERR_INVALID_LINE_RANGE );
@@ -87,14 +87,14 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
     if( EditFlags.Verbose && EditFlags.EchoOn ) {
         ClearWindow( MessageWindow );
     }
-    i = CurrentRegComp( sstr );
-    if( i ) {
-        return( i );
+    rc = CurrentRegComp( sstr );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     SaveCurrentFilePos();
     llineno = n1 - 1;
-    clineno = n1;
-    ccol = 0;
+    pos.line = n1;
+    pos.column = 0;
     StartUndoGroup( UndoStack );
     EditFlags.DisplayHold = TRUE;
     strcpy( sstr, data );
@@ -107,30 +107,28 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
         /*
          * go thorugh file, marking global lines
          */
-        i = FindRegularExpression( NULL, &clineno, ccol, &linedata, n2, FALSE );
-        if( !i ) {
-            ccol = GetCurrRegExpColumn( linedata );
-        } else {
-            if( i == ERR_FIND_PAST_TERM_LINE || i == ERR_FIND_NOT_FOUND ||
-                i == ERR_FIND_END_OF_FILE ) {
+        rc = FindRegularExpression( NULL, &pos, &linedata, n2, FALSE );
+        if( rc != ERR_NO_ERR ) {
+            if( rc == ERR_FIND_PAST_TERM_LINE || rc == ERR_FIND_NOT_FOUND ||
+                rc == ERR_FIND_END_OF_FILE ) {
                 break;
             }
             RestoreCurrentFilePos();
             EditFlags.DisplayHold = FALSE;
-            return( i );
+            return( rc );
         }
-        if( clineno > n2 ) {
+        if( pos.line > n2 ) {
             break;
         }
 
         /*
          * go to appropriate spot in file
          */
-        i = GoToLineNoRelCurs( clineno );
-        if( i ) {
+        rc = GoToLineNoRelCurs( pos.line );
+        if( rc != ERR_NO_ERR ) {
             RestoreCurrentFilePos();
             EditFlags.DisplayHold = FALSE;
-            return( i );
+            return( rc );
         }
 
         /*
@@ -140,14 +138,14 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
         CurrentLine->inf.ld.globmatch = TRUE;
         if( EditFlags.Verbose && EditFlags.EchoOn ) {
             // WPrintfLine( MessageWindow,1,"Match on line %l",clineno );
-            Message1( "Match on line %l", clineno );
+            Message1( "Match on line %l", pos.line );
         }
 
-        clineno++;
-        if( clineno > n2 ) {
+        pos.line++;
+        if( pos.line > n2 ) {
             break;
         }
-        ccol = 0;
+        pos.column = 0;
 
     }
 
@@ -160,10 +158,10 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
          * run through each line, flipping globmatch flag on lines
          */
         CGimmeLinePtr( n1, &CurrentFcb, &CurrentLine );
-        CurrentLineNumber = n1;
+        CurrentPos.line = n1;
         while( TRUE ) {
             i = FALSE;
-            while( CurrentLine != NULL && CurrentLineNumber <= n2 ) {
+            while( CurrentLine != NULL && CurrentPos.line <= n2 ) {
                 if( CurrentLine->inf.ld.globmatch ) {
                     CurrentLine->inf.ld.globmatch = FALSE;
                 } else {
@@ -171,10 +169,10 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
                     CurrentLine->inf.ld.globmatch = TRUE;
                 }
                 CurrentLine = CurrentLine->next;
-                CurrentLineNumber++;
+                CurrentPos.line++;
             }
             CurrentFcb->globalmatch = i;
-            if( CurrentLineNumber > n2 ) {
+            if( CurrentPos.line > n2 ) {
                 break;
             }
             CurrentFcb = CurrentFcb->next;
@@ -187,6 +185,7 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
     /*
      * Pass 2: do all changes
      */
+    rc = ERR_NO_ERR;
     EditFlags.GlobalInProgress = TRUE;
     memcpy( &crx, CurrentRegularExpression, sizeof( crx ) );
     while( TRUE ) {
@@ -204,14 +203,14 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
                  * find a line
                  */
                 FetchFcb( CurrentFcb );
-                CurrentLineNumber = CurrentFcb->start_line;
+                CurrentPos.line = CurrentFcb->start_line;
                 CurrentLine = CurrentFcb->line_head;
                 while( CurrentLine != NULL ) {
                     if( CurrentLine->inf.ld.globmatch ) {
                         todo = TRUE;
                         break;
                     }
-                    CurrentLineNumber++;
+                    CurrentPos.line++;
                     CurrentLine = CurrentLine->next;
                 }
 
@@ -235,17 +234,17 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
          */
         CurrentLine->inf.ld.globmatch = FALSE;
         cfcb = CurrentFcb;
-        CurrentColumn = 1;
+        CurrentPos.column = 1;
 
         /*
          * build command line
          */
         changecnt++;
         strcpy( cmd, sstr );
-        ProcessingMessage( CurrentLineNumber );
+        ProcessingMessage( CurrentPos.line );
 
         rc = RunCommandLine( cmd );
-        if( rc > 0 ) {
+        if( rc > ERR_NO_ERR ) {
             break;
         }
 
@@ -254,7 +253,7 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
     /*
      * we have an error, so fix up fcbs
      */
-    if( rc > 0 ) {
+    if( rc > ERR_NO_ERR ) {
 
         cfcb = CurrentFile->fcb_head;
         while( cfcb != NULL ) {
@@ -279,12 +278,12 @@ int Global( linenum n1, linenum n2, char *data, int dmt )
     EditFlags.DisplayHold = FALSE;
     EndUndoGroup( UndoStack );
     RestoreCurrentFilePos();
-    i = SetCurrentLine( CurrentLineNumber );
-    if( i ) {
-        if( i == ERR_NO_SUCH_LINE ) {
+    rc1 = SetCurrentLine( CurrentPos.line );
+    if( rc1 != ERR_NO_ERR ) {
+        if( rc1 == ERR_NO_SUCH_LINE ) {
             SetCurrentLine( 1 );
         } else {
-            return( i );
+            return( rc1 );
         }
     }
     Message1( "%l matches found",changecnt );

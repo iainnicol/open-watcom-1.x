@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
-#include "keys.h"
 #include "utils.h"
 #include "win.h"
 
@@ -102,7 +100,8 @@ LONG WINEXP CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         /* turn off the caret */
         MyHideCaret( hwnd );
         DestroyCaret();
-        if( w && ( (HWND) w == Root || GetWindow( (HWND) w, GW_OWNER ) == EditContainer ) ) {
+        if( w && ((HWND) w == Root ||
+                   GetWindow( (HWND) w, GW_OWNER ) == EditContainer) ) {
             /* hmmm... losing focus to one of our own windows - suicide */
             if( ReadingAString ) {
                 KeyAdd( VI_KEY( ESC ) );

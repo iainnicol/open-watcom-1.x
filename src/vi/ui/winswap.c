@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include "vi.h"
 #include <fcntl.h>
 #include "posix.h"
-#include "vi.h"
 #include "win.h"
 
 static char swapName[L_tmpnam];
@@ -43,14 +42,14 @@ static int swapHandle = -1;
  */
 static void windowSwapFileOpen( void )
 {
-    int i;
+    vi_rc   rc;
 
     if( swapHandle >= 0 ) {
         return;
     }
 
-    i = TmpFileOpen( swapName, &swapHandle );
-    if( i ) {
+    rc = TmpFileOpen( swapName, &swapHandle );
+    if( rc != ERR_NO_ERR ) {
         swapHandle = -1;
     }
 
@@ -63,8 +62,8 @@ static long buffSize( void )
 {
     long        tmp;
 
-    tmp = (long)WindMaxWidth*(long)WindMaxHeight*4L;
-    tmp = tmp/512;
+    tmp = (long)WindMaxWidth * (long)WindMaxHeight * 4L;
+    tmp = tmp / 512;
     tmp++;
     tmp *= 512;
     return( tmp );
@@ -76,12 +75,12 @@ static long buffSize( void )
  */
 void static windowSwap( wind *w )
 {
-    int         i,size;
+    int         i, size;
     long        pos;
 
     pos = (long)w->id * buffSize();
     FileSeek( swapHandle, pos );
-    size = w->width*w->height;
+    size = w->width * w->height;
     i = write( swapHandle, w->overlap, size );
     if( i != size ) {
         return;
@@ -90,8 +89,8 @@ void static windowSwap( wind *w )
     if( i != size ) {
         return;
     }
-    i = write( swapHandle, w->text, size*sizeof( char_info ) );
-    if( i != sizeof( char_info )*size ) {
+    i = write( swapHandle, w->text, size * sizeof( char_info ) );
+    if( i != sizeof( char_info ) * size ) {
         return;
     }
     MemFree2( &w->text );
@@ -118,7 +117,7 @@ void SwapAllWindows( void )
     }
     cinfo = InfoHead;
     while( cinfo != NULL ) {
-        w = Windows[ cinfo->CurrentWindow ];
+        w = Windows[cinfo->CurrentWindow];
         if( !TestVisible( w ) && !w->isswapped && w->accessed == 0 ) {
             windowSwap( w );
         }
@@ -135,16 +134,16 @@ static void fetchWindow( wind *w )
     int         size;
     long        pos;
 
-    size = w->width*w->height;
-    w->text = MemAlloc( sizeof( char_info )*size );
+    size = w->width * w->height;
+    w->text = MemAlloc( sizeof( char_info ) * size );
     w->whooverlapping = MemAlloc( size );
     w->overlap = MemAlloc( size );
 
     pos = (long)w->id * buffSize();
     FileSeek( swapHandle, pos );
-    read( swapHandle,w->overlap, size );
-    read( swapHandle,w->whooverlapping, size );
-    read( swapHandle,w->text, sizeof( char_info )*size );
+    read( swapHandle, w->overlap, size );
+    read( swapHandle, w->whooverlapping, size );
+    read( swapHandle, w->text, sizeof( char_info ) * size );
     w->isswapped = FALSE;
 
 } /* fetchWindow */
@@ -156,7 +155,7 @@ wind *AccessWindow( window_id id )
 {
     wind        *w;
 
-    w = Windows[ id ];
+    w = Windows[id];
     w->accessed++;
     if( w->isswapped ) {
         fetchWindow( w );
@@ -179,7 +178,6 @@ void ReleaseWindow( wind *w )
  */
 void WindowSwapFileClose( void )
 {
-
     TmpFileClose( swapHandle, swapName );
 
 } /* WindowSwapFileClose */

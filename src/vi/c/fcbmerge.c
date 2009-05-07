@@ -30,20 +30,18 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 /*
  * CMergeFcbs - merge two fcbs, removing the second one
  */
-int CMergeFcbs( fcb *fcb1, fcb *fcb2 )
+vi_rc CMergeFcbs( fcb *fcb1, fcb *fcb2 )
 {
-    int i;
+    vi_rc   rc;
 
-    i = JoinFcbs( fcb1, fcb2 );
-    if( i ) {
-        return( i );
+    rc = JoinFcbs( fcb1, fcb2 );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     DeleteLLItem( (ss **)&(CurrentFile->fcb_head), (ss **)&(CurrentFile->fcb_tail),
         (ss *)fcb2 );
@@ -60,10 +58,10 @@ int CMergeFcbs( fcb *fcb1, fcb *fcb2 )
 /*
  * CMergeAllFcbs - try merge process with all fcbs
  */
-int CMergeAllFcbs( void )
+vi_rc CMergeAllFcbs( void )
 {
-    fcb *cfcb;
-    int i;
+    fcb     *cfcb;
+    vi_rc   rc;
 
     cfcb = CurrentFile->fcb_head;
     while( cfcb != NULL ) {
@@ -74,12 +72,12 @@ int CMergeAllFcbs( void )
             cfcb = cfcb->next;
             continue;
         }
-        i = CMergeFcbs( cfcb, cfcb->next );
-        if( i ) {
-            if( i == COULD_NOT_MERGE_FCBS ) {
+        rc = CMergeFcbs( cfcb, cfcb->next );
+        if( rc != ERR_NO_ERR ) {
+            if( rc == COULD_NOT_MERGE_FCBS ) {
                 cfcb = cfcb->next;
             } else {
-                return( i );
+                return( rc );
             }
         }
     }
@@ -91,7 +89,7 @@ int CMergeAllFcbs( void )
 /*
  * JoinFcbs - join two fcbs
  */
-int JoinFcbs( fcb *fcb1, fcb *fcb2 )
+vi_rc JoinFcbs( fcb *fcb1, fcb *fcb2 )
 {
     unsigned    j, k;
 

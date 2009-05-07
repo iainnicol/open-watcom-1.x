@@ -30,47 +30,43 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <ctype.h>
 #include "vi.h"
+#include "rxsupp.h"
 
 /*
  * getBracketLoc - find a matching '(' for a ')'
  */
-static int getBracketLoc( linenum *mline, int *mcol )
+static vi_rc getBracketLoc( i_mark *pos )
 {
-    int         rc;
+    vi_rc       rc;
     char        tmp[3];
     int         len;
     linenum     lne;
-    bool        oldmagic = EditFlags.Magic;
+    bool        oldmagic;
     bool        oldnrss = EditFlags.NoReplaceSearchString;
 
     EditFlags.NoReplaceSearchString = TRUE;
-    EditFlags.Magic = TRUE;
     tmp[0] = '\\';
     tmp[1] = ')';
     tmp[2] = 0;
-    lne = CurrentLineNumber;
-    rc = GetFind( tmp, mline, mcol, &len, FINDFL_BACKWARDS | FINDFL_NOERROR );
+    lne = CurrentPos.line;
+    oldmagic = SetMagicFlag( TRUE );
+    rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR );
+    SetMagicFlag( oldmagic );
     EditFlags.NoReplaceSearchString = oldnrss;
-    if( *mline != CurrentLineNumber ) {
-        EditFlags.Magic = oldmagic;
+    if( pos->line != CurrentPos.line ) {
         return( ERR_FIND_NOT_FOUND );
     }
-    if( rc ) {
-        EditFlags.Magic = oldmagic;
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
 
     /*
      * find the matching '('
      */
-    CurrentLineNumber = *mline;
-    CurrentColumn = *mcol;
-    CGimmeLinePtr( CurrentLineNumber, &CurrentFcb, &CurrentLine );
-    rc = FindMatch( mline, mcol );
-    EditFlags.Magic = oldmagic;
+    CurrentPos = *pos;
+    CGimmeLinePtr( CurrentPos.line, &CurrentFcb, &CurrentLine );
+    rc = FindMatch( pos );
     return( rc );
 
 } /* getBracketLoc */
@@ -82,12 +78,12 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
 {
     int         i, j = 0, k;
     bool        tabme;
-    int         rc, col;
-    linenum     sline;
+    vi_rc       rc;
     line        *cline;
     fcb         *cfcb;
     char        ch;
     int         indent_amount;
+    i_mark      pos;
 
     while( EditFlags.AutoIndent ) {
         i = FindStartOfCurrentLine();
@@ -109,20 +105,20 @@ int GetAutoIndentAmount( char *buff, int extra, bool above_line )
                     }
                     extra += ShiftWidth;
                     SaveCurrentFilePos();
-                    CurrentColumn = k + 1;
+                    CurrentPos.column = k + 1;
                     /* add a { to keep matches even! */
                     if( ch == '}' ) {
-                        rc = FindMatch( &sline, &col );
-                        if( !rc ) {
-                            CurrentLineNumber = sline;
-                            CurrentColumn = col - 1;
-                            CGimmeLinePtr( CurrentLineNumber, &CurrentFcb, &CurrentLine );
+                        rc = FindMatch( &pos );
+                        if( rc == ERR_NO_ERR ) {
+                            CurrentPos = pos;
+                            CurrentPos.column -= 1;
+                            CGimmeLinePtr( CurrentPos.line, &CurrentFcb, &CurrentLine );
                         }
                     }
-                    rc = getBracketLoc( &sline, &col );
+                    rc = getBracketLoc( &pos );
                     RestoreCurrentFilePos();
-                    if( !rc ) {
-                        CGimmeLinePtr( sline, &cfcb, &cline );
+                    if( rc == ERR_NO_ERR ) {
+                        CGimmeLinePtr( pos.line, &cfcb, &cline );
                         i = FindStartOfALine( cline );
                     }
                     break;

@@ -29,13 +29,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "vi.h"
 #include "source.h"
 #ifndef __OS2V2__
-#include <malloc.h>
-#include "stack.h"
+    #include <malloc.h>
+    #include "stack.h"
 #endif
 
 /*
@@ -43,8 +41,8 @@
  */
 static void getEXEName( char *name )
 {
-    char path[_MAX_PATH],drive[_MAX_DRIVE],dir[_MAX_DIR];
-    char fname[_MAX_FNAME],ext[_MAX_EXT];
+    char path[_MAX_PATH], drive[_MAX_DRIVE], dir[_MAX_DIR];
+    char fname[_MAX_FNAME], ext[_MAX_EXT];
     char tmppath[_MAX_PATH];
 
     _splitpath( name, drive, dir, fname, ext );
@@ -60,26 +58,27 @@ static void getEXEName( char *name )
 
 void main( int argc, char *argv[] )
 {
-    #ifdef TRMEM
-        InitTRMEM();
-    #endif
+#ifdef TRMEM
+    InitTRMEM();
+#endif
 
     argc = argc;
     getEXEName( argv[0] );
-    #ifdef __OS2V2__
-        VarAddGlobalStr( "OS", "os2v2" );
-    #else
-        VarAddGlobalStr( "OS", "os2" );
-        InitialStack();
-    #endif
+#ifdef __OS2V2__
+    VarAddGlobalStr( "OS", "os2v2" );
+#else
+    VarAddGlobalStr( "OS", "os2" );
+    InitialStack();
+#endif
     Comspec = getenv( "COMSPEC" );
     InitializeEditor();
-    #ifndef __OS2V2__
-        FinalStack();
-    #endif
+#ifndef __OS2V2__
+    FinalStack();
+#endif
     EditMain();
-    #ifdef TRMEM
-        DumpTRMEM();
-    #endif
+
+#ifdef TRMEM
+    DumpTRMEM();
+#endif
 
 } /* main */

@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 
 static file_stack       **fStack;
@@ -57,7 +55,7 @@ void FiniFileStack( void )
 /*
  * PushFileStack - add current file to file stack
  */
-int PushFileStack( void )
+vi_rc PushFileStack( void )
 {
     file_stack  *fs;
     int         len;
@@ -71,8 +69,7 @@ int PushFileStack( void )
 
     fs = MemAlloc( sizeof( file_stack ) + len );
     memcpy( fs->fname, CurrentFile->name, len + 1 );
-    fs->lineno = CurrentLineNumber;
-    fs->col = CurrentColumn;
+    fs->p = CurrentPos;
 
     if( fDepth == MaxPush ) {
         for( i = 1; i < MaxPush; i++ ) {
@@ -90,12 +87,12 @@ int PushFileStack( void )
 /*
  * PushFileStackAndMsg - push the file stack, and display a message
  */
-int PushFileStackAndMsg( void )
+vi_rc PushFileStackAndMsg( void )
 {
-    int rc;
+    vi_rc   rc;
 
     rc = PushFileStack();
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
         Message1( "Current position saved; %d entries on file stack", fDepth );
     }
     return( rc );
@@ -105,10 +102,10 @@ int PushFileStackAndMsg( void )
 /*
  * PopFileStack - go to file at top of file stack
  */
-int PopFileStack( void )
+vi_rc PopFileStack( void )
 {
     file_stack  *fs;
-    int         rc;
+    vi_rc       rc;
 
     if( fDepth == 0 ) {
         return( ERR_FILE_STACK_EMPTY );
@@ -122,8 +119,8 @@ int PopFileStack( void )
         MemFree( fs );
         return( rc );
     }
-    GoToLineNoRelCurs( fs->lineno );
-    GoToColumnOnCurrentLine( fs->col );
+    GoToLineNoRelCurs( fs->p.line );
+    GoToColumnOnCurrentLine( fs->p.column );
     MemFree( fs );
     Message2( "%d entries left on file stack", fDepth );
     return( ERR_NO_ERR );

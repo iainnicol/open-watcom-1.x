@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include "walloca.h"
 #include "vi.h"
+#include "walloca.h"
 #include "rxsupp.h"
 
 static regexp  *cRx;
@@ -40,7 +38,7 @@ static regexp  *cRx;
 /*
  * FileMatch - check if a file matches a wild card
  */
-int FileMatch( char *name )
+bool FileMatch( char *name )
 {
     int i;
 
@@ -61,15 +59,14 @@ static char *majickStr;
 /*
  * FileMatchInit - start file matching
  */
-int FileMatchInit( char *wild )
+vi_rc FileMatchInit( char *wild )
 {
     char        *tomatch;
     int         i, j, len;
 
-    magicFlag = EditFlags.Magic;
+    magicFlag = SetMagicFlag( FALSE );
     caseignFlag = EditFlags.CaseIgnore;
     EditFlags.CaseIgnore = TRUE;
-    EditFlags.Magic = FALSE;
     majickStr = Majick;
     Majick = ".";
 
@@ -124,7 +121,7 @@ int FileMatchInit( char *wild )
  */
 void FileMatchFini( void )
 {
-    EditFlags.Magic = magicFlag;
+    SetMagicFlag( magicFlag );
     EditFlags.CaseIgnore = caseignFlag;
     Majick = majickStr;
     MemFree( cRx );

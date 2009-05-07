@@ -29,17 +29,14 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
+#include <malloc.h>
 #include "fcbmem.h"
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <os2.h>
 
-char _NEAR * _NEAR ExeExtensions[] = {".cmd", ".exe" };
+char _NEAR * _NEAR ExeExtensions[] = { ".cmd", ".exe" };
 int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );
 
 char _NEAR * _NEAR InternalCommands[] = {
@@ -94,12 +91,12 @@ int MySpawn( char *cmd )
     USHORT              rc;
     RESULTCODES         returncodes;
     char                path[_MAX_PATH];
-    char                all[_MAX_PATH+128];
-    char                *dest,*src;
+    char                all[_MAX_PATH + 128];
+    char                *dest, *src;
     cmd_struct          cmds;
 
     GetSpawnCommandLine( path, cmd, &cmds );
-    cmds.cmd[ cmds.len ] = 0x00;
+    cmds.cmd[cmds.len] = 0x00;
 
     src = path;
     dest = all;

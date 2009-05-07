@@ -29,40 +29,33 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdlib.h>
-#ifdef __WATCOMC__
-    #include <malloc.h>
-    #include <process.h>
-  #if defined( __X86__ )
-    #include "stack.h"
-  #endif
-#else
-    #include "clibext.h"
-#endif
 #include "vi.h"
-#include "source.h"
+#if defined( __WATCOMC__ )
+  #include <process.h>
+#endif
 
 int main( int argc, char *argv[] )
 {
     static char buffer[FILENAME_MAX];
+
+#ifdef TRMEM
+    InitTRMEM();
+#endif
+
     argc = argc;
 #ifndef __WATCOMC__
     _argc = argc;
     _argv = argv;
 #endif
-    EXEName = _cmdname(buffer);
-#if defined( __WATCOMC__ ) && defined( __X86__ )
-    InitialStack();
-#endif
+    EXEName = _cmdname( buffer );
     VarAddGlobalStr( "OS", "unix" );
     Comspec = getenv( "SHELL" );
     InitializeEditor();
-#if defined( __WATCOMC__ ) && defined( __X86__ )
-    FinalStack();
-#endif
     EditMain();
+
+#ifdef TRMEM
+    DumpTRMEM();
+#endif
     return( 0 );
 
 } /* main */

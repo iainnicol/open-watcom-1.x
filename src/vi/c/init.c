@@ -29,13 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#ifndef __UNIX__
-    // To be removed when OW 1.4 is in universal use
-    #include <env.h>
-#endif
 #include "vi.h"
 #include "rxsupp.h"
 #include "fcbmem.h"
@@ -46,7 +39,6 @@
 #include "sstyle.h"
 #include "fts.h"
 #ifdef __WIN__
-    #include "winvi.h"
     #include "subclass.h"
     #include "utils.h"
 #endif
@@ -216,7 +208,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int         i, rc, arg, cnt, ocnt, ln, startcnt = 0;
+    int         i, arg, cnt, ocnt, ln, startcnt = 0;
     int         k, j;
     char        tmp[FILENAME_MAX], c[1];
     char        buff[MAX_STR], file[MAX_STR], **list;
@@ -224,6 +216,8 @@ static void doInitializeEditor( int argc, char *argv[] )
     char        *parm;
     char        *startup[MAX_STARTUP];
     char        *startup_parms[MAX_STARTUP];
+    vi_rc       rc;
+    vi_rc       rc1;
 
     /*
      * Make sure WATCOM is setup and if it is not, make a best guess.
@@ -366,21 +360,21 @@ static void doInitializeEditor( int argc, char *argv[] )
      */
     StartWindows();
     InitMouse();
-    i = NewMessageWindow();
-    if( i ) {
-        FatalError( i );
+    rc1 = NewMessageWindow();
+    if( rc1 != ERR_NO_ERR ) {
+        FatalError( rc1 );
     }
     DoVersion();
-    i = InitMenu();
-    if( i ) {
-        FatalError( i );
+    rc1 = InitMenu();
+    if( rc1 != ERR_NO_ERR ) {
+        FatalError( rc1 );
     }
     EditFlags.SpinningOurWheels = TRUE;
     EditFlags.ClockActive = TRUE;
     EditFlags.DisplayHold = TRUE;
-    i = NewStatusWindow();
-    if( i ) {
-        FatalError( i );
+    rc1 = NewStatusWindow();
+    if( rc1 != ERR_NO_ERR ) {
+        FatalError( rc1 );
     }
     EditFlags.DisplayHold = FALSE;
     MaxMemFreeAfterInit = MemSize();
@@ -406,14 +400,14 @@ static void doInitializeEditor( int argc, char *argv[] )
             }
         }
 #endif
-        i = LocateTag( cTag, file, buff );
+        rc1 = LocateTag( cTag, file, buff );
         cFN = file;
-        if( i ) {
-            if( i == ERR_TAG_NOT_FOUND ) {
-                Error( GetErrorMsg( i ), cTag );
+        if( rc1 ) {
+            if( rc1 == ERR_TAG_NOT_FOUND ) {
+                Error( GetErrorMsg( rc1 ), cTag );
                 ExitEditor( 0 );
             }
-            FatalError( i );
+            FatalError( rc1 );
         }
     }
 
@@ -434,9 +428,9 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         for( j = 0; j < cnt; j++ ) {
 
-            i = NewFile( cFN, FALSE );
-            if( i && i != NEW_FILE ) {
-                FatalError( i );
+            rc1 = NewFile( cFN, FALSE );
+            if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
+                FatalError( rc1 );
             }
             if( EditFlags.BreakPressed ) {
                 break;
@@ -460,9 +454,9 @@ static void doInitializeEditor( int argc, char *argv[] )
         cFN = argv[k];
     }
     if( EditFlags.StdIOMode ) {
-        i = NewFile( "stdio", FALSE );
-        if( i ) {
-            FatalError( i );
+        rc1 = NewFile( "stdio", FALSE );
+        if( rc1 != ERR_NO_ERR ) {
+            FatalError( rc1 );
         }
     }
     EditFlags.WatchForBreak = EditFlags.Starting = FALSE;
@@ -473,12 +467,12 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( cTag != NULL && !EditFlags.NoInitialFileLoad ) {
         if( buff[0] != '/' ) {
             i = atoi( buff );
-            i = GoToLineNoRelCurs( i );
+            rc1 = GoToLineNoRelCurs( i );
         } else {
-            i = FindTag( buff );
+            rc1 = FindTag( buff );
         }
-        if( i > 0 ) {
-            Error( GetErrorMsg( i ) );
+        if( rc1 > 0 ) {
+            Error( GetErrorMsg( rc1 ) );
         }
     }
 
@@ -509,7 +503,7 @@ static void doInitializeEditor( int argc, char *argv[] )
             rc = Source( cfgFN, parm, &ln );
         }
     }
-    if( rc > 0 ) {
+    if( rc > ERR_NO_ERR ) {
         Error( "%s on line %d of \"%s\"", GetErrorMsg( rc ), ln, cfgFN );
     }
     if( argc == 1 ) {

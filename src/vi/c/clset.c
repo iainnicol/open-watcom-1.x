@@ -30,22 +30,15 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <setjmp.h>
 #include "vi.h"
+#include <setjmp.h>
 #include "parsecl.h"
 #include "expr.h"
 #include "rxsupp.h"
 #include "fcbmem.h"
 #include "win.h"
-#include "keys.h"
 #include "menu.h"
 #include "source.h"
-#ifdef __WIN__
-    #include "winvi.h"
-#endif
 #include "lang.h"
 
 static bool msgFlag;
@@ -310,23 +303,24 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
  * GetNewValueDialog - get a new value from the user
  */
 #ifndef __WIN__
-int GetNewValueDialog( char *value )
+vi_rc GetNewValueDialog( char *value )
 {
-    int         rc;
+    bool        ret;
+    vi_rc       rc;
     char        st[MAX_STR];
     window_id   clw;
     static char prompt[] = "New:";
 
     rc = NewWindow2( &clw, &setvalw_info );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     WPrintfLine( clw, 1, "Old: %s", value );
-    rc = ReadStringInWindow( clw, 2, prompt, st, MAX_STR - 1, NULL );
+    ret = ReadStringInWindow( clw, 2, prompt, st, MAX_STR - 1, NULL );
     CloseAWindow( clw );
     SetWindowCursor();
     KillCursor();
-    if( !rc ) {
+    if( !ret ) {
         return( NO_VALUE_ENTERED );
     }
     if( st[0] == 0 ) {
@@ -338,13 +332,13 @@ int GetNewValueDialog( char *value )
 
 } /* GetNewValueDialog */
 #else
-extern int GetNewValueDialog( char * );
+extern vi_rc GetNewValueDialog( char * );
 #endif
 
 /*
  * getAColor - get an fg/bg color
  */
-static int getAColor( char *name, int *cval )
+static vi_rc getAColor( char *name, int *cval )
 {
     char        fn[MAX_STR];
     int         fg, bg;
@@ -365,19 +359,19 @@ static int getAColor( char *name, int *cval )
 /*
  * processSetToken - set value for set token
  */
-static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
+static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 {
     char        fn[MAX_STR], str[MAX_STR], tmp[3];
     char        tokstr[MAX_STR];
     char        save[MAX_STR];
-    int         rc = ERR_NO_ERR;
+    vi_rc       rc = ERR_NO_ERR;
     int         i, clr, cval, k;
     bool        newset;
     bool        set1, toggle, *ptr;
     jmp_buf     jmpaddr;
     cursor_type ct;
     char        *name;
-    void        *fptr;
+    command_rtn fptr;
     event_bits  eb;
     bool        redisplay = FALSE;
 
@@ -428,11 +422,11 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
         case SET2_T_MODELESS:
             if( (newset && !EditFlags.Modeless) ||
                 (!newset && EditFlags.Modeless) ) {
-                for( k = 0; k < EventCount; k++ ) {
-                    fptr = EventList[k].rtn.ptr;
+                for( k = 0; k < MAX_EVENTS; k++ ) {
+                    fptr = EventList[k].rtn;
                     eb = EventList[k].b;
-                    EventList[k].rtn.ptr = EventList[k].alt_rtn.ptr;
-                    EventList[k].alt_rtn.ptr = fptr;
+                    EventList[k].rtn = EventList[k].alt_rtn;
+                    EventList[k].alt_rtn = fptr;
                     EventList[k].b = EventList[k].alt_b;
                     EventList[k].alt_b = eb;
                 }
@@ -588,13 +582,10 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
         }
         RemoveLeadingSpaces( value );
         if( value[0] == '"' ) {
-            k = NextWord( value, fn, "\"" );
+            NextWord( value, fn, "\"" );
             EliminateFirstN( value, 1 );
         } else {
-            k = NextWord1( value, fn );
-        }
-        if( k <= 0 ) {
-            fn[0] = 0;
+            NextWord1( value, fn );
         }
         if( EditFlags.CompileScript ) {
             itoa( j, str, 10 );
@@ -673,7 +664,7 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 return( ERR_INVALID_SET_COMMAND );
             }
             rc = getAColor( value, &cval );
-            if( rc ) {
+            if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
             TileColors[clr] = (char) cval;
@@ -769,22 +760,20 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
         case SET1_T_OVERSTRIKECURSORTYPE:
         case SET1_T_INSERTCURSORTYPE:
             i = setjmp( jmpaddr );
-            if( i == 0 ) {
-                StartExprParse( fn, jmpaddr );
-                ct.height = GetConstExpr();
-            } else {
-                return( i );
+            if( i != 0 ) {
+                return( (vi_rc)i );
             }
+            StartExprParse( fn, jmpaddr );
+            ct.height = GetConstExpr();
             if( NextWord1( value, fn ) <= 0 ) {
                 ct.width = 100;
             } else {
                 i = setjmp( jmpaddr );
-                if( i == 0 ) {
-                    StartExprParse( fn, jmpaddr );
-                    ct.width = GetConstExpr();
-                } else {
-                    return( i );
+                if( i != 0 ) {
+                    return( (vi_rc)i );
                 }
+                StartExprParse( fn, jmpaddr );
+                ct.width = GetConstExpr();
             }
             if( j == SET1_T_COMMANDCURSORTYPE ) {
                 NormalCursorType = ct;
@@ -803,14 +792,13 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
             break;
         default:
             i = setjmp( jmpaddr );
-            if( i == 0 ) {
-                StartExprParse( fn, jmpaddr );
-                i = GetConstExpr();
-                if( i < 0 ) {
-                    i = 0;
-                }
-            } else {
-                return( i );
+            if( i != 0 ) {
+                return( (vi_rc)i );
+            }
+            StartExprParse( fn, jmpaddr );
+            i = GetConstExpr();
+            if( i < 0 ) {
+                i = 0;
             }
             switch( j ) {
             case SET1_T_WRAPMARGIN:
@@ -987,7 +975,7 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
         setMessage( fn, redisplay );
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
     }
-    if( !rc && toggle ) {
+    if( rc == ERR_NO_ERR && toggle ) {
         strcpy( value, save );
     }
 
@@ -998,7 +986,7 @@ static int processSetToken( int j, char *value, int *winflag, bool isnonbool )
 /*
  * SettingSelected - a setting was selected from the dialog
  */
-int SettingSelected( char *item, char *value, int *winflag )
+vi_rc SettingSelected( char *item, char *value, int *winflag )
 {
     int         id;
     bool        isnonbool;
@@ -1025,16 +1013,16 @@ typedef struct {
 
 #ifndef __WIN__
 /*
- * CompareString - quicksort comparison
+ * compareString - quicksort comparison
  */
-int CompareString( void const *_p1, void const *_p2 )
+static int compareString( void const *_p1, void const *_p2 )
 {
     set_data * const *p1 = _p1;
     set_data * const *p2 = _p2;
 
     return( stricmp( (*p1)->setting,(*p2)->setting ) );
 
-} /* CompareString */
+} /* compareString */
 
 /*
  * getSetInfo - build string of values
@@ -1063,7 +1051,7 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
         AddString( &(sdata[tc1 + i]->setting), GetTokenString( SetTokens2, i ) );
         AddString( &(sdata[tc1 + i]->val), getOneSetVal( i, FALSE, tmpstr, TRUE ) );
     }
-    qsort( sdata, tc, sizeof( set_data * ), CompareString );
+    qsort( sdata, tc, sizeof( set_data * ), compareString );
     for( i = 0; i < tc; i++ ) {
         (*list)[i] = sdata[i]->setting;
         (*vals)[i] = sdata[i]->val;
@@ -1085,10 +1073,10 @@ static int getSetInfo( char ***vals, char ***list, int *longest )
 /*
  * Set - set editor control variable
  */
-int Set( char *name )
+vi_rc Set( char *name )
 {
     char        fn[MAX_STR];
-    int         rc = ERR_NO_ERR;
+    vi_rc       rc = ERR_NO_ERR;
     int         j, i;
 #ifndef __WIN__
     int         tmp, tc;
@@ -1164,7 +1152,7 @@ int Set( char *name )
             }
             i = TRUE;
             rc = processSetToken( j, name, &i, FALSE );
-            if( rc > 0 ) {
+            if( rc > ERR_NO_ERR ) {
                 break;
             }
             RemoveLeadingSpaces( name );

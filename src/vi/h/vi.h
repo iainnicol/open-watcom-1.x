@@ -68,13 +68,23 @@ void            *_inline_memset( void *__s, int __c, unsigned int __n );
 #endif
 
 #include "const.h"
-#include "struct.h"
-#include "pragmas.h"
 #include "errs.h"
+#include "struct.h"
+#include "mouse.h"
 #include "globals.h"
 #include "rtns.h"
 #include "rtns2.h"
-#include "mouse.h"
 #include "dc.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#ifdef __WIN__
+  #include "winvi.h"
+#elif defined( __NT__ )
+  #define _WINSOCKAPI_
+  #include <windows.h>
+#endif
 
 #endif

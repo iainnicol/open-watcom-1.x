@@ -36,6 +36,7 @@
 #endif
 
 #include <windows.h>
+#include "bool.h"
 #define MSG_RC_BASE     0
 #include "rcstr.gh"
 #include "ldstr.h"
@@ -120,7 +121,6 @@ typedef enum {
 
 
 typedef enum {
-    MC_NULL,
     MC_CLIPBRD,
     MC_DDE,
     MC_IME,
@@ -135,40 +135,18 @@ typedef enum {
     MC_UNKNOWN,
     MC_USER,
     MC_WINDOW,
-    MC_CONTROL
+    MC_CONTROL,
+    FILTER_ENTRIES
 } MsgClass;
 
 typedef struct {
-    char        flag[2];
-    MsgClass    type;
+    bool        flag[2];
 } filter;
 
-typedef struct {
-    filter clipboard;
-    filter dde;
-    filter ime;
-    filter init;
-    filter input;
-    filter mdi;
-    filter mouse;
-    filter ncmisc;
-    filter ncmouse;
-    filter other;
-    filter system;
-    filter unknown;
-    filter user;
-    filter window;
-} _filters;
-
-#define FILTER_ENTRIES  13
-typedef union {
-    _filters    filts;
-    filter      array[FILTER_ENTRIES];
-} filters;
 #define M_WATCH         0
 #define M_STOPON        1
 typedef struct {
-    char        bits[2];
+    bool        bits[2];
     WORD        id;
     char        *str;
     MsgClass    type;
@@ -176,9 +154,9 @@ typedef struct {
 } message;
 
 typedef struct {
-    char    *class_name;
-    message *message_array;
-    WORD    *message_array_size;
+    char        *class_name;
+    message     *message_array;
+    unsigned    message_array_size;
 } class_messages;
 
 typedef struct {
@@ -209,7 +187,6 @@ extern HWND             SpyMainWindow;
 extern HANDLE           MyTask;
 extern HANDLE           Instance;
 extern HANDLE           ResInstance;
-extern filters          Filters;
 extern WORD             MessageArraySize;
 extern message          near MessageArray[];
 extern WORD             ClassMessagesSize;
@@ -222,6 +199,9 @@ extern LPVOID           HandleMessageInst;
 extern WndConfigInfo    SpyMainWndInfo;
 extern HMENU            SpyMenu;
 extern statwnd          *StatusHdl;
+extern filter           Filters[FILTER_ENTRIES];
+extern unsigned         TotalMessageArraySize;
+
 
 /*
  * function prototypes
@@ -267,14 +247,14 @@ message *GetMessageDataFromID( int msgid, char *class_name );
 void ProcessIncomingMessage( int msgid, char *class_name, char *res );
 LPSTR GetMessageStructAddr( int msgid );
 void InitMessages( void );
-void SetFilterMsgs( MsgClass type, BOOL val, int bit );
-char *SaveBitState( int x );
-void RestoreBitState( char *data, int x );
+void SetFilterMsgs( MsgClass type, bool val, int bit );
+bool *SaveBitState( int x );
+void RestoreBitState( bool *data, int x );
 void ClearMessageCount( void );
-char *CloneBitState( char *old );
-void FreeBitState( char *data );
-void CopyBitState( char *dst, char *src );
-void SetFilterSaveBitsMsgs( MsgClass type, BOOL val, char *bits );
+bool *CloneBitState( bool *old );
+void FreeBitState( bool *data );
+void CopyBitState( bool *dst, bool *src );
+void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits );
 
 /* spypick.c */
 void FrameAWindow( HWND hwnd );

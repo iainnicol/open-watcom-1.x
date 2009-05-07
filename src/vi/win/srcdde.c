@@ -30,19 +30,16 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#define INCLUDE_DDEML_H
+#include "vi.h"
 #include <malloc.h>
 #include <setjmp.h>
-#define INCLUDE_DDEML_H
-#include "winvi.h"
 #include "source.h"
 #include "ddedef.h"
 #include "expr.h"
 #include "srcwin.h"
 
-#define TIME_OUT        10*1000L
+#define TIME_OUT        10 * 1000L
 
 /*
  * getVarName - extract a variable name from a command
@@ -63,12 +60,12 @@ static bool getVarName( char *str, char *tmp1, vlist *vl )
 /*
  * RunDDECommand - try to run a Windows specific command
  */
-bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
+bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
 {
-    int         rc;
+    vi_rc       rc;
     char        *tmp2;
     HSZ         hdl;
-    HSZ         serverhdl,topichdl;
+    HSZ         serverhdl, topichdl;
     DWORD       dword;
     HCONV       hconv;
     HDDEDATA    data;
@@ -111,7 +108,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        len = DdeQueryString( DDEInstId, hdl, NULL, 0, CP_WINANSI )+1;
+        len = DdeQueryString( DDEInstId, hdl, NULL, 0, CP_WINANSI ) + 1;
         ptr = MemAlloc( len  );
         DdeQueryString( DDEInstId, hdl, ptr, len, CP_WINANSI );
         VarAddStr( tmp1, ptr, vl );
@@ -156,7 +153,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuote( str, tmp2 ) ) {
+        if( GetStringWithPossibleQuote( str, tmp2 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -173,7 +170,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
          * syntax: deleteddestring <handle>
          */
         Expand( str, vl );
-        if( !GetDWORD( str, &hdl  ) ) {
+        if( !GetDWORD( str, &hdl ) ) {
             rc = ERR_INVALID_DDE;
         } else {
             DeleteStringHandle( hdl );
@@ -215,12 +212,12 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuote( str, tmp2 ) ) {
+        if( GetStringWithPossibleQuote( str, tmp2 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
         data = DdeCreateDataHandle( DDEInstId, (LPBYTE)tmp2, strlen( tmp2 ) + 1,
-                        0, hdl, ClipboardFormat, 0 );
+                                    0, hdl, ClipboardFormat, 0 );
         if( data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
@@ -282,11 +279,11 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
             break;
         }
         data = DdeClientTransaction( NULL, 0, hconv, hdl, ClipboardFormat,
-                                XTYP_REQUEST, TIME_OUT, &dword );
+                                     XTYP_REQUEST, TIME_OUT, &dword );
         if( data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            len = DdeGetData( data, NULL, 0, 0 )+1;
+            len = DdeGetData( data, NULL, 0, 0 ) + 1;
             ptr = MemAlloc( len );
             DdeGetData( data, (LPBYTE)ptr, len, 0 );
             VarAddStr( tmp1, ptr,  vl );
@@ -300,7 +297,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
          * syntax: ddepoke "<data>" <conv> <strhandle>
          */
         Expand( str, vl );
-        if( GetStringWithPossibleQuote( str, tmp1 ) ) {
+        if( GetStringWithPossibleQuote( str, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -312,13 +309,13 @@ bool RunDDECommand( int token, char *str, char *tmp1, long *result, vlist *vl )
             rc = ERR_INVALID_DDE;
             break;
         }
-        data = DdeCreateDataHandle( DDEInstId, (LPBYTE)tmp1, strlen( tmp1 )+1,
-                            0L, hdl, ClipboardFormat, 0 );
+        data = DdeCreateDataHandle( DDEInstId, (LPBYTE)tmp1, strlen( tmp1 ) + 1,
+                                    0L, hdl, ClipboardFormat, 0 );
         if( data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
             DdeClientTransaction( (LPBYTE) data, -1, hconv, hdl,
-                    ClipboardFormat, XTYP_POKE, TIME_OUT, NULL );
+                                  ClipboardFormat, XTYP_POKE, TIME_OUT, NULL );
         }
         break;
     }

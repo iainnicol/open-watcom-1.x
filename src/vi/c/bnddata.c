@@ -29,12 +29,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "vi.h"
 #include "posix.h"
 #include <fcntl.h>
-#include <ctype.h>
-#include <string.h>
 #ifdef __WATCOMC__
   #include <share.h>
   #define sopen3 sopen
@@ -43,7 +40,6 @@
   #define sopen3( a, b, c )     open( a, b )
   #define sopen4( a, b, c, d )  open( a, b, d )
 #endif
-#include "vi.h"
 
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
@@ -127,6 +123,7 @@ bool SpecialOpen( char *fn, GENERIC_FILE *gf )
     long        shift = 0;
     int         h, i;
     char        a;
+    vi_rc       rc;
 
     /*
      * process bound file
@@ -174,8 +171,8 @@ bool SpecialOpen( char *fn, GENERIC_FILE *gf )
     if( fn[0] == '.' && fn[1] == 0 ) {
         gf->type = GF_BUFFER;
         gf->data.cfile = CurrentFile;
-        i = GimmeLinePtr( 1, CurrentFile, &(gf->gf.b.cfcb), &(gf->gf.b.cline));
-        if( i ) {
+        rc = GimmeLinePtr( 1, CurrentFile, &(gf->gf.b.cfcb), &(gf->gf.b.cline));
+        if( rc != ERR_NO_ERR ) {
             return( FALSE );
         }
         return( TRUE );
@@ -218,6 +215,7 @@ void SpecialFclose( GENERIC_FILE *gf )
 int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
     int         i, j;
+    vi_rc       rc;
 
     switch( gf->type ) {
     case GF_FILE:
@@ -250,9 +248,9 @@ int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
         }
         j= gf->gf.b.cline->len;
         memcpy( buff, gf->gf.b.cline->data, j + 1 );
-        i = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb),
+        rc = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb),
                               &(gf->gf.b.cline) );
-        if( i ) {
+        if( rc != ERR_NO_ERR ) {
             gf->data.cfile = NULL;
         }
         return( j );

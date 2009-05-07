@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
-#include "keys.h"
 #include "win.h"
 
 /*
  * DoLineSubstitute - substitute lines
  */
-int DoLineSubstitute( event **ev, event **next )
+vi_rc DoLineSubstitute( event **ev, event **next )
 {
     *ev = &EventList['c'];
     *next = &EventList['c'];
@@ -50,7 +47,7 @@ int DoLineSubstitute( event **ev, event **next )
 /*
  * DoSubstitute - substitute characters
  */
-int DoSubstitute( event **ev, event **next )
+vi_rc DoSubstitute( event **ev, event **next )
 {
     *ev = &EventList['c'];
     *next = &EventList[' '];
@@ -61,7 +58,7 @@ int DoSubstitute( event **ev, event **next )
 /*
  * DoChangeLineEnd - change up to end of line
  */
-int DoChangeLineEnd( event **ev, event **next )
+vi_rc DoChangeLineEnd( event **ev, event **next )
 {
     *ev = &EventList['c'];
     *next = &EventList['$'];

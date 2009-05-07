@@ -32,8 +32,9 @@
 #ifndef _STRUCT_INCLUDED
 #define _STRUCT_INCLUDED
 
+#include <stdio.h>
+
 typedef unsigned short  vi_ushort;
-typedef unsigned short  vi_key;
 
 typedef struct ss {
     struct ss   *next, *prev;
@@ -45,21 +46,21 @@ typedef struct {
 } cursor_type;
 
 typedef struct {
-    char        case_ignore     : 1;
-    char        use_regexp      : 1;
-    char        search_forward  : 1;
-    char        search_wrap     : 1;
-    char        prompt          : 1;
-    char        selection       : 1;
-    char        spare           : 2;
-    char        *find;
-    int         findlen;
-    char        *replace;
-    int         replacelen;
-    char        *ext;
-    int         extlen;
-    char        *path;
-    int         pathlen;
+    unsigned char   case_ignore     : 1;
+    unsigned char   use_regexp      : 1;
+    unsigned char   search_forward  : 1;
+    unsigned char   search_wrap     : 1;
+    unsigned char   prompt          : 1;
+    unsigned char   selection       : 1;
+    unsigned char   spare           : 2;
+    char            *find;
+    int             findlen;
+    char            *replace;
+    int             replacelen;
+    char            *ext;
+    int             extlen;
+    char            *path;
+    int             pathlen;
 } fancy_find;
 
 typedef struct {
@@ -69,15 +70,15 @@ typedef struct {
 } history_data;
 
 typedef struct {
-    char        inuse           : 1;
-    char        is_base         : 1;
-    char        was_inuse       : 1;
-    char        no_input_window : 1;
-    char        fill5           : 1;
-    char        fill6           : 1;
-    char        fill7           : 1;
-    char        fill8           : 1;
-    vi_key      *data;
+    unsigned char   inuse           : 1;
+    unsigned char   is_base         : 1;
+    unsigned char   was_inuse       : 1;
+    unsigned char   no_input_window : 1;
+    unsigned char   fill5           : 1;
+    unsigned char   fill6           : 1;
+    unsigned char   fill7           : 1;
+    unsigned char   fill8           : 1;
+    vi_key          *data;
 } key_map;
 
 /* command structure */
@@ -100,13 +101,17 @@ typedef struct alias_list {
  */
 typedef long linenum;
 
+typedef struct i_mark {
+    linenum     line;
+    int         column;
+} i_mark;
+
 /*
  * file stack
  */
 typedef struct file_stack {
-    linenum             lineno;
-    int                 col;
-    char                fname[1];
+    i_mark      p;
+    char        fname[1];
 } file_stack;
 
 /*
@@ -151,13 +156,11 @@ typedef struct {
     #include "winhdr.h"
     #ifdef HAS_HWND
         typedef HWND window_id;
-    #else
-    #ifdef __WINDOWS_386__
+    #elif defined( __WINDOWS_386__ )
         typedef unsigned short window_id;
     #else
         typedef const void _NEAR * window_id;
     #endif
-#endif
 #else
     typedef int window_id;
 #endif
@@ -267,18 +270,12 @@ typedef struct file {
  * mark setting
  */
 typedef struct {
-    linenum     lineno;         // line number that mark is on
+    i_mark      p;              // line number and column number that mark is on
     char        next;           // pointer to next mark on the same line
-    vi_ushort   col     : 12;   // column that mark is on
     vi_ushort   inuse   : 1;    // mark is being used
     vi_ushort   spare   : 3;
 } mark;
 #define MARK_SIZE sizeof( mark )
-
-typedef struct i_mark {
-    linenum     line;
-    int         column;
-} i_mark;
 
 typedef struct range {
     i_mark              start;
@@ -290,28 +287,29 @@ typedef struct range {
  * to begin and end highlighting, as well as a flag to decide whether to
  * actually do the highlighting. Puke.
  */
-    i_mark      hi_start;
-    i_mark      hi_end;
-    char        highlight   : 1;
-    char        line_based  : 1;
+    i_mark          hi_start;
+    i_mark          hi_end;
+    unsigned char   highlight   : 1;
+    unsigned char   line_based  : 1;
 /*
  * Double ACK! Some times we need to treat a range differently depending
  * on whether an operator or a move is using it. This tells us if we should
  * include the last character or not (compare "d/foo" to "/foo"). Puke.
  */
-    char        fix_range   : 1;
-    char        spare       : 5;
+    unsigned char   fix_range   : 1;
+    unsigned char   selected    : 1;
+    unsigned char   spare       : 4;
 } range;
 
-typedef int (*insert_rtn)( void );
-typedef int (*move_rtn)( range *, long count );
-typedef int (*op_rtn)( range * );
-typedef int (*misc_rtn)( long count );
-typedef int (*old_rtn)( void );
-typedef int (*alias_rtn)( void *, void * );
+typedef vi_rc (*insert_rtn)( void );
+typedef vi_rc (*move_rtn)( range *, long count );
+typedef vi_rc (*op_rtn)( range * );
+typedef vi_rc (*misc_rtn)( long count );
+typedef vi_rc (*old_rtn)( void );
+typedef vi_rc (*alias_rtn)( void *, void * );
 
 typedef union command_rtn {
-    void        *ptr;   /* Must go first to avoid type mismatches */
+    vi_rc       (*dummy)(); /* Must go first to avoid parameter type mismatches */
     insert_rtn  ins;
     move_rtn    move;
     op_rtn      op;
@@ -346,9 +344,9 @@ typedef struct {
  * structure to define all the goop needed to display text
  */
 typedef struct {
-    short       foreground;
-    short       background;
-    short       font;
+    vi_color    foreground;
+    vi_color    background;
+    font_type   font;
 } type_style;
 
 /*
@@ -356,7 +354,7 @@ typedef struct {
  */
 typedef struct {
     bool        has_border;
-    short       border_color1, border_color2;
+    vi_color    border_color1, border_color2;
     type_style  text;
     type_style  hilight;
     short       x1, y1, x2, y2;
@@ -374,8 +372,9 @@ typedef struct {
 } undo_delete;
 
 typedef struct {
-    linenum     line, top;
-    short       col, depth;
+    i_mark      p;
+    linenum     top;
+    short       depth;
     long        time_stamp;
 } undo_start;
 
@@ -402,15 +401,13 @@ typedef struct undo_stack {
 } undo_stack;
 
 typedef struct select_rgn {
+    i_mark      start;
+    i_mark      end;
+    int         start_col_v;
     vi_ushort   selected    : 1;
     vi_ushort   lines       : 1;
     vi_ushort   dragging    : 1;
     vi_ushort   empty       : 13;
-    linenum     start_line;
-    linenum     end_line;
-    int         start_col;
-    int         end_col;
-    int         start_col_v;
 } select_rgn;
 
 /*
@@ -419,8 +416,8 @@ typedef struct select_rgn {
 typedef struct info {
     struct info *next, *prev;
     file        *CurrentFile;
-    linenum     CurrentLineNumber, TopOfPage;
-    int         CurrentColumn, LeftColumn;
+    i_mark      CurrentPos;
+    i_mark      LeftTopPos;
     undo_stack  *UndoStack, *UndoUndoStack;
     int         CurrentUndoItem, CurrentUndoUndoItem;
     window_id   CurrNumWindow;
@@ -483,8 +480,8 @@ typedef struct {
     int         num;            // number of the picked line
     int         *allowrl;       // allow cursor right/left (for menu bar)
     char        **hilite;       // chars to highlight
-    int         *retevents;     // events that simulate pressing enter
-    int         event;          // event that caused a return
+    vi_key      *retevents;     // events that simulate pressing enter
+    vi_key      event;          // event that caused a return
     bool        show_lineno;    // show lines in top-right corner
     linenum     cln;            // current line to display
     window_id   eiw;            // alternate window to accept events in (like
@@ -503,13 +500,13 @@ typedef struct {
     window_info *wi;                // info describing window to create
     linenum     sl;                 // selected line
     char        *title;             // title of window
-    int         (*checkres)(char *, char *, int * ); // check if selected
+    vi_rc       (*checkres)(char *, char *, int * ); // check if selected
                                     // change is valid
     int         *allow_rl;          // allow cursor right/left (for menu bar)
     char        **hilite;           // chars to highlight
     bool        show_lineno;        // show lines in top-right corner
-    int         *retevents;         // events that simulate pressing enter
-    int         event;              // event that caused a return
+    vi_key      *retevents;         // events that simulate pressing enter
+    vi_key      event;              // event that caused a return
     linenum     cln;                // current line to display
     window_id   eiw;                // alternate window to accept events in (like
                                     // the options window after fgrep...)

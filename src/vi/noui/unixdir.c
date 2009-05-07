@@ -29,22 +29,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "vi.h"
 #include <unistd.h>
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
-#include "vi.h"
-
-extern long DosGetFullPath( char *old, char *full )
-{
-    strcpy( full, old );        /* for now */
-    return( 0L );
-
-} /* DosGetFullPath */
 
 /*
  * GetFileInfo - get info from a directory entry
@@ -58,9 +47,9 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
     tmpname = malloc( strlen( path ) + strlen( nd->d_name ) + 3 );
     strcpy( tmpname, path );
     len = strlen( tmpname );
-    if( tmpname[ len-1 ] != FILE_SEP ) {
-            tmpname[ len ] = FILE_SEP;
-            tmpname[ len+1 ] = 0;
+    if( tmpname[len - 1] != FILE_SEP ) {
+            tmpname[len] = FILE_SEP;
+            tmpname[len + 1] = 0;
     }
     strcat( tmpname, nd->d_name );
     stat( tmpname, &st );
@@ -78,7 +67,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path )
 /*
  * MyGetFileSize - do just that
  */
-int MyGetFileSize( char *inname, long *size )
+vi_rc MyGetFileSize( char *inname, long *size )
 {
     struct stat sb;
 
@@ -93,7 +82,7 @@ int MyGetFileSize( char *inname, long *size )
 /*
  * IsDirectory - check if a specified path is a directory
  */
-int IsDirectory( char *name )
+bool IsDirectory( char *name )
 {
     struct stat sb;
 
@@ -121,22 +110,22 @@ void FormatFileEntry( direct_ent *file, char *res )
     size = strlen( file->name ) + 4;
     tmp = malloc( max( size, NAMEWIDTH + 1 ) );
 
-    strcpy(buff,"----------");
+    strcpy( buff, "----------" );
     size = file->fsize;
     if( file->attr & _A_SUBDIR ) {
-        MySprintf(tmp," " FILE_SEP_STR "%S", file->name);
+        MySprintf( tmp, " " FILE_SEP_STR "%S", file->name );
         buff[0] = 'd';
         size = 0;
     } else {
         if( !IsTextFile( file->name ) ) {
-            MySprintf(tmp," *%S",file->name);
+            MySprintf( tmp, " *%S", file->name );
         } else {
-            MySprintf(tmp,"  %S",file->name);
+            MySprintf( tmp, "  %S", file->name );
         }
     }
 
     /*
-     * build attributeibutes
+     * build attributes
      */
     if( file->st_mode & S_IWUSR ) {
         buff[1] = 'r';
@@ -169,19 +158,19 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[9] = 'x';
     }
 
-    tmp[NAMEWIDTH]=0;
+    tmp[NAMEWIDTH] = 0;
 
     tt = file->time;
     tm = localtime( &tt );
 
-    MySprintf(res, "%s %s %L %D/%D/%d %D:%D",
-            tmp,
-            buff,
-            size,
-            (int)tm->tm_mon+1,
-            (int)tm->tm_mday,
-            (int)tm->tm_year + 1900,
-            (int)tm->tm_hour,
-            (int)tm->tm_min);
+    MySprintf( res, "%s %s %L %D/%D/%d %D:%D",
+               tmp,
+               buff,
+               size,
+               (int)tm->tm_mon + 1,
+               (int)tm->tm_mday,
+               (int)tm->tm_year + 1900,
+               (int)tm->tm_hour,
+               (int)tm->tm_min );
 
 } /* FormatFileEntry */

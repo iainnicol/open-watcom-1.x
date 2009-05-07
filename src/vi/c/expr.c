@@ -30,12 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <setjmp.h>
 #include "vi.h"
+#include <setjmp.h>
 #include "source.h"
 #include "expr.h"
 
@@ -63,23 +59,12 @@ static char     *exprData;
 static jmp_buf  abortAddr;
 static int      tokenBuffCnt;
 
+#define str( a ) #a
+#undef vi_pick
+#define vi_pick( a ) str( a\0 )
 static char     colorTokens[] = {
-    "BLACK\0"
-    "BLUE\0"
-    "GREEN\0"
-    "CYAN\0"
-    "RED\0"
-    "MAGENTA\0"
-    "BROWN\0"
-    "WHITE\0"
-    "DARK_GRAY\0"
-    "LIGHT_BLUE\0"
-    "LIGHT_GREEN\0"
-    "LIGHT_CYAN\0"
-    "LIGHT_RED\0"
-    "LIGHT_MAGENTA\0"
-    "YELLOW\0"
-    "BRIGHT_WHITE\0"
+#include "colors.h"
+#undef vi_pick
 };
 
 #ifdef __WIN__
@@ -145,9 +130,9 @@ void StartExprParse( char *data, jmp_buf abort_addr )
 
 } /* StartExprParse */
 
-static void Abort( int err )
+static void abortExpr( vi_rc err )
 {
-    longjmp( abortAddr, err );
+    longjmp( abortAddr, (int)err );
 }
 
 /*
@@ -340,7 +325,6 @@ static token _nextToken( void )
 static token nextToken( void )
 {
     int         j;
-    extern long LastRC;
     char        *endptr;
 
     currToken = _nextToken();
@@ -351,7 +335,7 @@ static token nextToken( void )
             if( (endptr - tokenBuff) != tokenBuffCnt ) {
                 constantVal = strtol( tokenBuff, &endptr, 16 );
                 if( (endptr - tokenBuff) != tokenBuffCnt ) {
-                    Abort( ERR_INVALID_VALUE );
+                    abortExpr( ERR_INVALID_VALUE );
                 }
             }
         } else {
@@ -372,7 +356,7 @@ static token nextToken( void )
             } else if( !strcmp( tokenBuff, "rdonly" ) ) {
                 constantVal = CFileReadOnly();
             } else if( !strcmp( tokenBuff, "lastrc" ) ) {
-                constantVal = LastRC;
+                constantVal = (long)LastRC;
             } else if( !strcmp( tokenBuff, "pagelen" ) ) {
                 constantVal = WindMaxHeight;
             } else if( !strcmp( tokenBuff, "endcolumn" ) ) {
@@ -421,10 +405,10 @@ static void mustRecog( token t )
 {
     if( currToken != t ) {
         if( t == T_RIGHT_PAREN ) {
-            Abort( ERR_RE_UNMATCHED_ROUND_BRACKETS );
+            abortExpr( ERR_RE_UNMATCHED_ROUND_BRACKETS );
         }
         if( t == T_COLON ) {
-            Abort( ERR_EXPECTING_COLON );
+            abortExpr( ERR_EXPECTING_COLON );
         }
     }
     nextToken();

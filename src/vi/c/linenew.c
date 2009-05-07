@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "win.h"
 
@@ -70,7 +68,7 @@ void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
         SetCurrentLineNumber( 1 );
     } else {
         if( dir == INSERT_BEFORE ) {
-            SetCurrentLineNumber( CurrentLineNumber + 1 );
+            SetCurrentLineNumber( CurrentPos.line + 1 );
         }
         UpdateLineNumbers( 1L, CurrentFcb->next );
     }

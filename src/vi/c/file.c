@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "vi.h"
 #include <errno.h>
 #include "posix.h"
-#include "vi.h"
 #include "source.h"
 #include "win.h"
-#ifdef __WIN__
-#include "winvi.h"
 
+#ifdef __WIN__
 extern long VScrollBarScale;
 extern int  HScrollBarScale;
 #endif
@@ -53,11 +50,9 @@ void SaveInfo( info *ci  )
         return;
     }
     ci->CurrentFile = CurrentFile;
-    ci->CurrentLineNumber = CurrentLineNumber;
-    ci->CurrentColumn = CurrentColumn;
+    ci->CurrentPos = CurrentPos;
     ci->ColumnDesired = ColumnDesired;
-    ci->LeftColumn = LeftColumn;
-    ci->TopOfPage = TopOfPage;
+    ci->LeftTopPos = LeftTopPos;
     ci->CurrentWindow = CurrentWindow;
     ci->UndoStack = UndoStack;
     ci->UndoUndoStack = UndoUndoStack;
@@ -124,10 +119,11 @@ bool RestoreInfo( info *ci  )
         memset( ci, 0, sizeof( tmpinfo ) );
         ci->CurrentWindow = NO_WINDOW;
         ci->CurrNumWindow = NO_WINDOW;
-        ci->CurrentLineNumber = 1;
-        ci->CurrentColumn = 1;
+        ci->CurrentPos.line = 1;
+        ci->CurrentPos.column = 1;
         ci->ColumnDesired = 1;
-        ci->TopOfPage = 1;
+        ci->LeftTopPos.line = 1;
+        ci->LeftTopPos.column = 0;
         CurrentLine = NULL;
         CurrentFcb = NULL;
 
@@ -147,11 +143,9 @@ bool RestoreInfo( info *ci  )
     VScrollBarScale = ci->VScrollBarScale;
     HScrollBarScale = ci->HScrollBarScale;
 #endif
-    CurrentLineNumber = ci->CurrentLineNumber;
-    CurrentColumn = ci->CurrentColumn;
+    CurrentPos = ci->CurrentPos;
     ColumnDesired = ci->ColumnDesired;
-    LeftColumn = ci->LeftColumn;
-    TopOfPage = ci->TopOfPage;
+    LeftTopPos = ci->LeftTopPos;
     CurrentWindow = ci->CurrentWindow;
     CurrNumWindow = ci->CurrNumWindow;
     UndoStack = ci->UndoStack;
@@ -172,9 +166,9 @@ bool RestoreInfo( info *ci  )
 
     cRestoreFileDisplayBits();
 
-    CGimmeLinePtr( CurrentLineNumber, &CurrentFcb, &CurrentLine );
+    CGimmeLinePtr( CurrentPos.line, &CurrentFcb, &CurrentLine );
     ValidateCurrentColumn();
-    ResetLastFind();
+    ResetLastFind( ci );
 
     VarAddRandC();
     if( CurrentFile == NULL ) {
@@ -222,9 +216,9 @@ static int getFileInfoString( char *st, int is_small )
             strcat( st, " [lf]" );
         }
 #endif
-        pc = (CurrentLineNumber * 100L) / CurrentFile->fcb_tail->end_line;
+        pc = (CurrentPos.line * 100L) / CurrentFile->fcb_tail->end_line;
         MySprintf( st + strlen( st ), " line %l of %l  -- %l%%%% --",
-            CurrentLineNumber, CurrentFile->fcb_tail->end_line, pc );
+            CurrentPos.line, CurrentFile->fcb_tail->end_line, pc );
         if( EditFlags.ColumnInFileStatus ) {
             MySprintf( st + strlen( st  ), " (col %d)", VirtualCursorPosition() );
         }
@@ -257,7 +251,7 @@ static int getFileInfoString( char *st, int is_small )
         }
 #endif
         MySprintf( st + strlen( st ), " line %l of %l",
-            CurrentLineNumber, CurrentFile->fcb_tail->end_line );
+            CurrentPos.line, CurrentFile->fcb_tail->end_line );
         if( EditFlags.ColumnInFileStatus ) {
             MySprintf( st + strlen( st ), " (col %d)", VirtualCursorPosition() );
         }
@@ -293,7 +287,7 @@ static void make_short_name( char *name, int len, char *buffer )
 /*
  * DisplayFileStatus - print file status
  */
-int DisplayFileStatus( void )
+vi_rc DisplayFileStatus( void )
 {
     char        st[MAX_STR], data[MAX_STR];
     int         free_len;

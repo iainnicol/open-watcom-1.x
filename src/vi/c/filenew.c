@@ -30,34 +30,30 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include "posix.h"
 #include "vi.h"
+#include "posix.h"
 #include "source.h"
 #include "win.h"
-#ifdef __WIN__
-    #include "winvi.h"
-#endif
 #include "lang.h"
 #include "fts.h"
 
 /*
  * createNewFile - create new file entry
  */
-static int createNewFile( char *name, bool same_file )
+static vi_rc createNewFile( char *name, bool same_file )
 {
-    int         i, rc, height;
+    int         height;
     window_id   cw;
     info        *tmp;
+    vi_rc       rc;
 
     /*
      * test that we can create this file
      */
     if( !same_file ) {
-        i = FileExists( name );
-        if( !(i == ERR_READ_ONLY_FILE || i == ERR_NO_ERR || i == ERR_FILE_EXISTS) ) {
-            return( i );
+        rc = FileExists( name );
+        if( !(rc == ERR_READ_ONLY_FILE || rc == ERR_NO_ERR || rc == ERR_FILE_EXISTS) ) {
+            return( rc );
         }
     } else {
         if( name == NULL ) {
@@ -82,9 +78,9 @@ static int createNewFile( char *name, bool same_file )
     /*
      * get new window
      */
-    i = NewWindow2( &cw, &editw_info );
-    if( i ) {
-        return( i );
+    rc = NewWindow2( &cw, &editw_info );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 #ifdef __WIN__
     if( !strncmp( name, "untitled", 8 ) ) {
@@ -118,8 +114,8 @@ static int createNewFile( char *name, bool same_file )
             EditFlags.WriteCRLF = FALSE;
         }
         for( ;; ) {
-            i = ReadFcbData( CurrentFile );
-            if( i ) {
+            rc = ReadFcbData( CurrentFile );
+            if( rc != ERR_NO_ERR ) {
                 break;
             }
             if( !CurrentFile->is_stdio ) {
@@ -130,14 +126,14 @@ static int createNewFile( char *name, bool same_file )
                 }
             }
         }
-        if( i && i != ERR_FILE_NOT_FOUND && i != END_OF_FILE ) {
+        if( rc != ERR_NO_ERR && rc != ERR_FILE_NOT_FOUND && rc != END_OF_FILE ) {
             MemFree( CurrentInfo );
             CurrentInfo = tmp;
             FileFree( CurrentFile );
             CloseAWindow( cw );
-            return( i );
+            return( rc );
         }
-        if( i == ERR_FILE_NOT_FOUND ) {
+        if( rc == ERR_FILE_NOT_FOUND ) {
             rc = NEW_FILE;
             EditFlags.NewFile = TRUE;
             if( EditFlags.CRLFAutoDetect ) {
@@ -164,10 +160,11 @@ static int createNewFile( char *name, bool same_file )
     /*
      * create info entry
      */
-    CurrentLineNumber = 0;
-    ColumnDesired = CurrentColumn = 1;
-    TopOfPage = 1;
-    LeftColumn = 0;
+    CurrentPos.line = 0;
+    CurrentPos.column = 1;
+    ColumnDesired = 1;
+    LeftTopPos.line = 1;
+    LeftTopPos.column = 0;
     if( !same_file ) {
         AllocateUndoStacks();
     }
@@ -211,11 +208,11 @@ static int      inReadHook;
 /*
  * NewFile - load up a new file
  */
-int NewFile( char *name, bool same_file )
+vi_rc NewFile( char *name, bool same_file )
 {
-    int rc;
-    int dup;
-    int oldstatus;
+    vi_rc       rc;
+    int         dup;
+    status_type oldstatus;
 
     dup = EditFlags.DuplicateFile;
     EditFlags.DuplicateFile = FALSE;
@@ -226,7 +223,7 @@ int NewFile( char *name, bool same_file )
     EditFlags.ResizeableWindow = TRUE;
 #endif
     rc = createNewFile( name, same_file );
-    if( rc && rc != NEW_FILE ) {
+    if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
         ScreenPage( -1 );
         if( !EditFlags.Starting ) {
             MoveWindowToFrontDammit( MessageWindow, TRUE );

@@ -29,11 +29,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
 #include "vi.h"
-#include "myprtf.h"
 #ifdef __WIN__
     #include "winrtns.h"
     #include "subclass.h"
@@ -47,6 +43,7 @@
 #include "fts.h"
 #include "rxsupp.h"
 #include "rcs.h"
+#include "myprtf.h"
 
 #ifdef __WIN__
     #define T1      ""
@@ -225,13 +222,13 @@ void ExitEditor( int rc )
 /*
  * QuitEditor - quit the editor
  */
-void QuitEditor( int rc )
+void QuitEditor( vi_rc rc )
 {
 #ifndef __WIN__
     ScreenPage( -1000 );
     EditFlags.NoSetCursor = FALSE;
-    SetCursorOnScreen( (int) WindMaxHeight -1, 0 );
+    SetPosToMessageLine();
 #endif
-    ExitEditor( rc );
+    ExitEditor( ( rc == ERR_NO_ERR ) ? 0 : -1 );
 
 } /* QuitEditor */

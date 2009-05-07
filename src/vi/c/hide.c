@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
 
 #if 0
@@ -41,13 +38,14 @@
  */
 int DoHideCmd( void )
 {
-    int         wasline = TRUE, rc;
+    int         wasline = TRUE;
+    vi_rc       rc;
     int         scol, ecol;
     linenum     s, e;
 
     UpdateCurrentStatus( CSTATUS_HIDE );
     rc = GetRange( 'g', &wasline, &scol, &ecol, &s, &e );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         if( rc == ERR_INVALID_RANGE ) {
             rc = ERR_INVALID_HIDE_CMD;
         }
@@ -69,9 +67,9 @@ int DoHideCmd( void )
 /*
  * HideLineRange - hide/unhide a given line range
  */
-int HideLineRange( linenum s, linenum e, bool unhide )
+vi_rc HideLineRange( linenum s, linenum e, bool unhide )
 {
-    int         rc;
+    vi_rc       rc;
     bool        hideval;
     fcb         *cfcb;
     line        *cline;
@@ -85,7 +83,7 @@ int HideLineRange( linenum s, linenum e, bool unhide )
 
     for( c = s; c <= e; c++ ) {
         rc = CGimmeLinePtr( c, &cfcb, &cline );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             return( rc );
         }
         cline->inf.ld.hidden = hideval;

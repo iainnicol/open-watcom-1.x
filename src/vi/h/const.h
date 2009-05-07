@@ -44,9 +44,6 @@
 
 #define NO_WINDOW ((window_id) -1)
 
-#define NO_ADD_TO_HISTORY_KEY   1
-#define NO_INPUT_WINDOW_KEY     19
-
 typedef enum {
     DRIVE_NONE,
     DRIVE_IS_REMOVABLE,
@@ -91,27 +88,7 @@ typedef enum {
 
 #define Tab( col, ta )  ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
 
-#ifndef __UNIX__
-#ifndef __WIN__
-    typedef enum {
-        FALSE = 0,
-        TRUE
-    } bool;
-    #ifdef __cplusplus
-        inline bool operator ! ( bool x ) { return (bool) ((int)x ^ 1); }
-    #endif
-#else
-    typedef char bool;
-    #define FALSE       0
-    #define TRUE        1
-#endif
-#else
-#ifndef FALSE
-    typedef char bool;
-    #define FALSE       0
-    #define TRUE        1
-#endif
-#endif
+#include "bool.h"
 
 #define INITIAL_MATCH_COUNT     4
 #define MIN_LINE_LEN            128
@@ -206,12 +183,32 @@ typedef enum {
 } status_type;
 
 /*
- * find constants
+ * find types
  */
-#define FINDFL_FORWARD          0x01
-#define FINDFL_BACKWARDS        0x02
-#define FINDFL_NEXTLINE         0x04
-#define FINDFL_NOERROR          0x08
+typedef enum {
+    FINDFL_FORWARD   = 1,
+    FINDFL_BACKWARDS = 2,
+    FINDFL_NEXTLINE  = 4,
+    FINDFL_NOERROR   = 8
+} find_type;
+
+/*
+ * Font types
+ */
+typedef enum font_type {
+    FONT_COURIER = 0,
+    FONT_COURIERBOLD,
+    FONT_HELV,
+    FONT_ARIAL,
+    FONT_ARIALBOLD,
+    FONT_FIXED,
+    FONT_SANSSERIF,
+
+    MAX_FONTS = 25
+} font_type;
+
+#define FONT_DEFAULT        FONT_COURIER
+#define FONT_DEFAULTBOLD    FONT_COURIERBOLD
 
 /*
  * word constants
@@ -247,11 +244,13 @@ typedef enum {
 /*
  * Event type constants for the event list
  */
-#define EVENT_OP                0x00
-#define EVENT_REL_MOVE          0x01
-#define EVENT_ABS_MOVE          0x02
-#define EVENT_MISC              0x03
-#define EVENT_INS               0x04
+typedef enum event_type {
+    EVENT_OP       = 0,
+    EVENT_REL_MOVE = 1,
+    EVENT_ABS_MOVE = 2,
+    EVENT_MISC     = 3,
+    EVENT_INS      = 4
+} event_type;
 
 /*
  * Name of environment variable to set the prompt.
@@ -263,5 +262,38 @@ typedef enum {
 #endif
 
 #define MAX_COLOR_REGISTERS     16
+
+/*
+ * Color type
+ */
+#undef vi_pick
+#define vi_pick(a) a,
+typedef enum {
+#include "colors.h"
+#undef vi_pick
+#ifdef __WIN__
+    MAX_COLORS = 64
+#else
+    MAX_COLORS = MAX_COLOR_REGISTERS
+#endif
+} vi_color;
+
+/*
+ * Event type
+ */
+#define VI_KEY( a )                 __VIKEY__##a
+#define BITS( a, b, c, d, e, f, g ) { a, b, c, d, e, f, g }
+
+#undef vi_pick
+#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) enum,
+typedef enum vi_key {
+#include "events.h"
+    MAX_EVENTS
+#undef vi_pick
+} vi_key;
+
+#define NO_ADD_TO_HISTORY_KEY   VI_KEY( CTRL_A )
+#define VI_KEY_HANDLED          VI_KEY( NULL )
+#define VI_KEY_DUMMY            MAX_EVENTS
 
 #endif

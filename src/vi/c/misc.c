@@ -29,11 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include <stdarg.h>
-#include <ctype.h>
 
 #ifdef _M_I86
   #include <i86.h>
@@ -45,16 +42,11 @@
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <assert.h>
-#include "vi.h"
-#ifdef __WIN__
-  #include "winvi.h"
-#endif
 #include "source.h"
 #include "posix.h"
 #include "win.h"
+
 #ifdef __NT__
-  #include <windows.h>
   extern HANDLE       OutputHandle;
 #endif
 
@@ -311,9 +303,9 @@ int ExecCmd( char *file_in, char *file_out, char *cmd )
 /*
  * GetResponse - get a response from the user
  */
-int GetResponse( char *str, char *res )
+vi_rc GetResponse( char *str, char *res )
 {
-    int rc;
+    vi_rc   rc;
 
     rc = PromptForString( str, res, MAX_STR, NULL );
     if( rc == ERR_NO_ERR ) {
@@ -431,15 +423,16 @@ bool QueryFile( const char *filename )
 bool ExitWithPrompt( bool do_quit )
 {
     info        *cinfo;
-    int         rc, i;
+    int         i;
     int         num = 0;
+    bool        rc;
 
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         num++;
     }
     BringUpFile( InfoHead, TRUE );
     for( i = 0; i < num; i++ ){
-        if( NextFile() > 0 ) {
+        if( NextFile() > ERR_NO_ERR ) {
             // file modified ask
             rc = FileExitOptionSaveChanges( CurrentFile );
             if( rc == TRUE ) {
@@ -449,7 +442,7 @@ bool ExitWithPrompt( bool do_quit )
         }
     }
     if( do_quit ) {
-        QuitEditor( 0 );
+        QuitEditor( ERR_NO_ERR );
     }
     return( TRUE );
 
@@ -460,7 +453,7 @@ bool ExitWithPrompt( bool do_quit )
  */
 void ExitWithVerify( void )
 {
-    int         i, num = 0;
+    int         num = 0;
     static bool entered = FALSE;
     info        *cinfo;
     bool        modified;
@@ -481,9 +474,8 @@ void ExitWithVerify( void )
     }
     if( modified ) {
 #ifdef __WIN__
-        i = MessageBox( Root, "Files are modified, really exit?",
-                        EditorName, MB_YESNO | MB_TASKMODAL );
-        if( i == IDYES ) {
+        if( MessageBox( Root, "Files are modified, really exit?",
+                         EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
             BringUpFile( InfoHead, TRUE );
             EditFlags.QuitAtLastFileExit = TRUE;
             for( ;; ) {
@@ -491,11 +483,11 @@ void ExitWithVerify( void )
             }
         }
 #else
-        i = GetResponse( "Files are modified, really exit?", st );
-        if( i == GOT_RESPONSE && st[0] == 'y' ) {
+        if( GetResponse( "Files are modified, really exit?", st )
+                                    == GOT_RESPONSE && st[0] == 'y' ) {
             BringUpFile( InfoHead, TRUE );
             EditFlags.QuitAtLastFileExit = TRUE;
-            for( ;; ){
+            for( ;; ) {
                 NextFileDammit();
             }
         }
@@ -533,7 +525,7 @@ bool ExitWithPrompt( bool do_quit )
         }
     }
     if( do_quit ) {
-        QuitEditor( 0 );
+        QuitEditor( ERR_NO_ERR );
     }
     return( TRUE );
 
@@ -567,16 +559,16 @@ void ExitWithVerify( void )
         i = MessageBox( Root, "Files are modified, really exit?",
                         EditorName, MB_YESNO | MB_TASKMODAL );
         if( i == IDYES ) {
-            QuitEditor( 0 );
+            QuitEditor( ERR_NO_ERR );
         }
 #else
         i = GetResponse( "Files are modified, really exit?", st );
         if( i == GOT_RESPONSE && st[0] == 'y' ) {
-            QuitEditor( 0 );
+            QuitEditor( ERR_NO_ERR );
         }
 #endif
     } else {
-        QuitEditor( 0 );
+        QuitEditor( ERR_NO_ERR );
     }
     entered = FALSE;
 
@@ -586,12 +578,12 @@ void ExitWithVerify( void )
 /*
  * PrintHexValue - print hex value of char under cursor
  */
-int PrintHexValue( void )
+vi_rc PrintHexValue( void )
 {
     int i;
 
     if( CurrentFile != NULL ) {
-        i = CurrentLine->data[CurrentColumn - 1];
+        i = CurrentLine->data[CurrentPos.column - 1];
         if( i == '\0' ) {
             // of not on data, pretend are 'on' newline
             i = '\n';
@@ -606,10 +598,11 @@ int PrintHexValue( void )
 /*
  * EnterHexKey - enter a hexidecimal key stroke and insert it into the text
  */
-int EnterHexKey( void )
+vi_rc EnterHexKey( void )
 {
-    int         rc, i;
+    int         i;
     char        st[MAX_STR], val;
+    vi_rc       rc;
 
     if( rc = ModificationTest() ) {
         return( rc );
@@ -620,7 +613,7 @@ int EnterHexKey( void )
 
     rc = PromptForString( "Enter the number of char to insert:", st,
                           sizeof( st ) - 1, NULL );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         if( rc == NO_VALUE_ENTERED ) {
             return( ERR_NO_ERR );
         }
@@ -648,14 +641,14 @@ int EnterHexKey( void )
      * add the char
      */
     GetCurrentLine();
-    for( i = WorkLine->len; i >= CurrentColumn - 1; i-- ) {
+    for( i = WorkLine->len; i >= CurrentPos.column - 1; i-- ) {
         WorkLine->data[i + 1] = WorkLine->data[i];
     }
-    WorkLine->data[CurrentColumn - 1] = val;
+    WorkLine->data[CurrentPos.column - 1] = val;
     WorkLine->len++;
     DisplayWorkLine( TRUE );
-    if( CurrentColumn < WorkLine->len ) {
-        GoToColumn( CurrentColumn + 1, WorkLine->len + 1 );
+    if( CurrentPos.column < WorkLine->len ) {
+        GoToColumn( CurrentPos.column + 1, WorkLine->len + 1 );
     }
     ReplaceCurrentLine();
     EditFlags.Dotable = TRUE;
@@ -666,7 +659,7 @@ int EnterHexKey( void )
 /*
  * DoVersion - display version info
  */
-int DoVersion( void )
+vi_rc DoVersion( void )
 {
     Message1( "\"%s\" v%s  %s %s", TITLE,VERSIONT, DATESTAMP_T, DATESTAMP_D );
     Message2( "%s", AUTHOR );
@@ -698,9 +691,9 @@ char *StrMerge( int cnt, char *str, ... )
 /*
  * ModificationTest - test a file as it is about to be modified
  */
-int ModificationTest( void )
+vi_rc ModificationTest( void )
 {
-    int         rc;
+    vi_rc       rc;
     bool        olddm;
     int         olddotdigits;
 
@@ -729,9 +722,9 @@ int ModificationTest( void )
 /*
  * CurFileExitOptionSaveChanges - exit current file, opt save if modified
  */
-int CurFileExitOptionSaveChanges( void )
+vi_rc CurFileExitOptionSaveChanges( void )
 {
-    if( NextFile() > 0 ) {
+    if( NextFile() > ERR_NO_ERR ) {
         FileExitOptionSaveChanges( CurrentFile );
     }
     return( ERR_NO_ERR );
@@ -752,7 +745,7 @@ void UpdateCurrentDirectory( void )
 /*
  * DoAboutBox - do an about box
  */
-int DoAboutBox( void )
+vi_rc DoAboutBox( void )
 {
     return( ERR_NO_ERR );
 
@@ -781,7 +774,7 @@ int NextBiggestPrime( int start )
     return( n );
 }
 
-int FancySetFS( void )
+vi_rc FancySetFS( void )
 {
 #ifdef __WIN__
     GetSetFSDialog();
@@ -789,7 +782,7 @@ int FancySetFS( void )
     return( ERR_NO_ERR );
 }
 
-int FancySetScr( void )
+vi_rc FancySetScr( void )
 {
 #ifdef __WIN__
     GetSetScrDialog();
@@ -797,7 +790,7 @@ int FancySetScr( void )
     return( ERR_NO_ERR );
 }
 
-int FancySetGen( void )
+vi_rc FancySetGen( void )
 {
 #ifdef __WIN__
     GetSetGenDialog();
@@ -805,42 +798,42 @@ int FancySetGen( void )
     return( ERR_NO_ERR );
 }
 
-int ToggleToolbar( void )
+vi_rc ToggleToolbar( void )
 {
     char    cmd[14];
     sprintf( cmd, "set%stoolbar", EditFlags.Toolbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleStatusbar( void )
+vi_rc ToggleStatusbar( void )
 {
     char    cmd[17];
     sprintf( cmd, "set%sstatusinfo", EditFlags.StatusInfo ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleColorbar( void )
+vi_rc ToggleColorbar( void )
 {
     char    cmd[15];
     sprintf( cmd, "set%scolorbar", EditFlags.Colorbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleSSbar( void )
+vi_rc ToggleSSbar( void )
 {
     char    cmd[15];
     sprintf( cmd, "set%sssbar", EditFlags.SSbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int ToggleFontbar( void )
+vi_rc ToggleFontbar( void )
 {
     char    cmd[14];
     sprintf( cmd, "set%sfontbar", EditFlags.Fontbar ? " no" : " " );
     return( RunCommandLine( cmd ) );
 }
 
-int GenericQueryBool( char *str )
+bool GenericQueryBool( char *str )
 {
 #ifdef __WIN__
     return( MessageBox( Root, str, EditorName, MB_OKCANCEL ) == IDOK );

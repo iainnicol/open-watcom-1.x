@@ -33,32 +33,23 @@
 #ifndef RXSUPP_INCLUDED
 #define RXSUPP_INCLUDED
 
-#ifdef REGEXP
-    #include <stdio.h>
-    #include "vi.h"
-    #define CASEIGNORE      EditFlags.CaseIgnore
-    #define MAGICFLAG       EditFlags.Magic
-    #define MAGICSTR        Majick
-    #define REALTABS        EditFlags.RealTabs
-    #define ALLOC           MemAlloc
-    #define WANT_EXCLAMATION
-#endif
 #include "regexp.h"
 
 extern regexp *CurrentRegularExpression;
 
 /* findrx.c */
-int FindRegularExpression( char *, linenum *, int, char **, linenum, int );
-int FindRegularExpressionBackwards( char *, linenum *, int, char **, linenum, int );
+extern vi_rc    FindRegularExpression( char *, i_mark *, char **, linenum, int );
+extern vi_rc    FindRegularExpressionBackwards( char *, i_mark *, char **, linenum, int );
 
 /* rxsupp.c */
-extern int  CurrentRegComp( char * );
-extern int  GetCurrRegExpColumn( char * );
-extern int  GetCurrRegExpLength( void );
-extern void MakeExpressionNonRegular( char * );
-extern void SetMajickString( char * );
+extern int      CurrentRegComp( char * );
+extern int      GetCurrRegExpColumn( char * );
+extern int      GetCurrRegExpLength( void );
+extern void     MakeExpressionNonRegular( char * );
+extern void     SetMajickString( char * );
+extern bool     SetMagicFlag( bool );
 
 /* regsub.c */
-extern int RegSub( regexp *, char *, char *, linenum );
+extern int      RegSub( regexp *, char *, char *, linenum );
 
 #endif

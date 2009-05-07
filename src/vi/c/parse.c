@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
 #include "vi.h"
 
 static bool isIgnorable( char, char * );
@@ -83,31 +79,34 @@ void TranslateTabs( char *buff )
 /*
  * GetStringWithPossibleQuote
  */
-int GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
+vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
 {
+    int     len;
+    
     RemoveLeadingSpaces( data );
     if( allow_slash && data[0] == '/' ) {
-        if( NextWord( data, st, SingleSlash ) <= 0 ) {
-            return( ERR_NO_STRING );
+        len = NextWord( data, st, SingleSlash );
+        if( len >= 0 ) {
+            EliminateFirstN( data, 1 );
         }
-        EliminateFirstN( data, 1 );
     } else if( data[0] == '"' ) {
-        if( NextWord( data, st, "\"" ) <= 0 ) {
-            return( ERR_NO_STRING );
+        len = NextWord( data, st, "\"" );
+        if( len >= 0 ) {
+            EliminateFirstN( data, 1 );
         }
-        EliminateFirstN( data, 1 );
     } else {
-        if( NextWord1( data, st ) <= 0 ) {
-            return( ERR_NO_STRING );
-        }
+        len = NextWord1( data, st );
+    }
+    if( len <= 0 ) {
+        return( ERR_NO_STRING );
     }
     return( ERR_NO_ERR );
 
 } /* GetStringWithPossibleQuote2 */
 
-int GetStringWithPossibleQuote( char *data, char *st )
+vi_rc GetStringWithPossibleQuote( char *data, char *st )
 {
-    return GetStringWithPossibleQuote2( data, st, TRUE );
+    return( GetStringWithPossibleQuote2( data, st, TRUE ) );
 
 } /* GetStringWithPossibleQuote */
 
@@ -223,7 +222,7 @@ static bool isIgnorable( char c, char *ign )
     while( *ign != 0 ) {
         if( *ign == ' ' ) {
             if( isspace( c ) ) {
-                return ( TRUE );
+                return( TRUE );
             }
         } else if( c == *ign ) {
             return( TRUE );
@@ -262,7 +261,7 @@ extern char toUpper( char );
         "jg     LL34" \
         "sub    al, 0020H" \
         "LL34:" \
-        parm[al] value[al];
+    parm [al] value[al];
 
 extern char toLower( char );
 #pragma aux toLower = \
@@ -272,7 +271,7 @@ extern char toLower( char );
         "jg     LL35" \
         "add    al, 0020H" \
         "LL35:" \
-        parm[al] value[al];
+    parm [al] value[al];
 #endif
 
 /*
@@ -422,7 +421,7 @@ char **BuildTokenList( int num, char *list )
  */
 char *GetTokenString( char *list, int num )
 {
-    int         off  =0, i = 0, k;
+    int         off = 0, i = 0, k;
     char        *t;
 
     while( TRUE ) {

@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include "asavedlg.h"
 
 /*
@@ -70,7 +69,7 @@ BOOL WINEXP ASaveDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 /*
  * GetAutosaveResponse - create dialog for controlling settings
  */
-char GetAutosaveResponse( void )
+vi_key GetAutosaveResponse( void )
 {
     DLGPROC     proc;
     int         rc;

@@ -29,13 +29,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <ctype.h>
 #include "vi.h"
-#include "colors.h"
 #include "sstyle.h"
 #include "lang.h"
 #include "sstyle_c.h"
@@ -43,6 +37,7 @@
 #include "sstyle_h.h"
 #include "sstyle_g.h"
 #include "sstyle_m.h"
+#include <assert.h>
 
 
 /*----- EXPORTS -----*/
@@ -149,24 +144,24 @@ void addSelection( ss_block *ss_start, linenum line_no )
     i = 0;
 
     // get nicely ordered values from SelRgn
-    sel_end_col = VirtualCursorPosition2( SelRgn.end_col ) - 1;
+    sel_end_col = VirtualCursorPosition2( SelRgn.end.column ) - 1;
     sel_start_col = SelRgn.start_col_v - 1;
 #ifdef __WIN__
     if( EditFlags.RealTabs ) {
-        sel_end_col = SelRgn.end_col - 1;
-        sel_start_col = SelRgn.start_col - 1;
+        sel_end_col = SelRgn.end.column - 1;
+        sel_start_col = SelRgn.start.column - 1;
     }
 #endif
     swap_cols = FALSE;
-    if( SelRgn.start_line > SelRgn.end_line ) {
-        sel_start_line = SelRgn.end_line;
-        sel_end_line = SelRgn.start_line;
+    if( SelRgn.start.line > SelRgn.end.line ) {
+        sel_start_line = SelRgn.end.line;
+        sel_end_line = SelRgn.start.line;
         swap_cols = TRUE;
     } else {
-        sel_start_line = SelRgn.start_line;
-        sel_end_line = SelRgn.end_line;
+        sel_start_line = SelRgn.start.line;
+        sel_end_line = SelRgn.end.line;
     }
-    if( SelRgn.start_line == SelRgn.end_line && sel_start_col > sel_end_col ) {
+    if( SelRgn.start.line == SelRgn.end.line && sel_start_col > sel_end_col ) {
         swap_cols = TRUE;
     }
     if( swap_cols ) {
@@ -545,14 +540,14 @@ void SSGetLanguageFlags( ss_flags *flags )
 }
 
 #ifdef __WIN__
-int SSGetStyle( int row, int col )
+syntax_element SSGetStyle( int row, int col )
 {
     dc          c_line;
     ss_block    *ss;
 
     c_line = DCFindLine( row - 1, CurrentWindow );
     assert( c_line->valid );
-    if( c_line->start_col != LeftColumn ) {
+    if( c_line->start_col != LeftTopPos.column ) {
         // text is scrolled off screen - ws remains
         return( SE_WHITESPACE );
     }
@@ -570,12 +565,12 @@ int SSGetStyle( int row, int col )
  */
 void SSInitBeforeConfig( void )
 {
-    int i;
+    syntax_element  i;
 
     for( i = 0; i < SE_NUMTYPES; i++ ) {
         SEType[i].foreground = -1;
         SEType[i].background = -1;
-        SEType[i].font = 0;
+        SEType[i].font = FONT_DEFAULT;
     }
 }
 
@@ -584,7 +579,7 @@ void SSInitBeforeConfig( void )
  */
 void SSInitAfterConfig( void )
 {
-    int i;
+    syntax_element  i;
 
     // text must have some color
     if( SEType[SE_TEXT].foreground == -1 ) {

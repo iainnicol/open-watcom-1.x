@@ -30,26 +30,19 @@
 ****************************************************************************/
 
 
-#if defined( __WIN__ )
-    #include "winvi.h"
-#else
-    #include <stdio.h>
-    #include "vi.h"
-    #include "win.h"
-#endif
+#include "vi.h"
+#include "win.h"
 #ifdef _M_IX86
     #ifdef __WATCOMC__
         #include <i86.h>
     #endif
 #endif
-#include <string.h>
-#include "keys.h"
 #if defined( __OS2__ )
     #define INCL_BASE
     #include <os2.h>
 #endif
 
-static int      overrideKeyBuff[MAX_OVERRIDE_KEY_BUFF];
+static vi_key   overrideKeyBuff[MAX_OVERRIDE_KEY_BUFF];
 static int      overrideKeyPos, overrideKeyEnd;
 
 #if !defined( __UNIX__ ) && !defined( __NT__ ) || defined( __WIN__ )
@@ -61,12 +54,12 @@ static int      overrideKeyPos, overrideKeyEnd;
 #endif
 
 #if !defined( NO_TRANSLATE )
-static char altLookup[] = { 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37,
-                            38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47,
-                            17, 45, 21, 44  };
-static char altLookup2[] = { 117, 147, 146, 119, 132, 118, 115, 116, 141, 145,
-                             159, 163, 162, 151, 153, 161, 155, 158, 152, 160,
-                             148, 165 };
+static unsigned char altLookup[] = { 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37,
+                                     38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47,
+                                     17, 45, 21, 44  };
+static unsigned char altLookup2[] = { 117, 147, 146, 119, 132, 118, 115, 116, 141, 145,
+                                      159, 163, 162, 151, 153, 161, 155, 158, 152, 160,
+                                      148, 165 };
 #endif
 /*
  * clearSpin - clear spin area
@@ -88,7 +81,7 @@ static void clearSpin( void )
 /*
  * getOverrideKey - get next key from the override buffer
  */
-static int getOverrideKey( void )
+static vi_key getOverrideKey( void )
 {
     int         c;
     bool        mouse = FALSE;
@@ -146,7 +139,7 @@ static int getOverrideKey( void )
 /*
  * GetVIKey - return a VI equivalent of a given key/scan code
  */
-int GetVIKey( int ch, int scan, int shift )
+vi_key GetVIKey( vi_key ch, int scan, int shift )
 {
 #if !defined NO_TRANSLATE
     int     i;
@@ -176,8 +169,7 @@ int GetVIKey( int ch, int scan, int shift )
     /*
      * special characters: fcn keys, and cursor control
      */
-    ch = scan;
-    switch( ch ) {
+    switch( scan ) {
     case 14:
         return( VI_KEY( ALT_BS ) );
     case 15:
@@ -243,47 +235,47 @@ int GetVIKey( int ch, int scan, int shift )
             return( VI_KEY( DEL ) );
         }
     }
-    if( ch >= 59 && ch <= 68 ) {
-        return ( ch - 59 + VI_KEY( F1 ) );
+    if( scan >= 59 && scan <= 68 ) {
+        return ( scan - 59 + VI_KEY( F1 ) );
     }
-    if( ch >= 84 && ch <= 113 ) {
-        if( ch >= 84 && ch <= 93 ) {
-            return ( ch - 84 + VI_KEY( SHIFT_F1 ) );
+    if( scan >= 84 && scan <= 113 ) {
+        if( scan >= 84 && scan <= 93 ) {
+            return ( scan - 84 + VI_KEY( SHIFT_F1 ) );
         }
-        if( ch >= 94 && ch <= 103 ) {
-            return ( ch - 94 + VI_KEY( CTRL_F1 ) );
+        if( scan >= 94 && scan <= 103 ) {
+            return ( scan - 94 + VI_KEY( CTRL_F1 ) );
         }
 #ifdef __WIN
-        if( ch >= 104 && ch <= 105 ) {
-            return( ch - 104 + VI_KEY( ALT_F1 ) );
+        if( scan >= 104 && scan <= 105 ) {
+            return( scan - 104 + VI_KEY( ALT_F1 ) );
         }
 #else
-        if( ch >= 104 && ch <= 113 ) {
-            return( ch - 104 + VI_KEY( ALT_F1 ) );
+        if( scan >= 104 && scan <= 113 ) {
+            return( scan - 104 + VI_KEY( ALT_F1 ) );
         }
 #endif
     }
-    if( ch == 130 ) {
+    if( scan == 130 ) {
         return( VI_KEY( ALT_HYPHEN ) );
     }
-    if( ch >= 133 && ch <= 140 ) {
-        return( ch - 133 + VI_KEY( F11 ) );
+    if( scan >= 133 && scan <= 140 ) {
+        return( scan - 133 + VI_KEY( F11 ) );
     }
     for( i = 0; i < sizeof( altLookup ); i++ ) {
-        if( altLookup[i] == (char) ch ) {
+        if( altLookup[i] == scan ) {
             return( VI_KEY( ALT_A ) + i );
         }
     }
     for( i = 0; i < sizeof( altLookup2 ); i++ ) {
-        if( altLookup2[i] == (char) ch ) {
+        if( altLookup2[i] == scan ) {
             return( VI_KEY( CTRL_END ) + i );
         }
     }
-    return( 128 );
+    return( VI_KEY( DUMMY ) );
 #else
     /* avoid warning about unused arguments */
-    ( void ) scan;
-    ( void ) shift;
+    (void) scan;
+    (void) shift;
     return( ch );
 #endif
 
@@ -292,11 +284,12 @@ int GetVIKey( int ch, int scan, int shift )
 /*
  * GetKey - read a key from the keyboard
  */
-int GetKey( bool usemouse )
+vi_key GetKey( bool usemouse )
 {
     bool        shift;
     bool        hit;
-    int         ch, scan;
+    vi_key      key;
+    int         scan;
 
     clearSpin();
     while( 1 ) {
@@ -304,7 +297,7 @@ int GetKey( bool usemouse )
             TurnOffCapsLock();
         }
         LastMouseEvent = GetMouseEvent();
-        if( LastMouseEvent >= 0 ) {
+        if( LastMouseEvent != MOUSE_NONE ) {
             RedrawMouse( MouseRow, MouseCol );
             DisplayMouse( TRUE );
             if( TestMouseEvent( usemouse ) ) {
@@ -315,15 +308,15 @@ int GetKey( bool usemouse )
          * could get set by mouse handler or IDEGetKeys
          */
         if( EditFlags.KeyOverride ) {
-            ch = getOverrideKey();
+            key = getOverrideKey();
 #ifndef __WIN__
-            if( ch == 3 ) {
+            if( key == 3 ) {
                 ExitWithVerify();
                 clearSpin();
                 continue;
             }
 #endif
-            return( ch );
+            return( key );
         }
         hit = KeyboardHit();
         if( !hit ) {
@@ -341,24 +334,24 @@ int GetKey( bool usemouse )
 #if defined( BUSYWAIT )
         else {
 #endif
-            ch = GetKeyboard( &scan );
+            key = GetKeyboard( &scan );
 #if defined( __NT__ )
-            if( ch == VI_KEY( MOUSEEVENT ) ) {
+            if( key == VI_KEY( MOUSEEVENT ) ) {
                 continue;
             }
 #endif
             shift = ShiftDown();
             DisplayMouse( FALSE );
 #ifdef __WIN__
-            if( ch == 0 && scan == 0 ) {
+            if( key == 0 && scan == 0 ) {
                 GetKeyboard( NULL );
                 ExitWithVerify();
                 clearSpin();
                 continue;
             }
 #else
-            if( !EditFlags.EscapedInsertChar && (ch == 3 || (ch == 0 && scan == 0)) ) {
-                if( ch == 0 && scan == 0 ) {
+            if( !EditFlags.EscapedInsertChar && (key == 3 || (key == 0 && scan == 0)) ) {
+                if( key == 0 && scan == 0 ) {
                     GetKeyboard( NULL );
                 }
                 ExitWithVerify();
@@ -378,14 +371,14 @@ int GetKey( bool usemouse )
     if( EditFlags.Spinning ) {
         EditFlags.SpinningOurWheels = TRUE;
     }
-    return( GetVIKey( ch, scan, shift ) );
+    return( GetVIKey( key, scan, shift ) );
 
 } /* GetKey */
 
 /*
  * NonKeyboardEventsPending - check if anything is buffered and waiting
  */
-int NonKeyboardEventsPending( void )
+bool NonKeyboardEventsPending( void )
 {
     if( EditFlags.KeyOverride ) {
         return( TRUE );
@@ -403,24 +396,24 @@ int NonKeyboardEventsPending( void )
 /*
  * GetNextEvent - return next event from appropriate source
  */
-int GetNextEvent( bool usemouse )
+vi_key GetNextEvent( bool usemouse )
 {
-    int c;
+    vi_key  key;
 
     if( EditFlags.NoCapsLock ) {
         TurnOffCapsLock();
     }
     if( EditFlags.KeyOverride ) {
-        c = getOverrideKey();
-        LastEvent = c;
-        return( c );
+        key = getOverrideKey();
+        LastEvent = key;
+        return( key );
     }
 
     if( EditFlags.InputKeyMapMode || EditFlags.KeyMapMode ) {
 
-        c = CurrentKeyMap[CurrentKeyMapCount++];
+        key = CurrentKeyMap[CurrentKeyMapCount++];
 
-        if( c == 0 ) {
+        if( key == 0 ) {
             EditFlags.NoInputWindow = FALSE;
             if( EditFlags.InputKeyMapMode ) {
                 DoneInputKeyMap();
@@ -428,8 +421,8 @@ int GetNextEvent( bool usemouse )
                 EditFlags.KeyMapMode = FALSE;
             }
         } else {
-            LastEvent = c;
-            return( c );
+            LastEvent = key;
+            return( key );
         }
 
     }
@@ -442,29 +435,29 @@ int GetNextEvent( bool usemouse )
         if( AltDotCount > AltDotDigits ) {
             return( VI_KEY( ESC ) );
         }
-        c = AltDotBuffer[AltDotCount++];
+        key = AltDotBuffer[AltDotCount++];
     } else {
-        c = GetKey( usemouse );
+        key = GetKey( usemouse );
     }
 
     if( !EditFlags.NoAddToDotBuffer ) {
-        if( c != VI_KEY( MOUSEEVENT ) ) {
+        if( key != VI_KEY( MOUSEEVENT ) ) {
             if( EditFlags.AltMemorizeMode ) {
                 if( AltDotDigits < maxdotbuffer ) {
-                    AltDotBuffer[AltDotDigits++] = c;
+                    AltDotBuffer[AltDotDigits++] = key;
                 } else {
-                    AltDotBuffer[AltDotDigits - 1] = (char) VI_KEY( ESC );
+                    AltDotBuffer[AltDotDigits - 1] = VI_KEY( ESC );
                 }
             }
             if( DotDigits < maxdotbuffer ) {
-                DotBuffer[DotDigits++] = c;
+                DotBuffer[DotDigits++] = key;
             } else {
-                DotBuffer[DotDigits - 1] = (char) VI_KEY( ESC );
+                DotBuffer[DotDigits - 1] = VI_KEY( ESC );
             }
         }
     }
-    LastEvent = c;
-    return( c );
+    LastEvent = key;
+    return( key );
 
 } /* GetNextEvent */
 
@@ -483,9 +476,9 @@ void ClearBreak( void )
 /*
  * KeyAdd - add a keystroke to the override buffer
  */
-void KeyAdd( int ch )
+void KeyAdd( vi_key key )
 {
-    overrideKeyBuff[overrideKeyEnd] = ch;
+    overrideKeyBuff[overrideKeyEnd] = key;
     if( overrideKeyEnd == MAX_OVERRIDE_KEY_BUFF - 1 ) {
         overrideKeyEnd = 0;
     } else {
@@ -501,11 +494,11 @@ void KeyAdd( int ch )
 void KeyAddString( char *str )
 {
     key_map     scr;
-    int         rc;
+    vi_rc       rc;
     vi_key      *s;
 
-    rc = AddKeyMap( &scr, str, strlen( str ) );
-    if( !rc ) {
+    rc = AddKeyMap( &scr, str );
+    if( rc == ERR_NO_ERR ) {
         s = scr.data;
         while( *s != 0 ) {
             KeyAdd( *s );

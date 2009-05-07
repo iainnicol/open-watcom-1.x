@@ -30,24 +30,21 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
 #include "rxsupp.h"
 
 /*
  * DoMatching - do matching braces command
  */
-int DoMatching( range *r, long count )
+vi_rc DoMatching( range *r, long count )
 {
-    linenum     line;
-    int         column, rc;
+    vi_rc       rc;
+    i_mark      pos;
 
     count = count;
-    rc = FindMatch( &line, &column );
+    rc = FindMatch( &pos );
     r->line_based = FALSE;
-    r->start.line = line;
-    r->start.column = column;
+    r->start = pos;
     return( rc );
 
 } /* DoMatching */
@@ -55,35 +52,38 @@ int DoMatching( range *r, long count )
 /*
  * FindMatch - do matching braces command
  */
-int FindMatch( linenum *xln, int *xcol )
+vi_rc FindMatch( i_mark *pos1 )
 {
     char        *match[2];
     int         matchcnt, which, m1, m2, i;
-    linenum     ln;
-    int         cl;
     char        matchd[MAX_STR], tmp[MAX_STR];
     char        *linedata;
+    i_mark      pos2;
+    vi_rc       rc;
+    bool        oldmagic;
 
     /*
      * build match command
      */
-    matchd[0] = '!';
-    matchd[1] = 0;
+    matchd[0] = '\0';
     for( i = 0; i < MatchCount; i++ ) {
-        MySprintf( tmp, "(%s)", MatchData[i] );
-        strcat( matchd, tmp );
-        if( i != MatchCount - 1 ) {
+        if( i > 0 ) {
             strcat( matchd, "|" );
         }
+        MySprintf( tmp, "(%s)", MatchData[i] );
+        strcat( matchd, tmp );
     }
 
     /*
      * find start of match on this line
      */
-    ln = CurrentLineNumber;
-    cl = CurrentColumn - 1;
+    pos2 = CurrentPos;
+    pos2.column -= 1;
 
-    if( FindRegularExpression( matchd, &ln, cl, &linedata, ln, FALSE ) ) {
+    oldmagic = SetMagicFlag( TRUE );
+    rc = FindRegularExpression( matchd, &pos2, &linedata, pos2.line, FALSE );
+    if( rc != ERR_NO_ERR ) {
+        SetMagicFlag( oldmagic );
         return( ERR_NOTHING_TO_MATCH );
     }
 
@@ -97,8 +97,6 @@ int FindMatch( linenum *xln, int *xcol )
         }
     }
 
-    cl = GetCurrRegExpColumn( linedata );
-
     /*
      * get appropriate array entry
      */
@@ -107,10 +105,11 @@ int FindMatch( linenum *xln, int *xcol )
     match[0] = MatchData[m1];
     match[1] = MatchData[m1 + 1];
     matchcnt = 1;
-    MySprintf( matchd, "!(%s)|(%s)", match[0], match[1] );
-    i = CurrentRegComp( matchd );
-    if( i ) {
-        return( i );
+    MySprintf( matchd, "(%s)|(%s)", match[0], match[1] );
+    rc = CurrentRegComp( matchd );
+    SetMagicFlag( oldmagic );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
@@ -118,24 +117,22 @@ int FindMatch( linenum *xln, int *xcol )
      */
     while( TRUE ) {
         if( m2 ) {
-            cl--;
-            if( FindRegularExpressionBackwards( NULL, &ln, cl, &linedata, -1L, FALSE ) ) {
-                break;
-            }
+            pos2.column--;
+            rc = FindRegularExpressionBackwards( NULL, &pos2, &linedata, -1L, FALSE );
         } else {
-            cl++;
-            if( FindRegularExpression( NULL, &ln, cl, &linedata, MAX_LONG, FALSE ) ) {
-                break;
-            }
+            pos2.column++;
+            rc = FindRegularExpression( NULL, &pos2, &linedata, MAX_LONG, FALSE );
         }
-        cl = GetCurrRegExpColumn( linedata );
+        if( rc != ERR_NO_ERR ) {
+            break;
+        }
         if( CurrentRegularExpression->startp[m2 + 1] != NULL ) {
             matchcnt++;
         } else {
             matchcnt--;
             if( matchcnt == 0 ) {
-                *xln = ln;
-                *xcol = 1 + cl;
+                *pos1 = pos2;
+                pos1->column += 1;
                 return( ERR_NO_ERR );
             }
         }
@@ -149,7 +146,7 @@ int FindMatch( linenum *xln, int *xcol )
 /*
  * AddMatchString - add another match string
  */
-int AddMatchString( char *data )
+vi_rc AddMatchString( char *data )
 {
     char        st[MAX_STR], st2[MAX_STR];
 

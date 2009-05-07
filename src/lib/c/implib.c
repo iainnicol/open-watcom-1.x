@@ -394,9 +394,6 @@ static void peAddImport( arch_header *arch, libfile io )
     arch->ffname = NULL;
     DLLName = DupStr( DLLName );
     if( coff_obj == TRUE ) {
-        if( DLLName[ strlen(DLLName)-4 ] == '.' ) {
-            DLLName[ strlen(DLLName)-4 ] = '\0';
-        }
         coffAddImportOverhead( arch, DLLName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
@@ -417,8 +414,6 @@ static void peAddImport( arch_header *arch, libfile io )
 //            memcpy( buffer + 6, currname, sym_len );
 //            AddSym( buffer, SYM_WEAK, 0 );
         }
-        AddSym( currname, SYM_STRONG, 0 );
-        strcpy( buffer, "__imp_" );
         if( processor == WL_PROC_PPC ) {
             memcpy( buffer, "..", 2 );
             memcpy( buffer + 2, currname, sym_len );
@@ -452,6 +447,7 @@ static char *GetImportString( char **rawpntr, char *original )
             *raw++ = 0x00;
             break;
         }
+
         ++raw;
     }
 
@@ -843,7 +839,7 @@ int CoffImportSize( import_sym *import )
             } else if( sym_len > 2 ) {
                 ret += 7 + sym_len;
             }
-            ret += COFF_RELOC_SIZE + 6;     // text data
+            ret += 6 + COFF_RELOC_SIZE;     // .text
             break;
         }
         return( ret );

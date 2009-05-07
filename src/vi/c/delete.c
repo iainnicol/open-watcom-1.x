@@ -30,15 +30,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
 #include "vi.h"
-#include "keys.h"
 
 /*
  * DoDeleteRegion - delete currently selected region
  */
-int DoDeleteRegion( event **ev, event **next )
+vi_rc DoDeleteRegion( event **ev, event **next )
 {
 #ifdef __WIN__
     SavebufNumber = CLIPBOARD_SAVEBUF;
@@ -53,7 +50,7 @@ int DoDeleteRegion( event **ev, event **next )
 /*
  * DoDeleteLineEnd - delete to end of line
  */
-int DoDeleteLineEnd( event **ev, event **next )
+vi_rc DoDeleteLineEnd( event **ev, event **next )
 {
     *ev = &EventList['d'];
     *next = &EventList['$'];
@@ -66,7 +63,7 @@ int DoDeleteLineEnd( event **ev, event **next )
  * DoDeleteCharAtCursor - delete character at cursor (DEL, x)
  *                        (or range if one exists)
  */
-int DoDeleteCharAtCursor( event **ev, event **next )
+vi_rc DoDeleteCharAtCursor( event **ev, event **next )
 {
     *ev = &EventList['d'];
     if( SelRgn.selected && EditFlags.Modeless ) {
@@ -84,7 +81,7 @@ int DoDeleteCharAtCursor( event **ev, event **next )
  * DoDeleteCharBeforeCursor - delete character before cursor (DEL, x)
  *                            (or range if modeless & one exists)
  */
-int DoDeleteCharBeforeCursor( event **ev, event **next )
+vi_rc DoDeleteCharBeforeCursor( event **ev, event **next )
 {
     *ev = &EventList['d'];
     if( SelRgn.selected && EditFlags.Modeless ) {
@@ -100,7 +97,7 @@ int DoDeleteCharBeforeCursor( event **ev, event **next )
 /*
  * DeleteSelectedRegion - delete selected region
  */
-int DeleteSelectedRegion( void )
+vi_rc DeleteSelectedRegion( void )
 {
     range r;
 
@@ -115,7 +112,7 @@ int DeleteSelectedRegion( void )
 /*
  * YankSelectedRegion - yank selected region
  */
-int YankSelectedRegion( void )
+vi_rc YankSelectedRegion( void )
 {
     range r;
 

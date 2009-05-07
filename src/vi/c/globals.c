@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
-#include "colors.h"
-#include "keys.h"
+#include "menu.h"
+#include "ex.h"
 #include "rxsupp.h"
 
 /* strings */
@@ -40,11 +39,11 @@ char _NEAR      MSG_CHARACTERS[] = "characters";
 char _NEAR      MSG_LINES[] = "lines";
 char _NEAR      MSG_PRESSANYKEY[] = "Press any key";
 char _NEAR      MSG_DELETEDINTOBUFFER[] = " deleted into buffer ";
-char _NEAR      MEMORIZE_MODE[]="Memorize Mode ";
+char _NEAR      MEMORIZE_MODE[] = "Memorize Mode ";
 char _NEAR      CONFIG_FILE[] = CFG_NAME;
 char _NEAR      SingleBlank[] = " ";
 char _NEAR      SingleSlash[] = "/";
-char * _NEAR    BoolStr[] = { "FALSE", "TRUE" };
+char            * _NEAR BoolStr[] = { "FALSE", "TRUE" };
 
 /* edit options */
 char * _NEAR EditOpts[] =  {
@@ -53,6 +52,15 @@ char * _NEAR EditOpts[] =  {
     "<F3> Get All"
 };
 int NumEditOpts = sizeof( EditOpts ) / sizeof( char _NEAR * );
+
+/* event data */
+#undef vi_pick
+#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) \
+    modeless, insert, command, nm_bits, bits,
+event _NEAR EventList[] = {
+#include "events.h"
+#undef vi_pick
+};
 
 /* mouse data */
 #if !defined( __UNIX__ )
@@ -64,7 +72,7 @@ int             MouseSpeed = 4;
 int             MouseDoubleClickSpeed = 3;
 int             MouseRepeatStartDelay = 5;
 int             MouseRepeatDelay;
-int             LastMouseEvent = -1;
+vi_mouse_event  LastMouseEvent = MOUSE_NONE;
 
 /* generic editing data */
 char            *FileEndString = NULL;
@@ -78,10 +86,10 @@ long            NextAutoSave;
 int             PageLinesExposed = 1;
 int             HalfPageLines;
 char            *GrepDefault;
-int             LastEvent;
+vi_key          LastEvent;
 int             StackK = MIN_STACK_K;
 int             SpinCount;
-char            _NEAR SpinData[] = "Ä\\|/";
+char            _NEAR SpinData[] = { '\xC4', '\\', '|', '/' };
 char            ExitAttr = 7;
 char            VideoPage;
 char            *EXEName;
@@ -104,17 +112,14 @@ file            *CurrentFile;
 fcb             *CurrentFcb;
 line            *CurrentLine;
 line            *WorkLine;
-linenum         CurrentLineNumber = 1;
-linenum         TopOfPage = 1;
-int             CurrentColumn = 1;
-int             LeftColumn;
+i_mark          CurrentPos = { 1, 1 };
+i_mark          LeftTopPos = { 1, 0 };
 int             ColumnDesired = 1;
 window_id       CurrentWindow = (window_id)-1;
 window_id       MessageWindow = (window_id)-1;
 window_id       StatusWindow = (window_id)-1;
 window_id       MenuWindow = (window_id)-1;
 window_id       CurrNumWindow = (window_id)-1;
-int             LastEvent;
 select_rgn      SelRgn;
 int             CursorBlinkRate = -1;
 
@@ -171,7 +176,7 @@ key_map         *InputKeyMaps;
 /*
  * savebuf data
  */
-int             _NEAR SavebufBound[ MAX_SAVEBUFS ] =
+vi_key          _NEAR SavebufBound[MAX_SAVEBUFS] =
                         { VI_KEY( CTRL_F1 ), VI_KEY( CTRL_F2 ),
                           VI_KEY( CTRL_F3 ), VI_KEY( CTRL_F4 ),
                           VI_KEY( CTRL_F5 ), VI_KEY( CTRL_F6 ),
@@ -293,8 +298,8 @@ char            *Comspec;
 int             WrapMargin;
 short           *StatusSections;
 int             NumStatusSections;
-int             LastRetCode;
-long            LastRC;
+vi_rc           LastRetCode;
+vi_rc           LastRC;
 long            MaxMemFree;
 long            MaxMemFreeAfterInit;
 int             RegExpError;
@@ -305,7 +310,7 @@ cursor_type     InsertCursorType = { 50, 0 };
 cursor_type     NormalCursorType = { 7, 0 };
 char            * _NEAR MatchData[MAX_SEARCH_STRINGS * 2];
 int             MatchCount = INITIAL_MATCH_COUNT;
-int             LastError;
+vi_rc           LastError;
 int             LineNumWinWidth = 8;
 int             TabAmount = 8;
 int             ShiftWidth = 4;
@@ -330,20 +335,20 @@ char            _NEAR SpawnPrompt[MAX_STR];
  * windowing data
  */
 int             CurrentStatusColumn = 56;
-int             ClockX = 74, ClockY;
-int             SpinX = 68, SpinY;
+int             ClockX = 74, ClockY = 0;
+int             SpinX = 68, SpinY = 0;
 char            *TileColors;
 int             MaxTileColors = 10;
 int             MaxWindowTileX = 3;
 int             MaxWindowTileY = 1;
-int             MoveColor = CYAN;
-int             ResizeColor = YELLOW;
-int             InactiveWindowColor = WHITE;
+vi_color        MoveColor = CYAN;
+vi_color        ResizeColor = YELLOW;
+vi_color        InactiveWindowColor = WHITE;
 short           WindMaxWidth = 80;
 short           WindMaxHeight = 25;
 int             ToolBarButtonHeight = 24;
 int             ToolBarButtonWidth = 24;
-int             ToolBarColor = 1;
+vi_color        ToolBarColor = BLUE;
 char            EndOfLineChar = 0;
 
 /*
