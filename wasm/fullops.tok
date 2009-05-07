@@ -43,6 +43,7 @@ eq
 equ
 equ2
 .err
+err
 .errb
 .errdef
 .errdif
@@ -50,6 +51,15 @@ equ2
 .erre
 .erridn
 .erridni
+errifb
+errifdef
+errifdif
+errifdifi
+errife
+errifidn
+errifidni
+errifnb
+errifndef
 .errnb
 .errndef
 .errnz

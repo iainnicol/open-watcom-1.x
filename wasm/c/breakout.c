@@ -164,6 +164,15 @@ int directive( int i, long direct )
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
+    case T_ERR:
+    case T_ERRIFB:
+    case T_ERRIFDEF:
+    case T_ERRIFDIF:
+    case T_ERRIFDIFI:
+    case T_ERRIFE:
+    case T_ERRIFIDN:
+    case T_ERRIFIDNI:
+    case T_ERRIFNDEF:
         return( conditional_error_directive( i ) );
     case T_ENDS:
         if( Definition.struct_depth != 0 )
@@ -291,8 +300,6 @@ int directive( int i, long direct )
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
-        ExpandAllConsts( 0, FALSE );
-        break;
     case T_STARTUPCODE:
     case T_EXITCODE:
     default:
@@ -384,6 +391,8 @@ int directive( int i, long direct )
         return( ForDirective ( i+1, IRP_REPEAT ) );
     case T_DOT_STARTUP:
     case T_DOT_EXIT:
+    case T_STARTUPCODE:
+    case T_EXITCODE:
         return( Startup ( i ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
