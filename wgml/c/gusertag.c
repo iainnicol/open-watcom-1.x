@@ -39,119 +39,6 @@
 
 static  symvar  *   loc_dict;           // for preparing local vars
 
-/***************************************************************************/
-/*  some error msgs                                                        */
-/*                                                                         */
-/***************************************************************************/
-static void auto_att_err( void )
-{
-    //****ERROR**** SC--041: Cannot specify the automatic attribute 'xxx'
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_auto Cannot specify the automatic attribute '%s'\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 token_buf, input_cbs->s.m->lineno,
-                 input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_auto Cannot specify the automatic attribute '%s'\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 token_buf, input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    if( inc_level > 0 ) {
-        show_include_stack();
-    }
-    return;
-}
-
-static void att_range_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_range missing / invalid\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_range missing / invalid\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-static void att_len_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_length value too long\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_length value too long\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-static void att_val_err( char * attname )
-{
-//****ERROR**** SC--045: Value 'xxx' for the 'yyy' attribute is not defined
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_val Value '%s' for the '%s' attribute is not defined\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 token_buf, attname,
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_val Value '%s' for the '%s' attribute is not defined\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 token_buf, attname,
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-
-static void tag_text_err( char * tagname )
-{
-//****ERROR**** SC--038: Tag text may not be specified for the 'xxx' tag
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_TAG_txt Tag text may not be specified for the '5s' tag\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 tagname,
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_TAG_txt Tag text may not be specified for the '%s' tag\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 tagname,
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-static void tag_text_req_err( char * tagname )
-{
-//****ERROR**** SC--039: Tag text must be specified with the 'xxx' tag
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_TAG_txt Tag text must be specified with the '%s' tag\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 tagname,
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_TAG_txt Tag text must be specified with the '%s' tag\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 tagname,
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
 
 /***************************************************************************/
 /*  clear and set the relevant attribute parametercheck flags              */
@@ -199,7 +86,7 @@ static  void    add_defaults_to_dict( gtentry * ge, symvar * * dict )
                         }
                     }
                     if( gaval->valflags & val_range ) { // range default
-                        sprintf( token_buf, "%d", gaval->a.range[ 2 ] );
+                        sprintf( token_buf, "%d", gaval->a.range[2] );
                         valp = token_buf;
                     }
                     if( valp != NULL ) {
@@ -250,16 +137,16 @@ static bool check_att_value( gaentry * ga )
         } else {
             if( gaval->valflags & val_range ) {
                 attval = strtol( token_buf, NULL, 10 );
-                if( attval < gaval->a.range[ 0 ] ||
-                    attval > gaval->a.range[ 1 ]  ) {
-                    att_range_err();    // value outside range
+                if( attval < gaval->a.range[0] ||
+                    attval > gaval->a.range[1]  ) {
+                    xx_err( ERR_ATT_RANGE_INV );// value outside range
                     msg_done = true;
                     break;
                 }
             } else {
                 if( gaval->valflags & val_length ) {
                     if( strlen( token_buf ) > gaval->a.length ) {
-                        att_len_err();  // value too long
+                        xx_err( err_att_len_inv );  // value too long
                         msg_done = true;
                     } else {
                         scan_err = false;
@@ -295,7 +182,8 @@ bool        process_tag( gtentry * ge, mac_entry * me )
     char        *   p2;
     int             rc;
     char            quote;
-    char            longwork[ 20 ];
+    char            longwork[20];
+    bool            tag_end_found = false;
 
     processed = false;
     init_dict( &loc_dict );
@@ -318,9 +206,9 @@ bool        process_tag( gtentry * ge, mac_entry * me )
             *p2++ = *p++;
         }
         *p2 = '\0';
-        for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// for all attrs
+        for( ga = ge->attribs; ga != NULL; ga = ga->next ) { // for all attrs
             if( !stricmp( ga->name, token_buf ) ) {
-                ga->attflags |= att_proc_seen;
+                ga->attflags |= att_proc_seen;  // attribute specified
                 if( ga->attflags & att_auto ) {
                     auto_att_err();
                     break;
@@ -329,7 +217,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                 if( *p == '=' ) {       // value follows
                     ga->attflags |= att_proc_val;
 
-                    p++;
+                    p++;                // over =
                     p2 = token_buf;
                     if( is_quote_char( *p ) ) {
                         quote = *p++;
@@ -364,7 +252,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                              }
                         }
                         if( gaval != NULL ) {
-                             sprintf( token_buf, "%d", gaval->a.range[ 3 ] );
+                             sprintf( token_buf, "%d", gaval->a.range[3] );
                              rc = add_symvar( &loc_dict, ga->name, token_buf,
                                               no_subscript, local_var );
                         }
@@ -375,23 +263,38 @@ bool        process_tag( gtentry * ge, mac_entry * me )
             }
         }
         if( ga == NULL ) {              // attribute not found
+            char        linestr[MAX_L_AS_STR];
+
             wng_count++;
             //***WARNING*** SC--040: 'abd' is not a valid attribute name
+            g_warn( wng_att_name, token_buf );
             if( input_cbs->fmflags & II_macro ) {
-                out_msg( "WNG_ATT_NAME '%s' is not a valid attribute name\n"
-                         "\t\t\tLine %d of macro '%s'\n",
-                         token_buf, input_cbs->s.m->lineno,
-                         input_cbs->s.m->mac->name );
+                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                out_msg( "WNG_ATT_NAME '%s' is not a valid attribute name\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         token_buf, input_cbs->s.f->lineno,
-                         input_cbs->s.f->filename );
+                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
-            if( inc_level > 0 ) {
-                show_include_stack();
-            }
+            show_include_stack();
         }
+
+        /*******************************************************************/
+        /*  check for tag end .                                            */
+        /*******************************************************************/
+        if( *p == ' ' ) {
+            continue;                   // not yet at buffer / tag end
+        }
+        if( *p != '.' ) {
+            if( get_line() ) {
+                p = buff2;
+            } else {
+                *p = '\0';
+            }
+        } else {
+            processed = true;
+            tag_end_found = true;
+        }
+
     }
 
     /***********************************************************************/
@@ -412,6 +315,8 @@ bool        process_tag( gtentry * ge, mac_entry * me )
         }
     }
     if( *token_buf != '\0' ) {          // some req attr missing
+        char        linestr[MAX_L_AS_STR];
+
         // the errmsg in wgml 4.0 is wrong, it shows the macroname, not tag.
 //****ERROR**** SC--047: For the tag '@willi', the required attribute(s)
 //                       'muss2'
@@ -419,22 +324,13 @@ bool        process_tag( gtentry * ge, mac_entry * me )
 //                       have not been specified
 
         err_count++;
+        g_err( err_att_req, ge->name, token_buf );
         if( input_cbs->fmflags & II_macro ) {
-            out_msg( "ERR_ATT_req For the tag '%s', the required attribute(s)\n"
-                     "\t\t\t%s\n"
-                     "\t\t\thave not been specified\n"
-                     "\t\t\tLine %d of macro '%s'\n",
-                     ge->name,
-                     token_buf,
-                     input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
-            out_msg( "ERR_ATT_req For the tag '%s', the required attribute(s)\n"
-                     "\t\t\t%s\n"
-                     "\t\t\thave not been specified\n"
-                     "\t\t\tLine %d of file '%s'\n",
-                     ge->name,
-                     token_buf,
-                     input_cbs->s.f->lineno, input_cbs->s.f->filename );
+            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         show_include_stack();
     }
@@ -452,6 +348,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
         strcpy( token_buf, p + 1 );
         rc = add_symvar( &loc_dict, "_", token_buf, no_subscript, local_var );
         p += strlen( token_buf );
+        processed = true;
     }
 
     scan_start = p + 1;         // all processed
@@ -461,11 +358,11 @@ bool        process_tag( gtentry * ge, mac_entry * me )
 
     rc = add_symvar( &loc_dict, "_tag", ge->name, no_subscript, local_var );
     ge->usecount++;
-    sprintf( longwork, "%d", ge->usecount++ );
+    sprintf( longwork, "%d", ge->usecount );
     rc = add_symvar( &loc_dict, "_n", longwork, no_subscript, local_var );
 
 
-    add_macro_cb_entry( me, ge );       // prepare macro as input
+    add_macro_cb_entry( me, ge );       // prepare GML macro as input
     input_cbs->local_dict = loc_dict;
     inc_inc_level();                    // start new include level
 
@@ -473,7 +370,6 @@ bool        process_tag( gtentry * ge, mac_entry * me )
         print_sym_dict( input_cbs->local_dict );
     }
 
-    processed = true;
     return( processed );
 }
 

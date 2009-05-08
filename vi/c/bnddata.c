@@ -29,48 +29,44 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "vi.h"
 #include "posix.h"
 #include <fcntl.h>
-#include <ctype.h>
-#include <string.h>
 #ifdef __WATCOMC__
   #include <share.h>
   #define sopen3 sopen
   #define sopen4 sopen
 #else
-  #define sopen3(a,b,c)   open(a,b)
-  #define sopen4(a,b,c,d) open(a,b,d)
+  #define sopen3( a, b, c )     open( a, b )
+  #define sopen4( a, b, c, d )  open( a, b, d )
 #endif
-#include "vi.h"
 
-#define isWSorCtrlZ(x)  (isspace(x) || (x==0x1A))
+#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
 static char magicCookie[] = "CGEXXX";
 
 #define MAGIC_COOKIE_SIZE sizeof( magicCookie )
 
-static long *dataOffsets;
-static short *entryCounts,dataFcnt;
-static char *dataFnames;
-static long dataStart;
+static long     *dataOffsets;
+static short    *entryCounts, dataFcnt;
+static char     *dataFnames;
+static long     dataStart;
 
 /*
  * CheckForBoundData - check if data is bound to our exe
  */
 void CheckForBoundData( void )
 {
-    int         h,i;
-    char        buff[MAGIC_COOKIE_SIZE+3],*tmp;
+    int         h, i;
+    char        buff[MAGIC_COOKIE_SIZE + 3], *tmp;
     short       taillen;
 
     /*
      * get trailer
      */
     h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
-    lseek( h, -((long) MAGIC_COOKIE_SIZE+3L), SEEK_END );
-    read( h, buff, 3+MAGIC_COOKIE_SIZE );
+    lseek( h, -((long) MAGIC_COOKIE_SIZE + 3L), SEEK_END );
+    read( h, buff, 3 + MAGIC_COOKIE_SIZE );
 
     /*
      * seek to start of data
@@ -79,15 +75,15 @@ void CheckForBoundData( void )
         close( h );
         return;
     }
-    taillen = *( (short *) &(buff[MAGIC_COOKIE_SIZE+1]) );
-    dataStart = (long) -((long) taillen+(long) MAGIC_COOKIE_SIZE+3);
+    taillen = *((short *) &(buff[MAGIC_COOKIE_SIZE + 1]));
+    dataStart = (long) -((long) taillen + (long) MAGIC_COOKIE_SIZE + 3);
     lseek( h, dataStart, SEEK_END );
 
     /*
      * get everything
      */
-    BndMemory = MemAlloc( taillen+4 );
-    read( h, BndMemory, taillen+4 );
+    BndMemory = MemAlloc( taillen + 4 );
+    read( h, BndMemory, taillen + 4 );
     close( h );
 
     /*
@@ -100,7 +96,7 @@ void CheckForBoundData( void )
     /*
      * get file names
      */
-    tmp = BndMemory+2;
+    tmp = BndMemory + 2;
     i = *(short *) tmp;
     tmp += 2;
     dataFnames = MemAlloc( i );
@@ -124,9 +120,10 @@ void CheckForBoundData( void )
  */
 bool SpecialOpen( char *fn, GENERIC_FILE *gf )
 {
-    long        shift=0;
-    int         h,i;
+    long        shift = 0;
+    int         h, i;
     char        a;
+    vi_rc       rc;
 
     /*
      * process bound file
@@ -155,7 +152,7 @@ bool SpecialOpen( char *fn, GENERIC_FILE *gf )
                 gf->data.handle = h;
             } else {
                 shift -= dataStart;
-                gf->data.pos = &BndMemory[ shift ];
+                gf->data.pos = &BndMemory[shift];
                 a = (int) gf->data.pos[0];
                 gf->data.pos++;
             }
@@ -174,13 +171,12 @@ bool SpecialOpen( char *fn, GENERIC_FILE *gf )
     if( fn[0] == '.' && fn[1] == 0 ) {
         gf->type = GF_BUFFER;
         gf->data.cfile = CurrentFile;
-        i = GimmeLinePtr( 1, CurrentFile, &(gf->gf.b.cfcb), &(gf->gf.b.cline));
-        if( i ) {
+        rc = GimmeLinePtr( 1, CurrentFile, &(gf->gf.b.cfcb), &(gf->gf.b.cline));
+        if( rc != ERR_NO_ERR ) {
             return( FALSE );
         }
         return( TRUE );
     }
-
 
     /*
      * process regular file
@@ -219,19 +215,22 @@ void SpecialFclose( GENERIC_FILE *gf )
 int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
     int         i, j;
+    vi_rc       rc;
 
     switch( gf->type ) {
     case GF_FILE:
-        if( fgets( buff, max, gf->data.f ) == NULL )
+        if( fgets( buff, max, gf->data.f ) == NULL ) {
             return( -1 );
-        for( i = strlen( buff ); i && isWSorCtrlZ( buff[ i - 1] ); --i )
-            buff[ i - 1 ] = '\0';
+        }
+        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
+            buff[i - 1] = '\0';
+        }
         return( i );
     case GF_BOUND:
         if( gf->gf.a.currline >= gf->gf.a.maxlines ) {
             return( -1 );
         }
-        gf->gf.a.currline ++;
+        gf->gf.a.currline++;
         if( BndMemory == NULL ) {
             read( gf->data.handle, buff, gf->gf.a.length+1 );
         } else {
@@ -249,9 +248,9 @@ int SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
         }
         j= gf->gf.b.cline->len;
         memcpy( buff, gf->gf.b.cline->data, j + 1 );
-        i = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb),
+        rc = GimmeNextLinePtr( gf->data.cfile, &(gf->gf.b.cfcb),
                               &(gf->gf.b.cline) );
-        if( i ) {
+        if( rc != ERR_NO_ERR ) {
             gf->data.cfile = NULL;
         }
         return( j );

@@ -29,19 +29,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <ctype.h>
 #include "vi.h"
-#include "colors.h"
-#include "keys.h"
+#include <time.h>
 #include "menu.h"
 #include "win.h"
 
 typedef struct menu_item {
-    struct menu_item    *next,*prev;
+    struct menu_item    *next, *prev;
     char                hi;
     char                hioff;
     char                slen;
@@ -55,29 +49,29 @@ typedef struct {
 } hilst;
 
 typedef struct menu {
-    struct menu *next,*prev;
-    menu_item   *itemhead,*itemtail;
-    int         itemcnt;
-    int         orig_itemcnt;
-    char        **list;
-    hilst       *hilist;
-    char        has_file_list:1;
-    char        need_hook:1;
-    char        has_last_files:1;
-    char        spare:5;
-    char        maxwidth;
-    char        orig_maxwidth;
-    char        hi;
-    char        hioff;
-    char        slen;
-    char        str[1];
+    struct menu     *next, *prev;
+    menu_item       *itemhead, *itemtail;
+    int             itemcnt;
+    int             orig_itemcnt;
+    char            **list;
+    hilst           *hilist;
+    unsigned char   has_file_list   : 1;
+    unsigned char   need_hook       : 1;
+    unsigned char   has_last_files  : 1;
+    unsigned char   spare           : 5;
+    char            maxwidth;
+    char            orig_maxwidth;
+    char            hi;
+    char            hioff;
+    char            slen;
+    char            str[1];
 } menu;
 
 int CurrentMenuNumber;
 
 static int      menuCnt;
 
-static menu     *menuHead,*menuTail,*currMenu;
+static menu     *menuHead, *menuTail, *currMenu;
 static menu     *windowGadgetMenu;
 static menu     *floatMenus[MAX_FLOAT_MENUS] = { NULL, NULL, NULL, NULL };
 
@@ -88,7 +82,7 @@ static void getMenuName( char *res, char *str, int slen, int hioff )
 {
     int i;
 
-    for( i=0;i<=slen;i++ ) {
+    for( i = 0; i <= slen; i++ ) {
         if( i == hioff ) {
             *res++ = '&';
         }
@@ -154,17 +148,17 @@ void BarfMenuData( FILE *f )
  */
 static int extractMenuStr( char *str, int *hioff )
 {
-    int         len,i,j;
+    int         len, i, j;
     char        ch;
 
     len = strlen( str );
     *hioff = 0;
-    for( i=0;i<len;i++ ) {
+    for( i = 0; i < len; i++ ) {
         if( str[i] == '&' ) {
-            ch = str[i+1];
+            ch = str[i + 1];
             *hioff = i;
-            for( j=i+1;j<=len;j++ ) {
-                str[j-1] = str[j];
+            for( j = i + 1; j <= len; j++ ) {
+                str[j - 1] = str[j];
             }
             return( ch );
         }
@@ -178,7 +172,7 @@ static int extractMenuStr( char *str, int *hioff )
  */
 static void freeMenuData( menu *cmenu )
 {
-    menu_item   *curr,*next;
+    menu_item   *curr, *next;
     menu        *tmp;
 
     if( cmenu == NULL ) {
@@ -223,7 +217,7 @@ static menu *findMenu( char *str, menu ***predef_menu )
     if( str[0] == 'f' || str[0] == 'w' ) {
         if( !strnicmp( str, "float", 5 ) ) {
             num = str[5] - '0';
-            if( num >=0 && num < MAX_FLOAT_MENUS ) {
+            if( num >= 0 && num < MAX_FLOAT_MENUS ) {
                 res = floatMenus[num];
                 *predef_menu = &floatMenus[num];
             }
@@ -249,7 +243,7 @@ static menu *findMenu( char *str, menu ***predef_menu )
 /*
  * StartMenu - start a new top level menu
  */
-int StartMenu( char *data )
+vi_rc StartMenu( char *data )
 {
     char        str[MAX_STR];
     menu        *tmp;
@@ -286,7 +280,7 @@ int StartMenu( char *data )
     }
     if( predef_menu == NULL ) {
         if( new ) {
-            AddLLItemAtEnd( (ss**)&menuHead, (ss**)&menuTail, (ss*)tmp );
+            AddLLItemAtEnd( (ss **)&menuHead, (ss **)&menuTail, (ss *)tmp );
         } else {
             freeMenuData( tmp );
         }
@@ -314,10 +308,10 @@ static void initMenuList( menu *cmenu )
     MemFree( cmenu->list );
     MemFree( cmenu->hilist );
     cmenu->list = MemAlloc( sizeof( char * ) * cmenu->itemcnt );
-    cmenu->hilist = MemAlloc( sizeof( hilst) * (cmenu->itemcnt+1) );
+    cmenu->hilist = MemAlloc( sizeof( hilst ) * (cmenu->itemcnt + 1) );
 
     cmi = cmenu->itemhead;
-    for( i=0;i<cmenu->itemcnt; i++ ) {
+    for( i = 0; i < cmenu->itemcnt; i++ ) {
         cmenu->list[i] = cmi->str;
         cmenu->hilist[i].hi = cmi->hi;
         cmenu->hilist[i].hioff = cmi->hioff;
@@ -331,9 +325,10 @@ static void initMenuList( menu *cmenu )
 /*
  * ViEndMenu - terminate new menu
  */
-int ViEndMenu( void )
+vi_rc ViEndMenu( void )
 {
-    int         ch;
+    char        ch;
+    vi_key      key;
 
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
@@ -343,11 +338,11 @@ int ViEndMenu( void )
     }
     ch = toupper( currMenu->hi );
     if( ch >= 'A' && ch <='Z' ) {
-        ch = ch - 'A' + VI_KEY( ALT_A );
-        EventList[ ch ].rtn.old = DoMenu;
-        EventList[ ch ].b.keep_selection = TRUE;
-        EventList[ ch ].alt_rtn.old = DoMenu;
-        EventList[ ch ].alt_b.keep_selection = TRUE;
+        key = ch - 'A' + VI_KEY( ALT_A );
+        EventList[key].rtn.old = DoMenu;
+        EventList[key].b.keep_selection = TRUE;
+        EventList[key].alt_rtn.old = DoMenu;
+        EventList[key].alt_b.keep_selection = TRUE;
     }
 
     initMenuList( currMenu );
@@ -361,7 +356,7 @@ int ViEndMenu( void )
 /*
  * MenuItem - add new item current menu
  */
-int MenuItem( char *data )
+vi_rc MenuItem( char *data )
 {
     char        str[MAX_STR];
     int         len;
@@ -383,13 +378,13 @@ int MenuItem( char *data )
     tmp->hi = ch;
     tmp->hioff = hioff;
     strcpy( tmp->str, str );
-    tmp->cmd = &(tmp->str[len+1]);
+    tmp->cmd = &(tmp->str[len + 1]);
     strcpy( tmp->cmd, data );
     if( len > currMenu->maxwidth ) {
         currMenu->maxwidth = len;
     }
 
-    AddLLItemAtEnd( (ss**)&currMenu->itemhead, (ss**)&currMenu->itemtail, (ss*)tmp );
+    AddLLItemAtEnd( (ss **)&currMenu->itemhead, (ss **)&currMenu->itemtail, (ss *)tmp );
 
     currMenu->itemcnt++;
     return( ERR_NO_ERR );
@@ -399,13 +394,13 @@ int MenuItem( char *data )
 /*
  * DoItemDelete - delete an item from a menu
  */
-int DoItemDelete( char *data )
+vi_rc DoItemDelete( char *data )
 {
-    menu        *cmenu,**predef_menu;
+    menu        *cmenu, **predef_menu;
     char        mname[MAX_STR];
     char        str[MAX_STR];
-    menu_item   *cmi,*dmi;
-    int         i,id,mwid;
+    menu_item   *cmi, *dmi;
+    int         i, id, mwid;
 
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
@@ -418,7 +413,7 @@ int DoItemDelete( char *data )
     NextWord1( data, str );
     id = atoi( str );
     if( id < 0 ) {
-        id = cmenu->itemcnt-1;
+        id = cmenu->itemcnt - 1;
     }
     if( id >= cmenu->itemcnt ) {
         return( ERR_INVALID_MENU );
@@ -426,7 +421,7 @@ int DoItemDelete( char *data )
     i = 0;
     mwid = 0;
     dmi = NULL;
-    for( cmi=cmenu->itemhead; cmi != NULL; cmi = cmi->next ) {
+    for( cmi = cmenu->itemhead; cmi != NULL; cmi = cmi->next ) {
         if( i == id ) {
             dmi = cmi;
         } else {
@@ -442,7 +437,7 @@ int DoItemDelete( char *data )
 
     cmenu->itemcnt--;
     cmenu->maxwidth = mwid;
-    DeleteLLItem( (ss**)&cmenu->itemhead, (ss**)&cmenu->itemtail, (ss*)dmi );
+    DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)dmi );
     MemFree( dmi );
     initMenuList( cmenu );
     return( ERR_NO_ERR );
@@ -452,11 +447,11 @@ int DoItemDelete( char *data )
 /*
  * AddMenuItem - add a menu item to an already created menu
  */
-int AddMenuItem( char *data )
+vi_rc AddMenuItem( char *data )
 {
-    menu        *cmenu,**predef_menu;
+    menu        *cmenu, **predef_menu;
     char        mname[MAX_STR];
-    int         rc;
+    vi_rc       rc;
 
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
@@ -477,9 +472,9 @@ int AddMenuItem( char *data )
 /*
  * DoMenuDelete - delete an existing menu
  */
-int DoMenuDelete( char *data )
+vi_rc DoMenuDelete( char *data )
 {
-    menu        *cmenu,**predef_menu;
+    menu        *cmenu, **predef_menu;
     char        mname[MAX_STR];
 
     if( currMenu != NULL ) {
@@ -495,7 +490,7 @@ int DoMenuDelete( char *data )
         *predef_menu = NULL;
         return( ERR_NO_ERR );
     }
-    DeleteLLItem( (ss**)&menuHead, (ss**)&menuTail, (ss*)cmenu );
+    DeleteLLItem( (ss **)&menuHead, (ss **)&menuTail, (ss *)cmenu );
     freeMenu( cmenu );
     menuCnt--;
     InitMenu();
@@ -522,8 +517,8 @@ static void addFileList( menu *cmenu )
     cinfo = InfoHead;
     cnt = 1;
     while( cinfo != NULL && cnt < 10 ) {
-        MySprintf( buff,"\"&%d %s\" edit %s", cnt,
-                cinfo->CurrentFile->name, cinfo->CurrentFile->name );
+        MySprintf( buff, "\"&%d %s\" edit %s", cnt,
+                   cinfo->CurrentFile->name, cinfo->CurrentFile->name );
         MenuItem( buff );
         cinfo = cinfo->next;
         cnt++;
@@ -542,7 +537,7 @@ static void addFileList( menu *cmenu )
  */
 static void removeFileList( menu *cmenu )
 {
-    menu_item   *citem,*nitem;
+    menu_item   *citem, *nitem;
     int         i;
 
     i = 0;
@@ -553,7 +548,7 @@ static void removeFileList( menu *cmenu )
     }
     while( citem != NULL ) {
         nitem = citem->next;
-        DeleteLLItem( (ss**)&cmenu->itemhead, (ss**)&cmenu->itemtail, (ss*)citem );
+        DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)citem );
         MemFree( citem );
         citem = nitem;
         cmenu->itemcnt--;
@@ -568,12 +563,13 @@ static void removeFileList( menu *cmenu )
 /*
  * InitMenu - initialize control bar window
  */
-int InitMenu( void )
+vi_rc InitMenu( void )
 {
-    int         i,ws;
+    int         ws;
     char        disp[MAX_STR];
     char        tmp[MAX_STR];
     menu        *cmenu;
+    vi_rc       rc;
 
     if( !EditFlags.WindowsStarted ) {
         return( ERR_NO_ERR );
@@ -588,50 +584,51 @@ int InitMenu( void )
     menubarw_info.y1 = 0;
     menubarw_info.y2 = 0;
     menubarw_info.x1 = 0;
-    menubarw_info.x2 = WindMaxWidth-1;
-    i = NewWindow2( &MenuWindow, &menubarw_info );
-    if( i ) {
+    menubarw_info.x2 = WindMaxWidth - 1;
+    rc = NewWindow2( &MenuWindow, &menubarw_info );
+    if( rc != ERR_NO_ERR ) {
         EditFlags.Menus = FALSE;
-        return( i );
+        return( rc );
     }
 
-    memset( disp,' ', sizeof( disp ) - 1 );
+    memset( disp, ' ', sizeof( disp ) - 1 );
     disp[START_OFFSET] = 0;
-    for( cmenu=menuHead; cmenu != NULL; cmenu=cmenu->next ) {
-        MySprintf(tmp,"%s  ",cmenu->str );
-        strcat(disp,tmp );
+    for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
+        MySprintf( tmp, "%s  ", cmenu->str );
+        strcat( disp, tmp );
     }
-    disp[ strlen( disp ) ] = ' ';
+    disp[strlen( disp )] = ' ';
     if( EditFlags.CurrentStatus ) {
-        disp[ CurrentStatusColumn-1 ] = 0;
-        // disp[ CurrentStatusColumn-7 ] = 0;
+        disp[CurrentStatusColumn - 1] = 0;
+        // disp[CurrentStatusColumn - 7] = 0;
         // strcat( disp, "Mode:" );
     }
     DisplayLineInWindow( MenuWindow, 1, disp );
 
     ws = 0;
-    for( cmenu=menuHead; cmenu != NULL; cmenu=cmenu->next ) {
-        SetCharInWindowWithColor( MenuWindow,1, ws+START_OFFSET+1+
-                cmenu->hioff,cmenu->hi, &menubarw_info.hilight );
-        ws += cmenu->slen+2;
+    for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
+        SetCharInWindowWithColor( MenuWindow, 1, ws + START_OFFSET + 1 +
+            cmenu->hioff, cmenu->hi, &menubarw_info.hilight );
+        ws += cmenu->slen + 2;
     }
 
     return( ERR_NO_ERR );
 
 } /* InitMenu */
 
-void FiniMenu( void ){
+void FiniMenu( void )
+{
     menu        *cmenu;
     menu        *oldmenu;
     int         i;
 
-    for( cmenu=menuHead; cmenu != NULL; ) {
+    for( cmenu = menuHead; cmenu != NULL; ) {
         oldmenu = cmenu;
         cmenu = cmenu->next;
         freeMenu( oldmenu );
     }
-    for( i=0; i<MAX_FLOAT_MENUS; i++ ){
-        if( floatMenus[i] != NULL ){
+    for( i = 0; i < MAX_FLOAT_MENUS; i++ ) {
+        if( floatMenus[i] != NULL ) {
             freeMenu( floatMenus[i] );
         }
     }
@@ -641,7 +638,7 @@ void FiniMenu( void ){
 /*
  * lightMenu - light up control name
  */
-static void lightMenu( int sel, int ws ,int on)
+static void lightMenu( int sel, int ws, int on )
 {
     char        ch;
     int         i;
@@ -655,11 +652,11 @@ static void lightMenu( int sel, int ws ,int on)
     ws++;
 
     cmenu = menuHead;
-    for( i=0;i<sel;i++ ) {
+    for( i = 0; i < sel; i++ ) {
         cmenu = cmenu->next;
     }
 
-    for( i=0; i<cmenu->slen; i++ ) {
+    for( i = 0; i < cmenu->slen; i++ ) {
         if( i == cmenu->hioff && !on ) {
             ch = cmenu->hi;
             s = menubarw_info.hilight;
@@ -670,7 +667,7 @@ static void lightMenu( int sel, int ws ,int on)
                 s.foreground = menubarw_info.hilight.foreground;
             }
         }
-        SetCharInWindowWithColor( MenuWindow,1, ws+i,ch, &s );
+        SetCharInWindowWithColor( MenuWindow, 1, ws + i, ch, &s );
     }
 
 } /* lightMenu */
@@ -680,9 +677,9 @@ static void lightMenu( int sel, int ws ,int on)
  */
 static menu *getMenuPtrFromId( int id )
 {
-    int         i=0;
+    int         i = 0;
     menu        *cmenu;
-    for( cmenu=menuHead; cmenu != NULL; cmenu=cmenu->next ) {
+    for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( id == i ) {
             break;
         }
@@ -693,22 +690,23 @@ static menu *getMenuPtrFromId( int id )
 } /* getMenuPtrFromId */
 
 static int currentID;
+
 /*
  * processMenu - process selected menu
  */
-static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
+static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
 {
-    int         i,ws;
+    int         i, ws;
     char        result[80];
-    int         resint,allowrl,*arl;
+    int         resint, allowrl, *arl;
     selectitem  si;
     menu        *tmenu;
     menu_item   *cmi;
     char        cmd[MAX_INPUT_LINE];
-    int         x1,y1,x2,y2;
+    int         x1, y1, x2, y2;
     int         diff;
     int         xwid;
-    int         rc;
+    vi_rc       rc;
 
     xwid = rxwid;
     if( xwid < 0 ) {
@@ -729,7 +727,7 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
             ws = START_OFFSET;
             tmenu = menuHead;
             while( tmenu != cmenu ) {
-                ws += tmenu->slen+2;
+                ws += tmenu->slen + 2;
                 tmenu = tmenu->next;
             }
             x1 = ws;
@@ -739,25 +737,25 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
             x1 = ws;
             arl = NULL;
         }
-        x2 = x1+cmenu->maxwidth+1;
+        x2 = x1 + cmenu->maxwidth + 1;
         y1 = ypos;
-        y2 = y1 + (int) cmenu->itemcnt+1;
+        y2 = y1 + (int) cmenu->itemcnt + 1;
 
         /*
          * make sure menu will be valid!
          */
-        if( x2-x1+1 > WindMaxWidth || y2-y1+1 > WindMaxHeight ) {
-            return( ERR_WIND_INVALID );;
+        if( x2 - x1 + 1 > WindMaxWidth || y2 - y1 + 1 > WindMaxHeight ) {
+            return( ERR_WIND_INVALID );
         }
         if( xpos < 0 ) {
             if( x2 >= WindMaxWidth ) {
-                diff = x2-WindMaxWidth;
+                diff = x2 - WindMaxWidth;
                 x2 -= diff;
                 x1 -= diff;
             }
         } else {
             if( y2 >= WindMaxHeight ) {
-                diff = y2-y1;
+                diff = y2 - y1;
                 y2 = y1;
                 y1 -= diff;
                 if( xwid > 0 || rxwid == -1 ) {
@@ -766,9 +764,9 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
                 }
             }
             if( x2 >= WindMaxWidth ) {
-                diff = x2-x1;
-                x2 = x1-xwid;
-                x1 -= (diff+xwid);
+                diff = x2 - x1;
+                x2 = x1 - xwid;
+                x1 -= (diff + xwid);
             }
         }
         menuw_info.x1 = x1;
@@ -780,7 +778,7 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
          * go get a selected item from the menu
          */
         memset( &si, 0, sizeof( si ) );
-        allowrl=0;
+        allowrl = 0;
         si.is_menu = TRUE;
         si.wi = &menuw_info;
         si.list = cmenu->list;
@@ -794,16 +792,16 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         if( xpos < 0 ) {
             lightMenu( sel, ws, TRUE );
         }
-        CurrentMenuNumber = sel+1;
-        i = SelectItem( &si );
+        CurrentMenuNumber = sel + 1;
+        rc = SelectItem( &si );
         if( xpos < 0 ) {
             lightMenu( sel, ws, FALSE );
         }
-        if( i ) {
+        if( rc != ERR_NO_ERR ) {
             if( cmenu->has_file_list ) {
                 removeFileList( cmenu );
             }
-            return( i );
+            return( rc );
         }
         if( !allowrl ) {
             break;
@@ -811,7 +809,7 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
 
         sel += allowrl;
         if( sel < 0 ) {
-            sel = menuCnt-1;
+            sel = menuCnt - 1;
         }
         if( sel >= menuCnt ) {
             sel = 0;
@@ -832,7 +830,7 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
     }
 
     cmi = cmenu->itemhead;
-    for( i=0;i<resint;i++ ) {
+    for( i = 0; i < resint; i++ ) {
         cmi = cmi->next;
     }
     strcpy( cmd, cmi->cmd );
@@ -847,11 +845,11 @@ static int processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
 /*
  * DoMenu - process some kind of control request
  */
-int DoMenu( void )
+vi_rc DoMenu( void )
 {
     int         i;
-    int         sel= -1;
-    char        key;
+    int         sel = -1;
+    char        ch;
     menu        *cmenu;
 
     /*
@@ -860,11 +858,11 @@ int DoMenu( void )
     if( !EditFlags.Menus ) {
         return( ERR_NO_ERR );
     }
-    key = LastEvent - (char) VI_KEY( ALT_A ) + (char) 'A';
+    ch = LastEvent - VI_KEY( ALT_A ) + 'A';
     i = 0;
-    for( cmenu=menuHead; cmenu != NULL; cmenu=cmenu->next ) {
-        if( key == cmenu->hi ) {
-            sel=i;
+    for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
+        if( ch == cmenu->hi ) {
+            sel = i;
             break;
         }
         i++;
@@ -879,16 +877,16 @@ int DoMenu( void )
 /*
  * DoWindowGadgetMenu - handle menu for each file
  */
-int DoWindowGadgetMenu( void )
+vi_rc DoWindowGadgetMenu( void )
 {
-    int         rc;
+    vi_rc       rc;
 
     if( windowGadgetMenu == NULL ) {
         return( ERR_NO_ERR );
     }
     rc = processMenu( -1, windowGadgetMenu,
-        WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ),
-        WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 )+1, -1 );
+                      WindowAuxInfo( CurrentWindow, WIND_INFO_X1 ),
+                      WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 ) + 1, -1 );
     return( rc );
 
 } /* DoWindowGadgetMenu */
@@ -896,9 +894,9 @@ int DoWindowGadgetMenu( void )
 /*
  * DoFloatMenu - handle floating menus
  */
-int DoFloatMenu( int id, int slen, int x1, int y1 )
+vi_rc DoFloatMenu( int id, int slen, int x1, int y1 )
 {
-    int         rc;
+    vi_rc       rc;
 
     if( id < 0 || id >= MAX_FLOAT_MENUS ) {
         return( ERR_INVALID_MENU );
@@ -914,10 +912,10 @@ int DoFloatMenu( int id, int slen, int x1, int y1 )
 /*
  * ActivateFloatMenu - activate floating menu
  */
-int ActivateFloatMenu( char *data )
+vi_rc ActivateFloatMenu( char *data )
 {
     char        str[MAX_STR];
-    int         id,slen,x1,y1;
+    int         id, slen, x1, y1;
 
     /*
      * get input syntax :
@@ -950,12 +948,12 @@ int GetCurrentMenuId( void )
 {
     return( currentID );
 
-} /* GetCurrentMenuId*/
+} /* GetCurrentMenuId */
 
 /*
  * SetToMenuId - set to specified menu id (mouse did it)
  */
-int SetToMenuId( int id )
+vi_rc SetToMenuId( int id )
 {
     menu        *cmenu;
 
@@ -978,11 +976,11 @@ int GetMenuIdFromCoord( int x )
 
     ws = START_OFFSET;
     i = 0;
-    for( cmenu=menuHead; cmenu != NULL; cmenu=cmenu->next ) {
+    for( cmenu = menuHead; cmenu != NULL; cmenu = cmenu->next ) {
         if( x >= ws && x < ws + cmenu->slen ) {
             return( i );
         }
-        ws += cmenu->slen+2;
+        ws += cmenu->slen + 2;
         i++;
     }
     return( -1 );
@@ -992,16 +990,16 @@ int GetMenuIdFromCoord( int x )
 /*
  * IsMenuHotKey - test if a specified character is a main menu hot key
  */
-int IsMenuHotKey( int ch )
+bool IsMenuHotKey( vi_key key )
 {
     menu        *curr;
+    char        ch;
 
-    curr = menuHead;
-    while( curr != NULL ) {
+    ch = key - VI_KEY(ALT_A ) + 'A';
+    for( curr = menuHead; curr != NULL; curr = curr->next ) {
         if( curr->hi == ch ) {
             return( TRUE );
         }
-        curr = curr->next;
     }
     return( FALSE );
 
@@ -1010,7 +1008,7 @@ int IsMenuHotKey( int ch )
 /*
  * MenuItemFileList - add the Window List menu item
  */
-int MenuItemFileList( void )
+vi_rc MenuItemFileList( void )
 {
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
@@ -1023,7 +1021,7 @@ int MenuItemFileList( void )
 /*
  * MenuItemLastFiles - add the Last File List menu item
  */
-int MenuItemLastFiles( void )
+vi_rc MenuItemLastFiles( void )
 {
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );

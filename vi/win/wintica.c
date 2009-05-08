@@ -30,16 +30,13 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 // #include <malloc.h>
-#include "winvi.h"
 
 /*
  * WindowTile - tile all edit windows
  */
-int WindowTile( int maxx, int maxy )
+vi_rc WindowTile( int maxx, int maxy )
 {
     RECT        rect;
     info        *cinfo;
@@ -61,8 +58,7 @@ int WindowTile( int maxx, int maxy )
                 ShowWindow( cinfo->CurrentWindow, SW_RESTORE );
             }
             BringUpFile( cinfo, FALSE );
-            MoveWindow( cinfo->CurrentWindow, 0, 0, width,
-                                height, TRUE );
+            MoveWindow( cinfo->CurrentWindow, 0, 0, width, height, TRUE );
             cinfo = cinfo->next;
         }
         BringUpFile( cwinfo, FALSE );
@@ -70,7 +66,7 @@ int WindowTile( int maxx, int maxy )
     }
     // else
 
-    SendMessage( EditContainer, WM_MDITILE, 0, 0L);
+    SendMessage( EditContainer, WM_MDITILE, 0, 0L );
     return( ERR_NO_ERR );
 
 } /* WindowTile */
@@ -78,12 +74,12 @@ int WindowTile( int maxx, int maxy )
 /*
  * WindowCascade - cascade all edit windows
  */
-int WindowCascade( int x, int y )
+vi_rc WindowCascade( int x, int y )
 {
     x = x;
     y = y;
 
-    SendMessage( EditContainer, WM_MDICASCADE, 0, 0L);
+    SendMessage( EditContainer, WM_MDICASCADE, 0, 0L );
     return( ERR_NO_ERR );
 
 } /* WindowCascade */

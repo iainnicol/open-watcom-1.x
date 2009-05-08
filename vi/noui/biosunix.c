@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 #include "win.h"
-#include "keys.h"
 
 long BIOSGetColorRegister( short a ) { return( 0 ); }
 void BIOSSetNoBlinkAttr() {}
@@ -44,6 +42,3 @@ int KeyboardInit( void ) { return 0; }
 short BIOSGetKeyboard( char extended ) { return 0; }
 short BIOSKeyboardHit( char a ) { return 0; }
 void MyVioShowBuf( unsigned offset, int length ) {}
-
-char WindowBordersNG[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-char WindowBordersG[]  = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

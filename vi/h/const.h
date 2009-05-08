@@ -44,9 +44,6 @@
 
 #define NO_WINDOW ((window_id) -1)
 
-#define NO_ADD_TO_HISTORY_KEY   1
-#define NO_INPUT_WINDOW_KEY     19
-
 typedef enum {
     DRIVE_NONE,
     DRIVE_IS_REMOVABLE,
@@ -54,8 +51,8 @@ typedef enum {
 } drive_type;
 
 typedef enum {
-    SAVEBUF_FLAG = 0x01,
-    USE_UNDO_UNDO = 0x02
+    SAVEBUF_FLAG    = 0x01,
+    USE_UNDO_UNDO   = 0x02
 } linedel_flags;
 
 #if defined( __UNIX__ ) || defined( __IBMC__ )
@@ -89,60 +86,40 @@ typedef enum {
  */
 #define LINE_EXTRA      4
 
-#define Tab( col, ta ) ( ( ta == 0 ) ? 0 : ( (((col-1)/ta)+1)*ta - (col-1) ) )
+#define Tab( col, ta )  ((ta == 0) ? 0 : ((((col - 1) / ta) + 1) * ta - (col - 1)))
 
-#ifndef __UNIX__
-#ifndef __WIN__
-    typedef enum {
-        FALSE = 0,
-        TRUE
-    } bool;
-    #ifdef __cplusplus
-        inline bool operator ! ( bool x ) { return (bool) ((int)x ^ 1); }
-    #endif
-#else
-    typedef char bool;
-    #define FALSE       0
-    #define TRUE        1
-#endif
-#else
-#ifndef FALSE
-    typedef char bool;
-    #define FALSE       0
-    #define TRUE        1
-#endif
-#endif
+#include "bool.h"
 
 #define INITIAL_MATCH_COUNT     4
-#define MIN_LINE_LEN    128
-#define MAX_LONG        0x7fffffffL
-#define MAX_REPEAT_STRING 10
-#define MAX_FILES       640
-#define MAX_BOOL_TOKENS 2
-#define MAX_SAVEBUFS    9
+#define MIN_LINE_LEN            128
+#define MAX_LONG                0x7fffffffL
+#define MAX_REPEAT_STRING       10
+#define MAX_FILES               640
+#define MAX_BOOL_TOKENS         2
+#define MAX_SAVEBUFS            9
 #define MAX_SPECIAL_SAVEBUFS    26
-#define WORK_SAVEBUF (MAX_SAVEBUFS + MAX_SPECIAL_SAVEBUFS)
+#define WORK_SAVEBUF            (MAX_SAVEBUFS + MAX_SPECIAL_SAVEBUFS)
 #define NO_SAVEBUF              -1
 #define CLIPBOARD_SAVEBUF       -2
-#define SCROLL_HLINE    10
-#define SCROLL_VLINE    2
-#define MAX_MARKS       26
-#define MAX_SEARCH_STRINGS 9
-#define MAX_SCRIPT_LENGTH 2048
-#define MAX_MOUSE_SPEED 250
+#define SCROLL_HLINE            10
+#define SCROLL_VLINE            2
+#define MAX_MARKS               26
+#define MAX_SEARCH_STRINGS      9
+#define MAX_SCRIPT_LENGTH       2048
+#define MAX_MOUSE_SPEED         250
 #define MAX_OVERRIDE_KEY_BUFF   512
-#define MAX_STR 256
-#define FGREP_BUFFSIZE  32000
-#define NUM_EDIT_OPTS   4
-#define EXTENSION_LENGTH 5
-#define CR      0x0d
-#define LF      0x0a
-#define CTLZ    26
-#define MAX_STATIC_BUFFERS 5
-#define MAX_STARTUP     10
-#define MAX_INPUT_LINE  512
-#define DATE_LEN        24
-#define MIN_STACK_K     10
+#define MAX_STR                 256
+#define FGREP_BUFFSIZE          32000
+#define NUM_EDIT_OPTS           4
+#define EXTENSION_LENGTH        5
+#define CR                      0x0d
+#define LF                      0x0a
+#define CTLZ                    26
+#define MAX_STATIC_BUFFERS      5
+#define MAX_STARTUP             10
+#define MAX_INPUT_LINE          512
+#define DATE_LEN                24
+#define MIN_STACK_K             10
 #define MAX_DUPLICATE_FILES     10
 
 #define MAX_IO_BUFFER   0x2000
@@ -206,12 +183,32 @@ typedef enum {
 } status_type;
 
 /*
- * find constants
+ * find types
  */
-#define FINDFL_FORWARD          0x01
-#define FINDFL_BACKWARDS        0x02
-#define FINDFL_NEXTLINE         0x04
-#define FINDFL_NOERROR          0x08
+typedef enum {
+    FINDFL_FORWARD   = 1,
+    FINDFL_BACKWARDS = 2,
+    FINDFL_NEXTLINE  = 4,
+    FINDFL_NOERROR   = 8
+} find_type;
+
+/*
+ * Font types
+ */
+typedef enum font_type {
+    FONT_COURIER = 0,
+    FONT_COURIERBOLD,
+    FONT_HELV,
+    FONT_ARIAL,
+    FONT_ARIALBOLD,
+    FONT_FIXED,
+    FONT_SANSSERIF,
+
+    MAX_FONTS = 25
+} font_type;
+
+#define FONT_DEFAULT        FONT_COURIER
+#define FONT_DEFAULTBOLD    FONT_COURIERBOLD
 
 /*
  * word constants
@@ -247,11 +244,13 @@ typedef enum {
 /*
  * Event type constants for the event list
  */
-#define EVENT_OP                0x00
-#define EVENT_REL_MOVE          0x01
-#define EVENT_ABS_MOVE          0x02
-#define EVENT_MISC              0x03
-#define EVENT_INS               0x04
+typedef enum event_type {
+    EVENT_OP       = 0,
+    EVENT_REL_MOVE = 1,
+    EVENT_ABS_MOVE = 2,
+    EVENT_MISC     = 3,
+    EVENT_INS      = 4
+} event_type;
 
 /*
  * Name of environment variable to set the prompt.
@@ -263,5 +262,38 @@ typedef enum {
 #endif
 
 #define MAX_COLOR_REGISTERS     16
+
+/*
+ * Color type
+ */
+#undef vi_pick
+#define vi_pick(a) a,
+typedef enum {
+#include "colors.h"
+#undef vi_pick
+#ifdef __WIN__
+    MAX_COLORS = 64
+#else
+    MAX_COLORS = MAX_COLOR_REGISTERS
+#endif
+} vi_color;
+
+/*
+ * Event type
+ */
+#define VI_KEY( a )                 __VIKEY__##a
+#define BITS( a, b, c, d, e, f, g ) { a, b, c, d, e, f, g }
+
+#undef vi_pick
+#define vi_pick( enum, modeless, insert, command, nm_bits, bits ) enum,
+typedef enum vi_key {
+#include "events.h"
+    MAX_EVENTS
+#undef vi_pick
+} vi_key;
+
+#define NO_ADD_TO_HISTORY_KEY   VI_KEY( CTRL_A )
+#define VI_KEY_HANDLED          VI_KEY( NULL )
+#define VI_KEY_DUMMY            MAX_EVENTS
 
 #endif

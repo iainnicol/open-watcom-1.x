@@ -29,15 +29,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include <time.h>
 #include <setjmp.h>
 #ifdef _M_I86
-#include <i86.h>
+    #include <i86.h>
 #endif
-#include "vi.h"
 #include "parsecl.h"
 #include "source.h"
 #include "rxsupp.h"
@@ -46,10 +43,6 @@
 #include "expr.h"
 #include "menu.h"
 #include "source.h"
-#ifdef __WIN__
-#include "winvi.h"
-#include "winrtns.h"
-#endif
 #include "sstyle.h"
 #include "fts.h"
 #include "rcscli.h"
@@ -58,12 +51,12 @@
 static bool isOS2( void )
 {
     union {
-        DWORD dVersion;
+        DWORD   dVersion;
         struct {
-            char winMajor;
-            char winMinor;
-            char dosMinor;
-            char dosMajor;
+            char    winMajor;
+            char    winMinor;
+            char    dosMinor;
+            char    dosMajor;
         } v;
     } v;
     v.dVersion = GetVersion();
@@ -74,16 +67,16 @@ static bool isOS2( void )
 }
 #endif
 
-static window_info *wInfo=NULL;
-static int setWDimension( char * );
-static int setWHilite( char * );
-static int setWText( char * );
-static int setWBorder( char * );
-static int setSyntaxStyle( int, char * );
+static window_info  *wInfo = NULL;
+static char         strLoad[] = "loaded";
+static char         strCompile[] = "compiled";
+static char         *dataBuff;
 
-static char strLoad[] = "loaded";
-static char strCompile[] = "compiled";
-static char *dataBuff;
+static vi_rc        setWDimension( char * );
+static vi_rc        setWHilite( char * );
+static vi_rc        setWText( char * );
+static vi_rc        setWBorder( char * );
+static vi_rc        setSyntaxStyle( syntax_element, char * );
 
 /*
  * InitCommandLine - initialize command line processing
@@ -100,14 +93,15 @@ void InitCommandLine( void )
 void FiniCommandLine( void )
 {
     MemFree( dataBuff );
+
 } /* FiniCommandLine */
 
 /*
  * doProcessCommandLine - handle getting and processing a command line
  */
-static int doProcessCommandLine( bool is_fancy )
+static vi_rc doProcessCommandLine( bool is_fancy )
 {
-    int         rc;
+    vi_rc       rc;
     char        *st;
 
     /*
@@ -127,7 +121,7 @@ static int doProcessCommandLine( bool is_fancy )
     } else {
 #endif
         rc = PromptForString( ":", st, MaxLine, &CLHist );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             MemFree( st );
             if( rc == NO_VALUE_ENTERED ) {
                 return( ERR_NO_ERR );
@@ -139,7 +133,7 @@ static int doProcessCommandLine( bool is_fancy )
 #endif
     CommandBuffer = st;
     rc = SourceHook( SRC_HOOK_COMMAND, ERR_NO_ERR );
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
         rc = RunCommandLine( st );
     }
     CommandBuffer = NULL;
@@ -151,7 +145,7 @@ static int doProcessCommandLine( bool is_fancy )
 /*
  * ProcessCommandLine - do just that
  */
-int ProcessCommandLine( void )
+vi_rc ProcessCommandLine( void )
 {
     return( doProcessCommandLine( FALSE ) );
 
@@ -160,7 +154,7 @@ int ProcessCommandLine( void )
 /*
  * FancyProcessCommandLine - do just that
  */
-int FancyProcessCommandLine( void )
+vi_rc FancyProcessCommandLine( void )
 {
     return( doProcessCommandLine( TRUE ) );
 
@@ -169,10 +163,10 @@ int FancyProcessCommandLine( void )
 /*
  * TryCompileableToken - process token that can also be compiled
  */
-int TryCompileableToken( int token, char *data, bool iscmdline,
-                                bool dmt )
+vi_rc TryCompileableToken( int token, char *data, bool iscmdline,
+                         bool dmt )
 {
-    int         rc = ERR_INVALID_COMMAND;
+    vi_rc       rc = ERR_INVALID_COMMAND;
     bool        mflag;
     char        *tmp;
 
@@ -272,27 +266,28 @@ int TryCompileableToken( int token, char *data, bool iscmdline,
 /*
  * RunCommandLine - run a command line command
  */
-int RunCommandLine( char *cl )
+vi_rc RunCommandLine( char *cl )
 {
-    int         i,rc=ERR_INVALID_COMMAND,x,y,x2,y2;
-    int         n2f,n1f,dmt,tkn,flag;
+    int         i, x, y, x2, y2;
+    int         n2f, n1f, dmt, tkn, flag;
     bool        test1;
-    linenum     n1,n2;
+    linenum     n1, n2;
     char        st[FILENAME_MAX];
     info        *cinfo;
     long        val;
     jmp_buf     jmpaddr;
+    vi_rc       rc;
 
     /*
      * parse command string
      */
-    i = ParseCommandLine( cl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff, &dmt );
-    if( i ) {
-        return( i );
+    rc = ParseCommandLine( cl, &n1, &n1f, &n2, &n2f, &tkn, dataBuff, &dmt );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     if( !n2f ) {
         if( !n1f ) {
-            n1 = n2 = CurrentLineNumber;
+            n1 = n2 = CurrentPos.line;
         } else {
             n2 = n1;
         }
@@ -301,6 +296,7 @@ int RunCommandLine( char *cl )
     /*
      * process tokens
      */
+    rc = ERR_INVALID_COMMAND;
     test1 = n1f || n2f;
     switch( tkn ) {
     case PCL_T_ABOUT:
@@ -314,12 +310,11 @@ int RunCommandLine( char *cl )
         break;
     case PCL_T_EXECUTE:
         RemoveLeadingSpaces( dataBuff );
-        i = strlen( dataBuff );
-        if( i > 0 ) {
+        if( *dataBuff != '\0' ) {
             key_map     scr;
 
-            rc = AddKeyMap( &scr, dataBuff, i );
-            if( rc ) {
+            rc = AddKeyMap( &scr, dataBuff );
+            if( rc != ERR_NO_ERR ) {
                 break;
             }
             rc = RunKeyMap( &scr, 1L );
@@ -384,12 +379,15 @@ int RunCommandLine( char *cl )
 
     case PCL_T_EVAL:
         Expand( dataBuff, NULL );
-        rc = setjmp( jmpaddr );
-        if( rc == 0 ) {
+        i = setjmp( jmpaddr );
+        if( i != 0 ) {
+            rc = (vi_rc)i;
+        } else {
             StartExprParse( dataBuff, jmpaddr );
             val = GetConstExpr();
             ltoa( val, st, Radix );
             Message1( "%s", st );
+            rc = ERR_NO_ERR;
         }
         break;
 
@@ -397,10 +395,10 @@ int RunCommandLine( char *cl )
     case PCL_T_SOURCE:
     case PCL_T_LOAD:
         {
-        char *tstr;
+            char *tstr;
 
-            if( NextWord1( dataBuff, st ) <=0 ) {
-                rc=ERR_NO_FILE_SPECIFIED;
+            if( NextWord1( dataBuff, st ) <= 0 ) {
+                rc = ERR_NO_FILE_SPECIFIED;
                 break;
             }
 
@@ -413,7 +411,7 @@ int RunCommandLine( char *cl )
                             EditFlags.CompileAssignmentsDammit = TRUE;
                         }
                         if( NextWord1( dataBuff, st) <= 0 ) {
-                            rc=ERR_NO_FILE_SPECIFIED;
+                            rc = ERR_NO_FILE_SPECIFIED;
                             break;
                         }
                     }
@@ -432,7 +430,7 @@ int RunCommandLine( char *cl )
             if( EditFlags.SourceScriptActive ) {
                 LastError = rc;
             }
-            if( rc > 0 ) {
+            if( rc > ERR_NO_ERR ) {
                 Error( "%s on line %d of \"%s\"", GetErrorMsg( rc ), i, st );
             } else {
                 if( rc != DO_NOT_CLEAR_MESSAGE_WINDOW ) {
@@ -464,7 +462,7 @@ int RunCommandLine( char *cl )
             EditFlags.SaveConfig = TRUE;
             WriteProfile();
             EditFlags.SaveConfig = temp;
-            rc=ERR_NO_ERR;
+            rc = ERR_NO_ERR;
         }
 #endif
         break;
@@ -478,11 +476,11 @@ int RunCommandLine( char *cl )
         break;
 
     case PCL_T_SHOVE:
-        rc = Shift( n1,n2,'>', TRUE );
+        rc = Shift( n1, n2, '>', TRUE );
         break;
 
     case PCL_T_SUCK:
-        rc = Shift( n1,n2,'<', TRUE );
+        rc = Shift( n1, n2, '<', TRUE );
         break;
 
     case PCL_T_FILES:
@@ -516,12 +514,12 @@ int RunCommandLine( char *cl )
         break;
 
     case PCL_T_HIDE:
-        rc = HideLineRange( n1,n2, dmt );
+        rc = HideLineRange( n1, n2, dmt );
         break;
 
     case PCL_T_DELETE:
         rc = SetSavebufNumber( dataBuff );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( SelRgn.selected && !EditFlags.LineBased ) {
@@ -532,14 +530,14 @@ int RunCommandLine( char *cl )
         } else {
             rc = DeleteLineRange( n1, n2, SAVEBUF_FLAG );
         }
-        if( !rc ) {
+        if( rc == ERR_NO_ERR ) {
             DCDisplayAllLines();
             LineDeleteMessage( n1, n2 );
         }
         break;
 
     case PCL_T_SAVEANDEXIT:
-        if( NextWord1( dataBuff,st ) >= 0 ) {
+        if( NextWord1( dataBuff, st ) >= 0 ) {
             rc = SaveAndExit( st );
         } else {
             rc = SaveAndExit( NULL );
@@ -548,7 +546,7 @@ int RunCommandLine( char *cl )
 
     case PCL_T_PUT:
         rc = SetSavebufNumber( dataBuff );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         rc = SaveAndResetFilePos( n1 );
@@ -564,7 +562,7 @@ int RunCommandLine( char *cl )
 
     case PCL_T_YANK:
         rc = SetSavebufNumber( dataBuff );
-        if( rc ) {
+        if( rc != ERR_NO_ERR ) {
             break;
         }
         if( SelRgn.selected && !EditFlags.LineBased ) {
@@ -572,24 +570,24 @@ int RunCommandLine( char *cl )
             // @ may have turned this on - it is now definitely off
             SelRgn.selected = FALSE;
         } else {
-            rc = YankLineRange( n1,n2 );
+            rc = YankLineRange( n1, n2 );
         }
         break;
 
     case PCL_T_SUBSTITUTE:
         RemoveLeadingSpaces( dataBuff );
-        rc = Substitute( n1,n2, dataBuff );
+        rc = Substitute( n1, n2, dataBuff );
         break;
 
     case PCL_T_GLOBAL:
         if( !test1 ) {
             n1 = 1;
             rc = CFindLastLine( &n2 );
-            if( rc ) {
+            if( rc != ERR_NO_ERR ) {
                 break;
             }
         }
-        rc = Global( n1,n2, dataBuff,dmt );
+        rc = Global( n1,n2, dataBuff, dmt );
         break;
 
     case PCL_T_WRITEQUIT:
@@ -597,7 +595,7 @@ int RunCommandLine( char *cl )
             rc = NextFile();
         } else {
             CurrentFile->modified = TRUE;
-            if( NextWord1( dataBuff,st ) >= 0 ) {
+            if( NextWord1( dataBuff, st ) >= 0 ) {
                 rc = SaveAndExit( st );
             } else {
                 rc = SaveAndExit( NULL );
@@ -607,15 +605,15 @@ int RunCommandLine( char *cl )
 
     case PCL_T_WRITE:
         if( test1 ) {
-            if( NextWord1( dataBuff, st ) <=0 ) {
-                rc=ERR_NO_FILE_SPECIFIED;
+            if( NextWord1( dataBuff, st ) <= 0 ) {
+                rc = ERR_NO_FILE_SPECIFIED;
             } else {
                 rc = SaveFile( st, n1, n2, dmt );
             }
         } else {
             if( NextWord1( dataBuff, st ) >= 0 ) {
 #ifdef __WIN__
-                if( st[ 0 ] == '?' && st[ 1 ] == '\0' ) {
+                if( st[0] == '?' && st[1] == '\0' ) {
                     rc = SaveFileAs();
                     break;
                 } else {
@@ -626,7 +624,7 @@ int RunCommandLine( char *cl )
 #endif
             } else {
                 rc = SaveFile( NULL, -1, -1, dmt );
-                if( !rc ) {
+                if( rc == ERR_NO_ERR ) {
                     Modified( FALSE );
                 }
             }
@@ -661,7 +659,7 @@ int RunCommandLine( char *cl )
         } else {
             rc = ERR_NO_ERR;
         }
-        if( !rc ) {
+        if( rc == ERR_NO_ERR ) {
             Message1( "Current directory is %s",CurrentDirectory );
         }
         break;
@@ -702,20 +700,20 @@ int RunCommandLine( char *cl )
     case PCL_T_TILE:
         if( NextWord1( dataBuff, st ) > 0 ) {
             if( st[0] == 'v' ) {
-                x = y =1;
+                x = y = 1;
                 cinfo = InfoHead;
-                while( (cinfo=cinfo->next) != NULL ) {
+                while( (cinfo = cinfo->next) != NULL ) {
                     x++;
                 }
             } else if( st[0] == 'h' ) {
-                x = y =1;
+                x = y = 1;
                 cinfo = InfoHead;
-                while( (cinfo=cinfo->next) != NULL ) {
+                while( (cinfo = cinfo->next) != NULL ) {
                     y++;
                 }
             } else {
                 x = atoi( st );
-                if( NextWord1( dataBuff,st ) < 0 ) {
+                if( NextWord1( dataBuff, st ) < 0 ) {
                     break;
                 } else {
                     y = atoi( st );
@@ -778,12 +776,12 @@ int RunCommandLine( char *cl )
 
                         strcpy( snoopbuf, ff->path );
                         /* assume no string means current directory */
-                        if( strlen(snoopbuf) &&
-                            snoopbuf[strlen(snoopbuf)-1] != '\\' ){
+                        if( strlen( snoopbuf ) &&
+                            snoopbuf[strlen( snoopbuf ) - 1] != '\\' ){
                             strcat( snoopbuf, "\\" );
                         }
-                        MySprintf( st, "%s", ff->find);
-                        strcat(snoopbuf,ff->ext);
+                        MySprintf( st, "%s", ff->find );
+                        strcat( snoopbuf, ff->ext );
                         ci = ff->case_ignore;
                         if( !ff->use_regexp ) {
                             //MakeExpressionNonRegular( st );
@@ -812,19 +810,19 @@ int RunCommandLine( char *cl )
         break;
 
     case PCL_T_SIZE:
-        if( NextWord1( dataBuff,st ) <= 0 ) {
+        if( NextWord1( dataBuff, st ) <= 0 ) {
             break;
         }
         x = atoi( st );
-        if( NextWord1( dataBuff,st ) <= 0 ) {
+        if( NextWord1( dataBuff, st ) <= 0 ) {
             break;
         }
         y = atoi( st );
-        if( NextWord1( dataBuff,st ) <= 0 ) {
+        if( NextWord1( dataBuff, st ) <= 0 ) {
             break;
         }
         x2 = atoi( st );
-        if( NextWord1( dataBuff,st ) <= 0 ) {
+        if( NextWord1( dataBuff, st ) <= 0 ) {
             break;
         }
         y2 = atoi( st );
@@ -832,14 +830,14 @@ int RunCommandLine( char *cl )
         break;
 
     case PCL_T_ECHO:
-        if( NextWord1( dataBuff,st ) <= 0 ) {
+        if( NextWord1( dataBuff, st ) <= 0 ) {
             break;
         }
         rc = ERR_NO_ERR;
-        if( !stricmp( st,"on" ) ) {
+        if( !stricmp( st, "on" ) ) {
             EditFlags.EchoOn = TRUE;
             break;
-        } else if( !stricmp( st,"off" ) ) {
+        } else if( !stricmp( st, "off" ) ) {
             EditFlags.EchoOn = FALSE;
             break;
         }
@@ -876,96 +874,91 @@ int RunCommandLine( char *cl )
 #ifdef VI_RCS
     case PCL_T_CHECKOUT:
         rc = ERR_NO_ERR;
-  #ifdef __WINDOWS__
+#ifdef __WINDOWS__
         if( isOS2() ) break; // OS/2 shell returns before checkout finishes
-  #endif
+#endif
         if( CurrentFile == NULL ) break;
         if( RCSInit == NULL || RCSRegisterBatchCallback == NULL ||
             RCSSetPause == NULL || RCSCheckout == NULL || RCSFini == NULL ) {
         } else {
             extern int RCSAPI Batcher( char *cmd, void *cookie );
             linenum row;
-            int col;
+            int     col;
             rcsdata r;
-  #ifdef __WIN__
+#ifdef __WIN__
             FARPROC fp;
             r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
             fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
             RCSRegisterBatchCallback( r, (BatchCallbackFP)fp, NULL );
-  #else
+#else
             r = RCSInit( 0, getenv( "WATCOM" ) );
             RCSRegisterBatchCallback( r, (BatchCallbackFP)&Batcher, NULL );
-  #endif
+#endif
             if( RCSQuerySystem( r ) != 0 ) {
                 if( GenericQueryBool( "File is read only, check out?" ) ) {
                     char full1[FILENAME_MAX];
-  #ifdef __WINDOWS__
-                    void WinGetFullPath( char *filename, char *full );
-                    WinGetFullPath( CurrentFile->name, full1 );
-  #else
-                    DosGetFullPath( CurrentFile->name, full1 );
-  #endif
+
+                    _fullpath( full1, CurrentFile->name, FILENAME_MAX );
                     RCSSetPause( r, TRUE );
                     if( RCSCheckout( r, full1, NULL, NULL ) ) {
                         strcpy( dataBuff, CurrentFile->name );
                         rc = ERR_NO_ERR;
-                        row = CurrentLineNumber;
-                        col = CurrentColumn;
+                        row = CurrentPos.line;
+                        col = CurrentPos.column;
                         EditFile( dataBuff, TRUE );
                         GoToLineNoRelCurs( row );
                         GoToColumnOnCurrentLine( col );
                     }
                 }
             }
-  #ifdef __WIN__
+#ifdef __WIN__
             FreeProcInstance( (FARPROC) fp );
-  #endif
+#endif
             RCSFini( r );
-
             break;
         }
     case PCL_T_CHECKIN:
         if( CurrentFile == NULL ) break;
         if( RCSInit == NULL || RCSRegisterBatchCallback == NULL ||
-            RCSSetPause == NULL || RCSCheckin == NULL || RCSFini == NULL )break;
+            RCSSetPause == NULL || RCSCheckin == NULL || RCSFini == NULL ) break;
         {
-        extern int RCSAPI Batcher( char *cmd, void *cookie );
-        linenum row;
-        int col;
-        rcsdata r;
+            extern int RCSAPI Batcher( char *cmd, void *cookie );
+            linenum row;
+            int     col;
+            rcsdata r;
 
-  #ifdef __WIN__
-        FARPROC fp;
-        r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
-        fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
-        RCSRegisterBatchCallback( r, (BatchCallbackFP)fp, NULL );
-  #else
-        r = RCSInit( 0, getenv( "WATCOM" ) );
-        RCSRegisterBatchCallback( r, (BatchCallbackFP)&Batcher, NULL );
-  #endif
-        RCSSetPause( r, TRUE );
-        if( CurrentFile->modified ) {
-            FilePromptForSaveChanges( CurrentFile );
-        }
-        if( RCSCheckin( r, CurrentFile->name, NULL, NULL ) ) {
-            rc = ERR_NO_ERR;
-            strcpy( dataBuff, CurrentFile->name );
-            row = CurrentLineNumber;
-            col = CurrentColumn;
-            EditFile( dataBuff, TRUE );
-            GoToLineNoRelCurs( row );
-            GoToColumnOnCurrentLine( col );
-        }
-  #ifdef __WIN__
-        FreeProcInstance( (FARPROC) fp );
-  #endif
-        RCSFini( r );
-        break;
+#ifdef __WIN__
+            FARPROC fp;
+            r = RCSInit( (unsigned long)Root, getenv( "WATCOM" ) );
+            fp = MakeProcInstance( (FARPROC)(&Batcher), InstanceHandle );
+            RCSRegisterBatchCallback( r, (BatchCallbackFP)fp, NULL );
+#else
+            r = RCSInit( 0, getenv( "WATCOM" ) );
+            RCSRegisterBatchCallback( r, (BatchCallbackFP)&Batcher, NULL );
+#endif
+            RCSSetPause( r, TRUE );
+            if( CurrentFile->modified ) {
+                FilePromptForSaveChanges( CurrentFile );
+            }
+            if( RCSCheckin( r, CurrentFile->name, NULL, NULL ) ) {
+                rc = ERR_NO_ERR;
+                strcpy( dataBuff, CurrentFile->name );
+                row = CurrentPos.line;
+                col = CurrentPos.column;
+                EditFile( dataBuff, TRUE );
+                GoToLineNoRelCurs( row );
+                GoToColumnOnCurrentLine( col );
+            }
+#ifdef __WIN__
+            FreeProcInstance( (FARPROC) fp );
+#endif
+            RCSFini( r );
+            break;
         }
 #endif
     default:
         if( tkn >= 1000 ) {
-            rc = ProcessEx( n1,n2,n2f,dmt, tkn-1000, dataBuff );
+            rc = ProcessEx( n1, n2, n2f, dmt, tkn - 1000, dataBuff );
             break;
         }
         rc = TryCompileableToken( tkn, dataBuff, TRUE, dmt );
@@ -973,7 +966,7 @@ int RunCommandLine( char *cl )
             break;
         }
         rc = ProcessWindow( tkn, dataBuff );
-        if( rc >= 0 ) {
+        if( rc >= ERR_NO_ERR ) {
             break;
         }
         if( n1f && !n2f ) {
@@ -985,7 +978,7 @@ int RunCommandLine( char *cl )
             if( rc == ERR_NO_ERR ) {
                 GoToColumnOnCurrentLine( 1 );
                 if( EditFlags.LineDisplay ) {
-                    MyPrintf( "%s\n",CurrentLine->data );
+                    MyPrintf( "%s\n", CurrentLine->data );
                 }
             }
             return( rc );
@@ -1004,9 +997,9 @@ int RunCommandLine( char *cl )
 /*
  * ProcessWindow - process window commands.
  */
-int ProcessWindow( int tkn, char *data )
+vi_rc ProcessWindow( int tkn, char *data )
 {
-    int         rc;
+    vi_rc       rc;
 
     rc = ERR_NO_ERR;
     switch( tkn ) {
@@ -1060,7 +1053,7 @@ int ProcessWindow( int tkn, char *data )
         } else if ( wInfo == &editw_info ) {
             ResetAllWindows();
         }
-        wInfo=NULL;
+        wInfo = NULL;
         break;
     case PCL_T_BORDER:
         rc = setWBorder( data );
@@ -1131,21 +1124,21 @@ int ProcessWindow( int tkn, char *data )
 } /* ProcessWindow */
 
 /*
- * setSyntaxStyle2 - from setSyntaxStyle & setWText
+ * setStyle - set style parameters
  */
-void setSyntaxStyle2( int style, int tc1, int tc2, int tc3 )
+static void setStyle( type_style *style, vi_color tc1, vi_color tc2, font_type tc3 )
 {
-    SEType[ style ].foreground = tc1;
-    SEType[ style ].background = tc2;
-    SEType[ style ].font = tc3;
+    style->foreground = tc1;
+    style->background = tc2;
+    style->font = tc3;
 }
 
 /*
  * setWBorder - set window border
  */
-static int setWBorder( char *data )
+static vi_rc setWBorder( char *data )
 {
-    int         btype, bc1,bc2;
+    int         btype, bc1, bc2;
     bool        has_border;
     char        token[MAX_STR];
 
@@ -1161,7 +1154,7 @@ static int setWBorder( char *data )
     } else {
         has_border = TRUE;
     }
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         if( !has_border ) {
             wInfo->has_border = FALSE;
             return( ERR_NO_ERR );
@@ -1169,7 +1162,7 @@ static int setWBorder( char *data )
         return( ERR_INVALID_WINDOW_SETUP );
     }
     bc1 = atoi( token );
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     bc2 = atoi( token );
@@ -1184,43 +1177,7 @@ static int setWBorder( char *data )
 /*
  * setWText - set window text color
  */
-static int setWText( char *data )
-{
-    int         tc1, tc2, tc3;
-    char        token[ MAX_STR ];
-
-    if( wInfo == NULL ) {
-        return( ERR_WIND_INVALID );
-    }
-    if( NextWord1( data,token ) <= 0 ) {
-        return( ERR_INVALID_WINDOW_SETUP );
-    }
-    tc1 = atoi( token );
-    if( NextWord1( data,token ) <= 0 ) {
-        return( ERR_INVALID_WINDOW_SETUP );
-    }
-    tc2 = atoi( token );
-    tc3 = 0;
-    if( NextWord1( data, token ) > 0 ) {
-        tc3 = atoi( token );
-    }
-
-    wInfo->text.foreground = tc1;
-    wInfo->text.background = tc2;
-    wInfo->text.font = tc3;
-
-    /* want an SE_TEXT entry when SS turned off - steal it from here
-    */
-    if( wInfo == &editw_info ) {
-        setSyntaxStyle2( SE_TEXT, tc1, tc2, tc3 );
-    }
-    return( ERR_NO_ERR );
-} /* setWText */
-
-/*
- * setWHilite - set window hilighting color
- */
-static int setWHilite( char *data )
+static vi_rc setWText( char *data )
 {
     int         tc1, tc2, tc3;
     char        token[MAX_STR];
@@ -1228,22 +1185,53 @@ static int setWHilite( char *data )
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
-    tc3 = 1;
+    tc3 = FONT_DEFAULT;
     if( NextWord1( data, token ) > 0 ) {
         tc3 = atoi( token );
     }
 
-    wInfo->hilight.foreground = tc1;
-    wInfo->hilight.background = tc2;
-    wInfo->hilight.font = tc3;
+    setStyle( &wInfo->text, tc1, tc2, tc3 );
+    /* want an SE_TEXT entry when SS turned off - steal it from here */
+    if( wInfo == &editw_info ) {
+        setStyle( &SEType[SE_TEXT], tc1, tc2, tc3 );
+    }
+    return( ERR_NO_ERR );
+
+} /* setWText */
+
+/*
+ * setWHilite - set window hilighting color
+ */
+static vi_rc setWHilite( char *data )
+{
+    int         tc1, tc2, tc3;
+    char        token[MAX_STR];
+
+    if( wInfo == NULL ) {
+        return( ERR_WIND_INVALID );
+    }
+    if( NextWord1( data, token ) <= 0 ) {
+        return( ERR_INVALID_WINDOW_SETUP );
+    }
+    tc1 = atoi( token );
+    if( NextWord1( data, token ) <= 0 ) {
+        return( ERR_INVALID_WINDOW_SETUP );
+    }
+    tc2 = atoi( token );
+    tc3 = FONT_DEFAULTBOLD;
+    if( NextWord1( data, token ) > 0 ) {
+        tc3 = atoi( token );
+    }
+
+    setStyle( &wInfo->hilight, tc1, tc2, tc3 );
     return( ERR_NO_ERR );
 
 } /* setWHilite */
@@ -1251,41 +1239,41 @@ static int setWHilite( char *data )
 /*
  * setWDimension - set window dimension
  */
-static int setWDimension( char *data )
+static vi_rc setWDimension( char *data )
 {
-    int         x1,y1,x2,y2;
+    int         x1, y1, x2, y2;
     char        token[MAX_STR];
     jmp_buf     jmpaddr;
-    int         rc;
-    int         x,y;
+    int         i;
+    int         x, y;
 
     if( wInfo == NULL ) {
         return( ERR_WIND_INVALID );
     }
-    rc = setjmp( jmpaddr );
-    if( rc != 0 ) {
-        return( rc );
+    i = setjmp( jmpaddr );
+    if( i != 0 ) {
+        return( (vi_rc)i );
     }
 
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     x1 = GetConstExpr();
 
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     y1 = GetConstExpr();
 
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
     x2 = GetConstExpr();
 
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     StartExprParse( token, jmpaddr );
@@ -1313,7 +1301,7 @@ static int setWDimension( char *data )
 /*
  * setSyntaxStyle - set syntax style color
  */
-static int setSyntaxStyle( int style, char *data )
+static vi_rc setSyntaxStyle( syntax_element style, char *data )
 {
     int         tc1, tc2, tc3;
     char        token[MAX_STR];
@@ -1321,21 +1309,20 @@ static int setSyntaxStyle( int style, char *data )
     if( wInfo != &editw_info ) {
         return( ERR_WIND_INVALID );
     }
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc1 = atoi( token );
-    if( NextWord1( data,token ) <= 0 ) {
+    if( NextWord1( data, token ) <= 0 ) {
         return( ERR_INVALID_WINDOW_SETUP );
     }
     tc2 = atoi( token );
-    tc3 = 1;
+    tc3 = FONT_DEFAULTBOLD;
     if( NextWord1( data, token ) > 0 ) {
         tc3 = atoi( token );
     }
 
-    setSyntaxStyle2( style, tc1, tc2, tc3 );
-
+    setStyle( &SEType[style], tc1, tc2, tc3 );
     return( ERR_NO_ERR );
 }
 

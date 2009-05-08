@@ -27,16 +27,16 @@
 * Description:  GML :SET processing
 *
 ****************************************************************************/
-
+ 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
+ 
 #include <stdarg.h>
 #include <errno.h>
-
+ 
 #include "wgml.h"
 #include "gvars.h"
-
-
+ 
+ 
 /***************************************************************************/
 /*   :SET symbol='symbol-name'                                             */
 /*        value='character-string'                                         */
@@ -51,7 +51,7 @@
 /* be assigned to the symbol name.  If the attribute value delete is used, */
 /* the symbol referred to by the symbol name is deleted.                   */
 /***************************************************************************/
-
+ 
 extern  void    gml_set( const gmltag * entry )
 {
     char        *   p;
@@ -64,20 +64,20 @@ extern  void    gml_set( const gmltag * entry )
     sub_index       subscript;
     int             rc;
     symvar      * * working_dict;
-
+ 
     subscript = no_subscript;           // not subscripted
     scan_err = false;
-
+ 
     p = scan_start;
     p++;
-
+ 
     for( ;;) {
         while( *p == ' ' ) {            // over WS to attribute
             p++;
         }
-
+ 
         if( !strnicmp( "symbol", p, 6 ) ) {
-
+ 
             p += 6;
             while( *p == ' ' ) {        // over WS to attribute
                 p++;
@@ -91,7 +91,7 @@ extern  void    gml_set( const gmltag * entry )
                 continue;
             }
             symstart = p;
-
+ 
             p = scan_sym( symstart, &sym, &subscript );
             if( scan_err ) {
                 return;
@@ -105,15 +105,15 @@ extern  void    gml_set( const gmltag * entry )
                 working_dict = &global_dict;
             }
             symbolthere = true;
-
+ 
             while( *p == ' ' ) {
                 p++;
             }
         }
-
+ 
         if( !strnicmp( "value", p, 5 ) ) {
             char    quote;
-
+ 
             p += 5;
             while( *p == ' ' ) {        // over WS to attribute
                 p++;
@@ -146,7 +146,7 @@ extern  void    gml_set( const gmltag * entry )
             valuethere = true;
         }
         if( symbolthere && valuethere ) {   // both attributes
-
+ 
             if( !strnicmp( token_buf, "delete", 6 ) ) {
                 sym.flags |= deleted;
             }
@@ -154,21 +154,21 @@ extern  void    gml_set( const gmltag * entry )
                              sym.flags );
             break;                          // tag complete with attributes
         }
-
+ 
         c = *p;
         if( p >= scan_stop ) {
             c = '.';                    // simulate end of tag if EOF
-
+ 
             if( !(input_cbs->fmflags & II_eof) ) {
                 if( get_line() ) {      // next line for missing attribute
-
+ 
                     process_line();
                     scan_start = buff2;
                     scan_stop  = buff2 + buff2_lg;
                     if( (*scan_start == SCR_char) ||
                         (*scan_start == GML_char) ) {
                                         //  missing attribute not supplied error
-
+ 
                     } else {
                         p = scan_start;
                         continue;       // scanning
@@ -177,16 +177,18 @@ extern  void    gml_set( const gmltag * entry )
             }
         }
         if( c == '.' ) {                // end of tag found
+            char    linestr[MAX_L_AS_STR];
+ 
             err_count++;
             // AT-001 Required attribute not found
+ 
+            g_err( err_att_missing );
             if( input_cbs->fmflags & II_macro ) {
-                out_msg( "ERR_ATT_missing Required attribute not found\n"
-                         "\t\t\tLine %d of macro '%s'\n",
-                         input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                out_msg( "ERR_ATT_missing Required attribute not found\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         input_cbs->s.f->lineno, input_cbs->s.f->filename );
+                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
             if( inc_level > 1 ) {
                 show_include_stack();
@@ -197,4 +199,4 @@ extern  void    gml_set( const gmltag * entry )
     scan_start = scan_stop + 1;
     return;
 }
-
+ 

@@ -30,13 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
 
-#define isWSorCtrlZ(x)  (isspace(x) || (x==0x1A))
+#define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static bool historyLoaded;
 
@@ -56,7 +52,7 @@ typedef enum {
 static void updateHist( history_data *hist, char *str )
 {
     if( hist->curr < hist->max ) {
-        AddString2( &hist->data[ hist->curr ], str );
+        AddString2( &hist->data[hist->curr], str );
         hist->curr++;
     }
 
@@ -83,8 +79,9 @@ void LoadHistory( char *cmd )
         cnt = 0;
         rs = READ_NONE;
         while( fgets( str, MAX_INPUT_LINE, f ) != NULL ) {
-            for( i = strlen( str ); i && isWSorCtrlZ( str[ i - 1 ] ); --i )
-                str[ i - 1 ] = 0;
+            for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1 ]); --i ) {
+                str[i - 1] = 0;
+            }
             if( cnt == 0 ) {
                 cnt = atoi( str );
                 rs++;
@@ -113,7 +110,7 @@ void LoadHistory( char *cmd )
         break;
     }
     if( cmd != NULL ) {
-        AddString2( &CLHist.data[ CLHist.curr % CLHist.max ], cmd );
+        AddString2( &CLHist.data[CLHist.curr % CLHist.max], cmd );
         CLHist.curr++;
     }
 
@@ -124,7 +121,7 @@ void LoadHistory( char *cmd )
  */
 static int getHistCount( history_data *hist )
 {
-    int i,j;
+    int i, j;
     int cnt;
 
     /*
@@ -132,8 +129,8 @@ static int getHistCount( history_data *hist )
      */
     j = hist->curr;
     cnt = 0;
-    for( i=0;i<hist->max;i++ ) {
-        if( hist->data[ j % hist->max ] != NULL ) {
+    for( i = 0; i < hist->max; i++ ) {
+        if( hist->data[j % hist->max] != NULL ) {
             cnt++;
         }
         j++;
@@ -147,14 +144,14 @@ static int getHistCount( history_data *hist )
  */
 static void writeHistory( FILE *f, history_data *hist )
 {
-    int i,j;
+    int i, j;
 
     MyFprintf( f, "%d\n", getHistCount( hist ) );
     j = hist->curr;
-    for( i=0;i<hist->max;i++ ) {
-        if( hist->data[ j % hist->max ] != NULL ) {
-            MyFprintf( f, "%s\n", hist->data[ j % hist->max ] );
-            DeleteString( &hist->data[ j % hist->max ] );
+    for( i = 0; i < hist->max; i++ ) {
+        if( hist->data[j % hist->max] != NULL ) {
+            MyFprintf( f, "%s\n", hist->data[j % hist->max] );
+            DeleteString( &hist->data[j % hist->max] );
         }
         j++;
     }
@@ -172,7 +169,7 @@ void SaveHistory( void )
         return;
     }
 
-    f = fopen( HistoryFile,"wt" );
+    f = fopen( HistoryFile, "wt" );
     if( f == NULL ) {
         return;
     }
@@ -191,7 +188,8 @@ void FilterHistInit( int max )
 {
     FilterHist.max = max;
     FilterHist.curr = 0;
-    FilterHist.data = MemReAlloc( FilterHist.data, (FilterHist.max+1) * sizeof( char * ) );
+    FilterHist.data = MemReAlloc( FilterHist.data,
+        (FilterHist.max + 1) * sizeof( char * ) );
 
 } /* FilterHistInit */
 
@@ -202,7 +200,7 @@ void CLHistInit( int max )
 {
     CLHist.max = max;
     CLHist.curr = 0;
-    CLHist.data = MemReAlloc( CLHist.data, (CLHist.max+1) * sizeof( char * ) );
+    CLHist.data = MemReAlloc( CLHist.data, (CLHist.max + 1) * sizeof( char * ) );
 
 } /* CLHistInit */
 
@@ -213,7 +211,7 @@ void FindHistInit( int max )
 {
     FindHist.max = max;
     FindHist.curr = 0;
-    FindHist.data = MemReAlloc( FindHist.data, (FindHist.max+1) * sizeof( char * ) );
+    FindHist.data = MemReAlloc( FindHist.data, (FindHist.max + 1) * sizeof( char * ) );
 
 } /* FindHistInit */
 
@@ -224,11 +222,13 @@ void LastFilesHistInit( int max )
 {
     LastFilesHist.max = max;
     LastFilesHist.curr = 0;
-    LastFilesHist.data = MemReAlloc( LastFilesHist.data, (LastFilesHist.max+1) * sizeof( char * ) );
+    LastFilesHist.data = MemReAlloc( LastFilesHist.data,
+        (LastFilesHist.max + 1) * sizeof( char * ) );
 
 } /* LastFilesHistInit */
 
-void HistFini( void ){
+void HistFini( void )
+{
     MemFree( LastFilesHist.data );
     MemFree( FindHist.data );
     MemFree( CLHist.data );

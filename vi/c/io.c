@@ -30,23 +30,20 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "vi.h"
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
-#include <ctype.h>
-#include "vi.h"
 
 static int closeAFile( void );
 
 /*
  * FileExists - test if a file exists
  */
-int FileExists( char *name )
+vi_rc FileExists( char *name )
 {
-    int i,rc,en;
+    int     i, en;
+    vi_rc   rc;
 
     while( TRUE ) {
         i = open( name, O_RDWR | O_BINARY, 0 );
@@ -85,9 +82,9 @@ int FileExists( char *name )
             if( en != EMFILE ) {
                 return( ERR_FILE_OPEN );
             }
-            i = closeAFile();
-            if( i ) {
-                return( i );
+            rc = closeAFile();
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
         } else {
             if( isatty( i ) ) {
@@ -105,17 +102,18 @@ int FileExists( char *name )
 /*
  * FileOpen - open a file, conditional on exist flag
  */
-int FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
+vi_rc FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
 {
-    int         i,handle,en;
+    int         handle, en;
+    vi_rc       rc;
 
     /*
      * test if file exists
      */
     if( existflag ) {
-        i = FileExists( name );
-        if( i ) {
-            return( i );
+        rc = FileExists( name );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
 
@@ -130,9 +128,9 @@ int FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
             if( en != EMFILE ) {
                 return( ERR_FILE_OPEN );
             }
-            i = closeAFile();
-            if( i ) {
-                return( i );
+            rc = closeAFile();
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
         } else {
             if( handle >= 0 && isatty( handle ) ) {
@@ -151,9 +149,9 @@ int FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
 /*
  * FileSeek - seek location in swap file
  */
-int FileSeek( int handle, long where )
+vi_rc FileSeek( int handle, long where )
 {
-    long        i,relo,lastpos;
+    long        i, relo, lastpos;
 
     lastpos = tell( handle );
     if( lastpos < 0 ) {
@@ -178,7 +176,7 @@ int FileSeek( int handle, long where )
  */
 static int closeAFile( void )
 {
-info *cinfo;
+    info    *cinfo;
 
     cinfo = InfoHead;
     while( cinfo != NULL ) {
@@ -213,11 +211,11 @@ FILE *GetFromEnvAndOpen( char *path )
  */
 void GetFromEnv( char *what, char *path )
 {
-    _searchenv(what,"EDPATH",path );
+    _searchenv( what, "EDPATH", path );
     if( path[0] != 0 ) {
         return;
     }
-    _searchenv(what,"PATH",path );
+    _searchenv( what, "PATH", path );
 
 } /* GetFromEnv */
 
@@ -232,8 +230,8 @@ static char altTmpDir[] = "c:";
  */
 void VerifyTmpDir( void )
 {
-    int i;
-    char *env_tmpdir;
+    int     i;
+    char    *env_tmpdir;
 
     if( TmpDir != NULL ) {
         i = strlen( TmpDir ) - 1;
@@ -251,10 +249,10 @@ void VerifyTmpDir( void )
     }
     env_tmpdir = getenv( "tmp" );
     if( env_tmpdir != NULL ) {
-        if( env_tmpdir[strlen(env_tmpdir)-1] == '\\' ) {
+        if( env_tmpdir[strlen( env_tmpdir ) - 1] == '\\' ) {
             char buf[FILENAME_MAX];
             strcpy( buf, env_tmpdir );
-            buf[strlen(buf)-1] = '\0';
+            buf[strlen( buf ) - 1] = '\0';
             AddString2( &TmpDir, buf );
         } else {
             AddString2( &TmpDir, env_tmpdir );
@@ -288,14 +286,14 @@ void MakeTmpPath( char *out, char *in )
 /*
  * TmpFileOpen - open a tmp file
  */
-int TmpFileOpen( char *inname, int *_handle )
+vi_rc TmpFileOpen( char *inname, int *_handle )
 {
     char        file[FILENAME_MAX];
 
     tmpnam( inname );
     MakeTmpPath( file, inname );
     return( FileOpen( file, FALSE, O_TRUNC | O_RDWR | O_BINARY | O_CREAT,
-                0, _handle ) );
+                      0, _handle ) );
 
 } /* TmpFileOpen */
 
@@ -338,7 +336,7 @@ bool FileTemplateMatch( char *name, char *template )
     while( 1 ) {
         if( *template == '*' ) {
             if( inExtension == FALSE ) {
-                while( *( name + 1 ) && *( name + 1 ) != '.' ) {
+                while( *(name + 1) && *(name + 1) != '.' ) {
                     name++;
                 }
                 inExtension = TRUE;
@@ -367,7 +365,8 @@ bool FileTemplateMatch( char *name, char *template )
         return( TRUE );
     }
     return( FALSE );
-}
+
+} /* FileTemplateMatch */
 
 /*
  * StripPath - return pointer to where actual filename begins
@@ -375,10 +374,12 @@ bool FileTemplateMatch( char *name, char *template )
 char *StripPath( char *name )
 {
     char *ptr;
-    if( name == NULL ) return( NULL );
+    if( name == NULL ) {
+        return( NULL );
+    }
     ptr = name + strlen( name ) - 1;
 
-    while( ptr != name &&( *ptr != '\\' && *ptr != '/')  ) {
+    while( ptr != name && (*ptr != '\\' && *ptr != '/') ) {
         ptr--;
     }
     if( *ptr == '\\' ) {
@@ -386,4 +387,5 @@ char *StripPath( char *name )
     }
 
     return( ptr );
-}
+
+} /* StripPath */

@@ -30,18 +30,17 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 
 /*
  * SplitFcbAtLine - split a fcb at specified line (specified line goes in
  *                  new one) - line 1 causes new fcb to be created at start
  */
-int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
+vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
 {
     linenum     sline;
-    int         bytecnt=0;
-    line        *cl,*pl;
+    int         bytecnt = 0;
+    line        *cl, *pl;
     fcb         *cfcb;
 
     /*
@@ -50,7 +49,7 @@ int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
     if( lne == fb->start_line ) {
         return( NO_SPLIT_CREATED_AT_START_LINE );
     }
-    if( lne == fb->end_line+1 ) {
+    if( lne == fb->end_line + 1 ) {
         return( NO_SPLIT_CREATED_AT_END_LINE );
     }
 
@@ -74,7 +73,7 @@ int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
     sline = fb->start_line;
     cl = fb->line_head;
     while( sline != lne ) {
-        bytecnt += cl->len+1;
+        bytecnt += cl->len + 1;
         cl = cl->next;
         sline++;
     }
@@ -84,7 +83,7 @@ int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
      */
     pl = cl->prev;
     cfcb = FcbAlloc( f );
-    InsertLLItemAfter( (ss**)&(f->fcb_tail), (ss*)fb, (ss*)cfcb );
+    InsertLLItemAfter( (ss **)&(f->fcb_tail), (ss *)fb, (ss *)cfcb );
 
     /*
      * reset line data for new fcb
@@ -99,7 +98,7 @@ int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
     /*
      * reset line data for original fcb
      */
-    fb->end_line = lne-1;
+    fb->end_line = lne - 1;
     fb->line_tail = pl;
     fb->line_tail->next = NULL;
     fb->byte_cnt = bytecnt;
@@ -111,7 +110,7 @@ int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
         /*
          * make sure original one should stay locked
          */
-        fb->globalmatch=FALSE;
+        fb->globalmatch = FALSE;
         cl = fb->line_head;
         while( cl != NULL ) {
             if( cl->inf.ld.globmatch ) {
@@ -146,17 +145,18 @@ int SplitFcbAtLine( linenum lne, file *f, fcb *fb )
  * CheckCurrentFcbCapacity - check if fcb has exceeded its capacity; if so,
  *                           split it
  */
-int CheckCurrentFcbCapacity( void )
+vi_rc CheckCurrentFcbCapacity( void )
 {
-    int         i,bc,bl;
+    int         bc, bl;
     line        *cl;
     linenum     l;
+    vi_rc       rc;
 
     /*
      * check if fcb is full
      */
     if( FcbSize( CurrentFcb ) <= MAX_IO_BUFFER ) {
-        return (ERR_NO_ERR );
+        return( ERR_NO_ERR );
     }
     FetchFcb( CurrentFcb );
 
@@ -164,17 +164,17 @@ int CheckCurrentFcbCapacity( void )
      * can't take it, so split it
      */
     cl = CurrentFcb->line_head;
-    bl = CurrentFcb->byte_cnt/2;
-    bc = cl->len+1;
+    bl = CurrentFcb->byte_cnt / 2;
+    bc = cl->len + 1;
     l = CurrentFcb->start_line;
     while( bc < bl ) {
         cl = cl->next;
         l++;
-        bc += cl->len+1;
+        bc += cl->len + 1;
     }
-    i = SplitFcbAtLine( l, CurrentFile, CurrentFcb );
-    if( i ) {
-        return( i );
+    rc = SplitFcbAtLine( l, CurrentFile, CurrentFcb );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
 
     /*
@@ -182,7 +182,7 @@ int CheckCurrentFcbCapacity( void )
      * as well, new fcb had better have the same display status as the old
      */
     CurrentFcb->next->on_display = CurrentFcb->on_display;
-    if( CurrentLineNumber > CurrentFcb->end_line ) {
+    if( CurrentPos.line > CurrentFcb->end_line ) {
         CurrentFcb = CurrentFcb->next;
         FetchFcb( CurrentFcb );
     }

@@ -29,9 +29,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "vi.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/seginfo.h>
@@ -45,11 +43,9 @@
 #include <sys/sendmx.h>
 #include <sys/proxy.h>
 #include <sys/vc.h>
-#include "vi.h"
 #include "dosx.h"
-#include "pragmas.h"
 #include "win.h"
-#include "keys.h"
+#include "vibios.h"
 
 struct                  _console_ctrl *QNXCon;
 int                     QNXConHandle;
@@ -61,8 +57,8 @@ extern pid_t            _my_pid;
 
 
 struct map {
-    char        qnx;
-    char        event;
+    unsigned char   qnx;
+    vi_key          event;
 };
 
 static struct map events[] = {
@@ -256,42 +252,54 @@ static int CompareEvents( const void *d1, const void *d2 )
     return( p1->qnx - p2->qnx );
 }
 
-extern short BIOSGetKeyboard( char y)
+/*
+ * BIOSGetKeyboard - get a keyboard char
+ */
+extern vi_key BIOSGetKeyboard( int *scan )
 {
-    char        ch;
-    struct map  what;
-    struct map  *ev;
+    unsigned char   ch;
+    struct map      what;
+    struct map      *ev;
+    vi_key          key;
 
-    y = y;
     while( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) <= 0 ) {
         WaitForProxy();
-    };
+    }
     if( ch == 0xff ) {
-        if( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) <= 0 ) {
-            return( 0x80 );
-        }
-        what.qnx = ch;
-        ev = bsearch( &what, events, sizeof( events )/sizeof( struct map ),
+        key = VI_KEY( DUMMY );
+        if( dev_read( QNXConHandle, &ch, 1, 0, 0, 0, Proxy, 0 ) > 0 ) {
+            what.qnx = ch;
+            ev = bsearch( &what, events, sizeof( events )/sizeof( struct map ),
                         sizeof( what ), CompareEvents );
-        if( ev != NULL ) {
-            return( ev->event );
+            if( ev != NULL ) {
+                key = ev->event;
+            }
         }
-        return( 0x80 );
     } else {
         if( ch == 127 ) {
             ch = 8; /* KLUDGE - bs comes through as del */
         }
+        key = ch;
     }
-    return( ch );
+    if( scan != NULL ) {
+        *scan = 0;
+    }
+    if( key == 0xe0 ) {
+        return( 0 );
+    }
+    return( key );
 
 } /* BIOSGetKeyboard */
 
-extern short BIOSKeyboardHit( char x )
+/*
+ * BIOSKeyboardHit - test for keyboard hit
+ */
+extern bool BIOSKeyboardHit( void )
 {
-    x = x;
     return( dev_ischars( QNXConHandle ) != 0 );
 
 } /* BIOSKeyboardHit */
+
 
 void WaitForProxy( void )
 {
@@ -299,14 +307,6 @@ void WaitForProxy( void )
     Receive( Proxy, 0, 0 );
 
 } /* WaitForProxy */
-
-extern long DosGetFullPath( char *old, char *full )
-{
-    strcpy( full, old );        /* for now */
-    return( 0L );
-
-} /* DosGetFullPath */
-
 
 static void addConsoleNumber( char * ptr, unsigned number )
 {
@@ -317,9 +317,9 @@ static void addConsoleNumber( char * ptr, unsigned number )
 } /* addConsoleNumber */
 
 /*
- * KeyboardInit
+ * BIOSKeyboardInit
  */
-int KeyboardInit( void )
+int BIOSKeyboardInit( void )
 {
     struct _dev_info_entry      dev;
     char                        *ptr;
@@ -349,7 +349,7 @@ int KeyboardInit( void )
     }
     qnx_vc_detach( proc );
 
-    ptr = &sidinfo.tty_name[ strlen( sidinfo.tty_name ) ];
+    ptr = &sidinfo.tty_name[strlen( sidinfo.tty_name )];
     while( 1 ) {
         if( ptr[-1] < '0' || ptr[-1] > '9' ) {
             break;
@@ -399,7 +399,7 @@ int KeyboardInit( void )
 //    StopKeyboard();
     return( ERR_NO_ERR );
 
-} /* KeyboardInit */
+} /* BIOSKeyboardInit */
 
 void RestoreKeyboard( void )
 {
@@ -434,9 +434,9 @@ void StopKeyboard( void )
 } /* StopKeyboard */
 
 /*
- * MyVioShowBuf - update the screen
+ * BIOSUpdateScreen - update the screen
  */
-void MyVioShowBuf( unsigned offset, int nbytes )
+void BIOSUpdateScreen( unsigned offset, unsigned nbytes )
 {
     struct _mxfer_entry sx[2];
     struct _mxfer_entry rx;
@@ -467,4 +467,5 @@ void MyVioShowBuf( unsigned offset, int nbytes )
 
     Sendmx(QNXCon->driver, 2, 1, &sx, &rx );
 
-} /* MyVioShowBuf */
+} /* BIOSUpdateScreen */
+

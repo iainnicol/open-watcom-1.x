@@ -25,6 +25,7 @@
 *  ========================================================================
 *
 * Description: implement ...label and .go script control words
+*               not all options are used / implemented
 *
 *  comments are from script-tso.txt
 ****************************************************************************/
@@ -87,11 +88,11 @@ bool        gotarget_reached( void )
             }
             if( *p != '\0' ) {
                 k = 0;
-                while( gotarget[ k ] && *p == gotarget[ k ] ) {
+                while( gotarget[k] && *p == gotarget[k] ) {
                     k++;
                     p++;
                 }
-                if( gotarget[ k ] == '\0' && ((*p == ' ') || (*p == '\0')) ) {
+                if( gotarget[k] == '\0' && ((*p == ' ') || (*p == '\0')) ) {
                     reached = true;
                 }
             }
@@ -160,6 +161,7 @@ void    scr_label( void )
     condcode        cc;
     getnum_block    gn;
     labelcb     *   lb;
+    char            linestr[MAX_L_AS_STR];
 
     scan_start += 2;                    // over dots
 
@@ -169,14 +171,13 @@ void    scr_label( void )
     if( *scan_start == '\0'  ) {        // no label?
         scan_err = true;
         err_count++;
+        g_err( err_missing_name, "" );
         if( input_cbs->fmflags & II_macro ) {
-            out_msg( "ERR_LABEL_name missing\n"
-                     "\t\t\tLine %d of macro '%s'\n",
-                     input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
-            out_msg( "ERR_LABEL_name missing\n"
-                     "\t\t\tLine %d of file '%s'\n",
-                     input_cbs->s.f->lineno, input_cbs->s.f->filename );
+            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         show_include_stack();
         return;
@@ -197,11 +198,9 @@ void    scr_label( void )
                 if( gn.result != input_cbs->s.m->lineno ) {
                     scan_err = true;
                     err_count++;
-                    out_msg( "ERR_LABEL_lineno not as expected %d\n"
-                             "\t\t\tLine %d of macro '%s'\n",
-                             gn.result,
-                             input_cbs->s.m->lineno,
-                             input_cbs->s.m->mac->name );
+                    g_err( err_label_line, gn.resultstr );
+                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     show_include_stack();
                     return;
                 }
@@ -209,11 +208,9 @@ void    scr_label( void )
                 if( gn.result != input_cbs->s.f->lineno ) {
                     scan_err = true;
                     err_count++;
-                    out_msg( "ERR_LABEL_lineno not as expected %d\n"
-                             "\t\t\tLine %d of file '%s'\n",
-                             gn.result,
-                             input_cbs->s.f->lineno,
-                             input_cbs->s.f->filename );
+                    g_err( err_label_line, gn.resultstr );
+                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     show_include_stack();
                     return;
                 }
@@ -223,16 +220,15 @@ void    scr_label( void )
                   // numeric macro label no need to store
             } else {
                 wng_count++;
-                out_msg( "WNG_LABEL numeric not implemented\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         input_cbs->s.f->lineno,
-                         input_cbs->s.f->filename );
+                g_warn( wng_label_num );
+                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 show_include_stack();
             }
 
         } else {                        // no numeric label
             cc = getarg();
-            if( cc == pos ) {           // label name found
+            if( cc == pos ) {           // label name specefied
                 char    *   p;
                 char    *   pt;
                 int         len;
@@ -247,12 +243,11 @@ void    scr_label( void )
                 *pt = '\0';
                 if( len >  MAC_NAME_LENGTH ) {
                     err_count++;
-                    out_msg( "ERR_LABEL length greater 8 chars\n"
-                             "\t\t\tLine %d of file '%s'\n",
-                             input_cbs->s.f->lineno,
-                             input_cbs->s.f->filename );
+                    g_err( err_sym_long, token_buf );
+                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     show_include_stack();
-                    token_buf[ MAC_NAME_LENGTH ] = '\0';
+                    token_buf[MAC_NAME_LENGTH] = '\0';
                 }
 
                 if( input_cbs->fmflags & II_macro ) {
@@ -264,9 +259,9 @@ void    scr_label( void )
                         if( cc == neg ) {   // name with different lineno
                             scan_err = true;
                             err_count++;
-                            out_msg( "ERR_LABEL name duplicate at different line\n"
-                                     "\t\t\tLine %d of macro '%s'\n",
-                                     input_cbs->s.m->lineno,
+                            g_err( err_label_dup, token_buf );
+                            utoa( input_cbs->s.m->lineno, linestr, 10 );
+                            g_info( inf_mac_line, linestr,
                                      input_cbs->s.m->mac->name );
                             show_include_stack();
                             return;
@@ -288,10 +283,10 @@ void    scr_label( void )
                         if( cc == neg ) {   // name with different lineno
                             scan_err = true;
                             err_count++;
-                            out_msg( "ERR_LABEL name duplicate at different line\n"
-                                     "\t\t\tLine %d of file '%s'\n",
-                                     input_cbs->s.f->lineno,
-                                     input_cbs->s.f->filename );
+                            g_err( err_label_dup, token_buf );
+                            utoa( input_cbs->s.f->lineno, linestr, 10 );
+                            g_info( inf_file_line, linestr,
+                                    input_cbs->s.f->filename );
                             show_include_stack();
                             return;
                         } else {        // new label
@@ -309,14 +304,13 @@ void    scr_label( void )
             } else {
                 scan_err = true;
                 err_count++;
+                g_err( err_missing_name, "" );
                 if( input_cbs->fmflags & II_macro ) {
-                    out_msg( "ERR_LABEL_name missing\n"
-                             "\t\t\tLine %d of macro '%s'\n",
-                             input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    out_msg( "ERR_LABEL_name missing\n"
-                             "\t\t\tLine %d of file '%s'\n",
-                             input_cbs->s.f->lineno, input_cbs->s.f->filename );
+                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 show_include_stack();
                 return;
@@ -324,7 +318,7 @@ void    scr_label( void )
         }
 
         if( *scan_start == ' ' ) {
-            scan_start++;       // skip one blank;
+            scan_start++;               // skip one blank
 
             if( *scan_start ) {         // rest of line is not empty
                 split_input( buff2, scan_start );   // split and process next
@@ -373,6 +367,11 @@ void    scr_label( void )
 /*     ...loop .sr i = &i + 1                                              */
 /*     &i                                                                  */
 /*     .if &i lt 50 .go loop                                               */
+/*                                                                         */
+/*                                                                         */
+/* ! goto linenumber is not implemented for FILE, only for MACRO           */
+/*                                                                         */
+/*                                                                         */
 /***************************************************************************/
 
 void    scr_go( void )
@@ -381,6 +380,7 @@ void    scr_go( void )
     getnum_block    gn;
     labelcb     *   golb;
     int             k;
+    char            linestr[MAX_L_AS_STR];
 
     input_cbs->if_cb->if_level = 0;     // .go terminates
     ProcFlags.keep_ifstate = false;     // ... all .if controls
@@ -391,14 +391,13 @@ void    scr_go( void )
     if( cc != pos ) {
         scan_err = true;
         err_count++;
+        g_err( err_missing_name, "" );
         if( input_cbs->fmflags & II_macro ) {
-            out_msg( "ERR_GOTO_LABEL_name missing\n"
-                     "\t\t\tLine %d of macro '%s'\n",
-                     input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
         } else {
-            out_msg( "ERR_GOTO_LABEL_name missing\n"
-                     "\t\t\tLine %d of file '%s'\n",
-                     input_cbs->s.f->lineno, input_cbs->s.f->filename );
+            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
         show_include_stack();
         return;
@@ -410,58 +409,61 @@ void    scr_go( void )
 
     cc = getnum( &gn );             // try numeric expression evaluation
     if( cc == pos  || cc  == neg) {     // numeric linenumber
-        if( input_cbs->fmflags & II_macro ) {
-           gotargetno = input_cbs->s.m->lineno;
-        } else {
-           gotargetno = input_cbs->s.m->lineno;
-        }
+        gotarget[0] = '\0';             // no target label name
         if( gn.num_sign == ' '  ) {     // absolute number
             gotargetno = gn.result;
         } else {
+            if( input_cbs->fmflags & II_macro ) {
+                gotargetno = input_cbs->s.m->lineno;
+            } else {
+                gotargetno = input_cbs->s.m->lineno;
+            }
             gotargetno += gn.result;    // relative target line number
         }
 
-        if( gotargetno == 0 ) {
+        if( gotargetno < 1 ) {
             scan_err = true;
             err_count++;
+            g_err( err_label_zero );
             if( input_cbs->fmflags & II_macro ) {
-                out_msg( "ERR_GOTO_LINENO must be greater zero\n"
-                         "\t\t\tLine %d of macro '%s'\n",
-                         input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                out_msg( "ERR_GOTO_LINENO must be greater zero\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         input_cbs->s.f->lineno, input_cbs->s.f->filename );
+                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
             show_include_stack();
             return;
         }
-        gotarget[ 0 ] = '\0';           // no target label name
-
+        if( input_cbs->fmflags & II_macro ) {
+            if( gotargetno <= input_cbs->s.m->lineno ) {
+                input_cbs->s.m->lineno = 0; // restart from beginning
+                input_cbs->s.m->macline = input_cbs->s.m->mac->macline;
+            }
+        }
     } else {                            // no numeric target label
 
         gotargetno = 0;                 // no target lineno known
         if( arg_flen >  MAC_NAME_LENGTH ) {
             err_count++;
+            g_err( err_sym_long, tok_start );
             if( input_cbs->fmflags & II_macro ) {
-                out_msg( "ERR_GOTO length greater 8 chars\n"
-                         "\t\t\tLine %d of macro '%s'\n",
-                         input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+                utoa( input_cbs->s.m->lineno, linestr, 10 );
+                g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
             } else {
-                out_msg( "ERR_GOTO length greater 8 chars\n"
-                         "\t\t\tLine %d of file '%s'\n",
-                         input_cbs->s.f->lineno, input_cbs->s.f->filename );
+                utoa( input_cbs->s.f->lineno, linestr, 10 );
+                g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             }
             show_include_stack();
             arg_flen = MAC_NAME_LENGTH;
         }
 
         for( k = 0; k < MAC_NAME_LENGTH; k++ ) {// copy to work
-            gotarget[ k ] = *tok_start++;
+            gotarget[k] = *tok_start++;
         }
-        gotarget[ k ] = '\0';
+        gotarget[k] = '\0';
 
-        golb = find_label(  gotarget );
+        golb = find_label( gotarget );
         if( golb != NULL ) {            // label already known
             gotargetno = golb->lineno;
 
@@ -492,7 +494,7 @@ void    scr_go( void )
 
 void        print_labels( labelcb * lcb )
 {
-    static const char   fill[ 10 ] = "         ";
+    static const char   fill[10] = "         ";
     size_t              len;
     labelcb         *   lb;
 
@@ -501,7 +503,7 @@ void        print_labels( labelcb * lcb )
         out_msg( "\nList of defined labels for current input:\n\n");
         while( lb != NULL ) {
             len = strlen( lb->label_name );
-            out_msg( "Label='%s'%s at line %d\n", lb->label_name, &fill[ len ],
+            out_msg( "Label='%s'%s at line %d\n", lb->label_name, &fill[len],
                       lb->lineno );
             lb = lb->prev;
         }

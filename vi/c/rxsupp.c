@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "vi.h"
 #include "rxsupp.h"
 
@@ -69,7 +65,7 @@ int GetCurrRegExpLength( void )
 {
     int len;
 
-    len = (int) (CurrentRegularExpression->endp[0] - CurrentRegularExpression->startp[0] );
+    len = (int) (CurrentRegularExpression->endp[0] - CurrentRegularExpression->startp[0]);
     return( len );
 
 } /* GetCurrRegExpLength */
@@ -79,7 +75,6 @@ int GetCurrRegExpLength( void )
  */
 void SetMajickString( char *str )
 {
-
     if( str == NULL ) {
         if( Majick != NULL ) {
             return;
@@ -95,12 +90,12 @@ void SetMajickString( char *str )
  */
 void MakeExpressionNonRegular( char *str )
 {
-    int         i,j=0,k;
+    int         i, j = 0, k;
     char        *foo;
 
     k = strlen( str );
     foo = StaticAlloc();
-    for( i=0;i<k;i++ ) {
+    for( i = 0; i < k; i++ ) {
         if( str[i] == '/' ) {
             foo[j++] = '\\';
         } else if( strchr( META, str[i] ) != NULL ) {
@@ -118,3 +113,17 @@ void MakeExpressionNonRegular( char *str )
     StaticFree( foo );
 
 } /* MakeExpressionNonRegular */
+
+/*
+ * SetMagicFlag - set up the Magic flag
+ */
+bool SetMagicFlag( bool new )
+{
+    bool    old;
+
+    old = EditFlags.Magic;
+    EditFlags.Magic = new;
+    return( old );
+
+} /* SetMagicFlag */
+

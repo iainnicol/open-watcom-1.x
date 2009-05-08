@@ -29,16 +29,12 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include "vi.h"
 #ifdef __WATCOMC__
-#include <conio.h>
+    #include <conio.h>
 #endif
 #include <sys/types.h>
 #include "posix.h"
-#include "vi.h"
 
 /*
  * GetCWD1 - get current working directory, then allocate space for it
@@ -57,7 +53,7 @@ void GetCWD1( char **str )
  */
 void GetCWD2( char *str, int maxlen )
 {
-    if( getcwd( str, maxlen-1 ) == NULL ) {
+    if( getcwd( str, maxlen - 1 ) == NULL ) {
         str[0] = 0;
     }
     // Don't lowercase the filename
@@ -68,23 +64,24 @@ void GetCWD2( char *str, int maxlen )
 /*
  * ChangeDirectory - change to given drive/directory
  */
-int ChangeDirectory( char *dir )
+vi_rc ChangeDirectory( char *dir )
 {
-    int         rc;
+    vi_rc       rc;
     int         shift;
     char        *tmp;
+    int         i;
 
     shift = 0;
     if( dir[1] == ':' ) {
         rc = ChangeDrive( dir[0] );
-        if( rc || dir[2] == 0 ) {
+        if( rc != ERR_NO_ERR || dir[2] == 0 ) {
             return( rc );
         }
-        shift=2;
+        shift = 2;
     }
     tmp = &(dir[shift]);
-    rc = chdir( tmp );
-    if( rc != 0 ) {
+    i = chdir( tmp );
+    if( i != 0 ) {
         return( ERR_DIRECTORY_OP_FAILED );
     }
     return( ERR_NO_ERR );
@@ -94,7 +91,7 @@ int ChangeDirectory( char *dir )
 /*
  * ConditionalChangeDirectory - change dir only if needed
  */
-int ConditionalChangeDirectory( char *where )
+vi_rc ConditionalChangeDirectory( char *where )
 {
     if( CurrentDirectory != NULL ) {
         if( !stricmp( CurrentDirectory, where ) ) {
@@ -108,13 +105,13 @@ int ConditionalChangeDirectory( char *where )
 /*
  * SetCWD - set current working directory
  */
-int SetCWD( char *str )
+vi_rc SetCWD( char *str )
 {
-    int i;
+    vi_rc   rc;
 
-    i = ChangeDirectory( str );
-    if( i ) {
-        return( i );
+    rc = ChangeDirectory( str );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     MemFree2( &CurrentDirectory );
     GetCWD1( &CurrentDirectory );
@@ -123,8 +120,8 @@ int SetCWD( char *str )
 } /* SetCWD */
 
 
-static int currOff;
-static int totalBytes;
+static int  currOff;
+static int  totalBytes;
 
 /*
  * addDirData - add directory file data to current buffer
@@ -134,15 +131,15 @@ static void addDirData( file *cfile, char *str )
     int k;
 
     k = strlen( str );
-    if( totalBytes + k + LINE_EXTRA > MAX_IO_BUFFER-2 ) {
+    if( totalBytes + k + LINE_EXTRA > MAX_IO_BUFFER - 2 ) {
         CreateFcbData( cfile, currOff );
         currOff = 0;
         totalBytes = 0;
     }
     memcpy( &ReadBuffer[currOff], str, k );
-    memcpy( &ReadBuffer[currOff+k],crlf,2 );
-    currOff += k+2;
-    totalBytes += k+LINE_EXTRA;
+    memcpy( &ReadBuffer[currOff + k], crlf, 2 );
+    currOff += k + 2;
+    totalBytes += k + LINE_EXTRA;
 
 } /* addDirData */
 
@@ -151,8 +148,8 @@ static void addDirData( file *cfile, char *str )
   */
 void FormatDirToFile( file *cfile, bool add_drives )
 {
-    int         i,j;
-    int         lastdir=0;
+    int         i, j;
+    int         lastdir = 0;
     char        str[MAX_STR];
     direct_ent  *de;
 
@@ -168,29 +165,29 @@ void FormatDirToFile( file *cfile, bool add_drives )
     /*
      * add directory data
      */
-    for( i=0;i<DirFileCount;i++ ) {
-        if( (DirFiles[i]->attr & _A_SUBDIR) ) {
+    for( i = 0; i < DirFileCount; i++ ) {
+        if( DirFiles[i]->attr & _A_SUBDIR ) {
             if( DirFiles[i]->name[0] == '.' && DirFiles[i]->name[1] == 0 ) {
                 MemFree( DirFiles[i] );
-                for( j=i+1;j<DirFileCount;j++ ) {
-                    DirFiles[j-1] = DirFiles[j];
+                for( j = i + 1; j < DirFileCount; j++ ) {
+                    DirFiles[j - 1] = DirFiles[j];
                 }
                 i--;
                 DirFileCount--;
             } else {
                 if( lastdir != i ) {
-                    de = DirFiles[ lastdir ];
-                    DirFiles[ lastdir ] = DirFiles[i];
-                    for( j=i;j>lastdir+1;j-- ) {
-                        DirFiles[j] = DirFiles[j-1];
+                    de = DirFiles[lastdir];
+                    DirFiles[lastdir] = DirFiles[i];
+                    for( j = i; j > lastdir + 1; j-- ) {
+                        DirFiles[j] = DirFiles[j - 1];
                     }
-                    DirFiles[ lastdir+1 ] = de;
+                    DirFiles[lastdir + 1] = de;
                 }
                 lastdir++;
             }
         }
     }
-    for( i=0;i<DirFileCount;i++ ) {
+    for( i = 0; i < DirFileCount; i++ ) {
         FormatFileEntry( DirFiles[i], str );
         addDirData( cfile, str );
     }
@@ -199,9 +196,9 @@ void FormatDirToFile( file *cfile, bool add_drives )
      * add drives
      */
     if( add_drives ) {
-        for( i='A';i<='Z';i++ ) {
+        for( i = 'A'; i <= 'Z'; i++ ) {
             if( DoGetDriveType( i ) != DRIVE_NONE ) {
-                MySprintf( str,"  [%c:]", (char) i-'A'+'a' );
+                MySprintf( str, "  [%c:]", (char) i - 'A' + 'a' );
                 addDirData( cfile, str );
             }
         }

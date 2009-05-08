@@ -30,30 +30,27 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
+#include "vi.h"
 #include <dos.h>
-#include <assert.h>
-#include <ctype.h>
-#include "winvi.h"
 #include "color.h"
 #include "font.h"
 #include "utils.h"
 #include "banner.h"
 #include "aboutdlg.h"
 #include "win.h"
+#include <assert.h>
 
 /*
  * WriteText - write a length specified string to a window
  */
 void WriteText( HWND hwnd, int x, int y, type_style *style, char * text, int len )
 {
-    HDC         hdc;
-    #ifdef __WINDOWS_386__
-        short   tab;
-    #else
-        int     tab;
-    #endif
+    HDC     hdc;
+#ifdef __WINDOWS_386__
+    short   tab;
+#else
+    int     tab;
+#endif
 
     if( len > 0 ){
         hdc = TextGetDC( hwnd, style );
@@ -104,7 +101,7 @@ void TextReleaseDC( HWND hwnd, HDC hdc )
 /*
  * BlankRectIndirect - blank out a rectangle given a pointer to the rectangle
  */
-void BlankRectIndirect( HWND hwnd, UINT color, RECT *rect )
+void BlankRectIndirect( HWND hwnd, vi_color color, RECT *rect )
 {
     HDC     hdc;
 
@@ -117,7 +114,7 @@ void BlankRectIndirect( HWND hwnd, UINT color, RECT *rect )
 /*
  * BlankRect - blank out a rectangle given its coordinates
  */
-void BlankRect( HWND hwnd, UINT color, int x1, int x2, int y1, int y2 )
+void BlankRect( HWND hwnd, vi_color color, int x1, int x2, int y1, int y2 )
 {
     RECT    rect;
 
@@ -138,11 +135,11 @@ int MyTextExtent( HWND hwnd, type_style *style, char *text, unsigned length )
     int         extent;
     unsigned    text_len, extra;
     int         font_width;
-    #ifdef __WINDOWS_386__
-        short   tab;
-    #else
-        int     tab;
-    #endif
+#ifdef __WINDOWS_386__
+    short       tab;
+#else
+    int         tab;
+#endif
 
     hdc = TextGetDC( hwnd, style );
     font_width = FontAverageWidth( style->font );
@@ -195,23 +192,23 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     }
 
     // get line data
-    dc_line = DCFindLine( ( *row ) - 1, hwnd );
-    if( dc_line->display != 0 ){
+    dc_line = DCFindLine( *row - 1, hwnd );
+    if( dc_line->display != 0 ) {
         // line needs to be displayed
         // therefore ss information has not been set!
         // therefore we cant use it to calculate anything of value!
         // best we can do is a good solid guess.
         avg_width = FontAverageWidth( WIN_FONT( w ) );
-        *col = x/avg_width + 1;
+        *col = x / avg_width + 1;
         return;
     }
     assert( dc_line->valid );
-    if( dc_line->start_col < LeftColumn ) {
+    if( dc_line->start_col < LeftTopPos.column ) {
         // entire line has been scrolled off to left - go to end of that line
         *col = 10000;
         return;
     }
-    assert( dc_line->start_col == LeftColumn );
+    assert( dc_line->start_col == LeftTopPos.column );
     ss_start = ss = dc_line->ss;
 
     // find which block x lies on
@@ -226,10 +223,9 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
 
 #if 0
     if( (ss->type < 0) ||
-        (ss ->type >= SE_NUMTYPES) ||
-        (ss->end > BEYOND_TEXT ) ||
-        (ss->len > BEYOND_TEXT )
-        ){
+        (ss->type >= SE_NUMTYPES) ||
+        (ss->end > BEYOND_TEXT) ||
+        (ss->len > BEYOND_TEXT) ) {
         assert( 0 );
     }
 #endif
@@ -255,47 +251,47 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     lenBlock = max( lenBlock, 0 );
 
     // avg_width must be greater than 0 (this probablly isn't needed but ...)
-    avg_width = max( FontAverageWidth( SEType[ ss->type ].font ), 1 );
+    avg_width = max( FontAverageWidth( SEType[ss->type].font ), 1 );
 
-    if( EditFlags.RealTabs ){
+    if( EditFlags.RealTabs ) {
         char    *start_str, *end_str;
         int     cur_pixel;
-        linenum line_num = (linenum)(TopOfPage + *row - 1);
+        linenum line_num = (linenum)(LeftTopPos.line + *row - 1);
         line    *line;
         fcb     *fcb;
-        int     i,v_pos;
+        int     v_pos;
+        vi_rc   rc;
 
-        i = CGimmeLinePtr( line_num, &fcb, &line );
-        if( i == ERR_NO_ERR ) {
+        rc = CGimmeLinePtr( line_num, &fcb, &line );
+        if( rc == ERR_NO_ERR ) {
             char *text = line->data;
             // get the tab boundries in this block
-
-            #if 0
+#if 0
             v_pos = WinVirtualCursorPosition( text, startCols );
-            if( v_pos < LeftColumn ){
-                // block begins off left edge, advance forward to leftColumn
-                int rp = WinRealCursorPosition( text, LeftColumn );
+            if( v_pos < LeftTopPos.column ) {
+                // block begins off left edge, advance forward to LeftTopPos.column
+                int rp = WinRealCursorPosition( text, LeftTopPos.column );
                 start_str = text + rp;
-                v_pos = LeftColumn;
+                v_pos = LeftTopPos.column;
                 startPixel = 0;
-                lenBlock -=( rp - startCols );
+                lenBlock -= (rp - startCols);
             }
-            #else
-            if( LeftColumn > 1 ){
+#else
+            if( LeftTopPos.column > 1 ) {
                  // this only works for fixed fonts but its better than
                  // being wrong in every case; It's also correct
                  // immediately after every tab stop. And it should be
                  // at least close everywhere else :(
-                 *col = x/avg_width + 1;
+                 *col = x / avg_width + 1;
                  return;
             }
-            #endif
+#endif
             end_str = start_str = text + startCols;
 
-            while( end_str != start_str + lenBlock ){
-                if( *end_str == '\t' ){
-                    cur_pixel = ( WinVirtualCursorPosition( text, end_str+1-text )
-                               -LeftColumn )*avg_width;
+            while( end_str != start_str + lenBlock ) {
+                if( *end_str == '\t' ) {
+                    cur_pixel = (WinVirtualCursorPosition( text, end_str + 1 - text ) -
+                                 LeftTopPos.column ) * avg_width;
 
                     if( cur_pixel > x ) {
                         // we've found the new boundries for the block.
@@ -309,12 +305,12 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
             }
             // startCols are virtual# columns before the block
             v_pos = WinVirtualCursorPosition( text, start_str - text + 1 ) - 1;
-            if(start_str == text+startCols ) {
+            if( start_str == text + startCols ) {
                 if( startCols != v_pos ){
-                    startCols = v_pos - LeftColumn;
+                    startCols = v_pos - LeftTopPos.column;
                 }
             } else {
-                startCols = v_pos - LeftColumn;
+                startCols = v_pos - LeftTopPos.column;
             }
             lenBlock = end_str - start_str;
             str = start_str;
@@ -333,7 +329,8 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     if( intoExtent > x ) {
         while( intoExtent > x ) {
             intoCols--;
-            difExtent = intoExtent - MyTextExtent( hwnd, &SEType[ss->type], str, intoCols );
+            difExtent = intoExtent - MyTextExtent( hwnd, &SEType[ss->type], str,
+                                                   intoCols );
             intoExtent -= difExtent;
         }
         intoCols++;
@@ -342,14 +339,15 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
         while( intoExtent <= x ) {
             intoCols++;
             toleftExtent = intoExtent;
-            difExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols ) - intoExtent;
+            difExtent = MyTextExtent( hwnd, &SEType[ss->type], str, intoCols ) -
+                                            intoExtent;
             intoExtent += difExtent;
         }
     }
 
     // fine-tune if have | cursor
     if( divide == DIVIDE_MIDDLE ) {
-        if( ( x - toleftExtent ) > ( difExtent / 2 ) ) {
+        if( (x - toleftExtent) > (difExtent / 2) ) {
             intoCols++;
         }
     }
@@ -399,7 +397,7 @@ void SetGadgetString( char *str )
 }
 
 #ifdef __AXP__
-extern void     delay(unsigned int __milliseconds);
+extern void     delay( unsigned int __milliseconds );
 #endif
 void MyDelay( int ms )
 {
@@ -413,6 +411,7 @@ void MyBeep( void )
 
 static char oldPath[FILENAME_MAX];
 static char oldDrive;
+
 /*
  * PushDirectory - save the current drive/directory
  */
@@ -448,7 +447,7 @@ void PopDirectory( void )
 /*
  * DoAboutBox - do an about box
  */
-int DoAboutBox( void )
+vi_rc DoAboutBox( void )
 {
     about_info  ai;
 
@@ -470,8 +469,9 @@ void CursorOp( CursorOps op )
     static int          lastop = COP_FINI;
     static HCURSOR      noDrop, dropFt, dropClr, dropSS, statMove;
 
-//    if( op == lastop )
-// return;
+//    if( op == lastop ) {
+//        return;
+//    }
 
 //    ShowCursor( FALSE );
     switch( op ) {
@@ -523,13 +523,13 @@ char *windowName[] = {
     "WTool",
 #if 0
     EditorName,         // nothing to change
-    "Edit Container",   // should use standard Windows colour for this
+    "Edit Container"    // should use standard Windows colour for this
 #endif
 };
 
 HWND GetOwnedWindow( POINT pt )
 {
-    char        textBuffer[ 80 ];
+    char        textBuffer[80];
     int         i, nTypes;
     HWND        hwndElement, hwndChild;
     POINT       ptSave;
@@ -556,20 +556,20 @@ HWND GetOwnedWindow( POINT pt )
     GetClassName( hwndElement, textBuffer, sizeof( textBuffer ) - 1 );
     nTypes = GetNumWindowTypes();
     for( i = 0; i < nTypes; i++ ) {
-        if( !strcmp( textBuffer, windowName [ i ] ) ) {
+        if( !strcmp( textBuffer, windowName[i] ) ) {
             /* a recognized window - return handle to it
             */
-            #ifdef __WINDOWS__
+#ifdef __WINDOWS__
             if( GetWindowWord( hwndElement, GWW_HINSTANCE ) ==
                 GetWindowWord( Root, GWW_HINSTANCE ) ) {
                 return( hwndElement );
             }
-            #else
+#else
             if( GetWindowLong( hwndElement, GWL_HINSTANCE ) ==
                 GetWindowLong( Root, GWL_HINSTANCE ) ) {
                 return( hwndElement );
             }
-            #endif
+#endif
             return( (HWND)NULL );
         }
     }
@@ -578,7 +578,7 @@ HWND GetOwnedWindow( POINT pt )
 
 int GetNumWindowTypes( void )
 {
-    return( sizeof( windowName ) / sizeof( windowName[ 0 ] ) );
+    return( sizeof( windowName ) / sizeof( windowName[0] ) );
 }
 
 void MoveWindowTopRight( HWND hwnd )
@@ -617,7 +617,6 @@ void MoveWindowTopRight( HWND hwnd )
         ScreenToClient( GetParent( hwnd ), &pt );
         MoveWindow( hwnd, pt.x, pt.y, usWidth, usHeight, TRUE );
     }
-
 }
 
 /*
@@ -722,22 +721,26 @@ void CenterWindowInRoot( HWND hwnd )
     // center in root
     w = rH.right - rH.left;
     h = rH.bottom - rH.top;
-    x = ( ( rR.right - rR.left + 1 ) - ( w + 1 ) ) / 2 + rR.left;
-    y = ( ( rR.bottom - rR.top + 1 ) - ( h + 1 ) ) / 2 + rR.top;
+    x = ((rR.right - rR.left + 1) - (w + 1)) / 2 + rR.left;
+    y = ((rR.bottom - rR.top + 1) - (h + 1)) / 2 + rR.top;
 
     // try to keep on-screen
-    if( x < 0 ) x = 0;
-    if( y < 0 ) y = 0;
-    d = GetSystemMetrics( SM_CXSCREEN ) - ( x + w );
+    if( x < 0 ) {
+        x = 0;
+    }
+    if( y < 0 ) {
+        y = 0;
+    }
+    d = GetSystemMetrics( SM_CXSCREEN ) - (x + w);
     if( d < 0 ) {
         x += d;
     }
-    d = GetSystemMetrics( SM_CYSCREEN ) - ( y + h );
+    d = GetSystemMetrics( SM_CYSCREEN ) - (y + h);
     if( d < 0 ) {
         y += d;
     }
     SetWindowPos( hwnd, (HWND)NULL, x, y, 0, 0,
-        SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
+                  SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
 }
 
 void DrawRectangleUpDown( HWND hwnd, int which )
@@ -760,27 +763,22 @@ void DrawRectangleUpDown( HWND hwnd, int which )
 
 static void dumpSSBlocks( ss_block *ss_start, dc dc_line ) {
     ss_block    *ss = ss_start;
-    FILE *f= fopen( "C:\\vi.out", "a+t" );
+    FILE *f = fopen( "C:\\vi.out", "a+t" );
 
-    fprintf( f,"Bad SSBlock:: dumping current DC line\n" );
-    fprintf( f,"%s %d %d %d %d\n",
-        dc_line->text,
-        ss->type,
-        ss->end,
-        ss->len,
-        ss->offset );
+    fprintf( f, "Bad SSBlock:: dumping current DC line\n" );
+    fprintf( f, "%s %d %d %d %d\n", dc_line->text, ss->type, ss->end,
+             ss->len, ss->offset );
 
     ss++;
     while( ss->end <= BEYOND_TEXT ) {
-        fprintf( f,"%d %d %d %d\n",
-        ss->type,
-        ss->end,
-        ss->len,
-        ss->offset );
-        if( (ss->end == BEYOND_TEXT) || (ss->offset == 10000) ) break;
+        fprintf( f, "%d %d %d %d\n", ss->type, ss->end,
+                 ss->len, ss->offset );
+        if( (ss->end == BEYOND_TEXT) || (ss->offset == 10000) ) {
+            break;
+        }
         ss++;
     }
-    fprintf( f,"\n" );
+    fprintf( f, "\n" );
     fclose( f );
 }
 #endif
@@ -788,14 +786,14 @@ static void dumpSSBlocks( ss_block *ss_start, dc dc_line ) {
 /*
  * ChangeDrive - change the working drive
  */
-int ChangeDrive( int drive )
+vi_rc ChangeDrive( int drive )
 {
     char        a;
     unsigned    b;
-    unsigned    total,c;
+    unsigned    total, c;
 
-    a = (char) tolower(drive) - (char) 'a';
-    b = a+1;
+    a = (char) tolower( drive ) - (char) 'a';
+    b = a + 1;
     _dos_setdrive( b, &total );
     _dos_getdrive( &c );
     if( b != c ) {

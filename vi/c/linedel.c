@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 
 /*
@@ -50,31 +49,33 @@ void UpdateLineNumbers( linenum amt, fcb *cfcb  )
 /*
  * DeleteLineRange - delete a specified line range in current file
  */
-int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
+vi_rc DeleteLineRange( linenum s, linenum e, linedel_flags flags )
 {
-    int         i,j,k;
-    linenum     diff,ll;
-    fcb         *s1fcb,*sfcb,*e1fcb,*efcb,*cfcb;
+    linenum     diff, ll;
+    fcb         *s1fcb, *sfcb, *e1fcb, *efcb, *cfcb;
     undo_stack  *us;
+    vi_rc       rc;
+    vi_rc       rc1;
+    vi_rc       rc2;
 
     /*
      * check line range
      */
     UnselectRegion();
-    if( i = ModificationTest() ) {
-        return( i );
+    if( rc = ModificationTest() ) {
+        return( rc );
     }
     if( s > e ) {
         ll = s;
         s = e;
         e = ll;
     }
-    if( s<1 ) {
+    if( s < 1 ) {
         return( ERR_NO_SUCH_LINE );
     }
-    i = CFindLastLine( &ll );
-    if( i ) {
-        return( i );
+    rc = CFindLastLine( &ll );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
     if( e > ll ) {
         return( ERR_NO_SUCH_LINE );
@@ -83,45 +84,45 @@ int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
     /*
      * split fcb with start
      */
-    i=FindFcbWithLine( s, CurrentFile, &sfcb );
-    if( i ) {
-        return( i );
+    rc = FindFcbWithLine( s, CurrentFile, &sfcb );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    k = SplitFcbAtLine( s, CurrentFile, sfcb );
-    if( k > 0 ) {
-        return( k );
+    rc1 = SplitFcbAtLine( s, CurrentFile, sfcb );
+    if( rc1 > 0 ) {
+        return( rc1 );
     }
 
     /*
      * split fcb with end line
      */
-    i = FindFcbWithLine( e+1, CurrentFile, &efcb );
-    if( i ) {
-        if( i != ERR_NO_SUCH_LINE ) {
-            return( i );
+    rc = FindFcbWithLine( e + 1, CurrentFile, &efcb );
+    if( rc != ERR_NO_ERR ) {
+        if( rc != ERR_NO_SUCH_LINE ) {
+            return( rc );
         }
         if( e > ll ) {
             return( ERR_NO_SUCH_LINE );
         }
-        i = FindFcbWithLine( e, CurrentFile, &efcb );
-        if( i ) {
-            return( i );
+        rc = FindFcbWithLine( e, CurrentFile, &efcb );
+        if( rc != ERR_NO_ERR ) {
+            return( rc );
         }
     }
-    if( (j=SplitFcbAtLine( e+1, CurrentFile, efcb )) > 0 ) {
-        return( j );
+    if( (rc2 = SplitFcbAtLine( e + 1, CurrentFile, efcb )) > 0 ) {
+        return( rc2 );
     }
 
     /*
      * get pointers to middle fcbs (will use these for save buffers
      * and undos).
      */
-    if( k== NO_SPLIT_CREATED_AT_START_LINE ) {
+    if( rc1 == NO_SPLIT_CREATED_AT_START_LINE ) {
         s1fcb = sfcb;
     } else {
         s1fcb = sfcb->next;
     }
-    if( j != NO_SPLIT_CREATED_AT_START_LINE ) {
+    if( rc2 != NO_SPLIT_CREATED_AT_START_LINE ) {
         e1fcb = efcb;
     } else {
         e1fcb = efcb->prev;
@@ -132,10 +133,10 @@ int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
      * deleted, and point efcb to the fcb containing the line after the last
      * line deleted; then chain sfcb and efcb together
      */
-    if( k == NO_SPLIT_CREATED_AT_START_LINE ) {
+    if( rc1 == NO_SPLIT_CREATED_AT_START_LINE ) {
         sfcb = sfcb->prev;
     }
-    if( j != NO_SPLIT_CREATED_AT_START_LINE ) {
+    if( rc2 != NO_SPLIT_CREATED_AT_START_LINE ) {
         efcb = efcb->next;
     }
     if( sfcb != NULL ) {
@@ -144,13 +145,13 @@ int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
     if( efcb != NULL ) {
         efcb->prev = sfcb;
     }
-    diff = s-e-1;
+    diff = s - e - 1;
 
     /*
      * when this happens, all data is gone and we need a new
      * null fcb
      */
-    if(  sfcb == NULL && efcb == NULL ) {
+    if( sfcb == NULL && efcb == NULL ) {
         cfcb = FcbAlloc( CurrentFile );
         CreateNullLine( cfcb );
         cfcb->non_swappable = FALSE;
@@ -175,9 +176,9 @@ int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
      */
     } else {
         UpdateLineNumbers( diff, efcb );
-        i = CMergeFcbs( sfcb,efcb );
-        if( i > 0 ) {
-            return( i );
+        rc = CMergeFcbs( sfcb,efcb );
+        if( rc > ERR_NO_ERR ) {
+            return( rc );
         }
     }
 
@@ -197,32 +198,32 @@ int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
         us = UndoStack;
     }
     StartUndoGroup( us );
-    if( CurrentLineNumber >= s ) {
-        if( CurrentLineNumber <= e ) {
-            i = SetCurrentLine( s );
-            if( i ) {
-                if( i==ERR_NO_SUCH_LINE ) {
-                    i = SetCurrentLine( s-1 );
+    if( CurrentPos.line >= s ) {
+        if( CurrentPos.line <= e ) {
+            rc = SetCurrentLine( s );
+            if( rc != ERR_NO_ERR ) {
+                if( rc == ERR_NO_SUCH_LINE ) {
+                    rc = SetCurrentLine( s - 1 );
                 }
-                if( i ) {
-                    return( i );
+                if( rc != ERR_NO_ERR ) {
+                    return( rc );
                 }
             }
         } else {
-            i = SetCurrentLine( s+CurrentLineNumber-e-1 );
-            if( i ) {
-                return( i );
+            rc = SetCurrentLine( s + CurrentPos.line - e - 1 );
+            if( rc != ERR_NO_ERR ) {
+                return( rc );
             }
         }
     }
     Modified( TRUE );
     s1fcb->prev = e1fcb->next = NULL;
     if( EditFlags.GlobalInProgress ) {
-        for( cfcb=s1fcb;cfcb != NULL;cfcb=cfcb->next) {
+        for( cfcb = s1fcb; cfcb != NULL; cfcb = cfcb->next ) {
             cfcb->globalmatch = FALSE;
         }
     }
-    UndoDeleteFcbs( s-1, s1fcb, e1fcb, us );
+    UndoDeleteFcbs( s - 1, s1fcb, e1fcb, us );
     EndUndoGroup( us );
     PatchDeleteUndo( us );
 
@@ -235,15 +236,17 @@ int DeleteLineRange( linenum s, linenum e, linedel_flags flags )
  */
 void LineDeleteMessage( linenum s, linenum e )
 {
-
     if( EditFlags.GlobalInProgress ) {
         return;
     }
-    #ifdef __WIN__
-        if( LastSavebuf == 0 ) {
-            Message1( "%l lines deleted into the clipboard",e-s+1 );
-        } else
-    #endif
-    Message1( "%l lines%s%c",e-s+1, MSG_DELETEDINTOBUFFER, LastSavebuf );
+#ifdef __WIN__
+    if( LastSavebuf == 0 ) {
+        Message1( "%l lines deleted into the clipboard", e - s + 1 );
+    } else {
+#endif
+        Message1( "%l lines%s%c", e - s + 1, MSG_DELETEDINTOBUFFER, LastSavebuf );
+#ifdef __WIN__
+    }
+#endif
 
 } /* LineDeleteMessage */

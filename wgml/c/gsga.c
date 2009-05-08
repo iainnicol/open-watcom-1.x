@@ -30,7 +30,7 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
-#define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
+#define __STDC_WANT_LIB_EXT1__  1       /* use safer C library             */
 
 #include <stdarg.h>
 #include <errno.h>
@@ -191,130 +191,10 @@
 /***************************************************************************/
 
 
-static  char        stringval[ VAL_LENGTH + 1 ];
+static  char        stringval[VAL_LENGTH + 1];
 static  char    *   valptr;
-static  long        ranges[ 4 ];
+static  long        ranges[4];
 
-
-/* Some error msg routines
- */
-
-static void tagname_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_TAG_NAME missing / invalid\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_TAG_NAME missing / invalid\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-static void attname_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_NAME missing / invalid\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_NAME missing / invalid\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-
-static void attval_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_val missing / invalid\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_val missing / invalid\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-
-static void attrange_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_range missing / invalid\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_range missing / invalid\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-
-static void attdef_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_ATT_def default outside range\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_ATT_def default outside range\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-
-static void nottag_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_TAG User tag '%s' has not been defined\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_TAG User tag '%s' has not been defined\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
-
-
-static void toomany_err( void )
-{
-    err_count++;
-    if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_TAG_ too many attributes\n"
-                 "\t\t\tLine %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
-    } else {
-        out_msg( "ERR_TAG_ too many attributes\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
-    }
-    show_include_stack();
-    return;
-}
 
 
 /***************************************************************************/
@@ -400,7 +280,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
         return( cca );                  // no more parms
     }
 
-    stringval[ 0 ] = '\0';
+    stringval[0] = '\0';
     cc = pos;
 
     switch( tolower( *tok_start ) ) {
@@ -416,7 +296,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 *val_flags |= val_auto;
                 *att_flags |= att_auto;
             } else {
-                attval_err();
+                xx_err( err_att_val_inv );
                 cc = neg;
             }
         }
@@ -450,8 +330,8 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             gn.argstart = scan_start;
             gn.argstop  = scan_stop;
             gn.ignore_blanks = false;
-            ranges[ 2 ] = LONG_MIN;
-            ranges[ 3 ] = LONG_MIN;
+            ranges[2] = LONG_MIN;
+            ranges[3] = LONG_MIN;
             for( k = 0; k < 4; k++ ) {  // scan max 4 numbers
 
                 cc = getnum( &gn );
@@ -459,32 +339,32 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                     break;
                 }
                 if( cc == notnum ) {
-                    attval_err();
+                    xx_err( err_att_val_inv );
                     cc = neg;
                     return( cc );
                 }
-                ranges[ k ] = gn.result;
+                ranges[k] = gn.result;
             }
             scan_start = gn.argstart;
-            if( (k < 2) || (ranges[ 0 ] > ranges[ 1 ]) ) {// need 2 or more values
-                attrange_err();         // ... second >= first
+            if( (k < 2) || (ranges[0] > ranges[1]) ) {// need 2 or more values
+                xx_err( err_att_range_inv );// ... second <= first
                 cc = neg;
                 return( cc );
             }
             if( k == 3 ) {
-                ranges[ 3 ] = ranges[ 2 ];  // only 1 default specified
+                ranges[3] = ranges[2];  // only 1 default specified
             }
             if( k > 2 ) {               // default specified
-                if( (ranges[ 0 ] > ranges[ 2 ]) // default less min
-                    || (ranges[ 1 ] < ranges[ 2 ])  // default gt max
-                    || (ranges[ 0 ] > ranges[ 3 ])  // default less min
-                    || (ranges[ 1 ] < ranges[ 3 ]) ) {   // default gt max
-                    attdef_err();
+                if( (ranges[0] > ranges[2]) // default less min
+                    || (ranges[1] < ranges[2])  // default gt max
+                    || (ranges[0] > ranges[3])  // default2 less min
+                    || (ranges[1] < ranges[3]) ) {  // default2 gt max
+                    xx_err( err_att_default );
                     cc = neg;
                     return( cc );
                 }
             }
-            if( ranges[ 2 ] > LONG_MIN ) {
+            if( ranges[2] > LONG_MIN ) {
                 *val_flags |= val_def;  // we have default
                 *att_flags |= att_def;  // we have default
             }
@@ -509,12 +389,12 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             gn.ignore_blanks = false;
             cc = getnum( &gn );
             if( cc == notnum || cc == omit ) {
-                attval_err();
+                xx_err( err_att_val_inv );
                 cc = neg;
                 return( cc );
             } else {
                 scan_start = gn.argstart;
-                ranges [ 0 ] = gn.result;
+                ranges [0] = gn.result;
             }
         } else {
             cc = neg;
@@ -534,7 +414,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                         strupr( stringval );
                     }
                  } else {
-                    attval_err();       // only short string allowed
+                    xx_err( err_att_val_inv );  // only short string allowed
                     cc = neg;           // this is restriction from wgml 4.0
                     break;
 #if 0
@@ -547,7 +427,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 #endif
                  }
             } else {
-                attval_err();
+                xx_err( err_att_val_inv );
                 cc = neg;
                 break;
             }
@@ -561,7 +441,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 *val_flags |= val_def;
                 *att_flags |= att_def;
             } else {
-                attval_err();
+                xx_err( err_att_val_inv );
                 cc = neg;
                 break;
             }
@@ -611,7 +491,7 @@ void    scr_ga( void )
 
     if( cc == omit || (*tok_start == '*' && tag_entry == NULL) ) {
         // no operands or tagname * and no previous definition
-        tagname_err();
+        tag_name_missing_err();
     }
 
     /***********************************************************************/
@@ -622,7 +502,7 @@ void    scr_ga( void )
 
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
-            tagname_err();
+            xx_err( err_tag_name_inv );
             return;
         }
         savetag = '*';                  // remember for possible quick access
@@ -647,12 +527,12 @@ void    scr_ga( void )
             len++;
         }
         for( k = len; k < TAG_NAME_LENGTH; k++ ) {
-            tagname[ k ] = '\0';
+            tagname[k] = '\0';
         }
-        tagname[ TAG_NAME_LENGTH ] = '\0';
+        tagname[TAG_NAME_LENGTH] = '\0';
 
         if( len < arg_flen ) {
-            tagname_err();         // name contains invalid or too many chars
+            xx_err( err_tag_name_inv );// name contains invalid or too many chars
             return;
         }
         tag_entry = find_tag( &tag_dict, tagname );
@@ -670,7 +550,7 @@ void    scr_ga( void )
 
     if( cc == omit || (*tok_start == '*' && att_entry == NULL) ) {
         // no operands or attname * and no previous definition
-        attname_err();
+        xx_err( err_att_name_inv );
         return;
     }
 
@@ -678,7 +558,7 @@ void    scr_ga( void )
 
     if( *p == '*' ) {                   // single * as attname
         if( arg_flen > 1 ) {
-            attname_err();
+            xx_err( err_att_name_inv );
             return;
         }
         saveatt = '*';                  // remember for possible quick access
@@ -702,12 +582,12 @@ void    scr_ga( void )
             len++;
         }
         for( k = len; k < ATT_NAME_LENGTH; k++ ) {
-            attname[ k ] = '\0';
+            attname[k] = '\0';
         }
-        attname[ TAG_NAME_LENGTH ] = '\0';
+        attname[ATT_NAME_LENGTH] = '\0';
 
         if( len < arg_flen ) {
-            attname_err();          // attname with invalid or too many chars
+            xx_err( err_att_name_inv );// attname with invalid or too many chars
             cc = neg;
             return;
         }
@@ -738,7 +618,7 @@ void    scr_ga( void )
 
             cc = scan_att_optionsB( &val_flags, cc, &att_flags );// process option B
             if( cc != omit ) {
-                toomany_err();          // excess parameters
+                xx_err( err_tag_toomany );  // excess parameters
                 return;
             }
         }
@@ -788,16 +668,15 @@ void    scr_ga( void )
 
     gaval->valflags = val_flags;
     if( val_flags & val_length ) {
-        gaval->a.length = ranges[ 0 ];
+        gaval->a.length = ranges[0];
     } else if( val_flags & val_range ) {
         for( k = 0; k < 4; k++ ) {
-            gaval->a.range[ k ] = ranges[ k ];
+            gaval->a.range[k] = ranges[k];
         }
     } else if( val_flags & val_value ) {
         strcpy_s( gaval->a.value, sizeof( gaval->a.value ), stringval );
     } else if( val_flags & val_valptr ) {
         gaval->a.valptr = valptr;
     }
-
     return;
 }

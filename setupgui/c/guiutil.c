@@ -40,7 +40,8 @@
 #include "banner.h"
 #include <stdio.h>
 
-extern char             *GetVariableStrVal( const char *vbl_name );
+#include "genvbl.h"
+
 extern gui_colour_set   MainColours[];
 extern  void            GUISetJapanese();
 extern int              Invisible;
@@ -75,9 +76,8 @@ char *Bolt[] = {
 
 #define WND_APPROX_SIZE 10000
 
-static char         cpy1[1024];
-static char         *cpy1_templ = banner4gui(); //"Copyright © 2002-%s Open Watcom Contributors. All Rights Reserved."
-static char         *cpy2 = banner2agui();      //"Portions Copyright © 1982-2002 Sybase, Inc. All Rights Reserved."
+static char         cpy1[sizeof( banner4gui() ) + 5];
+static char         *cpy2 = banner2agui();
 
 gui_resource WndGadgetArray[] = {
     BITMAP_SPLASH, "splash",
@@ -103,7 +103,7 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
 
             gui_rgb             rgb, foreg;
             int                 row_count;
-            
+
             GUIGetClientRect( gui, &rect );
             GUIGetTextMetrics( gui, &metrics );
             indent = (rect.width - BitMapSize.x) / 2;
@@ -115,7 +115,7 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
                 topdent = 0;
             row = topdent / metrics.max.y;
             GUIDrawHotSpot( gui, 1, row, indent, GUI_BACKGROUND );
-            
+
             /*
              *  Do copyright stuff. There is a chance that we could overwrite the
              *  bitmap's graphics section if this stuff became too big, but that's a
@@ -126,7 +126,9 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
             if( BitMapSize.y ) {
                 row_count = BitMapSize.y / metrics.max.y;
             } else {
-                row_count = 3;  /* If there is no bitmap attached - such as virgin.exe - then just copyright to upper screen */
+                /* If there is no bitmap attached - such as virgin.exe - then just
+                 * copyright to upper screen */
+                row_count = 3;
                 indent = 16;
             }
 
@@ -178,8 +180,9 @@ extern bool SetupPreInit( void )
     /*
      *  Create copyright information 
      *
-     *  If the compile fails at this line, then the date is not in the 'MMM DD YYYY' format that I was expecting
-     *  so we should check what it is as the code below [adj_date onwards] may fail horribly
+     *  If the compile fails at this line, then the date is not in the 'MMM DD YYYY'
+     *  format that I was expecting so we should check what it is as the code below
+     *  [adj_date onwards] may fail horribly
      *
      *  see curr_date above
      */
@@ -189,11 +192,7 @@ extern bool SetupPreInit( void )
     }
 
     adj_date = strlen( curr_date ) - 4; /* subtract YYYY */
-    if( strlen( cpy1_templ ) < 1000 ) {
-        sprintf( cpy1, cpy1_templ, &curr_date[adj_date] );
-    } else {
-        strcpy( cpy1, "Copyright © 2002- Open Watcom Contributors. All Rights Reserved." );
-    }
+    sprintf( cpy1, banner4gui(), &curr_date[adj_date] );
 
     return( TRUE );
 }
@@ -228,7 +227,7 @@ extern bool SetupInit( void )
 
     GUIInitHotSpots( 1, WndGadgetArray );
     GUIGetHotSpotSize( 1, &BitMapSize );
-    
+
     MainWnd = GUICreateWindow( &init );
 
     /* remove GUI toolkit adjustment here as it is no longer required */
@@ -262,4 +261,3 @@ extern void SetupError( char *msg )
 //    MsgBox( NULL, "IDS_ERROR", GUI_OK, msg );
     MsgBox( NULL, msg, GUI_OK );
 }
-

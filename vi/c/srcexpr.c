@@ -30,22 +30,19 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <setjmp.h>
 #include "vi.h"
+#include <setjmp.h>
 #include "source.h"
 #include "expr.h"
 
 /*
  * SrcExpr - add a value to a variable
  */
-int SrcExpr( sfile *sf, vlist *vl )
+vi_rc SrcExpr( sfile *sf, vlist *vl )
 {
-    char        tmp[MAX_SRC_LINE],v1[MAX_SRC_LINE];
-    long        val,oval;
-    int         rc;
+    char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE];
+    long        val, oval;
+    int         i;
     jmp_buf     jmpaddr;
     vars        *v;
 
@@ -57,13 +54,12 @@ int SrcExpr( sfile *sf, vlist *vl )
     if( sf->hasvar ) {
         Expand( v1, vl  );
     }
-    rc = setjmp( jmpaddr );
-    if( rc == 0 ) {
-        StartExprParse( v1, jmpaddr );
-        val = GetConstExpr();
-    } else {
-        return( rc );
+    i = setjmp( jmpaddr );
+    if( i != 0 ) {
+        return( (vi_rc)i );
     }
+    StartExprParse( v1, jmpaddr );
+    val = GetConstExpr();
 
     if( sf->u.oper != EXPR_EQ ) {
         v = VarFind( tmp, vl );
@@ -87,7 +83,7 @@ int SrcExpr( sfile *sf, vlist *vl )
         }
     }
 
-    VarAddStr( tmp, ltoa( val,v1,10), vl );
+    VarAddStr( tmp, ltoa( val, v1, 10 ), vl );
     return( ERR_NO_ERR );
 
 } /* SrcExpr */

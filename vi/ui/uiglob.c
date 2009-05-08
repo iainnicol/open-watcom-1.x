@@ -30,39 +30,59 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 #include "win.h"
 #include "dosx.h"
-#include "colors.h"
 #include "regexp.h"
+#if defined( __UNIX__ )
+    #include "stdui.h"
+#endif
 
-char MinSlots[ MAX_MIN_SLOTS ];
+char        MinSlots[MAX_MIN_SLOTS];
 #ifdef __CURSES__
-char_info WindowNormalAttribute = { ' ',0 };
+char_info   WindowNormalAttribute = { ' ', 0 };
 #else
-char_info WindowNormalAttribute = { ' ',7 };
+char_info   WindowNormalAttribute = { ' ', 7 };
 #endif
-wind *Windows[ MAX_WINDS ];
-#ifndef __UNIX__
-/* for UNIX these are defined in biosunix.c */
-char WindowBordersNG[] = { 'Ú','¿','À','Ù','³','Ä','´','Ã','','','³','Û'};
-char WindowBordersG[] =  { 'ð','¿','À','','³','Ä','´','Ã','','','°','Û'};
-#endif
-char *GadgetString;
+wind        *Windows[MAX_WINDS];
 
-char _FAR *Scrn;
-char _FAR *ClockStart;
-char _FAR *SpinLoc;
-char *ScreenImage;
+char        WindowBordersNG[] = {
+#undef vi_pick
+#if defined( __UNIX__ )
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) UnixNG,
+#else
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) DosNG,
+#endif
+#include "borders.h"
+};
+char        WindowBordersG[] =  {
+#undef vi_pick
+#if defined( __UNIX__ )
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) UnixG,
+#else
+    #define vi_pick( enum, UnixNG, UnixG, DosNG, DosG ) DosG,
+#endif
+#include "borders.h"
+#undef vi_pick
+};
+char        *GadgetString;
+
+char        _FAR *Scrn;
+char        _FAR *ClockStart;
+char        _FAR *SpinLoc;
+char        *ScreenImage;
 
 #ifndef NOXTD
-int XMemBlockArraySize;
-char *XMemBlocks=NULL;
+int             XMemBlockArraySize;
+unsigned char   *XMemBlocks = NULL;
 #endif
 #ifndef NOEMS
-int MaxEMSBlocks=2048,TotalEMSBlocks=0,EMSBlocksInUse=0;
+int             MaxEMSBlocks   = 2048;
+int             TotalEMSBlocks = 0;
+int             EMSBlocksInUse = 0;
 #endif
 #ifndef NOXMS
-int MaxXMSBlocks=2048,TotalXMSBlocks=0,XMSBlocksInUse=0;
+int             MaxXMSBlocks   = 2048;
+int             TotalXMSBlocks = 0;
+int             XMSBlocksInUse = 0;
 #endif

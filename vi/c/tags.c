@@ -29,45 +29,41 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include "posix.h"
 #include "vi.h"
-#include "keys.h"
+#include "posix.h"
 #include "rxsupp.h"
 #ifdef __WIN__
-#include "winrtns.h"
+    #include "winrtns.h"
 #endif
 
 /*
  * GetCurrentTag - get current tag word and hunt for it
  */
-int GetCurrentTag( void )
+vi_rc GetCurrentTag( void )
 {
-    int         i;
+    vi_rc       rc;
     char        tag[MAX_STR];
 
-    i = GimmeCurrentWord( tag, sizeof( tag ) - 1, FALSE );
-    if( i ) {
-        return( i );
+    rc = GimmeCurrentWord( tag, sizeof( tag ) - 1, FALSE );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
     }
-    i = TagHunt( tag );
-    return( i );
+    rc = TagHunt( tag );
+    return( rc );
 
 } /* GetCurrentTag */
 
 /*
  * TagHunt - hunt for a specified tag
  */
-int TagHunt( char *str )
+vi_rc TagHunt( char *str )
 {
-    char        buff[MAX_STR],file[FILENAME_MAX];
-    int         num,rc=ERR_NO_ERR;
+    char        buff[MAX_STR], file[FILENAME_MAX];
+    int         num;
+    vi_rc       rc;
 
     rc = LocateTag( str, file, buff );
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
 
         PushFileStack();
         rc = EditFile( file, FALSE );
@@ -77,7 +73,7 @@ int TagHunt( char *str )
                 rc = GoToLineNoRelCurs( num );
             } else {
                 rc = FindTag( buff );
-                if( rc < 0 ) {
+                if( rc < ERR_NO_ERR ) {
                     strcpy( buff, str );
                     ColorFind( buff, 0 );
                     rc = ERR_TAG_NOT_FOUND;
@@ -90,7 +86,7 @@ int TagHunt( char *str )
     }
 
     if( rc == ERR_TAG_NOT_FOUND ) {
-        Error( GetErrorMsg(rc), str );
+        Error( GetErrorMsg( rc ), str );
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
     }
     return( rc );
@@ -100,21 +96,21 @@ int TagHunt( char *str )
 /*
  * FindTag - locate a given tag
  */
-int FindTag( char *tag )
+vi_rc FindTag( char *tag )
 {
-    extern char _NEAR META[];
-    int         rc,omag;
-    char        *oldms;
+    extern char _NEAR   META[];
+    bool                oldmagic;
+    char                *oldms;
+    vi_rc               rc;
 
-    omag = EditFlags.Magic;
-    EditFlags.Magic = FALSE;
     oldms = Majick;
     Majick = &META[3];
 
+    oldmagic = SetMagicFlag( FALSE );
     rc = ColorFind( tag, 0 );
+    SetMagicFlag( oldmagic );
 
     Majick = oldms;
-    EditFlags.Magic = omag;
     return( rc );
 
 } /* FindTag */
@@ -129,18 +125,18 @@ int PickATag( int clist, char **list, char *tagname )
     int         i;
     bool        show_lineno;
     selectitem  si;
-    int         rc;
+    vi_rc       rc;
     char        title[MAX_STR];
 
     memcpy( &tw, &dirw_info, sizeof( window_info ) );
     tw.x1 = 12;
-    tw.x2 = WindMaxWidth-12;
-    i = tw.y2 - tw.y1+1;
+    tw.x2 = WindMaxWidth - 12;
+    i = tw.y2 - tw.y1 + 1;
     if( tw.has_border ) {
         i -= 2;
     }
     if( clist < i ) {
-        tw.y2 -= ( i-clist );
+        tw.y2 -= i - clist;
     }
     if( clist > i ) {
         show_lineno = TRUE;
@@ -156,13 +152,13 @@ int PickATag( int clist, char **list, char *tagname )
     si.maxlist = clist;
     si.num = 0;
     si.retevents = NULL;
-    si.event = -1;
+    si.event = VI_KEY( DUMMY );
     si.show_lineno = show_lineno;
     si.cln = 1;
     si.eiw = NO_WINDOW;
 
     rc = SelectItem( &si );
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         return( -1 );
     }
     return( si.num );
@@ -173,7 +169,7 @@ int PickATag( int clist, char **list, char *tagname )
 /*
  * selectTag - select a tag from a list of possible tags
  */
-static int selectTag( FILE *f, char *str, char *buff, char *fname )
+static vi_rc selectTag( FILE *f, char *str, char *buff, char *fname )
 {
     int         tagcnt;
     char        **taglist;
@@ -186,7 +182,7 @@ static int selectTag( FILE *f, char *str, char *buff, char *fname )
 
     while( 1 ) {
         RemoveLeadingSpaces( buff );
-        taglist = MemReAlloc( taglist, sizeof( char * ) * (tagcnt+1) );
+        taglist = MemReAlloc( taglist, sizeof( char * ) * (tagcnt + 1) );
         AddString( &taglist[tagcnt], buff );
         i = 0;
         while( !isspace( taglist[tagcnt][i] ) ) {
@@ -194,16 +190,16 @@ static int selectTag( FILE *f, char *str, char *buff, char *fname )
         }
         taglist[tagcnt][i] = 0;
         tagcnt++;
-        if( fgets( buff,MAX_STR,f ) == NULL )  {
+        if( fgets( buff, MAX_STR, f ) == NULL )  {
             break;
         }
-        if( NextWord1( buff,tag ) <= 0 ) {
+        if( NextWord1( buff, tag ) <= 0 ) {
             continue;
         }
         if( EditFlags.IgnoreTagCase ) {
-            i = stricmp( str,tag );
+            i = stricmp( str, tag );
         } else {
-            i = strcmp( str,tag );
+            i = strcmp( str, tag );
         }
         if( i ) {
             break;
@@ -218,14 +214,14 @@ static int selectTag( FILE *f, char *str, char *buff, char *fname )
     } else {
         whichtag = 0;
     }
-    taglist[ whichtag ][ strlen( taglist[ whichtag ] ) ] = ' ';
-    strcpy( buff, taglist[ whichtag ] );
+    taglist[whichtag][strlen( taglist[whichtag] )] = ' ';
+    strcpy( buff, taglist[whichtag] );
     MemFreeList( tagcnt, taglist );
 
     if( NextWord1( buff, fname ) <= 0 ) {
         return( ERR_INVALID_TAG_FOUND );
     }
-    buff[strlen(buff)-1] = 0;
+    buff[strlen( buff ) - 1] = 0;
     RemoveLeadingSpaces( buff );
     if( buff[0] == 0 ) {
         return( ERR_INVALID_TAG_FOUND );
@@ -241,12 +237,12 @@ static int selectTag( FILE *f, char *str, char *buff, char *fname )
  * SearchForTags - search up the directory tree to see if there are any
  *                 tagfiles kicking around
  */
-FILE *SearchForTags(void)
+FILE *SearchForTags( void )
 {
-    char  path[FILENAME_MAX];
-    char *eop;
+    char    path[FILENAME_MAX];
+    char    *eop;
 
-    if (CurrentFile && CurrentFile->name) {
+    if( CurrentFile && CurrentFile->name ) {
         _fullpath(path, CurrentFile->name, FILENAME_MAX);
 
         /*
@@ -257,35 +253,35 @@ FILE *SearchForTags(void)
             *eop = 0x00;
         }
     } else {
-        GetCWD2(path, FILENAME_MAX);
+        GetCWD2( path, FILENAME_MAX );
     }
 
-    eop = &path[strlen(path) - 1];
+    eop = &path[strlen( path ) - 1];
 
-    while (eop >= path) {
-        strcpy((eop + 1), TAGFILE);
+    while( eop >= path ) {
+        strcpy( eop + 1, TAGFILE );
 
-        if (!access(path, F_OK)) {
-            return fopen(path, "r");
+        if( !access( path, F_OK ) ) {
+            return fopen( path, "r" );
         }
 
-        while ((eop >= path) && (*eop != '\\')) {
+        while( eop >= path && *eop != '\\' ) {
             --eop;
         }
 
-        if (eop >= path) {
+        if( eop >= path ) {
             *eop-- = 0x00;
         }
     } /* while */
 
-    return NULL;
-} /* SearchForTags() */
+    return( NULL );
 
+} /* SearchForTags() */
 
 /*
  * LocateTag - locate a tag in the tag file
  */
-int LocateTag( char *str, char *fname, char *buff )
+vi_rc LocateTag( char *str, char *fname, char *buff )
 {
     char        tag[MAX_STR];
     int         i;
@@ -294,14 +290,14 @@ int LocateTag( char *str, char *fname, char *buff )
     /*
      * get file and buffer
      */
-    f = GetFromEnvAndOpen(TagFileName);
-    if (!f) {
-        if (EditFlags.SearchForTagfile) {
+    f = GetFromEnvAndOpen( TagFileName );
+    if( !f ) {
+        if( EditFlags.SearchForTagfile ) {
             f = SearchForTags();
         }
 
-        if (!f) {
-            return ERR_FILE_NOT_FOUND;
+        if( !f ) {
+            return( ERR_FILE_NOT_FOUND );
         }
     }
 
@@ -310,17 +306,17 @@ int LocateTag( char *str, char *fname, char *buff )
      */
     while( TRUE ) {
 
-        if( fgets( buff,MAX_STR,f ) == NULL )  {
+        if( fgets( buff, MAX_STR, f ) == NULL )  {
             fclose( f );
             return( ERR_TAG_NOT_FOUND );
         }
-        if( NextWord1( buff,tag ) <= 0 ) {
+        if( NextWord1( buff, tag ) <= 0 ) {
             continue;
         }
         if( EditFlags.IgnoreTagCase ) {
-            i = stricmp( str,tag );
+            i = stricmp( str, tag );
         } else {
-            i = strcmp( str,tag );
+            i = strcmp( str, tag );
             if( i < 0 ) {
                 fclose( f );
                 return( ERR_TAG_NOT_FOUND );
@@ -330,4 +326,5 @@ int LocateTag( char *str, char *fname, char *buff )
             return( selectTag( f, str, buff, fname ) );
         }
     }
+
 } /* LocateTag */

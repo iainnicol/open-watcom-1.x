@@ -29,30 +29,25 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
+#include "vi.h"
 #include "const.h"
-#ifdef __WIN__
-#include "winvi.h"
-#endif
+#include "myprtf.h"
 
 void Lead( char c, int num, char *buff )
 // With "c", to "num" bytes, put leading bytes in "buff"
 // This is a service for basePrintf() which is made available externally.
 {
-    int len,diff,i;
+    int len, diff, i;
 
     len = strlen( buff );
-    diff = num-len;
+    diff = num - len;
     if( diff <= 0 ) {
         return;
     }
-    for( i=len;i>=0;i-- ) {
-        buff[diff+i] = buff[i];
+    for( i = len; i >= 0; i-- ) {
+        buff[diff + i] = buff[i];
     }
-    for( i=0;i<diff;i++ ) {
+    for( i = 0; i < diff; i++ ) {
         buff[i] = c;
     }
 }
@@ -77,9 +72,9 @@ static void basePrintf( const char *in, va_list al )
 // Unsupported specifiers are quietly ignored.
 {
     char        cin;
-    int         i,j;
+    int         i, j;
     long        l;
-    char        buff[MAX_STR],*tmp;
+    char        buff[MAX_STR], *tmp;
 
     cin = *in;
     while( cin ) {
@@ -111,23 +106,23 @@ static void basePrintf( const char *in, va_list al )
             case 's':
                 tmp = va_arg( al, char * );
                 goto copyloop2;
-            #ifdef DBG
-                case 'W':
-                    #ifdef __386__
-                        i = va_arg( al, int );
-                        itoa( j, buff, 16 );
-                        Lead( '0', 8, buff );
-                    #else
-                        i = va_arg( al, int );
-                        j = va_arg( al, int );
-                        itoa( j, buff, 16 );
-                        Lead( '0', 4, buff );
-                        buff[4] = ':';
-                        itoa( i, &buff[5], 16 );
-                        Lead( '0', 4, &buff[5] );
-                    #endif
-                    goto copyloop1;
-            #endif
+#ifdef DBG
+            case 'W':
+#ifdef __386__
+                i = va_arg( al, int );
+                itoa( j, buff, 16 );
+                Lead( '0', 8, buff );
+#else
+                i = va_arg( al, int );
+                j = va_arg( al, int );
+                itoa( j, buff, 16 );
+                Lead( '0', 4, buff );
+                buff[4] = ':';
+                itoa( i, &buff[5], 16 );
+                Lead( '0', 4, &buff[5] );
+#endif
+                goto copyloop1;
+#endif
             case 'Z':   /* %02x */
                 i = va_arg( al, int );
                 itoa( i, buff, 16 );
@@ -170,22 +165,25 @@ copyloopa:
                 tmp = va_arg( al, char * );
                 strcpy( buff, tmp );
                 {
-                    int k,l;
+                    int k, l;
 
                     l = strlen( buff );
-                    k = j-l;
+                    k = j - l;
                     if( k > 0 ) {
                         tmp = &buff[l];
-                        for( i=0;i<k;i++ ) {
+                        for( i = 0; i < k; i++ ) {
                             tmp[i] = ' ';
                         }
                         tmp[k] = 0;
                     }
                 }
                 goto copyloop1;
-copyloop:       Lead( ' ', j, buff );
-copyloop1:      tmp = buff;
-copyloop2:      while( *tmp ) {
+copyloop:
+                Lead( ' ', j, buff );
+copyloop1:
+                tmp = buff;
+copyloop2:
+                while( *tmp ) {
                     barfChar( *tmp++ );
                 }
                 break;
@@ -202,26 +200,17 @@ copyloop2:      while( *tmp ) {
 }
 
 void MyPrintf( const char *str, ... )
-// printf++ functionality; MessageBox() rather than stdout in windows programs.
 {
     va_list     al;
 
 #ifdef __WIN__
     char        tmp[MAX_STR];
-#ifdef MB_TOPMOST
-    // MB_TOPMOST to overlay HWND_TOPMOST window on screen. (else hangs)
-    static const UINT MessageType = MB_OK | MB_TASKMODAL | MB_TOPMOST;
-#else
-    // MB_TOPMOST not in 16 bit Windows. Nor does that hang! W.Briscoe 20041113
-    // MB_SETFOREGROUND is both 16/32 bit but ineffective with seizure.
-    static const UINT MessageType = MB_OK | MB_TASKMODAL | MB_SETFOREGROUND;
-#endif
 
     va_start( al, str );
     cFile = NULL;
     cStr = tmp;
     basePrintf( str, al );
-    MessageBox( NULL, tmp, EditorName, MessageType );
+    MessageBox( NULL, tmp, EditorName, MB_OK | MB_TASKMODAL );
 #else
     va_start( al, str );
     cFile = stdout;
@@ -229,7 +218,6 @@ void MyPrintf( const char *str, ... )
     basePrintf( str, al );
 #endif
     va_end( al );
-
 }
 
 void MySprintf( char *out, const char *str, ... )

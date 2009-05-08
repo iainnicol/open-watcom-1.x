@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include "finddlg.h"
 
-static fancy_find       findData = {TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,0,NULL,0,NULL,0};
+static fancy_find findData =
+    { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, NULL, 0, NULL, 0 };
 
 /*
  * FindDlgProc - callback routine for find dialog
@@ -60,10 +60,10 @@ BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         CheckDlgButton( hwnd, FIND_SEARCH_WRAP, findData.search_wrap );
         SetDlgItemText( hwnd, FIND_EDIT, findData.find );
         curr = FindHist.curr + FindHist.max - 1;
-        for( i=0;i<FindHist.max;i++ ) {
-            if( FindHist.data[ curr % FindHist.max ] != NULL ) {
+        for( i = 0; i < FindHist.max; i++ ) {
+            if( FindHist.data[curr % FindHist.max] != NULL ) {
                 SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_ADDSTRING, 0,
-                            (LONG) FindHist.data[ curr % FindHist.max ] );
+                                    (LONG) FindHist.data[curr % FindHist.max] );
             }
             curr--;
             if( curr < 0 ) {
@@ -79,23 +79,20 @@ BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         case FIND_LISTBOX:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETCURSEL,
-                                                        0, 0L );
+                index = SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETTEXT, index,
-                                        (LONG) find );
+                SendDlgItemMessage( hwnd, FIND_LISTBOX, LB_GETTEXT, index, (LONG) find );
                 SetDlgItemText( hwnd, FIND_EDIT, find );
                 if( cmd == LBN_DBLCLK ) {
-                    PostMessage( hwnd, WM_COMMAND,
-                                 GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );
+                    PostMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );
                 }
             }
             break;
         case IDCANCEL:
             RemoveEditSubClass( hwnd, FIND_EDIT );
-            EndDialog( hwnd, 0 );
+            EndDialog( hwnd, FALSE );
             break;
         case IDOK:
             GetDlgItemText( hwnd, FIND_EDIT, findData.find, findData.findlen );
@@ -107,14 +104,14 @@ BOOL WINEXP FindDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             curr = h->curr + h->max - 1;
             ptr = NULL;
             if( curr >= 0 ) {
-                ptr = h->data[ curr % h->max ];
+                ptr = h->data[curr % h->max];
             }
             if( ptr == NULL || strcmp( ptr, findData.find ) ) {
-                AddString2( &(h->data[ h->curr % h->max ] ), findData.find );
+                AddString2( &(h->data[h->curr % h->max]), findData.find );
                 h->curr += 1;
             }
             RemoveEditSubClass( hwnd, FIND_EDIT );
-            EndDialog( hwnd, 1 );
+            EndDialog( hwnd, TRUE );
             break;
         default:
             return( FALSE );

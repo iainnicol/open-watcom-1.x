@@ -29,13 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#ifndef __UNIX__
-    // To be removed when OW 1.4 is in universal use
-    #include <env.h>
-#endif
 #include "vi.h"
 #include "rxsupp.h"
 #include "fcbmem.h"
@@ -46,12 +39,11 @@
 #include "sstyle.h"
 #include "fts.h"
 #ifdef __WIN__
-#include "winvi.h"
-#include "subclass.h"
-#include "utils.h"
+    #include "subclass.h"
+    #include "utils.h"
 #endif
 #ifdef __NT__
-#include "windows.h"
+    #include "windows.h"
 #endif
 #include "rcs.h"
 #include "autoenv.h"
@@ -59,7 +51,7 @@
 static char     nullFN[] = "no_name";
 static char     defaultEDPath[] = DIR_SEP_STR "eddat";
 static char     *cFN;
-static char     *cfgFN=NULL;
+static char     *cfgFN = NULL;
 static char     *cTag;
 static char     *keysToPush;
 #ifdef __WIN__
@@ -102,46 +94,46 @@ static void checkFlags( int *argc, char *argv[], char *start[],
                         char *parms[], int *startcnt )
 {
     int         ch;
-    #ifndef __WIN__
+#ifndef __WIN__
     int         len;
-    #endif
+#endif
 
     cFN = NULL;
     while( 1 ) {
-        #ifndef __WIN__
-            ch = GetOpt( argc, argv, "#-ndvqzirc:k:p:s:t:", NULL );
-        #else
-            ch = GetOpt( argc, argv, "#-ndvqzirIP:c:k:p:s:t:", NULL );
-        #endif
+#ifndef __WIN__
+        ch = GetOpt( argc, argv, "#-ndvqzirc:k:p:s:t:", NULL );
+#else
+        ch = GetOpt( argc, argv, "#-ndvqzirIP:c:k:p:s:t:", NULL );
+#endif
         if( ch == -1 ) {
             break;
         }
         switch( ch ) {
         case '#':
-            #ifndef __WIN__
+#ifndef __WIN__
             strncpy( goCmd, OptArg, sizeof( goCmd ) -2 );
-            goCmd[ sizeof( goCmd ) - 2 ] = 0;
+            goCmd[sizeof( goCmd ) - 2] = 0;
             len = strlen( goCmd );
             goCmd[len] = 'G';
-            goCmd[len+1] = 0;
-            #else
-                lineToGoTo = atoi( OptArg );
-            #endif
+            goCmd[len + 1] = 0;
+#else
+            lineToGoTo = atoi( OptArg );
+#endif
             break;
-        #ifdef __WIN__
-            case 'P':
-                SetInitialWindowSize( OptArg );
-                break;
-            case 'I':
-                cFN = GetInitialFileName();
-                break;
-        #endif
-        #ifdef __IDE__
-            case 'X':
-                IDEInit();
-                EditFlags.UseIDE = TRUE;
-                break;
-        #endif
+#ifdef __WIN__
+        case 'P':
+            SetInitialWindowSize( OptArg );
+            break;
+        case 'I':
+            cFN = GetInitialFileName();
+            break;
+#endif
+#ifdef __IDE__
+        case 'X':
+            IDEInit();
+            EditFlags.UseIDE = TRUE;
+            break;
+#endif
         case '-':
             EditFlags.StdIOMode = TRUE;
             EditFlags.NoInitialFileLoad = TRUE;
@@ -177,12 +169,12 @@ static void checkFlags( int *argc, char *argv[], char *start[],
             if( *startcnt <= 0 ) {
                 Quit( NULL, "No script to give parm list\n" );
             }
-            parms[ (*startcnt-1)] = OptArg;
+            parms[(*startcnt - 1)] = OptArg;
             break;
         case 's':
             if( *startcnt < MAX_STARTUP ) {
-                start[ *startcnt ] = OptArg;
-                parms[ *startcnt ] = NULL;
+                start[*startcnt] = OptArg;
+                parms[*startcnt] = NULL;
                 (*startcnt)++;
             } else {
                 Quit( NULL, "Too many scripts\n" );
@@ -201,7 +193,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
      * now, check for null file name
      */
     if( cFN == NULL ) {
-        if( (*argc)==1 ) {
+        if( (*argc) == 1 ) {
             cFN = nullFN;
         } else {
 //          cFN = argv[(*argc)-1];
@@ -216,14 +208,16 @@ static void checkFlags( int *argc, char *argv[], char *start[],
  */
 static void doInitializeEditor( int argc, char *argv[] )
 {
-    int         i,rc,arg,cnt,ocnt,ln,startcnt=0;
-    int         k,j;
-    char        tmp[FILENAME_MAX],c[1];
-    char        buff[MAX_STR],file[MAX_STR],**list;
-    char        cmd[MAX_STR*2];
+    int         i, arg, cnt, ocnt, ln, startcnt = 0;
+    int         k, j;
+    char        tmp[FILENAME_MAX], c[1];
+    char        buff[MAX_STR], file[MAX_STR], **list;
+    char        cmd[MAX_STR * 2];
     char        *parm;
     char        *startup[MAX_STARTUP];
     char        *startup_parms[MAX_STARTUP];
+    vi_rc       rc;
+    vi_rc       rc1;
 
     /*
      * Make sure WATCOM is setup and if it is not, make a best guess.
@@ -254,7 +248,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * misc. set up
      */
-    SpawnPrompt[ 0 ] = 0;
+    SpawnPrompt[0] = 0;
     MaxMemFree = MemSize();
     StaticStart();
     FTSInit();
@@ -303,14 +297,14 @@ static void doInitializeEditor( int argc, char *argv[] )
         ln = 0;
         rc = Source( cfgFN, c, &ln );
         if( rc == ERR_FILE_NOT_FOUND ) {
-            #ifdef __WIN__
-                CloseStartupDialog();
-                MessageBox( (HWND) NULL, "Could not locate configuration information; please make sure your EDPATH environment variable is set correctly",
-                                        EditorName, MB_OK );
-                ExitEditor( -1 );
-            #else
-                rc = ERR_NO_ERR;
-            #endif
+#ifdef __WIN__
+            CloseStartupDialog();
+            MessageBox( (HWND) NULL, "Could not locate configuration information; please make sure your EDPATH environment variable is set correctly",
+                        EditorName, MB_OK );
+            ExitEditor( -1 );
+#else
+            rc = ERR_NO_ERR;
+#endif
         }
     } else {
         rc = ERR_NO_ERR;
@@ -341,14 +335,14 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( TagFileName == NULL ) {
         AddString( &TagFileName, "tags" );
     }
-    WorkLine = MemAlloc( LINE_SIZE + MaxLine+2 );
-    DotBuffer = MemAlloc( ( maxdotbuffer + 2 ) * sizeof( vi_key ) );
-    AltDotBuffer = MemAlloc( ( maxdotbuffer + 2 ) * sizeof( vi_key ) );
-    DotCmd = MemAlloc( ( maxdotbuffer + 2 ) * sizeof( vi_key ) );
+    WorkLine = MemAlloc( LINE_SIZE + MaxLine + 2 );
+    DotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
+    AltDotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
+    DotCmd = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
     WorkLine->len = -1;
     SwapBlockInit( MaxSwapBlocks );
-    ReadBuffer = MemAlloc( MAX_IO_BUFFER+6 );
-    WriteBuffer = MemAlloc( MAX_IO_BUFFER+6 );
+    ReadBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
+    WriteBuffer = MemAlloc( MAX_IO_BUFFER + 6 );
     FindHistInit( FindHist.max );
     FilterHistInit( FilterHist.max );
     CLHistInit( CLHist.max );
@@ -366,21 +360,21 @@ static void doInitializeEditor( int argc, char *argv[] )
      */
     StartWindows();
     InitMouse();
-    i = NewMessageWindow();
-    if( i ) {
-        FatalError( i );
+    rc1 = NewMessageWindow();
+    if( rc1 != ERR_NO_ERR ) {
+        FatalError( rc1 );
     }
     DoVersion();
-    i = InitMenu();
-    if( i ) {
-        FatalError( i );
+    rc1 = InitMenu();
+    if( rc1 != ERR_NO_ERR ) {
+        FatalError( rc1 );
     }
     EditFlags.SpinningOurWheels = TRUE;
     EditFlags.ClockActive = TRUE;
     EditFlags.DisplayHold = TRUE;
-    i = NewStatusWindow();
-    if( i ) {
-        FatalError( i );
+    rc1 = NewStatusWindow();
+    if( rc1 != ERR_NO_ERR ) {
+        FatalError( rc1 );
     }
     EditFlags.DisplayHold = FALSE;
     MaxMemFreeAfterInit = MemSize();
@@ -388,7 +382,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * start specified file(s)
      */
-    arg = argc-1;
+    arg = argc - 1;
     k = 1;
     cmd[0] = 'e';
     cmd[1] = 0;
@@ -398,22 +392,22 @@ static void doInitializeEditor( int argc, char *argv[] )
      * look for a tag: if there is one, set it up as the file to start
      */
     if( cTag != NULL && !EditFlags.NoInitialFileLoad ) {
-        #if defined( __NT__ ) && !defined( __WIN__ )
+#if defined( __NT__ ) && !defined( __WIN__ )
         {
             if( !EditFlags.Quiet ) {
                 extern HANDLE OutputHandle;
                 SetConsoleActiveScreenBuffer( OutputHandle );
             }
         }
-        #endif
-        i = LocateTag( cTag, file, buff );
+#endif
+        rc1 = LocateTag( cTag, file, buff );
         cFN = file;
-        if( i ) {
-            if( i == ERR_TAG_NOT_FOUND ) {
-                Error( GetErrorMsg(i), cTag );
+        if( rc1 ) {
+            if( rc1 == ERR_TAG_NOT_FOUND ) {
+                Error( GetErrorMsg( rc1 ), cTag );
                 ExitEditor( 0 );
             }
-            FatalError( i );
+            FatalError( rc1 );
         }
     }
 
@@ -432,17 +426,17 @@ static void doInitializeEditor( int argc, char *argv[] )
             cFN = list[0];
         }
 
-        for( j=0;j<cnt;j++ ) {
+        for( j = 0; j < cnt; j++ ) {
 
-            i = NewFile( cFN, FALSE );
-            if( i && i != NEW_FILE ) {
-                FatalError( i );
+            rc1 = NewFile( cFN, FALSE );
+            if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
+                FatalError( rc1 );
             }
             if( EditFlags.BreakPressed ) {
                 break;
             }
-            if( cnt > 0 && j < cnt-1 ) {
-                cFN = list[j+1];
+            if( cnt > 0 && j < cnt - 1 ) {
+                cFN = list[j + 1];
             }
         }
         if( ocnt > 0 ) {
@@ -457,12 +451,12 @@ static void doInitializeEditor( int argc, char *argv[] )
         if( cTag != NULL || arg < 1 ) {
             break;
         }
-        cFN = argv[ k ];
+        cFN = argv[k];
     }
     if( EditFlags.StdIOMode ) {
-        i = NewFile( "stdio", FALSE );
-        if( i ) {
-            FatalError( i );
+        rc1 = NewFile( "stdio", FALSE );
+        if( rc1 != ERR_NO_ERR ) {
+            FatalError( rc1 );
         }
     }
     EditFlags.WatchForBreak = EditFlags.Starting = FALSE;
@@ -473,12 +467,12 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( cTag != NULL && !EditFlags.NoInitialFileLoad ) {
         if( buff[0] != '/' ) {
             i = atoi( buff );
-            i = GoToLineNoRelCurs( i );
+            rc1 = GoToLineNoRelCurs( i );
         } else {
-            i = FindTag( buff );
+            rc1 = FindTag( buff );
         }
-        if( i > 0 ) {
-            Error( GetErrorMsg( i ) );
+        if( rc1 > 0 ) {
+            Error( GetErrorMsg( rc1 ) );
         }
     }
 
@@ -488,7 +482,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( EditFlags.RecoverLostFiles ) {
         startcnt = 0;
     }
-    for( i=0;i<startcnt;i++ ) {
+    for( i = 0; i < startcnt; i++ ) {
         GetFromEnv( startup[i], tmp );
         AddString2( &cfgFN, tmp );
         if( cfgFN[0] != 0 ) {
@@ -498,18 +492,18 @@ static void doInitializeEditor( int argc, char *argv[] )
                 c[0] = 0;
                 parm = c;
             }
-            #if defined( __NT__ ) && !defined( __WIN__ )
+#if defined( __NT__ ) && !defined( __WIN__ )
             {
                 if( !EditFlags.Quiet ) {
                     extern HANDLE OutputHandle;
                     SetConsoleActiveScreenBuffer( OutputHandle );
                 }
             }
-            #endif
+#endif
             rc = Source( cfgFN, parm, &ln );
         }
     }
-    if( rc > 0 ) {
+    if( rc > ERR_NO_ERR ) {
         Error( "%s on line %d of \"%s\"", GetErrorMsg( rc ), ln, cfgFN );
     }
     if( argc == 1 ) {
@@ -526,34 +520,34 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( keysToPush != NULL ) {
         KeyAddString( keysToPush );
     }
-    #ifdef __WIN__
-        if( lineToGoTo != 0 ) {
-            SetCurrentLine( lineToGoTo );
-            NewCursor( CurrentWindow, NormalCursorType );
-        }
-    #endif
+#ifdef __WIN__
+    if( lineToGoTo != 0 ) {
+        SetCurrentLine( lineToGoTo );
+        NewCursor( CurrentWindow, NormalCursorType );
+    }
+#endif
     AutoSaveInit();
-    HalfPageLines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES )/2-1;
-    #ifdef __386__
-        VarAddGlobalStr( "OS386", "1" );
-    #endif
+    HalfPageLines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) / 2 - 1;
+#ifdef __386__
+    VarAddGlobalStr( "OS386", "1" );
+#endif
     if( StatusString == NULL ) {
         AddString( &StatusString, "L:$6L$nC:$6C" );
     }
     UpdateStatusWindow();
-    #ifdef __WIN__
-        if( CurrentInfo == NULL ) {
-            // no file loaded - screen is disconcertenly empty - reassure
-            DisplayFileStatus();
-        }
-    #endif
+#ifdef __WIN__
+    if( CurrentInfo == NULL ) {
+        // no file loaded - screen is disconcertenly empty - reassure
+        DisplayFileStatus();
+    }
+#endif
     NewCursor( CurrentWindow, NormalCursorType );
-    #if defined( __NT__ ) && !defined( __WIN__ )
+#if defined( __NT__ ) && !defined( __WIN__ )
     {
         extern HANDLE OutputHandle;
         SetConsoleActiveScreenBuffer( OutputHandle );
     }
-    #endif
+#endif
 
 } /* doInitializeEditor */
 
@@ -562,8 +556,8 @@ static void doInitializeEditor( int argc, char *argv[] )
  */
 void InitializeEditor( void )
 {
-    extern int          _argc;
-    extern char **      _argv;
+    extern int  _argc;
+    extern char **_argv;
 
     doInitializeEditor( _argc, _argv );
 

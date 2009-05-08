@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdarg.h>
-#include "winvi.h"
+#include "vi.h"
 #include "color.h"
 #include "font.h"
 #include "utils.h"
@@ -50,7 +48,7 @@ window RepeatCountWindow = {
 LONG WINEXP RepeatWindowProc( HWND, unsigned, UINT, LONG );
 
 static char     *className = "RepeatWindow";
-static char     repString[ MAX_STR ];
+static char     repString[MAX_STR];
 static HWND     repeatWindow;
 
 static BOOL Init( window *w, void *parm )
@@ -60,7 +58,7 @@ static BOOL Init( window *w, void *parm )
     parm = parm;
     w = w;
 
-    repString[ 0 ] = 0;
+    repString[0] = 0;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = (WNDPROC)RepeatWindowProc;
@@ -103,7 +101,7 @@ static void drawRepeatString( void )
     FillRect( hdc, &rect, ColorBrush( WIN_BACKCOLOR( &RepeatCountWindow ) ) );
     TextReleaseDC( repeatWindow, hdc );
     WriteString( repeatWindow, 0, rect.top, WIN_STYLE( &RepeatCountWindow ),
-                repString );
+                 repString );
 
 } /* drawRepeatString */
 
@@ -147,7 +145,7 @@ window_id NewRepeatCountWindow( void )
     p.y = size->top;
     ClientToScreen( Root, &p );
 
-    repString[ 0 ] = 0;
+    repString[0] = 0;
     repeatWindow = CreateWindow( className, "Repeat Count",
         WS_POPUPWINDOW | WS_BORDER | WS_CLIPSIBLINGS,
         p.x, p.y, size->right - size->left, size->bottom - size->top,

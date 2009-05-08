@@ -116,7 +116,7 @@ libs_x86_ads            = clib3s
 libs_x86_pls            = clib3r
 libs_x86_nt             = clib3r
 libs_x86_nlm            = math3s
-libs_x86_zdos		= clib3r
+libs_x86_zdos           = clib3r
 
 libs_axp_nt             = clib
 

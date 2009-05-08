@@ -27,22 +27,17 @@
 * Description:  WGML implement multi letter function &'strip( )
 *
 ****************************************************************************/
-
+ 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
-#include <stdarg.h>
-#include <io.h>
-#include <fcntl.h>
-#include <errno.h>
-
+ 
 #include "wgml.h"
 #include "gvars.h"
-
+ 
 /***************************************************************************/
 /*  script string function &'strip(                                        */
 /*                                                                         */
 /***************************************************************************/
-
+ 
 /***************************************************************************/
 /*                                                                         */
 /* &'strip(string<,<type><,char>>):   To remove  leading and/or  trailing  */
@@ -58,8 +53,8 @@
 /*      "&'strip(--a-b--,,-)" ==> "a-b"                                    */
 /*                                                                         */
 /***************************************************************************/
-
-condcode    scr_strip( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     char            *   pval;
     char            *   pend;
@@ -68,34 +63,35 @@ condcode    scr_strip( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * r
     int                 len;
     char                stripchar;
     char                type;
-
+    char                linestr[MAX_L_AS_STR];
+ 
     if( (parmcount < 1) || (parmcount > 3) ) {
         return( neg );
     }
-
-    pval = parms[ 0 ].a;
-    pend = parms[ 0 ].e;
-
+ 
+    pval = parms[0].a;
+    pend = parms[0].e;
+ 
     unquote_if_quoted( &pval, &pend );
-
+ 
     len = pend - pval + 1;              // default length
-
+ 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
-
+ 
     stripchar = ' ';                    // default char to delete
     type      = 'b';                    // default strip both ends
-
+ 
     if( parmcount > 1 ) {               // evalute type
-        if( parms[ 1 ].e >= parms[ 1 ].a ) {// type
-            pa  = parms[ 1 ].a;
-            pe  = parms[ 1 ].e;
-
+        if( parms[1].e >= parms[1].a ) {// type
+            pa  = parms[1].a;
+            pe  = parms[1].e;
+ 
             unquote_if_quoted( &pa, &pe );
             type = tolower( *pa );
-
+ 
             switch( type ) {
             case   'b':
             case   'l':
@@ -104,16 +100,13 @@ condcode    scr_strip( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * r
                 break;
             default:
                 if( !ProcFlags.suppress_msg ) {
+                    g_err( err_func_parm, "2 (type)" );
                     if( input_cbs->fmflags & II_macro ) {
-                        out_msg( "ERR_FUNCTION parm 2 (type) invalid not l, b, or t\n"
-                                 "\t\t\tLine %d of macro '%s'\n",
-                                 input_cbs->s.m->lineno,
-                                 input_cbs->s.m->mac->name );
+                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        out_msg( "ERR_FUNCTION parm 2 (type) invalid not l, b, or t\n"
-                                 "\t\t\tLine %d of file '%s'\n",
-                                 input_cbs->s.f->lineno,
-                                 input_cbs->s.f->filename );
+                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     err_count++;
                     show_include_stack();
@@ -123,17 +116,17 @@ condcode    scr_strip( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * r
             }
         }
     }
-
+ 
     if( parmcount > 2 ) {               // stripchar
-        if( parms[ 2 ].e >= parms[ 2 ].a ) {
-            pa  = parms[ 2 ].a;
-            pe  = parms[ 2 ].e;
-
+        if( parms[2].e >= parms[2].a ) {
+            pa  = parms[2].a;
+            pe  = parms[2].e;
+ 
             unquote_if_quoted( &pa, &pe );
             stripchar = *pa;
         }
     }
-
+ 
     if( type != 't' ) {                 // strip leading requested
         for( ; pval <= pend; pval++ ) {
             if( *pval != stripchar ) {
@@ -141,20 +134,19 @@ condcode    scr_strip( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * r
             }
         }
     }
-
+ 
     for( ; pval <= pend; pval++ ) {
         **result = *pval;
         *result += 1;
     }
-
+ 
     if( type != 'l' ) {                 // strip trailing requested
         while( *(*result -1) == stripchar ) {
             *result -= 1;
         }
     }
-
+ 
     **result = '\0';
-
+ 
     return( pos );
 }
-

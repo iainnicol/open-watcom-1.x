@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 
 extern char *helpFiles[1];
@@ -62,14 +59,12 @@ void UpdateLastFileList( char *fname )
         if( *root == '\\' ) {
             root++;
         }
-        if( !strcmp( root, helpFiles[ i ] ) ) {
+        if( !strcmp( root, helpFiles[i] ) ) {
             return;
         }
     }
 
-
-    _fullpath(buff,fname,FILENAME_MAX);
-
+    _fullpath( buff, fname, FILENAME_MAX );
 
     // if name already in list, dont add it.
     h = &LastFilesHist;
@@ -82,7 +77,7 @@ void UpdateLastFileList( char *fname )
     }
 
     // add in the next available spot
-    AddString2( &(h->data[ h->curr % h->max ] ), buff );
+    AddString2( &(h->data[h->curr % h->max]), buff );
     h->curr += 1;
 
 } /* UpdateLastFileList */

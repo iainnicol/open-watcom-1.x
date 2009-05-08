@@ -35,44 +35,46 @@
 *             scr_em              -- .em control word execute macro
 *
 ****************************************************************************/
-
+ 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
+ 
 #include <stdarg.h>
 #include <errno.h>
-
+ 
 #include "wgml.h"
 #include "gvars.h"
-
-
-
+ 
+ 
+ 
 /***************************************************************************/
 /*  add info about macro   to LIFO input list                              */
-/*  if second parm is not null, macro is called via GML tag                */
+/*  if second parm is not null, macro is called via GML tag processing     */
 /***************************************************************************/
-
+ 
 void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
 {
     macrocb *   new;
     inputcb *   nip;
-
+ 
     new = mem_alloc( sizeof( macrocb ) );
-
+ 
     nip = mem_alloc( sizeof( inputcb ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
     nip->if_cb       = mem_alloc( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
-
+    nip->pe_cb.count = -1;
+    nip->pe_cb.line = NULL;
+ 
     init_dict( &nip->local_dict );
-
+ 
     nip->s.m        = new;
-
+ 
     new->lineno     = 0;
     new->macline    = me->macline;
     new->mac        = me;
     new->tag        = ge;
-
+ 
     if( ge == NULL ) {
         new->flags      = FF_macro;
         nip->fmflags    = II_macro;
@@ -80,13 +82,13 @@ void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
         new->flags      = FF_tag;
         nip->fmflags    = II_tag;
     }
-
+ 
     nip->prev = input_cbs;
     input_cbs = nip;
     return;
 }
-
-
+ 
+ 
 /*
  * add macro parms from input line as local symbolic variables
  * for non quoted parms try to assign symbolic variables
@@ -104,32 +106,32 @@ void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
  *  conflicts  -> change define MAC_STAR_NAME in gtype.h
  *
  */
-
+ 
 void    add_macro_parms( char * p )
 {
     int             len;
     condcode        cc;
-
+ 
     while( *p && *p == ' ' ) {
         ++p;
     }
     len   = strlen( p );
     if( len > 0 ) {
-        char    starbuf[ 12 ];
+        char    starbuf[12];
         int     star0;
-
+ 
                                         // the macro parameter line
                                         // the name _ has to change (perhaps)
         add_symvar( &input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript,
                     local_var );
-
+ 
         star0 = 0;
         garginit();
         cc = getarg();
         while( cc > omit ) {            // as long as there are parms
             char        c;
             char    *   scan_save;
-
+ 
             if( cc == pos ) {           // argument not quoted
                            /* look if it is a symbolic variable definition */
                 scan_save  = scan_start;
@@ -138,9 +140,9 @@ void    add_macro_parms( char * p )
                 scan_start = tok_start; // rescan for variable
                 ProcFlags.suppress_msg = true;  // no errmsg please
                 ProcFlags.blanks_allowed = 0;   // no blanks please
-
+ 
                 scr_se();               // try to set variable and value
-
+ 
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
                 *scan_save = c;        // restore original char at string end
@@ -156,7 +158,7 @@ void    add_macro_parms( char * p )
                                 no_subscript, local_var );
                     *p = c;                // restore original char at string end
                 }
-
+ 
             }
             if( cc == quotes ) {        // add argument as local symbolic var
                 star0++;
@@ -174,23 +176,23 @@ void    add_macro_parms( char * p )
         add_symvar( &input_cbs->local_dict, "0", starbuf,
                     no_subscript, local_var );
     }
-
+ 
     if( GlobalFlags.research && GlobalFlags.firstpass ) {
         print_sym_dict( input_cbs->local_dict );
     }
 }
-
-
+ 
+ 
 /*
  * free storage for macro lines
  *              or split input lines
  */
-
+ 
 void    free_lines( inp_line * line )
 {
     inp_line    *wk;
     inp_line    *wk1;
-
+ 
     wk = line;
     while( wk != NULL ) {
          wk1 = wk->next;
@@ -199,7 +201,7 @@ void    free_lines( inp_line * line )
     }
     return;
 }
-
+ 
 /***************************************************************************/
 /* DEFINE  MACRO defines  a  sequence of  input lines  to  be invoked  by  */
 /* ".name" as  a user-defined control word  or as an Execute  Macro (.EM)  */
@@ -252,7 +254,7 @@ void    free_lines( inp_line * line )
 /*     macro.   If the Set Symbol begins with an asterisk the symbol will  */
 /*     be local to the invoked macro.                                      */
 /***************************************************************************/
-
+ 
 void    scr_dm( void )
 {
     char        *   nmstart;
@@ -263,32 +265,35 @@ void    scr_dm( void )
     int             macro_line_count;
     int             compbegin;
     int             compend;
-    char            macname[ MAC_NAME_LENGTH + 1 ];
+    char            macname[MAC_NAME_LENGTH + 1];
     inp_line    *   head;
     inp_line    *   last;
     inp_line    *   work;
     ulong           lineno_start;
     condcode        cc;
     inputcb     *   cb;
-
+    char            linestr[MAX_L_AS_STR];
+ 
     cb = input_cbs;
-
+ 
     garginit();
-
+ 
     cc = getarg();
-
+ 
     if( cc == omit ) {
         err_count++;
-        out_msg( "ERR_MACRO_NAME_MISSING line %d of file '%s'\n",
-                 cb->s.f->lineno, cb->s.f->filename );
+        g_err( err_missing_name );
+        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+        show_include_stack();
         return;
     }
-
+ 
     p = tok_start;
-
+ 
     pn      = macname;
     len     = 0;
-
+ 
     /*  truncate name if too long WITHOUT error msg
      *  this is wgml 4.0 behaviour
      *
@@ -302,47 +307,46 @@ void    scr_dm( void )
         }
         len++;
     }
-    macname[ MAC_NAME_LENGTH ] = '\0';
-
+    macname[MAC_NAME_LENGTH] = '\0';
+ 
     cc = getarg();
     if( cc == omit ) {                  // nothing found
         err_count++;
         // SC--048 A control word parameter is missing
-        out_msg( "ERR_MACRO_DEFINITON '%s'"
-                 " expecting BEGIN END /macro/lines/\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 macname, cb->s.f->lineno, cb->s.f->filename );
+        g_err( err_mac_def_fun, macname );
+        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         return;
     }
-
+ 
     p = scan_start;
     head = NULL;
     last = NULL;
     save = *p;             // save char so we can make null terminated string
     *p   = '\0';
     macro_line_count = 0;
-
+ 
     compend   = !stricmp( tok_start, "end" );
     compbegin = !stricmp( tok_start, "begin" );
     if( !(compbegin | compend) ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
-
+ 
         if( cc == quotes ) {
             tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
         }
         if( ProcFlags.in_macro_define ) {
             err_count++;
-            out_msg( "ERR_NESTED_MACRO_DEFINE '%s' expecting END\n"
-                     "\t\t\tline %d of file '%s'\n",
-                     tok_start, cb->s.f->lineno, cb->s.f->filename );
+            g_err( err_mac_def_nest, tok_start );
+            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             return;
         }
         ProcFlags.in_macro_define = 1;
-
+ 
         *p   = save;
         lineno_start = cb->s.f->lineno;
-
-
+ 
+ 
         p = tok_start;
         sepchar = *p++;
         nmstart = p;
@@ -367,32 +371,32 @@ void    scr_dm( void )
         }
         compend = 1;                    // so the end processing will happen
     }                                   // BEGIN or END not found
-
+ 
     if( compend && !(ProcFlags.in_macro_define) ) {
         err_count++;
         // SC--003: A macro is not being defined
-        out_msg( "ERR_MACRO_DEFINE END without BEGIN '%s'\n"
-                 "\t\t\tLine %d of file '%s'\n",
-                 macname, cb->s.f->lineno, cb->s.f->filename );
+        g_err( err_mac_def_end, macname );
+        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         return;
     }
     if( compbegin && (ProcFlags.in_macro_define) ) {
         err_count++;
         // SC--002 The control word parameter '%s' is invalid
-        out_msg( "ERR_NESTED_MACRO_DEFINE '%s' expecting END\n"
-                 "\t\t\tline %d of file '%s'\n",
-                 macname, cb->s.f->lineno, cb->s.f->filename );
+        g_err( err_mac_def_nest, macname );
+        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
     }
     *p   = save;
     if( compbegin ) {                   // start new macro define
-
+ 
         ProcFlags.in_macro_define = 1;
         lineno_start = cb->s.f->lineno;
-
+ 
         while( !(cb->s.f->flags & FF_eof) ) {  // process all macro lines
-
+ 
             get_line();
-
+ 
             if( cb->s.f->flags & (FF_eof | FF_err) ) {
                 break;                  // out of read loop
             }
@@ -401,9 +405,9 @@ void    scr_dm( void )
                 if( tolower( *(p + 1) ) == 'd' &&
                     tolower( *(p + 2) ) == 'm' &&
                     (*(p + 3) == ' ' || *(p + 3) == '\0') ) {
-
+ 
                     garginit();
-
+ 
                     cc = getarg();
                     if( cc == omit ) {  // only .dm  means macro end
                         compend = 1;
@@ -416,9 +420,9 @@ void    scr_dm( void )
                         // macroname from begin different from end
                         err_count++;
                         // SC--005 Macro '%s' is not being defined
-                        out_msg( "ERR_MACRO_DEF Macro '%s' is not being defined\n"
-                                 "\t\t\tLine %d of file '%s'\n",
-                                 tok_start, cb->s.f->lineno, cb->s.f->filename );
+                        g_err( err_mac_def_not, tok_start );
+                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                         *p = save;
                         free_lines( head );
                         return;
@@ -428,10 +432,9 @@ void    scr_dm( void )
                     if( cc == omit ) {
                         err_count++;
                         // SC--048 A control word parameter is missing
-                        out_msg( "ERR_PARM_MISSING "
-                                 "A control word parameter is missing\n"
-                                 "\t\t\tLine %d of file '%s'\n",
-                                 cb->s.f->lineno, cb->s.f->filename );
+                        g_err( err_mac_def_miss );
+                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                         free_lines( head );
                         return;
                     }
@@ -441,11 +444,9 @@ void    scr_dm( void )
                     if( stricmp( tok_start, "end") ) {
                         err_count++;
                         // SC--002 The control word parameter '%s' is invalid
-                        out_msg( "ERR_PARMINVALID "
-                                 "The control word parameter '%s' is invalid\n"
-                                 "\t\t\tLine %d of file '%s'\n",
-                                 tok_start,
-                                 cb->s.f->lineno, cb->s.f->filename );
+                        g_err( err_mac_def_inv, tok_start );
+                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                         free_lines( head );
                         return;
                     }
@@ -469,25 +470,24 @@ void    scr_dm( void )
             err_count++;
             // error SC--004 End of file reached
             // macro '%s' is still being defined
-            out_msg( "ERR_MACRO_DEFINE End of file reached"
-                     " line %d of file '%s'\n"
-                     "\t\t\tmacro '%s' is still being defined\n",
-                     cb->s.f->lineno, cb->s.f->filename, macname );
+            g_err( err_mac_def_eof, macname );
+            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
             free_lines( head );
             return;
         }
     }                                   // end compbegin
-
+ 
     if( compend ) {                     // macro END definition processing
         mac_entry   *   me;
-
+ 
         me = find_macro( macro_dict, macname );
         if( me != NULL ) {              // delete macro with same name
             free_macro_entry( &macro_dict, me );
         }
-
+ 
         ProcFlags.in_macro_define = 0;
-
+ 
         len = strlen( cb->s.f->filename );
         me  = mem_alloc( len + sizeof( mac_entry ) );
         me->next = NULL;
@@ -496,24 +496,24 @@ void    scr_dm( void )
         me->macline = head;
         me->lineno = lineno_start;
         strcpy( me->mac_file_name, cb->s.f->filename );
-
+ 
         add_macro_entry( &macro_dict, me );
-
+ 
         if( GlobalFlags.research && GlobalFlags.firstpass ) {
-            out_msg( "INF_MACRO '%s' defined with %d lines\n", macname,
-                     macro_line_count );
+            utoa( macro_line_count, linestr, 10 );
+            g_info( inf_mac_defined, macname, linestr );
         }
     } else {
         err_count++;
-        out_msg( "ERR_MACRO_DEFINE_logic error '%s'\n", macname );
+        g_err( err_mac_def_logic, macname );
         free_lines( head );
         show_include_stack();
         return;
     }
     return;
 }
-
-
+ 
+ 
 /***************************************************************************/
 /* MACRO EXIT  causes immediate  termination of the  macro or  input file  */
 /* currently being processed  and resumption of the  higher-level file or  */
@@ -545,130 +545,133 @@ void    scr_dm( void )
 /* ! the line operand is ignored for .me in the master document file       */
 /*                                                                         */
 /***************************************************************************/
-
+ 
 void    scr_me( void )
 {
     condcode        cc;
-
+ 
     if( input_cbs->prev != NULL ) {     // if not master document file
-
+ 
         garginit();
-
+ 
         cc = getarg();
         if( cc != omit ) {              // line operand present
-
+ 
             free_lines( input_cbs->hidden_head );   // clear stacked input
             split_input( buff2, tok_start );// stack line operand
-
+ 
             // now move stacked line to previous input stack
-
+ 
             input_cbs->hidden_head->next = input_cbs->prev->hidden_head;
             input_cbs->prev->hidden_head = input_cbs->hidden_head;
-
+ 
             input_cbs->hidden_head = NULL;  // and delete from current input
             input_cbs->hidden_tail = NULL;
         }
     }
-
+ 
     input_cbs->fmflags |= II_eof;       // set eof
-
+ 
     input_cbs->if_cb->if_level = 0;     // terminate
     ProcFlags.keep_ifstate = false;     // ... all .if controls
     return;
 }
-
-
+ 
+ 
 static void macro_missing( void )
 {
+    char        linestr[MAX_L_AS_STR];
+ 
+    g_err( err_mac_name_inv );
     if( input_cbs->fmflags & II_macro ) {
-        out_msg( "ERR_MACRO_NAME missing/invalid line %d of macro '%s'\n",
-                 input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+        utoa( input_cbs->s.m->lineno, linestr, 10 );
+        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
     } else {
-        out_msg( "ERR_MACRO_NAME missing/invalid line %d of file '%s'\n",
-                 input_cbs->s.f->lineno, input_cbs->s.f->filename );
+        utoa( input_cbs->s.f->lineno, linestr, 10 );
+        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
     }
 }
-
-
-/**************************************************************************/
-/* ! EMPTY PAGE  is not implemeted ( not used in OW documentation )        */
-/*                                                                        */
-/* EMPTY PAGE,  EXECUTE MACRO:   EMPTY PAGE controls suppression of empty */
-/* pages (pages  that contain nothing in  the text area);   EXECUTE MACRO */
-/* treats the operand line as a  macro,  even if Macro Substitution (.MS) */
-/* is OFF.                                                                */
-/*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
-/*      |       |                                                  |      */
-/*      |  .EM  |    <YES|NO|OFFNO>  !not implemented              |      */
-/*      |       |                                                  |      */
-/*      |컴컴컴�|컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴|      */
-/*      |       |                                                  |      */
-/*      |  .EM  |    .macro <args>                                 |      */
-/*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
-/*                                                                        */
-/* Neither form of this control word causes a break.                      */
-/*                                                                        */
-/* .EM <YES|NO|OFFNO>:  The  situation can often arise in  which an empty */
-/*    page  is created  (a  page that  contains  only  top and/or  bottom */
-/*    running titles).    By default,   SCRIPT does  output these  pages. */
-/*    Specifying .EM YES allows  SCRIPT to print them,   .EM NO specifies */
-/*    that they are not to be printed,  and .EM OFFNO specifies that they */
-/*    are not to be printed and that the  page number is not to be incre- */
-/*    mented.   ".EM YES"  is the  initial value.    Empty pages  will be */
-/*    printed unless ".em no" is encountered.   If the operand is omitted */
-/*    then "YES" is assumed.                                              */
-/* .EM .macro <parameters>:  If the operands are missing it is treated as */
-/*    EMPTY PAGE (See above).   If the first operand of the ".EM" control */
-/*    word begins with a control word indicator,  then that first operand */
-/*    is  treated as  a  Macro or  Remote  name.    Optional keyword  and */
-/*    positional parameters  may follow the  macro name.   The  local set */
-/*    symbol &*0  is set to the  count of positional parameters  and &*1, */
-/*    &*2, etc. contain their values.   The symbol &* contains the entire */
-/*    parameter list.   Keyword parameters are accessed as set symbols by */
-/*    the keyword name.                                                   */
-/*                                                                        */
-/* EXAMPLES                                                               */
-/* (1) .EM .TEST parm1 KW1=parm2                                          */
-/*     A macro named  TEST is invoked;  &*0 is  set to 1,  &*1  is set to */
-/*     "parm1",   &KW1   is  set   to  "parm2",    and  &*   is  set   to */
-/*     "parm1 KW1=parm2".                                                 */
-/* (2) .EM .SK 1                                                          */
-/*     A macro named "SK" is invoked.    A native control word will never */
-/*     be assumed.   If the specified macro has not already been defined, */
-/*     an error will result.                                              */
-/**************************************************************************/
-
+ 
+ 
+/***************************************************************************/
+/* ! EMPTY PAGE  is not implemented ( not used in OW documentation )       */
+/*                                                                         */
+/* EMPTY PAGE,  EXECUTE MACRO:   EMPTY PAGE controls suppression of empty  */
+/* pages (pages  that contain nothing in  the text area);   EXECUTE MACRO  */
+/* treats the operand line as a  macro,  even if Macro Substitution (.MS)  */
+/* is OFF.                                                                 */
+/*                                                                         */
+/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      |       |                                                  |       */
+/*      |  .EM  |    <YES|NO|OFFNO>  !not implemented              |       */
+/*      |       |                                                  |       */
+/*      |컴컴컴�|컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴|       */
+/*      |       |                                                  |       */
+/*      |  .EM  |    .macro <args>                                 |       */
+/*      |       |                                                  |       */
+/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*                                                                         */
+/* Neither form of this control word causes a break.                       */
+/*                                                                         */
+/* .EM <YES|NO|OFFNO>:  The  situation can often arise in  which an empty  */
+/*    page  is created  (a  page that  contains  only  top and/or  bottom  */
+/*    running titles).    By default,   SCRIPT does  output these  pages.  */
+/*    Specifying .EM YES allows  SCRIPT to print them,   .EM NO specifies  */
+/*    that they are not to be printed,  and .EM OFFNO specifies that they  */
+/*    are not to be printed and that the  page number is not to be incre-  */
+/*    mented.   ".EM YES"  is the  initial value.    Empty pages  will be  */
+/*    printed unless ".em no" is encountered.   If the operand is omitted  */
+/*    then "YES" is assumed.                                               */
+/* .EM .macro <parameters>:  If the operands are missing it is treated as  */
+/*    EMPTY PAGE (See above).   If the first operand of the ".EM" control  */
+/*    word begins with a control word indicator,  then that first operand  */
+/*    is  treated as  a  Macro or  Remote  name.    Optional keyword  and  */
+/*    positional parameters  may follow the  macro name.   The  local set  */
+/*    symbol &*0  is set to the  count of positional parameters  and &*1,  */
+/*    &*2, etc. contain their values.   The symbol &* contains the entire  */
+/*    parameter list.   Keyword parameters are accessed as set symbols by  */
+/*    the keyword name.                                                    */
+/*                                                                         */
+/* EXAMPLES                                                                */
+/* (1) .EM .TEST parm1 KW1=parm2                                           */
+/*     A macro named  TEST is invoked;  &*0 is  set to 1,  &*1  is set to  */
+/*     "parm1",   &KW1   is  set   to  "parm2",    and  &*   is  set   to  */
+/*     "parm1 KW1=parm2".                                                  */
+/* (2) .EM .SK 1                                                           */
+/*     A macro named "SK" is invoked.    A native control word will never  */
+/*     be assumed.   If the specified macro has not already been defined,  */
+/*     an error will result.                                               */
+/***************************************************************************/
+ 
 void    scr_em( void )
 {
     char        *   p;
     char        *   pn;
-    char            macname[ MAC_NAME_LENGTH + 1 ];
+    char            macname[MAC_NAME_LENGTH + 1];
     condcode        cc;
     inputcb     *   cb;
     mac_entry   *   me;
     int             len;
-
+ 
     cb = input_cbs;
-
+ 
     garginit();
-
+ 
     cc = getarg();
-
+ 
     if( cc == omit ) {
         err_count++;
         macro_missing();
         show_include_stack();
         return;
     }
-
+ 
     if( *tok_start == SCR_char ) {      // possible macro name
         p = tok_start + 1;              // over .
-
+ 
         pn      = macname;
         len     = 0;
-
+ 
         /*  truncate name if too long WITHOUT error msg
          *  this is wgml 4.0 behaviour
          *
@@ -682,13 +685,13 @@ void    scr_em( void )
             }
             len++;
         }
-        macname[ MAC_NAME_LENGTH ] = '\0';
-
+        macname[MAC_NAME_LENGTH] = '\0';
+ 
         me = find_macro( macro_dict, macname );
     } else {
         me = NULL;                      // no macro name
     }
-
+ 
     if( me == NULL ) {                  // macro not specified or not defined
         err_count++;
         macro_missing();
@@ -699,4 +702,4 @@ void    scr_em( void )
     }
     return;
 }
-
+ 

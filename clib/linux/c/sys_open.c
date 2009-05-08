@@ -30,7 +30,7 @@
 
 
 #include <errno.h>
-#include "syslinux.h"
+#include "linuxsys.h"
 
 long sys_open( const char * filename, int flags, int mode )
 {

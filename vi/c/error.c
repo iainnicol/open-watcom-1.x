@@ -30,30 +30,26 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
 #include "vi.h"
-#include "myprtf.h"
 #include "win.h"
+#include "myprtf.h"
 
 static void readErrorMsgData( void );
 
 /*
  * FatalError - process fatal error
  */
-void FatalError( int err )
+void FatalError( vi_rc err )
 {
     char *str;
 
-    SetCursorOnScreen( (int)WindMaxHeight -1, 0 );
+    SetPosToMessageLine();
     if( err == ERR_NO_MEMORY ) {
         str = "Out of memory";
     } else {
         str = GetErrorMsg( err );
     }
-    MyPrintf("%s (fatal)\n", str );
+    MyPrintf( "%s (fatal)\n", str );
     ExitEditor( -1 );
 
 } /* FatalError */
@@ -65,25 +61,25 @@ void Die( const char *str, ... )
 {
     va_list     al;
 
-    SetCursorOnScreen(  (int) WindMaxHeight - 1, 0 );
-    MyPrintf("Failure: ");
+    SetPosToMessageLine();
+    MyPrintf( "Failure: " );
     va_start( al, str );
     MyVPrintf( str, al );
     va_end( al );
-    MyPrintf("\n");
+    MyPrintf( "\n" );
     ExitEditor( -1 );
 
 } /* Die */
 
 static char strBuff[25];
 static char readMsgData = FALSE;
-static int errCnt;
+static int  errCnt;
 static char *errorList;
 
 /*
  * GetErrorMsg - return pointer to message
  */
-char *GetErrorMsg( int err )
+char *GetErrorMsg( vi_rc err )
 {
     char        *msg;
 
@@ -97,12 +93,12 @@ char *GetErrorMsg( int err )
         EditFlags.Dotable = FALSE;
     }
     if( err < 0 || err > errCnt ) {
-        MySprintf( strBuff,"Err no. %d (no msg)",err);
+        MySprintf( strBuff, "Err no. %d (no msg)", err );
         return( strBuff );
     }
-    msg = GetTokenString( errorList, err );
+    msg = GetTokenString( errorList, (int)err );
     if( msg == NULL ) {
-        MySprintf( strBuff,"Err no. %d (no msg)",err);
+        MySprintf( strBuff, "Err no. %d (no msg)", err );
         return( strBuff );
     }
     return( msg );
@@ -143,33 +139,40 @@ void Error( char *str, ... )
         va_end( al );
     }
 
-
 } /* Error */
+
+
+static bool errmsg_alloc( int cnt )
+{
+    errCnt = cnt;
+    return( FALSE );
+}
+
+static bool errmsg_save( int i, char *buff )
+{
+    return( TRUE );
+}
+
 
 /*
  * readErrorMsgData - do just that
  */
 static void readErrorMsgData( void )
 {
-    int         *vals;
-    int         rc,cnt;
-    char        *buff;
+    vi_rc       rc;
 
-    rc = ReadDataFile( "errmsg.dat", &cnt, &buff, &vals, FALSE );
-    if( rc ) {
+    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save );
+    if( rc != ERR_NO_ERR ) {
         return;
     }
-    errCnt = cnt;
-    errorList = buff;
     readMsgData = TRUE;
-
-    // we dont really need the values
-    MemFree( vals );
 
 } /* readErrorMsgData */
 
-void ErrorFini( void ){
+void ErrorFini( void )
+{
     MemFree( errorList );
     MemFree( ErrorTokens );
     MemFree( ErrorValues );
-}
+
+} /* ErrorFini */

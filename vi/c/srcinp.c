@@ -30,19 +30,16 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "vi.h"
 #include "source.h"
 
 /*
  * srcGenericInput - input a value to a variable
  */
-static int srcGenericInput( char *data, vlist *vl, bool input )
+static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
 {
-    int         i;
-    char        tmp[MAX_SRC_LINE],v1[MAX_SRC_LINE],str[MAX_STR];
+    vi_rc       resp;
+    char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE], str[MAX_STR];
     vars        *v;
 
     /*
@@ -60,15 +57,15 @@ static int srcGenericInput( char *data, vlist *vl, bool input )
         if( v != NULL ) {
             strcpy( str, v->value );
         } else {
-            strcpy( str,"Enter value:");
+            strcpy( str, "Enter value:" );
         }
-        i = GetResponse( str, tmp );
+        resp = GetResponse( str, tmp );
     } else {
-        i = GOT_RESPONSE;
+        resp = GOT_RESPONSE;
         tmp[0] = GetKey( FALSE );
         tmp[1] = 0;
     }
-    if( i == GOT_RESPONSE ) {
+    if( resp == GOT_RESPONSE ) {
         VarAddStr( v1, tmp, vl );
         return( ERR_NO_ERR );
     }
@@ -76,7 +73,7 @@ static int srcGenericInput( char *data, vlist *vl, bool input )
 
 } /* srcGenericInput */
 
-int SrcInput( char *tmp, vlist *vl )
+vi_rc SrcInput( char *tmp, vlist *vl )
 {
     return( srcGenericInput( tmp, vl, TRUE ) );
 

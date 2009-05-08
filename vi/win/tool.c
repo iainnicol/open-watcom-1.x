@@ -29,14 +29,10 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
+#include "vi.h"
 #include <malloc.h>
-#include <stdio.h>
-#include "winvi.h"
 #include <shellapi.h>
 #include "toolbr.h"
-#include "keys.h"
 #include "color.h"
 #include "bitmap.h"
 #include "rcstr.gh"
@@ -45,9 +41,9 @@ typedef struct tool_item {
     ss                  tool_head;
     UINT                id;
     HBITMAP             bmp;
-    char                is_blank:1;
-    char                dont_save:1;
-    char                spare:6;
+    unsigned char       is_blank    : 1;
+    unsigned char       dont_save   : 1;
+    unsigned char       spare       : 6;
     char                *name;
     char                *help;
     char                cmd[1];
@@ -85,11 +81,12 @@ static HBITMAP          buttonPattern;
 
 RECT                    ToolBarFloatRect;
 
-int HandleToolCommand( UINT id )
+vi_rc HandleToolCommand( UINT id )
 {
     ss          *p;
     tool_item   *item;
-    int         len, rc;
+    int         len;
+    vi_rc       rc;
     char        *str;
 
     for( p = toolBarHead; p != NULL; p = p->next ) {
@@ -104,9 +101,10 @@ int HandleToolCommand( UINT id )
     }
     return( MENU_COMMAND_NOT_HANDLED );
 }
-#define BORDER_X( x )           ( (x) / 4 )
-#define BORDER_Y( y )           ( (y) / 8 )
-#define TOOLBAR_HEIGHT( y )     ( (y) + 2 * BORDER_Y( y ) + 3 )
+
+#define BORDER_X( x )           ((x) / 4)
+#define BORDER_Y( y )           ((y) / 8)
+#define TOOLBAR_HEIGHT( y )     ((y) + 2 * BORDER_Y( y ) + 3)
 
 static void nukeButtons( void )
 {
@@ -150,13 +148,13 @@ static void newToolBarWindow( void )
     if( fixedToolBar ) {
         // make it float
         tl.y = 0;
-        height += (fixedRect.bottom - fixedRect.top)+1;
+        height += (fixedRect.bottom - fixedRect.top) + 1;
         dinfo.area = ToolBarFloatRect;
         dinfo.style = TOOLBAR_FLOAT_STYLE;
         dinfo.is_fixed = FALSE;
     } else {
 //      tl.y = fixedRect.bottom + 1;
-//      height -= (fixedRect.bottom - fixedRect.top)+1;
+//      height -= (fixedRect.bottom - fixedRect.top) + 1;
         tl.y = fixedRect.bottom;
         height -= (fixedRect.bottom - fixedRect.top);
         dinfo.area = fixedRect;
@@ -258,7 +256,7 @@ static void createToolBar( RECT *rect )
     dinfo.is_fixed = TRUE;
     toolbar_height = TOOLBAR_HEIGHT( ToolBarButtonHeight );
     dinfo.area = *rect;
-    dinfo.area.bottom = ((dinfo.area.top + toolbar_height+1)&~1)-1;
+    dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
     dinfo.area.top -= 1;
     dinfo.area.bottom -= 1;
     dinfo.area.left -= 1;
@@ -269,7 +267,7 @@ static void createToolBar( RECT *rect )
     dinfo.use_tips = 1;
     buttonPattern = dinfo.background;
     toolBar = ToolBarInit( Root );
-#if defined (__NT__)
+#if defined( __NT__ )
     ToolBarChangeSysColors( GetSysColor( COLOR_BTNFACE ),
 #else
     ToolBarChangeSysColors( GetRGB( ToolBarColor ),
@@ -339,7 +337,7 @@ static void addToolBarItem( tool_item *item )
 void NewToolBar( RECT *rect )
 {
     ss          *curr;
-    RECT         covered;
+    RECT        covered;
 
     if( toolBar ) {
         userClose = FALSE;
@@ -366,16 +364,16 @@ void NewToolBar( RECT *rect )
 /*
  * AddBitmapToToolBar - add a toolbar item ([temp], bitmap, help & command)
  */
-int AddBitmapToToolBar( char *data )
+vi_rc AddBitmapToToolBar( char *data )
 {
-    char                file[ FILENAME_MAX ];
-    char                help[ MAX_STR ];
-    char                dont_save[ MAX_STR ];
+    char                file[FILENAME_MAX];
+    char                help[MAX_STR];
+    char                dont_save[MAX_STR];
     tool_item           *item;
     int                 cmd_len;
     int                 name_len;
 
-    dont_save[0]=0;
+    dont_save[0] = 0;
 
     RemoveLeadingSpaces( data );
     if( strnicmp( data, "temp", 4 ) == 0 ) {
@@ -389,8 +387,7 @@ int AddBitmapToToolBar( char *data )
     RemoveLeadingSpaces( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
-    item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len
-                        + strlen( help ) + 2 );
+    item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len + strlen( help ) + 2 );
     strcpy( item->cmd, data );
     if( name_len != 0 ) {
         item->id = NextMenuId();
@@ -403,14 +400,14 @@ int AddBitmapToToolBar( char *data )
         item->dont_save = FALSE;
     }
 
-    if( file[ 0 ] && item->cmd[ 0 ] ) {
+    if( file[0] && item->cmd[0] ) {
         item->bmp = LoadBitmap( InstanceHandle, file );
         if( item->bmp == HNULL ) {
             item->bmp = ReadBitmapFile( ToolBarWindow( toolBar ), file, NULL );
         }
-        item->name = &item->cmd[ cmd_len + 1 ];
+        item->name = &item->cmd[cmd_len + 1];
         strcpy( item->name, file );
-        item->help = &item->name[ name_len + 1 ];
+        item->help = &item->name[name_len + 1];
         strcpy( item->help, help );
     } else {
         item->bmp = HNULL;
@@ -426,11 +423,11 @@ int AddBitmapToToolBar( char *data )
 /*
  * DeleteFromToolBar - delete an item from the toolbar
  */
-int DeleteFromToolBar( char *data )
+vi_rc DeleteFromToolBar( char *data )
 {
-    char        buffer[ MAX_STR ];
-    int         index;
-    ss         *p;
+    char    buffer[MAX_STR];
+    int     index;
+    ss      *p;
 
     NextWord1( data, buffer );
     index = atoi( buffer );
@@ -439,7 +436,9 @@ int DeleteFromToolBar( char *data )
         p = toolBarHead;
         while( p != NULL ) {
             index -= 1;
-            if( index == 0 ) break;
+            if( index == 0 ) {
+                break;
+            }
             p = p->next;
         }
         if( p ) {
@@ -453,7 +452,8 @@ int DeleteFromToolBar( char *data )
         }
     }
     return( ERR_INVALID_MENU );
-}
+
+} /* DeleteFromToolBar */
 
 /*
  * CloseToolBar - make the toolbar go away.
@@ -506,7 +506,7 @@ void BarfToolBarData( FILE *f )
             MyFprintf( f, "addtoolbaritem\n" );
         } else {
             MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name,
-                            citem->help, citem->cmd );
+                       citem->help, citem->cmd );
         }
         p = p->next;
     }

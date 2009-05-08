@@ -27,22 +27,17 @@
 * Description:  WGML implement multi letter function &'delstr( )
 *
 ****************************************************************************/
-
+ 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
-#include <stdarg.h>
-#include <io.h>
-#include <fcntl.h>
-#include <errno.h>
-
+ 
 #include "wgml.h"
 #include "gvars.h"
-
+ 
 /***************************************************************************/
 /*  script string function &'delstr(                                       */
 /*                                                                         */
 /***************************************************************************/
-
+ 
 /***************************************************************************/
 /* &'delstr(string,n<,length>):  The  Delete String function  deletes the  */
 /*    part of 'string' starting at character  number 'n'.   The number of  */
@@ -53,8 +48,8 @@
 /*      &'delstr('abcdef',3,2) ==> abef                                    */
 /*      &'delstr('abcdef',10) ==> abcdef                                   */
 /***************************************************************************/
-
-condcode    scr_delstr( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+condcode    scr_delstr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     char            *   pval;
     char            *   pend;
@@ -63,43 +58,41 @@ condcode    scr_delstr( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * 
     int                 n;
     int                 len;
     getnum_block        gn;
-
+    char                linestr[MAX_L_AS_STR];
+ 
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
     }
-
-    pval = parms[ 0 ].a;
-    pend = parms[ 0 ].e;
-
+ 
+    pval = parms[0].a;
+    pend = parms[0].e;
+ 
     unquote_if_quoted( &pval, &pend );
-
+ 
     len = pend - pval + 1;              // default length
-
+ 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
-
+ 
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
-
-    if( parms[ 1 ].e >= parms[ 1 ].a ) {// start pos
-        gn.argstart = parms[ 1 ].a;
-        gn.argstop  = parms[ 1 ].e;
+ 
+    if( parms[1].e >= parms[1].a ) {// start pos
+        gn.argstart = parms[1].a;
+        gn.argstop  = parms[1].e;
         cc = getnum( &gn );
         if( (cc != pos) || (gn.result == 0) ) {
             if( !ProcFlags.suppress_msg ) {
+                g_err( err_func_parm, "2 (startpos)" );
                 if( input_cbs->fmflags & II_macro ) {
-                    out_msg( "ERR_FUNCTION parm 2 (startpos) invalid\n"
-                             "\t\t\tLine %d of macro '%s'\n",
-                             input_cbs->s.m->lineno,
-                             input_cbs->s.m->mac->name );
+                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    out_msg( "ERR_FUNCTION parm 2 (startpos) invalid\n"
-                             "\t\t\tLine %d of file '%s'\n",
-                             input_cbs->s.f->lineno,
-                             input_cbs->s.f->filename );
+                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 err_count++;
                 show_include_stack();
@@ -108,24 +101,21 @@ condcode    scr_delstr( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * 
         }
         n = gn.result - 1;
     }
-
+ 
     if( parmcount > 2 ) {               // evalute length
-        if( parms[ 2 ].e >= parms[ 2 ].a ) {// length specified
-            gn.argstart = parms[ 2 ].a;
-            gn.argstop  = parms[ 2 ].e;
+        if( parms[2].e >= parms[2].a ) {// length specified
+            gn.argstart = parms[2].a;
+            gn.argstop  = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
+                    g_err( err_func_parm, "3 (length)" );
                     if( input_cbs->fmflags & II_macro ) {
-                        out_msg( "ERR_FUNCTION parm 3 (length) invalid\n"
-                                 "\t\t\tLine %d of macro '%s'\n",
-                                 input_cbs->s.m->lineno,
-                                 input_cbs->s.m->mac->name );
+                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        out_msg( "ERR_FUNCTION parm 3 (length) invalid\n"
-                                 "\t\t\tLine %d of file '%s'\n",
-                                 input_cbs->s.f->lineno,
-                                 input_cbs->s.f->filename );
+                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     err_count++;
                     show_include_stack();
@@ -135,27 +125,26 @@ condcode    scr_delstr( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * 
             len = gn.result;
         }
     }
-
+ 
     k = 0;
     while( (k < n) && (pval <= pend) ) {// copy unchanged before startpos
         **result = *pval++;
         *result += 1;
         k++;
     }
-
+ 
     k = 0;
     while( (k < len) && (pval <= pend) ) {  // delete
         pval++;
         k++;
     }
-
+ 
     while( pval <= pend ) {             // copy unchanged
         **result = *pval++;
         *result += 1;
     }
-
+ 
     **result = '\0';
-
+ 
     return( pos );
 }
-

@@ -168,7 +168,7 @@ char *TrimQuote( char *text )
 }
 
 
-extern int set_dlg_push_button( char *var_name, char *text,
+extern int set_dlg_push_button( vhandle var_handle, char *text,
                                 gui_control_info *gui_controls,
                                 int num_controls, int row, int num_buttons,
                                 int of, int cols, int bwidth )
@@ -177,7 +177,6 @@ extern int set_dlg_push_button( char *var_name, char *text,
     int                 but_pos = 0;
     gui_control_info    *control;
     int                 id;
-    char                dummy_var[DUMMY_VAR_SIZE];
 
     control = &gui_controls[num_controls];
 
@@ -224,11 +223,10 @@ extern int set_dlg_push_button( char *var_name, char *text,
         } else if( stricmp( text, "Help" ) == 0 ) {
             id = CTL_HELP;
         } else {
-            id = VarGetId( GetVariableByName( var_name ) );
+            id = VarGetId( var_handle );
             if( id == 0 ) {
                 // dummy_var allows control to have an id - used by dynamic visibility feature
-                MakeDummyVar( dummy_var );
-                id = AddVariable( dummy_var );
+                id = MakeDummyVar();
             }
         }
         break;

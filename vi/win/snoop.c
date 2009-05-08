@@ -30,15 +30,15 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <string.h>
+#include "vi.h"
 #include "snoop.h"
 #include "rcstr.gh"
 #ifdef __NT__
     #include <shlobj.h>
 #endif
 
-static fancy_find       snoopData = {TRUE,FALSE,TRUE,TRUE,FALSE,FALSE,0,NULL,0,NULL,0,NULL,0};
+static fancy_find       snoopData =
+    { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, NULL, 0, NULL, 0, NULL, 0 };
 #ifdef __NT__
 static HINSTANCE        hInstShell = NULL;
 
@@ -62,7 +62,8 @@ int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data
         break;
     }
     return( 0 );
-}
+
+} /* BrowseCallbackProc */
 
 #endif
 
@@ -71,7 +72,7 @@ int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data
  */
 BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    // int                      i;
+    // int                 i;
     int                 cmd;
     DWORD               index;
     char                snoop[MAX_INPUT_LINE];
@@ -97,9 +98,9 @@ BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 
         // this isn't quite right. but it's close.
         /*
-        for( i=0; i<extension.max; i++ ) {
+        for( i = 0; i < extension.max; i++ ) {
             SendDlgItemMessage( hwnd, SNOOP_LISTBOX, LB_ADDSTRING, 0,
-                (LONG)extension[i] );
+                                (LONG)extension[i] );
         }
         */
 
@@ -112,13 +113,11 @@ BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         case SNOOP_EXT:
             cmd = GET_WM_COMMAND_CMD( wparam, lparam );
             if( cmd == LBN_SELCHANGE || cmd == LBN_DBLCLK ) {
-                index = SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETCURSEL,
-                                                        0, 0L );
+                index = SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETCURSEL, 0, 0L );
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index,
-                                        (LONG) snoop );
+                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LONG) snoop );
                 SetDlgItemText( hwnd, SNOOP_STRING, snoop );
             }
             break;
@@ -142,7 +141,7 @@ BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 #endif
         case IDCANCEL:
             // RemoveEditSubClass( hwnd, SNOOP_STRING );
-            EndDialog( hwnd, 0 );
+            EndDialog( hwnd, FALSE );
             break;
         case IDOK:
             GetDlgItemText( hwnd, SNOOP_STRING, snoop, MAX_INPUT_LINE );
@@ -154,7 +153,7 @@ BOOL WINEXP SnoopDlgProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             snoopData.case_ignore = IsDlgButtonChecked( hwnd, SNOOP_IGNORE_CASE );
             snoopData.use_regexp = IsDlgButtonChecked( hwnd, SNOOP_REGULAR_EXPRESSIONS );
             // RemoveEditSubClass( hwnd, SNOOP_STRING );
-            EndDialog( hwnd, 1 );
+            EndDialog( hwnd, TRUE );
             break;
         default:
             return( FALSE );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2008 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,7 @@
 #define WGML_H_INCLUDED
 
 #ifndef __STDC_WANT_LIB_EXT1__
-    #define __STDC_WANT_LIB_EXT1__  1  /* use safer C library              */
+    #define __STDC_WANT_LIB_EXT1__  1   /* use safer C library             */
 #endif
 
 #include <stdio.h>
@@ -85,15 +85,26 @@ extern  void    init_global_vars( void );
 
 
 /* gerror.c                             */
-extern  void    out_msg( char * fmt, ... );
-
-/* -------------------------------- TBD
-extern  void    g_err( int, ... );
-extern  void    g_warn( int, ... );
-extern  void    g_info( int, ... );
-----------------------------------*/
-
+extern  void    out_msg( const char * fmt, ... );
+extern  void    g_err( const msg_ids err, ... );
+extern  void    g_warn( const msg_ids err, ... );
+extern  void    g_info( const msg_ids err, ... );
 extern  void    g_suicide( void );
+
+
+/* gerrorxx.c                           */
+extern  void    att_val_err( char * attname );
+extern  void    auto_att_err( void );
+extern  void    cw_err( void );
+extern  void    dc_opt_err( char * pa );
+extern  void    file_mac_info( void );
+extern  void    nottag_err( void );
+extern  void    numb_err( void );
+extern  void    tag_name_missing_err( void );
+extern  void    tag_text_err( char * tagname );
+extern  void    tag_text_req_err( char * tagname );
+extern  void    xx_err( const msg_ids errid );
+extern  void    xx_opt_err( char *cw, char *pa );
 
 /* getnum.c                             */
 extern condcode     getnum( getnum_block * gn );
@@ -118,10 +129,11 @@ extern  void        g_trmem_close( void );
 
 
 /* goptions.c                         */
-extern  void    proc_options( char * cmdline );
+extern  int     proc_options( char * cmdline );
 extern  void    split_attr_file( char * filename, char * attr, size_t attrlen );
 
 /* gprocess.c                         */
+extern  void    process_late_subst( void );
 extern  void    process_line( void );
 extern  void    split_input( char * buf, char * split_pos );
 extern  void    split_input_LIFO( char * buf, char * split_pos );
@@ -170,6 +182,10 @@ extern  void        add_macro_parms( char * p );
 extern  void        free_lines( inp_line * line );
 
 
+/* gspe.c                             */
+extern  void    reset_pe_cb( void );
+
+
 /* gspu.c                             */
 extern  void    close_pu_file( int numb );
 extern  void    close_all_pu_files( void );
@@ -179,9 +195,14 @@ extern  void    close_all_pu_files( void );
 extern void     init_dict( symvar * * dict );
 extern void     free_dict( symvar * * dict );
 extern int      find_symvar( symvar * * dict, char * name, sub_index subscript, symsub * * symsubval );
-extern int      add_symvar( symvar * * dict, char * name, char * val, sub_index subscript, sym_flags f );
+extern int      add_symvar( symvar * * dict, char * name, char * val, sub_index subscript, symbol_flags f );
 extern void     print_sym_dict( symvar * dict );
 extern void     reset_auto_inc_dict( symvar * dict );
+
+/* gsyssym.c                          */
+extern  void    init_predefined_symbols( void );
+extern  void    init_sysparm( char * cmdline );
+
 
 /* gtagdict.c                         */
 extern  gtentry *   add_tag( gtentry * * dict, char const * name, char const * macro, const int flags );
@@ -199,10 +220,20 @@ extern  bool        process_tag( gtentry * ge, mac_entry * me );
 /* gutils.c                           */
 extern  bool    to_internal_SU( char * * scaninput, su * spaceunit );
 
+/* wgmlmsg.c                          */
+extern  int     init_msgs( void );
+extern  void    fini_msgs( void );
+extern  int     get_msg( msg_ids resourceid, char *buffer, size_t buflen );
+//extern  void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types, ... );
+//extern  void Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
+
 /*
  * prototypes for the gml processing routines
  */
 
+#ifdef pick
+    #undef pick
+#endif
 #define pick( name, length, routine, flags )  extern void routine( const gmltag * entry );
 
 #include "gtags.h"
@@ -220,7 +251,7 @@ extern  bool    to_internal_SU( char * * scaninput, su * spaceunit );
  */
 
 #define pick( name, length, mand_parms, opt_parms, routine ) \
-    extern condcode routine( parm parms[ MAX_FUN_PARMS ], size_t parm_count, char * * ppval );
+    extern condcode routine( parm parms[MAX_FUN_PARMS], size_t parm_count, char * * ppval );
 
 #include "gsfuncs.h"
 

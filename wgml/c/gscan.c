@@ -35,6 +35,7 @@
 
 #include "wgml.h"
 #include "gvars.h"
+#include "outbuff.h"
 
 
 /***************************************************************************/
@@ -50,7 +51,7 @@ static  const   gmltag  gml_tags[] = {
 
 };
 
-#define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[ 0 ] ) - 1)
+#define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ) - 1)
 
 #undef pick
 
@@ -68,7 +69,7 @@ static  const   scrtag  scr_tags[] = {
     { "  ", NULL   }                    // end
 };
 
-#define SCR_TAGMAX  (sizeof( scr_tags ) / sizeof( scr_tags[ 0 ] ) - 1)
+#define SCR_TAGMAX  (sizeof( scr_tags ) / sizeof( scr_tags[0] ) - 1)
 
 #undef pick
 
@@ -87,6 +88,7 @@ static void scan_gml( void )
     bool            processed;
     gtentry     *   ge;                 // GML user tag entry
     mac_entry   *   me;                // script macro for processing GML tag
+    char            linestr[MAX_L_AS_STR];
 
     cb = input_cbs;
 
@@ -103,13 +105,13 @@ static void scan_gml( void )
         err_count++;
         // SC--009 The tagname is too long
         if( cb->fmflags & II_macro ) {
-            out_msg( "ERR_TAG_NAME too long '%s'\n"
-                     "\t\t\tLine %d of macro '%s'\n",
-                     tok_start + 1, cb->s.m->lineno, cb->s.m->mac->name );
+            utoa( cb->s.m->lineno, linestr, 10 );
+            g_err( err_tag_name, tok_start + 1, linestr, "macro",
+                   cb->s.m->mac->name );
         } else {
-            out_msg( "ERR_TAG_NAME too long '%s'\n"
-                     "\t\t\tLine %d of file '%s'\n",
-                     tok_start + 1, cb->s.f->lineno, cb->s.f->filename );
+            utoa( cb->s.f->lineno, linestr, 10 );
+            g_err( err_tag_name, tok_start + 1, linestr, "file",
+                   cb->s.f->filename );
         }
         if( inc_level > 0 ) {
             show_include_stack();
@@ -124,11 +126,11 @@ static void scan_gml( void )
         if(  stricmp( tok_start + 1, "cmt" ) ) {   // quiet for :cmt.
 
             if( cb->fmflags & II_macro ) {
-                printf_research( "L%d    %c%s found in macro %s(%d)\n\n",
+                printf_research( "L%d    %c%s tag found in macro %s(%d)\n\n",
                                  inc_level, GML_char, tok_start + 1,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
-                printf_research( "L%d    %c%s found in file %s(%d)\n\n",
+                printf_research( "L%d    %c%s tag found in file %s(%d)\n\n",
                                  inc_level, GML_char, tok_start + 1,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
@@ -150,17 +152,15 @@ static void scan_gml( void )
             // SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy'
             //          is not defined
             if( cb->fmflags & II_macro ) {
-                out_msg( "ERR_TAG_macro   The macro '%s' for the gml tag '%s'\n"
-                         "\t\tis not defined\n"
-                         "\t\t\tLine %d of macro '%s'\n",
+                utoa( cb->s.m->lineno, linestr, 10 );
+                g_err( err_tag_macro,
                          ge->macname, ge->name,
-                         cb->s.m->lineno, cb->s.m->mac->name );
+                         linestr, "macro", cb->s.m->mac->name );
             } else {
-                out_msg( "ERR_TAG_macro   The macro '%s' for the gml tag '%s'\n"
-                         "\t\tis not defined\n"
-                         "\t\t\tLine %d of file '%s'\n",
+                utoa( cb->s.f->lineno, linestr, 10 );
+                g_err( err_tag_macro,
                          ge->macname, ge->name,
-                         cb->s.f->lineno, cb->s.f->filename );
+                         linestr, "file", cb->s.f->filename );
             }
             if( inc_level > 0 ) {
                 show_include_stack();
@@ -175,10 +175,10 @@ static void scan_gml( void )
         }
     } else {
         for( k = 0; k < GML_TAGMAX; ++k ) {
-            if( toklen == gml_tags[ k].taglen ) {
-                if( !stricmp( gml_tags[ k ].tagname, tok_start + 1 ) ) {
+            if( toklen == gml_tags[k].taglen ) {
+                if( !stricmp( gml_tags[k].tagname, tok_start + 1 ) ) {
                     *p = csave;
-                    gml_tags[ k ].gmlproc( &gml_tags[ k ] );
+                    gml_tags[k].gmlproc( &gml_tags[k] );
                     processed = true;
                     if( *scan_start == '.' ) {
                         scan_start++;
@@ -244,6 +244,7 @@ static void     scan_script( void)
     char        *   pt;
     int             toklen;
     int             k;
+    bool            cwfound;
 
     cb = input_cbs;
     p = scan_start + 1;
@@ -301,11 +302,9 @@ static void     scan_script( void)
 
         if( *p && (*p != ' ') || toklen == 0 ) {// no valid script controlword / macro
 
-           scan_start = p;
-
-//         copy_buff2_to_output();    TBD
-
-           return;
+            cw_err();
+            scan_start = p;
+            return;
         }
 
         if( toklen >= MAC_NAME_LENGTH ) {
@@ -321,11 +320,11 @@ static void     scan_script( void)
     if( me != NULL ) {                  // macro found
         if( GlobalFlags.research && GlobalFlags.firstpass ) {
             if( cb->fmflags & II_macro ) {
-                printf_research( "L%d    %c%s found in macro %s(%d)\n\n",
+                printf_research( "L%d    %c%s macro found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
-                printf_research( "L%d    %c%s found in file %s(%d)\n\n",
+                printf_research( "L%d    %c%s macro found in file %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
@@ -335,13 +334,14 @@ static void     scan_script( void)
         inc_inc_level();
         add_macro_parms( p );
     } else {                            // try script controlword
+        cwfound = false;
         if( GlobalFlags.research && GlobalFlags.firstpass ) {
             if( cb->fmflags & II_macro ) {
-                printf_research( "L%d    %c%s found in macro %s(%d)\n\n",
+                printf_research( "L%d    %c%s CW found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
-                printf_research( "L%d    %c%s found in file %s(%d)\n\n",
+                printf_research( "L%d    %c%s CW found in file %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
@@ -350,12 +350,16 @@ static void     scan_script( void)
 
         if( toklen == SCR_KW_LENGTH ) {
             for( k = 0; k < SCR_TAGMAX; ++k ) {
-                if( !stricmp( scr_tags[ k ].tagname, token_buf ) ) {
+                if( !stricmp( scr_tags[k].tagname, token_buf ) ) {
                     scan_start = p; // script controlword found, process
-                    scr_tags[ k ].tagproc();
+                    scr_tags[k].tagproc();
+                    cwfound = true;
                     break;
                 }
             }
+        }
+        if( !cwfound ) {
+            cw_err();                   // unrecognized control word
         }
     }
 }
@@ -372,6 +376,7 @@ static  condcode    mainif( void)
 {
     condcode    cc;
     ifcb    *   cb;
+    char        linestr[MAX_L_AS_STR];
 
     cb = input_cbs->if_cb;
     cc = no;
@@ -380,37 +385,37 @@ static  condcode    mainif( void)
         out_msg( "ANF mainif L %d t %d, f %d"
                 " th(%d)  el(%d)  do(%d) last(%d) cwif,do,te(%d,%d,%d)\n",
                  cb->if_level,
-                 cb->if_flags[ cb->if_level ].iftrue,
-                 cb->if_flags[ cb->if_level ].iffalse,
-                 cb->if_flags[ cb->if_level ].ifthen,
-                 cb->if_flags[ cb->if_level ].ifelse,
-                 cb->if_flags[ cb->if_level ].ifdo,
-                 cb->if_flags[ cb->if_level ].iflast,
-                 cb->if_flags[ cb->if_level ].ifcwif,
-                 cb->if_flags[ cb->if_level ].ifcwdo,
-                 cb->if_flags[ cb->if_level ].ifcwte
+                 cb->if_flags[cb->if_level].iftrue,
+                 cb->if_flags[cb->if_level].iffalse,
+                 cb->if_flags[cb->if_level].ifthen,
+                 cb->if_flags[cb->if_level].ifelse,
+                 cb->if_flags[cb->if_level].ifdo,
+                 cb->if_flags[cb->if_level].iflast,
+                 cb->if_flags[cb->if_level].ifcwif,
+                 cb->if_flags[cb->if_level].ifcwdo,
+                 cb->if_flags[cb->if_level].ifcwte
               );
     }
 #endif
 //mainif
-    if( cb->if_flags[ cb->if_level ].iflast // 1. rec after .if
-        && !cb->if_flags[ cb->if_level ].ifcwte) {  // not .th or .el
+    if( cb->if_flags[cb->if_level].iflast   // 1. rec after .if
+        && !cb->if_flags[cb->if_level].ifcwte) {// not .th or .el
 
-        cb->if_flags[ cb->if_level ].iflast = false;// reset first switch
-        cb->if_flags[ cb->if_level ].ifthen = true; // treat as then
+        cb->if_flags[cb->if_level].iflast = false;  // reset first switch
+        cb->if_flags[cb->if_level].ifthen = true;   // treat as then
     }
 //mnif01
-    if( cb->if_flags[ cb->if_level ].ifcwif ) { // .if
+    if( cb->if_flags[cb->if_level].ifcwif ) {   // .if
 //mnif03
-        if( cb->if_flags[ cb->if_level ].ifthen
-            || cb->if_flags[ cb->if_level ].ifelse ) {// object of .th or .el
+        if( cb->if_flags[cb->if_level].ifthen
+            || cb->if_flags[cb->if_level].ifelse ) {// object of .th or .el
 
             cc = pos;
         } else {
 //mnif03a
             while( cb->if_level > 0 ) { // pop one level
                 cb->if_level--;
-                if( cb->if_flags[ cb->if_level ].ifdo ) {
+                if( cb->if_flags[cb->if_level].ifdo ) {
                     break;
                 }
             }
@@ -421,71 +426,71 @@ static  condcode    mainif( void)
             out_msg( "END mainif L %d t %d, f %d"
                     " th(%d)  el(%d)  do(%d) last(%d)\n",
                      cb->if_level,
-                     cb->if_flags[ cb->if_level ].iftrue,
-                     cb->if_flags[ cb->if_level ].iffalse,
-                     cb->if_flags[ cb->if_level ].ifthen,
-                     cb->if_flags[ cb->if_level ].ifelse,
-                     cb->if_flags[ cb->if_level ].ifdo,
-                     cb->if_flags[ cb->if_level ].iflast );
+                     cb->if_flags[cb->if_level].iftrue,
+                     cb->if_flags[cb->if_level].iffalse,
+                     cb->if_flags[cb->if_level].ifthen,
+                     cb->if_flags[cb->if_level].ifelse,
+                     cb->if_flags[cb->if_level].ifdo,
+                     cb->if_flags[cb->if_level].iflast );
         }
 #endif
         return( cc );
     } else {                            // not .if
 //mnif01 cont.
-        if( cb->if_flags[ cb->if_level ].ifcwdo ) { // if  .do
+        if( cb->if_flags[cb->if_level].ifcwdo ) {   // if  .do
             cc = pos;
 #if 0
             if( GlobalFlags.research && GlobalFlags.firstpass ) {
                 out_msg( "END mainif L %d t %d, f %d"
                         " th(%d)  el(%d)  do(%d) last(%d)\n",
                          cb->if_level,
-                         cb->if_flags[ cb->if_level ].iftrue,
-                         cb->if_flags[ cb->if_level ].iffalse,
-                         cb->if_flags[ cb->if_level ].ifthen,
-                         cb->if_flags[ cb->if_level ].ifelse,
-                         cb->if_flags[ cb->if_level ].ifdo,
-                         cb->if_flags[ cb->if_level ].iflast );
+                         cb->if_flags[cb->if_level].iftrue,
+                         cb->if_flags[cb->if_level].iffalse,
+                         cb->if_flags[cb->if_level].ifthen,
+                         cb->if_flags[cb->if_level].ifelse,
+                         cb->if_flags[cb->if_level].ifdo,
+                         cb->if_flags[cb->if_level].iflast );
             }
 #endif
             return( cc );
         }
-        if( cb->if_flags[ cb->if_level ].ifthen
-            || cb->if_flags[ cb->if_level ].ifelse ) {// object of .th or .el
+        if( cb->if_flags[cb->if_level].ifthen
+            || cb->if_flags[cb->if_level].ifelse ) {// object of .th or .el
 //mnif05
-            if( cb->if_flags[ cb->if_level ].ifelse ) { // object of .el
+            if( cb->if_flags[cb->if_level].ifelse ) {   // object of .el
 //mnif06
-                if( cb->if_flags[ cb->if_level ].iftrue ) {// omit if true for .el
+                if( cb->if_flags[cb->if_level].iftrue ) {// omit if true for .el
 //mnif08
                     cc = neg;
                 } else {
                     cc = pos;
                 }
             } else {
-                if( cb->if_flags[ cb->if_level ].iffalse ) {// omit false for .th
+                if( cb->if_flags[cb->if_level].iffalse ) {// omit false for .th
                     cc = neg;
                 } else {
                     cc = pos;
                 }
             }
         } else {
-            if( cb->if_flags[ cb->if_level ].ifcwte ) {
+            if( cb->if_flags[cb->if_level].ifcwte ) {
                 cc = pos;
             } else {
 //mnif02
                 while( cb->if_level > 0 ) {
                     cb->if_level--;
-                    if( cb->if_flags[ cb->if_level ].ifdo ) {
+                    if( cb->if_flags[cb->if_level].ifdo ) {
 //mnif05
-                        if( cb->if_flags[ cb->if_level ].ifelse ) {// object of .el
+                        if( cb->if_flags[cb->if_level].ifelse ) {// object of .el
 //mnif06
-                            if( cb->if_flags[ cb->if_level ].iftrue ) {
+                            if( cb->if_flags[cb->if_level].iftrue ) {
 //mnif08
                                 cc = neg;   // omit if true for .el
                             } else {
                                 cc = pos;
                             }
                         } else {
-                            if( cb->if_flags[ cb->if_level ].iffalse ) {
+                            if( cb->if_flags[cb->if_level].iffalse ) {
                                 cc = neg;   // omit false for .th
                             } else {
                                 cc = pos;
@@ -502,13 +507,12 @@ static  condcode    mainif( void)
     }
     if( cc == no ) {
         if( input_cbs->fmflags & II_macro ) {
-            out_msg( "ERR_IF internal logic error\n"
-                     "\t\t\tLine %d of macro '%s'\n",
-                     input_cbs->s.m->lineno, input_cbs->s.m->mac->name );
+            utoa( input_cbs->s.m->lineno, linestr, 10 );
+            g_err( err_if_intern, linestr, "macro", input_cbs->s.m->mac->name );
         } else {
-            out_msg( "ERR_IF internal logic error\n"
-                     "\t\t\tLine %d of file '%s'\n",
-                     input_cbs->s.f->lineno, input_cbs->s.f->filename );
+            utoa( input_cbs->s.f->lineno, linestr, 10 );
+            g_err( err_if_intern,
+                     linestr, "file", input_cbs->s.f->filename );
         }
         if( inc_level > 1 ) {
             show_include_stack();
@@ -520,12 +524,12 @@ static  condcode    mainif( void)
         out_msg( "END mainif L %d t %d, f %d"
                 " th(%d)  el(%d)  do(%d) last(%d)\n",
                  cb->if_level,
-                 cb->if_flags[ cb->if_level ].iftrue,
-                 cb->if_flags[ cb->if_level ].iffalse,
-                 cb->if_flags[ cb->if_level ].ifthen,
-                 cb->if_flags[ cb->if_level ].ifelse,
-                 cb->if_flags[ cb->if_level ].ifdo,
-                 cb->if_flags[ cb->if_level ].iflast );
+                 cb->if_flags[cb->if_level].iftrue,
+                 cb->if_flags[cb->if_level].iffalse,
+                 cb->if_flags[cb->if_level].ifthen,
+                 cb->if_flags[cb->if_level].ifelse,
+                 cb->if_flags[cb->if_level].ifdo,
+                 cb->if_flags[cb->if_level].iflast );
     }
 #endif
     return( cc );
@@ -555,11 +559,11 @@ static void set_if_then_do( void )
     cw[2] = '\0';
 
     if( !strcmp( cw, "if" ) ) {
-        cb->if_flags[ cb->if_level ].ifcwif = true;
+        cb->if_flags[cb->if_level].ifcwif = true;
     } else if( !strcmp( cw, "do" ) ) {
-        cb->if_flags[ cb->if_level ].ifcwdo = true;
+        cb->if_flags[cb->if_level].ifcwdo = true;
     } else if( !strcmp( cw, "th" ) || !strcmp( cw, "el" ) ) {
-        cb->if_flags[ cb->if_level ].ifcwte = true;
+        cb->if_flags[cb->if_level].ifcwte = true;
     }
 }
 
@@ -578,9 +582,9 @@ void    scan_line( void )
     scan_start = buff2;
     scan_stop  = buff2 + buff2_lg;
 
-    cb->if_flags[ cb->if_level ].ifcwte = false;// reset
-    cb->if_flags[ cb->if_level ].ifcwdo = false;// .. current
-    cb->if_flags[ cb->if_level ].ifcwif = false;// .... if, then, else, do
+    cb->if_flags[cb->if_level].ifcwte = false;  // reset
+    cb->if_flags[cb->if_level].ifcwdo = false;  // .. current
+    cb->if_flags[cb->if_level].ifcwif = false;  // .... if, then, else, do
 
     if( *scan_start == SCR_char ) {
         set_if_then_do();
@@ -588,21 +592,32 @@ void    scan_line( void )
     cc = mainif();
     if( cc == pos ) {
         if( *scan_start == SCR_char ) {
+            if( ProcFlags.late_subst ) {
+                process_late_subst();   // substitute &gml, &amp, ...
+            }
             scan_script();              // script control line
             scan_start = scan_stop + 1; // cannot have unprocessed text
         } else if( *scan_start == GML_char ) {
+            if( ProcFlags.late_subst ) {
+                process_late_subst();   // substitute &gml, &amp, ...
+            }
             scan_gml();                 // gml tags
+        } else if( ProcFlags.late_subst ) {
+                process_late_subst();   // substitute &gml, &amp, ...
         }
         if( (*scan_start != '\0') && (scan_start <= scan_stop) ) {
             if( GlobalFlags.research && GlobalFlags.firstpass ) {
-                out_msg(") )%s( (\n", scan_start);
+                g_info( inf_text_line, scan_start );
             }
 
+                           /* process text or unprocessed tag      TBD */
+            ob_insert_block( scan_start, scan_stop - scan_start, false, false );
+            ob_insert_block( " ", 1, false, false );
                            /* process text or unprocessed tag      TBD */
 
         }
     } else if( GlobalFlags.research && GlobalFlags.firstpass ) {
-        out_msg( "skip line\n" );
+        g_info( inf_skip_line );
     }
 }
 

@@ -29,24 +29,19 @@
 *                                                     &'words( )
 *                                                     &'wordpos( )
 ****************************************************************************/
-
+ 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
-#include <stdarg.h>
-#include <io.h>
-#include <fcntl.h>
-#include <errno.h>
-
+ 
 #include "wgml.h"
 #include "gvars.h"
-
+ 
 static  bool    is_word;          // true if word call, false if subword call
-
+ 
 /***************************************************************************/
 /*  script string function &'subword(                                      */
 /*                         &'word(                                         */
 /***************************************************************************/
-
+ 
 /***************************************************************************/
 /*                                                                         */
 /* &'subword(string,n<,length>):  The Subword function  returns the words  */
@@ -62,7 +57,7 @@ static  bool    is_word;          // true if word call, false if subword call
 /*      &'subword('',1) ==> ""                                             */
 /*                                                                         */
 /***************************************************************************/
-
+ 
 /***************************************************************************/
 /* &'word(string,n):  The  Word function returns  only the 'n'th  word in  */
 /*    'string'.   The value of 'n' must be positive.   If there are fewer  */
@@ -74,8 +69,8 @@ static  bool    is_word;          // true if word call, false if subword call
 /*      &'word('The quick brown fox') ==> error, missing number            */
 /*      &'word('',1) ==> ""                                                */
 /***************************************************************************/
-
-static  condcode    scr_xx_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     char            *   pval;
     char            *   pend;
@@ -85,42 +80,40 @@ static  condcode    scr_xx_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, 
     int                 n;
     int                 len;
     getnum_block        gn;
-
+    char                linestr[MAX_L_AS_STR];
+ 
     if( (parmcount < 2) || (parmcount > 3) ) {
         return( neg );
     }
-
-    pval = parms[ 0 ].a;
-    pend = parms[ 0 ].e;
-
+ 
+    pval = parms[0].a;
+    pend = parms[0].e;
+ 
     unquote_if_quoted( &pval, &pend );
-
+ 
     len = pend - pval + 1;              // default length
-
+ 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
-
+ 
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
-
-    if( parms[ 1 ].e >= parms[ 1 ].a ) {// start pos specified
-        gn.argstart = parms[ 1 ].a;
-        gn.argstop  = parms[ 1 ].e;
+ 
+    if( parms[1].e >= parms[1].a ) {// start pos specified
+        gn.argstart = parms[1].a;
+        gn.argstop  = parms[1].e;
         cc = getnum( &gn );
         if( (cc != pos) || (gn.result > len) ) {
             if( !ProcFlags.suppress_msg ) {
+                g_err( err_func_parm, "2 (startword)" );
                 if( input_cbs->fmflags & II_macro ) {
-                    out_msg( "ERR_FUNCTION parm 2 (startword) invalid\n"
-                             "\t\t\tLine %d of macro '%s'\n",
-                             input_cbs->s.m->lineno,
-                             input_cbs->s.m->mac->name );
+                    utoa( input_cbs->s.m->lineno, linestr, 10 );
+                    g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                 } else {
-                    out_msg( "ERR_FUNCTION parm 2 (startword) invalid\n"
-                             "\t\t\tLine %d of file '%s'\n",
-                             input_cbs->s.f->lineno,
-                             input_cbs->s.f->filename );
+                    utoa( input_cbs->s.f->lineno, linestr, 10 );
+                    g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                 }
                 err_count++;
                 show_include_stack();
@@ -129,27 +122,24 @@ static  condcode    scr_xx_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, 
         }
         n = gn.result;
     }
-
+ 
     if( is_word ) {
         len = 1;                        // only one word
     } else {
         if( parmcount > 2 ) {           // evalute word count
-            if( parms[ 2 ].e >= parms[ 2 ].a ) {
-                gn.argstart = parms[ 2 ].a;
-                gn.argstop  = parms[ 2 ].e;
+            if( parms[2].e >= parms[2].a ) {
+                gn.argstart = parms[2].a;
+                gn.argstop  = parms[2].e;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
+                        g_err( err_func_parm, "3 (length)" );
                         if( input_cbs->fmflags & II_macro ) {
-                            out_msg( "ERR_FUNCTION parm 3 (length) invalid\n"
-                                     "\t\t\tLine %d of macro '%s'\n",
-                                     input_cbs->s.m->lineno,
-                                     input_cbs->s.m->mac->name );
+                            utoa( input_cbs->s.m->lineno, linestr, 10 );
+                            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                         } else {
-                            out_msg( "ERR_FUNCTION parm 3 (length) invalid\n"
-                                     "\t\t\tLine %d of file '%s'\n",
-                                     input_cbs->s.f->lineno,
-                                     input_cbs->s.f->filename );
+                            utoa( input_cbs->s.f->lineno, linestr, 10 );
+                            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                         }
                         err_count++;
                         show_include_stack();
@@ -160,7 +150,7 @@ static  condcode    scr_xx_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, 
             }
         }
     }
-
+ 
     scan_start = pval;
     scan_stop  = pend;
     k = 0;
@@ -173,9 +163,9 @@ static  condcode    scr_xx_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, 
         **result = '\0';
         return( pos );
     }
-
+ 
     pval = tok_start;                   // start word
-
+ 
     if( len == 0 ) {                 // default word count = to end of string
         for( ; pval <= ptok; pval++ ) { // copy rest of words
             **result = *pval;
@@ -205,37 +195,37 @@ static  condcode    scr_xx_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, 
             }
         }
     }
-
+ 
     **result = '\0';
-
+ 
     return( pos );
 }
-
-
+ 
+ 
 /*
  * &'word( )
  *
  */
-
-condcode    scr_word( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+condcode    scr_word( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     is_word = true;
     return( scr_xx_word( parms, parmcount, result ) );
 }
-
-
+ 
+ 
 /*
  * &'subword( )
  *
  */
-
-condcode    scr_subword( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+condcode    scr_subword( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     is_word = false;
     return( scr_xx_word( parms, parmcount, result ) );
 }
-
-
+ 
+ 
 /***************************************************************************/
 /* &'words(string):  The Words function returns the number of words found  */
 /*    in 'string'.                                                         */
@@ -244,35 +234,35 @@ condcode    scr_subword( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * *
 /*      &'words('') ==> 0                                                  */
 /*      &'words('cat dot',1) ==> too many operands                         */
 /***************************************************************************/
-
-condcode    scr_words( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+condcode    scr_words( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     char            *   pval;
     char            *   pend;
     int                 wc;
     int                 len;
-
+ 
     if( parmcount != 1 ) {
         return( neg );
     }
-
-    pval = parms[ 0 ].a;
-    pend = parms[ 0 ].e;
-
+ 
+    pval = parms[0].a;
+    pend = parms[0].e;
+ 
     unquote_if_quoted( &pval, &pend );
-
+ 
     len = pend - pval + 1;
-
+ 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '0';
         *result += 1;
         **result = '\0';
         return( pos );
     }
-
+ 
     wc = 0;
     for( ; pval <= pend; pval++ ) {     // for all chars in string
-
+ 
         for( ; pval <= pend; pval++ ) { // skip leading blanks
             if( *pval != ' ') {
                 break;
@@ -282,19 +272,19 @@ condcode    scr_words( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * r
             break;
         }
         wc++;                           // start of word found
-
+ 
         for( ; pval <= pend; pval++ ) {
             if( *pval == ' ') {         // end of word found
                 break;
             }
         }
     }
-
+ 
     *result += sprintf( *result, "%d", wc );
     **result = '\0';
     return( pos );
 }
-
+ 
 /***************************************************************************/
 /* &'wordpos(phrase,string<,start>):  The Word  Position function returns  */
 /*    the word  position of  the words  in 'phrase'  within the  words of  */
@@ -308,15 +298,15 @@ condcode    scr_words( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * r
 /*      &'wordpos('xyz','The quick  brown fox') ==> 0                      */
 /*      &'wordpos('The quick brown fox') ==> error, missing string         */
 /***************************************************************************/
-
-condcode    scr_wordpos( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * * result )
+ 
+condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result )
 {
     char            *   phrase;
     char            *   phrasend;
     char            *   pstr;
     char            *   pstrend;
     char            *   pp;
-
+ 
     int                 index;
     condcode            cc;
     int                 k;
@@ -325,54 +315,52 @@ condcode    scr_wordpos( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * *
     getnum_block        gn;
     bool                inword;
     bool                found;
-
+    char                linestr[MAX_L_AS_STR];
+ 
     if( (parmcount < 2) || (parmcount > 3) ) {
         return( neg );
     }
-
-    phrase = parms[ 0 ].a;
-    phrasend = parms[ 0 ].e;
-
+ 
+    phrase = parms[0].a;
+    phrasend = parms[0].e;
+ 
     unquote_if_quoted( &phrase, &phrasend );
-
+ 
     len = phrasend - phrase + 1;
-
-    pstr    = parms[ 1 ].a;
-    pstrend = parms[ 1 ].e;
-
+ 
+    pstr    = parms[1].a;
+    pstrend = parms[1].e;
+ 
     unquote_if_quoted( &pstr, &pstrend );
-
+ 
     if( (len <= 0) ||                   // null phrase nothing to do
         (pstrend - pstr + 1 <= 0) ) {   // null string nothing to do
-
+ 
         **result = '0';
         *result += 1;
         **result = '\0';
         return( pos );
     }
-
-
+ 
+ 
     n = 0;                              // default start word - 1
-
+ 
     if( parmcount > 2 ) {               // evalute start word
-        if( parms[ 2 ].e >= parms[ 2 ].a ) {
+        if( parms[2].e >= parms[2].a ) {
             gn.ignore_blanks = false;
-            gn.argstart = parms[ 2 ].a;
-            gn.argstop  = parms[ 2 ].e;
+            gn.argstart = parms[2].a;
+            gn.argstop  = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    if( input_cbs->fmflags & II_macro ) {
-                        out_msg( "ERR_FUNCTION parm 3 (startword) invalid\n"
-                                 "\t\t\tLine %d of macro '%s'\n",
-                                 input_cbs->s.m->lineno,
-                                 input_cbs->s.m->mac->name );
-                    } else {
-                        out_msg( "ERR_FUNCTION parm 3 (startword) invalid\n"
-                                 "\t\t\tLine %d of file '%s'\n",
-                                 input_cbs->s.f->lineno,
-                                 input_cbs->s.f->filename );
-                    }
+                        g_err( err_func_parm, "3 (startword)" );
+                        if( input_cbs->fmflags & II_macro ) {
+                            utoa( input_cbs->s.m->lineno, linestr, 10 );
+                            g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
+                        } else {
+                            utoa( input_cbs->s.f->lineno, linestr, 10 );
+                            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+                        }
                     err_count++;
                     show_include_stack();
                 }
@@ -381,8 +369,8 @@ condcode    scr_wordpos( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * *
             n = gn.result - 1;
         }
     }
-
-
+ 
+ 
     scan_start = pstr;
     scan_stop  = pstrend;
     k = 0;
@@ -398,7 +386,7 @@ condcode    scr_wordpos( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * *
         **result = '\0';
         return( pos );
     }
-
+ 
     pstr = tok_start;                   // start word in string
     index = 0;
     pp = phrase;
@@ -422,7 +410,7 @@ condcode    scr_wordpos( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * *
                         }
                     }
                     pstr--;            // outer for loop will increment again
-
+ 
                     for( ; pp <= phrasend; pp++ ) {
                         if( *pp != ' ' ) {
                             break;
@@ -453,8 +441,6 @@ condcode    scr_wordpos( parm parms[ MAX_FUN_PARMS ], size_t parmcount, char * *
     }
     *result += sprintf( *result, "%d", index );
     **result = '\0';
-
+ 
     return( pos );
 }
-
-

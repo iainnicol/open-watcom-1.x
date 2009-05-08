@@ -98,23 +98,131 @@ NULL
  * the command line. No parsing is done: the text is entirely static and the
  * assignment of words to lines etc is done manually; only the actual output
  * is being tested. 
+ *
+ * Notes:
+ *      This code only allows for the :PAGEADDRESS block y_positive to have
+ *          different values in different drivers. No known drivers have any
+ *          value for x_positive other than "1" ("yes"). 
  */
 
 static void emulate_wgml( void )
 {
+    int         i;
+    uint32_t    cur_h_len;
+    uint32_t    cur_h_start;
+    uint32_t    cur_v_len;
+    uint32_t    cur_v_start;
+    uint32_t    max_char_width;
+    uint32_t    max_line_height;
+    uint32_t    net_page_height;
+    uint32_t    net_page_width;
+
+    /* Set the variables. */
+
+    max_char_width = 0;
+    max_line_height = 0;
+    for( i = 0; i < wgml_font_cnt; i++ ) {
+        if( max_char_width < wgml_fonts[i].default_width ) \
+            max_char_width = wgml_fonts[i].default_width;
+        if( max_line_height < wgml_fonts[i].line_height ) \
+            max_line_height = wgml_fonts[i].line_height;
+    }
+
+    net_page_height = bin_device->page_depth;
+    net_page_width = bin_device->page_width;
+
+    /* First pass processing. */
     /* START processing.*/
 
     fb_start();
 
     /* DOCUMENT processing.*/
 
+    fb_document();
+
+    /* Last pass processing. */
+
     /* First page. */
+
+    /* Margin/indent setup. */
+
+    /* The default is 10 characters per inch. */
+
+    /* One-inch margin on line 1. */
+
+    cur_h_start = 10 * max_char_width;
+    if( bin_driver->y_positive == 0x00 ) {
+        cur_v_start = net_page_height - (1 * max_line_height);
+    } else {
+        cur_v_start = 1 * max_line_height;
+    }
+
+    fb_position( cur_h_start, cur_v_start );
+
+    /* One-half inch paragraph indent. */
+
+    cur_h_start = 15 * max_char_width;
+
+    fb_position( cur_h_start, cur_v_start );
+
+    /* First box. */
+
+    cur_h_len = 10 * max_char_width;
+    cur_h_start = 10 * max_char_width;
+    cur_v_len = 2 * max_char_width;
+    if( bin_driver->y_positive == 0x00 ) {
+        cur_v_start = 16 * max_line_height;
+    } else {
+        cur_v_start = net_page_height - (16 * max_line_height);
+    }
+
+    if( bin_driver->absoluteaddress.text != NULL ) {
+        if( bin_driver->y_positive == 0x00 ) {
+            if( bin_driver->hline.text != NULL ) {
+                fb_hline( cur_h_start, cur_v_start, cur_h_len );
+                fb_hline( cur_h_start, cur_v_start - cur_v_len, cur_h_len );
+            }
+            if( bin_driver->vline.text != NULL ) {
+                fb_vline( cur_h_start, cur_v_start, cur_h_len );
+                fb_vline( cur_h_start + cur_h_len, cur_v_start - cur_v_len, \
+                                                                cur_h_len );
+            }
+        } else {
+            if( bin_driver->hline.text != NULL ) {
+                fb_hline( cur_h_start, cur_v_start, cur_h_len );
+                fb_hline( cur_h_start, cur_v_start + cur_v_len, cur_h_len );
+            }
+            if( bin_driver->vline.text != NULL ) {
+                fb_vline( cur_h_start, cur_v_start, cur_h_len );
+                fb_vline( cur_h_start + cur_h_len, cur_v_start + cur_v_len, \
+                                                                cur_h_len );
+            }
+        }
+    }
 
     /* :NEWPAGE block. */
 
+    fb_document_page();
+
     /* Second page. */
 
+    /* Second box. */
+
+    if( bin_driver->absoluteaddress.text != NULL ) {
+        if( bin_driver->y_positive == 0x00 ) {
+            if( bin_driver->dbox.text != NULL ) {
+                fb_dbox( 1500, 8633, 1500, 2000 );
+            }
+        } else {
+            if( bin_driver->dbox.text != NULL ) {
+                fb_dbox( 1500, 8633, 1500, 2000 );
+            }
+        }
+    }
+
     /* :FINISH block. */
+
+    fb_finish();
 
     return;
 }
@@ -218,6 +326,7 @@ start_heapcheck( "main" );
 
     /* Initialize the binary device library. */
 
+    get_systime();
     ff_setup();
     cop_setup();
 
@@ -232,6 +341,7 @@ start_heapcheck( "main" );
 
     cop_teardown();
     ff_teardown();
+    free_symtab();
 
     mem_free(tgt_path);
     tgt_path = NULL;

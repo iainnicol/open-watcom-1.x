@@ -129,11 +129,11 @@ static bool AddMenu( gui_window *wnd, gui_window *parent, int num_menus,
 
 static void MakeLabel( int index, char *name, char *label )
 {
-    if( GUIGetWindowText( MDIWindows[index], name, MAX_LENGTH - 4) == 0 ) {
+    if( GUIGetWindowText( MDIWindows[index], name, MAX_LENGTH - 3 ) == 0 ) {
         name[0] = '\0';
     }
     label[0] = '&';
-    itoa( (index+1), label+1, 10 );
+    itoa( index + 1, label + 1, 10 );
     label[2] = ' ';
     strcpy( label+3, name );
 }
@@ -424,7 +424,7 @@ static void DlgInit( gui_window *wnd, void *param )
     info = (dlg_init *)param;
     TotalWindows++;
     ChildWindows[TotalWindows-1] = wnd;
-    if( GUIGetWindowText( wnd, buffer, MAX_LENGTH - 1 ) != 0 ) {
+    if( GUIGetWindowText( wnd, buffer, sizeof( buffer ) ) != 0 ) {
         GUIAddText( info->dlg_wnd, info->list_ctrl, buffer );
     } else {
         GUIAddText( info->dlg_wnd, info->list_ctrl, "" );
@@ -498,7 +498,7 @@ void GUIMDIMoreWindows( void )
 
     chosen = GUIDlgPick( LIT( Select_Window ), &PickInit );
     if( ( chosen >= 0 ) && ( chosen < TotalWindows ) ) {
-        wnd = ChildWindows[ chosen ];
+        wnd = ChildWindows[chosen];
         if( GUIIsMinimized( wnd ) ) {
             GUIRestoreWindow( wnd );
         }

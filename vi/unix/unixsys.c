@@ -29,14 +29,14 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "curses.h"
 #include "vi.h"
+#include "curses.h"
 #include "win.h"
 #include "stdui.h"
+#include "vibios.h"
 
 static char oldPath[FILENAME_MAX];
+
 /*
  * PushDirectory
  */
@@ -66,6 +66,7 @@ void PopDirectory( void )
 void NewCursor( window_id id, cursor_type ct )
 {
     // could do a curs_set() here
+
 } /* NewCursor */
 
 /*
@@ -76,6 +77,7 @@ void MyBeep( void )
     if( EditFlags.BeepFlag ) {
         beep();
     }
+
 } /* MyBeep */
 
 
@@ -85,7 +87,7 @@ void MyBeep( void )
 void ScreenInit( void )
 {
     uistart();
-    KeyboardInit();
+    BIOSKeyboardInit();
 
     WindMaxHeight = LINES;
     WindMaxWidth = COLS;
@@ -120,6 +122,7 @@ void ChkExtendedKbd( void )
 long MemSize( void )
 {
     return ( 0 );
+
 } /* MemSize */
 
 /*
@@ -136,10 +139,11 @@ void ScreenPage( int page )
 /*
  * ChangeDrive - change the working drive
  */
-int ChangeDrive( int drive )
+vi_rc ChangeDrive( int drive )
 {
     drive = drive;
     return( ERR_NO_ERR );
+
 }/* ChangeDrive */
 
 /*
@@ -147,7 +151,7 @@ int ChangeDrive( int drive )
  */
 bool ShiftDown( void )
 {
-    return( (bool)FALSE );
+    return( FALSE );
 
 } /* ShiftDown */
 
@@ -178,6 +182,7 @@ drive_type DoGetDriveType( int drv )
 void MyDelay( int ms )
 {
     napms( ms );
+
 } /* MyDelay */
 
 /*
@@ -188,3 +193,19 @@ void SetCursorBlinkRate( int cbr )
     CursorBlinkRate = cbr;
 
 } /* SetCursorBlinkRate */
+
+vi_key GetKeyboard( int *scan )
+{
+    return( BIOSGetKeyboard( scan ) );
+}
+
+bool KeyboardHit( void )
+{
+    return( BIOSKeyboardHit() );
+}
+
+void MyVioShowBuf( unsigned offset, unsigned length )
+{
+    BIOSUpdateScreen( offset, length );
+}
+

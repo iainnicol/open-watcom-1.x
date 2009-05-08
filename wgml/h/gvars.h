@@ -32,11 +32,14 @@
 #ifndef GVARS_H_INCLUDED
 #define GVARS_H_INCLUDED
 
+#include <setjmp.h>
 #include <time.h>
 
 #ifndef global
     #define global  extern
 #endif
+
+#include "gtype.h"
 
 global struct tm        doc_tm;         // document time/date
 
@@ -70,8 +73,8 @@ global  ulong           line_to;        // ending lineno to process
 #define LINEFROM_DEFAULT    1
 #define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
 
-global  char            gotarget[ MAC_NAME_LENGTH +1 ]; // .go to target name
-global  ulong           gotargetno;     // .go to line no
+global  char            gotarget[MAC_NAME_LENGTH +1];   // .go to target name
+global  int32_t         gotargetno;     // .go to line no
 
 global  int             err_count;      // Overall Errorcount
 global  int             wng_count;      // Overall warning count
@@ -119,6 +122,18 @@ global  struct GlobalFlags {
     unsigned        research      : 1;  // research mode, minimal formatting
 } GlobalFlags;                          // Global flags
 
+
+typedef enum ju_enum {                  // for .ju(stify)
+    ju_off,
+    ju_half,
+    ju_on,
+    ju_left,
+    ju_right,
+    ju_centre,
+    ju_inside,
+    ju_outside
+} ju_enum;
+
 global struct ProcFlags {
     unsigned        newLevelFile    : 1;// start new include Level (file)
     unsigned        macro_ignore    : 1;// .. in col 1-2
@@ -131,14 +146,26 @@ global struct ProcFlags {
 
     unsigned        substituted     : 1;// & found in current input line
     unsigned        unresolved      : 1;// variable not (yet) resolved
-    unsigned        freea           : 1;
+    unsigned        late_subst      : 1;// special var found &gml, &amp,
     unsigned        freeb           : 1;
     unsigned        freec           : 1;
     unsigned        freed           : 1;
     unsigned        freee           : 1;
     unsigned        freef           : 1;
 
+    ju_enum         justify         : 8;// .ju on half off ...
+
+    unsigned        concat          : 1;// .co ON if set
+    unsigned        free19          : 1;
+    unsigned        free1a          : 1;
+    unsigned        free1b          : 1;
+    unsigned        free1c          : 1;
+    unsigned        free1d          : 1;
+    unsigned        free1e          : 1;
+    unsigned        free1f          : 1;
+
 } ProcFlags;                            // processing flags
+
 
 global  size_t          buf_size;       // default buffer size
 global  char        *   token_buf;
@@ -149,13 +176,13 @@ global char         *   open_paren;     // ( in input
 global char         *   clos_paren;     // ) in input
 global char         *   var_unresolved; // first unresolved var in input
 
-global char             srnm[ SYM_NAME_LENGTH + 1 ];// symbol name for getsym()
+global char             srnm[SYM_NAME_LENGTH + 1];// symbol name for getsym()
 global sub_index        srnmsub;        // subscript
 
 // the following to manage .gt * and .ga * * syntax
-global char        tagname[ TAG_NAME_LENGTH + 1 ];// last defined GML tag name
+global char        tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name
 global gtentry  *  tag_entry;           // ... entry in tag_dict
-global char        attname[ ATT_NAME_LENGTH + 1 ];// last defined GML attribute
+global char        attname[ATT_NAME_LENGTH + 1];// last defined GML attribute
 global gaentry  *  att_entry;           // ... entry in tag_dict
 
 

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "vi.h"
 #include "fcbmem.h"
 
@@ -39,7 +38,7 @@
  */
 void FetchFcb( fcb *fb )
 {
-    int         rc;
+    vi_rc       rc;
 
     if( fb == NULL ) {
         rc = ERR_INTERNAL_NULL_PTR;
@@ -64,7 +63,7 @@ void FetchFcb( fcb *fb )
         }
     }
 
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         AbandonHopeAllYeWhoEnterHere( rc );
     }
 
@@ -75,7 +74,7 @@ void FetchFcb( fcb *fb )
  */
 void SwapFcb( fcb *fb )
 {
-    int rc;
+    vi_rc   rc;
 
 #ifndef NOXTD
     rc = SwapToExtendedMemory( fb );
@@ -99,13 +98,12 @@ void SwapFcb( fcb *fb )
 #ifndef NOXTD
     }
 #endif
-    if( !rc ) {
+    if( rc == ERR_NO_ERR ) {
         fb->line_head = fb->line_tail = NULL;
         fb->in_memory = FALSE;
     }
 
-
-    if( rc ) {
+    if( rc != ERR_NO_ERR ) {
         AbandonHopeAllYeWhoEnterHere( rc );
     }
 
@@ -114,9 +112,9 @@ void SwapFcb( fcb *fb )
 /*
  * RestoreToNormalMemory - restore swapped data to normal memory
  */
-int RestoreToNormalMemory( fcb *fb, int len )
+vi_rc RestoreToNormalMemory( fcb *fb, int len )
 {
-    int         used,linecnt;
+    int         used, linecnt;
     char        *buff;
     line        *cline;
     char        savech;
@@ -124,8 +122,8 @@ int RestoreToNormalMemory( fcb *fb, int len )
     /*
      * remove line data from buffer that is restored
      */
-    len -= (int) 2*(fb->end_line - fb->start_line+1 );
-    buff = &ReadBuffer[ len ];
+    len -= (int) 2 * (fb->end_line - fb->start_line + 1);
+    buff = &ReadBuffer[len];
     savech = *buff;
 
     /*

@@ -27,34 +27,34 @@
 * Description:  implement .se and .sr script control words
 *
 ****************************************************************************/
-
+ 
 #define __STDC_WANT_LIB_EXT1__  1      /* use safer C library              */
-
+ 
 #include <stdarg.h>
 #include <errno.h>
-
+ 
 #include "wgml.h"
 #include "gvars.h"
-
-
-
+ 
+ 
+ 
 /* construct symbol name and optionally subscript from input
  *
  *
  */
-
+ 
 char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
 {
     size_t      k;
     char    *   sym_start;
-    inputcb *   cb = input_cbs;
     char        quote;
-
+    char        linestr[MAX_L_AS_STR];
+ 
     scan_err = false;
     sym->next = NULL;
     sym->flags = 0;
     *subscript = no_subscript;          // not subscripted
-
+ 
     while( *p && *p == ' ' ) {          // skip over spaces
         p++;
     }
@@ -68,39 +68,38 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         sym->flags = local_var;
     }
     sym_start = p;
-    sym->name[ 0 ] = '\0';
-
+    sym->name[0] = '\0';
+ 
     k = 0;
     while( *p && is_symbol_char( *p ) ) {
-
+ 
         if( k < SYM_NAME_LENGTH ) {
-            if( (k == 3) && (sym->name[ 0 ] != '$') ) {
-                if( sym->name[ 0 ] == 's' &&
-                    sym->name[ 1 ] == 'y' &&
-                    sym->name[ 2 ] == 's' ) {
-
-                    sym->name[ 0 ] = '$';   // create sys shortcut $
+            if( (k == 3) && (sym->name[0] != '$') ) {
+                if( sym->name[0] == 's' &&
+                    sym->name[1] == 'y' &&
+                    sym->name[2] == 's' ) {
+ 
+                    sym->name[0] = '$';   // create sys shortcut $
                     k = 1;
                 }
             }
-            sym->name[ k++ ] = tolower( *p );
-            sym->name[ k ] = '\0';
+            sym->name[k++] = tolower( *p );
+            sym->name[k] = '\0';
         } else {
             if( !scan_err ) {
                 scan_err = true;
                 if( !ProcFlags.suppress_msg ) {
                     // SC--074 For the symbol '%s'
                     //     The length of a symbol cannot exceed ten characters
-                    if( cb->fmflags & II_macro ) {
-                        out_msg( "ERR_SYM_NAME_too_long '%s'\n"
-                            "The length of a symbol cannot exceed 10 characters\n"
-                            "\t\t\tLine %d of macro '%s'\n",
-                            sym_start, cb->s.m->lineno, cb->s.m->mac->name );
+ 
+                    g_err( err_sym_long, sym_start );
+                    g_info( inf_sym_10 );
+                    if( input_cbs->fmflags & II_macro ) {
+                        utoa( input_cbs->s.m->lineno, linestr, 10 );
+                        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
                     } else {
-                        out_msg( "ERR_SYM_NAME_too_long '%s'\n"
-                            "The length of a symbol cannot exceed 10 characters\n"
-                            "\t\t\tLine %d of file '%s'\n",
-                            sym_start, cb->s.f->lineno, cb->s.f->filename );
+                        utoa( input_cbs->s.f->lineno, linestr, 10 );
+                        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
                     }
                     show_include_stack();
                     err_count++;
@@ -109,18 +108,18 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         }
         p++;
     }
-
+ 
     if( p == sym_start ) {              // special for &*
         if( *p != '&' ) {               // not &*&xx construct
-
+ 
             if( (sym->flags & local_var)
                 && (input_cbs->fmflags & II_macro) ) {
-
+ 
                 strcpy_s( sym->name, SYM_NAME_LENGTH, MAC_STAR_NAME );
             } else {
                 scan_err = true;
                 if( !ProcFlags.suppress_msg ) {
-                    out_msg( "ERR_SYMBOL_NAME_missing %s\n", sym_start );
+                    g_err( err_missing_name, sym_start );
                     err_count++;
                     show_include_stack();
                 }
@@ -135,7 +134,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
         sub_index   var_ind;
         symsub  *   symsubval;
         int         rc;
-
+ 
         p++;
         if( *p == ')' ) {               // () is auto increment
             p++;
@@ -157,7 +156,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
             getnum_block    gn;
             condcode        cc;
             char            csave;
-
+ 
             gn.argstart      = p;
             while( *p && (*p != ')') ) {
                 p++;
@@ -166,9 +165,9 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
             csave            = *p;
             *p               = '\0';    // make nul terminated string
             gn.ignore_blanks = 0;
-
+ 
             cc = getnum( &gn );     // try numeric expression evaluation
-
+ 
             *p = csave;
             if( cc == pos || cc == neg ) {
                 *subscript = gn.result;
@@ -180,13 +179,13 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
                 }
             } else {
                 if( !scan_err && !ProcFlags.suppress_msg ) {
-                    out_msg( "ERR_SUBSCRIPT_invalid %s\n", psave );
+                    g_err( err_sub_invalid, psave );
                     err_count++;
                     show_include_stack();
                 }
                 scan_err = true;
             }
-
+ 
             if( scan_err ) {
                p = psave;
             }
@@ -194,7 +193,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
     }
     return( p );
 }
-
+ 
 /***************************************************************************/
 /*  processing  SET                                                        */
 /*                                                                         */
@@ -213,7 +212,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
 /*         .se n2  =  -1+(2+5)/6)        case 4                            */
 /*                                                                         */
 /***************************************************************************/
-
+ 
 void    scr_se( void )
 {
     char        *   p;
@@ -223,17 +222,17 @@ void    scr_se( void )
     int             rc;
     symvar      * * working_dict;
     symsub      *   symsubval;
-
+ 
     subscript = no_subscript;           // not subscripted
     scan_err = false;
     p = scan_sym( scan_start, &sym, &subscript );
-
+ 
     if( sym.flags & local_var ) {
         working_dict = &input_cbs->local_dict;
     } else {
         working_dict = &global_dict;
     }
-
+ 
     if( ProcFlags.blanks_allowed ) {
         while( *p && *p == ' ' ) {      // skip over spaces
             p++;
@@ -241,7 +240,7 @@ void    scr_se( void )
     }
     if( *p == '\0' ) {
         if( !ProcFlags.suppress_msg ) {
-            out_msg( "WNG_SYMBOL_VALUE_MISSING for %s\n", sym.name );
+            g_warn( err_missing_value, sym.name );
             show_include_stack();
             wng_count++;
         }
@@ -274,26 +273,26 @@ void    scr_se( void )
             } else {                    // case 2 and 4
                 getnum_block    gn;
                 condcode        cc;
-
+ 
                 gn.argstart      = valstart;
                 gn.argstop       = scan_stop;
                 gn.ignore_blanks = 1;
-
+ 
                 cc = getnum( &gn );     // try numeric expression evaluation
                 if( cc != notnum ) {
                     valstart = gn.resultstr;
                 }                       // if notnum treat as character value
             }
-
+ 
             rc = add_symvar( working_dict, sym.name, valstart, subscript,
                              sym.flags );
-
+ 
         } else {                        // OFF value = delete variable ?
             if( *(p + 3)            == '\0' &&  // case 3
                 tolower( *p )       == 'o' &&
                 tolower( *(p + 1) ) == 'f' &&
                 tolower( *(p + 2) ) == 'f' ) {
-
+ 
                 p += 3;
                 rc = find_symvar( working_dict, sym.name, subscript,
                                   &symsubval );
@@ -302,19 +301,18 @@ void    scr_se( void )
                 }
             } else {
                 if( !ProcFlags.suppress_msg ) {
+                     char    linestr[MAX_L_AS_STR];
+ 
                      wng_count++;
+                     g_err( wng_miss_inv_value, sym.name, p );
                      if( input_cbs->fmflags & II_macro ) {
-                         out_msg( "WNG_SYMBOL_VALUE_INVALID for %s (%s)\n",
-                                  "\t\t\tLine %d of macro '%s'\n",
-                                  sym.name, p,
-                                  input_cbs->s.m->lineno,
-                                  input_cbs->s.m->mac->name );
+                         utoa( input_cbs->s.m->lineno, linestr, 10 );
+                         g_info( inf_mac_line, linestr,
+                                 input_cbs->s.m->mac->name );
                      } else {
-                         out_msg( "WNG_SYMBOL_VALUE_INVALID for %s (%s)\n",
-                                  "\t\t\tLine %d of file '%s'\n",
-                                  sym.name, p,
-                                  input_cbs->s.f->lineno,
-                                  input_cbs->s.f->filename );
+                         utoa( input_cbs->s.f->lineno, linestr, 10 );
+                         g_info( inf_file_line, linestr,
+                                 input_cbs->s.f->filename );
                      }
                      show_include_stack();
                 }
@@ -324,4 +322,4 @@ void    scr_se( void )
     }
     return;
 }
-
+ 

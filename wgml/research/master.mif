@@ -3,16 +3,19 @@
 # =======================================
 #
 
-proj_name = cfparse
-wgml_autodepends = .AUTODEPEND
+proj_name = wgml_research
+wgml_research_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
+!include wres.mif
 
 inc_dirs = -I"../h;../../h"
 
-.c: ../c;../../c;../../../watcom/c
+.c: ../c;../../c;$(watcom_dir)/c
+
+wgml_libs = $(wres_lib)
 
 common_objs = &
             common.obj    &
@@ -33,8 +36,14 @@ cf_common_objs = &
             lhdirect.obj
 
 cfc_objs = &
+            $(cf_common_objs) &
             cfcheck.obj   &
             cfcutils.obj
+
+cfp_objs = &
+            $(cf_common_objs) &
+            cfparse.obj       &
+            cfputils.obj
 
 cop_common_objs = &
 	    $(common_objs) &
@@ -68,54 +77,35 @@ outc_objs = &
             $(cop_common_objs) &
 	    outcheck.obj
 
-objs = &
-            $(cf_common_objs) &
-            cfparse.obj       &
-            cfputils.obj
+nwgml : wgmlmsge.gh wgmlmsgs.gh cfcheck.exe cfparse.exe copparse.exe &
+	devldchk.exe findfunc.exe outcheck.exe .SYMBOLIC
 
-nwgml : cfcheck.exe cfparse.exe copparse.exe devldchk.exe findfunc.exe &
-	outcheck.exe .SYMBOLIC
+cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(cfc_objs) }
 
-!include exetarg.mif
+cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(cfp_objs) }
 
-cfcheck.exe : $(cfc_objs) $(cf_common_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
+copparse.exe : $(copp_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(copp_objs) }
 
-copparse.exe : $(copp_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
+devldchk.exe : $(devld_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(devld_objs) }
 
-devldchk.exe : $(devld_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
+findfunc.exe : $(ff_objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(ff_objs) }
 
-findfunc.exe : $(ff_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
+outcheck.exe : wgml.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) op map file { $(outc_objs) } lib { $(wgml_libs) }
+    wstrip -q -a -r $@ . wgml.res
 
-outcheck.exe : $(outc_objs) $(libs)
-!ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
-!else
-        @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
-!endif
+wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
+        $(awk) -v base=000 -f ../../makemdef.awk $< > $^@
 
+wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
+        $(awk) -v rcbase=000 -f ../../msgtoenm.awk $< > $^@
+
+wgml.res : wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h $(__MAKEFILES__) &
+                       ../../h/wgmlerr.msg ../../h/wgml.rc
+        $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$@
 

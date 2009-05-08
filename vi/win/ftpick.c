@@ -30,8 +30,7 @@
 ****************************************************************************/
 
 
-#include "winvi.h"
-#include <stdlib.h>
+#include "vi.h"
 #include "utils.h"
 #include "ftbar.h"
 #include "font.h"
@@ -46,10 +45,10 @@ static  POINT       m_pt;
 
 static void sendNewFontCurrentWindow( void )
 {
-    int     row, col;
-    int     style;
-    BOOL    totally;
-    linenum     line_num;
+    int             row, col;
+    syntax_element  style;
+    BOOL            totally;
+    linenum         line_num;
 
     ScreenToClient( mod_hwnd, &m_pt );
     ClientToRowCol( mod_hwnd, m_pt.x, m_pt.y, &row, &col, DIVIDE_BETWEEN );
@@ -59,12 +58,14 @@ static void sendNewFontCurrentWindow( void )
      * of visible text, so check!
      */
 
-    if( col < 1 ) return;
+    if( col < 1 ) {
+        return;
+    }
     col--;
 
     // SStyle expect real not virtual columns!
     // Hmmm.
-    line_num = (linenum)(TopOfPage + row - 1);
+    line_num = (linenum)(LeftTopPos.line + row - 1);
     col = RealCursorPositionOnLine( line_num, col );
 
     style = SSGetStyle( row, col );
@@ -76,8 +77,8 @@ static void sendNewFontCurrentWindow( void )
         if( CtrlDown() ) {
             totally = TRUE;
         }
-        EnsureUniformFonts( SE_TEXT, SE_NUMTYPES - 1, &CurLogfont, totally );
-        SetUpFont( &CurLogfont, style );
+        EnsureUniformFonts( 0, SE_NUMTYPES - 1, &CurLogfont, totally );
+        SetUpFont( &CurLogfont, SEType[style].font );
     }
 }
 
@@ -89,7 +90,7 @@ static void sendNewFont( void )
         return;
     }
 
-    mod_style = ( &( WINDOW_FROM_ID( mod_hwnd )->info->text ) );
+    mod_style = (&(WINDOW_FROM_ID( mod_hwnd )->info->text));
 
     if( mod_hwnd == CurrentWindow ) {
         sendNewFontCurrentWindow();
@@ -102,8 +103,7 @@ static void sendNewFont( void )
 
 static long doDrop( HWND hwnd, UINT wparam )
 {
-    DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ),
-                         DRAW_UP );
+    DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_UP );
     CursorOp( COP_ARROW );
     ReleaseCapture();
     haveCapture = FALSE;
@@ -174,12 +174,12 @@ LONG drawCurLogfont( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
     GetTextExtentPoint( hdc, "Waterloo", 8, &size );
     GetTextMetrics( hdc, &tm );
     trim = tm.tmDescent + tm.tmInternalLeading;
-    x = ( rect.right - size.cx ) / 2;
-    y = ( rect.bottom - size.cy + trim ) / 2;
+    x = (rect.right - size.cx) / 2;
+    y = (rect.bottom - size.cy + trim) / 2;
     if( x < 0 ) {
         x = 0;
     }
-    if( ( size.cy - trim ) > rect.bottom  ) {
+    if( (size.cy - trim) > rect.bottom  ) {
         /* align baseline with bottom of window
         */
         y = rect.bottom - size.cy + trim;
@@ -195,8 +195,7 @@ LONG drawCurLogfont( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 
 static long setupForDrop( HWND hwnd )
 {
-    DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ),
-                         DRAW_DOWN );
+    DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_DOWN );
     CursorOp( COP_DROPFT );
     SetCapture( hwnd );
     haveCapture = TRUE;
@@ -239,7 +238,7 @@ void InitFtPick( void )
     wndclass.hInstance          = InstanceHandle;
     wndclass.hIcon              = (HICON)NULL;
     wndclass.hCursor            = LoadCursor( (HINSTANCE) NULL, IDC_ARROW );
-    wndclass.hbrBackground      = (HBRUSH) ( COLOR_APPWORKSPACE );
+    wndclass.hbrBackground      = (HBRUSH) COLOR_APPWORKSPACE;
     wndclass.lpszMenuName       = NULL;
     wndclass.lpszClassName      = "FtPick";
 

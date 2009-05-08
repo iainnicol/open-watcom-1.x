@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*  Copyright (c) 2004-2008 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,10 +34,10 @@
 
 
 #if defined(__QNX__) || defined(__LINUX__) // try to be nice to linux
-    #define PATH_SEP        "/"
+    #define PATH_SEP        '/'
     #define INCLUDE_SEP     ':'
 #elif defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__OSI__)
-    #define PATH_SEP        "\\"
+    #define PATH_SEP        '\\'
     #define INCLUDE_SEP     ';'
 #else
     #error gtype.h not configured for system
@@ -68,6 +68,7 @@
 #define MAX_FUN_PARMS   7             // max parmcount found in documentation
 
 #define MAX_IF_LEVEL    10              // maximum nested .if s
+#define MAX_L_AS_STR    16              // long as string
 
 /* default filename extensions */
 #define DEF_EXT         ".def"
@@ -93,33 +94,33 @@
 
 
 /***************************************************************************/
-/*  Space units Horiz + Vert              to be redesigned                 */
+/*  Space units Horiz + Vert              to be redesigned      TBD        */
 /***************************************************************************/
 
 typedef enum space_units {
-    SU_undefined,                       // don't care = value zero
+    SU_undefined   = 0,                 // don't care = value zero
     SU_chars_lines = 10,                // undimensioned value
-    SU_chars = 1,                       // chars horizontal
-    SU_lines = 1,                       // lines vertical
-    SU_cicero,                          // Cicero
-    SU_cm,                              // centimeter
-    SU_dv,                              // device units
-    SU_ems,                             // Ems
-    SU_inch,                            // inch
-    SU_mm,                              // millimeter
-    SU_pica,                            // pica
-    SU_absolute                         // absolute mm with 4 decimals
+    SU_chars       = 1,                 // chars horizontal
+    SU_lines       = 1,                 // lines vertical
+    SU_cicero,                          // C   Cicero
+    SU_cm,                              // cm  centimeter
+    SU_dv,                              // dv  device units
+    SU_ems,                             // M   Ems
+    SU_inch,                            // i   inch
+    SU_mm,                              // mm  millimeter
+    SU_pica                             // p   pica
 } space_units;
 
 #define MAX_SU_CHAR     12            // length of space units in char format
 
 typedef struct {
-    char        su_txt[ MAX_SU_CHAR ];
-    long        su_whole;               // integer part
-    long        su_dec;                 // decimal part (if any)
-    long        su_conv;                // abs. value in mm with 4 decimals
-    space_units su_u;                   // unit
+    char        su_txt[MAX_SU_CHAR];    // space unit as entered in chars
+    int32_t     su_whole;               // integer part
+    int32_t     su_dec;                 // decimal part (if any)
+    int32_t     su_inch;                // value in inch with 4 decimals
+    int32_t     su_mm;                  // value in mm with 4 decimals
     bool        su_relative;            // + - sign found
+    space_units su_u;                   // unit
 } su;
 
 /***************************************************************************/
@@ -137,8 +138,10 @@ typedef enum {
     local_var   = 1,
     subscripted = 2,
     auto_inc    = 4,
+    predefined  = 8,                   // predefined at startup
+    late_subst  = 16,                  // substituted not too early
     deleted     = 0x100
-} sym_flags;
+} symbol_flags;
 
 
 /***************************************************************************/
@@ -157,12 +160,12 @@ typedef struct symsub {
 /***************************************************************************/
 typedef struct symvar {
     struct symvar   *   next;           // next base entry
-    char                name[ SYM_NAME_LENGTH + 1];
+    char                name[SYM_NAME_LENGTH + 1];
     long                last_auto_inc;// last autoincremented subscript value
     long                subscript_used; // count of used subscripts
     symsub          *   subscripts;     // subscript entries
     symsub          *   sub_0;          // special subscript 0 entry
-    sym_flags           flags;
+    symbol_flags        flags;
 } symvar;
 
 
@@ -186,7 +189,7 @@ typedef enum {
 /***************************************************************************/
 typedef struct inp_line {
     struct inp_line *   next;           // next line
-    char                value[ 1 ];     // line content variable length
+    char                value[1];       // line content variable length
 } inp_line;
 
 
@@ -197,7 +200,7 @@ typedef struct labelcb {
     struct labelcb  *   prev;
     fpos_t              pos;            // file position for label if file
     ulong               lineno;         // lineno of label
-    char                label_name[ MAC_NAME_LENGTH + 1 ];
+    char                label_name[MAC_NAME_LENGTH + 1];
 } labelcb;
 
 
@@ -206,11 +209,11 @@ typedef struct labelcb {
 /***************************************************************************/
 typedef struct mac_entry {
     struct mac_entry    *   next;
-    char                    name[ MAC_NAME_LENGTH + 1 ];
+    char                    name[MAC_NAME_LENGTH + 1];
     inp_line            *   macline;    // macro definition lines
     ulong                   lineno;     // lineno start of macro definition
     labelcb             *   label_cb;   // controlling label definitions
-    char                    mac_file_name[ 1 ]; // file name macro definition
+    char                    mac_file_name[1];   // file name macro definition
                                             // var length
 } mac_entry;
 
@@ -228,8 +231,8 @@ typedef struct filecb {
     size_t          usedlen;            // used data of filebuf
     fpos_t          pos;                // position for reopen
     labelcb     *   label_cb;           // controlling label definitions
-    char            fileattr[ MAX_FILE_ATTR + 1];  // T:xxxx
-    char            filename[ 1 ];      // full filename var length
+    char            fileattr[MAX_FILE_ATTR + 1];// T:xxxx
+    char            filename[1];        // full filename var length
 } filecb;
 
 /***************************************************************************/
@@ -279,8 +282,17 @@ typedef struct ifflags {
 
 typedef struct ifcb {
     int             if_level;           // nesting level
-    ifflags         if_flags[ MAX_IF_LEVEL + 1];// index 0 not used
+    ifflags         if_flags[MAX_IF_LEVEL + 1]; // index 0 not used
 } ifcb;
+
+/***************************************************************************/
+/*  for .pe processing                                                     */
+/***************************************************************************/
+typedef struct pecb {                   // for .pe control
+    char *  line;                       // line to perform n times
+    int     ll;                         // lenght of line
+    int     count;                      // value of .pe n  active if > 0
+} pecb;
 
 
 /***************************************************************************/
@@ -291,6 +303,7 @@ typedef enum {
     II_file     = 0x01,                 // inputcb is file
     II_macro    = 0x02,                 // inputcb is macro
     II_tag      = 0x06,                 // inputcb is macro via tag
+    II_input    = II_file | II_macro | II_tag, // all input types
     II_eof      = 0x08                  // end of file (input)
 } i_flags;
 
@@ -304,6 +317,7 @@ typedef struct  inputcb {
     inp_line        *   hidden_tail;    // manage split lines at ; or :
     symvar          *   local_dict;     // local symbol dictionary
     ifcb            *   if_cb;          // for controlling .if .th .el
+    pecb                pe_cb;          // for controlling .pe perform
     union  {
         filecb      *   f;              // used if input is from file
         macrocb     *   m;              // used if input is from macro/tag
@@ -316,7 +330,7 @@ typedef struct  inputcb {
 /***************************************************************************/
 
 typedef struct scrtag {
-    char            tagname[ SCR_KW_LENGTH + 1 ];
+    char            tagname[SCR_KW_LENGTH + 1];
     void            (*tagproc)( void );
 } scrtag;
 
@@ -336,7 +350,7 @@ typedef enum {
 
 
 typedef struct gmltag {
-   char             tagname[ TAG_NAME_LENGTH + 1 ];
+   char             tagname[TAG_NAME_LENGTH + 1];
    size_t           taglen;
    void             (*gmlproc)( const struct gmltag * entry );
    gmlflags         tagflags;
@@ -370,8 +384,8 @@ typedef struct gavalentry {
     gavalflags              valflags;
     union a {
        size_t   length;           // possible max length of (character) value
-       long     range[ 4 ];// min, max, default omitted, default without value
-       char     value[ VAL_LENGTH + 1 ];// string value if short enough
+       long     range[4]; // min, max, default omitted, default without value
+       char     value[VAL_LENGTH + 1];  // string value if short enough
        char *   valptr;                 // ... else allocated
     } a;
 } gavalentry;
@@ -408,7 +422,7 @@ typedef enum {
 typedef struct gaentry {
     struct gaentry  *   next;
     gavalentry      *   vals;
-    char                name[ ATT_NAME_LENGTH + 1 ];
+    char                name[ATT_NAME_LENGTH + 1];
     gaflags             attflags;
 } gaentry;
 
@@ -441,8 +455,8 @@ typedef struct gtentry {
     gaentry         *   attribs;        // list of attributes
     ulong               usecount;
     size_t              namelen;        // actual length of name
-    char                name[ TAG_NAME_LENGTH + 1 ];
-    char                macname[ MAC_NAME_LENGTH + 1];  // macro to call
+    char                name[TAG_NAME_LENGTH + 1];
+    char                macname[MAC_NAME_LENGTH + 1];   // macro to call
     gtflags             tagflags;
 } gtentry;
 
@@ -475,11 +489,11 @@ typedef struct parm {
 
 
 typedef struct scrfunc {
-    const   char    fname[ FUN_NAME_LENGTH + 1 ];   // function name
+    const   char    fname[FUN_NAME_LENGTH + 1];   // function name
     const   size_t  length;             // actual length of fname
     const   size_t  parm_cnt;           // mandatory parms
     const   size_t  opt_parm_cnt;       // optional parms
-    condcode        (*fun)( parm parms[ MAX_FUN_PARMS ], size_t parm_count,
+    condcode        (*fun)( parm parms[MAX_FUN_PARMS], size_t parm_count,
                             char * * ppval );
 } scrfunc;
 
@@ -527,6 +541,23 @@ typedef struct opt_font {
     uint32_t            height;
 } opt_font;
 
+/***************************************************************************/
+/*  message numbers  + severities                                          */
+/***************************************************************************/
+typedef enum msg_ids  {
+    #include "wgmlmsge.gh"              // as lowercase enums
+} msg_ids;
+
+#include "wgmlmsgs.gh"                  // as uppercase defines
+
+typedef enum {
+    SEV_BANNER,
+    SEV_DEBUG,
+    SEV_INFO,
+    SEV_WARNING,
+    SEV_ERROR,
+    SEV_FATAL_ERR
+} severity;
 
 
 #endif                                  // GTYPE_H_INCLUDED
