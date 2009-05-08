@@ -10,6 +10,7 @@ additional_cleanup = *.d32 *.dip
 
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
+fpu_flags_zdos_386  = -fpc
 fpu_flags_os2_i86   = -fpc
 fpu_flags_os2_386   = -fpc
 fpu_flags_qnx_i86   = -fpc
@@ -34,6 +35,7 @@ sys_qnx_386     = pharlap rex disable 1023,1014
 sys_linux_386   = pharlap rex disable 1023,1014
 sys_win_i86     = windows op modname=$(name),rwr
 sys_dos_386     = pharlap rex disable 1023,1014
+sys_zdos_386    = pharlap rex disable 1023,1014
 sys_nt_386      = nt_dll export DIPLOAD op modname=$(name) $(sys_nt_386_$(name))
 sys_nt_axp      = ntaxp_dll export DIPLOAD op modname=$(name)
 
@@ -44,6 +46,7 @@ ext_qnx_386     = .dip
 ext_linux_386   = .dip
 ext_win_i86     = .dll
 ext_dos_386     = .dip
+ext_zdos_386    = .dip
 ext_nt_386      = .dll
 ext_nt_axp      = .dll
 
@@ -65,6 +68,7 @@ clib_linux_386  = clib3r
 !endif
 clib_win_i86    = clibl
 clib_dos_386    = clib3r
+clib_zdos_386   = clib3r
 clib_nt_386     = clib3r
 clib_nt_axp     = clib
 
