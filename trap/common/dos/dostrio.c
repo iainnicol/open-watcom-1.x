@@ -58,6 +58,8 @@ extern int KeyGet_pragma( void );
 
 void Output( char *str )
 {
+    TinyWrite( TINY_ERR, str, strlen( str ) );
+{
     TinyWrite( 2, str, strlen( str ) );
 }
 

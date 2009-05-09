@@ -60,7 +60,7 @@
 !inject enterdb.obj  d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp zda zdd
 !inject errno.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp zda zdd
 !inject errnovar.obj                                                            q32             l32
-!inject _exit.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp zda zdd
+!inject _exit.obj    d16 d32             nt nta ntp                 o16 o32 q16 q32     w32 osi l32 lpc lmp zda zdd
 !inject exit.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp zda zdd
 !inject fltused.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp zda zdd
 !inject fpexcept.obj d16 d32 dpm         nt         nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32         zda
@@ -235,16 +235,16 @@ axp_xd_opts=-xd
 ppc_xd_opts=
 mps_xd_opts=
 
-atexit_opts   =$($(processor)_sub_opts)
-cmain086_opts =$($(processor)_sub_opts)
-cmain386_opts =$($(processor)_sub_opts)
-cmainosi_opts =$($(processor)_sub_opts)
-cmainqnx_opts =$($(processor)_sub_opts)
-initargv_opts =$($(processor)_sub_opts)
+atexit_opts  =$($(processor)_sub_opts)
+cmain086_opts=$($(processor)_sub_opts)
+cmain386_opts=$($(processor)_sub_opts)
+cmainosi_opts=$($(processor)_sub_opts)
+cmainqnx_opts=$($(processor)_sub_opts)
+initargv_opts=$($(processor)_sub_opts)
 initrtns_opts =$($(processor)_ac_opts)
 libcstrt_opts =-I"$(clib_dir)/mthread/h"
-main2wnt_opts =$($(processor)_xd_opts)
-main4wnt_opts =$($(processor)_xd_opts)
+main2wnt_opts=$($(processor)_xd_opts)
+main4wnt_opts=$($(processor)_xd_opts)
 
 # these options override C lib standard options
 ################################################
@@ -267,7 +267,7 @@ d16msels_postopts =-zld
 dmaino32_postopts =-os
 dos16m_postopts   =-zld
 exit_postopts     =-os
-fpi87_postopts    =$($(processor)_fpi87_postopts)
+fpi87_postopts=$($(processor)_fpi87_postopts)
 libentry_postopts =-zld
 maino16_postopts  =-os
 maino32_postopts  =-os

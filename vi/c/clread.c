@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #ifdef __WIN__
-    #include "utils.h"
+#include "utils.h"
 #endif
 
 /*
@@ -43,16 +43,17 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
     file        *cfile;
     char        *dir;
     int         len;
-    long        bytecnt = 0;
-    linenum     lnecnt = 0;
+    long        bytecnt=0;
+    linenum     lnecnt=0;
     status_type lastst;
-    char        *fn = MemAlloc( FILENAME_MAX );
+    char        *fn = MemAlloc(FILENAME_MAX);
     vi_rc       rc;
 
     /*
      * get file name
      */
-    if( rc = ModificationTest() ) {
+    rc = ModificationTest();
+    if( rc != ERR_NO_ERR ) {
         return( rc );
     }
     len = NextWord1( name, fn );
@@ -93,9 +94,9 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
          * read all fcbs
          */
         lastst = UpdateCurrentStatus( CSTATUS_READING );
-#ifdef __WIN__
-        ToggleHourglass( TRUE );
-#endif
+        #ifdef __WIN__
+            ToggleHourglass( TRUE );
+        #endif
         while( TRUE ) {
             rc = ReadFcbData( cfile );
             lnecnt += cfile->fcb_tail->end_line - cfile->fcb_tail->start_line + 1L;
@@ -104,9 +105,9 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
                 break;
             }
         }
-#ifdef __WIN__
-        ToggleHourglass( FALSE );
-#endif
+        #ifdef __WIN__
+            ToggleHourglass( FALSE );
+        #endif
         UpdateCurrentStatus( lastst );
         if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {
             MemFree( fn );

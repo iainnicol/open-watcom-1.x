@@ -88,8 +88,8 @@ void NewCursor( window_id id, cursor_type ct )
     } else {
         base = 16;
     }
-    nbase = (base * (int)(100 - ct.height)) / 100;
-    BIOSNewCursor( (char) nbase, base - 1 );
+    nbase = (base*(int)(100-ct.height))/100;
+    BIOSNewCursor( (char) nbase, base-1 );
 
 } /* NewCursor */
 
@@ -114,7 +114,7 @@ static void noteOn( int freq )
      */
     Out43( 0xb6 );
     Out42( freq & 0xFF );
-    Out42( freq / 256 );
+    Out42( freq/256 );
 
 } /* noteOn */
 
@@ -148,9 +148,9 @@ void MyBeep( void )
         Out61( pbstate );
         Out43( 0xb6 );
         Out42( 3000 & 0xFF );
-        Out42( 3000 / 256 );
+        Out42( 3000/256 );
 
-        for( i = 1; i < 15000; i++ ) {
+        for( i=1;i<15000;i++) {
             j++;
         }
 
@@ -170,7 +170,7 @@ static void getExitAttr( void )
     cursor = BIOSGetCursor( VideoPage );
     x = cursor >> 8;
     y = cursor & 0xff;
-    attr = Scrn[(y * WindMaxWidth + x) * 2 + 1];
+    attr = Scrn[ ( y * WindMaxWidth + x ) * 2 + 1 ];
     ExitAttr = attr;
 }
 
@@ -184,9 +184,9 @@ void ScreenInit( void )
 
     x = BIOSGetVideoMode();
     y = (U_INT) x;
-    WindMaxWidth = (y >> 8);
+    WindMaxWidth = (y >> 8 );
     y &= 0xff;
-    VideoPage = (U_INT) (x >> 24);
+    VideoPage = (U_INT) (x>>24);
 
     /*
      * mode _ get apropos screen ptr
@@ -200,7 +200,7 @@ void ScreenInit( void )
     }
     ScreenPage( 0 );
 
-    WindMaxHeight = BIOSGetRowCount() + 1;
+    WindMaxHeight = BIOSGetRowCount()+1;
     getExitAttr();
 
 } /* ScreenInit */
@@ -217,14 +217,14 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-#define RSH( x )    (((x) & 0x0002) != 0)
-#define LSH( x )    (((x) & 0x0002) != 0)
-#define CT( x )     (((x) & 0x0004) != 0)
-#define AL( x )     (((x) & 0x0008) != 0)
-#define LCT( x )    (((x) & 0x0100) != 0)
-#define LAL( x )    (((x) & 0x0200) != 0)
-#define RCT( x )    (((x) & 0x0400) != 0)
-#define RAL( x )    (((x) & 0x0800) != 0)
+#define RSH(x)  ( ( ( x ) & 0x0002 ) != 0 )
+#define LSH(x)  ( ( ( x ) & 0x0002 ) != 0 )
+#define CT(x)   ( ( ( x ) & 0x0004 ) != 0 )
+#define AL(x)   ( ( ( x ) & 0x0008 ) != 0 )
+#define LCT(x)  ( ( ( x ) & 0x0100 ) != 0 )
+#define LAL(x)  ( ( ( x ) & 0x0200 ) != 0 )
+#define RCT(x)  ( ( ( x ) & 0x0400 ) != 0 )
+#define RAL(x)  ( ( ( x ) & 0x0800 ) != 0 )
 
     unsigned    x;
 
@@ -235,10 +235,10 @@ void ChkExtendedKbd( void )
         return; /* too many damn keys pressed! */
     }
 
-    if( AL( x ) != (RAL( x ) || LAL( x )) ) {
+    if( AL( x ) != ( RAL( x ) || LAL( x ) ) ) {
         return;
     }
-    if( CT( x ) != (RCT( x ) || LCT( x )) ) {
+    if( CT( x ) != ( RCT( x ) || LCT( x ) ) ) {
         return;
     }
     EditFlags.ExtendedKeyboard = 0x10;
@@ -279,9 +279,9 @@ void ScreenPage( int page )
     Scrn += (unsigned long) a;
     PageCnt += page;
     if( PageCnt > 0 ) {
-        b = (unsigned long)((WindMaxWidth + 1) * (WindMaxHeight + 1)) * 2L;
+        b = (unsigned long)((WindMaxWidth+1)*(WindMaxHeight+1))*2L;
         if( a + b < 0x8000L ) {
-            Scrn += b;
+            Scrn+= b;
         }
         EditFlags.NoSetCursor = TRUE;
     } else {
@@ -297,11 +297,11 @@ void ScreenPage( int page )
     } else {
         c = 0xb0000;
     }
-    a = *(unsigned short _FAR *) MK_FP( PHAR_SCRN_SEL, 0x44e );
+    a = *(unsigned short _FAR *) MK_FP( PHAR_SCRN_SEL,0x44e );
     c += (unsigned long) a;
     PageCnt += page;
     if( PageCnt > 0 ) {
-        b = (unsigned long)((WindMaxWidth + 1) * (WindMaxHeight + 1)) * 2L;
+        b = (unsigned long)((WindMaxWidth+1)*(WindMaxHeight+1))*2L;
         if( a + b < 0x8000L ) {
             c+= b;
         }
@@ -323,9 +323,9 @@ void ScreenPage( int page )
     Scrn += (unsigned long) a;
     PageCnt += page;
     if( PageCnt > 0 ) {
-        b = (unsigned long)((WindMaxWidth + 1)*(WindMaxHeight + 1)) * 2L;
+        b = (unsigned long)((WindMaxWidth+1)*(WindMaxHeight+1))*2L;
         if( a + b < 0x8000L ) {
-            Scrn += b;
+            Scrn+= b;
         }
         EditFlags.NoSetCursor = TRUE;
     } else {
@@ -342,10 +342,10 @@ vi_rc ChangeDrive( int drive )
 {
     char        a;
     unsigned    b;
-    unsigned    total, c;
+    unsigned    total,c;
 
-    a = (char) tolower( drive ) - (char) 'a';
-    b = a + 1;
+    a = (char) tolower(drive) - (char) 'a';
+    b = a+1;
     _dos_setdrive( b, &total );
     _dos_getdrive( &c );
     if( b != c ) {
@@ -356,11 +356,11 @@ vi_rc ChangeDrive( int drive )
 }/* ChangeDrive */
 
 #if defined( __4G__ )
-    #define KEY_PTR (char *) 0x00000417;
+#define KEY_PTR (char *) 0x00000417;
 #elif defined( __386__ )
-    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
+#define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
 #else
-    #define KEY_PTR (char *) 0x00400017;
+#define KEY_PTR (char *) 0x00400017;
 #endif
 
 /*
@@ -400,15 +400,15 @@ void TurnOffCapsLock( void )
 
 extern short CheckRemovable( char );
 #pragma aux CheckRemovable = \
-        "mov    ax, 04408h" \
+        "mov    ax,04408h" \
         "int    021h" \
-        "cmp    ax, 0fh" \
+        "cmp    ax,0fh" \
         "jne    ok" \
-        "mov    ax, 0" \
+        "mov    ax,0" \
         "jmp    done" \
         "ok:    inc ax" \
         "done:" \
-    parm [bl] value[ax];
+        parm [bl] value[ax];
 
 /*
  * DoGetDriveType - get the type of drive A-Z
@@ -426,7 +426,7 @@ void MyDelay( int ms )
 {
     int         final_ticks;
 
-    final_ticks = ClockTicks + ((ms * 182L + 5000L) / 10000L);
+    final_ticks = ClockTicks + ((ms*182L+5000L)/10000L );
     while( ClockTicks < final_ticks );
 
 } /* MyDelay */
@@ -461,20 +461,19 @@ bool KeyboardHit( void )
 /*
  * GetKeyboard - get a keyboard char
  */
-vi_key GetKeyboard( int *scan )
+vi_key GetKeyboard( void )
 {
     unsigned short  key;
-    int             scancode;
+    int             scan;
+    bool            shift;
 
     key = _BIOSGetKeyboard( EditFlags.ExtendedKeyboard );
-    scancode = key >> 8;
+    shift = ShiftDown();
+    scan = key >> 8;
     key &= 0xff;
-    if( scan != NULL ) {
-        *scan = scancode;
+    if( key == 0xE0 && scan != 0 ) {
+        key = 0;
     }
-    if( key == 0xe0 && scancode != 0 ) {
-        return( 0 );
-    }
-    return( key );
+    return( GetVIKey( key, scan, shift ) );
 
 } /* GetKeyboard */

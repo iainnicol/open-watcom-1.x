@@ -32,8 +32,7 @@
 
 #include <string.h>
 #include "pgvars.h"
-
-
+#include "fontsupp.h"
 static char _WCI86FAR *GetCharPtr( short ch )
 //======================================
 

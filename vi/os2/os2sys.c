@@ -35,11 +35,11 @@
 #include "vibios.h"
 
 #ifdef __OS2V2__
-    #define SEG16   _Seg16
-    #define STUPID_UINT     unsigned long
+#define SEG16   _Seg16
+#define STUPID_UINT     unsigned long
 #else
-    #define SEG16
-    #define STUPID_UINT     unsigned short
+#define SEG16
+#define STUPID_UINT     unsigned short
 #endif
 
 static char     oldPath[_MAX_PATH];
@@ -87,8 +87,8 @@ void NewCursor( window_id id, cursor_type ct )
     id = id;
     VioGetCurType( &vioCursor, 0 );
     base = vioCursor.cEnd;
-    nbase = (base * (int)(100 - ct.height)) / 100;
-    BIOSNewCursor( (char) nbase, base - 1 );
+    nbase = (base*(int)(100-ct.height))/100;
+    BIOSNewCursor( (char) nbase, base-1 );
 
 } /* NewCursor */
 
@@ -112,14 +112,14 @@ void ScreenInit( void )
     struct _VIOMODEINFO         vioMode;
     void * SEG16                ptr;
 
-    vioMode.cb = sizeof( vioMode );
+    vioMode.cb = sizeof(vioMode);
     if( VioGetMode( &vioMode, 0 ) != 0 ) {
         FatalError( ERR_WIND_INVALID );
     }
     WindMaxWidth = vioMode.col;
     WindMaxHeight = vioMode.row;
 
-    config.cb = sizeof( config );
+    config.cb = sizeof(config);
     if( VioGetConfig( 0, &config, 0 ) != 0 ) {
         FatalError( ERR_WIND_INVALID );
     }
@@ -182,8 +182,8 @@ vi_rc ChangeDrive( int drive )
 {
     char        a;
     unsigned    b;
-    a = (char) tolower( drive ) - (char) 'a';
-    b = a + 1;
+    a = (char) tolower(drive) - (char) 'a';
+    b = a+1;
     if( DosSelectDisk( b ) ) {
         return( ERR_NO_SUCH_DRIVE );
     }
@@ -239,7 +239,7 @@ drive_type DoGetDriveType( int drv )
     int         i;
 
     DosQCurDisk( &disk, &map );
-    for( i = 'A'; i <= 'Z'; i++ ) {
+    for( i='A';i<='Z';i++ ) {
         if( drv == i ) {
             if( map & 1 ) {
                 return( DRIVE_IS_FIXED );
@@ -271,9 +271,19 @@ void SetCursorBlinkRate( int cbr )
 
 } /* SetCursorBlinkRate */
 
-vi_key GetKeyboard( int *scan )
+vi_key GetKeyboard( void )
 {
-    return( BIOSGetKeyboard( scan ) );
+    unsigned short  key;
+    int             scan;
+    bool            shift;
+
+    key = BIOSGetKeyboard( &scan );
+    shift = ShiftDown();
+    key &= 0xff;
+    if( key == 0xE0 && scan != 0 ) {
+        key = 0;
+    }
+    return( GetVIKey( key, scan, shift ) );
 }
 
 bool KeyboardHit( void )

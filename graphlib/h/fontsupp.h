@@ -24,57 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  MAD CPU registers structure.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef MADREGS_H_INCLUDED
-#define MADREGS_H_INCLUDED
-
-#include "madtypes.h"
-
-#ifdef MD_x86
-#include "madx86.h"
-#endif
-
-#ifdef MD_axp
-#include "madaxp.h"
-#endif
-
-#ifdef MD_ppc
-#include "madppc.h"
-#endif
-
-#ifdef MD_mips
-#include "madmips.h"
-#endif
-
-#ifdef MD_jvm
-#include "madjvm.h"
-#endif
-
-#include "digpck.h"
-
-union mad_registers {
-    unsigned_8                  nul;
-#ifdef MD_x86
-    struct x86_mad_registers    x86;
-#endif
-#ifdef MD_axp
-    struct axp_mad_registers    axp;
-#endif
-#ifdef MD_ppc
-    struct ppc_mad_registers    ppc;
-#endif
-#ifdef MD_mips
-    struct mips_mad_registers   mips;
-#endif
-#ifdef MD_jvm
-    struct jvm_mad_registers    jvm;
-#endif
-};
-
-#include "digunpck.h"
-
-#endif
+char _WCI86FAR *_getbitmap( short ch, short _WCI86FAR *width );

@@ -247,36 +247,36 @@ int StatusWndInit( HINSTANCE hinstance, statushook hook, int extra )
         return( 1 );
     } else {
 #endif
-        if( !hasGDIObjects ) {
-            colorButtonFace = GetSysColor( COLOR_BTNFACE );
-            brushButtonFace = CreateSolidBrush( colorButtonFace );
-            penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
-            penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
-            hasGDIObjects = TRUE;
-        }
+    if( !hasGDIObjects ) {
+        colorButtonFace = GetSysColor( COLOR_BTNFACE );
+        brushButtonFace = CreateSolidBrush( colorButtonFace );
+        penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
+        penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
+        hasGDIObjects = TRUE;
+    }
 
-        statusWndHookFunc = hook;
+    statusWndHookFunc = hook;
 
-        rc = TRUE;
+    rc = TRUE;
 
-        if( GetClassInfo( hinstance, className, &wc ) ) {
-            classWinExtra = wc.cbWndExtra - sizeof(statwnd *);
-        } else {
-            classWinExtra = extra;
-            wc.style = CS_HREDRAW | CS_VREDRAW;
-            wc.lpfnWndProc = (LPVOID) StatusWndCallback;
-            wc.cbClsExtra = 0;
-            wc.cbWndExtra = extra + sizeof(statwnd *);
-            wc.hInstance = hinstance;
-            wc.hIcon = LoadIcon( (HINSTANCE)NULL, IDI_APPLICATION );
-            wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
-            wc.hbrBackground = (HBRUSH) 0;
-            wc.lpszMenuName = NULL;
-            wc.lpszClassName = className;
-            rc = RegisterClass( &wc );
-        }
+    if( GetClassInfo( hinstance, className, &wc ) ) {
+        classWinExtra = wc.cbWndExtra - sizeof(statwnd *);
+    } else {
+        classWinExtra = extra;
+        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = (LPVOID) StatusWndCallback;
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = extra + sizeof(statwnd *);
+        wc.hInstance = hinstance;
+        wc.hIcon = LoadIcon( (HINSTANCE)NULL, IDI_APPLICATION );
+        wc.hCursor = LoadCursor( (HINSTANCE)NULL, IDC_ARROW );
+        wc.hbrBackground = (HBRUSH) 0;
+        wc.lpszMenuName = NULL;
+        wc.lpszClassName = className;
+        rc = RegisterClass( &wc );
+    }
 
-        return( rc );
+    return( rc );
 #ifdef __NT__
     }
 #endif
@@ -476,7 +476,7 @@ void outputText( statwnd *sw, HDC hdc, char *buff, RECT *r,
  * StatusWndDrawLine - draws a line in the status bar
  */
 void StatusWndDrawLine( statwnd *sw, HDC hdc, HFONT hfont,
-                        char *str, UINT flags )
+                        const char *str, UINT flags )
 {
     RECT        rect;
     char        buff[256];
@@ -488,52 +488,52 @@ void StatusWndDrawLine( statwnd *sw, HDC hdc, HFONT hfont,
 #ifdef __NT__
     if( hInstCommCtrl == NULL ) {
 #endif
-        initHDC( sw, hdc );
-        getRect( sw, &rect, curr_block );
-        makeInsideRect( &rect );
-        bptr = str;
-        if( flags == (UINT) -1  ) {
-            flags = DT_VCENTER | DT_LEFT;
-            bptr = buff;
-            while( *str ) {
-                if( *str == STATUS_ESC_CHAR ) {
-                    str++;
-                    switch( *str ) {
-                    case STATUS_NEXT_BLOCK:
-                        *bptr = 0;
-                        outputText( sw, hdc, buff, &rect, flags, curr_block );
-                        curr_block++;
-                        getRect( sw, &rect, curr_block );
-                        makeInsideRect( &rect );
-                        flags = DT_VCENTER | DT_LEFT;
-                        bptr = buff;
-                        break;
-                    case STATUS_FORMAT_CENTER:
-                        flags &= ~(DT_RIGHT|DT_LEFT);
-                        flags |= DT_CENTER;
-                        break;
-                    case STATUS_FORMAT_RIGHT:
-                        flags &= ~(DT_CENTER|DT_LEFT);
-                        flags |= DT_RIGHT;
-                        break;
-                    case STATUS_FORMAT_LEFT:
-                        flags &= ~(DT_CENTER|DT_RIGHT);
-                        flags |= DT_LEFT;
-                        break;
-                    }
-                } else {
-                    *bptr++ = *str;
-                }
+    initHDC( sw, hdc );
+    getRect( sw, &rect, curr_block );
+    makeInsideRect( &rect );
+        bptr = (char *)str;
+    if( flags == (UINT) -1  ) {
+        flags = DT_VCENTER | DT_LEFT;
+        bptr = buff;
+        while( *str ) {
+            if( *str == STATUS_ESC_CHAR ) {
                 str++;
+                switch( *str ) {
+                case STATUS_NEXT_BLOCK:
+                    *bptr = 0;
+                    outputText( sw, hdc, buff, &rect, flags, curr_block );
+                    curr_block++;
+                    getRect( sw, &rect, curr_block );
+                    makeInsideRect( &rect );
+                    flags = DT_VCENTER | DT_LEFT;
+                    bptr = buff;
+                    break;
+                case STATUS_FORMAT_CENTER:
+                    flags &= ~(DT_RIGHT|DT_LEFT);
+                    flags |= DT_CENTER;
+                    break;
+                case STATUS_FORMAT_RIGHT:
+                    flags &= ~(DT_CENTER|DT_LEFT);
+                    flags |= DT_RIGHT;
+                    break;
+                case STATUS_FORMAT_LEFT:
+                    flags &= ~(DT_CENTER|DT_RIGHT);
+                    flags |= DT_LEFT;
+                    break;
+                }
+            } else {
+                *bptr++ = *str;
             }
-            *bptr = 0;
-            bptr = buff;
+            str++;
         }
-        outputText( sw, hdc, bptr, &rect, flags, curr_block );
-        finiHDC( hdc );
+        *bptr = 0;
+        bptr = buff;
+    }
+    outputText( sw, hdc, bptr, &rect, flags, curr_block );
+    finiHDC( hdc );
 #ifdef __NT__
     } else {
-        bptr = str;
+        bptr = (char *)str;
         if( flags == (UINT)-1 ) {
             bptr = buff;
             while( *str ) {

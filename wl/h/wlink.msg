@@ -256,7 +256,7 @@ pick(    MSG_GENERAL_HELP_38,   "            | \"SYMFile\"[\"=\"symbol_file], | 
                 "            | \"SYMFile\"[\"=\"シンボルファイル], | \"[NO]Undefsok\" | \"Verbose\"" )
 pick(    MSG_GENERAL_HELP_39,   "            | \"VFRemoval\"" ,
                 "            | \"VFRemoval\"" )
-
+                
 /*
  *  Dos help screen: max 16 lines (from 0 to 15).
  *  To start a new page, leave a line undefined or define an empty line.
@@ -266,7 +266,7 @@ pick(    MSG_DOS_HELP_0,    "\ncommands valid for the MS-DOS executable format o
 pick(    MSG_DOS_HELP_1,    "form      ::= \"Dos\" [\"COM\"]" ,
                 "form      ::= \"Dos\" [\"COM\"]" )
 pick(    MSG_DOS_HELP_2,    "directive ::= \"NEWsegment\"" ,
-                "directive ::+ \"NEWsegment\"" )
+                "directive ::+ \"NEWsegment\"" )                
 pick(    MSG_DOS_HELP_3,    "option    ::=  \"PACKCode=\"n | \"PACKData=\"n" ,
                 "option    ::=  \"PACKCode=\"n | \"PACKData=\"n" )
 
@@ -283,7 +283,7 @@ pick(    MSG_OS2_HELP_2,    "            | [\"DLl\"[\"INITGlobal\"|\"INITInstanc
 pick(    MSG_OS2_HELP_3,    "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " ,
                 "            | \"PM\" | \"PMCompatible\" | \"FULLscreen\"] " )
 pick(    MSG_OS2_HELP_4,    "directive ::= \"NEWsegment\"" ,
-                "directive ::= \"NEWsegment\"" )
+                "directive ::= \"NEWsegment\"" )                
 pick(    MSG_OS2_HELP_5,    "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
                 "            | \"SEgment\"     segdesc{\",\"segdesc}" )
 pick(    MSG_OS2_HELP_6,    "            | \"IMPort\"      import{\",\"import}" ,
@@ -381,7 +381,7 @@ pick(    MSG_NT_HELP_1,     "form      ::= \"WIndows NT\" [\"TNT\"]" ,
 pick(    MSG_NT_HELP_2,     "              [\"DLl\"[\"INITGlobal\"|\"INITInstance\" [\"TERMInstance\"|\"TERMGlobal\"]]" ,
                 "              [\"DLl\"[\"INITGlobal\"|\"INITInstance\" [\"TERMInstance\"|\"TERMGlobal\"]]" )
 pick(    MSG_NT_HELP_3,     "directive ::= \"RUntime\"     runoption[\"=\"major[\".\"minor]]" ,
-                "directive ::= \"RUntime\"     runoption[\"=\"ﾒｼﾞｬｰﾊﾞｰｼﾞｮﾝ[\".\"ﾏｲﾅｰﾊﾞｰｼﾞｮﾝ]]")
+                "directive ::= \"RUntime\"     runoption[\"=\"ﾒｼﾞｬｰﾊﾞｰｼﾞｮﾝ[\".\"ﾏｲﾅｰﾊﾞｰｼﾞｮﾝ]]")             
 pick(    MSG_NT_HELP_4,     "            | \"SEGment\"     segdesc{\",\"segdesc}" ,
                                 "            | \"SEgment\"     segdesc{\",\"segdesc}" )
 pick(    MSG_NT_HELP_5,     "            | \"IMPort\"      import{\",\"import}" ,
@@ -422,11 +422,11 @@ pick(    MSG_NT_HELP_20,    "commitopt ::= \"STack=\"n | \"Heap=\"n\n" ,
  *  To start a new page, leave a line undefined or define an empty line.
  */
 pick(    MSG_PHAR_HELP_0,   " " ,
-                " " )
+                " " )               
 pick(    MSG_PHAR_HELP_1,   "commands valid for the Phar Lap executable formats only:" ,
                 "Phar Lap実行可能形式に対してのみ有効なオプション:" )
 pick(    MSG_PHAR_HELP_2,   " " ,
-                " " )
+                " " )               
 pick(    MSG_PHAR_HELP_3,   "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\" | \"SEGmented\"]" ,
                 "form      ::= \"PHARlap\" [\"EXTended\" | \"REX\"]" )
 pick(    MSG_PHAR_HELP_4,   "directive ::= \"RUntime\"     runoption{\",\"runoption}" ,
@@ -477,9 +477,9 @@ pick(    MSG_NOVELL_HELP_13,    "            | \"THReadname\" name | \"VERSion=\
 pick(    MSG_NOVELL_HELP_14,    "            | \"XDCdata=\"file_name | \"AUTOUNload\"" ,
                 "            | \"XDCdata=\"ファイル名 | \"AUTOUNload\"" )
 pick(    MSG_NOVELL_HELP_15,    "import    ::= entryname" ,
-                "import    ::= エントリ名" )
+                "import    ::= エントリ名" )                
 pick(    MSG_NOVELL_HELP_16,    "export    ::= entryname" ,
-                "export    ::= エントリ名" )
+                "export    ::= エントリ名" )                
 pick(    MSG_NOVELL_HELP_17,    " " ,
                 " " )
 
@@ -488,7 +488,7 @@ pick(    MSG_NOVELL_HELP_17,    " " ,
  *  To start a new page, leave a line undefined or define an empty line.
  */
 pick(    MSG_DOS16_HELP_0,  " " ,
-                " " )
+                " " )               
 pick(    MSG_DOS16_HELP_1,  "commands valid for the DOS/16M executable format only:" ,
                 "DOS/16M実行可能形式に対してのみ有効なコマンド:" )
 pick(    MSG_DOS16_HELP_2,  " " ,
@@ -496,9 +496,9 @@ pick(    MSG_DOS16_HELP_2,  " " ,
 pick(    MSG_DOS16_HELP_3,  "form      ::= \"DOS16M\"" ,
                 "form      ::= \"DOS16m\"" )
 pick(    MSG_DOS16_HELP_4,  "directive ::= \"MEMory\"      strategy" ,
-                "directive ::= \"MEMory\"      strategy" )
+                "directive ::= \"MEMory\"      strategy" )              
 pick(    MSG_DOS16_HELP_5,  "            | \"TRansparent\" seg_type" ,
-                "            | \"TRansparent\" seg_type" )
+                "            | \"TRansparent\" seg_type" )              
 pick(    MSG_DOS16_HELP_6,  "            | \"RUntime\"     runoption{\",\"runoption}" ,
                 "            | \"RUntime\"     runoption{\",\"runoption}" )
 pick(    MSG_DOS16_HELP_7,  "option    ::= \"BUFfer=\"n | \"GDTsize=\"n | (\"RELocs\" | \"NORelocs\") | \"SELstart=\"n" ,
@@ -514,7 +514,7 @@ pick(    MSG_DOS16_HELP_11, "            | \"SELectors\" | \"INT10\"" ,
 pick(    MSG_DOS16_HELP_12, "strategy  ::= \"TRYExtended\" | \"TRYLow\" | \"FORCEExtended\" | \"FORCELow\"" ,
                 "strategy  ::= \"TRYExtended\" | \"TRYLow\" | \"FORCEExtended\" | \"FORCELow\"" )
 pick(    MSG_DOS16_HELP_13, "seg_type  ::= \"STack\" | \"DAta\"" ,
-                "seg_type  ::= \"STack\" | \"DAta\"" )
+                "seg_type  ::= \"STack\" | \"DAta\"" )              
 pick(    MSG_DOS16_HELP_14, " " ,
                 " " )
 
@@ -523,13 +523,13 @@ pick(    MSG_DOS16_HELP_14, " " ,
  *  To start a new page, leave a line undefined or define an empty line.
  */
 pick(    MSG_QNX_HELP_0,    " " ,
-                " " )
+                " " )               
 pick(    MSG_QNX_HELP_1,    "commands valid for the QNX executable format only:" ,
-                "QNX実行可能形式に対してのみ有効なコマンド:" )
+                "QNX実行可能形式に対してのみ有効なコマンド:" )              
 pick(    MSG_QNX_HELP_2,    " " ,
-                " " )
+                " " )               
 pick(    MSG_QNX_HELP_3,    "form      ::= \"QNX\" [\"FLat\"]" ,
-                "form      ::= \"QNX\" [\"FLat\"]" )
+                "form      ::= \"QNX\" [\"FLat\"]" )                
 pick(    MSG_QNX_HELP_4,    "directive ::= \"SEGment\"     segdesc{\",\"segdesc}" ,
                 "directive ::= \"SEgment\"     segdesc{\",\"segdesc}" )
 pick(    MSG_QNX_HELP_5,    "            | \"NEWsegment\"" ,

@@ -46,10 +46,10 @@ extern void     MemFree( LPVOID );
 static char                     *className = "StatusWnd";
 static int                      numSections = 0;
 static status_block_desc        sectionDesc[MAX_SECTIONS];
-static LPSTR                    sectionData[MAX_SECTIONS + 1];
-static UINT                     sectionDataFlags[MAX_SECTIONS + 1];
+static LPSTR                    sectionData[MAX_SECTIONS+1];
+static UINT                     sectionDataFlags[MAX_SECTIONS+1];
 static HFONT                    sectionDataFont;
-#if defined( __NT__ )
+#if defined (__NT__)
 static HFONT                    systemDataFont;
 #endif
 static HPEN                     penLight;
@@ -88,18 +88,18 @@ static void getRect( RECT *r, int i )
     *r = statusRect;
     width = statusRect.right - statusRect.left;
     if( i > 0 ) {
-        if( sectionDesc[i - 1].width_is_percent ) {
-            pos = (WORD) (((DWORD) width * (DWORD) sectionDesc[i].width) / 100L);
+        if( sectionDesc[i-1].width_is_percent ) {
+            pos = (WORD) (((DWORD) width * (DWORD) sectionDesc[i].width)/100L);
         } else {
-            pos = sectionDesc[i - 1].width;
+            pos = sectionDesc[i-1].width;
         }
-        r->left = pos + sectionDesc[i - 1].separator_width;
+        r->left = pos+sectionDesc[i-1].separator_width;
     }
     if( i == numSections ) {
         pos = statusRect.right;
     } else if( sectionDesc[i].width_is_percent ) {
-        pos = (WORD) (((DWORD) (statusRect.right - statusRect.left)
-                    * (DWORD) sectionDesc[i].width) / 100L);
+        pos = (WORD) (((DWORD) (statusRect.right-statusRect.left)
+                    * (DWORD) sectionDesc[i].width)/100L);
     } else {
         pos = sectionDesc[i].width;
     }
@@ -190,13 +190,13 @@ LONG CB StatusWndCallback( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam  )
     switch( msg ) {
     case WM_SIZE:
         GetClientRect( hwnd, &statusRect );
-        InflateRect( &statusRect, -HORZ_BORDER, -VERT_BORDER );
+        InflateRect( &statusRect, - HORZ_BORDER, - VERT_BORDER );
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     case WM_PAINT:
         BeginPaint( hwnd, &ps );
         StatusWndDraw3DBox( ps.hdc );
         if( initHDC( ps.hdc ) ) {
-            for( i = 0; i <= numSections; i++ ) {
+            for( i=0;i<=numSections;i++ ) {
                 if( sectionData[i] != NULL ) {
                     getRect( &r, i );
                     makeInsideRect( &r );
@@ -207,7 +207,7 @@ LONG CB StatusWndCallback( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam  )
         }
         EndPaint( hwnd, &ps );
         break;
-#if defined( __NT__ )
+#if defined (__NT__)
     case WM_SYSCOLORCHANGE:
         if( hasGDIObjects ) {
             DeleteObject( penLight );
@@ -226,8 +226,8 @@ LONG CB StatusWndCallback( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam  )
     break;
 #endif
     case WM_ERASEBKGND:
-#if defined( __NT__ )
-        if( colorButtonFace != GetSysColor( COLOR_BTNFACE ) ) {
+#if defined (__NT__)
+        if(colorButtonFace != GetSysColor( COLOR_BTNFACE )) {
             /* WM_SYSCOLORCHANGED: not received by this window.
                Have to fake it...  */
             SendMessage( hwnd, WM_SYSCOLORCHANGE, (WPARAM)0, (LPARAM)0 );
@@ -261,32 +261,32 @@ int StatusWndInit( HINSTANCE hinstance, statushook hook, int extra,
         return( 1 );
     } else {
 #endif
-        if( !hasGDIObjects ) {
-            colorButtonFace = GetSysColor( COLOR_BTNFACE );
-            colorTextFace = GetSysColor( COLOR_BTNTEXT );
-            brushButtonFace = CreateSolidBrush( colorButtonFace );
-            penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
-            penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
-            hasGDIObjects = TRUE;
-        }
+    if( !hasGDIObjects ) {
+        colorButtonFace = GetSysColor( COLOR_BTNFACE );
+        colorTextFace = GetSysColor( COLOR_BTNTEXT );
+        brushButtonFace = CreateSolidBrush( colorButtonFace );
+        penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
+        penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
+        hasGDIObjects = TRUE;
+    }
 
-        statusWndHookFunc = hook;
+    statusWndHookFunc = hook;
 
-        rc = TRUE;
-        if( !GetClassInfo( hinstance, className, &wc ) ) {
-            wc.style = CS_HREDRAW | CS_VREDRAW;
-            wc.lpfnWndProc = (WNDPROC)StatusWndCallback;
-            wc.cbClsExtra = 0;
-            wc.cbWndExtra = extra;
-            wc.hInstance = hinstance;
-            wc.hIcon = LoadIcon( (HINSTANCE)NULL, IDI_APPLICATION );
-            wc.hCursor = hDefaultCursor;
-            wc.hbrBackground = (HBRUSH) 0;
-            wc.lpszMenuName = NULL;
-            wc.lpszClassName = className;
-            rc = RegisterClass( &wc );
-        }
-        return( rc );
+    rc = TRUE;
+    if( !GetClassInfo( hinstance, className, &wc ) ) {
+        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = (WNDPROC)StatusWndCallback;
+        wc.cbClsExtra = 0;
+        wc.cbWndExtra = extra;
+        wc.hInstance = hinstance;
+        wc.hIcon = LoadIcon( (HINSTANCE)NULL, IDI_APPLICATION );
+        wc.hCursor = hDefaultCursor;
+        wc.hbrBackground = (HBRUSH) 0;
+        wc.lpszMenuName = NULL;
+        wc.lpszClassName = className;
+        rc = RegisterClass( &wc );
+    }
+    return( rc );
 #ifdef __NT__
     }
 #endif
@@ -302,20 +302,20 @@ void StatusWndChangeSysColors( COLORREF btnFace, COLORREF btnText,
 #ifdef __NT__
     if( hInstCommCtrl == NULL ) {
 #endif
-        if( hasGDIObjects ) {
-            DeleteObject( penLight );
-            DeleteObject( penShade );
-            DeleteObject( brushButtonFace );
-        }
-
-        colorButtonFace = btnFace;
-        colorTextFace = btnText;
-        brushButtonFace = CreateSolidBrush( btnFace );
-        penLight = CreatePen( PS_SOLID, 1, btnHighlight );
-        penShade = CreatePen( PS_SOLID, 1, btnShadow );
-        hasGDIObjects = TRUE;
-#ifdef __NT__
+    if( hasGDIObjects ) {
+        DeleteObject( penLight );
+        DeleteObject( penShade );
+        DeleteObject( brushButtonFace );
     }
+
+    colorButtonFace = btnFace;
+    colorTextFace = btnText;
+    brushButtonFace = CreateSolidBrush( btnFace );
+    penLight = CreatePen( PS_SOLID, 1, btnHighlight );
+    penShade = CreatePen( PS_SOLID, 1, btnShadow );
+    hasGDIObjects = TRUE;
+#ifdef __NT__
+}
 #endif
 }
 
@@ -384,12 +384,12 @@ HWND StatusWndCreate( HWND parent, RECT *size, HINSTANCE hinstance,
                          lpvParam );
 #endif
     if( stat != NULL ) {
-#if defined( __NT__ )
-       if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+#if defined (__NT__)
+       if (LOBYTE(LOWORD(GetVersion())) >= 4) {
            /* New shell active, Win95 or later */
-           systemDataFont = (HFONT) GetStockObject( DEFAULT_GUI_FONT );
+           systemDataFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
        } else {
-           systemDataFont = (HFONT) GetStockObject( SYSTEM_FONT );
+           systemDataFont = (HFONT) GetStockObject(SYSTEM_FONT);
        }
 #endif
         ShowWindow( stat, SW_SHOWNORMAL );
@@ -405,12 +405,12 @@ HWND StatusWndCreate( HWND parent, RECT *size, HINSTANCE hinstance,
  */
 void StatusWndDraw3DBox( HDC hdc )
 {
-    HPEN    old_pen;
-    int     i;
-    RECT    r;
+    HPEN        old_pen;
+    int         i;
+    RECT        r;
 
     old_pen = SelectObject( hdc, penLight );
-    for( i = 0; i <= numSections; i++ ) {
+    for( i=0;i<=numSections;i++ ) {
         getRect( &r, i );
         outlineRect( hdc, &r );
         makeInsideRect( &r );
@@ -425,14 +425,14 @@ void StatusWndDraw3DBox( HDC hdc )
  */
 void outputText( HDC hdc, char *buff, RECT *r, UINT flags, int curr_block )
 {
-    RECT    ir;
-    int     len;
-    int     ext;
-    int     width;
+    RECT        ir;
+    int         len;
+    int         ext;
+    int         width;
 
-    if( sectionData[curr_block] != NULL ) {
-        if( !strcmp( buff, sectionData[curr_block] ) &&
-            flags == sectionDataFlags[curr_block] ) {
+    if( sectionData[ curr_block ] != NULL ) {
+        if( !strcmp( buff, sectionData[ curr_block ] ) &&
+            flags == sectionDataFlags[ curr_block ] ) {
             return;
         }
     }
@@ -441,10 +441,10 @@ void outputText( HDC hdc, char *buff, RECT *r, UINT flags, int curr_block )
     if( len == 0 ) {
         return;
     }
-    MemFree( sectionData[curr_block] );
-    sectionData[curr_block] = MemAlloc( len + 1 );
-    memcpy( sectionData[curr_block], buff, len + 1 );
-    sectionDataFlags[curr_block] = flags;
+    MemFree( sectionData[ curr_block ] );
+    sectionData[ curr_block ] = MemAlloc( len+1 );
+    memcpy( sectionData[ curr_block ], buff, len+1 );
+    sectionDataFlags[ curr_block ] = flags;
 
 #ifndef __NT__
     ext = LOWORD( GetTextExtent( hdc, buff, len ) );
@@ -458,12 +458,12 @@ void outputText( HDC hdc, char *buff, RECT *r, UINT flags, int curr_block )
 #endif
     ir = *r;
     if( flags & DT_CENTER ) {
-        width = (ir.right - ir.left - ext) / 2;
+        width = (ir.right - ir.left - ext)/2;
         if( width > 0 ) {
-            ir.right = ir.left + width;
+            ir.right = ir.left+width;
             FillRect( hdc, &ir, brushButtonFace );
             ir.right = r->right;
-            ir.left = r->right - width;
+            ir.left = r->right-width;
             FillRect( hdc, &ir, brushButtonFace );
         }
     } else if( flags & DT_RIGHT ) {
@@ -484,15 +484,15 @@ void outputText( HDC hdc, char *buff, RECT *r, UINT flags, int curr_block )
 /*
  * StatusWndDrawLine - draws a line in the status bar
  */
-void StatusWndDrawLine( HDC hdc, HFONT hfont, char *str, UINT flags )
+void StatusWndDrawLine( HDC hdc, HFONT hfont, const char *str, UINT flags )
 {
-    RECT    rect;
-    char    buff[256];
-    char    *bptr;
-    int     curr_block;
+    RECT        rect;
+    char        buff[256];
+    char        *bptr;
+    int         curr_block;
 
     curr_block = 0;
-#if defined( __NT__ )
+#if defined (__NT__)
     sectionDataFont = systemDataFont;
 #else
     sectionDataFont = hfont;
@@ -500,52 +500,52 @@ void StatusWndDrawLine( HDC hdc, HFONT hfont, char *str, UINT flags )
 #ifdef __NT__
     if( hInstCommCtrl == NULL ) {
 #endif
-        initHDC( hdc );
-        getRect( &rect, curr_block );
-        makeInsideRect( &rect );
-        bptr = str;
-        if( flags == (UINT) -1  ) {
-            flags = DT_VCENTER | DT_LEFT;
-            bptr = buff;
-            while( *str ) {
-                if( *str == STATUS_ESC_CHAR ) {
-                    str++;
-                    switch( *str ) {
-                    case STATUS_NEXT_BLOCK:
-                        *bptr = 0;
-                        outputText( hdc, buff, &rect, flags, curr_block );
-                        curr_block++;
-                        getRect( &rect, curr_block );
-                        makeInsideRect( &rect );
-                        flags = DT_VCENTER | DT_LEFT;
-                        bptr = buff;
-                        break;
-                    case STATUS_FORMAT_CENTER:
-                        flags &= ~(DT_RIGHT | DT_LEFT);
-                        flags |= DT_CENTER;
-                        break;
-                    case STATUS_FORMAT_RIGHT:
-                        flags &= ~(DT_CENTER | DT_LEFT);
-                        flags |= DT_RIGHT;
-                        break;
-                    case STATUS_FORMAT_LEFT:
-                        flags &= ~(DT_CENTER | DT_RIGHT);
-                        flags |= DT_LEFT;
-                        break;
-                    }
-                } else {
-                    *bptr++ = *str;
-                }
+    initHDC( hdc );
+    getRect( &rect, curr_block );
+    makeInsideRect( &rect );
+        bptr = (char *)str;
+    if( flags == (UINT) -1  ) {
+        flags = DT_VCENTER | DT_LEFT;
+        bptr = buff;
+        while( *str ) {
+            if( *str == STATUS_ESC_CHAR ) {
                 str++;
+                switch( *str ) {
+                case STATUS_NEXT_BLOCK:
+                    *bptr = 0;
+                    outputText( hdc, buff, &rect, flags, curr_block );
+                    curr_block++;
+                    getRect( &rect, curr_block );
+                    makeInsideRect( &rect );
+                    flags = DT_VCENTER | DT_LEFT;
+                    bptr = buff;
+                    break;
+                case STATUS_FORMAT_CENTER:
+                    flags &= ~(DT_RIGHT|DT_LEFT);
+                    flags |= DT_CENTER;
+                    break;
+                case STATUS_FORMAT_RIGHT:
+                    flags &= ~(DT_CENTER|DT_LEFT);
+                    flags |= DT_RIGHT;
+                    break;
+                case STATUS_FORMAT_LEFT:
+                    flags &= ~(DT_CENTER|DT_RIGHT);
+                    flags |= DT_LEFT;
+                    break;
+                }
+            } else {
+                *bptr++ = *str;
             }
-            *bptr = 0;
-            bptr = buff;
+            str++;
         }
-        outputText( hdc, bptr, &rect, flags, curr_block );
-        finiHDC( hdc );
+        *bptr = 0;
+        bptr = buff;
+    }
+    outputText( hdc, bptr, &rect, flags, curr_block );
+    finiHDC( hdc );
 #ifdef __NT__
     } else {
-        bptr = str;
+        bptr = (char *)str;
         if( flags == (UINT)-1 ) {
             bptr = buff;
             while( *str ) {
@@ -572,7 +572,7 @@ void StatusWndDrawLine( HDC hdc, HFONT hfont, char *str, UINT flags )
         }
     }
 #endif
-                    
+
 } /* StatusWndDrawLine */
 
 /*
@@ -580,12 +580,12 @@ void StatusWndDrawLine( HDC hdc, HFONT hfont, char *str, UINT flags )
  */
 void StatusWndSetSeparators( int num_items, status_block_desc *list )
 {
-    int     i;
+    int i;
 
     if( num_items > MAX_SECTIONS ) {
         num_items = MAX_SECTIONS;
     }
-    for( i=0; i < num_items; i++ ) {
+    for( i=0;i<num_items;i++ ) {
         sectionDesc[i] = list[i];
     }
     numSections = num_items;
@@ -611,7 +611,7 @@ void StatusWndFini( void )
         DeleteObject( brushButtonFace );
         hasGDIObjects = FALSE;
     }
-    for( i = 0; i <= numSections; i++ ) {
+    for( i=0;i<=numSections;i++ ) {
         MemFree( sectionData[i] );
         sectionData[i] = NULL;
     }

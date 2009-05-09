@@ -71,7 +71,7 @@ cdsay .
     <CPCMD> cfg/idelnx.cfg       <RELROOT>/binl/
     <CPCMD> cfg/idezdos.cfg      <RELROOT>/binl/
 
-  [ IFDEF (cpu_axp) <2*> ]
+  [ IFDEF (cpu_axp) <2*> ] 
     <CPCMD> viper/ntaxp/ide.exe  <RELROOT>/axpnt/
     <CPCMD> cfg/ntaxp/idex.cfg   <RELROOT>/axpnt/
     <CPCMD> bviper/ntaxp/ide2make.exe <RELROOT>/axpnt/

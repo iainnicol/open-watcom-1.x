@@ -106,13 +106,13 @@ void ScreenInit( void )
     char                        tmp[256];
 
     InputHandle = CreateFile( "CONIN$", GENERIC_READ | GENERIC_WRITE,
-                              FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                              OPEN_EXISTING, 0, NULL );
+                        FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+                        OPEN_EXISTING, 0, NULL );
     SetConsoleMode( InputHandle, ENABLE_MOUSE_INPUT | ENABLE_LINE_INPUT |
                                  ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT );
 
     OutputHandle = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
-                                              0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
+                0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
     SetConsoleMode( OutputHandle, 0 );
     // SetConsoleActiveScreenBuffer( OutputHandle );
 
@@ -263,9 +263,9 @@ void SetCursorBlinkRate( int cbr )
 
 } /* SetCursorBlinkRate */
 
-vi_key GetKeyboard( int *scan )
+vi_key GetKeyboard( void )
 {
-    return( BIOSGetKeyboard( scan ) );
+    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, FALSE ) );
 }
 
 bool KeyboardHit( void )

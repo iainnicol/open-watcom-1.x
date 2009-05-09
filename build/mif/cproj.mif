@@ -11,7 +11,7 @@ bootstrapmode = 1
 !endif
 
 # define OW build windows version for Win32 platform
-# Now it is setup to 0x400
+# Now it is setup to 0x400 
 # to be OK for Windows 95 and Windows NT
 #
 !ifdef $(proj_name)_win32ver
@@ -141,6 +141,11 @@ model_switch_386 = -m$(memory_model_386)
 cflags_all      =-w4 -we $(mode_cflags) -fo=.obj
 !else
 cflags_all      =-w4 -we $(mode_cflags)
+!endif
+!ifdef sys_dll
+!ifndef suppress_bd
+cflags_all     += -bd
+!endif
 !endif
 
 cflags_386      = $(model_switch_$(host_cpu))
@@ -314,6 +319,7 @@ lflags_linux_386 = sys linux
 lflags_linux_ppc = sys linuxppc
 lflags_linux_mps = sys linuxmips
 
+lflags_dll_dos_386   = sys cwdllr
 lflags_dll_nt_axp    = sys ntaxp dll
 lflags_dll_nt_386    = sys nt dll
 lflags_dll_os2_386   = sys os2v2 dll
@@ -329,14 +335,12 @@ lflags_os2_i86  = sys os2_pm
 !endif
 !ifdef sys_dll
 #this is equally bad
+lflags_dos_386  = sys cwdllr
 lflags_nt_386   = sys nt_dll
 lflags_nt_axp   = sys ntaxp_dll
 lflags_win_i86  = sys windows_dll
 lflags_os2_386  = sys os2v2 dll
 lflags_os2_i86  = sys os2 dll
-!ifndef suppress_bd
-cflags_all     += -bd
-!endif
 !endif
 
 lflags          = $(mode_lflags) $(lflags_$(host_os)_$(host_cpu)) $(extra_l_flags_$(host_os)) $(extra_l_flags)

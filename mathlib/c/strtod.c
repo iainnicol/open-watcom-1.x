@@ -438,7 +438,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
     const CHAR_TYPE     *cur_ptr;
     long_double         ld;
     flt_flags           flags;
-    CHAR_TYPE           buffer[MAX_SIG_DIG];
+    CHAR_TYPE           buffer[ MAX_SIG_DIG + 1 ];
     char                *tmpbuf;
     int                 rc, neg = 0;
 
@@ -502,12 +502,12 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         return( _ZERO | neg );      /* indicate zero */
     } else {
 #ifdef __WIDECHAR__
-        char    tmp[MAX_SIG_DIG];
+        char    tmp[ MAX_SIG_DIG + 1 ];
 #endif
         buffer[ sigdigits ] = '\0';
 #ifdef __WIDECHAR__
         // convert wide string of digits to skinny string of digits
-        wcstombs( tmp, buffer, sigdigits + 1 );
+        wcstombs( tmp, buffer, sizeof( tmp ) );
         tmpbuf = tmp;
 #else
         tmpbuf = buffer;

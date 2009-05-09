@@ -396,7 +396,7 @@ static void BuildReloc( save_fixup *save, frame_spec *targ, frame_spec *frame )
     }
     if( FmtData.type & MK_OVERLAYS ) {
         if( ( targ->type == FIX_FRAME_EXT )
-            && ( (fix.type & FIX_REL) == 0 || FmtData.u.dos.ovl_short )
+            && ( (fix.type & FIX_REL) == 0 || FmtData.u.dos.ovl_short ) 
             && targ->u.sym->u.d.ovlref
             && ( (targ->u.sym->u.d.ovlstate & OVL_VEC_MASK) == OVL_MAKE_VECTOR ) ) {
             // redirect target to appropriate vector entry
@@ -1035,7 +1035,7 @@ static void PatchData( fix_data *fix )
         if( !( ( FmtData.type & MK_WINDOWS ) && ( fix->type & FIX_LOADER_RES ) ) ) {
             PatchOffset( fix, FindRealAddr( fix ), FALSE );
             if( !( FmtData.type & ( MK_ELF | MK_QNX | MK_PE | MK_OS2_FLAT | MK_NOVELL | MK_PHAR_REX | MK_ZDOS | MK_RAW ) )
-                || ( FmtData.type & MK_OS2_LX ) && !FmtData.u.os2.gen_int_relocs ) {
+                || ( FmtData.type & MK_OS2_LX ) && !FmtData.u.os2.gen_int_relocs ){
                 fix->done = TRUE;
             }
         }

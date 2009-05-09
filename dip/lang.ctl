@@ -42,7 +42,7 @@ cdsay .
         <CPCMD> <DEVDIR>/dip/mapsym/zdos386/mapsym.dip      <RELROOT>/binz/
         <CPCMD> <DEVDIR>/dip/mapsym/zdos386/mapsym.sym      <RELROOT>/binz/
 
-[ IFDEF (os_win "") <2*> ]
+  [ IFDEF (os_win "") <2*> ]
         <CPCMD> <DEVDIR>/dip/dwarf/wini86/dwarf.dll         <RELROOT>/binw/
 #        <CPCMD> <DEVDIR>/dip/dwarf/wini86/dwarf.sym         <RELROOT>/binw/
         <CPCMD> <DEVDIR>/dip/codeview/wini86/codeview.dll   <RELROOT>/binw/

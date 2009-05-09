@@ -33,32 +33,32 @@
 void    AbandonHopeAllYeWhoEnterHere( vi_rc );
 
 /* addstr.c */
-void    AddString( char **, char * );
-void    AddString2( char **, char * );
-void    DeleteString( char ** );
+void AddString( char **, char * );
+void AddString2( char **, char * );
+void DeleteString( char ** );
 
 /* alias.c */
 vi_rc   SetAlias( char * );
 vi_rc   CheckAlias( char *, char * );
-bool    CheckAbbrev( char *, int * );
+bool CheckAbbrev( char *, int * );
 vi_rc   Abbrev( char * );
 vi_rc   UnAbbrev( char * );
 vi_rc   UnAlias( char * );
 
 /* autosave.c */
-void    DoAutoSave( void );
-void    AutoSaveInit( void );
-void    AutoSaveFini( void );
-void    SetNextAutoSaveTime( void );
-bool    LostFileCheck( void );
-void    RemoveFromAutoSaveList( void );
-void    GetCurrentFilePath( char *path );
+void DoAutoSave( void );
+void AutoSaveInit( void );
+void AutoSaveFini( void );
+void SetNextAutoSaveTime( void );
+bool LostFileCheck( void );
+void RemoveFromAutoSaveList( void );
+void GetCurrentFilePath( char *path );
 
 /* bnddata.c */
-void    CheckForBoundData( void );
-bool    SpecialOpen( char *, GENERIC_FILE * );
-void    SpecialFclose( GENERIC_FILE * );
-int     SpecialFgets( char *, int, GENERIC_FILE * );
+void CheckForBoundData( void );
+bool SpecialOpen( char *, GENERIC_FILE * );
+void SpecialFclose( GENERIC_FILE * );
+int SpecialFgets( char *, int, GENERIC_FILE * );
 
 /* change.c */
 vi_rc   DoSubstitute( event **, event ** );
@@ -72,14 +72,14 @@ vi_rc   OpenWindowOnFile( char *data );
 
 /* clglob.c */
 vi_rc   Global( linenum, linenum, char *, int );
-void    ProcessingMessage( linenum );
+void ProcessingMessage( linenum );
 
 /* clread.c */
 vi_rc   ReadAFile( linenum, char * );
 
 /* clset.c */
 vi_rc   Set( char * );
-char    *GetASetVal( char *token );
+char *GetASetVal( char *token );
 vi_rc   SettingSelected( char *item, char *value, int *winflag );
 
 /* clsubs.c */
@@ -88,16 +88,16 @@ vi_rc   Substitute( linenum, linenum, char * );
 linenum SplitUpLine( linenum );
 
 /* cmdline.c */
-void    InitCommandLine( void );
+void InitCommandLine( void );
 vi_rc   ProcessCommandLine( void );
 vi_rc   FancyProcessCommandLine( void );
 vi_rc   TryCompileableToken( int token, char *data, bool iscmdline, bool dmt );
 vi_rc   RunCommandLine( char * );
 vi_rc   ProcessWindow( int, char * );
-void    FiniCommandLine( void );
+void FiniCommandLine( void );
 
 /* cstatus.c */
-void    GetModeString( char * );
+void GetModeString( char * );
 status_type UpdateCurrentStatus( status_type st );
 
 /* cut.c */
@@ -115,7 +115,7 @@ vi_rc   DeleteSelectedRegion( void );
 vi_rc   YankSelectedRegion( void );
 
 /* op.c */
-int     LineLength( linenum );
+int LineLength( linenum );
 vi_rc   GetLineRange( range *, long, linenum );
 vi_rc   Delete( range * );
 vi_rc   DeleteLines( void );
@@ -128,31 +128,31 @@ vi_rc   ChangeCase( range * );
 vi_rc   Filter( range * );
 
 /* dir.c */
-void    DirFini( void );
-void    GetCWD1( char ** );
-void    GetCWD2( char *, int );
+void DirFini( void );
+void GetCWD1( char ** );
+void GetCWD2( char *, int );
 vi_rc   ChangeDirectory( char * );
 vi_rc   ConditionalChangeDirectory( char * );
-void    FormatDirToFile( file *cfile, bool add_drives );
+void FormatDirToFile( file *cfile, bool add_drives );
 
 /* dirdisp.c */
 vi_rc   StartFileComplete( char *, int, int, int );
 vi_rc   ContinueFileComplete( char *data, int start, int max, int what );
-void    PauseFileComplete( void );
-void    FinishFileComplete( void );
+void PauseFileComplete( void );
+void FinishFileComplete( void );
 
 /* dosdir.c */
 struct dirent;
 
 vi_rc   MyGetFileSize( char *, long * );
-void    FormatFileEntry( direct_ent *file, char *res );
+void FormatFileEntry( direct_ent *file, char *res );
 bool    IsDirectory( char *name );
-void    GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path );
+void GetFileInfo( direct_ent *tmp, struct dirent *nd, char *path );
 
 /* dotmode.c */
 vi_rc   DoDotMode( void );
 vi_rc   DoAltDotMode( void );
-void    SaveDotCmd( void );
+void SaveDotCmd( void );
 
 /* editdc.c */
 vi_rc   DeleteBlockFromCurrentLine( int, int, int );
@@ -185,27 +185,27 @@ vi_rc   IMDelete( void );
 vi_rc   IMDeleteML( void );
 vi_rc   IMCloseBracket( void );
 vi_rc   IMCloseBrace( void );
-void    PushMode( void );
+void PushMode( void );
 vi_rc   PopMode( void );
-void    UpdateEditStatus( void );
-void    DoneCurrentInsert( bool );
+void UpdateEditStatus( void );
+void DoneCurrentInsert( bool );
 
 /* editmain.c */
 vi_rc   DoMove( event *event );
 vi_rc   DoLastEvent( void );
 void    DoneLastEvent( vi_rc rc, bool is_dotmode );
-void    EditMain( void );
+void EditMain( void );
 vi_rc   AbsoluteNullResponse( void );
 vi_rc   NullResponse( void );
-long    GetRepeatCount( void );
-void    SetRepeatCount( long );
+long GetRepeatCount( void );
+void SetRepeatCount( long );
 vi_rc   DoDigit( void );
-void    DoneRepeat( void );
-void    KillRepeatWindow( void );
+void DoneRepeat( void );
+void KillRepeatWindow( void );
 vi_rc   InvalidKey( void );
-void    SetModifiedVar( bool val );
-void    Modified( bool );
-void    ResetDisplayLine( void );
+void SetModifiedVar( bool val );
+void Modified( bool );
+void ResetDisplayLine( void );
 
 /* editmv.c */
 vi_rc MovePage( int, long, bool );
@@ -259,19 +259,19 @@ vi_rc MoveBottomOfPage( range *, long );
 
 /* error.c */
 void    FatalError( vi_rc );
-void    Die( const char *, ... );
+void Die( const char *, ... );
 char    *GetErrorMsg( vi_rc );
-void    Error( char *, ... );
-void    FreeErrorMsgData( void );
-void    ErrorFini( void );
+void Error( char *, ... );
+void FreeErrorMsgData( void );
+void ErrorFini( void );
 
 /* expandfn.c */
 int ExpandFileNames( char *, char *** );
 
 /* fcb.c */
 vi_rc   ReadFcbData( file * );
-void    CreateFcbData( file *, int );
-int     FcbSize( fcb * );
+void CreateFcbData( file *, int );
+int FcbSize( fcb * );
 
 /* fcb2.c */
 vi_rc FindFcbWithLine( linenum, file *, fcb ** );
@@ -290,36 +290,36 @@ vi_rc LineInfo( void );
 vi_rc SanityCheck( void );
 
 /* fcbdup.c */
-void    CreateDuplicateFcbList( fcb *, fcb **, fcb ** );
+void CreateDuplicateFcbList( fcb *, fcb **, fcb ** );
 
 /* fcbmem.c */
-fcb     *FcbAlloc( file * );
-void    FcbFree( fcb * );
-void    FreeEntireFcb( fcb * );
-void    FreeFcbList( fcb * );
+fcb *FcbAlloc( file * );
+void FcbFree( fcb * );
+void FreeEntireFcb( fcb * );
+void FreeFcbList( fcb * );
 
 /* fcbsplit.c */
 vi_rc SplitFcbAtLine( linenum, file *, fcb * );
 vi_rc CheckCurrentFcbCapacity( void );
 
 /* fcbswap.c */
-void    FetchFcb( fcb * );
-void    SwapBlockFini( void );
+void FetchFcb( fcb * );
+void SwapBlockFini( void );
 
 /* fgrep.c */
 vi_rc DoFGREP( char *, char *, bool );
 vi_rc DoEGREP( char *, char * );
 
 /* file.c */
-void    SaveInfo( info * );
-void    SaveCurrentInfo( void );
-bool    RestoreInfo( info * );
+void SaveInfo( info * );
+void SaveCurrentInfo( void );
+bool RestoreInfo( info * );
 vi_rc   DisplayFileStatus( void );
-void    CTurnOffFileDisplayBits( void );
-bool    CFileReadOnly( void );
-void    FileIOMessage( char *, linenum, long );
-bool    IsTextFile( char * );
-int     GimmeFileCount( void );
+void CTurnOffFileDisplayBits( void );
+bool CFileReadOnly( void );
+void FileIOMessage( char *, linenum, long );
+bool IsTextFile( char * );
+int GimmeFileCount( void );
 
 /* filemove.c */
 vi_rc   NextFile( void );
@@ -327,17 +327,17 @@ vi_rc   NextFileDammit( void );
 vi_rc   RotateFileForward( void );
 vi_rc   RotateFileBackwards( void );
 vi_rc   GotoFile( window_id );
-void    BringUpFile( info *, bool );
+void BringUpFile( info *, bool );
 
 /* filelast.c */
-void    UpdateLastFileList( char *fname );
-char    *GetFileInLastFileList( int num );
+void UpdateLastFileList( char *fname );
+char *GetFileInLastFileList( int num );
 
 /* filenew.c */
 vi_rc   NewFile( char *, bool );
-file    *FileAlloc( char * );
-void    FileFree( file * );
-void    FreeEntireFile( file * );
+file *FileAlloc( char * );
+void FileFree( file * );
+void FreeEntireFile( file * );
 
 /* filesave.c */
 #ifdef __WIN__
@@ -346,8 +346,8 @@ vi_rc   SaveFileAs( void );
 vi_rc   SaveFile( char *, linenum, linenum, int );
 vi_rc   StartSaveExit( void );
 vi_rc   SaveAndExit( char *fname );
-bool    FileExitOptionSaveChanges( file * );
-bool    FilePromptForSaveChanges( file *f );
+bool FileExitOptionSaveChanges( file * );
+bool FilePromptForSaveChanges( file *f );
 vi_rc   FancyFileSave( void );
 vi_rc   DoKeyboardSave( void );
 
@@ -357,11 +357,11 @@ vi_rc SelectFileSave( char * );
 vi_rc SelectLineInFile( selflinedata *sfd );
 
 /* filestk.c */
-void    InitFileStack( void );
+void InitFileStack( void );
 vi_rc   PushFileStack( void );
 vi_rc   PushFileStackAndMsg( void );
 vi_rc   PopFileStack( void );
-void    FiniFileStack( void );
+void FiniFileStack( void );
 
 /* filter.c */
 vi_rc DoGenericFilter( linenum, linenum, char * );
@@ -372,10 +372,10 @@ void    ResetLastFind( info * );
 vi_rc   FindForwardWithString( char * );
 vi_rc   GetFind( char *, i_mark *, int *, find_type );
 vi_rc   FindBackwardsWithString( char * );
-void    SaveFindRowColumn( void );
+void SaveFindRowColumn( void );
 vi_rc   ColorFind( char *, find_type );
 void    SetLastFind( char * );
-void    FindCmdFini( void );
+void FindCmdFini( void );
 void    JumpTo( i_mark * );
 
 vi_rc DoFindBackwards( range *, long );
@@ -397,27 +397,27 @@ vi_rc ToggleSSbar( void );
 #ifdef __WATCOMC__
 #pragma aux Quit aborts;
 #endif
-void    Quit( const char **, const char *, ... );
-void    ExitEditor( int );
+void Quit( const char **, const char *, ... );
+void ExitEditor( int );
 void    QuitEditor( vi_rc );
-void    Usage( char * );
+void Usage( char * );
 
 /* fmatch.c */
 bool    FileMatch( char *name );
 vi_rc   FileMatchInit( char *wild );
-void    FileMatchFini( void );
+void FileMatchFini( void );
 
 /* gencfg.c */
 vi_rc   GenerateConfiguration( char *fname, bool is_cmdline );
 
 /* getautoi.c */
-int     GetAutoIndentAmount( char *, int, bool );
+int GetAutoIndentAmount( char *, int, bool );
 
 /* getdir.c */
 vi_rc GetSortDir( char *, bool );
 
 /* getspcmd.c */
-void    GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds );
+void GetSpawnCommandLine( char *path, char *cmdl, cmd_struct *cmds );
 
 /* help.c */
 vi_rc DoHelp( char *data );
@@ -426,80 +426,80 @@ vi_rc DoHelpOnContext( void );
 /* hide.c */
 vi_rc   DoHideCmd( void );
 vi_rc   HideLineRange( linenum s, linenum e, bool unhide );
-void    GetHiddenRange( linenum l, linenum *s, linenum *e );
+void GetHiddenRange( linenum l, linenum *s, linenum *e );
 linenum GetHiddenLineCount( linenum s, linenum e );
 linenum GetHiddenLineBreaks( linenum s, linenum e );
 
 /* hist.c */
-void    LoadHistory( char *cmd );
-void    SaveHistory( void );
-void    CLHistInit( int );
-void    FilterHistInit( int );
-void    FindHistInit( int );
-void    LastFilesHistInit( int );
-void    HistFini( void );
+void LoadHistory( char *cmd );
+void SaveHistory( void );
+void CLHistInit( int );
+void FilterHistInit( int );
+void FindHistInit( int );
+void LastFilesHistInit( int );
+void HistFini( void );
 
 #ifdef __IDE__
 /* ide.c */
-void    IDEInit( void );
-void    IDEFini( void );
-void    IDEGetKeys( void );
+void IDEInit( void );
+void IDEFini( void );
+void IDEGetKeys( void );
 #endif
 
 /* init.c */
-void    InitializeEditor( void );
-void    SetConfigFileName( char *fn );
-char    *GetConfigFileName( void );
-void    FiniCFName( void );
+void InitializeEditor( void );
+void SetConfigFileName( char *fn );
+char *GetConfigFileName( void );
+void FiniCFName( void );
 
 /* io.c */
 vi_rc   FileExists( char * );
 vi_rc   FileOpen( char *, int, int, int, int * );
 vi_rc   FileSeek( int, long );
-FILE    *GetFromEnvAndOpen( char * );
-void    GetFromEnv( char *, char * );
+FILE *GetFromEnvAndOpen( char * );
+void GetFromEnv( char *, char * );
 vi_rc   TmpFileOpen( char *, int * );
-void    TmpFileClose( int, char * );
-void    FileLower( char *str );
-bool    FileTemplateMatch( char *, char * );
-char    *StripPath( char * );
-void    VerifyTmpDir( void );
-void    MakeTmpPath( char *out, char *in );
+void TmpFileClose( int, char * );
+void FileLower( char *str );
+bool FileTemplateMatch( char *, char * );
+char *StripPath( char * );
+void VerifyTmpDir( void );
+void MakeTmpPath( char *out, char *in );
 
 /* key.c */
-vi_key  GetVIKey( vi_key ch, int scan, int shift );
+vi_key  GetVIKey( vi_key ch, int scan, bool shift );
 vi_key  GetNextEvent( bool );
 vi_key  GetKey( bool );
-void    ClearBreak( void );
+void ClearBreak( void );
 bool    NonKeyboardEventsPending( void );
 void    KeyAdd( vi_key ch );
-void    KeyAddString( char *str );
-void    AddCurrentMouseEvent( void );
+void KeyAddString( char *str );
+void AddCurrentMouseEvent( void );
 
 /* linecfb.c */
-bool    CreateLinesFromBuffer( int, line **, line **, int *, int *, short * );
+bool CreateLinesFromBuffer( int, line **, line **, int *, int *, short * );
 
 /* linedel.c */
-void    UpdateLineNumbers( linenum amt, fcb *cfcb  );
+void UpdateLineNumbers( linenum amt, fcb *cfcb  );
 vi_rc   DeleteLineRange( linenum, linenum, linedel_flags );
-void    LineDeleteMessage( linenum, linenum );
+void LineDeleteMessage( linenum, linenum );
 
 /* linedisp.c */
 vi_rc   ReDisplayScreen( void );
 vi_rc   ReDisplayBuffers( bool );
-void    DisplaySomeLines( int,int );
-void    DisplayAllLines( void  );
+void DisplaySomeLines( int,int );
+void DisplayAllLines( void  );
 
 /* linefind.c */
-int     FindFirstCharInListForward( line *, char *, int  );
-int     FindFirstCharInListBackwards( line *, char *, int  );
-int     FindFirstCharNotInListForward( line *, char *, int  );
-int     FindFirstCharNotInListBackwards( line *, char *, int  );
-int     FindFirstCharInRangeForward( line *, char *, int );
-int     FindFirstCharInRangeBackwards( line *, char *, int );
-int     FindFirstCharNotInRangeForward( line *, char *, int );
-int     FindFirstCharNotInRangeBackward( line *, char *, int );
-bool    TestIfCharInRange( char, char * );
+int FindFirstCharInListForward( line *, char *, int  );
+int FindFirstCharInListBackwards( line *, char *, int  );
+int FindFirstCharNotInListForward( line *, char *, int  );
+int FindFirstCharNotInListBackwards( line *, char *, int  );
+int FindFirstCharInRangeForward( line *, char *, int );
+int FindFirstCharInRangeBackwards( line *, char *, int );
+int FindFirstCharNotInRangeForward( line *, char *, int );
+int FindFirstCharNotInRangeBackward( line *, char *, int );
+bool TestIfCharInRange( char, char * );
 vi_rc   FindCharOnCurrentLine( bool, int, int *, int );
 vi_rc   FancyGotoLine( void );
 
@@ -508,12 +508,12 @@ vi_rc InsertLines( linenum, fcb *, fcb *, undo_stack * );
 vi_rc InsertLinesAtCursor( fcb *, fcb *, undo_stack * );
 
 /* linemisc.c */
-int     FindStartOfCurrentLine( void );
-int     FindStartOfALine( line * );
+int FindStartOfCurrentLine( void );
+int FindStartOfALine( line * );
 vi_rc   JoinCurrentLineToNext( void );
 vi_rc   GenericJoinCurrentLineToNext( bool remsp );
-void    SaveCurrentFilePos( void );
-void    RestoreCurrentFilePos( void );
+void SaveCurrentFilePos( void );
+void RestoreCurrentFilePos( void );
 vi_rc   SaveAndResetFilePos( linenum );
 
 /* lineptr.c */
@@ -529,43 +529,43 @@ bool  IsPastLastLine( linenum l );
 vi_rc ValidateCurrentLine( void );
 
 /* linenew.c */
-void    AddNewLineAroundCurrent( char *, int, insert_dir );
-void    InsertNewLine( line *, line **, line **, char *, int, insert_dir );
-void    CreateNullLine( fcb * );
-line    *LineAlloc( char *, int );
+void AddNewLineAroundCurrent( char *, int, insert_dir );
+void InsertNewLine( line *, line **, line **, char *, int, insert_dir );
+void CreateNullLine( fcb * );
+line *LineAlloc( char *, int );
 
 /* linenum.c */
 vi_rc LineNumbersSetup( void );
 
 /* linework.c */
-void    GetCurrentLine( void );
+void GetCurrentLine( void );
 vi_rc   ReplaceCurrentLine( void );
-void    DisplayWorkLine( bool );
+void DisplayWorkLine( bool );
 
 /* lineyank.c */
 vi_rc   YankLineRange( linenum, linenum );
 vi_rc   GetCopyOfLineRange( linenum, linenum, fcb **, fcb ** );
-void    LineYankMessage( linenum, linenum );
+void LineYankMessage( linenum, linenum );
 
 /* llrtns.c */
-void    AddLLItemAtEnd( ss **, ss **, ss * );
-void    InsertLLItemAfter( ss **, ss *, ss * );
-void    InsertLLItemBefore( ss **, ss *, ss * );
-void    *DeleteLLItem( ss **, ss **, ss * );
-void    ReplaceLLItem( ss **, ss **, ss *, ss * );
-bool    ValidateLL( ss *, ss * );
+void AddLLItemAtEnd( ss **, ss **, ss * );
+void InsertLLItemAfter( ss **, ss *, ss * );
+void InsertLLItemBefore( ss **, ss *, ss * );
+void *DeleteLLItem( ss **, ss **, ss * );
+void ReplaceLLItem( ss **, ss **, ss *, ss * );
+bool ValidateLL( ss *, ss * );
 
 /* mapkey.c */
 vi_rc   MapKey( int flag, char *data );
 vi_rc   DoKeyMap( vi_key );
-void    DoneInputKeyMap( void );
+void DoneInputKeyMap( void );
 vi_rc   StartInputKeyMap( vi_key );
 vi_rc   RunKeyMap( key_map *, long );
 vi_rc   AddKeyMap( key_map *, char * );
-void    InitKeyMaps( void );
+void InitKeyMaps( void );
 vi_rc   ExecuteBuffer( void );
 char    *LookUpCharToken( vi_key ch, bool want_single );
-void    FiniKeyMaps( void );
+void FiniKeyMaps( void );
 
 /* mark.c */
 vi_rc   SetMark( void );
@@ -575,32 +575,32 @@ vi_rc   GoMarkLine( range *, long );
 vi_rc   GetMark( linenum *, int * );
 vi_rc   GetMarkLine( linenum * );
 vi_rc   VerifyMark( int, int );
-void    AllocateMarkList( void );
-void    FreeMarkList( void );
-void    MemorizeCurrentContext( void );
-void    SetMarkContext( void );
+void AllocateMarkList( void );
+void FreeMarkList( void );
+void MemorizeCurrentContext( void );
+void SetMarkContext( void );
 
 /* match.c */
 vi_rc   DoMatching( range *, long count );
 vi_rc   FindMatch( i_mark * );
 vi_rc   AddMatchString( char * );
-void    MatchFini( void );
+void MatchFini( void );
 
 /* mem.c */
-void    *MemAlloc( unsigned );
-void    *MemAllocUnsafe( unsigned );
-void    MemFree( void * );
-void    *MemReAlloc( void *, unsigned );
-void    *MemReAllocUnsafe( void *ptr, unsigned size );
-void    *StaticAlloc( void );
-void    StaticFree( char * );
-void    StaticStart( void );
-void    StaticFini( void );
-char    *MemStrDup( char * );
+void *MemAlloc( unsigned );
+void *MemAllocUnsafe( unsigned );
+void MemFree( void * );
+void *MemReAlloc( void *, unsigned );
+void *MemReAllocUnsafe( void *ptr, unsigned size );
+void *StaticAlloc( void );
+void StaticFree( char * );
+void StaticStart( void );
+void StaticFini( void );
+char *MemStrDup( char * );
 vi_rc   DumpMemory( void );
 #ifdef TRMEM
-void    InitTRMEM( void );
-void    DumpTRMEM( void );
+    void InitTRMEM( void );
+    void DumpTRMEM( void );
 #endif
 
 #define MemFree2( pp ) \
@@ -609,34 +609,34 @@ void    DumpTRMEM( void );
         *(pp) = NULL;       \
     } while( 0 )
 
-#define MemFreeList(s, pp)                                                  \
-    do {                                                                    \
-        if( pp ) {                                                          \
-            size_t memFreeList_i;                                           \
-            for( memFreeList_i = 0; memFreeList_i < s; memFreeList_i++ ) {  \
-                MemFree( pp[memFreeList_i] );                               \
-            }                                                               \
-            MemFree( pp );                                                  \
-        }                                                                   \
-    } while( 0 )
+#define MemFreeList(s, pp)                                              \
+do {                                                                    \
+    if (pp) {                                                           \
+        size_t memFreeList_i;                                           \
+        for( memFreeList_i = 0; memFreeList_i < s; memFreeList_i++ ) {  \
+            MemFree( pp[memFreeList_i] );                               \
+        }                                                               \
+        MemFree( pp );                                                  \
+    }                                                                   \
+} while (0)
 
 /* misc.c */
-int     ExecCmd( char *, char *, char * );
+int ExecCmd( char *, char *, char * );
 vi_rc   GetResponse( char *, char * );
-void    ExitWithVerify( void );
-bool    ExitWithPrompt( bool );
-bool    PromptFilesForSave( void );
-bool    PromptThisFileForSave( const char * );
-bool    QueryFile( const char * );
+void ExitWithVerify( void );
+bool ExitWithPrompt( bool );
+bool PromptFilesForSave( void );
+bool PromptThisFileForSave( const char * );
+bool QueryFile( const char * );
 vi_rc   PrintHexValue( void );
 vi_rc   EnterHexKey( void );
 vi_rc   DoVersion( void );
-char    *StrMerge( int, char *, ... );
+char *StrMerge( int, char *, ... );
 vi_rc   ModificationTest( void );
-void    UpdateCurrentDirectory( void );
+void UpdateCurrentDirectory( void );
 vi_rc   DoAboutBox( void );
 vi_rc   CurFileExitOptionSaveChanges( void );
-int     NextBiggestPrime( int );
+int NextBiggestPrime( int );
 vi_rc   FancySetFS( void );
 vi_rc   FancySetScr( void );
 vi_rc   FancySetGen( void );
@@ -646,52 +646,52 @@ bool    GenericQueryBool( char *str );
 vi_rc   GoToLineRelCurs( linenum );
 vi_rc   GoToLineNoRelCurs( linenum );
 vi_rc   GoToColumn( int, int );
-int     NewColumn( int );
+int NewColumn( int );
 vi_rc   GoToColumnOK( int );
 vi_rc   GoToColumnOnCurrentLine( int );
 vi_rc   SetCurrentLine( linenum );
-void    SetCurrentLineNumber( linenum );
+void SetCurrentLineNumber( linenum );
 bool    CheckLeftColumn( void );
-void    ValidateCurrentColumn( void );
+void ValidateCurrentColumn( void );
 bool    CheckCurrentColumn( void );
-int     ShiftTab( int, int );
+int ShiftTab( int, int );
 vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( char * );
 
 /* parse.c */
-void    RemoveLeadingSpaces( char *);
-void    TranslateTabs( char * );
+void RemoveLeadingSpaces( char *);
+void TranslateTabs( char * );
 vi_rc   GetStringWithPossibleSlash( char *, char * );
 vi_rc   GetStringWithPossibleQuote( char *, char * );
 vi_rc   GetStringWithPossibleQuote2( char *, char *, bool );
-int     NextWord( char *, char *, char *);
-int     NextWordSlash( char *, char * );
-int     NextWord1( char *, char * );
-void    EliminateFirstN( char *, int );
-int     Tokenize( char *, char *, bool );
-int     GetLongestTokenLength( char * );
-int     GetNumberOfTokens( char * );
-char    **BuildTokenList( int, char * );
-char    *GetTokenString( char *, int );
-int     AddColorToken( char *);
-int     ReplaceSubString( char *, int, int, int, char *, int );
-void    GetSubString( char *, int, int, char * );
-void    GetEndString( char *data, char *res );
+int NextWord( char *, char *, char *);
+int NextWordSlash( char *, char * );
+int NextWord1( char *, char * );
+void EliminateFirstN( char *, int );
+int Tokenize( char *, char *, bool );
+int GetLongestTokenLength( char * );
+int GetNumberOfTokens( char * );
+char **BuildTokenList( int, char * );
+char *GetTokenString( char *, int );
+int AddColorToken( char *);
+int ReplaceSubString( char *, int, int, int, char *, int );
+void GetSubString( char *, int, int, char * );
+void GetEndString( char *data, char *res );
 
 /* parsecfg.c */
-void    ParseConfigFile( char * );
+void ParseConfigFile( char * );
 
 /* parsecl.c */
 vi_rc ParseCommandLine( char *, linenum *, int *, linenum *, int *, int *, char *, int * );
 vi_rc GetAddress( char *, linenum * );
 
 /* printf.c */
-void    MySprintf( char *, const char *, ... );
-void    MyPrintf( const char *, ... );
-void    MyFprintf( FILE *,const char *, ... );
+void MySprintf( char *, const char *, ... );
+void MyPrintf( const char *, ... );
+void MyFprintf( FILE *,const char *, ... );
 
 /* readstr.c */
-bool    ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
+bool ReadStringInWindow( window_id, int, char *, char *, int, history_data * );
 vi_rc   PromptForString( char *prompt, char *buff, int maxbuff, history_data *hist );
 bool    GetTextForSpecialKey( int str_max, vi_key event, char *tmp );
 void    InsertTextForSpecialKey( vi_key event, char *buff );
@@ -705,28 +705,28 @@ vi_rc   InsertSavebufAfter( void );
 vi_rc   InsertSavebufBefore2( void );
 vi_rc   InsertSavebufAfter2( void );
 vi_rc   InsertGenericSavebuf( int, int );
-void    InitSavebufs( void );
-void    AddLineToSavebuf( char *, int, int );
+void InitSavebufs( void );
+void AddLineToSavebuf( char *, int, int );
 vi_rc   AddSelRgnToSavebuf( void );
 vi_rc   AddSelRgnToSavebufAndDelete( void );
-void    AddFcbsToSavebuf( fcb *, fcb *, int );
+void AddFcbsToSavebuf( fcb *, fcb *, int );
 vi_rc   SwitchSavebuf( void );
 vi_rc   DoSavebufNumber( void );
 vi_rc   SetSavebufNumber( char * );
 vi_rc   GetSavebufString( char ** );
-bool    IsEmptySavebuf( char ch );
-void    FiniSavebufs( void );
+bool IsEmptySavebuf( char ch );
+void FiniSavebufs( void );
 
 /* select.c */
 vi_rc SelectItem( selectitem *si );
 vi_rc SelectItemAndValue( window_info *, char *, char **, int , vi_rc (*)(char *, char *, int * ), int, char **, int );
 
 /* selrgn.c */
-void    UpdateDrag( window_id, int, int );
-void    InitSelectedRegion( void );
-void    UnselectRegion( void );
-void    SetSelRegionCols( linenum sl, int sc, int ec );
-void    UpdateCursorDrag( void );
+void UpdateDrag( window_id, int, int );
+void InitSelectedRegion( void );
+void UnselectRegion( void );
+void SetSelRegionCols( linenum sl, int sc, int ec );
+void UpdateCursorDrag( void );
 vi_rc   ReselectRegion( void );
 vi_rc   SelectDown( void );
 vi_rc   SelectUp( void );
@@ -747,49 +747,49 @@ vi_rc   DoSelectSelectionPopMenu( void );
 vi_rc   GetSelectedRegion( range * );
 vi_rc   SetSelectedRegion( range * );
 vi_rc   SetSelectedRegionFromLine( range *, linenum );
-void    SelRgnInit( void );
-void    SelRgnFini( void );
-void    GetFixedSelectedRegion( select_rgn *);
-void    NormalizeRange( range * );
+void SelRgnInit( void );
+void SelRgnFini( void );
+void GetFixedSelectedRegion( select_rgn *);
+void NormalizeRange( range * );
 
 /* shove.c */
 vi_rc Shift( linenum, linenum, char, bool );
 
 /* source.c */
 vi_rc   Source( char *, char *, int * );
-void    FileSPVAR( void );
-void    SourceError( char *msg );
-void    DeleteResidentScripts( void );
+void FileSPVAR( void );
+void SourceError( char *msg );
+void DeleteResidentScripts( void );
 
 /* spawn.c */
-int     MySpawn( char * );
-void    ResetSpawnScreen( void );
+int MySpawn( char * );
+void ResetSpawnScreen( void );
 
 /* srcvar.c */
-void    VarAddGlobalStr( char *, char * );
-void    VarFini( void );
+void VarAddGlobalStr( char *, char * );
+void VarFini( void );
 
 /* status.c */
-void    UpdateStatusWindow( void );
+void UpdateStatusWindow( void );
 vi_rc   NewStatusWindow( void );
 
 /* tab_hell.c */
 vi_rc   ExpandWhiteSpace( void );
 vi_rc   CompressWhiteSpace( void );
-bool    ExpandTabsInABufferUpToColumn( int, char *, int, char *, int );
-bool    ExpandTabsInABuffer( char *, int, char *, int );
-int     InsertTabSpace( int, char *, bool * );
-int     GetVirtualCursorPosition( char *, int );
-int     VirtualCursorPosition( void );
-int     VirtualCursorPosition2( int );
-int     RealCursorPosition( int );
-int     RealCursorPositionInString( char *, int );
-int     RealCursorPositionOnLine( linenum, int );
-int     WinRealCursorPosition( char *, int );
-int     WinVirtualCursorPosition( char *, int );
-int     RealLineLen( char * );
+bool ExpandTabsInABufferUpToColumn( int, char *, int, char *, int );
+bool ExpandTabsInABuffer( char *, int, char *, int );
+int InsertTabSpace( int, char *, bool * );
+int GetVirtualCursorPosition( char *, int );
+int VirtualCursorPosition( void );
+int VirtualCursorPosition2( int );
+int RealCursorPosition( int );
+int RealCursorPositionInString( char *, int );
+int RealCursorPositionOnLine( linenum, int );
+int WinRealCursorPosition( char *, int );
+int WinVirtualCursorPosition( char *, int );
+int RealLineLen( char * );
 bool    AddLeadingTabSpace( short *, char *, int );
-bool    ConvertSpacesToTabsUpToColumn( int, char *, int, char *, int );
+bool ConvertSpacesToTabsUpToColumn( int, char *, int, char *, int );
 
 /* tags.c */
 vi_rc GetCurrentTag( void );
@@ -798,59 +798,59 @@ vi_rc FindTag( char * );
 vi_rc LocateTag( char *, char *, char * );
 
 /* time.c */
-void    GetTimeString( char *st );
-void    GetDateString( char *st );
-void    GetDateTimeString( char *st );
+void GetTimeString( char *st );
+void GetDateString( char *st );
+void GetDateTimeString( char *st );
 
 /* undo.c */
-void    StartUndoGroup( undo_stack * );
-void    StartUndoGroupWithPosition( undo_stack *stack, linenum lne, linenum top, int col );
+void StartUndoGroup( undo_stack * );
+void StartUndoGroupWithPosition( undo_stack *stack, linenum lne, linenum top, int col );
 vi_rc   UndoReplaceLines( linenum, linenum );
-void    UndoDeleteFcbs( linenum, fcb *, fcb *, undo_stack * );
-void    UndoInsert( linenum, linenum, undo_stack * );
-void    PatchDeleteUndo( undo_stack * );
-void    EndUndoGroup( undo_stack * );
-void    TryEndUndoGroup( undo_stack *cstack );
+void UndoDeleteFcbs( linenum, fcb *, fcb *, undo_stack * );
+void UndoInsert( linenum, linenum, undo_stack * );
+void PatchDeleteUndo( undo_stack * );
+void EndUndoGroup( undo_stack * );
+void TryEndUndoGroup( undo_stack *cstack );
 
 /* undoclne.c */
-void    CurrentLineReplaceUndoStart( void );
-void    CurrentLineReplaceUndoCancel( void );
-void    ConditionalCurrentLineReplaceUndoEnd( void );
-void    CurrentLineReplaceUndoEnd( int );
+void CurrentLineReplaceUndoStart( void );
+void CurrentLineReplaceUndoCancel( void );
+void ConditionalCurrentLineReplaceUndoEnd( void );
+void CurrentLineReplaceUndoEnd( int );
 
 /* undo_do.c */
 vi_rc DoUndo( void );
 vi_rc DoUndoUndo( void );
 
 /* undostks.c */
-undo    *UndoAlloc( undo_stack *stack, int type );
-void    UndoFree( undo *cundo, int freefcbs );
-void    AddUndoToCurrent( undo *item, undo_stack *stack );
-void    PurgeUndoStack( undo_stack *stack );
-bool    TossUndos( void );
-void    AllocateUndoStacks( void );
-void    FreeUndoStacks( void );
-void    FreeAllUndos( void );
-undo    *PopUndoStack( undo_stack *stack );
-void    PushUndoStack( undo *item, undo_stack *stack );
+undo *UndoAlloc( undo_stack *stack, int type );
+void UndoFree( undo *cundo, int freefcbs );
+void AddUndoToCurrent( undo *item, undo_stack *stack );
+void PurgeUndoStack( undo_stack *stack );
+bool TossUndos( void );
+void AllocateUndoStacks( void );
+void FreeUndoStacks( void );
+void FreeAllUndos( void );
+undo *PopUndoStack( undo_stack *stack );
+void PushUndoStack( undo *item, undo_stack *stack );
 
 /* wingen.c */
 vi_rc   DisplayExtraInfo( window_info *, window_id *, char  _NEAR * _NEAR *, int );
 vi_rc   NewMessageWindow( void );
 vi_rc   NewWindow2( window_id *, window_info * );
-void    Message1( char *, ... );
-void    Message2( char *, ... );
+void Message1( char *, ... );
+void Message2( char *, ... );
 vi_rc   WPrintfLine( window_id, int, char *, ... );
-bool    ColumnInWindow( int, int * );
-void    SetWindowSizes( void );
-void    SetWindowCursor( void );
-void    SetWindowCursorForReal( void );
+bool ColumnInWindow( int, int * );
+void SetWindowSizes( void );
+void SetWindowCursor( void );
+void SetWindowCursorForReal( void );
 vi_rc   CurrentWindowResize( int x1, int y1, int x2, int y2 );
-void    SetFileWindowTitle( window_id cw, info *cinfo, bool hilite );
-void    ResetAllWindows( void );
+void SetFileWindowTitle( window_id cw, info *cinfo, bool hilite );
+void ResetAllWindows( void );
 
 /* word.c */
-void    InitWordSearch( char *regword );
+void InitWordSearch( char *regword );
 vi_rc   FindColumnOfNextWordForward( line *, int *, bool, bool );
 vi_rc   FindColumnOfNextWordBackwards( line *, int *, bool, bool );
 vi_rc   GimmeCurrentWord( char *, int, bool );

@@ -374,7 +374,8 @@ BOOL NameFromHandle( HANDLE hFile, char *name )
                 UINT    uNameLen = strlen( szName );
 
                 if( uNameLen < MAX_PATH ) {
-                    bFound = strnicmp( pszFilename, szName, uNameLen ) == 0;
+                    bFound = ( strnicmp( pszFilename, szName, uNameLen ) == 0
+                               && pszFilename[ uNameLen ] == '\\' );
 
                     if( bFound ) {
                         // Reconstruct pszFilename using szTemp
@@ -504,13 +505,13 @@ void DelProcess( BOOL closeHandles )
 
 static void force16SegmentLoad( thread_info *ti, WORD sel )
 {
-    static char     getMemIns[INS_BYTES] = {
+    static unsigned char    getMemIns[INS_BYTES] = {
         0x8e, 0xc0, 0x26, 0xa1, 0x00, 0x00, 0xcc
     };
-    static char     origBytes[INS_BYTES];
-    static BOOL     gotOrig;
-    auto   CONTEXT  con;
-    auto   CONTEXT  oldcon;
+    static unsigned char    origBytes[INS_BYTES];
+    static BOOL             gotOrig;
+    auto   CONTEXT          con;
+    auto   CONTEXT          oldcon;
 
     if( !UseVDMStuff ) {
         return;

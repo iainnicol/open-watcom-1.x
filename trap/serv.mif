@@ -11,8 +11,8 @@ sys_x86_linux   = sys linux
 sys_x86_win     = sys windows op st=20k, modname=$^&, desc $(description)
 sys_x86_dos     = sys dos op st=4k
 sys_x86_zdos    = sys zdos
-sys_x86_rsi     = stub
-sys_x86_cw      = sys causeway
+sys_x86_rsi     = sys dos16m
+sys_x86_cw      = sys causeway op stub=$(cw_dir)/cw32/dosi86/cwdstub.exe
 sys_x86_ads     = sys ads op st=8k lib $(adsdir)/wcads.lib
 !ifndef sys_x86_pls
 sys_x86_pls     = sys pharlap op st=8k
@@ -110,7 +110,13 @@ SERVER_remote_objs = testserv.obj servname.obj
 SERVER_remote_objs = wserver.obj options.obj
 resource_file = wserver.res
 !else
+!ifeq os linux
+SERVER_remote_objs += serv.obj lnxtrio.obj
+!else ifeq os os2v2
+SERVER_remote_objs += serv.obj os2trio2.obj
+!else
 SERVER_remote_objs += serv.obj $(os)trio.obj
+!endif
 !endif
 SERVER_remote_objs += servacc.obj servcmd.obj servname.obj $(trap_objs)
 extra_srcs +=;$(dig_srcs)

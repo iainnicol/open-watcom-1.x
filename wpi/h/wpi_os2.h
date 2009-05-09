@@ -663,7 +663,7 @@ extern WPI_COLOUR _wpi_setbackcolour( WPI_PRES, WPI_COLOUR );
 
     #define _wpi_getbackcolour( pres ) GpiQueryBackColor( pres )
 
-extern BOOL _wpi_textout( WPI_PRES pres, int left, int top, LPSTR text, ULONG
+extern BOOL _wpi_textout( WPI_PRES pres, int left, int top, LPCSTR text, ULONG
                                                                         len );
     #define _wpi_getdeffm( fm ) memset( &fm, 0, sizeof( FONTMETRICS ) )
 
@@ -1100,7 +1100,7 @@ extern void _wpi_getoldpen( WPI_PRES pres, HPEN oldobj );
 
     #define _wpi_ptvisible( pres, pt ) GpiPtVisible( pres, pt )
 
-extern void _wpi_gettextextent( WPI_PRES pres, LPSTR string, int len_string,
+extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
                                                     int *width, int *height );
 extern int _wpi_setrop2( WPI_PRES pres, int mode );
 
@@ -1300,10 +1300,10 @@ extern BOOL _wpi_iszoomed( HWND hwnd );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned id,
-                             HMENU popup, char *text, BOOL by_position );
+                             HMENU popup, const char *text, BOOL by_position );
 extern BOOL _wpi_appendmenu( HMENU hmenu, unsigned menu_flags,
                              unsigned attr_flags, unsigned id,
-                             HMENU popup, char *text );
+                             HMENU popup, const char *text );
 extern BOOL _wpi_getmenustate( HMENU hmenu, unsigned id, WPI_MENUSTATE *state,
                                BOOL by_position );
 extern void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state,
@@ -1324,7 +1324,8 @@ extern void _wpi_getmenuflagsfromstate( WPI_MENUSTATE *state,
 
 extern BOOL _wpi_modifymenu( HMENU hmenu, unsigned id, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,
-                             HMENU new_popup, char *new_text, BOOL by_position );
+                             HMENU new_popup, const char *new_text,
+                             BOOL by_position );
 
     #define _wpi_createmenu() WinCreateMenu( HWND_DESKTOP, NULL )
 
@@ -1337,7 +1338,7 @@ extern BOOL _wpi_checkmenuitem( HMENU hmenu, unsigned id,
 extern BOOL _wpi_enablemenuitem( HMENU hmenu, unsigned id,
                                  BOOL fenabled, BOOL by_position );
 extern BOOL _wpi_setmenutext( HMENU hmenu, unsigned id,
-                              char *text, BOOL by_position );
+                              const char *text, BOOL by_position );
 extern BOOL _wpi_getmenutext( HMENU hmenu, unsigned id, char *text, int ctext,
                               BOOL by_position );
 extern UINT _wpi_getmenuitemid( HMENU hmenu, unsigned pos );
@@ -1382,7 +1383,7 @@ extern WPI_HANDLE __wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj,
         __wpi_selectobject( pres, obj, alloca( sizeof(WPI_OBJECT) ) )
 
 extern void _wpi_deleteobject( WPI_HANDLE object );
-extern char *_wpi_menutext2pm( char *text );
+extern char *_wpi_menutext2pm( const char *text );
 extern void _wpi_menutext2win( char *text );
 
     #define _wpi_freemenutext( ptext ) _wpi_free( ptext )
