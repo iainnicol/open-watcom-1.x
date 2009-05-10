@@ -33,7 +33,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #ifdef __WATCOMC__
-    #include <process.h>
+  #include <process.h>
 #else
     #include "clibext.h"
 #endif
@@ -52,7 +52,7 @@
 #include "banner.h"
 
 #ifdef __OSI__
-    #include "ostype.h"
+  #include "ostype.h"
 #endif
 
 extern void             Fatal( unsigned msg, ... );
@@ -212,7 +212,7 @@ static void SetCPUPMC( void )
                 SWData.register_conventions = FALSE;
             else
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-        } else if( *tmp == '"' ) {      // set default mangler
+        } else if( *tmp == '"' ) {                             // set default mangler
             char *dest;
             tmp++;
             dest = strchr(tmp, '"');
@@ -325,7 +325,7 @@ static void SetMemoryModel( void )
     if( Options.ideal )
         strcpy( buffer, "MODEL " );
     else
-        strcpy( buffer, ".MODEL " );
+    strcpy( buffer, ".MODEL " );
     strcat( buffer, model );
     InputQueueLine( buffer );
 }
@@ -1022,8 +1022,6 @@ static void do_envvar_cmdline( char *envvar )
     }
 }
 
-#define MAX_OS_NAME_SIZE 7
-
 static int set_build_target( void )
 /*********************************/
 {
@@ -1031,43 +1029,41 @@ static int set_build_target( void )
     char *uscores = "__";
 
     if( Options.build_target == NULL ) {
-        Options.build_target = AsmAlloc( MAX_OS_NAME_SIZE + 1 );
 #if defined(__OSI__)
         if( __OS == OS_DOS ) {
-            strcpy( Options.build_target, "DOS" );
+            SetTargName( "DOS", 3 );
         } else if( __OS == OS_OS2 ) {
-            strcpy( Options.build_target, "OS2" );
+            SetTargName( "OS2", 3 );
         } else if( __OS == OS_NT ) {
-            strcpy( Options.build_target, "NT" );
+            SetTargName( "NT", 2 );
         } else if( __OS == OS_WIN ) {
-            strcpy( Options.build_target, "WINDOWS" );
+            SetTargName( "WINDOWS", 7 );
         } else {
-            strcpy( Options.build_target, "XXX" );
+            SetTargName( "XXX", 3 );
         }
 #elif defined(__QNX__)
-        strcpy( Options.build_target, "QNX" );
+        SetTargName( "QNX", 3 );
 #elif defined(__LINUX__)
-        strcpy( Options.build_target, "LINUX" );
+        SetTargName( "LINUX", 5 );
 #elif defined(__BSD__)
-        strcpy( Options.build_target, "BSD" );
+        SetTargName( "BSD", 3 );
 #elif defined(__OSX__) || defined(__APPLE__)
-        strcpy( Options.build_target, "OSX" );
+        SetTargName( "OSX", 3 );
 #elif defined(__SOLARIS__) || defined( __sun )
-        strcpy( Options.build_target, "SOLARIS" );
+        SetTargName( "SOLARIS", 7 );
 #elif defined(__DOS__)
-        strcpy( Options.build_target, "DOS" );
+        SetTargName( "DOS", 3 );
 #elif defined(__OS2__)
-        strcpy( Options.build_target, "OS2" );
+        SetTargName( "OS2", 3 );
 #elif defined(__NT__)
-        strcpy( Options.build_target, "NT" );
+        SetTargName( "NT", 2 );
 #elif defined(__ZDOS__)
-        strcpy( Options.build_target, "ZDOS" );
+        SetTargName( "ZDOS", 4 );
 #else
         #error unknown host OS
 #endif
     }
 
-    strupr( Options.build_target );
     tmp = AsmTmpAlloc( strlen( Options.build_target ) + 5 ); // null + 4 uscores
     strcpy( tmp, uscores );
     strcat( tmp, Options.build_target );
@@ -1206,7 +1202,7 @@ void set_cpu_parameters( void )
             add_constant( "__REGISTER__" );
         else
             add_constant( "__STACK__" );
-    }
+        }
     switch( SWData.cpu ) {
     case 0:
         token = T_DOT_8086;

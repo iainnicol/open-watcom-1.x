@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 #include "asmglob.h"
-#include "asmins.h"
 #include "asmeval.h"
 #include "asmexpnd.h"
-#include "asmdefs.h"
 
 #if defined( _STANDALONE_ )
 
@@ -191,8 +189,8 @@ int ExpandProcString( int index )
                     }
                     if( right_bracket < left_bracket ) {
                         AsmError( SYNTAX_ERROR );
-                        return( ERROR );
-                    }
+                return( ERROR );
+            }
                 }
                 if( ( Options.ideal == 0 ) &&
                     ( left_bracket == 0 ) &&
@@ -345,7 +343,7 @@ static void FreeConstData( const_info *constinfo )
 
 int StoreConstantNumber( char *name, long value, bool redefine )
 {
-    struct asm_tok  *new;
+    struct asm_tok      *new;
     dir_node        *dir;
     struct asm_sym  *sym;
 
@@ -409,15 +407,15 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         dir->e.constinfo->redefine = redefine;
         dir->e.constinfo->expand_early = expand_early;
     } else if( dir->sym.state == SYM_UNDEFINED ) {
-        dir_change( dir, TAB_CONST );
-        dir->e.constinfo->redefine = redefine;
-        dir->e.constinfo->expand_early = expand_early;
+            dir_change( dir, TAB_CONST );
+            dir->e.constinfo->redefine = redefine;
+            dir->e.constinfo->expand_early = expand_early;
     } else if(( dir->sym.state != SYM_CONST )
-        || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
-        /* error */
-        AsmError( LABEL_ALREADY_DEFINED );
-        return( ERROR );
-    }
+            || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
+            /* error */
+            AsmError( LABEL_ALREADY_DEFINED );
+            return( ERROR );
+        }
 
     if( value ) {
         /* just define it to be 1 and get out */

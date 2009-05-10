@@ -30,9 +30,7 @@
 
 
 #include "asmglob.h"
-#include "asmins.h"
 #include "asmeval.h"
-#include "asmdefs.h"
 #include "directiv.h"
 
 #if defined( _STANDALONE_ )
@@ -241,7 +239,7 @@ static int get_operand( expr_list *new, int *start, int end, bool (*is_expr)(int
             new->type = EXPR_ADDR;
             new->indirect = TRUE;
         } else {
-            new->type = EXPR_CONST;
+        new->type = EXPR_CONST;
         }
 #else
         new->type = EXPR_CONST;
