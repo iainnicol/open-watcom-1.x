@@ -58,7 +58,7 @@
 #include "cgback.h"
 #include "cusage.h"
 #include "brinfo.h"
-#include "idedrv.h"
+#include "errout.h"
 #include "autodep.h"
 #include "swchar.h"
 #include "ialias.h"
@@ -145,14 +145,14 @@ static void OpenPgmFile(        // OPEN PROGRAM FILE
 
 
 int OpenSrcFile(                // OPEN A SOURCE FILE
-    char * filename,            // - file name
+    const char * filename,      // - file name
     boolean is_lib )            // - TRUE ==> is <file>
 {
     boolean     retn;           // - return: TRUE ==> opened ok
     int         save;           // - saved pre-proc status
 
     // See if there's an alias for this file name
-    filename = (char *)IAliasLookup( filename, is_lib ? '<' : 0 );
+    filename = IAliasLookup( filename, is_lib );
 
     if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
         PpStartFile();
@@ -233,7 +233,7 @@ static void openForceIncludeFile( void )
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
-    InitialMacroFlag = 0;
+    InitialMacroFlag = MFLAG_NONE;
     OpenSrcFile( ForceInclude, FALSE );
     CMemFreePtr( &ForceInclude );
 }

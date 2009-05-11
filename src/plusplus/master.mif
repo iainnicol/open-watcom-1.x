@@ -83,7 +83,7 @@ carvecpp_hdr = \"carvecpp.h\"
 fesupp_hdr   = "fesupp.h"
 carvecpp_hdr = "carvecpp.h"
 !endif
- 
+
 !ifeq cg_dll 1
 extra_c_flags += -D_CGDLL
 !endif
@@ -92,12 +92,15 @@ extra_c_flags += -D_CGDLL
 extra_c_flags_axp = -si
 cflags += -db
 !endif
- 
+
 extra_c_flags_osi   = -D__OS2__
 !ifndef plusplus_dll
 extra_c_flags       = -DIDE_PGM
 !endif
- 
+
+!ifdef plusplus_dll
+idedlldriver_c_flags_dos = -DCAUSEWAY
+!endif
 extra_c_flags_carve    = -Dheader=$(fesupp_hdr) -Dheader2=$(carvecpp_hdr)
 !ifndef bootstrap
 !ifneq host_os linux
@@ -110,8 +113,8 @@ extra_c_flags_cmdlnany = -os
 !ifeq release 0
 extra_c_flags_dbgzap   = -Dheader=$(fesupp_hdr)
 !endif
-extra_c_flags_idedlld  = -bd
-extra_c_flags_idedrv   = -DSTATIC_LINKAGE
+extra_c_flags_idedlld  = -bd $(idedlldriver_c_flags_$(host_os))
+extra_c_flags_idedrv   = -DSTATIC_LINKAGE $(idedlldriver_c_flags_$(host_os))
 extra_c_flags_initfini = -Dheader=$(fesupp_hdr) -DSPLIT_REQD
 extra_c_flags_intlload = -D__header=$(fesupp_hdr)
 !ifeq plusplus_trmem 1
@@ -301,6 +304,9 @@ drv.lnk : $(__MAKEFILES__)
     @%write $@ $(lflags)
     @for %i in ($(drv_objs)) do @%append $@ file %i
     @%append $@ lib $(dll_name).lib
+!ifeq host_os dos
+    @%append $@ lib cwdll.lib
+!endif
  
 #
 # .DLL version of compiler

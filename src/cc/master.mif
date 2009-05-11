@@ -65,7 +65,11 @@ extra_c_flags = $(defines)
 extra_c_flags += -D_CGDLL
 !endif
 
-extra_c_flags_idedll   = -bd
+!ifdef cc_dll
+idedlldriver_c_flags_dos = -DCAUSEWAY
+!endif
+extra_c_flags_idedll   = -bd $(idedlldriver_c_flags_$(host_os))
+extra_c_flags_idedrv   = $(idedlldriver_c_flags_$(host_os))
 !ifdef __UNIX__
 extra_c_flags_intlload = -D__header=\"fesupp.h\"
 !else
@@ -182,6 +186,9 @@ drv.lnk : $(__MAKEFILES__)
         @%write $@ $(lflags)
         @for %i in ($(drv_objs)) do @%append $@ file %i
         @%append $@ lib $(dll_name).lib
+!ifeq host_os dos
+        @%append $@ lib cwdll.lib
+!endif
 
 exe.lnk : $(__MAKEFILES__)
         @%write $@ $(lflags)

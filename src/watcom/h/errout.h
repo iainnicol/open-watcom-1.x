@@ -24,18 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Declaration of include aliasing functions.
+* Description:  errout declaration
 *
 ****************************************************************************/
 
 
-#ifndef _IALIAS_H
-#define _IALIAS_H
+#ifndef _ERROUT_H_INCLUDED
+#define _ERROUT_H_INCLUDED
 
-extern void IAliasInit( void );
-extern void IAliasFini( void );
-extern const char *IAliasLookup( const char *filename, boolean is_lib );
-extern void IAliasAdd( const char *alias_name, const char *real_name, boolean is_lib );
-
+#if defined(__UNIX__)
+#define errout  stderr
+#else
+#define errout  stdout
 #endif
 
+#endif
