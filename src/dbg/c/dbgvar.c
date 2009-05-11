@@ -106,6 +106,7 @@ extern void             DbgUpdate( update_list );
 extern char             *StrCopy( char*, char* );
 extern bool             AdvMachState( int );
 extern void             LValue( stack_entry * );
+extern char             *Format( char *, char *, ... );
 
 extern tokens           CurrToken;
 extern mod_handle       ContextMod;
@@ -815,6 +816,8 @@ static void     VarNodeFini( var_node *v )
 }
 
 
+#define MAX_EXPAND_ARRAY_ELEMENTS 100000
+
 static int ExpandArray( var_info *i, var_node *v,
                          long elts, long start, long end )
 /*
@@ -825,12 +828,14 @@ static int ExpandArray( var_info *i, var_node *v,
     int                 count;
     unsigned long       element;
     var_node            **owner;
+    char                buff[CMD_LEN];
 
     owner = &v->expand;
     count = 0;
-    if( elts > 1000 ) {
-        Warn( LIT( WARN_ONLY_1000_ARRAY_ELEMENTS ) );
-        elts = 1000;
+    if( elts > MAX_EXPAND_ARRAY_ELEMENTS ) {
+        elts = MAX_EXPAND_ARRAY_ELEMENTS;
+        Format( buff, LIT( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS ), elts );
+        Warn( buff );
     }
     for( element = start; element <= end; ++element ) {
         if( elts == 0 ) break;

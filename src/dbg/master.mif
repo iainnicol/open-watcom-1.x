@@ -4,7 +4,7 @@
 proj_name = dbg
 
 !ifndef dbg_autodepends
-wv_autodepends = .AUTODEPEND
+dbg_autodepends = .AUTODEPEND
 !endif
 
 dbg_trmem = 1
