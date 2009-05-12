@@ -101,8 +101,7 @@ inc_dirs_lang_osi =
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SMALL__ -DUNIX -D__FLAT__ -DBOOTSTRAP &
-$(cppflags_$(host_cpu)) -D_WCUNALIGNED="__attribute__((packed))" &
--funsigned-char -fno-asm -fno-common
+$(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 
 #cppflags += -D__LINUX__ -DLINUX
 
@@ -182,9 +181,8 @@ inc_dirs_lang_osi =
 # Warning flags: all enabled except the ones that have no use besides annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ &
--D__SMALL__ -DUNIX -D__FLAT__ $(cppflags_$(host_cpu)) &
--D_WCUNALIGNED="__attribute__((packed))" -funsigned-char -fno-asm -fno-common
+cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ -D__SMALL__ &
+-DUNIX -D__FLAT__ $(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
 !endif
