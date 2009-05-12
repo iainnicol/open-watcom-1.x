@@ -89,10 +89,17 @@ set BOOTCLEAN=
     set LOGFNAME=pass2
     set 1=rel
 
-# Configure executable extension: DOS, OS/2 and Windows use .exe, others nothing
+# Configure extensions: For executables, DOS, OS/2 and Windows use .exe, others
+# nothing. For dynamic libraries, DOS, OS/2 and Windows use .dll, UNIX uses .so.
 
 [ BLOCK <BUILD_PLATFORM> nt386 ntaxp os2386 dos386 ]
 #===================================================
     set CMDEXT=.exe
+    set DYLEXT=.dll
+
+[ BLOCK <BLD_HOST> UNIX ]
+#========================
+    set CMDEXT=
+    set DYLEXT=.so
 
 [ BLOCK . . ]
