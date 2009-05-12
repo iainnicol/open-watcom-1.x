@@ -52,7 +52,7 @@ cdsay .
     <CCCMD> <PROJDIR>/os2386.ppc/wclppc.exe     <RELROOT>/binp/wclppc.exe
     <CCCMD> <PROJDIR>/os2386.mps/wclmps.exe     <RELROOT>/binp/wclmps.exe
 
-    <CCCMD> <PROJDIR>/linux386/owcc.elf         <RELROOT>/binl/owcc
+    <CCCMD> <PROJDIR>/linux386/owcc.exe         <RELROOT>/binl/owcc
     <CCCMD> <PROJDIR>/linux386.i86/wcl.exe      <RELROOT>/binl/wcl
     <CCCMD> <PROJDIR>/linux386.i86/wcl.sym      <RELROOT>/binl/wcl.sym
     <CCCMD> <PROJDIR>/linux386.386/wcl386.exe   <RELROOT>/binl/wcl386

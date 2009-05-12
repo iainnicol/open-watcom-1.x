@@ -37,11 +37,7 @@ extra_c_flags += -DWCLMPS
 !else
 extra_deps = owcchelp.gh
 objs = owcc.obj clcommon.obj cmdlhelp.obj getopt.obj quit.obj
-!ifeq host_os linux
-name = owcc.elf
-!else
 name = owcc.exe
-!endif
 !endif
 extra_c_flags_swchar = -I"../../h;../../dos386.i86" -I"$(comp_cfg_dir)/h"
 extra_c_flags_owcc   = -I"$(posix_dir)/h"
