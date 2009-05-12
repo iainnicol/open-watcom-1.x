@@ -137,6 +137,7 @@ typedef unsigned char NCURSES_BOOL;
 #define bool NCURSES_BOOL
 #else
 typedef unsigned char bool;
+#define BOOL_DEFINED    /* Play nice with our bool.h. */
 #endif
 
 #endif /* !__cplusplus, etc. */
