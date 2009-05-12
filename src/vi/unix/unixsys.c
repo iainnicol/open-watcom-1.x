@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "vi.h"
 #include "curses.h"
+#include "vi.h"
 #include "win.h"
 #include "stdui.h"
 #include "vibios.h"
