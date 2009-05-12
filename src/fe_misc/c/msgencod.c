@@ -1067,7 +1067,6 @@ static void writeExtraDefs( FILE *fp ) {
 static void writeMsgH( void ) {
     MSGSYM *m;
 
-    fputs( "#pragma read_only_file;\n", o_msgh );
     if( ! flags.gen_pick ) {
         for( m = messageSyms; m != NULL; m = m->next ) {
             fputs( "#define ", o_msgh );
@@ -1386,7 +1385,6 @@ static void writeMsgC( void ) {
 static void writeLevH( void ) {
     MSGSYM *m;
 
-    fputs( "#pragma read_only_file;\n", o_levh );
     fputs( "#ifndef MSG_CONST\n", o_levh );
     fputs( "#define MSG_CONST const\n", o_levh );
     fputs( "#endif\n", o_levh );
