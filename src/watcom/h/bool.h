@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Define a bool type.
 *
 ****************************************************************************/
 
 
-#if !defined( BOOL_DEFINED )  &&  !defined( bool ) && !(__WATCOMC__ >= 1070 && defined(__cplusplus))
+#if !defined( BOOL_DEFINED )  &&  !defined( bool ) && !defined(__cplusplus)
     #define BOOL_DEFINED
     typedef unsigned char bool;
 #endif
