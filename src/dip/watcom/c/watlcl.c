@@ -349,7 +349,7 @@ search_result SearchLclMod( imp_image_handle *ii, imp_mod_handle im,
                 lookup_item *li, void *d )
 {
     lcl_defn            defn;
-    int                 (*compare)(void const*,void const*,unsigned);
+    int                 (*compare)(const char *, const char *, unsigned);
     byte                *ptr;
     byte                *next;
     char                *name;
@@ -363,9 +363,9 @@ search_result SearchLclMod( imp_image_handle *ii, imp_mod_handle im,
     if( li->scope.start != NULL ) return( SR_NONE );
     if( LoadLocalSyms( ii, im, &lclld ) != DS_OK ) return( SR_NONE );
     if( li->case_sensitive ) {
-        compare = &memcmp;
+        compare = strncmp;
     } else {
-        compare = &memicmp;
+        compare = strncasecmp;
     }
     name = li->name.start;
     len = li->name.len;
@@ -396,7 +396,7 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     byte                *ptr;
     byte                *next;
     unsigned            parent;
-    int                 (*compare)(void const*,void const*,unsigned);
+    int                 (*compare)(const char *, const char *, unsigned);
     char                *name;
     unsigned            len;
     search_result       sr;
@@ -405,9 +405,9 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     imp_sym_handle      *is;
 
     if( li->case_sensitive ) {
-        compare = memcmp;
+        compare = strncmp;
     } else {
-        compare = memicmp;
+        compare = strncasecmp;
     }
     name = li->name.start;
     len  = li->name.len;

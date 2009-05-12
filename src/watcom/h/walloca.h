@@ -34,10 +34,17 @@
 
 #if defined(__WATCOMC__) || defined(_MSC_VER)
     #include <malloc.h>
-#elif defined(__SUNPRO_C)
-    #include <alloca.h>
 #else
+  #if defined(__SUNPRO_C)
+    #include <alloca.h>
+  #else
     #include <stdlib.h>
+  #endif
+  /* __alloca() in the Watcom runtime is a special version with no stack
+   * checking. It is needed in some code built for DOS and similar funny
+   * environments, but on UNIX we can safely map it to alloca().
+   */
+  #define __alloca      alloca
 #endif
 
 #endif

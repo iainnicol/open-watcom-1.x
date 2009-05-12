@@ -504,15 +504,15 @@ static byte *FindAName( struct name_state *state, byte *p,
 {
     byte        *name;
     unsigned    len;
-    int         (*comp)(void const*,void const*,unsigned);
+    int         (*comp)(const char *, const char *, size_t);
     unsigned    index;
     unsigned    i;
     unsigned    type;
 
     if( li->case_sensitive ) {
-        comp = memcmp;
+        comp = strncmp;
     } else {
-        comp = memicmp;
+        comp = strncasecmp;
     }
     for( ; p < Type->end; p = NEXT_TYPE( p ) ) {
         state->curr_idx++;
@@ -575,7 +575,7 @@ static byte *FindAName( struct name_state *state, byte *p,
         name = NamePtr( p );
         len = *p - (name-p);
         if( len != li->name.len ) continue;
-        if( comp( name, li->name.start, len ) != 0 ) continue;
+        if( comp( (char *)name, li->name.start, len ) != 0 ) continue;
         return( p );
     }
     return( NULL );
@@ -1620,7 +1620,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     struct anc_graph    *pending, *new;
     imp_type_handle     new_it;
     unsigned            index;
-    int                 (*comp)(void const*,void const*,unsigned);
+    int                 (*comp)(const char *, const char*, size_t);
     imp_sym_handle      *is;
     byte                *name;
     unsigned            len;
@@ -1637,9 +1637,9 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
         return( SR_NONE );
     }
     if( li->case_sensitive ) {
-        comp = memcmp;
+        comp = strncmp;
     } else {
-        comp = memicmp;
+        comp = strncasecmp;
     }
     sr = SR_NONE;
     pending = NULL;
@@ -1675,7 +1675,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
         } else {
             name = NamePtr( p );
             len = *p - (name - p);
-            if( len==li->name.len && comp(name,li->name.start,len)==0 ) {
+            if( len==li->name.len && comp((char *)name,li->name.start,len)==0 ) {
                 is = DCSymCreate( ii, d );
                 is->u.typ.t.offset = p - Type->start;
                 is->u.typ.t.entry = Type->entry;

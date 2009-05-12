@@ -197,7 +197,7 @@ search_result DoLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
-    int         (*cmp)(const void *, const void *, size_t);
+    int         (*cmp)(const char *, const char *, size_t);
     msym_sym    *s;
 
     source = source;
@@ -211,9 +211,9 @@ search_result DoLookupSym( imp_image_handle *ii,
     if( li->type != ST_NONE ) return( SR_NONE );
     if( li->scope.start != NULL ) return( SR_NONE );
     if( li->case_sensitive ) {
-        cmp = memcmp;
+        cmp = strncmp;
     } else {
-        cmp = memicmp;
+        cmp = strncasecmp;
     }
     for( s = ii->gbl; s != NULL; s = s->next ) {
         if( s->len == li->name.len && cmp( s->name, li->name.start, s->len ) == 0 ) {
