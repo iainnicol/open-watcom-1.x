@@ -43,14 +43,14 @@
 #include "hint.h"
 
 #ifdef __NT__
-#define USE_SNAP_WINDOW         1
+    #define USE_SNAP_WINDOW         1
 #endif
 
 #ifdef __NT__
- #define GCW_STYLE              (-26)
- #define UINT_STR_LEN           8
+    #define GCW_STYLE              (-26)
+    #define UINT_STR_LEN           8
 #else
- #define UINT_STR_LEN           4
+    #define UINT_STR_LEN           4
 #endif
 
 #include "win1632.h"
@@ -70,47 +70,47 @@
 #include "spymenu.h"
 #include "ctl3d.h"
 #ifdef USE_SNAP_WINDOW
- #include "desknt.h"
- #define SNAP_MODE      TRUE
+    #include "desknt.h"
+    #define SNAP_MODE   TRUE
 #else
- #define SNAP_MODE      FALSE
+    #define SNAP_MODE   FALSE
 #endif
 
 #define RCSTR_MAX_LEN   128
 #ifndef FILE_OPEN
-#define FILE_OPEN       1
+    #define FILE_OPEN   1
 #endif
 #define FILE_SAVE       2
 
-#define BITMAP_X                ( 23 + 4 )
-#define BITMAP_Y                ( 19 + 4 )
-#define BORDER_X( x )           ( (x) / 4 )
-#define BORDER_Y( y )           ( (y) / 16 )
-#define GET_TOOLBAR_HEIGHT( y ) ( (y) + 2 * BORDER_Y( y ) + 3 )
+#define BITMAP_X                (23 + 4)
+#define BITMAP_Y                (19 + 4)
+#define BORDER_X( x )           ((x) / 4)
+#define BORDER_Y( y )           ((y) / 16)
+#define GET_TOOLBAR_HEIGHT( y ) ((y) + 2 * BORDER_Y( y ) + 3)
 #define TOOLBAR_HEIGHT          GET_TOOLBAR_HEIGHT( BITMAP_Y )
 
 /*
  * offsets in spy messages
  */
-#define SPYOUT_HWND     26
+#define SPYOUT_HWND             26
 #ifdef __NT__
- #define SPYOUT_HWND_LEN        8
- #define SPYOUT_MSG_LEN         8
- #define SPYOUT_WPARAM_LEN      8
- #define SPYOUT_LPARAM_LEN      8
- #define SPYOUT_WPARAM          SPYOUT_MSG+1+SPYOUT_MSG_LEN
- #define SPYOUT_LPARAM          SPYOUT_WPARAM+1+SPYOUT_WPARAM_LEN
+    #define SPYOUT_HWND_LEN     8
+    #define SPYOUT_MSG_LEN      8
+    #define SPYOUT_WPARAM_LEN   8
+    #define SPYOUT_LPARAM_LEN   8
+    #define SPYOUT_WPARAM       SPYOUT_MSG + 1 + SPYOUT_MSG_LEN
+    #define SPYOUT_LPARAM       SPYOUT_WPARAM + 1 + SPYOUT_WPARAM_LEN
 #else
- #define SPYOUT_HWND_LEN        4
- #define SPYOUT_MSG_LEN         4
- #define SPYOUT_WPARAM_LEN      4
- #define SPYOUT_LPARAM_LEN      8
- #define SPYOUT_WPARAM          SPYOUT_MSG+3+SPYOUT_MSG_LEN
- #define SPYOUT_LPARAM          SPYOUT_WPARAM+2+SPYOUT_WPARAM_LEN
+    #define SPYOUT_HWND_LEN     4
+    #define SPYOUT_MSG_LEN      4
+    #define SPYOUT_WPARAM_LEN   4
+    #define SPYOUT_LPARAM_LEN   8
+    #define SPYOUT_WPARAM       SPYOUT_MSG + 3 + SPYOUT_MSG_LEN
+    #define SPYOUT_LPARAM       SPYOUT_WPARAM + 2 + SPYOUT_WPARAM_LEN
 #endif
 
-#define SPYOUT_MSG      SPYOUT_HWND+1+SPYOUT_HWND_LEN
-#define SPYOUT_LENGTH   SPYOUT_LPARAM+SPYOUT_LPARAM_LEN
+#define SPYOUT_MSG      SPYOUT_HWND + 1 + SPYOUT_HWND_LEN
+#define SPYOUT_LENGTH   SPYOUT_LPARAM + SPYOUT_LPARAM_LEN
 
 
 typedef enum {

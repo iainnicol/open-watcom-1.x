@@ -30,6 +30,9 @@
 
 
 #include "asmglob.h"
+#include "asmdefs.h"
+#include "asmsym.h"
+#include "asmins.h"
 #include "asmexpnd.h"
 #include "tbyte.h"
 #include "asmfixup.h"
@@ -754,6 +757,7 @@ int data_init( int sym_loc, int initializer_loc )
             return( ERROR );
         }
     }
+
     switch( AsmBuffer[initializer_loc]->u.value ) {
 #if defined( _STANDALONE_ )
     case T_SBYTE:                       // 20-Aug-92

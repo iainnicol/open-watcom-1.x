@@ -6,7 +6,7 @@ public C d1
 public SYSCALL d2
 public STDCALL d3
 public FORTRAN d4
-public WATCOM_C d5
+; public WATCOM_C d5
 
 d1 db 0
 d2 db 0
@@ -51,8 +51,7 @@ p4 proc FORTRAN public USES ES DI BX, gb: byte, gw1: word, gw2: word, gw3: word,
 p4 endp
 
 public STDCALL p5
-p5:
-	ret
+p5:	ret
 
 p6 proc STDCALL public
 	ret
@@ -65,5 +64,4 @@ p7 proc WATCOM_C public USES ES DI BX, gb: byte, gw1: word, gw2: word, gw3: word
         mov     ax, x
 	ret
 p7 endp
-
         END

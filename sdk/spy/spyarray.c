@@ -36,7 +36,7 @@
 
 #ifdef __NT__
     #include <commctrl.h>
-#define NT_MSGS
+    #define NT_MSGS
 #endif
 
 #include "spyexmsg.h"

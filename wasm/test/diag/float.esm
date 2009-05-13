@@ -14,40 +14,40 @@ L$2:
 DATA		ENDS
 TEXT16		SEGMENT	PARA PRIVATE USE16 'CODE'
 		ASSUME CS:TEXT16, DS:DGROUP, SS:DGROUP
-    mov         esi,0bf3c28f6H
-    mov         ebx,0bf3c28f6H
-    mov         dword ptr [esi],0bf3c28f6H
-    mov         dword ptr [ebx],0bf3c28f6H
-    mov         dword ptr [esi],0bf3c28f6H
-    mov         dword ptr [ebx],0bf3c28f6H
-    mov         dword ptr L$1,0bf3c28f6H
-    mov         dword ptr L$2,0bf3c28f6H
-    mov         dword ptr L$2[ebx],0bf3c28f6H
-    mov         dword ptr L$2[bx],0bf3c28f6H
-    mov         dword ptr [si],0bf3c28f6H
-    mov         dword ptr [bx],0bf3c28f6H
-    mov         dword ptr [si],0bf3c28f6H
-    mov         dword ptr [bx],0bf3c28f6H
-    push        0bf3c28f6H
-    or          esi,0bf3c28f6H
+    mov         esi,0bf3c28f6H 
+    mov         ebx,0bf3c28f6H 
+    mov         dword ptr [esi],0bf3c28f6H 
+    mov         dword ptr [ebx],0bf3c28f6H 
+    mov         dword ptr [esi],0bf3c28f6H 
+    mov         dword ptr [ebx],0bf3c28f6H 
+    mov         dword ptr L$1,0bf3c28f6H 
+    mov         dword ptr L$2,0bf3c28f6H 
+    mov         dword ptr L$2[ebx],0bf3c28f6H 
+    mov         dword ptr L$2[bx],0bf3c28f6H 
+    mov         dword ptr [si],0bf3c28f6H 
+    mov         dword ptr [bx],0bf3c28f6H 
+    mov         dword ptr [si],0bf3c28f6H 
+    mov         dword ptr [bx],0bf3c28f6H 
+    push        0bf3c28f6H 
+    or          esi,0bf3c28f6H 
 TEXT16		ENDS
 TEXT32		SEGMENT	PARA PRIVATE USE32 'CODE'
 		ASSUME CS:TEXT32, DS:DGROUP, SS:DGROUP
-    mov         esi,0bf3c28f6H
-    mov         ebx,0bf3c28f6H
-    mov         dword ptr [esi],0bf3c28f6H
-    mov         dword ptr [ebx],0bf3c28f6H
-    mov         dword ptr [esi],0bf3c28f6H
-    mov         dword ptr [ebx],0bf3c28f6H
-    mov         dword ptr L$1,0bf3c28f6H
-    mov         dword ptr L$2,0bf3c28f6H
-    mov         dword ptr L$2[ebx],0bf3c28f6H
-    mov         dword ptr L$2[bx],0bf3c28f6H
-    mov         dword ptr [si],0bf3c28f6H
-    mov         dword ptr [bx],0bf3c28f6H
-    mov         dword ptr [si],0bf3c28f6H
-    mov         dword ptr [bx],0bf3c28f6H
-    push        0bf3c28f6H
-    or          esi,0bf3c28f6H
+    mov         esi,0bf3c28f6H 
+    mov         ebx,0bf3c28f6H 
+    mov         dword ptr [esi],0bf3c28f6H 
+    mov         dword ptr [ebx],0bf3c28f6H 
+    mov         dword ptr [esi],0bf3c28f6H 
+    mov         dword ptr [ebx],0bf3c28f6H 
+    mov         dword ptr L$1,0bf3c28f6H 
+    mov         dword ptr L$2,0bf3c28f6H 
+    mov         dword ptr L$2[ebx],0bf3c28f6H 
+    mov         dword ptr L$2[bx],0bf3c28f6H 
+    mov         dword ptr [si],0bf3c28f6H 
+    mov         dword ptr [bx],0bf3c28f6H 
+    mov         dword ptr [si],0bf3c28f6H 
+    mov         dword ptr [bx],0bf3c28f6H 
+    push        0bf3c28f6H 
+    or          esi,0bf3c28f6H 
 TEXT32		ENDS
 		END

@@ -58,8 +58,8 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
 int StructDef( int i )
 /********************/
 {
-    char *name;
-    dir_node *dir;
+    char        *name;
+    dir_node    *dir;
     int         n;
 
     if( Options.ideal ) {
@@ -72,9 +72,9 @@ int StructDef( int i )
     } else {
         n = i - 1;
         if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) {
-        AsmError( SYNTAX_ERROR );
-        return( ERROR );
-    }
+            AsmError( SYNTAX_ERROR );
+            return( ERROR );
+        }
     }
     name = AsmBuffer[n]->string_ptr;
     switch( AsmBuffer[i]->u.value ) {

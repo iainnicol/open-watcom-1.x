@@ -32,7 +32,7 @@
 #ifdef MKOPCODE
 
 #define ins(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix) tok,
-   
+
 #if defined( _STANDALONE_ )
     #define insa(tok,op1,byte1_info,op2,op3,op_dir,rm_info,opcode,rm_byte,cpu,prefix) tok,
 #else

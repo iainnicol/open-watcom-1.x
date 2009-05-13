@@ -91,7 +91,7 @@ int directive( int i, long direct )
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         } else {
-        ret = cpu_directive(direct);
+            ret = cpu_directive(direct);
             if( Parse_Pass != PASS_1 )
                 ret = NOT_ERROR;
             return( ret );
@@ -290,7 +290,7 @@ int directive( int i, long direct )
     case T_EQU2:        /* = */
     case T_EQU:         /* EQU */
         /* expand any constants and simplify any expressions */
-            ExpandTheConstant( 0, FALSE, TRUE );
+        ExpandTheConstant( 0, FALSE, TRUE );
         break;
     case T_NAME:        /* no expand parameters */
         break;
@@ -304,7 +304,7 @@ int directive( int i, long direct )
     case T_EXITCODE:
     default:
         /* expand any constants in all other directives */
-            ExpandAllConsts( 0, FALSE );
+        ExpandAllConsts( 0, FALSE );
         break;
     }
 

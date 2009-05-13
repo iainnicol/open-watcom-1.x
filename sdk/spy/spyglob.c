@@ -34,7 +34,7 @@
 
 WndConfigInfo   SpyMainWndInfo;
 char            *SpyName;
-char            near SpyPickClass[]="WatSpyPickClass";
+char            near SpyPickClass[] = "WatSpyPickClass";
 char            *TitleBar;
 char            *TitleBarULine;
 int             TitleBarLen;
@@ -45,9 +45,9 @@ WORD            WindowCount;
 HWND            *WindowList;
 HANDLE          MyTask;
 BOOL            SpyMessagesPaused;
-BOOL            SpyMessagesAutoScroll=TRUE;
+BOOL            SpyMessagesAutoScroll = TRUE;
 BOOL            AutoSaveConfig;
-spystate        SpyState=NEITHER;
+spystate        SpyState = NEITHER;
 HANDLE          Instance;
 HANDLE          ResInstance;
 LPVOID          HandleMessageInst;

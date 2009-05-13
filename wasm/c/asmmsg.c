@@ -37,7 +37,6 @@
 #include "directiv.h"
 #include "asminput.h"
 #include "fatal.h"
-#include "errout.h"
 
 extern void             MsgPrintf( int resourceid ); // don't use this
 extern int              MsgGet( int resourceid, char *buffer );
@@ -48,6 +47,12 @@ void                    print_include_file_nesting_structure( void );
 
 //    WngLvls[level] // warning levels associated with warning messages
 //    CompFlags.errout_redirected
+
+#ifdef __UNIX__
+#define errout stderr
+#else
+#define errout stdout
+#endif
 
 /* globals to this module */
 #define ErrLimit Options.error_limit

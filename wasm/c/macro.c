@@ -480,9 +480,9 @@ int ExpandMacro( int tok_count)
     if( count >= 0 ) {
         if( AsmBuffer[count]->token == T_DIRECTIVE &&
             AsmBuffer[count]->u.value == T_MACRO ) {
-        /* this is a macro DEFINITION! */
-        return( tok_count );
-    }
+            /* this is a macro DEFINITION! */
+            return( tok_count );
+        }
     }
     if( macro_name_loc != 0 ) {
         /* save the rest of the line from before the macro */
@@ -647,9 +647,9 @@ int ExpandMacro( int tok_count)
 int MacroDef( int i, bool hidden )
 /********************************/
 {
-    char                *name;
+    char        *name;
     int         n;
-    dir_node            *currproc;
+    dir_node    *currproc;
 
     if( Options.ideal )
         n = i + 1;
@@ -657,7 +657,7 @@ int MacroDef( int i, bool hidden )
         n = --i;
     if( ( Parse_Pass == PASS_1 ) &&
         ( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) ) {
-            AsmError( PROC_MUST_HAVE_A_NAME );
+        AsmError( PROC_MUST_HAVE_A_NAME );
         return( ERROR );
     }
     name = AsmBuffer[n]->string_ptr;

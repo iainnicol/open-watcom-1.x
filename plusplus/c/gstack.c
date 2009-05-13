@@ -40,6 +40,7 @@
 #include "stack.h"
 #include "gstack.h"
 #include "initdefs.h"
+#include "ring.h"
 
 #define BLOCK_GLOBAL_STACK      16
 static carve_t carveGLOBAL_STACK;

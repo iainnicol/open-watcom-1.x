@@ -37,7 +37,7 @@
 #include "cantype.h"
 #include "namemgr.h"
 #include "memutil.h"
-#include "carve.h"
+#include "_carve.h"
 
 STATIC symb_handle  cansHead;
 STATIC carve_t      myCarver;

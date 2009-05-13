@@ -386,7 +386,7 @@ static void write_lnames( void )
     objr->d.lnames.first_idx = 1;
     objr->d.lnames.num_names = 0;
     if( GetLnameData( objr ) ) {
-    write_record( objr, TRUE );
+        write_record( objr, TRUE );
     } else {
         ObjKillRec( objr );
     }
@@ -434,18 +434,18 @@ static int get_size_in_commdef( unsigned long value )
 static void write_external( void )
 /********************************/
 {
-    obj_rec     *objr;
+    obj_rec         *objr;
     dir_node        *start;
     dir_node        *first;
-    dir_node    *curr;
+    dir_node        *curr;
     dir_node        *last;
     direct_idx      ext_idx;
     long            total_size;
     unsigned        len;
     char            *name;
     uint            varsize;
-    uint        symsize;
-    unsigned long value;
+    uint            symsize;
+    unsigned long   value;
     int             i;
 
     last = NULL;
@@ -453,9 +453,9 @@ static void write_external( void )
     for( start = Tables[TAB_EXT].head; start != NULL; start = last ) {
         first = NULL;
         total_size = 0;
-    for( curr = start;
-        ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
-        curr = curr->next ) {
+        for( curr = start;
+          ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
+          curr = curr->next ) {
             if( !curr->sym.referenced )
                 continue;
             if( first == NULL ) {
@@ -468,18 +468,18 @@ static void write_external( void )
             if( first->e.extinfo->comm ) {
                 //  + 1 for data type //
                 len += 1;
-        varsize = opsize( curr->sym.mem_type );
-        if( curr->e.comminfo->distance == T_FAR ) {
+                varsize = opsize( curr->sym.mem_type );
+                if( curr->e.comminfo->distance == T_FAR ) {
                     len += get_size_in_commdef( varsize );
                     len += get_size_in_commdef( curr->e.comminfo->size );
-        } else {
+                } else {
                     len += get_size_in_commdef( curr->e.comminfo->size );
                 }
-        }
+            }
             if( total_size + len > MAX_REC_LENGTH )
                 break;
             total_size += len;
-    }
+        }
         last = curr;
         if( total_size == 0 )
             continue;
@@ -489,7 +489,7 @@ static void write_external( void )
         ObjAllocData( objr, total_size );
         for( curr = first;
           ( curr != last ) && ( curr->e.extinfo->comm == first->e.extinfo->comm );
-            curr = curr->next ) {
+          curr = curr->next ) {
             if( !curr->sym.referenced )
                 continue;
             ext_idx++;
@@ -501,49 +501,49 @@ static void write_external( void )
             AsmFree( name );
             ObjPut8( objr, 0 );    // for the type index
             if( first->e.extinfo->comm ) {
-            /* now add the data type & communal length */
-            if( curr->e.comminfo->distance == T_FAR ) {
+                /* now add the data type & communal length */
+                if( curr->e.comminfo->distance == T_FAR ) {
                     ObjPut8( objr, COMDEF_FAR );
-            } else {
+                } else {
                     ObjPut8( objr, COMDEF_NEAR );
-            }
-            value = curr->e.comminfo->size;
+                }
+                value = curr->e.comminfo->size;
                 varsize = get_size_in_commdef( value );
-            switch( varsize ) {
-            case 1:
-                break;
-            case 3:
+                switch( varsize ) {
+                case 1:
+                    break;
+                case 3:
                     ObjPut8( objr, COMDEF_LEAF_2 );
-                break;
-            case 4:
+                    break;
+                case 4:
                     ObjPut8( objr, COMDEF_LEAF_3 );
-                break;
-            case 5:
+                    break;
+                case 5:
                     ObjPut8( objr, COMDEF_LEAF_4 );
-                break;
-            }
-            if( varsize > 1 )
-                varsize--; /* we already output 1 byte */
-            symsize = opsize( curr->sym.mem_type );
-            if( curr->e.comminfo->distance != T_FAR ) {
-                value *= symsize;
-            }
+                    break;
+                }
+                if( varsize > 1 )
+                    varsize--; /* we already output 1 byte */
+                symsize = opsize( curr->sym.mem_type );
+                if( curr->e.comminfo->distance != T_FAR ) {
+                    value *= symsize;
+                }
                 for( i = 0; i < varsize; i++ ) {
                     ObjPut8( objr, value % ( UCHAR_MAX + 1 ) );
-                value >>= 8;
-            }
-            if( curr->e.comminfo->distance == T_FAR ) {
-                /* mem type always needs <= 1 byte */
-                myassert( symsize < UCHAR_MAX );
+                    value >>= 8;
+                }
+                if( curr->e.comminfo->distance == T_FAR ) {
+                    /* mem type always needs <= 1 byte */
+                    myassert( symsize < UCHAR_MAX );
                     ObjPut8( objr, symsize );
+                }
             }
         }
-    }
         if( objr->d.extdef.num_names ) {
-        write_record( objr, TRUE );
-    } else {
-        ObjKillRec( objr );
-    }
+            write_record( objr, TRUE );
+        } else {
+            ObjKillRec( objr );
+        }
     }
 }
 
@@ -578,11 +578,11 @@ void get_frame( fixup *fixnode, struct asmfixup *fixup )
     } else if( fixup->frame->state == SYM_EXTERNAL ) {
         fixnode->lr.frame = FRAME_EXT;
         fixnode->lr.frame_datum = ((dir_node *)fixup->frame)->e.extinfo->idx;
-        } else {
+    } else {
         fixnode->lr.frame = FRAME_TARG;
         fixnode->lr.frame_datum = 0;
-        }
     }
+}
 
 static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
 /*****************************************************************/
@@ -618,7 +618,7 @@ static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
             fixnode->lr.target_datum = ((dir_node *)sym)->e.extinfo->idx;
             get_frame( fixnode, fixup );
             return( fixnode );
-    } else {
+        } else {
             AsmError( MUST_BE_ASSOCIATED_WITH_CODE );
             return( NULL );
         }
@@ -829,7 +829,7 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
         get_frame( fixnode, fixup );
         break;
     }
-    
+
     /*--------------------*/
     /* Optimize the fixup */
     /*--------------------*/
@@ -847,9 +847,9 @@ static void get_fixup_list( unsigned long start, struct fixup **fl16, struct fix
 /* divide fixup record list to the 16-bit or 32-bit list of a fixup record */
 {
     struct asmfixup     *fixi;
-    struct fixup *fix;
-    struct fixup *fix16;
-    struct fixup *fix32;
+    struct fixup        *fix;
+    struct fixup        *fix16;
+    struct fixup        *fix32;
 
     fix16 = NULL;
     fix32 = NULL;
@@ -1198,7 +1198,7 @@ void WriteObjModule( void )
     while( PopLineQueue() ) {
     }
     CheckForOpenConditionals();
-#ifdef PRIVATE_PROC_INFO    
+#ifdef PRIVATE_PROC_INFO
     put_private_proc_in_public_table();
 #else
     if( Options.debug_flag ) {

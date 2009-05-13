@@ -33,7 +33,7 @@
 #include <stddef.h>
 #include "womp.h"
 #include "memutil.h"
-#include "carve.h"
+#include "_carve.h"
 #include "myassert.h"
 
 typedef struct blk blk_t;
