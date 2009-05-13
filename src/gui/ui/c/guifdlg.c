@@ -83,8 +83,13 @@
     #define FILES_ALL   "*.*"
 #endif
 
-#define INDENT_STR      "\xa0"
-#define INDENT_CHAR     '\xa0'
+#ifdef __UNIX__
+    #define INDENT_STR      "\xA0"
+    #define INDENT_CHAR     '\xA0'
+#else
+    #define INDENT_STR      " "
+    #define INDENT_CHAR     ' '
+#endif
 #define OPENED_DIR_CHAR '-'
 #define UNOPENED_DIR_CHAR '+'
 
@@ -924,6 +929,7 @@ static process_rc processFileName( gui_window *gui )
         _makepath( path, NULL, NULL, fname, ext );
 
         if( dlg->currOFN->base_file_name != NULL ) {
+            len = strlen( txt );
             if( len >= dlg->currOFN->max_base_file_name ) {
                 len = dlg->currOFN->max_base_file_name-1;
             }
