@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump heap allocations.
 *
 ****************************************************************************/
 
@@ -36,6 +35,39 @@
 
 
 #define LOCSIZE     1
+
+
+
+/*
+ * WalkMem - walk through the memory locations.   For the PC version only.
+ */
+
+extern int WalkMem() {
+/********************/
+
+    char *                  str;
+    int                     heap_status;
+    struct _heapinfo        h_info;
+
+    h_info._pentry = NULL;
+    for(;;) {
+        heap_status = _heapwalk( &h_info );
+        if( heap_status != _HEAPOK ) {
+            if( heap_status == _HEAPBADBEGIN ) {
+                str = "ERROR - heap is damaged";
+            } else if( heap_status == _HEAPBADPTR ) {
+                str = "ERROR - bad pointer to heap";
+            } else if( heap_status == _HEAPBADNODE ) {
+                str = "ERROR - bad node in heap";
+            } else {
+                break;
+            }
+            printf( "%s\n\n", str );
+            return( FALSE );
+        }
+    }
+    return( TRUE );
+}
 
 
 
@@ -97,37 +129,4 @@ extern void DumpMem() {
     printf( "\n\nStarting size   = %u\n", start_size );
     printf( "New allocations = %u\n", total );
     printf( "Ending address  = %u\n", start_size+total );
-}
-
-
-
-/*
- * WalkMem - walk through the memory locations.   For the PC version only.
- */
-
-extern int WalkMem() {
-/********************/
-
-    char *                  str;
-    int                     heap_status;
-    struct _heapinfo        h_info;
-
-    h_info._pentry = NULL;
-    for(;;) {
-        heap_status = _heapwalk( &h_info );
-        if( heap_status != _HEAPOK ) {
-            if( heap_status == _HEAPBADBEGIN ) {
-                str = "ERROR - heap is damaged";
-            } else if( heap_status == _HEAPBADPTR ) {
-                str = "ERROR - bad pointer to heap";
-            } else if( heap_status == _HEAPBADNODE ) {
-                str = "ERROR - bad node in heap";
-            } else {
-                break;
-            }
-            printf( "%s\n\n", str );
-            return( FALSE );
-        }
-    }
-    return( TRUE );
 }
