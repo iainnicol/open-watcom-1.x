@@ -44,7 +44,9 @@
    * checking. It is needed in some code built for DOS and similar funny
    * environments, but on UNIX we can safely map it to alloca().
    */
-  #define __alloca      alloca
+  #ifndef __alloca
+    #define __alloca      alloca
+  #endif
 #endif
 
 #endif
