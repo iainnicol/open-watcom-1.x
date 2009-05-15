@@ -47,6 +47,9 @@
     #include "wenviron.h"
     #include <wctype.h>
 #endif
+#ifdef __RDOS__
+    #include <rdos.h>
+#endif
 
 
 extern _WCRTLINK int _setenv( const char *name, const char *newvalue, int overwrite );
@@ -97,6 +100,19 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
             osRc = SetEnvironmentVariableA( name, newvalue );
         #endif
         if( osRc == FALSE ) return( -1 );
+    }
+#endif
+
+    /*** Update the process environment if using RDOS ***/
+#ifdef __RDOS__
+    if( overwrite  ||  __F_NAME(getenv,_wgetenv)( name ) == NULL ) {
+        int handle;
+
+        handle = RdosOpenProcessEnv();
+        RdosDeleteEnvVar( handle, name );
+        if( *newvalue != NULLCHAR )
+            RdosAddEnvVar( handle, name, newvalue );
+        RdosCloseEnv( handle );        
     }
 #endif
 
