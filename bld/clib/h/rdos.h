@@ -159,6 +159,8 @@ int RDOSAPI RdosGetFreeGdt();
 int RDOSAPI RdosGetFreeSmallKernelLinear();
 int RDOSAPI RdosGetFreeBigKernelLinear();
 
+int RDOSAPI RdosGetFreeHandles();
+
 int RDOSAPI RdosGetMaxComPort();
 int RDOSAPI RdosOpenCom(char ID, long BaudRate, char Parity, char DataBits, char StopBits, int SendBufSize, int RecBufSize); 
 void RDOSAPI RdosCloseCom(int Handle);
@@ -373,7 +375,8 @@ void RDOSAPI RdosCloseCrc(int Handle);
 unsigned short int RDOSAPI RdosCalcCrc(int Handle, unsigned short int CrcVal, const char *Buf, int Size);
 
 int RDOSAPI RdosGetModuleHandle();
-const char * RDOSAPI RdosGetExeName();
+const char *RDOSAPI RdosGetExeName();
+const char *RDOSAPI RdosGetCmdLine();
 int RDOSAPI RdosLoadDll(const char *Name);
 void RDOSAPI RdosFreeDll(int handle);
 int RDOSAPI RdosGetModuleName(int handle, char *Buf, int Size);
@@ -407,6 +410,7 @@ void RDOSAPI RdosCloseEnv(int handle);
 void RDOSAPI RdosAddEnvVar(int handle, const char *var, const char *value);
 void RDOSAPI RdosDeleteEnvVar(int handle, const char *var);
 int RDOSAPI RdosFindEnvVar(int handle, const char *var, char *value);
+int RDOSAPI RdosGetEnvSize(int handle);
 void RDOSAPI RdosGetEnvData(int handle, char *buf);
 void RDOSAPI RdosSetEnvData(int handle, const char *buf);
 
@@ -1345,6 +1349,11 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     CallGate_leave_user_section  \
     parm [ebx];
 
+#pragma aux RdosGetFreeHandles = \
+    CallGate_get_free_handles  \
+    "movzx eax,ax"  \
+    value [eax];
+
 #pragma aux RdosCreateWait = \
     CallGate_create_wait  \
     ValidateHandle  \
@@ -1909,6 +1918,11 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     ValidateEdi \
     value [edi];
 
+#pragma aux RdosGetCmdLine = \
+    CallGate_get_cmd_line  \
+    ValidateEdi \
+    value [edi];
+
 #pragma aux RdosLoadDll = \
     CallGate_load_dll  \
     ValidateHandle \
@@ -2064,6 +2078,11 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     CallGate_find_env_var \
     CarryToBool \
     parm [ebx] [esi] [edi] \
+    value [eax];
+
+#pragma aux RdosGetEnvSize = \
+    CallGate_get_env_size \
+    parm [ebx] \
     value [eax];
 
 #pragma aux RdosGetEnvData = \
