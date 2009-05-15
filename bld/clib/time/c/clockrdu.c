@@ -24,36 +24,45 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RDOS implementation of clock().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-    // the OS/2 and NT files are identical
-    #if defined(__SW_BM)
+#include <time.h>
+#include <rtinit.h>
+#include <rdos.h>
 
-        #include "thread.h"
 
-        #define _INITTHETIME
-        #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
+static int    init_milliseconds;
 
-    #else
+static unsigned long __get_tick( void )
+{
+    unsigned long           tick_count;
+    unsigned long           msb;
+    unsigned long           lsb;
 
-        static  struct  tm      The_time;
-        #define _INITTHETIME
-        #define _THE_TIME       The_time
+    RdosGetSysTime(&msb, &lsb);
 
-    #endif
-#else
-    #ifdef __NETWARE__
-        #define _INITTHETIME
-        #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
-    #else
-        #define _INITTHETIME
-        static  struct  tm        The_time;
-        #define _THE_TIME         The_time
-    #endif
-#endif
+    tick_count = lsb / 1193;
+    tick_count += msb * 3538944;
+
+    return( tick_count );
+}
+
+/* The system millisecond counter will wrap after ~49 days. This
+ * is is not considered a real problem and consistent with
+ * the behaviour of other C runtimes.
+ */
+_WCRTLINK clock_t clock( void )
+{
+    return( (clock_t)(__get_tick() - init_milliseconds) );
+}
+
+static void __clock_init( void )
+{
+    init_milliseconds = __get_tick();
+}
+
+AXI( __clock_init, INIT_PRIORITY_LIBRARY )

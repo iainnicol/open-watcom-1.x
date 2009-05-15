@@ -24,36 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of __getctime() for RDOS
 *
 ****************************************************************************/
 
-
 #include "variety.h"
-#if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
-    // the OS/2 and NT files are identical
-    #if defined(__SW_BM)
+#include <rdos.h>
+#include <time.h>
+#include "timedata.h"
 
-        #include "thread.h"
+int __getctime( struct tm *t )
+{
+    unsigned long msb;
+    unsigned long lsb;
+    int ms;
+    int us;
 
-        #define _INITTHETIME
-        #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
+    RdosGetTime( &msb, &lsb );
 
-    #else
+    RdosDecodeMsbTics( msb, 
+                       &t->tm_year, 
+                       &t->tm_mon,
+                       &t->tm_mday,
+                       &t->tm_hour );
 
-        static  struct  tm      The_time;
-        #define _INITTHETIME
-        #define _THE_TIME       The_time
+    RdosDecodeLsbTics( lsb,
+                       &t->tm_min,
+                       &t->tm_sec,
+                       &ms,
+                       &us );
+                           
+    t->tm_year -= 1900;
+    t->tm_mon--;
+    t->tm_isdst = -1;
 
-    #endif
-#else
-    #ifdef __NETWARE__
-        #define _INITTHETIME
-        #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
-    #else
-        #define _INITTHETIME
-        static  struct  tm        The_time;
-        #define _THE_TIME         The_time
-    #endif
-#endif
+    return( ms );
+}
