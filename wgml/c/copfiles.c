@@ -120,8 +120,10 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
      */
 
     if( (units % divisor) > 0 ) width++;
+
     return( width );
 }
+
 /* Function compute_metrics().
  * Computes and initializes the default_width, line_height and line_space values
  * for the given wgml_font instance.
@@ -129,7 +131,7 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
  * Parameter:
  *      in_font points to the given wgml_font instance.
  */
- 
+
 static void compute_metrics( wgml_font * in_font )
 {
     uint32_t    glyph_height;
@@ -147,28 +149,6 @@ static void compute_metrics( wgml_font * in_font )
 
         in_font->default_width = scale_basis_to_horizontal_base_units( \
                                         in_font->bin_font->char_width, in_font );
-
-        /* The default_width is the char_width times a computed value:
-         * horizontal_base_units * font_height
-         * -----------------------------------
-         *             scale_basis
-         * which is placed in "points" because that is what it is measures.
-         * font_height is in centipoints, hence the conversion to points.
-         */
-
-        height = in_font->font_height / 100;
-        points = (bin_device->horizontal_base_units * height) \
-                 / in_font->bin_font->scale_basis;
-
-        /* This rounds points up if the division did not produce an integer.
-         * This produces correct results with the test values, but may need
-         * to be modified (or the entire algorithm reconsidered) when
-         * side-by-side comparisons of wgml 4.0 and our wgml become possible.
-         */
-
-        if( (bin_device->horizontal_base_units * height) \
-             / in_font->bin_font->scale_basis > 0 ) points++;
-        in_font->default_width = in_font->bin_font->char_width * points;
     }
 
     /* Compute the line height and space values. */
@@ -190,6 +170,8 @@ static void compute_metrics( wgml_font * in_font )
          * where the divisor is 72 points/inch times the correction of
          * (font_height + font_space) from centipoints to points.
          */
+
+
         height = (in_font->font_height + in_font->font_space) * \
                                                 bin_device->vertical_base_units;
 
@@ -202,24 +184,6 @@ static void compute_metrics( wgml_font * in_font )
         if( (height % 7200) > 0 ) in_font->line_height++;
 
         /* If font_space is "0", then line_space will be "0". */
-
-        in_font->line_space = in_font->bin_font->line_space;
-        in_font->line_height = in_font->bin_font->line_height + \
-                                                            in_font->line_space;
-
-        /* Use the font_height, font_space, and vertical_base_units values. */
-
-        factor = 7200 / bin_device->vertical_base_units;
-        height = in_font->font_height + in_font->font_space;
-
-        /* line_height is set to the number of vertical_base_units needed to
-         * ensure that sufficient height is provided. This may need to be
-         * tweaked when side-by-side comparisons of wgml 4.0 and our wgml
-         * become possible.
-         */
-
-        in_font->line_height = height / factor;
-        if( (height % factor) > 0 ) in_font->line_height++;
 
         in_font->line_space = 0;
         if( in_font->font_space > 0) {
@@ -241,7 +205,7 @@ static void compute_metrics( wgml_font * in_font )
             /* The value of font_space is the difference between the computed
              * value of font_height and the value of glyph_height. 
              */
- 
+
             in_font->line_space = in_font->line_height - glyph_height;
         }
     }
@@ -291,13 +255,13 @@ static cop_device * get_cop_device( char const * in_name )
         out_msg( "ERR_FILE_IO %d %s\n", errno, try_file_name );
         err_count++;
         g_suicide();
-        
+
     case not_bin_dev:
     case not_se_v4_1:
     case dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
-    
+
         out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
         return( out_device );
 
@@ -318,9 +282,9 @@ static cop_device * get_cop_device( char const * in_name )
         break;
 
     default:
-    
+
         /* parse_header() returned an unknown value. */
-    
+
         out_msg("wgml internal error\n");
         err_count++;
         g_suicide();
@@ -344,7 +308,7 @@ static cop_device * get_cop_device( char const * in_name )
 static cop_driver * get_cop_driver( char const * in_name )
 {
     cop_driver      *   out_driver  = NULL;
-    cop_file_type   file_type;    
+    cop_file_type       file_type;
 
     /* Acquire the file, if it exists. */
 
@@ -383,7 +347,7 @@ static cop_driver * get_cop_driver( char const * in_name )
         if( !is_drv_file( try_fp ) ) {
             out_msg( "Device library problem: file given for driver %s does not" \
                             " encode a driver:\n  %s\n", in_name, try_file_name );
-        break;
+            break;
         }
 
         out_driver = parse_driver( try_fp );
@@ -393,7 +357,7 @@ static cop_driver * get_cop_driver( char const * in_name )
         break;
 
     default:
-    
+
         /* parse_header() returned an unknown value. */
 
         out_msg("wgml internal error\n");
@@ -465,10 +429,10 @@ static cop_font * get_cop_font( char const * in_name )
         if( out_font == NULL ) \
             out_msg( "Device library problem: file given for font %s appears" \
                             " to be corrupted:\n  %s\n", in_name, try_file_name );
-                        break;    
+        break;
 
     default:
-                 
+
         /* parse_header() returned an unknown value. */
 
         out_msg("wgml internal error\n");
@@ -518,9 +482,9 @@ static cop_font * find_cop_font( char const * in_name )
         retval->next_font = bin_fonts;
         bin_fonts = retval;
     }
-       
+
     return( retval );
-                            }
+}
 
 /* Function find_dev_font().
  * Finds the device_font instance for the requested font.
@@ -546,7 +510,7 @@ static device_font * find_dev_font( char const * in_name )
     for( i = 0; i < current->font_count; i++ ) {
         if( !strcmp( in_name, current->fonts[i].font_name ) ) {
             retval = &current->fonts[i];
-                            break;
+            break;
         }
     }
 
@@ -583,7 +547,7 @@ static fontstyle_block * find_style( char const * in_name )
     for( i = 0; i < current->count; i++ ) {
         if( !stricmp( in_name, current->fontstyleblocks[i].type ) ) {
             retval = &current->fontstyleblocks[i];
-                            break;
+            break;
         }
     }
 
@@ -594,7 +558,7 @@ static fontstyle_block * find_style( char const * in_name )
     }
 
     return( retval );
-                        }
+}
 
 /* Function find_switch().
  * Finds the fontswitch_block instance for the requested font switch.
@@ -628,10 +592,10 @@ static fontswitch_block * find_switch( char const * in_name )
         out_msg( "Designated :FONTSWITCH block not found: %s\n", in_name );
         err_count++;
         g_suicide();
-                    }
+    }
 
     return( retval );
-                }
+}
 
 /* Function free_opt_fonts().
  * Frees all memory allocated in setting up the opt_fonts global variable.
@@ -656,9 +620,9 @@ static void free_opt_fonts( void )
         opt_fonts = opt_fonts->nxt;
         mem_free( old );
     }
-       
+
     return;
-                    }
+}
 
 /* Extern function definitions */
 
@@ -712,7 +676,7 @@ void cop_setup( void )
         "Device library error: horizontal_base_units cannot have value \"0\"\n" );
         err_count++;
         g_suicide();
-                }
+    }
 
     /* The value of vertical_base_units cannot be "0". */
 
@@ -729,14 +693,14 @@ void cop_setup( void )
         out_msg( "Device library error: driver name not provided\n" );
         err_count++;
         g_suicide();
-          }
+    }
     bin_driver = get_cop_driver( bin_device->driver_name );
 
     if( bin_driver == NULL ) {
         out_msg( "Designated driver not found: %s\n", bin_device->driver_name );
         err_count++;
         g_suicide();
-        }
+    }
 
     /* Set ps_device to "true" if the driver name begins with "ps" or "PS". */
 
@@ -789,7 +753,7 @@ void cop_setup( void )
                 }
             }
         }
-}
+    }
 
     font_base = wgml_font_cnt;
     wgml_font_cnt += gen_cnt;
@@ -827,7 +791,7 @@ void cop_setup( void )
             cur_dev_font = find_dev_font( cur_def_fonts[0].font_name );
         } else {
             cur_dev_font = find_dev_font( cur_def_fonts[i].font_name );
-            }
+        }
         if( cur_dev_font->font_switch == NULL ) {
             wgml_fonts[i].font_switch = NULL;
         } else {
@@ -838,7 +802,7 @@ void cop_setup( void )
         else wgml_fonts[i].font_resident = 'y';
         compute_metrics( &wgml_fonts[i] );
     }
-    
+
     /* Process the FONT command-line option instances. */
 
     cur_opt = opt_fonts;
@@ -917,8 +881,8 @@ void cop_setup( void )
             wgml_fonts[i].default_width = 1;
             wgml_fonts[i].line_height = 1;
             wgml_fonts[i].line_space = 0;
-                    break;
-                }
+            break;
+        }
         break;
     case 2:
         if( bin_device->underscore.font_name != NULL ) {
@@ -1003,8 +967,8 @@ void cop_setup( void )
             wgml_fonts[i].default_width = def_font.default_width;
             wgml_fonts[i].line_height = def_font.line_height;
             wgml_fonts[i].line_space = def_font.line_space;
-                }
-            }
+        }
+    }
 
     /* Ensure that at least one binary :FONT block was processed. */
 
@@ -1012,15 +976,8 @@ void cop_setup( void )
         out_msg( "Device Library Error: No :FONT blocks loaded\n" );
         err_count++;
         g_suicide;
-        }
+    }
 
-    /* Initialize the dependent modules. */
-
-    df_setup();
-    ob_setup();
-
-    return;
-        
     /* Set the base values for the "Em" and "Device Unit" ("DV") Horizontal
      * Space Units, and record the width of the space character for quick
      * reference. This is done after wgml_fonts is otherwise-initialized
@@ -1046,7 +1003,7 @@ void cop_setup( void )
  * Frees all memory allocated by cop_setup().
  * This is where making cop_device, cop_driver and cop_font monolithic blocks of
  * allocated memory pays off!
-     */
+ */
 
 void cop_teardown( void )
 {
@@ -1055,13 +1012,13 @@ void cop_teardown( void )
     if( bin_device != NULL ) {
         mem_free( bin_device );
         bin_device = NULL;
-        }
-            
+    }
+
     if( bin_driver  != NULL ) {
         mem_free( bin_driver );
         bin_driver = NULL;
     }
-                
+
     if( bin_fonts != NULL) {
         while( bin_fonts != NULL) {
             old = bin_fonts;
@@ -1073,7 +1030,7 @@ void cop_teardown( void )
     if( wgml_fonts != NULL) {
         mem_free( wgml_fonts );
         wgml_fonts = NULL;
-}
+    }
 
     /* Release any memory allocated by the dependent modules. */
 
@@ -1137,145 +1094,6 @@ uint32_t cop_text_width( uint8_t * text, uint32_t length, uint32_t font )
  *          or the :BOX block characters instead.
  */
 
-extern void fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len )
-{
-    fb_thickness( bin_driver->dbox.text, h_start, v_start, h_len, v_len, \
-                                        bin_driver->dbox.thickness, "DBOX" );
-    return;
-}
-
-/* Function fb_document().
- * Performs the processing which occurs on the first pass when document
- * processing begins.
- */
-
-extern void fb_document( void )
-{
-    /* Interpret the DOCUMENT :PAUSE block. */
-
-    if( bin_device->pauses.document_pause != NULL ) \
-        df_interpret_device_functions( bin_device->pauses.document_pause->text );
-
-    /* Interpret the DOCUMENT :INIT block. */
-
-    if( bin_driver->inits.document != NULL ) \
-                                        fb_init( bin_driver->inits.document );
-
-    /* Perform the virtual %enterfont(0). */
-
-    fb_enterfont();
-
-    /* Perform the other actions needed at this point. */
-
-    df_populate_driver_table();
-    pages = 1;
-
-    return;
-}
-
-/* Function fb_document_page().
- * Interprets the :NEWPAGE block and increments the page number variable.
- */
-
-extern void fb_document_page( void )
-{
-    /* Interpret the DOCUMENT_PAGE :PAUSE block. */
-
-    if( bin_device->pauses.docpage_pause != NULL ) \
-        df_interpret_device_functions( bin_device->pauses.docpage_pause->text );
-
-    /* Interpret the :NEWPAGE block. */
-
-    df_interpret_driver_functions( bin_driver->newpage.text );
-
-    pages++;
-
-    return;
-}
-
-/* Function fb_finish().
- * Performs the processing which occurs after document processing ends.
- */
-
-extern void fb_finish( void )
-{
-    /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
-
-    fb_lineproc_endvalue();
-
-    /* If the END :FINISH block is present, interpret it. If the END
-     * :FINISH block is not present, then, if the DOCUMENT :FINISH block
-     * is present, interpret it.
-     */
-
-    if( bin_driver->finishes.end != NULL ) \
-        df_interpret_driver_functions( bin_driver->finishes.end->text );
-    else if( bin_driver->finishes.document != NULL ) \
-        df_interpret_driver_functions( bin_driver->finishes.document->text );
-
-    return;
-}
-
-/* Function fb_hline().
- * Interprets the :HLINE block.
- *
- * Parameters:
- *      h_start contains the horizontal position.
- *      v_start contains the vertical position.
- *      h_len contains the horizontal extent.
- * Prerequisites:
- *      The :HLINE block must exist.
- *      The :ABSOLUTEADDRESS block must exist.
- *
- * Notes:
- *      The :ABSOLUTEADDRESS block is required to position the print to the
- *          start of the line or box.
- *      The :HLINE block must exist because the box-drawing code should be
- *          checking this and, in some cases, drawing the line using the :BOX
- *          block characters instead.
- */
-
-extern void fb_hline( uint32_t h_start, uint32_t v_start, uint32_t h_len )
-}
-
-/* Function fb_position().
- * Initializes the print head position by calling two helper functions, which
- * allows them to use the internals of the interpreter module. This function
- * is extremely specialized.
- *
- * Parameters:
- *      h_start contains the horizontal position.
- *      v_start contains the vertical position.
- *
- * Notes:
- *      This is called at most twice: once to set the left margin at the
- *          start of document processing, and once if the first element is a
- *          paragraph (:P.) which has an indent.
- *      The initial vertical positioning should only be done the first time:
- *          v_start should have the same value on the second invocation as it
- *          did on the first.
- *      The initial horizontal positioning will behave slightly differently
- *          the first and second time this function is called.
- *      The internal state is updated without regard to whether any function
- *          blocks, or which function blocks, are interpreted.
- */
-
-extern void fb_position( uint32_t h_start, uint32_t v_start )
-{
-    df_set_vertical( v_start );
-    df_set_horizontal( h_start );
-    return;
- * Prerequisites:
- *      The :DBOX block must exist.
- *      The :ABSOLUTEADDRESS block must exist.
- * Notes:
- *      The :ABSOLUTEADDRESS block is required to position the print to the
- *          start of the line or box.
- *      The :DBOX block must exist because the box-drawing code should be
- *          checking this and drawing the box using either :HLINE and :VLINE
- *          or the :BOX block characters instead.
- */
-
 void fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len )
 {
     fb_line_block( &(bin_driver->dbox), h_start, v_start, h_len, v_len, "DBOX" );
@@ -1283,8 +1101,7 @@ void fb_dbox( uint32_t h_start, uint32_t v_start, uint32_t h_len, uint32_t v_len
 }
 
 /* Function fb_document().
- * Performs the processing which occurs on the first pass when document
- * processing begins.
+ * Performs the first document pass output seen when document processing begins.
  */
 
 void fb_document( void )
@@ -1318,17 +1135,7 @@ void fb_document( void )
      * computed here is the top of the device page.
      */
 
-    if( bin_driver->y_positive == 0x00 ) {
-
-        /* The :PAGEOFFSET applies to the bottom of the page. I think. */
-
-        page_top = bin_device->y_start;
-    } else {
-
-        /* The :PAGEOFFSET applies to the top of the page. I think. */
-
-        page_top = bin_device->y_start + bin_device->y_offset;
-    }
+    page_top = bin_device->y_start;
 
     /* Set up for the first document page. */
 
@@ -1437,9 +1244,9 @@ void fb_position( uint32_t h_start, uint32_t v_start )
 }
 
 /* Function fb_start().
- * Performs the processing which occurs before document processing starts. Indeed,
- * wgml 4.0 does not even look for the document specification file until the
- * actions taken here have been completed!
+ * Performs the processing which occurs before document processing starts.
+ * Indeed, wgml 4.0 does not even look for the document specification file
+ * until the actions taken here have been completed!
  */
 
 void fb_start( void )
@@ -1457,28 +1264,6 @@ void fb_start( void )
 
     return;
 }
-
-/* Function fb_vline().
- * Interprets the :VLINE block.
- *
- * Parameters:
- *      h_start contains the horizontal position.
- *      v_start contains the vertical position.
- *      v_len contains the vertical extent.
- *
- * Prerequisites:
- *      The :VLINE block must exist.
- *      The :ABSOLUTEADDRESS block must exist.
- *
- * Notes:
- *      The :ABSOLUTEADDRESS block is required to position the print to the
- *          start of the line or box.
- *      The :VLINE block must exist because the box-drawing code should be
- *          checking this and, in some cases, drawing the line using the :BOX
- *          block characters instead.
- */
-
-extern void fb_vline( uint32_t h_start, uint32_t v_start, uint32_t v_len )
 
 /* Function fb_vline().
  * Interprets the :VLINE block.
