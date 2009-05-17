@@ -35,9 +35,9 @@
 #include "cgdata.h"
 #include "pragdefn.h"
 #include "errdefns.h"
+#include "pcheader.h"
 #include "pdefn2.h"
 #include "preproc.h"
-#include "pcheader.h"
 #include "carve.h"
 
 enum {
