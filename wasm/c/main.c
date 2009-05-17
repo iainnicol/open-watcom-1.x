@@ -1022,8 +1022,6 @@ static void do_envvar_cmdline( char *envvar )
     }
 }
 
-#define MAX_OS_NAME_SIZE 7
-
 static int set_build_target( void )
 /*********************************/
 {
@@ -1031,7 +1029,6 @@ static int set_build_target( void )
     char *uscores = "__";
 
     if( Options.build_target == NULL ) {
-        Options.build_target = AsmAlloc( MAX_OS_NAME_SIZE + 1 );
 #if defined(__OSI__)
         if( __OS == OS_DOS ) {
             SetTargName( "DOS", 3 );
