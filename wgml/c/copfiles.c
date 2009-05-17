@@ -384,7 +384,7 @@ static cop_font * get_cop_font( char const * in_name )
 {
     cop_font        *   out_font    = NULL;
     cop_file_type       file_type;
-        
+
     /* Acquire the file, if it exists. */
 
     if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
@@ -414,7 +414,7 @@ static cop_font * get_cop_font( char const * in_name )
 
         out_msg( "Device library corrupt or wrong version: %s\n", try_file_name );
         return( out_font );
-                
+
     case se_v4_1_not_dir:
 
         /* try_fp was a same-endian version 4.1 file, but not a directory file. */
