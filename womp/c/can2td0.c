@@ -42,7 +42,7 @@
 #include "cantype.h"
 #include "cansymb.h"
 #include "myassert.h"
-#include "_carve.h"
+#include "carve.h"
 
 STATIC qdesc    dataRecs;
 STATIC uint_8   compileParmsBuf[2];

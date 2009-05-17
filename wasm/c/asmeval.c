@@ -30,12 +30,10 @@
 
 
 #include "asmglob.h"
-#include "asmins.h"
 #include "asmeval.h"
-#include "asmdefs.h"
-#include "directiv.h"
 
 #if defined( _STANDALONE_ )
+#include "directiv.h"
 #include "myassert.h"
 #else
 //  FIXME!!

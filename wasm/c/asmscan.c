@@ -31,7 +31,9 @@
 
 
 #include "asmglob.h"
+#if defined( _STANDALONE_ )
 #include "directiv.h"
+#endif
 #include <ctype.h>
 
 char                    *CurrString; // Current Input Line
