@@ -47,10 +47,6 @@ message *GetMessageDataFromID( int msgid, char *class_name )
     int i;
     int j;
 
-        if( msgid == MessageArray[i].id ) {
-            return( &MessageArray[i] );
-        }
-    }
     for( i = 0; i < ClassMessagesSize; i++ ) {
         if( i == 0 || !stricmp( class_name, ClassMessages[i].class_name ) ) {
             for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
@@ -128,6 +124,7 @@ void SetFilterMsgs( MsgClass type, bool val, int bit )
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
             if( ClassMessages[i].message_array[j].type == type ) {
                 ClassMessages[i].message_array[j].bits[bit] = val;
+            }
         }
     }
 
@@ -144,8 +141,9 @@ void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits )
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
             if( ClassMessages[i].message_array[j].type == type ) {
                 bits[k] = val;
-        }
+            }
             ++k;
+        }
     }
 
 } /* SetFilterSaveBitsMsgs */
@@ -174,7 +172,7 @@ bool *SaveBitState( int x )
     for( i = 0, k = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
             data[k++] = ClassMessages[i].message_array[j].bits[x];
-    }
+        }
     }
     return( data );
 
@@ -208,7 +206,7 @@ void RestoreBitState( bool *data, int x )
     for( i = 0, k = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
             ClassMessages[i].message_array[j].bits[x] = data[k++];
-    }
+        }
     }
     MemFree( data );
 

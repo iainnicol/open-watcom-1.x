@@ -49,7 +49,7 @@ BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     int         i, j, k, max;
     static int  which, firstmsg, pages;
     bool        fl;
-    HWND        nwnd,pwnd;
+    HWND        nwnd, pwnd;
     WORD        cmdid;
     char        *fmtstr;
     char        title[100];
@@ -161,9 +161,9 @@ void DoSpyMsgDialog( HWND hwnd, int which )
     bool        *savewatch;
 
     savewatch = CloneBitState( savedBits );
-        fp = MakeProcInstance( (FARPROC) SpyMsgDialog, Instance );
+    fp = MakeProcInstance( (FARPROC)SpyMsgDialog, Instance );
     which = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, (LPVOID)fp, which );
-        FreeProcInstance( fp );
+    FreeProcInstance( fp );
     if( which == -1 ) {
         CopyBitState( savedBits, savewatch );
     }
@@ -269,8 +269,8 @@ void DoMessageDialog( HWND hwnd, WORD cmdid )
         filts[i] = Filters[i].flag[currBit];
     }
     savedBits = SaveBitState( currBit );
-    fp = MakeProcInstance( (FARPROC) MessageDialog, Instance );
-    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, (LPVOID) fp );
+    fp = MakeProcInstance( (FARPROC)MessageDialog, Instance );
+    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, (LPVOID)fp );
     if( rc ) {
         for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
             i = id - SPYMSG_CLIPBOARD;
@@ -297,7 +297,7 @@ extern LPSTR GetPointer( DWORD );
 #pragma aux GetPointer = parm[dx ax] value[dx ax];
 #endif
 #else
-#define GetPointer( dword ) ( (LPSTR)dword )
+#define GetPointer( dword ) ((LPSTR)dword)
 #endif
 
 /*
@@ -357,7 +357,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         strcpy( strptr, str );
         SetWindowLong( hwnd, DWL_USER, (DWORD)strptr );
         setMessageName( hwnd, str );
-        str[SPYOUT_MSG+SPYOUT_MSG_LEN] = 0;
+        str[SPYOUT_MSG + SPYOUT_MSG_LEN] = 0;
         id = strtol( &str[SPYOUT_MSG], &endptr, 16 );
         if( endptr != str + SPYOUT_MSG + SPYOUT_MSG_LEN ) {
             EndDialog( hwnd, 0 );
@@ -396,11 +396,11 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         cmdid = LOWORD( wparam );
         switch( cmdid ) {
         case MSGSEL_HELP:
-            strptr = (char *) GetWindowLong( hwnd, DWL_USER );
+            strptr = (char *)GetWindowLong( hwnd, DWL_USER );
 #ifdef __NT__
-            WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM) strptr );
+            WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM)strptr );
 #else
-            WWinHelp( hwnd, "win31wh.hlp", HELP_KEY, (LPARAM) strptr );
+            WWinHelp( hwnd, "win31wh.hlp", HELP_KEY, (LPARAM)strptr );
 #endif
             break;
         case MSGSEL_SHOWINFO:
@@ -457,7 +457,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam
         EndDialog( hwnd, 0 );
         break;
     case WM_DESTROY:
-        strptr = (char *) GetWindowLong( hwnd, DWL_USER );
+        strptr = (char *)GetWindowLong( hwnd, DWL_USER );
         MemFree( strptr );
         break;
     default:
@@ -478,8 +478,8 @@ void DoMessageSelDialog( HWND hwnd )
     if( !GetSpyBoxSelection( str ) ) {
         return;
     }
-    fp = MakeProcInstance( (FARPROC) MessageSelectDialog, Instance );
-    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (LPVOID) fp, (DWORD) (LPSTR) str );
+    fp = MakeProcInstance( (FARPROC)MessageSelectDialog, Instance );
+    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (LPVOID)fp, (DWORD)(LPSTR)str );
     FreeProcInstance( fp );
 
 } /* DoMessageSelDialog */

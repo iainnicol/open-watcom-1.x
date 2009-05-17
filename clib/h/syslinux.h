@@ -24,47 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes of Linux system calls internal to the clib.
+* Description:  Defines for Linux specific system calls. We maintain this
+*               separately from the Linux kernel source code, so it may
+*               need updating from time to time. We need to do this so that
+*               the runtime library can be built on any platform without
+*               needing the Linux kernel headers to be installed.
 *
 ****************************************************************************/
 
-#ifndef _CLIB_SYSLINUX_H_INCLUDED
-#define _CLIB_SYSLINUX_H_INCLUDED
+#ifndef _SYSLINUX_H_INCLUDED
+#define _SYSLINUX_H_INCLUDED
 
-//#ifndef __TYPES_H_INCLUDED
-// #include <sys/types.h>
-//#endif
-
-/*
- * internal sub-numbers for SYS_socketcall
- */
-
-#define SYS_SOCKET                1
-#define SYS_BIND                  2
-#define SYS_CONNECT               3
-#define SYS_LISTEN                4
-#define SYS_ACCEPT                5
-#define SYS_GETSOCKNAME           6
-#define SYS_GETPEERNAME           7
-#define SYS_SOCKETPAIR            8
-#define SYS_SEND                  9
-#define SYS_RECV                 10
-#define SYS_SENDTO               11
-#define SYS_RECVFROM             12
-#define SYS_SHUTDOWN             13
-#define SYS_SETSOCKOPT           14
-#define SYS_GETSOCKOPT           15
-#define SYS_SENDMSG              16
-#define SYS_RECVMSG              17
-
-/*
- * Prototypes for Linux system call functions
- */
-
-u_long  sys_brk( u_long brk );
-long    sys_open( const char * filename, int flags, int mode );
-long    sys_exit( int error_code );
-int     sys_getdents( u_int fd, struct dirent *dirp, u_int count );
-long    __socketcall( int call, u_long *args );
-
+#ifndef __TYPES_H_INCLUDED
+    #include <sys/types.h>
 #endif
+
+/* Include architecture specific definitions */
+#if defined( __386__ )
+    #include "sys386.h"
+#elif defined( __PPC__ )
+    #include "sysppc.h"
+#elif defined( __MIPS__ )
+    #include "sysmips.h"
+#endif
+
+#endif  /* _SYSLINUX_H_INCLUDED */

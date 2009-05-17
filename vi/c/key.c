@@ -33,27 +33,27 @@
 #include "vi.h"
 #include "win.h"
 #ifdef _M_IX86
-#ifdef __WATCOMC__
-#include <i86.h>
+    #ifdef __WATCOMC__
+        #include <i86.h>
+    #endif
 #endif
-#endif
-#if defined(__OS2__)
-#define INCL_BASE
-#include <os2.h>
+#if defined( __OS2__ )
+    #define INCL_BASE
+    #include <os2.h>
 #endif
 
 static vi_key   overrideKeyBuff[MAX_OVERRIDE_KEY_BUFF];
-static int      overrideKeyPos,overrideKeyEnd;
+static int      overrideKeyPos, overrideKeyEnd;
 
-#if !defined(__UNIX__) && !defined(__NT__) || defined( __WIN__ )
-#define BUSYWAIT
+#if !defined( __UNIX__ ) && !defined( __NT__ ) || defined( __WIN__ )
+    #define BUSYWAIT
 #endif
 
-#if defined(__UNIX__) || defined(__NT__) && !defined( __WIN__ )
-#define NO_TRANSLATE
+#if defined( __UNIX__ ) || defined( __NT__ ) && !defined( __WIN__ )
+    #define NO_TRANSLATE
 #endif
 
-#if !defined(NO_TRANSLATE)
+#if !defined( NO_TRANSLATE )
 static unsigned char altLookup[] = { 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37,
                                      38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47,
                                      17, 45, 21, 44  };
@@ -67,12 +67,12 @@ static unsigned char altLookup2[] = { 117, 147, 146, 119, 132, 118, 115, 116, 14
 static void clearSpin( void )
 {
     if( EditFlags.Spinning ) {
-        #if !defined(__WIN__)
-            (*(char_info _FAR *)SpinLoc).ch = ' ';
-        #endif
-        #ifdef __VIO__
-            MyVioShowBuf( SpinLoc - Scrn, 1 );
-        #endif
+#if !defined(__WIN__)
+        (*(char_info _FAR *)SpinLoc).ch = ' ';
+#endif
+#ifdef __VIO__
+        MyVioShowBuf( SpinLoc - Scrn, 1 );
+#endif
         EditFlags.SpinningOurWheels = FALSE;
     }
 
@@ -88,8 +88,8 @@ static vi_key getOverrideKey( void )
     int         mcnt = 0;
 
     while( 1 ) {
-        c = overrideKeyBuff[ overrideKeyPos ];
-        if( overrideKeyPos == MAX_OVERRIDE_KEY_BUFF-1 ) {
+        c = overrideKeyBuff[overrideKeyPos];
+        if( overrideKeyPos == MAX_OVERRIDE_KEY_BUFF - 1 ) {
             overrideKeyPos = 0;
         } else {
             overrideKeyPos++;
@@ -164,7 +164,7 @@ vi_key GetVIKey( vi_key ch, int scan, bool shift )
         }
         return( ch );
     }
-#if !defined(NO_TRANSLATE)
+#if !defined( NO_TRANSLATE )
 
     /*
      * special characters: fcn keys, and cursor control
@@ -261,21 +261,21 @@ vi_key GetVIKey( vi_key ch, int scan, bool shift )
     if( scan >= 133 && scan <= 140 ) {
         return( scan - 133 + VI_KEY( F11 ) );
     }
-    for( i=0;i<sizeof( altLookup);i++ ) {
+    for( i = 0; i < sizeof( altLookup ); i++ ) {
         if( altLookup[i] == scan ) {
-            return( VI_KEY( ALT_A )+i );
+            return( VI_KEY( ALT_A ) + i );
         }
     }
-    for( i=0;i<sizeof( altLookup2 );i++ ) {
+    for( i = 0; i < sizeof( altLookup2 ); i++ ) {
         if( altLookup2[i] == scan ) {
-            return( VI_KEY( CTRL_END )+i );
+            return( VI_KEY( CTRL_END ) + i );
         }
     }
     return( VI_KEY( DUMMY ) );
 #else
     /* avoid warning about unused arguments */
-    ( void ) scan;
-    ( void ) shift;
+    (void) scan;
+    (void) shift;
     return( ch );
 #endif
 
@@ -288,7 +288,6 @@ vi_key GetKey( bool usemouse )
 {
     bool        hit;
     vi_key      key;
-    int         scan;
 
     clearSpin();
     while( 1 ) {
@@ -320,21 +319,21 @@ vi_key GetKey( bool usemouse )
         hit = KeyboardHit();
         if( !hit ) {
             DoAutoSave();
-            #ifdef __IDE__
-                IDEGetKeys();
-            #endif
-            #ifdef __QNX__
-                WaitForProxy();
-                if( !KeyboardHit() ) {
-                    continue;
-                }
-            #endif
+#ifdef __IDE__
+            IDEGetKeys();
+#endif
+#ifdef __QNX__
+            WaitForProxy();
+            if( !KeyboardHit() ) {
+                continue;
+            }
+#endif
         }
-#if defined(BUSYWAIT)
+#if defined( BUSYWAIT )
         else {
 #endif
             key = GetKeyboard();
-#if defined(__NT__)
+#if defined( __NT__ )
             if( key == VI_KEY( MOUSEEVENT ) ) {
                 continue;
             }
@@ -358,10 +357,10 @@ vi_key GetKey( bool usemouse )
             }
 #endif
             break;
-#if defined(BUSYWAIT)
+#if defined( BUSYWAIT )
         }
 #endif
-#if defined(__OS2__)
+#if defined( __OS2__ )
         DosSleep( 1 );
 #endif
     }
