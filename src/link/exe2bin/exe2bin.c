@@ -42,6 +42,7 @@
 #include "exedos.h"             // dos_exe_header, ...
 #include "banner.h"             // Watcom banner
 
+#include "clibext.h"
 
 #define BUF_SIZE  0x1000        // buffer size for file-ops (has to be >1)
 
