@@ -162,7 +162,12 @@ static void FarCallToNear( void )
     if( Parse_Pass == PASS_2 )
         AsmWarn( 4, CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
-    strcpy( buffer, "CALL NEAR PTR " );
+#if defined( _STANDALONE_ )
+    if( Options.ideal )
+        strcpy( buffer, "CALL NEAR " );
+    else
+#endif
+        strcpy( buffer, "CALL NEAR PTR " );
     for( i++; AsmBuffer[i]->token != T_FINAL; i++ ) {
         switch( AsmBuffer[i]->token ) {
         case T_NUM:
@@ -561,7 +566,14 @@ int jmp( expr_list *opndx )
         case T_LOOPNEW:
         case T_LOOPNZW:
         case T_LOOPZW:
-            if( Code->mem_type != MT_EMPTY && Code->mem_type != MT_SHORT ) {
+#if defined( _STANDALONE_ )
+            if( ( Code->mem_type != MT_EMPTY ) &&
+                ( Code->mem_type != MT_SHORT ) &&
+                ( Options.ideal == 0 ) ) {
+#else
+            if( ( Code->mem_type != MT_EMPTY ) &&
+                ( Code->mem_type != MT_SHORT ) ) {
+#endif
                 AsmError( ONLY_SHORT_DISPLACEMENT_IS_ALLOWED );
                 return( ERROR );
             }

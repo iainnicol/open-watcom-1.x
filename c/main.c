@@ -100,7 +100,6 @@ global_options Options = {
     /* quiet            */          FALSE,
     /* banner_printed   */          FALSE,
     /* debug_flag       */          FALSE,
-    /* naming_convention*/          ADD_USCORES,
     /* floating_point   */          DO_FP_EMULATION,
     /* output_comment_data_in_code_records */   TRUE,
 
@@ -122,9 +121,12 @@ global_options Options = {
     /* default_name_mangler */      NULL,
     /* allow_c_octals   */          FALSE,
     /* emit_dependencies */         TRUE,
-    /* Watcom C name mangler */     TRUE,
+    /* masm compatible C mangler */ TRUE,
     /* stdcall at number */         TRUE,
-    /* mangle stdcall   */          TRUE
+    /* mangle stdcall   */          TRUE,
+    /* write listing */             FALSE,
+    /* tasm ideal mode syntax */    FALSE,
+    /* register based parameters */ TRUE
 };
 
 static char *CopyOfParm( void )
@@ -196,24 +198,21 @@ static void SetCPUPMC( void )
 
     for( tmp=OptParm; tmp < OptScanPtr; tmp++ ) {
         if( *tmp == 'p' ) {
-            if( SWData.cpu >= 2 ) {         // set protected mode
+            if( SWData.cpu >= 2 )   // set protected mode
                 SWData.protect_mode = TRUE;
-            } else {
+            else
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-            }
         } else if( *tmp == 'r' ) {
-            if( SWData.cpu >= 3 ) {  // set register calling convention
+            if( SWData.cpu >= 3 )   // set register based calling convention
                 SWData.register_conventions = TRUE;
-            } else {
+            else
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-            }
         } else if( *tmp == 's' ) {
-            if( SWData.cpu >= 3 ) {  // set stack calling convention
+            if( SWData.cpu >= 3 )   // set stack based calling convention
                 SWData.register_conventions = FALSE;
-            } else {
+            else
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
-            }
-        } else if( *tmp == '"' ) {                             // set default mangler
+        } else if( *tmp == '"' ) {      // set default mangler
             char *dest;
             tmp++;
             dest = strchr(tmp, '"');
@@ -230,12 +229,6 @@ static void SetCPUPMC( void )
             MsgPrintf1( MSG_UNKNOWN_OPTION, CopyOfParm() );
             exit( 1 );
         }
-    }
-    if( SWData.cpu < 2 ) {
-        SWData.protect_mode = FALSE;
-        SWData.register_conventions = TRUE;
-    } else if( SWData.cpu < 3 ) {
-        SWData.register_conventions = TRUE;
     }
 }
 
@@ -329,7 +322,10 @@ static void SetMemoryModel( void )
         return;
     }
 
-    strcpy( buffer, ".MODEL " );
+    if( Options.ideal )
+        strcpy( buffer, "MODEL " );
+    else
+        strcpy( buffer, ".MODEL " );
     strcat( buffer, model );
     InputQueueLine( buffer );
 }
@@ -567,7 +563,7 @@ static void Set_WX( void ) { Options.warning_level = 4; }
 
 static void SetWarningLevel( void ) { Options.warning_level = OptValue; }
 
-static void Set_ZCM( void ) { Options.watcom_c_mangler = FALSE; }
+static void Set_ZCM( void ) { Options.masm_c_mangler = TRUE; }
 
 static void Set_ZLD( void ) { Options.emit_dependencies = FALSE; }
 
@@ -1061,6 +1057,8 @@ static int set_build_target( void )
         SetTargName( "OS2", 3 );
 #elif defined(__NT__)
         SetTargName( "NT", 2 );
+#elif defined(__ZDOS__)
+        SetTargName( "ZDOS", 4 );
 #else
         #error unknown host OS
 #endif
@@ -1196,19 +1194,14 @@ void set_cpu_parameters( void )
 {
     int token;
 
-    // set naming convention
-    if( SWData.register_conventions || ( SWData.cpu < 3 ) ) {
-        Options.naming_convention = ADD_USCORES;
-    } else {
-        Options.naming_convention = DO_NOTHING;
-    }
+    // Set WATCOM C calling convention
+    Options.register_parameters = SWData.register_conventions;
     // set parameters passing convention
     if( SWData.cpu >= 3 ) {
-        if( SWData.register_conventions ) {
+        if( SWData.register_conventions )
             add_constant( "__REGISTER__" );
-        } else {
+        else
             add_constant( "__STACK__" );
-        }
     }
     switch( SWData.cpu ) {
     case 0:

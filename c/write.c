@@ -829,7 +829,7 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
         get_frame( fixnode, fixup );
         break;
     }
-    
+
     /*--------------------*/
     /* Optimize the fixup */
     /*--------------------*/
@@ -1133,6 +1133,7 @@ static void writepass1stuff( char *name )
 static unsigned long OnePass( char *string )
 /******************************************/
 {
+    Options.ideal = 0;  /* Start pass in masm mode */
     CmdlParamsInit();
 
     AssumeInit();
@@ -1197,7 +1198,7 @@ void WriteObjModule( void )
     while( PopLineQueue() ) {
     }
     CheckForOpenConditionals();
-#ifdef PRIVATE_PROC_INFO    
+#ifdef PRIVATE_PROC_INFO
     put_private_proc_in_public_table();
 #else
     if( Options.debug_flag ) {

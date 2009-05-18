@@ -158,7 +158,6 @@ typedef struct global_options {
     bool        quiet;
     bool        banner_printed;
     bool        debug_flag;
-    char        naming_convention;
     enum fpe    floating_point;
     bool        output_comment_data_in_code_records;
 
@@ -179,13 +178,15 @@ typedef struct global_options {
   #ifdef DEBUG_OUT
     char        debug;
   #endif
-    char *      default_name_mangler;
+    char        *default_name_mangler;
     bool        allow_c_octals;
     bool        emit_dependencies;
-    bool        watcom_c_mangler;
+    bool        masm_c_mangler;
     bool        use_stdcall_at_number;
     bool        mangle_stdcall;
     bool        write_listing;
+    bool        ideal;
+    bool        register_parameters;
 } global_options;
 
 extern global_options Options;
