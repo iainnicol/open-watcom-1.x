@@ -458,11 +458,75 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
         if( Options.ideal ) {
             int i = *buf_index;
 
+            // don't use WASM/MASM mode keywords in ideal mode if necessary
+            switch( AsmOpTable[count].token ) {
+//            case T_...:
+//                buf->token = T_ID;
+//                return( NOT_ERROR );
+            default:
+                break;
+            }
             if( ( ( i == 0 ) && ( Definition.struct_depth != 0 )  &&
                   !( AsmOpTable[count].rm_byte & ( OP_DIRECTIVE|OP_RES_ID ) ) ) ||
                 ( ( i > 0 ) && ( AsmBuffer[--i]->token == T_DOT ) ) ) {
                 buf->token = T_ID;
                 return( NOT_ERROR );
+            }
+        } else {
+            // don't use IDEAL mode keywords in WASM/MASM mode
+            switch( AsmOpTable[count].token ) {
+            case T_ARG:
+            case T_CODESEG:
+            case T_CONST:
+            case T_DATASEG:
+            case T_ENUM:
+            case T_ERR:
+            case T_ERRIFB:
+            case T_ERRIFDEF:
+            case T_ERRIFDIF:
+            case T_ERRIFDIFI:
+            case T_ERRIFE:
+            case T_ERRIFIDN:
+            case T_ERRIFIDNI:
+            case T_ERRIFNB:
+            case T_ERRIFNDEF:
+            case T_EXITCODE:
+            case T_FARDATA:
+            case T_IDEAL:
+            case T_MASM:
+            case T_MODEL:
+            case T_NOLANGUAGE:
+            case T_NOWARN:
+            case T_P186:
+            case T_P286:
+            case T_P286N:
+            case T_P286P:
+            case T_P287:
+            case T_P386:
+            case T_P386P:
+            case T_P387:
+            case T_P486:
+            case T_P486P:
+            case T_P586:
+            case T_P586P:
+            case T_P686:
+            case T_P686P:
+            case T_P8086:
+            case T_P8087:
+            case T_PK3D:
+            case T_PMMX:
+            case T_PXMM:
+            case T_PXMM2:
+            case T_PXMM3:
+            case T_STACK:
+            case T_STARTUPCODE:
+            case T_UDATASEG:
+            case T_UFARDATA:
+            case T_WARN:
+                buf->token = T_ID;
+                return( NOT_ERROR );
+            default:
+                break;
             }
         }
 #endif

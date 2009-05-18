@@ -21,8 +21,8 @@ const
 .continue
 .cref
 .data
-dataseg
 .data?
+dataseg
 .dosseg
 dosseg
 dq
