@@ -33,7 +33,6 @@
 #define _ASMSYM_H_
 
 #include "asminlin.h"
-#include "asmops2.h"
 
 typedef enum {
         MT_BYTE,
@@ -64,6 +63,19 @@ typedef enum {
         MT_EMPTY
 } memtype;
 
+#if defined( _STANDALONE_ )
+typedef enum {
+    LANG_NONE     = 0,
+    LANG_C        = 1,
+    LANG_SYSCALL  = 2,
+    LANG_STDCALL  = 3,
+    LANG_PASCAL   = 4,
+    LANG_FORTRAN  = 5,
+    LANG_BASIC    = 6,
+    LANG_WATCOM_C = 7
+} lang_type;
+#endif
+
 typedef struct asm_sym {
         struct asm_sym  *next;
         char            *name;
@@ -77,8 +89,9 @@ typedef struct asm_sym {
         uint_32         total_length; /* total number of elements (lengthof) */
         uint_32         count;
         char            *(*mangler)( struct asm_sym *sym, char *buffer );
-        unsigned        public:1;
-        unsigned        langtype:3;
+        unsigned        public      :1;
+        unsigned        referenced  :1;
+        lang_type       langtype;
 #else
         long            addr;
 #endif
@@ -94,6 +107,7 @@ extern  struct asm_sym  *AsmGetSymbol( const char *name );
 
 extern  void            AsmTakeOut( const char *name );
 extern  int             AsmChangeName( const char *old, const char *new );
+extern  void            WriteListing( void );
 
 extern  struct asm_sym  *AllocDSym( const char *, int );
 

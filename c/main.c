@@ -33,14 +33,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 #ifdef __WATCOMC__
-  #include <process.h>
+    #include <process.h>
+#else
+    #include "clibext.h"
 #endif
 #include <ctype.h>
 
 #include "asmalloc.h"
-#include "asmins.h"
 #include "fatal.h"
-#include "asmdefs.h"
 #include "asmexpnd.h"
 #include "objprs.h"
 #include "genmsomf.h"
@@ -48,10 +48,11 @@
 #include "womputil.h"
 #include "swchar.h"
 #include "asminput.h"
-#include "asmerr.h"
+#include "pathgrp.h"
+#include "banner.h"
 
 #ifdef __OSI__
-  #include "ostype.h"
+    #include "ostype.h"
 #endif
 
 extern void             Fatal( unsigned msg, ... );
@@ -388,12 +389,10 @@ static void get_fname( char *token, int type )
  * fill in default object file name if it is null
  */
 {
-    char        *def_drive, *def_dir, *def_fname, *def_ext;
-    char        *drive, *dir, *fname, *ext;
-    char        buffer[ _MAX_PATH2 ];
-    char        buffer2[ _MAX_PATH2 ];
     char        name [ _MAX_PATH  ];
     char        msgbuf[80];
+    PGROUP      pg;
+    PGROUP      def;
 
     /* get filename for source file */
 
@@ -406,66 +405,86 @@ static void get_fname( char *token, int type )
             Fatal( MSG_TOO_MANY_FILES );
         }
 
-        _splitpath2( token, buffer, &drive, &dir, &fname, &ext );
-        if( *ext == '\0' ) {
-            ext = ASM_EXT;
+        _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        if( *pg.ext == '\0' ) {
+            pg.ext = ASM_EXT;
         }
-        _makepath( name, drive, dir, fname, ext );
+        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
         AsmFiles.fname[ASM] = AsmAlloc( strlen( name ) + 1 );
         strcpy( AsmFiles.fname[ASM], name );
 
-        _makepath( name, drive, dir, NULL, NULL );
+        _makepath( name, pg.drive, pg.dir, NULL, NULL );
         /* add the source path to the include path */
         AddStringToIncludePath( name );
 
         if( AsmFiles.fname[OBJ] == NULL ) {
             /* set up default object and error filename */
-            ext = OBJ_EXT;
-            _makepath( name, NULL, NULL, fname, ext );
+            pg.ext = OBJ_EXT;
+            _makepath( name, NULL, NULL, pg.fname, pg.ext );
         } else {
-            _splitpath2( AsmFiles.fname[OBJ], buffer2, &def_drive,
-                         &def_dir, &def_fname, &def_ext );
-            if( *def_fname == NULLC )
-                def_fname = fname;
-            if( *def_ext == NULLC )
-                def_ext = OBJ_EXT;
+            _splitpath2( AsmFiles.fname[OBJ], def.buffer, &def.drive,
+                         &def.dir, &def.fname, &def.ext );
+            if( *def.fname == NULLC )
+                def.fname = pg.fname;
+            if( *def.ext == NULLC )
+                def.ext = OBJ_EXT;
 
-            _makepath( name, def_drive, def_dir, def_fname, def_ext );
+            _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[OBJ] );
         }
         AsmFiles.fname[OBJ] = AsmAlloc( strlen( name ) + 1 );
         strcpy( AsmFiles.fname[OBJ], name );
 
         if( AsmFiles.fname[ERR] == NULL ) {
-            ext = ERR_EXT;
-            _makepath( name, NULL, NULL, fname, ext );
+            pg.ext = ERR_EXT;
+            _makepath( name, NULL, NULL, pg.fname, pg.ext );
         } else {
-            _splitpath2( AsmFiles.fname[ERR], buffer2, &def_drive,
-                         &def_dir, &def_fname, &def_ext );
-            if( *def_fname == NULLC )
-                def_fname = fname;
-            if( *def_ext == NULLC )
-                def_ext = ERR_EXT;
-            _makepath( name, def_drive, def_dir, def_fname, def_ext );
+            _splitpath2( AsmFiles.fname[ERR], def.buffer, &def.drive,
+                         &def.dir, &def.fname, &def.ext );
+            if( *def.fname == NULLC )
+                def.fname = pg.fname;
+            if( *def.ext == NULLC )
+                def.ext = ERR_EXT;
+            _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[ERR] );
         }
         AsmFiles.fname[ERR] = AsmAlloc( strlen( name ) + 1 );
         strcpy( AsmFiles.fname[ERR], name );
 
+        if( AsmFiles.fname[LST] == NULL ) {
+            pg.ext = LST_EXT;
+            _makepath( name, NULL, NULL, pg.fname, pg.ext );
+        } else {
+            _splitpath2( AsmFiles.fname[LST], def.buffer, &def.drive,
+                         &def.dir, &def.fname, &def.ext );
+            if( *def.fname == NULLC )
+                def.fname = pg.fname;
+            if( *def.ext == NULLC )
+                def.ext = LST_EXT;
+            _makepath( name, def.drive, def.dir, def.fname, def.ext );
+            AsmFree( AsmFiles.fname[LST] );
+        }
+        AsmFiles.fname[LST] = AsmAlloc( strlen( name ) + 1 );
+        strcpy( AsmFiles.fname[LST], name );
+
     } else {
-        /* get filename for object file */
-        _splitpath2( token, buffer, &drive, &dir, &fname, &ext );
+        /* get filename for object, error, or listing file */
+        _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( AsmFiles.fname[ASM] != NULL ) {
-            _splitpath2( AsmFiles.fname[ASM], buffer2, &def_drive,
-                         &def_dir, &def_fname, &def_ext );
-            if( *fname == NULLC ) {
-                fname = def_fname;
+            _splitpath2( AsmFiles.fname[ASM], def.buffer, &def.drive,
+                         &def.dir, &def.fname, &def.ext );
+            if( *pg.fname == NULLC ) {
+                pg.fname = def.fname;
             }
         }
-        if( *ext == NULLC ) {
-            ext = type == ERR ? ERR_EXT : OBJ_EXT;
+        if( *pg.ext == NULLC ) {
+            switch( type ) {
+            case ERR:   pg.ext = ERR_EXT;  break;
+            case LST:   pg.ext = LST_EXT;  break;
+            case OBJ:   pg.ext = OBJ_EXT;  break;
+            }
         }
-        _makepath( name, drive, dir, fname, ext );
+        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
         if( AsmFiles.fname[type] != NULL ) {
             AsmFree( AsmFiles.fname[type] );
         }
@@ -512,7 +531,7 @@ static void usage_msg( void )
     exit(1);
 }
 
-static void Ignore( void ) {};
+static void Ignore( void ) {}
 
 static void Set_BT( void ) { SetTargName( OptParm,  OptScanPtr - OptParm ); }
 
@@ -529,6 +548,8 @@ static void SetStopEnd( void ) { Options.stop_at_end = TRUE; }
 static void Set_FR( void ) { get_fname( GetAFileName(), ERR ); }
 
 static void Set_FI( void ) { ForceInclude = GetAFileName(); }
+
+static void Set_FL( void ) { get_fname( GetAFileName(), LST ); Options.write_listing = TRUE; }
 
 static void Set_FO( void ) { get_fname( GetAFileName(), OBJ ); }
 
@@ -591,6 +612,7 @@ static struct option const cmdl_options[] = {
     { "e=#",    0,        SetErrorLimit },
     { "fe=@",   0,        Set_FR },
     { "fi=@",   0,        Set_FI },
+    { "fl=@",   0,        Set_FL },
     { "fo=@",   0,        Set_FO },
     { "fp0",    0,        SetFPU },
     { "fp2",    2,        SetFPU },
@@ -1004,8 +1026,6 @@ static void do_envvar_cmdline( char *envvar )
     }
 }
 
-#define MAX_OS_NAME_SIZE 7
-
 static int set_build_target( void )
 /*********************************/
 {
@@ -1013,35 +1033,39 @@ static int set_build_target( void )
     char *uscores = "__";
 
     if( Options.build_target == NULL ) {
-        Options.build_target = AsmAlloc( MAX_OS_NAME_SIZE + 1 );
 #if defined(__OSI__)
         if( __OS == OS_DOS ) {
-            strcpy( Options.build_target, "DOS" );
+            SetTargName( "DOS", 3 );
         } else if( __OS == OS_OS2 ) {
-            strcpy( Options.build_target, "OS2" );
+            SetTargName( "OS2", 3 );
         } else if( __OS == OS_NT ) {
-            strcpy( Options.build_target, "NT" );
+            SetTargName( "NT", 2 );
         } else if( __OS == OS_WIN ) {
-            strcpy( Options.build_target, "WINDOWS" );
+            SetTargName( "WINDOWS", 7 );
         } else {
-            strcpy( Options.build_target, "XXX" );
+            SetTargName( "XXX", 3 );
         }
 #elif defined(__QNX__)
-        strcpy( Options.build_target, "QNX" );
+        SetTargName( "QNX", 3 );
 #elif defined(__LINUX__)
-        strcpy( Options.build_target, "LINUX" );
+        SetTargName( "LINUX", 5 );
+#elif defined(__BSD__)
+        SetTargName( "BSD", 3 );
+#elif defined(__OSX__) || defined(__APPLE__)
+        SetTargName( "OSX", 3 );
+#elif defined(__SOLARIS__) || defined( __sun )
+        SetTargName( "SOLARIS", 7 );
 #elif defined(__DOS__)
-        strcpy( Options.build_target, "DOS" );
+        SetTargName( "DOS", 3 );
 #elif defined(__OS2__)
-        strcpy( Options.build_target, "OS2" );
+        SetTargName( "OS2", 3 );
 #elif defined(__NT__)
-        strcpy( Options.build_target, "NT" );
+        SetTargName( "NT", 2 );
 #else
         #error unknown host OS
 #endif
     }
 
-    strupr( Options.build_target );
     tmp = AsmTmpAlloc( strlen( Options.build_target ) + 5 ); // null + 4 uscores
     strcpy( tmp, uscores );
     strcat( tmp, Options.build_target );
@@ -1066,6 +1090,8 @@ static int set_build_target( void )
     } else if( stricmp( Options.build_target, "QNX" ) == 0 ) {
         add_constant( "__UNIX__" );
     } else if( stricmp( Options.build_target, "LINUX" ) == 0 ) {
+        add_constant( "__UNIX__" );
+    } else if( stricmp( Options.build_target, "BSD" ) == 0 ) {
         add_constant( "__UNIX__" );
     }
     return( NOT_ERROR );
@@ -1093,32 +1119,13 @@ static void do_init_stuff( char **cmdline )
 /*****************************************/
 {
     char        *env;
-    char        *src;
-    char        *dst;
     char        buff[80];
 
     if( !MsgInit() )
         exit(1);
 
     AsmInit( -1, -1, -1, -1 );                // initialize hash table
-    strcpy( buff, "__WASM__=" );
-    dst = &buff[ strlen(buff) ];
-    src = (char *)FingerMsg[0];
-    while( !isdigit( *src ) )
-        ++src;
-    while( isdigit( *src ) ) {
-        *dst++ = *src++;
-    }
-    dst[0] = '0';
-    dst[1] = '0';
-    dst[2] = '\0';
-    if( *src == '.' ) {
-        if( isdigit( src[1] ) )
-            dst[0] = src[1];
-        if( isdigit( src[2] ) ) {
-            dst[0] = src[2];
-        }
-    }
+    strcpy( buff, "__WASM__=" BANSTR( _BANVER ) );
     add_constant( buff );
     ForceInclude = getenv( "FORCE" );
     do_envvar_cmdline( "WASM" );
@@ -1137,10 +1144,6 @@ static void do_init_stuff( char **cmdline )
     AsmLookup( "$" );    // create "$" symbol for current segment counter
 }
 
-#ifndef __WATCOMC__
-char **_argv;
-#endif
-
 #ifdef __UNIX__
 
 int main( int argc, char **argv )
@@ -1149,6 +1152,7 @@ int main( int argc, char **argv )
     argc = argc;
 #ifndef __WATCOMC__
     _argv = argv;
+    _argc = argc;
 #endif
 
 #else
@@ -1237,13 +1241,13 @@ void set_fpu_parameters( void )
 {
     switch( Options.floating_point ) {
     case DO_FP_EMULATION:
-        add_constant("__FPI__");
+        add_constant( "__FPI__" );
         break;
     case NO_FP_EMULATION:
-        add_constant("__FPI87__");
+        add_constant( "__FPI87__" );
         break;
     case NO_FP_ALLOWED:
-        add_constant("__FPC__");
+        add_constant( "__FPC__" );
         cpu_directive( T_DOT_NO87 );
         return;
     }

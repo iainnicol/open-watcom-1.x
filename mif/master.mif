@@ -17,9 +17,11 @@ wasm_trmem = 1
 
 !include trmem.mif
 
+fpu_flags = -fpc
+
 inc_dirs  = -I. -I"$(proj_path)/h" -I"$(womp_dir)/h"
 
-libs = -L$(clib_dir)/$(%OBJDIR) -lwatcom -L$(wres_dir)/$(%OBJDIR) -lwres
+libs = $(wres_dir)/$(%OBJDIR)/wres.lib
 
 #cflags stuff
 #########
@@ -79,7 +81,6 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
     asmfixup.obj        &
     asmmatch.obj        &
     asmdata.obj         &
-    insthash.obj        &
     asmjump.obj         &
     autodept.obj        &
     queues.obj          &
@@ -88,10 +89,14 @@ proj_obj =   $(extra_proj_obj_$(host_OS)_$(host_CPU)) &
 
 proj_obj += $(trmem_objs)
 
+!ifdef bootstrap
+proj_obj += clibext.obj
+!endif
+
 #explicit rules
 ######
 
-$(name).exe : fullops.gh $(name).res $(proj_obj)
+$(name).exe : asmops.gh asmopsd.gh $(name).res $(proj_obj) $(__MAKEFILES__)
 !ifeq  host_OS qnx
         @%make usage.u
 !endif
@@ -140,33 +145,24 @@ usagej.u : $(proj_path)/h/usage.sp
         wsplice -kJAPANESE -k$(host_OS) -t8 -u $[@ $^@
 
 msg.gh : $(proj_path)/h/asmshare.msg
-!ifdef __LINUX__
-        perl $(sdk_dir)/misc/msgtoh.pl < $[@ | sed -e '/0$$/d' | &
-        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_SHARE_RC_BASE/' > $^@
-!else
-        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_SHARE_RC_BASE" $[@
-!endif
+        $(awk) -v base=MSG_SHARE_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
 
 wasmmsg.gh : $(proj_path)/h/wasm.msg
-!ifdef __LINUX__
-        perl $(sdk_dir)/misc/msgtoh.pl < $[@ | &
-        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_WASM_RC_BASE/' > $^@
-!else
-        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_WASM_RC_BASE" $[@
-!endif
+        $(awk) -v base=MSG_WASM_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
 
 wmpmsg.gh : $(proj_path)/h/womp.msg
-!ifdef __LINUX__
-        perl $(sdk_dir)/misc/msgtoh.pl < $< | sed '/0$$/d' | &
-        sed -e '/0$$/d' -e 's/MSG_RC_BASE/MSG_WOMP_RC_BASE/' > $^@
-!else
-        $(vi) -s $(proj_path)/h/makemsg.vi -p"$^@ MSG_WOMP_RC_BASE" $[@
-!endif
+        $(awk) -v base=MSG_WOMP_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
 
 ###################################################################
 
-fullops.gh: $(proj_path)/fullops.tok $(proj_path)/inlnops.tok ./mkopcode.exe
-        $]@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $^@
+./mkopcod1.exe: $(proj_path)/mkopcod1.c $(proj_path)/mkopcode.h $(cl_objs)
+        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
 
-./mkopcode.exe: $(proj_path)/mkopcode.c
-        $(bld_cl) $(inc_path) $[@ $(wcl_util_opts) $(cl_libs) # order is important for gcc (linux bootstrap)
+asmops.gh: ./mkopcod1.exe $(proj_path)/fullops.tok $(proj_path)/inlnops.tok
+        $[@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $@
+
+./mkopcode.exe: $(proj_path)/mkopcode.c $(proj_path)/mkopcode.h asmops.gh $(cl_objs)
+        $(bld_cl) $(inc_path) -D_STANDALONE_ $[@ $(wcl_util_opts) $(cl_objs) $(cl_libs) # order is important for gcc (linux bootstrap)
+
+asmopsd.gh: ./mkopcode.exe $(proj_path)/fullops.tok $(proj_path)/inlnops.tok
+        $[@ $(proj_path)/fullops.tok $(proj_path)/inlnops.tok $@

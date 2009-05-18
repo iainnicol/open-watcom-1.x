@@ -25,7 +25,7 @@
 *  ========================================================================
 *
 * Description:  Symbols interface between inline assembler
-*                  and C/C++ compiler
+*                  and C/C++/F77 compilers
 *
 ****************************************************************************/
 
@@ -47,7 +47,6 @@ enum sym_state {
         SYM_CONST,          // constant - created with EQU, =, or /D on the cmdline
         SYM_LIB,            // included library
         SYM_EXT,            // extern def.
-        SYM_LNAME,          // lname entry
         SYM_CLASS_LNAME,    // lname entry for segment class ... not in symbol table
         SYM_STRUCT_FIELD,   // field defined in some structure
         SYM_STRUCT          // structure
@@ -122,9 +121,9 @@ struct asmfixup {
 //        unsigned                line;
 
 #if defined( _STANDALONE_ )
-        int_8                   frame;          // frame of the fixup
-        uint_16                 frame_datum;    // frame_datum of the fixup
-        struct dir_node         *def_seg;       // segment fixup is in
+        struct asmfixup         *next_loc;
+        struct asm_sym          *frame;         // frame of the fixup
+        struct dir_node         *fixup_seg;     // segment of the fixup location
         struct asm_sym          *sym;
 #else
         char                    *name;
@@ -133,7 +132,7 @@ struct asmfixup {
 };
 
 #if defined( _STANDALONE_ )
-#define     AsmCodeAddress      ( GetCurrAddr() )
+#define AsmCodeAddress          ( GetCurrAddr() )
 #else
 extern uint_32                  AsmCodeAddress;
 #endif

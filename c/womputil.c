@@ -36,12 +36,8 @@
 #include "objprs.h"
 #include "myassert.h"
 #include "womputil.h"
+#include "errout.h"
 
-#ifdef __UNIX__
-#define errout stderr
-#else
-#define errout stdout
-#endif
 
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
@@ -92,7 +88,7 @@ void ObjWriteError( void )
 {
     MsgPrintf( OBJECT_WRITE_ERROR );
     exit( EXIT_FAILURE );
-};
+}
 
 void write_record( obj_rec *objr, char kill )
 /*******************************************/

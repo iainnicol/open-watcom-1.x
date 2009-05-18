@@ -32,9 +32,6 @@
 #include "asmglob.h"
 #include <ctype.h>
 
-#include "asmins.h"
-#include "asmdefs.h"
-
 #if defined( _STANDALONE_ )
 
 #include "directiv.h"
@@ -43,6 +40,7 @@
 #include "asmexpnd.h"
 #include "macro.h"
 #include "asminput.h"
+#include "pathgrp.h"
 
 extern int              in_prologue;
 
@@ -66,7 +64,7 @@ typedef struct file_list {
     union {
         FILE            *file;
         struct input_queue  *lines;
-    };
+    } u;
     const FNAME         *srcfile;   /* name of include file */
     unsigned long       line_num;   /* current line in parent file */
     char                is_a_file;
@@ -150,7 +148,16 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
             }
             skip = TRUE;
             break;
+        case '\r':
+            continue; /* don't store character in string */
         case '\n':
+            /* if continuation character found, pass over newline */
+            if( (got_something == TRUE) && (*(ptr - 1) == '\\') ) {
+                ptr--;
+                max++;
+                LineNumber++;
+                continue; /* don't store character in string */
+            }
             *ptr = '\0';
             // fall through
         case '\0':
@@ -346,16 +353,15 @@ int InputQueueFile( char *path )
     FILE        *file;
     file_list   *new;
     char        fullpath[ _MAX_PATH ];
-    char        *drive, *dir, *fname, *ext;
-    char        buffer[ _MAX_PATH2 ];
     char        *tmp;
+    PGROUP      pg;
 
-    _splitpath2( path, buffer, &drive, &dir, &fname, &ext );
-    _makepath( fullpath, drive, dir, fname, ext );
+    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( fullpath, pg.drive, pg.dir, pg.fname, pg.ext );
     file = fopen( fullpath, "r" );
     tmp = path;
     if( file == NULL && IncludePath != NULL ) {
-        tmp = buffer;
+        tmp = pg.buffer;
         file = open_file_in_include_path( path, tmp );
     }
 
@@ -364,7 +370,7 @@ int InputQueueFile( char *path )
         return( ERROR );
     } else {
         new = push_flist( tmp, TRUE );
-        new->file = file;
+        new->u.file = file;
         return( NOT_ERROR );
     }
 }
@@ -395,22 +401,22 @@ static char *input_get( char *string )
     while( file_stack != NULL ) {
         inputfile = file_stack;
         if( inputfile->is_a_file ) {
-            if( get_asmline( string, MAX_LINE_LEN, inputfile->file ) ) {
+            if( get_asmline( string, MAX_LINE_LEN, inputfile->u.file ) ) {
                 LineNumber++;
                 return( string );
             }
             /* EOF is reached */
             file_stack = inputfile->next;
-            fclose( inputfile->file );
+            fclose( inputfile->u.file );
             LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         } else {
             /* this "file" is just a line queue for a macro */
-            inputline = inputfile->lines->head;
+            inputline = inputfile->u.lines->head;
             LineNumber++;
             if( inputline != NULL ) {
                 strcpy( string, inputline->line );
-                inputfile->lines->head = inputline->next;
+                inputfile->u.lines->head = inputline->next;
                 AsmFree( inputline->line );
                 AsmFree( inputline );
                 return( string );
@@ -418,7 +424,7 @@ static char *input_get( char *string )
             MacroEnd( FALSE );
 
             file_stack = inputfile->next;
-            AsmFree( inputfile->lines );
+            AsmFree( inputfile->u.lines );
             LineNumber = inputfile->line_num;
             AsmFree( inputfile );
         }
@@ -447,53 +453,46 @@ char *ReadTextLine( char *string )
     return( string );
 }
 
-static char *join_multiline_cmds( char *line, int len )
-/*****************************************************/
+static char *join_multiline_cmds( char *line, int max_len )
+/*********************************************************/
 {
-    char        *ptr;
     int         linelen;
+    int         i;
 
     linelen = strlen( line );
 
-    if( linelen == 0 )
-        return( line );
-
     /* if the last non-whitespace character is a comma, join the next line on */
 
-    for( ptr = line + linelen - 1 ; isspace( *ptr ); ptr-- )
-        ;
-
-    /* ptr now points at the last non-whitespace char */
-
-    if( *ptr != ',' ) {
-        return( line );
+    for( i = linelen; i; --i ) {
+        if( !isspace( line[ i - 1 ] ) ) {
+            if( line[ i - 1 ] == ',' )
+                ScanLine( line + linelen, max_len - linelen );
+            break;
+        }
     }
-    ptr++;
-
-    ptr = ScanLine( line + linelen, len - linelen );
     return( line );
 }
 
-char *ScanLine( char *string, int len )
-/*************************************/
+char *ScanLine( char *string, int max_len )
+/*****************************************/
 {
     char        *line;
     char        buffer[MAX_LINE_LEN];
 
-    line = ( len < MAX_LINE_LEN ? buffer : string );
+    line = ( max_len < MAX_LINE_LEN ? buffer : string );
     line = ReadTextLine( line );
     if( line != NULL ) {
 
         prep_line_for_conditional_assembly( line );
         if( line != string ) {          /* comparing the pointers */
-            if( strlen( line ) <= len ) {
+            if( strlen( line ) <= max_len ) {
                 strcpy( string, line );
             } else {
                 AsmError( ASM_CODE_TOO_LONG );
                 return( NULL );
             }
         }
-        join_multiline_cmds( string, len );
+        join_multiline_cmds( string, max_len );
     }
     return( line );
 }
@@ -565,7 +564,7 @@ void PushMacro( const char *name, bool hidden )
 
     DebugMsg(( "PUSH_MACRO\n" ));
     new = push_flist( name, FALSE );
-    new->lines = line_queue;
+    new->u.lines = line_queue;
     new->hidden = hidden;
     line_queue = line_queue->next;
 }
@@ -584,7 +583,7 @@ static void dbg_output( void )
         for( i = 0; i < Token_Count; i++ ) {
             switch( AsmBuffer[i]->token ) {
             case T_NUM:
-                DebugMsg(( " %d ", AsmBuffer[i]->value ));
+                DebugMsg(( " %d ", AsmBuffer[i]->u.value ));
                 break;
             case T_STRING:
                 DebugMsg(( " '%s' ", AsmBuffer[i]->string_ptr));
@@ -599,7 +598,7 @@ static void dbg_output( void )
                 DebugMsg(( " %s ", ":" ));
                 break;
             case T_RES_ID:
-                switch( AsmBuffer[i]->value ) {
+                switch( AsmBuffer[i]->u.value ) {
                 case T_PTR:
                     DebugMsg(( " %s ", "Ptr" ));
                     break;
@@ -663,9 +662,8 @@ void AsmByte( unsigned char byte )
 #if defined( _STANDALONE_ )
     if( CheckHaveSeg() ) {
         (CurrSeg->seg->e.seginfo->current_loc)++;
-        if( CurrSeg->seg->e.seginfo->current_loc >=
-            CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length ) {
-            CurrSeg->seg->e.seginfo->segrec->d.segdef.seg_length = CurrSeg->seg->e.seginfo->current_loc;
+        if( CurrSeg->seg->e.seginfo->current_loc >= CurrSeg->seg->e.seginfo->length ) {
+            CurrSeg->seg->e.seginfo->length = CurrSeg->seg->e.seginfo->current_loc;
         }
         if( Parse_Pass != PASS_1 && write_to_file ) {
             AsmCodeBuffer[BufSize] = byte;

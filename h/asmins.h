@@ -32,7 +32,7 @@
 #ifndef ASMINS_H
 #define ASMINS_H
 
-#ifdef M_I86
+#ifdef _M_I86
 
 #define ASMFAR far
 
@@ -44,8 +44,7 @@
 
 #include "asmopnds.h"
 #include "asmsym.h"
-#include "asmops1.h"
-#include "asmops2.h"
+#include "asmops.h"
 
 enum prefix_reg {
     PREFIX_EMPTY = EMPTY,
@@ -163,9 +162,9 @@ struct asm_code {
    OP_R ( without extension ) should follow OP_Rx
    OP_I ( without extension ) should follow OP_Ix  */
 
-extern const struct asm_ins ASMFAR AsmOpTable[];
-extern struct AsmCodeName          AsmOpcode[];
-extern char                        AsmChars[];
+extern const struct asm_ins ASMFAR  AsmOpTable[];
+extern const struct AsmCodeName     AsmOpcode[];
+extern const char                   AsmChars[];
 
 #if defined( _STANDALONE_ )
 

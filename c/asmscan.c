@@ -33,9 +33,6 @@
 #include "asmglob.h"
 #include <ctype.h>
 
-#include "asmins.h"
-#include "asmdefs.h"
-
 char                    *CurrString; // Current Input Line
 
 extern int              get_instruction_position( char *string );
@@ -70,8 +67,8 @@ typedef union {
         long    l;
 } NUMBERFL;
 
-static int get_float( struct asm_tok *buf, char **input, char **output )
-/**********************************************************************/
+static int get_float( asm_tok *buf, char **input, char **output )
+/***************************************************************/
 {
     /* valid floats look like:  (int)[.(int)][e(int)] */
 
@@ -123,12 +120,12 @@ done_scanning_float:
     (*output)++;
     *input = ptr;
 
-    *((float *)(&buf->value)) = atof(buf->string_ptr);
+    *((float *)(&buf->u.value)) = atof(buf->string_ptr);
     return( NOT_ERROR );
 }
 
-static void array_mul_add(char *buf, unsigned base, unsigned num, unsigned size) {
-
+static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsigned size )
+{
     while( size-- > 0 ) {
         num += *buf * base;
         *(buf++) = num;
@@ -136,8 +133,8 @@ static void array_mul_add(char *buf, unsigned base, unsigned num, unsigned size)
     }
 }
 
-static int get_string( struct asm_tok *buf, char **input, char **output )
-/***********************************************************************/
+static int get_string( asm_tok *buf, char **input, char **output )
+/****************************************************************/
 {
     char    symbol_o;
     char    symbol_c;
@@ -169,7 +166,7 @@ static int get_string( struct asm_tok *buf, char **input, char **output )
             *(*output)++ = *(*input)++; /* keep the 2nd one */
         }
         *(*output)++ = '\0';
-        buf->value = count;
+        buf->u.value = count;
         return( NOT_ERROR );
     }
     (*input)++;
@@ -191,7 +188,7 @@ static int get_string( struct asm_tok *buf, char **input, char **output )
             } else {
                 *(*output)++ = '\0';
                 (*input)++; /* skip the closing delimiter */
-                buf->value = count;
+                buf->u.value = count;
                 break;
             }
         } else if( symbol_c && **input == symbol_c ) {
@@ -202,7 +199,7 @@ static int get_string( struct asm_tok *buf, char **input, char **output )
             } else {
                 *(*output)++ = '\0';
                 (*input)++; /* skip the closing delimiter */
-                buf->value = count;
+                buf->u.value = count;
                 break;
             }
         } else if( **input == '\0' || **input == '\n' ) {
@@ -216,8 +213,8 @@ static int get_string( struct asm_tok *buf, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_number( struct asm_tok *buf, char **input, char **output )
-/***********************************************************************/
+static int get_number( asm_tok *buf, char **input, char **output )
+/****************************************************************/
 {
     char                *ptr = *input;
     char                *dig_start;
@@ -370,25 +367,25 @@ done_scan:
     **output = '\0';
     (*output)++;
     *input = ptr + extra;
-    memset(buf->bytes, 0, sizeof(buf->bytes));
+    memset( buf->u.bytes, 0, sizeof( buf->u.bytes ) );
     while( dig_start < ptr ) {
         if( isdigit( *dig_start ) ) {
             val = *dig_start - '0';
         } else {
             val = tolower( *dig_start ) - 'a' + 10;
         }
-        array_mul_add( buf->bytes, base, val, sizeof( buf->bytes ) );
+        array_mul_add( buf->u.bytes, base, val, sizeof( buf->u.bytes ) );
         ++dig_start;
     }
     return( NOT_ERROR );
 } /* get_number */
 
-static int get_id_in_backquotes( struct asm_tok *buf, char **input, char **output )
-/*********************************************************************************/
+static int get_id_in_backquotes( asm_tok *buf, char **input, char **output )
+/**************************************************************************/
 {
     buf->string_ptr = *output;
     buf->token = T_ID;
-    buf->value = 0;
+    buf->u.value = 0;
 
     /* copy char from input to output & inc both */
     (*input)++;             // strip off the backquotes
@@ -408,9 +405,9 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
 /***********************************************************************/
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
-    struct asm_tok  *buf;
-    char            cur_char;
-    int             count;
+    asm_tok     *buf;
+    char        cur_char;
+    int         count;
 
     buf = AsmBuffer[ *buf_index ];
 
@@ -420,7 +417,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
     } else {
         buf->token = T_PATH;
     }
-    buf->value = 0;
+    buf->u.value = 0;
 
     *(*output)++ = *(*input)++;
     for( ; ; ) {
@@ -453,17 +450,17 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             buf->token = T_QUESTION_MARK;
         }
     } else {
-        buf->value = AsmOpTable[count].token;
+        buf->u.value = AsmOpTable[count].token;
         // count = AsmOpcode[count].position;
 
         if( AsmOpTable[count].opnd_type[OPND1] == OP_SPECIAL ) {
             if( AsmOpTable[count].rm_byte & OP_REGISTER ) {
                 buf->token = T_REG;
             } else if( AsmOpTable[count].rm_byte & OP_RES_ID ) {
-                if( buf->value == T_PWORD ) {
-                    buf->value = T_FWORD;
-                } else if( buf->value == T_DP ) {
-                    buf->value = T_DF;
+                if( buf->u.value == T_PWORD ) {
+                    buf->u.value = T_FWORD;
+                } else if( buf->u.value == T_DP ) {
+                    buf->u.value = T_DF;
                 }
                 buf->token = T_RES_ID;
             } else if( AsmOpTable[count].rm_byte & OP_UNARY_OPERATOR ) {
@@ -487,7 +484,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
                     (*output)++;
                     (*input) += strlen( *input );
                     buf->token = T_STRING;
-                    buf->value = 0;
+                    buf->u.value = 0;
                     break;
                 } /* default do nothing */
 #endif
@@ -503,9 +500,8 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_special_symbol( struct asm_tok *buf,
-                                char **input, char **output )
-/***********************************************************/
+static int get_special_symbol( asm_tok *buf, char **input, char **output )
+/************************************************************************/
 {
     char    symbol;
 
@@ -541,7 +537,7 @@ static int get_special_symbol( struct asm_tok *buf,
 #if defined( _STANDALONE_ )
     case '=' :
         buf->token = T_DIRECTIVE;
-        buf->value = T_EQU2;
+        buf->u.value = T_EQU2;
         *(*output)++ = *(*input)++;
         *(*output)++ = '\0';
         break;
@@ -569,7 +565,7 @@ static int get_inc_path( unsigned int *buf_index, char **input, char **output )
     char symbol;
 
     AsmBuffer[*buf_index]->token = T_PATH;
-    AsmBuffer[*buf_index]->value = 0;
+    AsmBuffer[*buf_index]->u.value = 0;
     AsmBuffer[*buf_index]->string_ptr = *output;
 
     while( isspace( **input ) )
@@ -614,7 +610,14 @@ int AsmScan( char *string )
     CurrString = string;
     output_ptr = stringbuf;
 
-    for( ptr = string; ; ) {
+    ptr = string;
+// FIXME !!
+    /* skip initial spaces and expansion codes */
+    while( isspace( *ptr ) || (*ptr == '%') ) {
+        ptr++;
+    }
+
+    for( ;; ) {
         AsmBuffer[buf_index]->string_ptr = output_ptr;
 
         while( isspace( *ptr ) ) {
@@ -636,8 +639,8 @@ int AsmScan( char *string )
 #if defined( _STANDALONE_ )
             // this mess allows include directives with undelimited file names
             if( AsmBuffer[buf_index]->token == T_DIRECTIVE &&
-                ( AsmBuffer[buf_index]->value == T_INCLUDE ||
-                AsmBuffer[buf_index]->value == T_INCLUDELIB ) ) {
+                ( AsmBuffer[buf_index]->u.value == T_INCLUDE ||
+                AsmBuffer[buf_index]->u.value == T_INCLUDELIB ) ) {
                 buf_index++;
                 get_inc_path( &buf_index, &ptr, &output_ptr );
             }
@@ -651,7 +654,7 @@ int AsmScan( char *string )
 #if !defined( _STANDALONE_ )
             if( buf_index > 0 && AsmBuffer[buf_index-1]->token == T_MINUS ) {
                 AsmBuffer[buf_index-1]->token = T_PLUS;
-                AsmBuffer[buf_index]->value = -AsmBuffer[buf_index]->value;
+                AsmBuffer[buf_index]->u.value = -AsmBuffer[buf_index]->u.value;
             }
 #endif
         } else if( *ptr == '`' ) {

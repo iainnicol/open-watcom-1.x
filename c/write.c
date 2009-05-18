@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Write translated object module.
 *
 ****************************************************************************/
 
@@ -35,31 +34,33 @@
 #include <ctype.h>
 #include <time.h>
 
-#include "asmsym.h"
-#include "asmins.h"
 #include "asmalloc.h"
 #include "fatal.h"
-#include "asmdefs.h"
 #include "asmeval.h"
-#include "objio.h"
 #include "objprs.h"
 #include "fixup.h"
 #include "autodept.h"
 #include "mangle.h"
-#include "namemgr.h"  // WOMP callback NameGet routine declaration
 #include "directiv.h"
 #include "queues.h"
 #include "womputil.h"
 #include "asmlabel.h"
 #include "asminput.h"
+#include "asmfixup.h"
 
 #include "myassert.h"
 
 
-// use separate fixupp and fixupp32 records
-// fixupp32 record is used only for FIX_OFFSET386 and FIX_POINTER386 fixup
+// MASM doesn't mix 16 and 32-bit fixupp into one record, but WASM does
+// use following macro to separate 16 and 32-bit fixupp into two fixupp records
 // it is for better compatibility with MASM
-#define SEPARATE_FIXUPP_16_32 1
+#define SEPARATE_FIXUPP_16_32
+
+// MASM doesn't put private PROC symbol into object module, but WASM does
+// if you want exactly same behaviour as MASM then undefine following macro
+#define PRIVATE_PROC_INFO
+
+#define MAX_REC_LENGTH 0xFFFEL
 
 extern void             CheckForOpenConditionals( void );
 extern void             set_cpu_parameters( void );
@@ -69,10 +70,7 @@ extern void             CmdlParamsInit( void );
 extern void             PrintStats( void );
 
 extern symbol_queue     Tables[];       // tables of definitions
-extern struct fixup     *FixupListHead; // head of list of fixups ( from WOMP )
-extern struct fixup     *FixupListTail;
 extern uint_32          BufSize;
-extern obj_rec          *ModendRec;     // Record for Modend
 
 extern int              MacroExitState;
 extern int              in_prologue;
@@ -90,10 +88,7 @@ unsigned long           PassTotal;      // Total number of ledata bytes generate
 int_8                   PhaseError;
 char                    EndDirectiveFound = FALSE;
 
-extern uint             segdefidx;      // Number of Segment definition
-extern uint             extdefidx;      // Number of Extern definition
-
-static char             **NameArray;
+struct asmfixup         *ModendFixup = NULL; // start address fixup
 
 global_vars     Globals = { 0, 0, 0, 0, 0, 0, 0 };
 
@@ -158,15 +153,12 @@ static void write_init( void )
     BufSize       = 0;
     FixupListHead = NULL;
     FixupListTail = NULL;
-    ModendRec     = NULL;
     CurrProc      = NULL;
     DefineProc    = FALSE;
     Use32         = FALSE;
     write_to_file = TRUE;
 
-    IdxInit();
-    LnameInsert( "" );
-
+    AddLnameData( dir_insert( "", TAB_CLASS_LNAME ) );
     ModuleInit();
     FixInit();
 }
@@ -193,7 +185,7 @@ void OutSelect( bool starts )
     } else {
         if( !Options.output_comment_data_in_code_records || !Globals.data_in_code )
             return;
-        Globals.sel_idx = GetSegIdx( &CurrSeg->seg->sym );
+        Globals.sel_idx = CurrSeg->seg->e.seginfo->idx;
         Globals.data_in_code = FALSE;
 
         if( (Parse_Pass > PASS_1) && !PhaseError ) {
@@ -230,7 +222,7 @@ static void write_end_of_pass1( void )
     objr = ObjNewRec( CMD_COMENT );
     objr->d.coment.attr = 0x00;
     objr->d.coment.class = CMT_MS_END_PASS_1;
-    ObjAttachData( objr, "\x001", 1 );
+    ObjAttachData( objr, (uint_8 *)"\x001", 1 );
     write_record( objr, TRUE );
 }
 
@@ -242,7 +234,7 @@ static void write_dosseg( void )
     objr = ObjNewRec( CMD_COMENT );
     objr->d.coment.attr = 0x80;
     objr->d.coment.class = CMT_DOSSEG;
-    ObjAttachData( objr, "", 0 );
+    ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, TRUE );
 }
 
@@ -258,7 +250,7 @@ static void write_lib( void )
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEFAULT_LIBRARY;
-        ObjAttachData( objr, name, strlen( name ) );
+        ObjAttachData( objr, (uint_8 *)name, strlen( name ) );
         write_record( objr, TRUE );
     }
 }
@@ -271,7 +263,7 @@ static void write_one_export( dir_node *dir )
     proc_info   *info;
 
     info = dir->e.procinfo;
-    if( info->visibility == VIS_EXPORT ) {
+    if( info->export ) {
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x00;
         objr->d.coment.class = CMT_DLL_ENTRY;
@@ -303,46 +295,42 @@ static void write_export( void )
 static void write_grp( void )
 /***************************/
 {
-    dir_node        *curr;
+    dir_node        *grp;
     dir_node        *segminfo;
     seg_list        *seg;
-    obj_rec         *grp;
+    obj_rec         *objr;
     unsigned long   line_num;
-    char            writeseg;
-    unsigned        i = 1;
+    direct_idx      grp_idx;
 
     line_num = LineNumber;
-
-    for( curr = Tables[TAB_GRP].head; curr; curr = curr->next, i++ ) {
-
-        grp = ObjNewRec( CMD_GRPDEF );
-        /**/myassert( grp != NULL );
-
-        grp->d.grpdef.idx = curr->e.grpinfo->idx;
-
+    grp_idx = 0;
+    for( grp = Tables[TAB_GRP].head; grp; grp = grp->next ) {
+        objr = ObjNewRec( CMD_GRPDEF );
+        /**/myassert( objr != NULL );
+        grp_idx++;
+        objr->d.grpdef.idx = grp_idx;
         /* we might need up to 3 bytes for each seg in dgroup and 1 byte for
            the group name index */
-        ObjAllocData( grp, 1 + 3 * curr->e.grpinfo->numseg );
-        ObjPut8( grp, GetLnameIdx( curr->sym.name ) );
-
-        for( seg = curr->e.grpinfo->seglist; seg; seg = seg->next ) {
-            writeseg = TRUE;
-            segminfo = (dir_node *)(seg->seg);
-            if( ( segminfo->sym.state != SYM_SEG ) || ( segminfo->sym.segment == NULL ) ) {
-                LineNumber = curr->line_num;
+        ObjAllocData( objr, 1 + 3 * grp->e.grpinfo->numseg );
+        ObjPut8( objr, grp->e.grpinfo->idx );
+        for( seg = grp->e.grpinfo->seglist; seg != NULL; seg = seg->next ) {
+            segminfo = (dir_node *)seg->seg;
+            if( segminfo->sym.segment == NULL ) {
+                LineNumber = grp->line_num;
                 AsmErr( SEG_NOT_DEFINED, segminfo->sym.name );
                 write_to_file = FALSE;
                 LineNumber = line_num;
             } else {
-                ObjPut8( grp, GRP_SEGIDX );
-                ObjPutIndex( grp, segminfo->e.seginfo->segrec->d.segdef.idx);
+                ObjPut8( objr, GRP_SEGIDX );
+                ObjPutIndex( objr, segminfo->e.seginfo->idx);
             }
         }
+        grp->e.grpinfo->idx = grp_idx;
         if( write_to_file ) {
-            ObjTruncRec( grp );
-            write_record( grp, TRUE );
+            ObjTruncRec( objr );
+            write_record( objr, TRUE );
         } else {
-            ObjKillRec( grp );
+            ObjKillRec( objr );
         }
     }
 }
@@ -350,47 +338,42 @@ static void write_grp( void )
 static void write_seg( void )
 /***************************/
 {
-    dir_node    *curr;
+    dir_node    *dir;
     obj_rec     *objr;
-    uint        seg_index;
-    uint        total_segs = 0;
+    uint        seg_idx;
 
-    for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
-        if( ( curr->sym.segment == NULL )
-          && ( curr->e.seginfo->group == NULL ) )
-            AsmErr( SEG_NOT_DEFINED, curr->sym.name );
-        total_segs++;
-    }
-
-    for( seg_index = 1; seg_index <= total_segs; seg_index++ ) {
-        /* find segment by index */
-        for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
-            if( GetSegIdx( curr->sym.segment ) == seg_index ) {
-                break;
-            }
-        }
-        if( curr == NULL )
-            continue;
-        if( curr->sym.state != SYM_SEG ) {
-            AsmErr( SEG_NOT_DEFINED, curr->sym.name );
+    seg_idx = 0;
+    for( dir = Tables[TAB_SEG].head; dir; dir = dir->next ) {
+        if( dir->sym.segment == NULL ) {
+            AsmErr( SEG_NOT_DEFINED, dir->sym.name );
             continue;
         }
-        objr = curr->e.seginfo->segrec;
+        seg_idx++;
+        objr = ObjNewRec( CMD_SEGDEF );
         objr->is_32 = TRUE;
         objr->d.segdef.ovl_name_idx = 1;
-        objr->d.segdef.seg_name_idx = GetLnameIdx( curr->sym.name );
+        objr->d.segdef.seg_name_idx = dir->e.seginfo->idx;
+        objr->d.segdef.class_name_idx = ((dir_node *)dir->e.seginfo->class_name)->e.lnameinfo->idx;
+        objr->d.segdef.seg_length = dir->e.seginfo->length;
+        objr->d.segdef.align = dir->e.seginfo->align;
+        objr->d.segdef.combine = dir->e.seginfo->combine;
+        objr->d.segdef.use_32 = dir->e.seginfo->use_32;
+        objr->d.segdef.access_valid = FALSE;
+        objr->d.segdef.abs.frame = dir->e.seginfo->abs_frame;
+        objr->d.segdef.abs.offset = 0;
+        objr->d.segdef.idx = seg_idx;
         write_record( objr, FALSE );
-        if( curr->e.seginfo->iscode == SEGTYPE_ISCODE ) {
-            obj_rec     *rec;
 
-            rec = ObjNewRec( CMD_COMENT );
-            rec->d.coment.attr = CMT_TNP;
-            rec->d.coment.class = CMT_LINKER_DIRECTIVE;
-            ObjAllocData( rec, 3  );
-            ObjPut8( rec, LDIR_OPT_FAR_CALLS );
-            ObjPutIndex( rec, seg_index );
-            write_record( rec, TRUE );
+        if( dir->e.seginfo->iscode == SEGTYPE_ISCODE ) {
+            objr = ObjNewRec( CMD_COMENT );
+            objr->d.coment.attr = CMT_TNP;
+            objr->d.coment.class = CMT_LINKER_DIRECTIVE;
+            ObjAllocData( objr, 3  );
+            ObjPut8( objr, LDIR_OPT_FAR_CALLS );
+            ObjPutIndex( objr, seg_idx );
+            write_record( objr, TRUE );
         }
+        dir->e.seginfo->idx = seg_idx;
     }
 }
 
@@ -398,71 +381,15 @@ static void write_lnames( void )
 /******************************/
 {
     obj_rec     *objr;
-    uint        total_size = 0;
-    char        *lname = NULL;
 
     objr = ObjNewRec( CMD_LNAMES );
     objr->d.lnames.first_idx = 1;
-    objr->d.lnames.num_names = LnamesIdx;
-    total_size = GetLnameData( &lname );
-    if( total_size > 0 ) {
-        ObjAttachData( objr, lname, total_size );
-    }
-    ObjCanFree( objr );
-    write_record( objr, TRUE );
-}
-
-static void write_global( void )
-/******************************/
-/* turn the globals into either externs or publics as appropriate */
-{
-    GetGlobalData();
-}
-
-static dir_node *write_extdef( dir_node *start )
-/**********************************************/
-{
-    obj_rec     *objr;
-    dir_node    *curr;
-    uint        num;
-    uint        total_size;
-    uint        i;
-    char        name[MAX_EXT_LENGTH];
-    char        buffer[MAX_LINE_LEN];
-    uint        len;
-
-    num = 0;
-    total_size = 0;
-    i = 0;
-
-    objr = ObjNewRec( CMD_EXTDEF );
-    objr->d.extdef.first_idx = 0;
-
-    for( curr = start;
-        ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
-        curr = curr->next ) {
-        Mangle( &curr->sym, buffer );
-        len = strlen( buffer );
-
-        if( total_size + len >= MAX_EXT_LENGTH )
-            break;
-        total_size += len + 2;
-        num++;
-
-        name[i] = (char)len;
-        i++;
-        memcpy( name+i, buffer, len );
-        i += len;
-        name[i++] = 0;      // for the type index
-    }
-    ObjAttachData( objr, name, total_size );
-    if( num != 0 ) {
-        objr->d.extdef.num_names = num;
+    objr->d.lnames.num_names = 0;
+    if( GetLnameData( objr ) ) {
         write_record( objr, TRUE );
     } else {
         ObjKillRec( objr );
     }
-    return( curr );
 }
 
 static int opsize( memtype mem_type )
@@ -486,8 +413,8 @@ static int opsize( memtype mem_type )
 
 #define THREE_BYTE_MAX ( (1UL << 24) - 1 )
 
-static int get_number_of_bytes_for_size_in_commdef( unsigned long value )
-/****************************************************************/
+static int get_size_in_commdef( unsigned long value )
+/***************************************************/
 {
     /* The spec allows up to 128 in a one byte size field, but lots
        of software has problems with that, so we'll restrict ourselves
@@ -504,155 +431,229 @@ static int get_number_of_bytes_for_size_in_commdef( unsigned long value )
     }
 }
 
-static dir_node *write_comdef( dir_node *start )
-/**********************************************/
-{
-    obj_rec     *objr;
-    dir_node    *curr;
-    uint        num = 0;
-    uint        total_size = 0;
-    uint        varsize = 0;
-    uint        symsize;
-    uint        i = 0;
-    uint        j = 0;
-    char        *name;
-    uint        len;
-    unsigned long value;
-    char        buffer[MAX_LINE_LEN];
-    char        *ptr;
-
-
-    objr = ObjNewRec( CMD_COMDEF );
-    objr->d.comdef.first_idx = 0;
-
-    for( curr = start;
-        ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
-        curr = curr->next ) {
-        ptr = Mangle( &curr->sym, buffer );
-        total_size += 3 + strlen( ptr );
-        /* 3 = 1 for string len + 1 for type index + 1 for data type */
-
-        varsize = opsize( curr->sym.mem_type );
-        if( curr->e.comminfo->distance == T_FAR ) {
-            total_size += get_number_of_bytes_for_size_in_commdef( varsize );
-            total_size += get_number_of_bytes_for_size_in_commdef( curr->e.comminfo->size );
-        } else {
-            total_size += get_number_of_bytes_for_size_in_commdef( curr->e.comminfo->size );
-        }
-        num++;
-    }
-
-    if( total_size > 0 ) {
-        name = AsmAlloc( total_size * sizeof( char ) );
-        for( curr = start;
-            ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
-            curr = curr->next ) {
-            ptr = Mangle( &curr->sym, buffer );
-            len = strlen( ptr );
-            name[i] = (char)len;
-            i++;
-            memcpy( name+i, ptr, len );
-            i += len;
-            name[i++] = 0;      // for the type index
-
-            /* now add the data type & communal length */
-            if( curr->e.comminfo->distance == T_FAR ) {
-                name[i++] = COMDEF_FAR;
-            } else {
-                name[i++] = COMDEF_NEAR;
-            }
-
-            value = curr->e.comminfo->size;
-            varsize = get_number_of_bytes_for_size_in_commdef( value );
-            switch( varsize ) {
-            case 1:
-                break;
-            case 3:
-                name[i++] = COMDEF_LEAF_2;
-                break;
-            case 4:
-                name[i++] = COMDEF_LEAF_3;
-                break;
-            case 5:
-                name[i++] = COMDEF_LEAF_4;
-                break;
-            }
-            if( varsize > 1 )
-                varsize--; /* we already output 1 byte */
-
-            symsize = opsize( curr->sym.mem_type );
-            if( curr->e.comminfo->distance != T_FAR ) {
-                value *= symsize;
-            }
-
-            for( j=0; j < varsize; j++ ) {
-                name[i++] = value % ( UCHAR_MAX + 1 );
-                value >>= 8;
-            }
-
-            if( curr->e.comminfo->distance == T_FAR ) {
-                /* mem type always needs <= 1 byte */
-                myassert( symsize < UCHAR_MAX );
-                name[i++] = symsize;
-            }
-        }
-        ObjAttachData( objr, name, total_size );
-    }
-    ObjCanFree( objr );
-    if( num != 0 ) {
-        objr->d.comdef.num_names = num;
-        write_record( objr, TRUE );
-    } else {
-        ObjKillRec( objr );
-    }
-    return( curr );
-}
-
-static void write_ext_comm( void )
+static void write_external( void )
 /********************************/
 {
-    dir_node    *next;
+    obj_rec         *objr;
+    dir_node        *start;
+    dir_node        *first;
+    dir_node        *curr;
+    dir_node        *last;
+    direct_idx      ext_idx;
+    long            total_size;
+    unsigned        len;
+    char            *name;
+    uint            varsize;
+    uint            symsize;
+    unsigned long   value;
+    int             i;
 
-    for( next = Tables[TAB_EXT].head; next != NULL; ) {
-        if( next->e.extinfo->comm == 0 ) {
-            // extdef
-            next = write_extdef( next );
+    last = NULL;
+    ext_idx = 0;
+    for( start = Tables[TAB_EXT].head; start != NULL; start = last ) {
+        first = NULL;
+        total_size = 0;
+        for( curr = start;
+          ( curr != NULL ) && ( curr->e.extinfo->comm == start->e.extinfo->comm );
+          curr = curr->next ) {
+            if( !curr->sym.referenced )
+                continue;
+            if( first == NULL ) {
+                first = curr;
+            }
+            /* + 1 for string len + 1 for type index */
+            name = Mangle( &curr->sym, NULL );
+            len = strlen( name ) + 2;
+            AsmFree( name );
+            if( first->e.extinfo->comm ) {
+                //  + 1 for data type //
+                len += 1;
+                varsize = opsize( curr->sym.mem_type );
+                if( curr->e.comminfo->distance == T_FAR ) {
+                    len += get_size_in_commdef( varsize );
+                    len += get_size_in_commdef( curr->e.comminfo->size );
+                } else {
+                    len += get_size_in_commdef( curr->e.comminfo->size );
+                }
+            }
+            if( total_size + len > MAX_REC_LENGTH )
+                break;
+            total_size += len;
+        }
+        last = curr;
+        if( total_size == 0 )
+            continue;
+        objr = ObjNewRec( ( first->e.extinfo->comm ) ? CMD_COMDEF : CMD_EXTDEF );
+        objr->d.extdef.first_idx = 0;
+        objr->d.extdef.num_names = 0;
+        ObjAllocData( objr, total_size );
+        for( curr = first;
+          ( curr != last ) && ( curr->e.extinfo->comm == first->e.extinfo->comm );
+          curr = curr->next ) {
+            if( !curr->sym.referenced )
+                continue;
+            ext_idx++;
+            objr->d.extdef.num_names++;
+            curr->e.extinfo->idx = ext_idx;
+            name = Mangle( &curr->sym, NULL );
+            len = strlen( name );
+            ObjPutName( objr, name, len );
+            AsmFree( name );
+            ObjPut8( objr, 0 );    // for the type index
+            if( first->e.extinfo->comm ) {
+                /* now add the data type & communal length */
+                if( curr->e.comminfo->distance == T_FAR ) {
+                    ObjPut8( objr, COMDEF_FAR );
+                } else {
+                    ObjPut8( objr, COMDEF_NEAR );
+                }
+                value = curr->e.comminfo->size;
+                varsize = get_size_in_commdef( value );
+                switch( varsize ) {
+                case 1:
+                    break;
+                case 3:
+                    ObjPut8( objr, COMDEF_LEAF_2 );
+                    break;
+                case 4:
+                    ObjPut8( objr, COMDEF_LEAF_3 );
+                    break;
+                case 5:
+                    ObjPut8( objr, COMDEF_LEAF_4 );
+                    break;
+                }
+                if( varsize > 1 )
+                    varsize--; /* we already output 1 byte */
+                symsize = opsize( curr->sym.mem_type );
+                if( curr->e.comminfo->distance != T_FAR ) {
+                    value *= symsize;
+                }
+                for( i = 0; i < varsize; i++ ) {
+                    ObjPut8( objr, value % ( UCHAR_MAX + 1 ) );
+                    value >>= 8;
+                }
+                if( curr->e.comminfo->distance == T_FAR ) {
+                    /* mem type always needs <= 1 byte */
+                    myassert( symsize < UCHAR_MAX );
+                    ObjPut8( objr, symsize );
+                }
+            }
+        }
+        if( objr->d.extdef.num_names ) {
+            write_record( objr, TRUE );
         } else {
-            // comdef
-            next = write_comdef( next );
+            ObjKillRec( objr );
         }
     }
 }
 
-static void write_header( void )
-/******************************/
+static void write_header( char *name )
+/************************************/
 {
     obj_rec     *objr;
     unsigned    len;
-    char        *name;
 
     objr = ObjNewRec( CMD_THEADR );
-    if( Options.module_name != NULL ) {
-        name = Options.module_name;
-    } else {
-        name = ModuleInfo.srcfile->fullname;
-    }
     len = strlen( name );
     ObjAllocData( objr, len + 1 );
     ObjPutName( objr, name, len );
-    ObjTruncRec( objr );
     write_record( objr, TRUE );
+}
+
+void get_frame( fixup *fixnode, struct asmfixup *fixup )
+/*************************************************************/
+{
+    if( fixup->frame == NULL ) {
+        fixnode->lr.frame = FRAME_TARG;
+        fixnode->lr.frame_datum = fixnode->lr.target_datum;
+    } else if( fixup->frame == (asm_sym *)-1 ) {
+        fixnode->lr.frame = FRAME_LOC;
+        fixnode->lr.frame_datum = 0;
+    } else if( fixup->frame->state == SYM_GRP ) {
+        fixnode->lr.frame = FRAME_GRP;
+        fixnode->lr.frame_datum = ((dir_node *)fixup->frame)->e.grpinfo->idx;
+    } else if( fixup->frame->state == SYM_SEG ) {
+        fixnode->lr.frame = FRAME_SEG;
+        fixnode->lr.frame_datum = ((dir_node *)fixup->frame)->e.seginfo->idx;
+    } else if( fixup->frame->state == SYM_EXTERNAL ) {
+        fixnode->lr.frame = FRAME_EXT;
+        fixnode->lr.frame_datum = ((dir_node *)fixup->frame)->e.extinfo->idx;
+    } else {
+        fixnode->lr.frame = FRAME_TARG;
+        fixnode->lr.frame_datum = 0;
+    }
+}
+
+static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
+/*****************************************************************/
+/* Create a fixup record for WOMP */
+{
+    struct fixup        *fixnode;       // fixup structure from WOMP
+    struct asm_sym      *sym;
+
+    fixnode = FixNew();
+    fixnode->next = NULL;
+    fixnode->self_relative = FALSE;
+    fixnode->lr.is_secondary = FALSE;
+    fixnode->lr.target_offset = fixup->offset;
+    fixnode->loader_resolved = FALSE;
+    fixnode->loc_offset = 0;
+
+    /*------------------------------------*/
+    /* Determine the Target and the Frame */
+    /*------------------------------------*/
+
+    sym = fixup->sym;
+    switch( sym->state ) {
+    case SYM_UNDEFINED:
+        AsmErr( SYMBOL_NOT_DEFINED, sym->name );
+        return( NULL );
+    case SYM_GRP:
+    case SYM_SEG:
+        AsmError( INVALID_START_ADDRESS );
+        return( NULL );
+    case SYM_EXTERNAL:
+        if( sym->mem_type == MT_NEAR || sym->mem_type == MT_FAR || sym->mem_type == MT_SHORT ) {
+            fixnode->lr.target = TARGET_EXT & TARGET_WITH_DISPL;
+            fixnode->lr.target_datum = ((dir_node *)sym)->e.extinfo->idx;
+            get_frame( fixnode, fixup );
+            return( fixnode );
+        } else {
+            AsmError( MUST_BE_ASSOCIATED_WITH_CODE );
+            return( NULL );
+        }
+    default:
+        /**/myassert( sym->segment != NULL );
+        fixnode->lr.target = TARGET_SEG & TARGET_WITH_DISPL;
+        fixnode->lr.target_datum = ((dir_node *)sym->segment)->e.seginfo->idx;
+        fixnode->lr.frame = FRAME_TARG;
+        fixnode->lr.frame_datum = 0;
+        return( fixnode );
+    }
 }
 
 static int write_modend( void )
 /*****************************/
 {
-    if( ModendRec == NULL ) {
-        AsmError( UNEXPECTED_END_OF_FILE );
-        return ERROR;
+    obj_rec     *objr;
+    fixup       *fix;
+
+    objr = ObjNewRec( CMD_MODEND );
+    if( ModendFixup == NULL ) {
+        objr->d.modend.start_addrs = FALSE;
+        objr->d.modend.is_logical = FALSE;
+        objr->d.modend.main_module = FALSE;
+    } else {
+        objr->d.modend.start_addrs = TRUE;
+        objr->d.modend.is_logical = TRUE;
+        objr->d.modend.main_module = TRUE;
+        fix = CreateFixupRecModend( ModendFixup );
+        if( fix != NULL ) {
+            objr->d.modend.ref.log = fix->lr;
+        }
     }
-    write_record( ModendRec, TRUE );
-    return NOT_ERROR;
+    write_record( objr, TRUE );
+    return( NOT_ERROR );
 }
 
 static int write_autodep( void )
@@ -671,13 +672,13 @@ static int write_autodep( void )
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEPENDENCY;
 
-        len = strlen(curr->name);
+        len = strlen(curr->fullname);
         *((time_t *)buff) = _timet2dos(curr->mtime);
         *(buff + 4) = (unsigned char)len;
-        strcpy(buff + 5, curr->name);
+        strcpy(buff + 5, curr->fullname);
         len += 5;
 
-        ObjAttachData( objr, buff, len );
+        ObjAttachData( objr, (uint_8 *)buff, len );
 
         write_record( objr, TRUE );
     }
@@ -685,7 +686,7 @@ static int write_autodep( void )
     objr = ObjNewRec( CMD_COMENT );
     objr->d.coment.attr = 0x80;
     objr->d.coment.class = CMT_DEPENDENCY;
-    ObjAttachData( objr, "", 0 );
+    ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, TRUE );
     return NOT_ERROR;
 }
@@ -733,28 +734,127 @@ static void write_linnum( void )
         objr->is_32 = need_32;
         objr->d.linnum.num_lines = count;
         objr->d.linnum.lines = ldata;
-        objr->d.linnum.d.base.grp_idx = GetGrpIdx( GetGrp( &GetCurrSeg()->sym ) ); // fixme ?
-        objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->segrec->d.segdef.idx;
+        objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->idx;
+        if( CurrSeg->seg->e.seginfo->group == NULL ) {
+            objr->d.linnum.d.base.grp_idx = 0;
+        } else {
+            objr->d.linnum.d.base.grp_idx = ((dir_node *)CurrSeg->seg->e.seginfo->group)->e.grpinfo->idx;
+        }
         objr->d.linnum.d.base.frame = 0; // fixme ?
 
         write_record( objr, TRUE );
     }
 }
 
+static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixup )
+/*********************************************************************************/
+/* Create a fixup record for WOMP */
+{
+    struct fixup        *fixnode;       // fixup structure from WOMP
+    struct asm_sym      *sym;
+
+    fixnode = FixNew();
+    fixnode->next = NULL;
+    fixnode->self_relative = FALSE;
+    fixnode->lr.target_offset = 0;
+    fixnode->lr.is_secondary = TRUE;
+    fixnode->loader_resolved = FALSE;
+    fixnode->loc_offset = fixup->fixup_loc - offset;
+
+    switch( fixup->fixup_type ) {
+    case FIX_RELOFF8:
+        fixnode->self_relative = TRUE;
+    case FIX_LOBYTE:
+        fixnode->loc_method = FIX_LO_BYTE;
+        break;
+    case FIX_RELOFF16:
+        fixnode->self_relative = TRUE;
+    case FIX_OFF16:
+        fixnode->loc_method = FIX_OFFSET;
+        break;
+    case FIX_RELOFF32:
+        fixnode->self_relative = TRUE;
+    case FIX_OFF32:
+        fixnode->loc_method = FIX_OFFSET386;
+        break;
+    case FIX_SEG:
+        fixnode->loc_method = FIX_BASE;
+        break;
+    case FIX_PTR16:
+        fixnode->loc_method = FIX_POINTER;
+        break;
+    case FIX_PTR32:
+        fixnode->loc_method = FIX_POINTER386;
+        break;
+    }
+
+    /*------------------------------------*/
+    /* Determine the Target and the Frame */
+    /*------------------------------------*/
+
+    sym = fixup->sym;
+    switch( sym->state ) {
+    case SYM_UNDEFINED:
+        AsmErr( SYMBOL_NOT_DEFINED, sym->name );
+        return( NULL );
+    case SYM_GRP:
+        fixnode->lr.target = TARGET_GRP;
+        fixnode->lr.target_datum = ((dir_node *)sym)->e.grpinfo->idx;
+        if( fixup->frame == NULL ) {
+            fixnode->lr.frame = FRAME_GRP;
+            fixnode->lr.frame_datum = fixnode->lr.target_datum;
+        } else {
+            get_frame( fixnode, fixup );
+        }
+        break;
+    case SYM_SEG:
+        fixnode->lr.target = TARGET_SEG;
+        fixnode->lr.target_datum = ((dir_node *)sym)->e.seginfo->idx;
+        if( fixup->frame == NULL ) {
+            fixnode->lr.frame = FRAME_SEG;
+            fixnode->lr.frame_datum = fixnode->lr.target_datum;
+        } else {
+            get_frame( fixnode, fixup );
+        }
+        break;
+    case SYM_EXTERNAL:
+        fixnode->lr.target = TARGET_EXT;
+        fixnode->lr.target_datum = ((dir_node *)sym)->e.extinfo->idx;
+        get_frame( fixnode, fixup );
+        break;
+    default:
+        /**/myassert( sym->segment != NULL );
+        fixnode->lr.target = TARGET_SEG;
+        fixnode->lr.target_datum = ((dir_node *)sym->segment)->e.seginfo->idx;
+        get_frame( fixnode, fixup );
+        break;
+    }
+    
+    /*--------------------*/
+    /* Optimize the fixup */
+    /*--------------------*/
+
+    if( fixnode->lr.frame == ( fixnode->lr.target - TARGET_SEG ) ) {
+        fixnode->lr.frame = FRAME_TARG;
+    }
+    return( fixnode );
+}
+
 #ifdef SEPARATE_FIXUPP_16_32
 
-static void divide_fixup_list( struct fixup **fl16, struct fixup **fl32 ) {
-/**********************************************/
+static void get_fixup_list( unsigned long start, struct fixup **fl16, struct fixup **fl32 )
+/*****************************************************************************************/
 /* divide fixup record list to the 16-bit or 32-bit list of a fixup record */
-
-    struct fixup *fix;
-    struct fixup *fix16;
-    struct fixup *fix32;
+{
+    struct asmfixup     *fixi;
+    struct fixup        *fix;
+    struct fixup        *fix16;
+    struct fixup        *fix32;
 
     fix16 = NULL;
     fix32 = NULL;
-    fix = FixupListHead;
-    for( fix = FixupListHead; fix != NULL; fix = fix->next ) {
+    for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
+        fix = CreateFixupRec( start, fixi );
         switch( fix->loc_method ) {
         case FIX_OFFSET386:
         case FIX_POINTER386:
@@ -784,6 +884,27 @@ static void divide_fixup_list( struct fixup **fl16, struct fixup **fl32 ) {
 }
 
 #else
+
+int get_fixup_list( unsigned long start, struct fixup **fl )
+{
+    struct asmfixup     *fixi;
+    struct fixup        *fix;
+    struct fixup        *fixo;
+
+    fixo = NULL;
+    for( fixi = FixupListHead; fixi != NULL; fixi = fixi->next_loc ) {
+        fix = CreateFixupRec( start, fixi );
+        if( fixo == NULL ) {
+            *fl = fix;
+        } else {
+            fixo->next = fix;
+        }
+        fixo = fix;
+    }
+    if( fixo != NULL ) {
+        fixo->next = NULL;
+    }
+}
 
 static void check_need_32bit( obj_rec *objr ) {
 /**********************************************/
@@ -819,22 +940,23 @@ static void write_ledata( void )
 #ifdef SEPARATE_FIXUPP_16_32
     struct fixup    *fl16 = NULL;
     struct fixup    *fl32 = NULL;
+#else
+    struct fixup    *fl = NULL;
 #endif
 
     if( BufSize > 0 ) {
         objr = ObjNewRec( CMD_LEDATA );
         ObjAttachData( objr, AsmCodeBuffer, BufSize );
-        objr->d.ledata.idx = CurrSeg->seg->e.seginfo->segrec->d.segdef.idx;
+        objr->d.ledata.idx = CurrSeg->seg->e.seginfo->idx;
         objr->d.ledata.offset = CurrSeg->seg->e.seginfo->start_loc;
         if( objr->d.ledata.offset > 0xffffUL )
             objr->is_32 = TRUE;
-        CurrSeg->seg->e.seginfo->start_loc = CurrSeg->seg->e.seginfo->current_loc;
         write_record( objr, TRUE );
 
         /* Process Fixup, if any */
         if( FixupListHead != NULL ) {
 #ifdef SEPARATE_FIXUPP_16_32
-            divide_fixup_list( &fl16, &fl32 );
+            get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl16, &fl32 );
             /* Process Fixup, if any */
             if( fl16 != NULL ) {
                 objr = ObjNewRec( CMD_FIXUP );
@@ -849,6 +971,7 @@ static void write_ledata( void )
                 write_record( objr, TRUE );
             }
 #else
+            get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl );
             objr = ObjNewRec( CMD_FIXUP );
             objr->d.fixup.fixup = FixupListHead;
             check_need_32bit( objr );
@@ -860,20 +983,19 @@ static void write_ledata( void )
         if( Options.debug_flag ) {
             write_linnum();
         }
+        CurrSeg->seg->e.seginfo->start_loc = CurrSeg->seg->e.seginfo->current_loc;
     }
 }
 
-static void put_public_procs_in_public_table( void )
+static void put_private_proc_in_public_table( void )
 /**************************************************/
 {
     dir_node            *proc;
 
+    /* put private PROC into the pub table */
     for( proc = Tables[TAB_PROC].head; proc != NULL; proc = proc->next ) {
-
-        /* put it into the pub table */
         if( !proc->sym.public ) {
-            proc->sym.public = TRUE;
-            AddPublicData( proc );
+            AddPublicProc( proc );
         }
     }
 }
@@ -908,7 +1030,7 @@ static void write_alias( void )
         new -= len1 + 2;
 
         objr = ObjNewRec( CMD_ALIAS );
-        ObjAttachData( objr, new, len1+len2+2);
+        ObjAttachData( objr, (uint_8 *)new, len1+len2+2);
         write_record( objr, TRUE );
         first = FALSE;
     }
@@ -918,51 +1040,9 @@ static int write_pub( void )
 /**************************/
 /* note that procedures with public or export visibility are written out here */
 {
-    obj_rec             *objr;
-    struct pubdef_data  *data;
-    uint                i;
-    uint                count = 0;
-    uint                seg;
-    uint                grp;
-    char                cmd;
-    bool                first = TRUE;
-    bool                need32 = FALSE;
-
-    put_public_procs_in_public_table();
-
-    while( ( count = GetPublicData( &seg, &grp, &cmd, &NameArray, &data, &need32, first) ) > 0 ) {
-
-        /* create a public record for this segment */
-
-        objr = ObjNewRec( cmd );
-        objr->is_32 = need32;
-        objr->d.pubdef.base.grp_idx = grp;
-        objr->d.pubdef.base.seg_idx = seg;
-        objr->d.pubdef.base.frame = 0;
-        objr->d.pubdef.num_pubs = count;
-        objr->d.pubdef.pubs = data;
-        objr->d.pubdef.free_pubs = TRUE;
-        write_record( objr, TRUE );
-
-        /* free the names table */
-        for( i = 0; i < count; i++ ) {
-            if( NameArray[i] != NULL ) {
-                AsmFree( NameArray[i] );
-            }
-        }
-        AsmFree( NameArray );
-        first = FALSE;
-    }
+    GetPublicData();
     return( NOT_ERROR );
 }
-
-const char *NameGet( uint_16 hdl )
-/********************************/
-// WOMP callback routine
-{
-    return( NameArray[hdl] );
-}
-
 
 void FlushCurrSeg( void )
 /***************************/
@@ -981,24 +1061,26 @@ void FlushCurrSeg( void )
      */
 
     if( FixupListTail != NULL ) {
-        switch( FixupListTail->loc_method ) {
-        case FIX_LO_BYTE:
-        case FIX_HI_BYTE:
+        switch( FixupListTail->fixup_type ) {
+        case FIX_LOBYTE:
+        case FIX_RELOFF8:
             i = 1;
             break;
-        case FIX_OFFSET:
-        case FIX_BASE:
+        case FIX_OFF16:
+        case FIX_RELOFF16:
+        case FIX_SEG:
             i = 2;
             break;
-        case FIX_POINTER:
-        case FIX_OFFSET386:
+        case FIX_PTR16:
+        case FIX_OFF32:
+        case FIX_RELOFF32:
             i = 4;
             break;
-        case FIX_POINTER386:
+        case FIX_PTR32:
             i = 6;
             break;
         }
-        if( FixupListTail->loc_offset + i > BufSize ) {
+        if( FixupListTail->fixup_loc + i - CurrSeg->seg->e.seginfo->start_loc > BufSize ) {
             return; // can't output the ledata record as is
         }
     }
@@ -1017,22 +1099,22 @@ static void reset_seg_len( void )
     for( curr = Tables[TAB_SEG].head; curr; curr = curr->next ) {
         if( ( curr->sym.state != SYM_SEG ) || ( curr->sym.segment == NULL ) )
             continue;
-        if( curr->e.seginfo->segrec->d.segdef.combine != COMB_STACK ) {
-            curr->e.seginfo->segrec->d.segdef.seg_length = 0;
+        if( curr->e.seginfo->combine != COMB_STACK ) {
+            curr->e.seginfo->length = 0;
         }
         curr->e.seginfo->start_loc = 0; // fixme ?
         curr->e.seginfo->current_loc = 0;
     }
 }
 
-static void writepass1stuff( void )
-/*********************************/
+static void writepass1stuff( char *name )
+/***************************************/
 {
     if( CurrProc != NULL ) {
         AsmError( END_OF_PROCEDURE_NOT_FOUND );
         return;
     }
-    write_header();
+    write_header( name );
     write_autodep();
     if( Globals.dosseg )
         write_dosseg();
@@ -1040,8 +1122,7 @@ static void writepass1stuff( void )
     write_lnames();
     write_seg();
     write_grp();
-    write_global();
-    write_ext_comm();
+    write_external();
     write_alias();
     if( write_pub() == ERROR )
         return;
@@ -1079,11 +1160,12 @@ static unsigned long OnePass( char *string )
 void WriteObjModule( void )
 /**************************/
 {
-    char                codebuf[ MAX_LEDATA_THRESHOLD ];
+    uint_8              codebuf[ MAX_LEDATA_THRESHOLD ];
     char                string[ MAX_LINE_LEN ];
     char                *p;
     unsigned long       prev_total;
     unsigned long       curr_total;
+    char                *mod_name;
 
     AsmCodeBuffer = codebuf;
 
@@ -1115,10 +1197,22 @@ void WriteObjModule( void )
     while( PopLineQueue() ) {
     }
     CheckForOpenConditionals();
+#ifdef PRIVATE_PROC_INFO    
+    put_private_proc_in_public_table();
+#else
+    if( Options.debug_flag ) {
+        put_private_proc_in_public_table();
+    }
+#endif
+    if( Options.module_name != NULL ) {
+        mod_name = Options.module_name;
+    } else {
+        mod_name = ModuleInfo.srcfile->fullname;
+    }
     for( ;; ) {
         if( !write_to_file || Options.error_count > 0 )
             break;
-        writepass1stuff();
+        writepass1stuff( mod_name );
         ++Parse_Pass;
         rewind( AsmFiles.file[ASM] );
         reset_seg_len();
@@ -1155,6 +1249,10 @@ void WriteObjModule( void )
         write_modend();
     if( !Options.quiet )
         PrintStats();
+
+    /* Write a symbol listing file (if requested) */
+    OpenLstFile();
+    WriteListing();
 
     AsmSymFini();
     FreeIncludePath();

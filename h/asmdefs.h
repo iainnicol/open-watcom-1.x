@@ -32,8 +32,6 @@
 #ifndef _ASMDEFS_H_INCLUDED
 #define _ASMDEFS_H_INCLUDED
 
-#include "asmopnds.h"
-
 #define IS_CALL( inst )     ( inst == T_CALL || inst == T_CALLF )
 #define IS_JMP( inst )      ( inst >= T_JA && inst <= T_JZ )
 #define IS_BRANCH( inst )   ( IS_JMP( inst ) || IS_CALL( inst ) )
@@ -104,10 +102,9 @@
 #endif
 
 /* global variables */
-extern struct asm_tok   *AsmBuffer[];
+extern asm_tok          *AsmBuffer[];
 extern struct asm_code  *Code;
-extern int_8            Frame;
-extern uint_8           Frame_Datum;
+extern struct asm_sym   *Frame;
 extern char             Parse_Pass;     // phase of parsing
 extern unsigned char    Opnd_Count;
 extern char             Modend;         // end of module is reached

@@ -32,10 +32,11 @@
 
 #include "asmalloc.h"
 #include "mangle.h"
-#include "asmins.h"
 #include "directiv.h"
-#include "queue.h"
 #include "queues.h"
+#include "objprs.h"
+#include "namemgr.h"
+#include "womputil.h"
 
 #include "myassert.h"
 
@@ -46,19 +47,8 @@ typedef struct queuenode {
 
 static qdesc   *LnameQueue  = NULL;   // queue of LNAME structs
 static qdesc   *PubQueue    = NULL;   // queue of pubdefs
-static qdesc   *GlobalQueue = NULL;   // queue of global / externdefs
 static qdesc   *AliasQueue  = NULL;   // queue of aliases
 static qdesc   *LinnumQueue = NULL;   // queue of linnum_data structs
-
-static void QAddQItem( qdesc **queue, queuenode *node )
-/*****************************************************/
-{
-    if( *queue == NULL ) {
-        *queue = AsmAlloc( sizeof( qdesc ) );
-        QInit( *queue );
-    }
-    QEnqueue( *queue, node );
-}
 
 static void QAddItem( qdesc **queue, void *data )
 /***********************************************/
@@ -91,109 +81,116 @@ static long QCount( qdesc *q )
     return( count );
 }
 
+static char **NameArray;
+
+const char *NameGet( uint_16 hdl )
+/********************************/
+// WOMP callback routine
+{
+    return( NameArray[hdl] );
+}
+
 void AddPublicData( dir_node *dir )
+/*********************************/
+{
+    dir->sym.public = TRUE;
+    QAddItem( &PubQueue, dir );
+}
+
+void AddPublicProc( dir_node *dir )
 /*********************************/
 {
     QAddItem( &PubQueue, dir );
 }
 
-uint GetPublicData(
-    uint *seg,
-    uint *grp,
-    char *cmd,
-    char ***NameArray,
-    struct pubdef_data **data,
-    bool *need32,
-    bool first )
-/****************************/
+bool GetPublicData( void )
+/************************/
 {
-    static struct queuenode    *start;
-    struct queuenode           *curr;
-    struct asm_sym             *sym;
-    dir_node                   *pub;
-    uint                       count;
-    uint                       i;
-    struct pubdef_data         *d;
-    struct asm_sym             *curr_seg;
+    obj_rec             *objr;
+    struct queuenode    *start;
+    struct queuenode    *curr;
+    struct queuenode    *last;
+    dir_node            *curr_seg;
+    dir_node            *dir;
+    struct pubdef_data  *d;
+    unsigned char       cmd;
+    uint                i;
 
     if( PubQueue == NULL )
-        return( 0 );
-    if( first )
-        start = PubQueue->head;
-    if( start == NULL )
-        return( 0 );
+        return( FALSE );
 
-    *need32 = FALSE;
-    *cmd = CMD_PUBDEF;
-    sym = (asm_sym *)start->data;
-    if( sym->state == SYM_UNDEFINED ) {
-        AsmErr( SYMBOL_NOT_DEFINED, sym->name );
-        return( 0 );
-    }
-    curr_seg = sym->segment;
-    if( curr_seg == NULL ) {      // absolute symbol ( without segment )
-        *seg = 0;
-        *grp = 0;
-    } else {
-        *seg = GetSegIdx( curr_seg );
-        *grp = GetGrpIdx( GetGrp( curr_seg ) );
-    }
-    curr = start;
-    for( count = 0; curr != NULL; curr = curr->next ) {
-        if( count == MAX_PUB_SIZE )  // don't let the records get too big
-            break;
-        sym = (asm_sym *)curr->data;
-        if( sym->segment != curr_seg )
-            break;
-        if( sym->state == SYM_PROC ) {
-            if( ((dir_node *)sym)->e.procinfo->visibility == VIS_PRIVATE ) {
-                if( *cmd == CMD_PUBDEF ) {
-                    if( curr != start )
+    for( start = PubQueue->head; start != NULL; start = last ) {
+        dir = (dir_node *)start->data;
+        cmd = ( dir->sym.public ) ? CMD_PUBDEF : CMD_STATIC_PUBDEF;
+        objr = ObjNewRec( cmd );
+        objr->is_32 = FALSE;
+        objr->d.pubdef.free_pubs = TRUE;
+        objr->d.pubdef.num_pubs = 0;
+        objr->d.pubdef.base.frame = 0;
+        objr->d.pubdef.base.grp_idx = 0;
+        objr->d.pubdef.base.seg_idx = 0;
+        curr_seg = (dir_node *)dir->sym.segment;
+        if( curr_seg != NULL ) {
+            objr->d.pubdef.base.seg_idx = curr_seg->e.seginfo->idx;
+            if( curr_seg->e.seginfo->group != NULL ) {
+                objr->d.pubdef.base.grp_idx = ((dir_node *)curr_seg->e.seginfo->group)->e.grpinfo->idx;
+            }
+        }
+        for( curr = start; curr != NULL; curr = curr->next ) {
+            if( objr->d.pubdef.num_pubs > MAX_PUB_SIZE )
+                break;
+            dir = (dir_node *)curr->data;
+            if( (dir_node *)dir->sym.segment != curr_seg )
+                break;
+            if( dir->sym.state == SYM_PROC ) {
+                if( dir->sym.public ) {
+                    if( cmd == CMD_STATIC_PUBDEF ) {
                         break;
-                    *cmd = CMD_STATIC_PUBDEF;
-                } /* else we are just continuing a static def. */
+                    }
+                } else {
+                    if( cmd == CMD_PUBDEF ) {
+                        break;
+                    }
+                }
             } else {
-                if( *cmd == CMD_STATIC_PUBDEF ) {
+                if( cmd == CMD_STATIC_PUBDEF ) {
                     break;
                 }
             }
-        }
-        count++;
-        /* if we don't get to here, this entry is part of the next pubdef */
-    }
-    *NameArray = AsmAlloc( count * sizeof( char * ) );
-    for( i = 0; i < count; i++ ) {
-        (*NameArray)[i] = NULL;
-    }
-
-    *data = d = AsmAlloc( count * sizeof( struct pubdef_data ) );
-
-    for( curr = start, i = 0; i < count; i++, curr = curr->next ) {
-        sym = (asm_sym *)curr->data;
-        if( sym->segment != curr_seg )
-            break;
-        if( sym->offset > 0xffffUL )
-            *need32 = TRUE;
-
-        (*NameArray)[i] = Mangle( sym, NULL );
-
-        d[i].name = i;
-        /* No namecheck is needed by name manager */
-        if( sym->state != SYM_CONST ) {
-            d[i].offset = sym->offset;
-        } else {
-            pub = (dir_node *)sym;
-            if( pub->e.constinfo->data[0].token != T_NUM  ) {
-                AsmWarn( 2, PUBLIC_CONSTANT_NOT_NUMERIC );
-                d[i].offset = 0;
-            } else {
-                d[i].offset = pub->e.constinfo->data[0].value;
+            if( dir->sym.offset > 0xffffUL ) {
+                objr->is_32 = TRUE;
             }
+            objr->d.pubdef.num_pubs++;
         }
-        d[i].type.idx = 0;
+        last = curr;
+
+        objr->d.pubdef.pubs = d = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( struct pubdef_data ) );
+        NameArray = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( char * ) );
+        for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
+            dir = (dir_node *)curr->data;
+            NameArray[ i ] = Mangle( &dir->sym, NULL );
+            d->name = i;
+            if( dir->sym.state != SYM_CONST ) {
+                d->offset = dir->sym.offset;
+            } else {
+                if( dir->e.constinfo->data[0].token != T_NUM  ) {
+                    AsmWarn( 2, PUBLIC_CONSTANT_NOT_NUMERIC );
+                    d->offset = 0;
+                } else {
+                    d->offset = dir->e.constinfo->data[0].u.value;
+                }
+            }
+            d->type.idx = 0;
+            ++d;
+        }
+        d = objr->d.pubdef.pubs;
+        write_record( objr, TRUE );
+        for( i = 0; i < objr->d.pubdef.num_pubs; i++ ) {
+            AsmFree( NameArray[ i ] );
+        }
+        AsmFree( NameArray );
     }
-    start = curr;
-    return( count );
+    return( TRUE );
 }
 
 static void FreePubQueue( void )
@@ -251,81 +248,40 @@ void AddLnameData( dir_node *dir )
     QAddItem( &LnameQueue, dir );
 }
 
-direct_idx FindLnameIdx( char *name )
-/***********************************/
+bool GetLnameData( obj_rec *objr )
+/********************************/
 {
-    queuenode           *node;
-    dir_node            *dir;
-
-    if( LnameQueue == NULL )
-        return( LNAME_NULL);
-
-    for( node = LnameQueue->head; node != NULL; node = node->next ) {
-        dir = (dir_node *)node->data;
-        if( dir->sym.state != SYM_CLASS_LNAME )
-            continue;
-        if( stricmp( dir->sym.name, name ) == 0 ) {
-            return( dir->e.lnameinfo->idx );
-        }
-    }
-    return( LNAME_NULL );
-}
-
-char *GetLname( direct_idx idx )
-/******************************/
-{
-    queuenode           *node;
-    dir_node            *dir;
-
-    if( LnameQueue == NULL )
-        return( NULL);
-
-    for( node = LnameQueue->head; node != NULL; node = node->next ) {
-        dir = (dir_node *)node->data;
-        if( dir->sym.state != SYM_CLASS_LNAME )
-            continue;
-        if( dir->e.lnameinfo->idx == idx ) {
-            return( dir->sym.name );
-        }
-    }
-    return( NULL );
-}
-
-unsigned GetLnameData( char **data )
-/**********************************/
-{
-    char            *lname = NULL;
-    unsigned        total_size = 0;
     queuenode       *curr;
     dir_node        *dir;
-    int             len;
+    unsigned        len;
 
     if( LnameQueue == NULL )
-        return( 0 );
+        return( FALSE );
 
+    len = 0;
     for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
         dir = (dir_node *)(curr->data);
-        myassert( dir != NULL );
-        total_size += 1 + strlen( dir->sym.name );
+        len += strlen( dir->sym.name ) + 1;
     }
-
-    if( total_size > 0 ) {
-        int     i = 0;
-
-        lname = AsmAlloc( total_size * sizeof( char ) + 1 );
-        for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
-            dir = (dir_node *)(curr->data);
-
-            len = strlen( dir->sym.name );
-            lname[i] = (char)len;
-            i++;
-            strcpy( lname+i, dir->sym.name );
-            //For the Q folks... strupr( lname+i );
-            i += len; // overwrite the null char
+    ObjAllocData( objr, len );
+    for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
+        dir = (dir_node *)curr->data;
+        len = strlen( dir->sym.name );
+        ObjPutName( objr, dir->sym.name, len );
+        objr->d.lnames.num_names++;
+        switch( dir->sym.state ) {
+        case SYM_GRP:
+            dir->e.grpinfo->idx = objr->d.lnames.num_names;
+            break;
+        case SYM_SEG:
+            dir->e.seginfo->idx = objr->d.lnames.num_names;
+            break;
+        case SYM_CLASS_LNAME:
+            dir->e.lnameinfo->idx = objr->d.lnames.num_names;
+            break;
         }
     }
-    *data = lname;
-    return( total_size );
+    return( TRUE );
 }
 
 static void FreeLnameQueue( void )
@@ -347,39 +303,6 @@ static void FreeLnameQueue( void )
         }
         AsmFree( LnameQueue );
     }
-}
-
-void AddGlobalData( dir_node *dir )
-/*********************************/
-{
-    QAddItem( &GlobalQueue, dir );
-}
-
-void GetGlobalData( void )
-/************************/
-/* turn the globals into either externs or publics as appropriate */
-{
-    queuenode           *curr;
-    struct asm_sym      *sym;
-
-    if( GlobalQueue == NULL )
-        return;
-    for( ; ; ) {
-        curr = (queuenode *)QDequeue( GlobalQueue );
-        if( curr == NULL )
-            break;
-        sym = (asm_sym *)curr->data;
-        if( sym->state == SYM_UNDEFINED ) {
-            dir_change( (dir_node *)curr->data, TAB_EXT );
-            AsmFree( curr );
-        } else {
-            /* make this record a pubdef */
-            sym->public = TRUE;
-            QAddQItem( &PubQueue, curr );
-        }
-    }
-    AsmFree( GlobalQueue );
-    GlobalQueue = NULL;
 }
 
 void AddLinnumData( struct line_num_info *data )

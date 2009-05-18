@@ -35,8 +35,6 @@
 #include <ctype.h>
 
 #include "asmalloc.h"
-#include "asmins.h"
-#include "asmdefs.h"
 #include "asmeval.h"
 #include "asmexpnd.h"
 #include "directiv.h"
@@ -213,7 +211,7 @@ static int macro_local( void )
     int i = 0;
     char buffer[MAX_LINE_LEN];
 
-    if( AsmBuffer[i]->value != T_LOCAL ) {
+    if( AsmBuffer[i]->u.value != T_LOCAL ) {
         AsmError( SYNTAX_ERROR );
         return( ERROR );
     }
@@ -374,9 +372,9 @@ static int my_sprintf( char *dest, char *format, int argc, char *argv[] )
     char buffer[3];
     char *start;
     char *end;
-    char parmno = 0;
+    int  parmno = 0;
 
-    *dest = NULL;
+    *dest = '\0';
     start = format;
     for( end = start ;*end != '\0'; start = end + PLACEHOLDER_SIZE ) {
         /* scan till we hit a placeholdr ( #dd ) or the end of the string */
@@ -409,7 +407,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     parm_list           *parm;
     char                *new_line;
     char                **parm_array; /* array of ptrs to parm replace str's */
-    char                count = 0;
+    int                 count = 0;
 
     for( parm = parmlist; parm != NULL; parm = parm->next ) {
         count ++;
@@ -422,7 +420,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     }
 
     my_sprintf( buffer, lnode->line, count-1, parm_array );
-    new_line = AsmAlloc( strlen( (char *)buffer ) + 1 );
+    new_line = AsmAlloc( strlen( buffer ) + 1 );
     strcpy( new_line, buffer );
     return( new_line );
 }
@@ -473,7 +471,7 @@ int ExpandMacro( int tok_count)
     }
     macro_name_loc = count;
     if( AsmBuffer[count+1]->token == T_DIRECTIVE &&
-        AsmBuffer[count+1]->value == T_MACRO ) {
+        AsmBuffer[count+1]->u.value == T_MACRO ) {
         /* this is a macro DEFINITION! */
         return( tok_count );
     }
@@ -546,7 +544,7 @@ int ExpandMacro( int tok_count)
                             strcat( buffer, next_char );
                         } else if( AsmBuffer[count]->token == T_NUM ) {
                             if( *AsmBuffer[count]->string_ptr == 0 ) {
-                                itoa( AsmBuffer[count]->value, buffer+strlen( buffer ), 10 );
+                                itoa( AsmBuffer[count]->u.value, buffer+strlen( buffer ), 10 );
                             } else {
                                 strcpy( buffer+strlen( buffer ), AsmBuffer[count]->string_ptr );
                             }

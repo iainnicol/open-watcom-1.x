@@ -31,16 +31,14 @@
 
 #include "asmglob.h"
 
-#include "asmins.h"
-#include "asmdefs.h"
 #include "asmfixup.h"
 #include "asmlabel.h"
 
 #if defined( _STANDALONE_ )
 
 #include "directiv.h"
-
-extern int                  AddFieldToStruct( int );
+#include "asmstruc.h"
+#include "queues.h"
 
 static unsigned             AnonymousCounter = 0;
 
@@ -120,7 +118,14 @@ int MakeLabel( char *symbol_name, memtype mem_type )
     if( sym == NULL )
         return( ERROR );
     if( Parse_Pass == PASS_1 ) {
-        if( sym->state != SYM_UNDEFINED ) {
+        if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
+            dir_to_sym( (dir_node *)sym );
+            AddPublicData( (dir_node *)sym );
+            if( sym->mem_type != mem_type ) {
+                AsmErr( SYMBOL_TYPE_DIFF, sym->name );
+                return( ERROR );
+            }
+        } else if( sym->state != SYM_UNDEFINED ) {
             AsmErr( SYMBOL_PREVIOUSLY_DEFINED, symbol_name );
             return( ERROR );
         }
@@ -176,7 +181,7 @@ int LabelDirective( int i )
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );
     }
-    switch( AsmBuffer[i+1]->value ) {
+    switch( AsmBuffer[i+1]->u.value ) {
     case T_NEAR:
         return( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR ));
     case T_FAR:

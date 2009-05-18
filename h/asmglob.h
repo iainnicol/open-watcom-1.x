@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WASM globals and limits.
+* Description:  WASM main header file contains globals and limits
 *
 ****************************************************************************/
 
@@ -39,7 +39,16 @@
 #include <time.h>
 #include "watcom.h"
 #include "bool.h"
-#include "asmerr.h"
+
+#define ERROR                   -1
+#define NOT_ERROR               1
+#define EMPTY                   -2
+#define NOT_EMPTY               2
+#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
+
+/* these come back from the jmp() routine */
+#define SCRAP_INSTRUCTION       3
+#define INDIRECT_JUMP           4
 
 #define MAX_TOKEN               100     // there is no restriction for this number
 #define MAX_LINE_LEN            512     // there is no restriction for this number
@@ -54,14 +63,9 @@
 
 /* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
 
-#define ERROR                   -1
-#define NOT_ERROR               1
-#define EMPTY                   -2
-#define NOT_EMPTY               2
-#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
-/* these come back from the jmp() routine */
-#define SCRAP_INSTRUCTION       3
-#define INDIRECT_JUMP           4
+#include "asmerr.h"
+#include "asmins.h"
+#include "asmdefs.h"
 
 #define NULLC                   '\0'
 #define NULLS                   "\0"
@@ -107,9 +111,10 @@ enum {
 enum {
     ASM,
     ERR,
-    OBJ
+    OBJ,
+    LST
 };
-#define FILE_TYPES 3
+#define FILE_TYPES      4
 
 typedef struct {
     FILE        *file[FILE_TYPES];      // ASM, ERR and OBJ
@@ -120,6 +125,7 @@ extern File_Info        AsmFiles;   // files information
 
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
+#define LST_EXT "lst"
 
 #ifdef __UNIX__
 #define OBJ_EXT "o"
@@ -179,6 +185,7 @@ typedef struct global_options {
     bool        watcom_c_mangler;
     bool        use_stdcall_at_number;
     bool        mangle_stdcall;
+    bool        write_listing;
 } global_options;
 
 extern global_options Options;
@@ -194,8 +201,6 @@ typedef struct global_vars{
 } global_vars;
 
 extern global_vars Globals;
-
-typedef struct asm_tok ASM_TOK;
 
 #endif
 

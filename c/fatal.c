@@ -47,8 +47,8 @@ typedef struct {
 } Msg_Struct;
 
 static const Msg_Struct Fatal_Msg[] = {
-#undef fix
-#define fix( cmd, number, msg, act, ret )     { number, msg, act, ret }
+#undef pick
+#define pick( cmd, number, msg, act, ret )    { number, msg, act, ret }
 #include "fatald.h"
 };
 
@@ -76,6 +76,7 @@ void AsmShutDown( void )
     }
     AsmFree( AsmFiles.fname[ASM] );
     AsmFree( AsmFiles.fname[ERR] );
+    AsmFree( AsmFiles.fname[LST] );
     AsmFree( AsmFiles.fname[OBJ] );
     MemFini();
 }
