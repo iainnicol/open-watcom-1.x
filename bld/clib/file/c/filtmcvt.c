@@ -34,6 +34,8 @@
 #include <time.h>
 #ifdef __NT__
     #include <windows.h>
+#elif __RDOS__
+    #include <rdos.h>
 #else
 #endif
 #include "find.h"
@@ -77,6 +79,37 @@ time_t __nt_filetime_cvt( FILETIME *ft )
     return( time );
 }
 
+#elif __RDOS__
+
+time_t __rdos_filetime_cvt( unsigned long msb, unsigned long lsb )
+{
+    int         ms;
+    int         us;
+    struct tm   tm;
+    time_t      time;
+
+    RdosDecodeMsbTics( msb, 
+                       &tm.tm_year, 
+                       &tm.tm_mon,
+                       &tm.tm_mday,
+                       &tm.tm_hour );
+
+    RdosDecodeLsbTics( lsb,
+                       &tm.tm_min,
+                       &tm.tm_sec,
+                       &ms,
+                       &us );
+                           
+    tm.tm_year -= 1900;
+    tm.tm_mon--;
+    tm.tm_isdst = -1;
+    tm.tm_wday = -1;
+    tm.tm_yday = -1;
+
+    /*** Convert to time_t form ***/
+    time = mktime( &tm );               /* make a time_t */
+    return( time );
+}
 
 #else   /* __NT__ */
 

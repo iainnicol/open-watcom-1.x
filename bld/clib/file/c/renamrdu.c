@@ -24,56 +24,62 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  rename function for RDOS
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <io.h>
-#ifdef __NT__
-    #include <windows.h>
-#elif __RDOS__
-    #include <rdos.h>
-    #include "find.h"
-    #include "liballoc.h"
-#else
-    #include <dos.h>
-    #include "liballoc.h"
-#endif
+#include "widechar.h"
+#include <stdio.h>
+#include <rdos.h>
+#include "liballoc.h"
 
-
-_WCRTLINK int _findclose( long handle )
+_WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 {
-    #ifdef __NT__
-        if( FindClose( (HANDLE)handle )  ==  TRUE ) {
-            return( 0 );
-        } else {
-            return( -1 );
+    int src;
+    int dst;
+    int attrib;
+    unsigned long msb;
+    unsigned long lsb;
+    int ok;
+    char *buf;
+    int rdsize;
+    int wrsize;
+
+    if( RdosGetFileAttribute( old, &attrib ) )
+    {
+        src = RdosOpenFile( old, 0 );
+        dst = RdosCreateFile( new, attrib );
+
+        ok = 1;    
+        buf = (char*) lib_malloc( sizeof( 0x1000 ) );
+
+        rdsize = RdosReadFile( src, buf, 0x1000 );
+
+        while( ok && rdsize ) {
+            wrsize = RdosWriteFile( dst, buf, 0x1000 );
+
+            if( rdsize == wrsize )
+                rdsize = RdosReadFile( src, buf, 0x1000 );
+            else
+                ok = 0;
         }
-    #elif __RDOS__
-        RDOSFINDTYPE * handlebuf = ( RDOSFINDTYPE * )handle;
 
-        RdosCloseDir( handlebuf->handle );    
-        lib_free( (void*) handle );
-        return( 0 );
-    #else
-        unsigned        rc;
-#ifdef USING_LFN
-        struct find_t * handlestuff = ( struct find_t * )handle;
-
-        handlestuff->lfnax = (int)handle;
-        rc = _dos_findclose( handlestuff );
-#else
-
-        rc = _dos_findclose( (struct find_t*) handle );
-#endif
-        lib_free( (void*) handle );
-        if( rc == 0 ) {
-            return( 0 );
-        } else {
-            return( -1 );
+        if( ok ) {
+            RdosGetFileTime( src, &msb, &lsb );
+            RdosSetFileTime( dst, msb, lsb );
+            RdosDeleteFile( old );
         }
-    #endif
+
+        RdosCloseFile( src );
+        RdosCloseFile( dst );
+        
+        lib_free( buf );        
+
+        if( ok )
+            return( 0 );
+    }
+
+    return( -1 );
 }

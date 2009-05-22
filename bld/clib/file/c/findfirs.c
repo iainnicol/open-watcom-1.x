@@ -36,6 +36,9 @@
 #ifdef __NT__
     #include <windows.h>
 #endif
+#ifdef __RDOS__
+    #include <rdos.h>
+#endif
 /* gross hack for building 11.0 libraries with 10.6 compiler */
 #ifndef __WATCOM_INT64__
     #include <limits.h>         /* a gross hack to make a gross hack work */
@@ -50,6 +53,8 @@
 #ifdef __NT__
     #include "libwin32.h"
     #include "ntex.h"
+#elif __RDOS__
+    #include "liballoc.h"
 #else
     #include <dos.h>
     #include "liballoc.h"
@@ -95,6 +100,23 @@
             __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffb, fileinfo );
         #endif
         return( (long)h );
+
+    #elif __RDOS__
+        RDOSFINDTYPE *  findbuf;
+
+        findbuf = (RDOSFINDTYPE*) lib_malloc( sizeof( RDOSFINDTYPE ) );
+        if( findbuf == NULL )  return( -1L );
+
+        findbuf->handle = RdosOpenDir( filespec );
+        findbuf->entry = 0;
+
+        if( __rdos_finddata_get( findbuf, fileinfo ) )
+            return( (long) findbuf );
+        else {
+            lib_free( findbuf );        
+            return( -1 );
+        }
+            
     #else
         DOSFINDTYPE *   findbuf;
         unsigned        rc;
@@ -186,6 +208,53 @@
     __F_NAME(strcpy,wcscpy)( fileinfo->name, ffb->cFileName );
 }
 
+#elif __RDOS__
+
+int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
+{
+    long            FileSize;
+    int             Attribute;
+    unsigned long   MsbTime;
+    unsigned long   LsbTime;
+    int             stat;
+
+    stat = RdosReadDir( findbuf->handle, 
+                        findbuf->entry, 
+                        _MAX_PATH, 
+                        fileinfo->name, 
+                        &FileSize, 
+                        &Attribute, 
+                        &MsbTime, 
+                        &LsbTime );
+
+    if( stat ) {
+        fileinfo->time_create = -1L;
+        fileinfo->time_access = -1L;
+        fileinfo->time_write = __rdos_filetime_cvt( MsbTime, LsbTime );
+        fileinfo->size = FileSize;
+
+        fileinfo->attrib = 0;
+        if( Attribute & FILE_ATTRIBUTE_ARCHIVE ) {
+            fileinfo->attrib |= _A_ARCH;
+        }
+        if( Attribute & FILE_ATTRIBUTE_DIRECTORY ) {
+            fileinfo->attrib |= _A_SUBDIR;
+        }
+        if( Attribute & FILE_ATTRIBUTE_HIDDEN ) {
+            fileinfo->attrib |= _A_HIDDEN;
+        }
+        if( Attribute & FILE_ATTRIBUTE_NORMAL ) {
+            fileinfo->attrib |= _A_NORMAL;
+        }
+        if( Attribute & FILE_ATTRIBUTE_READONLY ) {
+            fileinfo->attrib |= _A_RDONLY;
+        }
+        if( Attribute & FILE_ATTRIBUTE_SYSTEM ) {
+            fileinfo->attrib |= _A_SYSTEM;
+        }
+    }
+    return( stat );
+}
 
 #else   /* __NT__ */
 

@@ -36,6 +36,8 @@
 #include <io.h>
 #ifdef __NT__
     #include <windows.h>
+#elif __RDOS__
+    #include <rdos.h>
 #else
     #include <dos.h>
 #endif
@@ -66,6 +68,21 @@ _WCRTLINK extern long _wfindfirsti64( const wchar_t *__filespec,
     extern void     __nt_wfinddatai64_cvt( WIN32_FIND_DATA *ffb,
                                            struct _wfinddatai64_t *fileinfo );
     extern time_t   __nt_filetime_cvt( FILETIME *ft );
+
+#elif __RDOS__
+
+    struct _rdos_find_t {
+        int handle;
+        int entry;
+    };
+
+    #define RDOSFINDTYPE        struct _rdos_find_t
+
+    extern time_t   __rdos_filetime_cvt( unsigned long msb,
+                                         unsigned long lsb );
+
+    extern int      __rdos_finddata_get( RDOSFINDTYPE *findbuf,
+                                         struct _finddata_t *fileinfo );
 
 #else
 

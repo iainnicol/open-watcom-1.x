@@ -31,49 +31,18 @@
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <io.h>
-#ifdef __NT__
-    #include <windows.h>
-#elif __RDOS__
-    #include <rdos.h>
-    #include "find.h"
-    #include "liballoc.h"
-#else
-    #include <dos.h>
-    #include "liballoc.h"
-#endif
+#include <direct.h>
+#include <rdos.h>
 
 
-_WCRTLINK int _findclose( long handle )
+_WCRTLINK int remove( CHAR_TYPE const *filename )
 {
-    #ifdef __NT__
-        if( FindClose( (HANDLE)handle )  ==  TRUE ) {
-            return( 0 );
-        } else {
-            return( -1 );
-        }
-    #elif __RDOS__
-        RDOSFINDTYPE * handlebuf = ( RDOSFINDTYPE * )handle;
+    __ptr_check( filename, 0 );
 
-        RdosCloseDir( handlebuf->handle );    
-        lib_free( (void*) handle );
+    if( RdosDeleteFile( filename ) )
         return( 0 );
-    #else
-        unsigned        rc;
-#ifdef USING_LFN
-        struct find_t * handlestuff = ( struct find_t * )handle;
-
-        handlestuff->lfnax = (int)handle;
-        rc = _dos_findclose( handlestuff );
-#else
-
-        rc = _dos_findclose( (struct find_t*) handle );
-#endif
-        lib_free( (void*) handle );
-        if( rc == 0 ) {
-            return( 0 );
-        } else {
-            return( -1 );
-        }
-    #endif
+    else
+        return( -1 );  
 }

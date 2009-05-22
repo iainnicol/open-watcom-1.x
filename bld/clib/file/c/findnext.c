@@ -83,6 +83,17 @@
     __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffb, fileinfo );
  #endif
     return( 0 );
+
+#elif __RDOS__
+    RDOSFINDTYPE *   findbuf = (RDOSFINDTYPE*) handle;
+
+    findbuf->entry++;
+
+    if( __rdos_finddata_get( findbuf, fileinfo ) )
+        return( 0 );
+    else
+        return( -1 );
+       
 #else
     DOSFINDTYPE *   findbuf = (DOSFINDTYPE*) handle;
     unsigned        rc;
