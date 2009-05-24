@@ -255,10 +255,11 @@ static int macro_exam( int i )
     uint                nesting_depth = 0;
     bool                store_data;
 
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         name = AsmBuffer[i+1]->string_ptr;
-    else
+    } else {
         name = AsmBuffer[i]->string_ptr;
+    }
     dir = (dir_node *)AsmGetSymbol( name );
     info = dir->e.macroinfo;
 
@@ -473,10 +474,11 @@ int ExpandMacro( int tok_count)
         return( tok_count );
     }
     macro_name_loc = count;
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         count--;
-    else
+    } else {
         count++;
+    }
     if( count >= 0 ) {
         if( AsmBuffer[count]->token == T_DIRECTIVE &&
             AsmBuffer[count]->u.value == T_MACRO ) {
@@ -651,10 +653,11 @@ int MacroDef( int i, bool hidden )
     int         n;
     dir_node    *currproc;
 
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-    else
+    } else {
         n = --i;
+    }
     if( ( Parse_Pass == PASS_1 ) &&
         ( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) ) {
         AsmError( PROC_MUST_HAVE_A_NAME );

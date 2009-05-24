@@ -73,12 +73,10 @@ struct  option {
 };
 
 static struct SWData {
-    bool register_conventions;
-    bool protect_mode;
-    int cpu;
-    int fpu;
+    bool    protect_mode;
+    int     cpu;
+    int     fpu;
 } SWData = {
-    TRUE,  // register conventions
     FALSE, // real mode CPU instructions set
     0,     // default CPU 8086
     -1     // unspecified FPU
@@ -95,38 +93,37 @@ static char             *OptParm;
 static char             *ForceInclude = NULL;
 
 global_options Options = {
-    /* sign_value       */          FALSE,
-    /* stop_at_end      */          FALSE,
-    /* quiet            */          FALSE,
-    /* banner_printed   */          FALSE,
-    /* debug_flag       */          FALSE,
-    /* floating_point   */          DO_FP_EMULATION,
-    /* output_comment_data_in_code_records */   TRUE,
+    FALSE,              // sign_value
+    FALSE,              // stop_at_end
+    FALSE,              // quiet
+    FALSE,              // banner_printed
+    FALSE,              // debug_flag
+    DO_FP_EMULATION,    // floating_point
+    TRUE,               // output_comment_data_in_code_records
 
-    /* error_count      */          0,
-    /* warning_count    */          0,
-    /* error_limit      */          20,
-    /* warning_level    */          2,
-    /* warning_error    */          FALSE,
-    /* build_target     */          NULL,
+    0,                  // error_count
+    0,                  // warning_count
+    20,                 // error_limit
+    2,                  // warning_level
+    FALSE,              // warning_error
+    NULL,               // build_target
 
-    /* code_class       */          NULL,
-    /* data_seg         */          NULL,
-    /* text_seg         */          NULL,
-    /* module_name      */          NULL,
+    NULL,               // code_class
+    NULL,               // data_seg
+    NULL,               // text_seg
+    NULL,               // module_name
 
 #ifdef DEBUG_OUT
-    /* debug            */          FALSE,
+    FALSE,              // debug
 #endif
-    /* default_name_mangler */      NULL,
-    /* allow_c_octals   */          FALSE,
-    /* emit_dependencies */         TRUE,
-    /* masm compatible C mangler */ TRUE,
-    /* stdcall at number */         TRUE,
-    /* mangle stdcall   */          TRUE,
-    /* write listing */             FALSE,
-    /* tasm ideal mode syntax */    FALSE,
-    /* register based parameters */ TRUE
+    NULL,               // default_name_mangler
+    FALSE,              // allow_c_octals
+    TRUE,               // emit_dependencies
+    TRUE,               // stdcall at number
+    TRUE,               // mangle stdcall
+    FALSE,              // write listing
+    TRUE,               // parameters passed by registers
+    MODE_WATCOM         // assembler mode
 };
 
 static char *CopyOfParm( void )
@@ -198,22 +195,26 @@ static void SetCPUPMC( void )
 
     for( tmp=OptParm; tmp < OptScanPtr; tmp++ ) {
         if( *tmp == 'p' ) {
-            if( SWData.cpu >= 2 )   // set protected mode
+            if( SWData.cpu >= 2 ) { // set protected mode
                 SWData.protect_mode = TRUE;
-            else
+            } else {
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
+            }
         } else if( *tmp == 'r' ) {
-            if( SWData.cpu >= 3 )   // set register based calling convention
-                SWData.register_conventions = TRUE;
-            else
+            if( SWData.cpu >= 3 ) { // set register based calling convention
+                Options.watcom_parms_passed_by_regs = TRUE;
+            } else {
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
+            }
         } else if( *tmp == 's' ) {
-            if( SWData.cpu >= 3 )   // set stack based calling convention
-                SWData.register_conventions = FALSE;
-            else
+            if( SWData.cpu >= 3 ) { // set stack based calling convention
+                Options.watcom_parms_passed_by_regs = FALSE;
+            } else {
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
+            }
         } else if( *tmp == '"' ) {      // set default mangler
             char *dest;
+            
             tmp++;
             dest = strchr(tmp, '"');
             if( Options.default_name_mangler != NULL ) {
@@ -228,6 +229,12 @@ static void SetCPUPMC( void )
         } else {
             MsgPrintf1( MSG_UNKNOWN_OPTION, CopyOfParm() );
             exit( 1 );
+        }
+    }
+    if( SWData.cpu < 3 ) {
+        Options.watcom_parms_passed_by_regs = TRUE;
+        if( SWData.cpu < 2 ) {
+            SWData.protect_mode = FALSE;
         }
     }
 }
@@ -322,10 +329,11 @@ static void SetMemoryModel( void )
         return;
     }
 
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         strcpy( buffer, "MODEL " );
-    else
+    } else {
         strcpy( buffer, ".MODEL " );
+    }
     strcat( buffer, model );
     InputQueueLine( buffer );
 }
@@ -563,7 +571,18 @@ static void Set_WX( void ) { Options.warning_level = 4; }
 
 static void SetWarningLevel( void ) { Options.warning_level = OptValue; }
 
-static void Set_ZCM( void ) { Options.masm_c_mangler = TRUE; }
+static void Set_ZCM( void )
+{
+    if( OptScanPtr == OptParm || strnicmp( OptParm, "MASM", OptScanPtr - OptParm ) == 0 ) {
+        Options.mode = MODE_MASM6;
+    } else if( strnicmp( OptParm, "WATCOM", OptScanPtr - OptParm ) == 0 ) {
+        Options.mode = MODE_WATCOM;
+    } else if( strnicmp( OptParm, "TASM", OptScanPtr - OptParm ) == 0 ) {
+        Options.mode = MODE_TASM | MODE_MASM5;
+//    } else if( strnicmp( OptParm, "MASM5", OptScanPtr - OptParm ) == 0 ) {
+//        Options.mode = MODE_MASM5;
+    }
+}
 
 static void Set_ZLD( void ) { Options.emit_dependencies = FALSE; }
 
@@ -644,7 +663,7 @@ static struct option const cmdl_options[] = {
     { "wx",     0,        Set_WX },
     { "w=#",    0,        SetWarningLevel },
     { "zld",    0,        Set_ZLD },
-    { "zcm",    0,        Set_ZCM },
+    { "zcm=$",  0,        Set_ZCM },
     { "zz",     0,        Set_ZZ },
     { "zzo",    0,        Set_ZZO },
     { "zq",     0,        Set_ZQ },
@@ -1194,14 +1213,15 @@ void set_cpu_parameters( void )
 {
     int token;
 
-    // Set WATCOM C calling convention
-    Options.register_parameters = SWData.register_conventions;
-    // set parameters passing convention
+    // Start in masm mode
+    Options.mode &= ~MODE_IDEAL;
+    // set parameters passing convention macro
     if( SWData.cpu >= 3 ) {
-        if( SWData.register_conventions )
+        if( Options.watcom_parms_passed_by_regs ) {
             add_constant( "__REGISTER__" );
-        else
+        } else {
             add_constant( "__STACK__" );
+        }
     }
     switch( SWData.cpu ) {
     case 0:

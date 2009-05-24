@@ -89,17 +89,14 @@ typedef struct {
 
 enum {
 #undef pick
-#define pick( tok, str, val, init )     tok
-
+#define pick(token,string,value,init_val)   token
 #include "directd.h"
 };
 
 
 static typeinfo TypeInfo[] = {
-
 #undef pick
-#define pick( tok, string, value, init_val )    { string, value, init_val }
-
+#define pick(token,string,value,init_val)   { string, value, init_val }
 #include "directd.h"
 };
 
@@ -1016,31 +1013,39 @@ uint_32 GetCurrSegStart( void )
     return( CurrSeg->seg->e.seginfo->start_loc );
 }
 
+int CheckForLang( int i )
+/***********************/
+{
+    char        *token;
+    int         lang;
+
+    if( AsmBuffer[i]->token == T_ID) {
+        token = AsmBuffer[i]->string_ptr;
+        // look up the type of token
+        if( Options.mode & MODE_TASM ) {
+            lang = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
+        } else {
+            lang = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
+        }
+        if( lang != ERROR ) {
+            return( TypeInfo[lang].value );
+        }
+    }
+    return( ERROR );
+}
+
 static int GetLangType( int *i )
 /******************************/
 {
-    if( AsmBuffer[*i]->token == T_RES_ID) {
-        switch( AsmBuffer[(*i)++]->u.value ) {
-        case T_C:
-            return( LANG_C );
-        case T_BASIC:
-            return( LANG_BASIC );
-        case T_FORTRAN:
-            return( LANG_FORTRAN );
-        case T_PASCAL:
-            return( LANG_PASCAL );
-        case T_WATCOM_C:
-            return( LANG_WATCOM_C );
-        case T_STDCALL:
-            return( LANG_STDCALL );
-        case T_SYSCALL:
-            return( LANG_SYSCALL );
-        default:
-            (*i)--;
-            break;
-        }
+    int         lang_type;
+
+    lang_type = CheckForLang( *i );
+    if( lang_type == ERROR ) {
+        return( ModuleInfo.langtype );
+    } else {
+        (*i)++;
     }
-    return( ModuleInfo.langtype );
+    return( lang_type );
 }
 
 int ExtDef( int i, bool glob_def )
@@ -1211,10 +1216,11 @@ int GrpDef( int i )
     dir_node    *seg;
     int         n;
 
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-    else
+    } else {
         n = --i;
+    }
     if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) {    /* name present? */
         AsmError( GRP_NAME_MISSING );
         return( ERROR );
@@ -1308,10 +1314,11 @@ int  SetCurrSeg( int i )
     switch( AsmBuffer[i]->u.value ) {
     case T_SEGMENT:
         FlushCurrSeg();
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             name = AsmBuffer[i+1]->string_ptr;
-        else
+        } else {
             name = AsmBuffer[i-1]->string_ptr;
+        }
         seg = (dir_node *)AsmGetSymbol( name );
         /**/ myassert( seg != NULL );
         push_seg( seg );
@@ -1442,7 +1449,7 @@ int SegDef( int i )
     dir_node            *seg;
     char                *name;
     int                 n;
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
         if( ( AsmBuffer[n]->token == T_DIRECTIVE ) &&
             ( ( AsmBuffer[n]->u.value == T_STACK ) ||
@@ -1513,11 +1520,11 @@ int SegDef( int i )
         }
 
         initstate = 0;
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             i += 2;     /* Go past SEGMENT and name */
-        else
+        } else {
             i++;        /* Go past SEGMENT */
-
+        }
         for( ; i < Token_Count; i ++ ) {
             if( AsmBuffer[i]->token == T_STRING ) {
 
@@ -1726,10 +1733,11 @@ static void input_group( int type, char *name )
 
     if( ModuleInfo.model == MOD_FLAT )
         return;
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         strcpy( buffer, "GROUP DGROUP " );
-    else
+    } else {
         strcpy( buffer, "DGROUP GROUP " );
+    }
     if( name != NULL ) {
         strcat( buffer, name );
     } else {
@@ -1832,19 +1840,17 @@ int Startup( int i )
 static char *get_sim_code_beg( char *buffer, char *name, int bit )
 /****************************************************************/
 {
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         strcpy( buffer, "SEGMENT " );
         strcat( buffer, name );
-        if( bit == BIT16 )
-            strcat( buffer, " WORD PUBLIC '" );
-        else
-            strcat( buffer, " DWORD USE32 PUBLIC '" );
     } else {
         strcpy( buffer, name );
-        if( bit == BIT16 )
-            strcat( buffer, " SEGMENT WORD PUBLIC '" );
-        else
-            strcat( buffer, " SEGMENT DWORD USE32 PUBLIC '" );
+        strcat( buffer, " SEGMENT" );
+    }
+    if( bit == BIT16 ) {
+        strcat( buffer, " WORD PUBLIC '" );
+    } else {
+        strcat( buffer, " DWORD USE32 PUBLIC '" );
     }
     strcat( buffer, Options.code_class );
     strcat( buffer, "' IGNORE");
@@ -1854,7 +1860,7 @@ static char *get_sim_code_beg( char *buffer, char *name, int bit )
 static char *get_sim_code_end( char *buffer, char *name )
 /*******************************************************/
 {
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         strcpy( buffer, "ENDS ");
         strcat( buffer, name );
     } else {
@@ -1890,7 +1896,7 @@ int SimSeg( int i )
     } else {
         string = NULL;
     }
-    ideal = Options.ideal;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
     switch( type ) {
     case T_DOT_CODE:
     case T_CODESEG:
@@ -2018,7 +2024,7 @@ static void module_prologue( int type )
     char        buffer[ MAX_LINE_LEN ];
 
     bit = ( ModuleInfo.defUse32 ) ? BIT32 : BIT16;
-    ideal = Options.ideal;
+    ideal = ( Options.mode & MODE_IDEAL ) ? 1 : 0;
 
     /* Generates codes for code segment */
     InputQueueLine( get_sim_code_beg( buffer, Options.text_seg, bit ) );
@@ -2195,7 +2201,7 @@ int Model( int i )
 
     get_module_name();
 
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         token = AsmBuffer[i+1]->string_ptr;
         type = token_cmp( &token, TOK_USE16, TOK_USE32 );
         if( ( type == TOK_USE16 ) || ( type == TOK_USE32 ) ) {
@@ -2214,7 +2220,11 @@ int Model( int i )
         // look up the type of token
         type = token_cmp( &token, TOK_TINY, TOK_FARSTACK );
         if( type == ERROR ) {
-            type = token_cmp( &token, TOK_PROC_BASIC, TOK_PROC_SYSCALL );
+            if( Options.mode & MODE_TASM ) {
+                type = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
+            } else {
+                type = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
+            }
             if( type == ERROR ) {
                 type = token_cmp( &token, TOK_OS_OS2, TOK_OS_DOS );
                 if( type == ERROR ) {
@@ -2249,13 +2259,14 @@ int Model( int i )
         case TOK_FARSTACK:
             ModuleInfo.distance = TypeInfo[type].value;
             break;
-        case TOK_PROC_BASIC:
-        case TOK_PROC_FORTRAN:
-        case TOK_PROC_PASCAL:
-        case TOK_PROC_C:
-        case TOK_PROC_WATCOM_C:
-        case TOK_PROC_STDCALL:
-        case TOK_PROC_SYSCALL:
+        case TOK_LANG_BASIC:
+        case TOK_LANG_FORTRAN:
+        case TOK_LANG_PASCAL:
+        case TOK_LANG_C:
+        case TOK_LANG_WATCOM_C:
+        case TOK_LANG_STDCALL:
+        case TOK_LANG_SYSCALL:
+        case TOK_LANG_NOLANG:
             ModuleInfo.langtype = TypeInfo[type].value;
             break;
         case TOK_OS_DOS:
@@ -2688,7 +2699,7 @@ static int find_size( int type )
 static void size_override( char *buffer, int size )
 /*************************************************/
 {
-    if ( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         switch( size ) {
         default:
         case 0:
@@ -2831,7 +2842,7 @@ int LocalDef( int i )
 
             type = token_cmp( &(AsmBuffer[i]->string_ptr), TOK_EXT_BYTE,
                               TOK_EXT_TBYTE );
-            if( ( type == ERROR ) && ( Options.ideal ) ) {
+            if( ( type == ERROR ) && (Options.mode & MODE_IDEAL) ) {
                 tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
                 if( tmp != NULL ) {
                     if( tmp->state == SYM_STRUCT ) {
@@ -2923,7 +2934,7 @@ int ArgDef( int i )
     info = CurrProc->e.procinfo;
 
     if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
-        ( Options.register_parameters ) ) {
+        ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
         parameter_on_stack = FALSE;
         register_count = unused_stack_space = 0;
     }
@@ -2948,11 +2959,12 @@ int ArgDef( int i )
 
         type = token_cmp( &typetoken, TOK_EXT_BYTE, TOK_EXT_TBYTE );
 
-        if( ( type == ERROR ) && ( Options.ideal ) ) {
+        if( ( type == ERROR ) && (Options.mode & MODE_IDEAL) ) {
             tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
             if( tmp != NULL ) {
-                if( tmp->state == SYM_STRUCT )
+                if( tmp->state == SYM_STRUCT ) {
                     type = MT_STRUCT;
+                }
             }
         }
         if( type == ERROR ) {
@@ -3140,10 +3152,11 @@ int EnumDef( int i )
 
     var: name [= number]
     */
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-    else
+    } else {
         n = --i;
+    }
     if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) {    /* name present? */
         AsmError( ENUM_NAME_MISSING );
         return( ERROR );
@@ -3272,18 +3285,24 @@ static int proc_exam( dir_node *proc, int i )
         case TOK_PROC_FAR:
         case TOK_PROC_NEAR:
             info->mem_type = TypeInfo[type].value;
-            minimum = TOK_PROC_BASIC;
+            if( Options.mode & MODE_TASM ) {
+                minimum = TOK_LANG_NOLANG;
+            } else {
+                minimum = TOK_LANG_BASIC;
+            }
             break;
-        case TOK_PROC_WATCOM_C:
-            if( Options.register_parameters )
+        case TOK_LANG_WATCOM_C:
+            if( Options.watcom_parms_passed_by_regs || !Use32 ) {
                 parameter_on_stack = FALSE;
-        case TOK_PROC_BASIC:
-        case TOK_PROC_FORTRAN:
-        case TOK_PROC_PASCAL:
-        case TOK_PROC_C:
-        case TOK_PROC_STDCALL:
-        case TOK_PROC_SYSCALL:
-        case TOK_PROC_NOLANG:
+            }
+            // fall through
+        case TOK_LANG_BASIC:
+        case TOK_LANG_FORTRAN:
+        case TOK_LANG_PASCAL:
+        case TOK_LANG_C:
+        case TOK_LANG_STDCALL:
+        case TOK_LANG_SYSCALL:
+        case TOK_LANG_NOLANG:
             proc->sym.langtype = TypeInfo[type].value;
             minimum = TOK_PROC_PRIVATE;
             break;
@@ -3332,7 +3351,7 @@ parms:
 
     if( i >= Token_Count ) {
         return( NOT_ERROR );
-    } else if( ( proc->sym.langtype == LANG_NONE ) && ( Options.ideal == 0 ) ) {
+    } else if( ( proc->sym.langtype == LANG_NONE ) && ( (Options.mode & MODE_IDEAL) == 0 ) ) {
         AsmError( LANG_MUST_BE_SPECIFIED );
         return( ERROR );
     } else if( AsmBuffer[i]->token == T_COMMA ) {
@@ -3465,10 +3484,11 @@ int ProcDef( int i, bool proc_def )
     char            *name;
     int             n;
 
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         n = ++i;
-    else
+    } else {
         n = i - 1;
+    }
 
     if( CurrProc != NULL ) {
         /* nested procs ... push currproc on a stack */
@@ -3542,10 +3562,11 @@ int ProcEnd( int i )
     if( CurrProc == NULL ) {
         AsmError( BLOCK_NESTING_ERROR );
         return( ERROR );
-    } else if( Options.ideal ) {
+    } else if( Options.mode & MODE_IDEAL ) {
         if( AsmBuffer[++i]->token == T_ID ) {
-            if( ( (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr ) != CurrProc ) )
+            if( ( (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr ) != CurrProc ) ) {
                 AsmError( PROC_NAME_DOES_NOT_MATCH );
+            }
         }
         ProcFini();
         return( NOT_ERROR );
@@ -3599,13 +3620,14 @@ int WritePrologue( void )
             size = curr->size * curr->factor;
             offset += ROUND_UP( size, align );
             size_override( buffer, curr->size );
-            if( Options.ideal ) {
-                if( curr->sym != NULL )
+            if( Options.mode & MODE_IDEAL ) {
+                if( curr->sym != NULL ) {
                     sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
                              Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
-                else
+                } else {
                     sprintf( buffer + strlen(buffer), "%s%d",
                              Use32 ? IDEAL_LOCAL_STRING_32 : IDEAL_LOCAL_STRING, offset );
+                }
             } else {
                 sprintf( buffer + strlen(buffer), "%s%d]",
                          Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
@@ -3625,7 +3647,7 @@ int WritePrologue( void )
         if( Use32 )
             offset *= 2;
         if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
-            ( Options.register_parameters ) &&
+            ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
             ( info->is_vararg == FALSE ) ) {
             parameter_on_stack = FALSE;
         }
@@ -3639,28 +3661,31 @@ int WritePrologue( void )
             if( parameter_on_stack ) {
                 size_override( buffer, curr->size );
                 if( Use32 ) {
-                    if( Options.ideal ) {
-                        if( curr->sym != NULL )
+                    if( Options.mode & MODE_IDEAL ) {
+                        if( curr->sym != NULL ) {
                             sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
                                      IDEAL_ARGUMENT_STRING_32, offset );
-                        else
+                        } else {
                             sprintf( buffer + strlen(buffer), "%s%d",
                                      IDEAL_ARGUMENT_STRING_32, offset );
+                        }
                     } else {
                         sprintf( buffer + strlen(buffer), "%s%d]",
                                  ARGUMENT_STRING_32, offset );
                     }
                 } else {
-                    if( Options.ideal ) {
-                        if( curr->sym != NULL )
+                    if( Options.mode & MODE_IDEAL ) {
+                        if( curr->sym != NULL ) {
                             sprintf( buffer + strlen(buffer), "(%s %s%d)", curr->sym->name,
                                      IDEAL_ARGUMENT_STRING, offset );
-                        else
+                        } else {
                             sprintf( buffer + strlen(buffer), "%s%d",
                                      IDEAL_ARGUMENT_STRING, offset );
-                    } else
+                        }
+                    } else {
                         sprintf( buffer + strlen(buffer), "%s%d]",
                                  ARGUMENT_STRING, offset );
+                    }
                 }
                 offset += ROUND_UP( curr->size, align );
             } else {
@@ -3677,7 +3702,7 @@ int WritePrologue( void )
             }
         }
     }
-    if( ( Options.ideal ) && ( CurrProc->sym.langtype == LANG_NONE ) )
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
         return( NOT_ERROR );
     in_prologue = TRUE;
     PushLineQueue();
@@ -3766,7 +3791,7 @@ static void write_epilogue( void )
 
     /**/myassert( CurrProc != NULL );
 
-    if( ( Options.ideal ) && ( CurrProc->sym.langtype == LANG_NONE ) )
+    if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
         return;
 
     info = CurrProc->e.procinfo;
@@ -3900,7 +3925,7 @@ int Ret( int i, int count, int flag_iret )
                 }
                 break;
             case LANG_WATCOM_C:
-                if( ( Options.register_parameters ) &&
+                if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
                     ( info->is_vararg == FALSE ) &&
                     ( info->parasize != 0 ) ) {
                     sprintf( buffer + strlen( buffer ), "%d", info->parasize );

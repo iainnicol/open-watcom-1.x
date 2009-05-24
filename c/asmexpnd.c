@@ -192,7 +192,7 @@ int ExpandProcString( int index )
                         return( ERROR );
                     }
                 }
-                if( ( Options.ideal == 0 ) &&
+                if( ( (Options.mode & MODE_IDEAL) == 0 ) &&
                     ( left_bracket == 0 ) &&
                     ( right_bracket == 0 ) ) {
                     left_bracket = index;

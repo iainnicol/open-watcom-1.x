@@ -574,108 +574,113 @@ static int comp_opt( uint direct )
   Compare function for CPU directive
 */
 {
-
+    switch( direct ) {
+    case T_DOT_NO87:
+        return( P_NO87 );
+    case T_DOT_8086:
 #if defined( _STANDALONE_ )
-    if( Options.ideal ) {
-        // Borland TASM ideal mode
-        switch( direct ) {
-        case T_P8086:
-            return( P_86 );
-        case T_P8087:
-            return( P_87 );
-        case T_P186:
-            return( P_186 );
-        case T_P286:
-            return( P_286 );
-        case T_P287:
-            return( P_287 );
-        case T_P286P:
-            return( P_286p );
-        case T_P386:
-            return( P_386 );
-        case T_P387:
-            return( P_387 );
-        case T_P386P:
-            return( P_386p );
-        case T_P486:
-            return( P_486 );
-        case T_P486P:
-            return( P_486p );
-        case T_P586:
-            return( P_586 );
-        case T_P586P:
-            return( P_586p );
-        case T_P686:
-            return( P_686 );
-        case T_P686P:
-            return( P_686p );
-        case T_PMMX:
-            return( P_MMX );
-        case T_PK3D:
-            return( P_K3D | P_MMX );
-        case T_PXMM:
-            return( P_SSE | P_MMX );
-        case T_PXMM2:
-            return( P_SSE2 | P_SSE | P_MMX );
-        case T_PXMM3:
-            return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
-        default:
-            // not found
-            return( EMPTY );
-        }
-    } else {
+    case T_P8086:
 #endif
-        // follow Microsoft MASM
-        switch( direct ) {
-        case T_DOT_NO87:
-            return( P_NO87 );
-        case T_DOT_8086:
-            return( P_86 );
-        case T_DOT_8087:
-            return( P_87 );
-        case T_DOT_186:
-            return( P_186 );
-        case T_DOT_286:
-            return( P_286 );
-        case T_DOT_287:
-            return( P_287 );
-        case T_DOT_286P:
-            return( P_286p );
-        case T_DOT_386:
-            return( P_386 );
-        case T_DOT_387:
-            return( P_387 );
-        case T_DOT_386P:
-            return( P_386p );
-        case T_DOT_486:
-            return( P_486 );
-        case T_DOT_486P:
-            return( P_486p );
-        case T_DOT_586:
-            return( P_586 );
-        case T_DOT_586P:
-            return( P_586p );
-        case T_DOT_686:
-            return( P_686 );
-        case T_DOT_686P:
-            return( P_686p );
-        case T_DOT_MMX:
-            return( P_MMX );
-        case T_DOT_K3D:
-            return( P_K3D | P_MMX );
-        case T_DOT_XMM:
-            return( P_SSE | P_MMX );
-        case T_DOT_XMM2:
-            return( P_SSE2 | P_SSE | P_MMX );
-        case T_DOT_XMM3:
-            return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
-        default:
-            // not found
-            return( EMPTY );
-        }
+        return( P_86 );
+    case T_DOT_8087:
 #if defined( _STANDALONE_ )
+    case T_P8087:
+#endif
+        return( P_87 );
+    case T_DOT_186:
+#if defined( _STANDALONE_ )
+    case T_P186:
+#endif
+        return( P_186 );
+    case T_DOT_286:
+#if defined( _STANDALONE_ )
+    case T_P286:
+#endif
+        return( P_286 );
+    case T_DOT_287:
+#if defined( _STANDALONE_ )
+    case T_P287:
+#endif
+        return( P_287 );
+    case T_DOT_286P:
+#if defined( _STANDALONE_ )
+    case T_P286P:
+#endif
+        return( P_286p );
+    case T_DOT_386:
+#if defined( _STANDALONE_ )
+    case T_P386:
+#endif
+        return( P_386 );
+    case T_DOT_387:
+#if defined( _STANDALONE_ )
+    case T_P387:
+#endif
+        return( P_387 );
+    case T_DOT_386P:
+#if defined( _STANDALONE_ )
+    case T_P386P:
+#endif
+        return( P_386p );
+    case T_DOT_486:
+#if defined( _STANDALONE_ )
+    case T_P486:
+#endif
+        return( P_486 );
+    case T_DOT_486P:
+#if defined( _STANDALONE_ )
+    case T_P486P:
+#endif
+        return( P_486p );
+    case T_DOT_586:
+#if defined( _STANDALONE_ )
+    case T_P586:
+#endif
+        return( P_586 );
+    case T_DOT_586P:
+#if defined( _STANDALONE_ )
+    case T_P586P:
+#endif
+        return( P_586p );
+    case T_DOT_686:
+#if defined( _STANDALONE_ )
+    case T_P686:
+#endif
+        return( P_686 );
+    case T_DOT_686P:
+#if defined( _STANDALONE_ )
+    case T_P686P:
+#endif
+        return( P_686p );
+    case T_DOT_MMX:
+#if defined( _STANDALONE_ )
+    case T_PMMX:
+#endif
+        return( P_MMX );
+    case T_DOT_K3D:
+#if defined( _STANDALONE_ )
+    case T_PK3D:
+#endif
+        return( P_K3D | P_MMX );
+    case T_DOT_XMM:
+#if defined( _STANDALONE_ )
+    case T_PXMM:
+#endif
+        return( P_SSE | P_MMX );
+    case T_DOT_XMM2:
+#if defined( _STANDALONE_ )
+    case T_PXMM2:
+#endif
+        return( P_SSE2 | P_SSE | P_MMX );
+    case T_DOT_XMM3:
+#if defined( _STANDALONE_ )
+    case T_PXMM3:
+#endif
+        return( P_SSE3 | P_SSE2 | P_SSE | P_MMX );
+    default:
+        // not found
+        return( EMPTY );
     }
-#endif
 }
 
 static int def_fpu( uint direct )
@@ -732,40 +737,30 @@ static void MakeCPUConstant( int i )
     switch( i ) {
     // fall right through
     case T_DOT_686P:
-    case T_DOT_686:
-#if defined( _STANDALONE_ )
     case T_P686P:
+    case T_DOT_686:
     case T_P686:
-#endif
         MakeConstantUnderscored( T_DOT_686 );
     case T_DOT_586P:
-    case T_DOT_586:
-#if defined( _STANDALONE_ )
     case T_P586P:
+    case T_DOT_586:
     case T_P586:
-#endif
         MakeConstantUnderscored( T_DOT_586 );
     case T_DOT_486P:
-    case T_DOT_486:
-#if defined( _STANDALONE_ )
     case T_P486P:
+    case T_DOT_486:
     case T_P486:
-#endif
         MakeConstantUnderscored( T_DOT_486 );
     case T_DOT_386P:
-    case T_DOT_386:
-#if defined( _STANDALONE_ )
     case T_P386P:
+    case T_DOT_386:
     case T_P386:
-#endif
         MakeConstantUnderscored( T_DOT_386 );
         break;
     case T_DOT_286P:
-    case T_DOT_286:
-#if defined( _STANDALONE_ )
     case T_P286P:
+    case T_DOT_286:
     case T_P286:
-#endif
         MakeConstantUnderscored( T_DOT_286 );
     }
     return;
@@ -777,7 +772,7 @@ int cpu_directive( int i )
 {
     int                 temp;
 
-    if( ( temp = comp_opt( i ) ) != EMPTY ) {
+    if( (temp = comp_opt( i )) != EMPTY ) {
         if( i == T_DOT_NO87 ) {
             Code->info.cpu &= ~P_FPU_MASK;                 // turn off FPU bits
         } else if( temp & P_EXT_MASK ) {
@@ -800,37 +795,33 @@ int cpu_directive( int i )
     MakeCPUConstant( i );
     switch( i ) {
     case T_DOT_686P:
-    case T_DOT_686:
-    case T_DOT_586P:
-    case T_DOT_586:
-    case T_DOT_486P:
-    case T_DOT_486:
-    case T_DOT_386P:
-    case T_DOT_386:
-#if defined( _STANDALONE_ )
     case T_P686P:
+    case T_DOT_686:
     case T_P686:
+    case T_DOT_586P:
     case T_P586P:
+    case T_DOT_586:
     case T_P586:
+    case T_DOT_486P:
     case T_P486P:
+    case T_DOT_486:
     case T_P486:
+    case T_DOT_386P:
     case T_P386P:
+    case T_DOT_386:
     case T_P386:
-#endif
         SetUse32Def( TRUE );
         break;
     case T_DOT_286P:
-    case T_DOT_286C:
-    case T_DOT_286:
-    case T_DOT_186:
-    case T_DOT_8086:
-#if defined( _STANDALONE_ )
     case T_P286P:
+    case T_DOT_286C:
     case T_P286N:
+    case T_DOT_286:
     case T_P286:
+    case T_DOT_186:
     case T_P186:
+    case T_DOT_8086:
     case T_P8086:
-#endif
         SetUse32Def( FALSE );
         break;
     default:
@@ -1252,7 +1243,7 @@ int get_stack_argument( int index, char *buffer )
     return( 0 );
 }
 
-int expand_call( int index )
+int expand_call( int index, int lang_type )
 {
     int         i, j;
     int         arglist[16];
@@ -1261,35 +1252,33 @@ int expand_call( int index )
 
     argcount = cleanup = reversed = register_count = register_arguments = 0;
     parameter_on_stack = TRUE;
-    switch( AsmBuffer[index]->u.value ) {
-    case T_C:
-    case T_SYSCALL:
+    switch( lang_type ) {
+    case LANG_C:
+    case LANG_SYSCALL:
         cleanup++;
         reversed++;
         break;
-    case T_WATCOM_C:
-        if( Options.register_parameters  == FALSE )
-            cleanup++;
-        else
+    case LANG_WATCOM_C:
+        if( Options.watcom_parms_passed_by_regs || !Use32 ) {
             parameter_on_stack = FALSE;
-        /*fall into T_STDCALL */
-    case T_STDCALL:
+        } else {
+            cleanup++;
+        }
+        /* fall into T_STDCALL */
+    case LANG_STDCALL:
         reversed++;
         break;
-    case T_PASCAL:
-    case T_FORTRAN:
-    case T_BASIC:
+    case LANG_PASCAL:
+    case LANG_FORTRAN:
+    case LANG_BASIC:
         break;
-    case T_NOLANGUAGE:
-        if( AsmBuffer[index + 1]->token == T_FINAL )
+    case LANG_NONE:
+        if( AsmBuffer[index]->token == T_FINAL )
             break;
         AsmError( SYNTAX_ERROR );
         return ( ERROR );
     }
-    i = index + 1;
-    for( ; ; ) {
-        if( AsmBuffer[i]->token == T_FINAL )
-            break;
+    for( i = index; AsmBuffer[i]->token != T_FINAL; ) {
         if( ( AsmBuffer[i]->token != T_COMMA ) ||
             ( AsmBuffer[i+1]->token == T_FINAL ) ) {
             AsmError( SYNTAX_ERROR );
@@ -1301,8 +1290,9 @@ int expand_call( int index )
         }
         for( j = ++i; ; j++ ) {
             if( ( AsmBuffer[j]->token == T_FINAL ) ||
-                ( AsmBuffer[j]->token == T_COMMA ) )
+                ( AsmBuffer[j]->token == T_COMMA ) ) {
                 break;
+            }
         }
         arglist[argcount++] = i;
         i = j;
@@ -1337,7 +1327,7 @@ int expand_call( int index )
     }
     *buffer = 0;
     /* add original line up to before language */
-    for( i = 0; i < index; i++ ) {
+    for( i = 0; i < index - 1; i++ ) {
         sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i]->string_ptr );
     }
     InputQueueLine( buffer );
@@ -2427,21 +2417,14 @@ int AsmParse( void )
                 rCode->info.token = AsmBuffer[i]->u.value;
                 break;
             case T_CALL:
-                if( Options.ideal ) {
+                if( Options.mode & MODE_IDEAL ) {
                     int n;
+                    int lang_type;
+
                     for( n = i + 2; n < Token_Count; n++ ) {
-                        if( AsmBuffer[n]->token == T_RES_ID ) {
-                            switch( AsmBuffer[n]->u.value ) {
-                            case T_NOLANGUAGE:
-                            case T_C:
-                            case T_SYSCALL:
-                            case T_STDCALL:
-                            case T_PASCAL:
-                            case T_FORTRAN:
-                            case T_BASIC:
-                            case T_WATCOM_C:
-                                return( expand_call( n ) );
-                            }
+                        lang_type = CheckForLang( n );
+                        if( lang_type != ERROR ) {
+                            return( expand_call( n + 1, lang_type ) );
                         }
                     }
                 }
@@ -3003,8 +2986,9 @@ static int check_size( void )
                          Code->info.opnd_type[OPND2] = OP_I32;
 #if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
-                             if( Options.ideal == 0 )
+                             if( (Options.mode & MODE_IDEAL) == 0 ) {
                                  AsmWarn( 1, ASSUMING_DWORD );
+                             }
                          }
 #endif
                     } else if( (unsigned long)Code->data[OPND2] > UCHAR_MAX ) {
@@ -3013,8 +2997,9 @@ static int check_size( void )
                          Code->info.opnd_type[OPND2] = OP_I16;
 #if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
-                             if( Options.ideal == 0 )
+                             if( (Options.mode & MODE_IDEAL) == 0 ) {
                                  AsmWarn( 1, ASSUMING_WORD );
+                             }
                          }
 #endif
                     } else {
@@ -3022,8 +3007,9 @@ static int check_size( void )
                          Code->info.opnd_type[OPND2] = OP_I8;
 #if defined( _STANDALONE_ )
                          if( Parse_Pass == PASS_1 ) {
-                             if( Options.ideal == 0 )
+                             if( (Options.mode & MODE_IDEAL) == 0 ) {
                                  AsmWarn( 1, ASSUMING_BYTE );
+                             }
                          }
 #endif
                     }
@@ -3046,8 +3032,9 @@ static int check_size( void )
                         Code->mem_type = MT_BYTE;
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
-                            if( Options.ideal == 0 )
+                            if( (Options.mode & MODE_IDEAL) == 0 ) {
                                 AsmWarn( 1, ASSUMING_BYTE );
+                            }
                         }
 #endif
                         break;
@@ -3056,8 +3043,9 @@ static int check_size( void )
                         Code->info.opcode |= W_BIT;
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
-                            if( Options.ideal == 0 )
+                            if( (Options.mode & MODE_IDEAL) == 0 ) {
                                 AsmWarn( 1, ASSUMING_WORD );
+                            }
                         }
 #endif
                         if( Code->use32 )
@@ -3068,8 +3056,9 @@ static int check_size( void )
                         Code->info.opcode |= W_BIT;
 #if defined( _STANDALONE_ )
                         if( ( Parse_Pass == PASS_1 ) && ( op2 & OP_I ) ) {
-                            if( Options.ideal )
+                             if( (Options.mode & MODE_IDEAL) == 0 ) {
                                 AsmWarn( 1, ASSUMING_DWORD );
+                            }
                         }
 #endif
                         break;

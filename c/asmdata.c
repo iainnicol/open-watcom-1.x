@@ -787,7 +787,7 @@ int data_init( int sym_loc, int initializer_loc )
         mem_type = MT_STRUCT;
         struct_sym = AsmLookup( AsmBuffer[initializer_loc]->string_ptr );
         no_of_bytes = GetStructSize( struct_sym );
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL )
             sym->structure = struct_sym;
         break;
 #endif

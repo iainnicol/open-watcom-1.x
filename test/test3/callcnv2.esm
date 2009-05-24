@@ -1,19 +1,19 @@
 .387
-		PUBLIC	p1
-		PUBLIC	p2
-		PUBLIC	`_p3@12`
-		PUBLIC	P4
-		PUBLIC	_p5
-		PUBLIC	`_p6@0`
-		PUBLIC	p7_
-		PUBLIC	d1
-		PUBLIC	d2
-		PUBLIC	_d3
-		PUBLIC	D4
-		PUBLIC	_d5
-DGROUP		GROUP	_DATA
-_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
-		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+                PUBLIC  p1
+                PUBLIC  p2
+                PUBLIC  `_p3@12`
+                PUBLIC  P4
+                PUBLIC  _p5
+                PUBLIC  `_p6@0`
+                PUBLIC  p7_
+                PUBLIC  d1
+                PUBLIC  d2
+                PUBLIC  _d3
+                PUBLIC  D4
+                PUBLIC  _d5
+DGROUP          GROUP   _DATA
+_TEXT           SEGMENT WORD PUBLIC USE16 'CODE'
+                ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
 p1:
     push        bp
     mov         bp,sp
@@ -92,21 +92,21 @@ p7_:
     pop         di
     pop         es
     pop         bp
-    ret         
-_TEXT		ENDS
-_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+    ret         4
+_TEXT           ENDS
+_DATA           SEGMENT WORD PUBLIC USE16 'DATA'
 d1:
-    DB	0
+    DB  0
 d2:
-    DB	0
+    DB  0
 _d3:
-    DB	0
+    DB  0
 D4:
-    DB	0
+    DB  0
 _d5:
-    DB	0
+    DB  0
 L$1:
-    DB	0, 0
+    DB  0, 0
 
-_DATA		ENDS
-		END
+_DATA           ENDS
+                END

@@ -97,7 +97,7 @@ static int get_float( asm_tok *buf, char **input, char **output )
                 got_e = TRUE;
                 /* accept e+2 / e-4 /etc. */
 
-                switch( *(ptr+1) ) {
+                switch( *(ptr + 1) ) {
                 case '+':
                 case '-':
                     ptr++;
@@ -237,8 +237,8 @@ static int get_number( asm_tok *buf, char **input, char **output )
 
     extra = 0;
     if( *ptr == '0' ) {
-        if( tolower( *(ptr+1) ) == 'x' ) {
-            ptr+=2;
+        if( tolower( *(ptr + 1) ) == 'x' ) {
+            ptr += 2;
             base = 16;
         } else {
             ptr += 1;
@@ -455,25 +455,30 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
         }
     } else {
 #if defined( _STANDALONE_ )
-        if( Options.ideal ) {
-            int i = *buf_index;
-
-            // don't use WASM/MASM mode keywords in ideal mode if necessary
+        if( (Options.mode & MODE_MASM5) == 0 ) {
+            // ignore MASM5 keywords
+  #if 0                
             switch( AsmOpTable[count].token ) {
-//            case T_...:
-//                buf->token = T_ID;
-//                return( NOT_ERROR );
+            case T_...:
+                buf->token = T_ID;
+                return( NOT_ERROR );
             default:
                 break;
             }
-            if( ( ( i == 0 ) && ( Definition.struct_depth != 0 )  &&
-                  !( AsmOpTable[count].rm_byte & ( OP_DIRECTIVE|OP_RES_ID ) ) ) ||
-                ( ( i > 0 ) && ( AsmBuffer[--i]->token == T_DOT ) ) ) {
+  #endif                
+        } else {
+            // ignore MASM6 keywords
+            switch( AsmOpTable[count].token ) {
+            case T_FOR:
+            case T_FORC:
                 buf->token = T_ID;
                 return( NOT_ERROR );
+            default:
+                break;
             }
-        } else {
-            // don't use IDEAL mode keywords in WASM/MASM mode
+        }
+        if( (Options.mode & MODE_TASM) == 0 ) {
+            // ignore TASM keywords
             switch( AsmOpTable[count].token ) {
             case T_ARG:
             case T_CODESEG:
@@ -495,7 +500,6 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             case T_IDEAL:
             case T_MASM:
             case T_MODEL:
-            case T_NOLANGUAGE:
             case T_NOWARN:
             case T_P186:
             case T_P286:
@@ -528,10 +532,41 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             default:
                 break;
             }
+        } else {
+            if( Options.mode & MODE_IDEAL ) {
+                int i = *buf_index;
+    
+                // ignore WASM/MASM keywords in TASM ideal mode if necessary
+  #if 0                
+                switch( AsmOpTable[count].token ) {
+                case T_...:
+                    buf->token = T_ID;
+                    return( NOT_ERROR );
+                default:
+                    break;
+                }
+  #endif                
+                if( ( ( i == 0 ) && ( Definition.struct_depth != 0 )  &&
+                      !( AsmOpTable[count].rm_byte & ( OP_DIRECTIVE|OP_RES_ID ) ) ) ||
+                    ( ( i > 0 ) && ( AsmBuffer[--i]->token == T_DOT ) ) ) {
+                    buf->token = T_ID;
+                    return( NOT_ERROR );
+                }
+            } else {
+                // ignore WASM/MASM keywords in TASM default mode if necessary
+  #if 0                
+                switch( AsmOpTable[count].token ) {
+                case T_...:
+                    buf->token = T_ID;
+                    return( NOT_ERROR );
+                default:
+                    break;
+                }
+  #endif                
+            }
         }
 #endif
         buf->u.value = AsmOpTable[count].token;
-        // count = AsmOpcode[count].position;
 
         if( AsmOpTable[count].opnd_type[OPND1] == OP_SPECIAL ) {
             if( AsmOpTable[count].rm_byte & OP_REGISTER ) {
@@ -548,7 +583,7 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
             } else if( AsmOpTable[count].rm_byte & OP_DIRECTIVE ) {
 #if defined( _STANDALONE_ )
                 if( ( AsmOpTable[count].rm_byte & OP_IDEAL ) &&
-                    ( Options.ideal == 0 ) ) {
+                    ( (Options.mode & MODE_IDEAL) == 0 ) ) {
                     buf->token = T_ID;
                     return( NOT_ERROR );
                 }
@@ -676,7 +711,7 @@ static int get_inc_path( unsigned int *buf_index, char **input, char **output )
     case '<' :
     case '{' :
         /* string delimiters -- just get the path as a string */
-        if( get_special_symbol( AsmBuffer[*buf_index],input,output ) == ERROR ) {
+        if( get_special_symbol( AsmBuffer[*buf_index], input, output ) == ERROR ) {
             return( ERROR );
         }
         return( NOT_ERROR );
@@ -733,7 +768,7 @@ int AsmScan( char *string )
             || *ptr == '?'
             || *ptr == '\\'
             || ( *ptr == '.' && buf_index == 0 ) ) {
-            if( get_id( &buf_index,&ptr,&output_ptr ) == ERROR ) {
+            if( get_id( &buf_index, &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
 #if defined( _STANDALONE_ )
@@ -744,25 +779,24 @@ int AsmScan( char *string )
                 buf_index++;
                 get_inc_path( &buf_index, &ptr, &output_ptr );
             }
-
 #endif
         } else if( isdigit( *ptr ) ) {
-            if( get_number( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
+            if( get_number( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
             /* handle negatives here - for inline assembler */
 #if !defined( _STANDALONE_ )
-            if( buf_index > 0 && AsmBuffer[buf_index-1]->token == T_MINUS ) {
-                AsmBuffer[buf_index-1]->token = T_PLUS;
+            if( buf_index > 0 && AsmBuffer[buf_index - 1]->token == T_MINUS ) {
+                AsmBuffer[buf_index - 1]->token = T_PLUS;
                 AsmBuffer[buf_index]->u.value = -AsmBuffer[buf_index]->u.value;
             }
 #endif
         } else if( *ptr == '`' ) {
-            if( get_id_in_backquotes( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
+            if( get_id_in_backquotes( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
         } else {
-            if( get_special_symbol( AsmBuffer[buf_index],&ptr,&output_ptr ) == ERROR ) {
+            if( get_special_symbol( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
                 return( ERROR );
             }
         }

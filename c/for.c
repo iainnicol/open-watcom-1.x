@@ -94,7 +94,7 @@ int ForDirective( int i, enum irp_type type )
     /* now make a macro */
     i = start;
     sprintf( buffer, "%s%d", macroname, Globals.for_counter );
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         AsmBuffer[i+1]->string_ptr = buffer;
         AsmBuffer[i+1]->token = T_ID;
     } else {
