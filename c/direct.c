@@ -974,7 +974,7 @@ dir_node *GetCurrSeg( void )
 /**************************/
 {
     if( CurrSeg == NULL )
-        return( 0 );
+        return( NULL );
     return( CurrSeg->seg );
 }
 
@@ -2202,10 +2202,10 @@ int Model( int i )
     get_module_name();
 
     if( Options.mode & MODE_IDEAL ) {
-        token = AsmBuffer[i+1]->string_ptr;
+        token = AsmBuffer[i + 1]->string_ptr;
+        wipe_space( token );
         type = token_cmp( &token, TOK_USE16, TOK_USE32 );
-        if( ( type == TOK_USE16 ) || ( type == TOK_USE32 ) ) {
-            wipe_space( token );
+        if( type != ERROR ) {
             SetUse32Def( TypeInfo[type].value );
             i++;
         }

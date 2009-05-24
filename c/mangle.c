@@ -166,11 +166,7 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
 static char *CMangler( struct asm_sym *sym, char *buffer )
 /********************************************************/
 {
-    if( Options.mode & MODE_WATCOM ) {
-        return( AsmMangler( sym, buffer ) );
-    } else {
-        return( UScoreMangler( sym, buffer ) );
-    }
+    return( UScoreMangler( sym, buffer ) );
 }
 
 static mangle_func GetMangler( char *mangle_type )
