@@ -138,6 +138,7 @@ void BuildLinkFile( void )
         Fputnl( "option caseexact", Fp );
     }
     fclose( Fp );       /* close Temp_Link */
+    Fp = NULL;
 }
 
 

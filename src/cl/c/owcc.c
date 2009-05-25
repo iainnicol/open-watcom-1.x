@@ -230,6 +230,7 @@ OW options that might be useful to add:
 
 #ifndef __WATCOMC__
 #define P_WAIT 0
+#include <sys/wait.h>
 int spawnlp( int mode, const char *path, const char *cmd, ... )
 {
     pid_t       pid;
@@ -1202,6 +1203,7 @@ int main( int argc, char **argv )
     }
     if( rc == 1 ) {
         fclose( Fp );
+        Fp = NULL;
     }
     if( Link_Name != NULL ) {
         if( strfcmp( Link_Name, Temp_Link + 1) != 0 ) {
