@@ -87,6 +87,8 @@ typedef struct  semaphore_object {
         sem_t           semaphore;
   #elif defined(__LINUX__)
     // TODO: Linux semaphore goes here!
+  #elif defined(__RDOS__)
+        int             semaphore; // RDOS only have critical sections, which should work
   #else
         unsigned long   semaphore;
   #endif
@@ -160,6 +162,9 @@ typedef struct thread_data {
         unsigned long           thread_id;
     #elif defined(__UNIX__)
         pid_t                   thread_id;
+    #elif defined(__RDOS__)
+        int                     thread_id;
+        char                    thread_name[256];
     #endif
     #if defined(__NT__)
         void                    *thread_handle;
