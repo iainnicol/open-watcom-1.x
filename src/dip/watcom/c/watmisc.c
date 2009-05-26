@@ -136,7 +136,7 @@ search_result DIPENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
     return( LookupGblAddr( ii, addr, is ) );
 }
 
-#define SH_ESCAPE       '\xf0'
+#define SH_ESCAPE       (byte)'\xf0'
 
 unsigned DIPENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc,

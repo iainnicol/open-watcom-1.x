@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom line number information processing.
 *
 ****************************************************************************/
 
@@ -44,19 +43,18 @@ extern mod_info         *ModPointer( imp_image_handle *, imp_mod_handle );
 extern unsigned         PrimaryCueFile( imp_image_handle *, imp_cue_handle *, char *, unsigned );
 extern void             *FindSpecCueTable( imp_image_handle *, imp_mod_handle, void ** );
 
-extern address          NilAddr;
-
-static void     *LinStart;
-static void     *LinEnd;
-static byte     V2Lines;
-
-
-#define NO_LINE         ((unsigned_16)-1)
-
 typedef union {
     v2_line_segment     v2;
     v3_line_segment     v3;
 } line_segment;
+
+extern address          NilAddr;
+
+static void             *LinStart;
+static line_segment     *LinEnd;
+static byte             V2Lines;
+
+#define NO_LINE         ((unsigned_16)-1)
 
 #define NEXT_SEG( ptr ) (V2Lines ? ((line_segment *)&((ptr)->v2.line[(ptr)->v2.num])) \
                                  : ((line_segment *)&((ptr)->v3.line[(ptr)->v3.num])))
@@ -192,7 +190,7 @@ static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im,
     if( entry != 0 ) UnlockLine();
     LinStart = InfoLoad( ii, im, DMND_LINES, entry, NULL );
     if( LinStart == NULL ) return( DS_FAIL );
-    LinEnd = (byte *)LinStart + InfoSize( ii, im, DMND_LINES, entry );
+    LinEnd = (line_segment *)((byte *)LinStart + InfoSize( ii, im, DMND_LINES, entry ));
     V2Lines = ii->v2;
     return( DS_OK );
 }
@@ -317,6 +315,8 @@ search_result DIPENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
     close.have = SR_NONE;
     close.ic.entry = 0;
     close.have_spec_table = ST_UNKNOWN;
+    close.off = 0;
+    save_entry = 0;
     for( ;; ) {
         if( GetLineInfo( ii, close.ic.im, close.ic.entry ) != DS_OK ) break;
         SearchSection( ii, &close, addr );
@@ -335,7 +335,7 @@ static void ScanSection( struct search_info *close, unsigned file_id,
 {
     line_info           *curr;
     line_segment        *ptr;
-    void                *next;
+    line_segment        *next;
     unsigned            num;
     cue_state           spec;
 
@@ -345,7 +345,7 @@ static void ScanSection( struct search_info *close, unsigned file_id,
         if( line == 0 ) {
             line = LINE_LINE( ptr )[0].line_number;
         }
-        for( curr = LINE_LINE( ptr ); curr < next; ++curr ) {
+        for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
             spec.fno = 1;
             num = curr->line_number;
             if( num >= PRIMARY_RANGE ) {
@@ -385,6 +385,7 @@ search_result DIPENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
     close.num = 0;
     close.ic.entry = 0;
     close.special_table = FindSpecCueTable( ii, im, &base );
+    save_entry = 0;
     for( ;; ) {
         if( GetLineInfo( ii, im, close.ic.entry ) != DS_OK ) break;
         ScanSection( &close, file, line );
@@ -447,7 +448,7 @@ walk_result DIPENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im
 {
     line_info           *curr;
     line_segment        *ptr;
-    void                *next;
+    line_segment        *next;
     walk_result         wr;
 
     //NYI: handle special cues
@@ -458,7 +459,7 @@ walk_result DIPENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im
         for( ptr = LinStart; ptr < LinEnd; ptr = next ) {
             next = NEXT_SEG( ptr );
             ic->seg_bias = BIAS( ptr );
-            for( curr = LINE_LINE( ptr ); curr < next; ++curr ) {
+            for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
                 ic->info_bias = BIAS( curr );
                 if( curr->line_number < PRIMARY_RANGE ) {
                     wr = wk( ii, ic, d );
@@ -534,7 +535,7 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
         info = UNBIAS( ic->info_bias );
         ++info;
         for( ;; ) {
-            if( (void *)info < NEXT_SEG( seg ) ) {
+            if( (line_segment *)info < NEXT_SEG( seg ) ) {
                 ic->seg_bias = BIAS( seg );
                 ic->info_bias = BIAS( info );
                 UnlockLine();

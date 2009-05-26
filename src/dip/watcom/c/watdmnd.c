@@ -38,7 +38,7 @@ extern mod_info *ModPointer( imp_image_handle *, imp_mod_handle );
 extern section_info *FindInfo(imp_image_handle *, imp_mod_handle );
 
 /* WD looks for this symbol to determine module bitness */
-#if !defined( __WINDOWS__ )
+#if defined( __WATCOMC__ ) && !defined( __WINDOWS__ )
 int __nullarea;
 #pragma aux __nullarea "*";
 #endif

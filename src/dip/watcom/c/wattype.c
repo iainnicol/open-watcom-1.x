@@ -872,7 +872,11 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
                     case STRUCT_TYPE+ST_BIT_LOC:
                     case STRUCT_TYPE+ST_INHERIT:
                         skip = 0;
+                        offset = 0; /* just to make gcc happy */
                         break;
+                    default:
+                        DCStatus( DS_FAIL | DS_INFO_INVALID );
+                        return( DS_FAIL | DS_INFO_INVALID );
                     }
                     if( skip > 0 ) {
                         GetIndex( p + skip, &index );
@@ -1057,6 +1061,9 @@ dip_status DIPENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
             ai->low_bound = *(signed_32 *)(p+2);
             hi = *(signed_32 *)(p+6);
             break;
+        default:
+            DCStatus( DS_FAIL | DS_INFO_INVALID );
+            return( DS_FAIL | DS_INFO_INVALID );
         }
         ai->num_elts = (hi - ai->low_bound) + 1;
         break;
@@ -1456,6 +1463,10 @@ dip_status SymHdl2MbrLoc( imp_image_handle *ii, imp_sym_handle *is,
             bit_len = p[1];
         }
         offset = 0;
+    default:
+        PopLoad();
+        DCStatus( DS_ERR | DS_BAD_LOCATION );
+        return( DS_ERR | DS_BAD_LOCATION );
     }
     PopLoad();
     LocationAdd( ll, offset * 8 + bit_start );

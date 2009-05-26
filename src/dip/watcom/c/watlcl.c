@@ -490,6 +490,7 @@ search_result LookupLclAddr( imp_image_handle *ii, address addr,
     if( LoadLocalSyms( ii, is->im, &lclld ) != DS_OK ) return( SR_NONE );
     sr = SR_NONE;
     next = local->start;
+    close_addr.mach.offset = 0; /* just to make gcc happy */
     for( ;; ) {
         ptr = ModAddrLkupVar( next, local );
         if( ptr == NULL ) break;

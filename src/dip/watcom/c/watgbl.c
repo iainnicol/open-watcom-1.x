@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Watcom globals processing.
 *
 ****************************************************************************/
 
@@ -348,6 +347,7 @@ search_result LookupGblAddr( imp_image_handle *ii, address addr,
     SET_GBLNAMEOFF( ii );
     inf = FindInfo( ii, is->im );
     curr = inf->gbl;
+    sr = SR_NONE;
     for( ;; ) {
         if( curr == NULL ) break;
         if( addr.sect_id == 0 || addr.sect_id == inf->sect_id ) {

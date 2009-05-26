@@ -261,6 +261,7 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im,
         mem_block       block;
 
         block.start = NilAddr;
+        block.len   = 0;
         return( block );
     }
     if( SegBlockCache.ii == ii
