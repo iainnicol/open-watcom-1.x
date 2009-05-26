@@ -51,8 +51,9 @@
 #define _WCI86FAR
 #endif
 
-#define IMPORT_PREFIX_STR       "__imp_"
-#define IMPORT_PREFIX_LEN       ( sizeof( IMPORT_PREFIX_STR ) - 1 )
+#define IMPORT_PREFIX_STR_L     "__imp_"
+#define IMPORT_PREFIX_STR_U     "__IMP_"
+#define IMPORT_PREFIX_LEN       ( sizeof( IMPORT_PREFIX_STR_L ) - 1 )
 
 #undef  TRUE
 #undef  FALSE
@@ -299,6 +300,44 @@ static int type_encoding( output_desc *data, state_desc *state );
 static int recursive_mangled_name( output_desc *data, state_desc *state );
 static size_t terminateOutput( output_desc *data );
 
+/* Local variants of non-portable itoa()/utoa() functions */
+static const char i2a_alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+static char *u10toa( unsigned value, char *buffer )
+{
+    char        *p = buffer;
+    char        *q;
+    unsigned    rem;
+    unsigned    quot;
+    char        buf[34];
+
+    buf[0] = '\0';
+    q = &buf[1];
+    do {
+        rem = value % 10;
+        quot = value / 10;
+        *q = i2a_alphabet[rem];
+        ++q;
+        value = quot;
+    } while( value != 0 );
+    while( (*p++ = *--q) )
+        ;
+    return( buffer );
+}
+
+
+static char *i10toa( int value, char *buffer )
+{
+    char   *p = buffer;
+
+    if( value < 0 ) {
+        *p++ = '-';
+        value = -value;
+    }
+    u10toa( value, p );
+    return( buffer );
+}
+
 static void zapSpace( output_desc *data )
 {
     if( data->output == NULL ) {
@@ -483,14 +522,14 @@ static void demangleEmit( void **cookie, dm_pts dp, int value, char const *ptr )
     case DM_INTEGER:
         {
             char buff[12];
-            itoa( value, buff, 10 );
+            i10toa( value, buff );
             emitStr( data, buff );
         }
         break;
     case DM_ARRAY_SIZE:
         if( value != 0 ) {
             char buff[12];
-            itoa( value, buff, 10 );
+            u10toa( value, buff );
             emitStr( data, buff );
         }
         break;
@@ -654,7 +693,7 @@ static int strRecog( output_desc *data, char *str, unsigned len )
     if(( data->end - data->input ) < len ) {
         return( 0 );
     }
-    if( memicmp( data->input, str, len ) != 0 ) {
+    if( memcmp( data->input, str, len ) != 0 ) {
         return( 0 );
     }
     data->input += len;
@@ -1528,7 +1567,8 @@ static int full_mangled_name( output_desc *data )
     unsigned advances;
 
     advances = 1;
-    if( strRecog( data, IMPORT_PREFIX_STR, IMPORT_PREFIX_LEN ) ) {
+    if( strRecog( data, IMPORT_PREFIX_STR_L, IMPORT_PREFIX_LEN ) 
+     || strRecog( data, IMPORT_PREFIX_STR_U, IMPORT_PREFIX_LEN ) ) {
         data->dllimport = 1;
     }
     switch( nextChar( data ) ) {
@@ -1804,7 +1844,8 @@ int __is_mangled( char const *name, size_t len )
     len = len;
 
     offset = 2;
-    if( name[0] == '_' && memicmp( name, IMPORT_PREFIX_STR, IMPORT_PREFIX_LEN ) == 0 ) {
+    if( name[0] == '_' && ( !memcmp( name, IMPORT_PREFIX_STR_L, IMPORT_PREFIX_LEN )
+     || !memcmp( name, IMPORT_PREFIX_STR_U, IMPORT_PREFIX_LEN ) ) ) {
         name += IMPORT_PREFIX_LEN;
         offset += IMPORT_PREFIX_LEN;
     }
@@ -2318,7 +2359,7 @@ test_stream testVector[] = {
 
 void testEmit( void **cookie, dm_pts dp, int value, char const *ptr )
 {
-    unsigned **argc = cookie;
+    unsigned **argc = (unsigned **)cookie;
     static const char *names[] = {
         #define DM_DEF( id )    "\tDM_" #id ": %d\n",
         DM_DEFS
@@ -2344,7 +2385,7 @@ static char *typeTestVector[] = {
     NULL, NULL,
 };
 
-void main( int argc )
+int main( int argc, char **argv )
 {
     static char buff[TRUNC_BUFFER+2];   // allow for two guard chars
     size_t len;
@@ -2470,7 +2511,7 @@ void main( int argc )
     }
     if( errors ) {
         printf( "test failed!\n" );
-        exit( 1 );
+        return( 1 );
     }
     for( trunc_len = TRUNC_BUFFER ; trunc_len > 0 ; trunc_len-- ) {
         for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
@@ -2510,7 +2551,7 @@ void main( int argc )
         }
     }
     printf( "...test completed.\n" );
-    exit( 0 );
+    return( 0 );
 }
 #endif
 
@@ -2518,15 +2559,16 @@ void main( int argc )
 
 #define BUF_SIZE 4096
 
-void main( int argc, char **argv )
+int main( int argc, char **argv )
 {
     char    buffer[BUF_SIZE];
 
     if( argc < 2) {
         printf( "Usage: demangle <mangled name>\n" );
-        return;
+        return( 2 );
     }
     __demangle_l( argv[1], strlen( argv[1] ), buffer, BUF_SIZE );
     puts( buffer );
+    return( 0 );
 }
 #endif
