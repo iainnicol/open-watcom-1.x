@@ -79,6 +79,9 @@ unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
     case DIG_ORG:
         npos = p;
         break;
+    default:
+        DCStatus( DS_ERR | DS_BAD_PARM );
+        return( -1UL ); /* invalid seek type */
     }
     if( npos >= bpos && npos < (bpos+Buff.len) ) {
         Buff.off = npos - bpos;

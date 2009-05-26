@@ -32,6 +32,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "walloca.h"
 #include "demangle.h"
 #include "cvinfo.h"
@@ -151,6 +152,7 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
         skip = sizeof( s_lthread32 );
         break;
     default:
+        skip = 0;
         Confused();
     }
     name = (char *)p + skip;
@@ -764,6 +766,7 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
             offset_count = *(unsigned_32 *)p;
             if( offset_count == 0 ) goto next_seg;
             curr.base += base + num_segs * sizeof( unsigned_32 );
+            curr.off = 0;   /* just to make gcc happy */
             //NYI: offsets are sorted, so we can binary search this sucker
             count = 0;
             for( ;; ) {
@@ -823,7 +826,7 @@ static unsigned long CalcHash( char *name, unsigned len )
     sum = 0;
     for( i = 0; i < len; ++i ) {
         sum ^= D_toupper( *(unsigned_32 *)name );
-        sum = _lrotl( sum, 4 );
+        sum = (sum << 4) | (sum >> (sizeof( sum ) - 4));
         name += 4;
     }
     return( sum ^ end );
@@ -881,10 +884,11 @@ static search_result TableSearchForName( imp_image_handle *ii,
                 return( SR_FAIL );
             }
             if( name_len != li_len ) continue;
+            /* NB: CV sym names may not be null terminated, but we know the length */
             if( case_sense ) {
-                if( memcmp( li_name, name, name_len ) != 0 ) continue;
+                if( strncmp( li_name, name, name_len ) != 0 ) continue;
             } else {
-                if( memicmp( li_name, name, name_len ) != 0 ) continue;
+                if( strncasecmp( li_name, name, name_len ) != 0 ) continue;
             }
             /* Got one! */
             switch( create( ii, sp, is, d ) ) {
@@ -1580,10 +1584,11 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
         break;
     }
     if( len != li->name.len ) return( WR_CONTINUE );
+    /* NB: CV sym names may not be null terminated, but we know the length */
     if( li->case_sensitive ) {
-        if( memcmp( li->name.start, name, len ) != 0 ) return( WR_CONTINUE );
+        if( strncmp( li->name.start, name, len ) != 0 ) return( WR_CONTINUE );
     } else {
-        if( memicmp( li->name.start, name, len ) != 0 ) return( WR_CONTINUE );
+        if( strncasecmp( li->name.start, name, len ) != 0 ) return( WR_CONTINUE );
     }
     /* Got one! */
     new = DCSymCreate( ii, sd->d );

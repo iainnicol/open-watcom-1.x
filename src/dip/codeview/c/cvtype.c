@@ -31,6 +31,7 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <strings.h>
 #include "walloca.h"
 #include "cvinfo.h"
 
@@ -1151,10 +1152,11 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
     if( array_p == NULL ) return( SR_FAIL );
+    /* NB: CV sym names may not be null terminated, but we know the length */
     if( li->case_sensitive ) {
-        cmp = memcmp;
+        cmp = strncmp;
     } else {
-        cmp = memicmp;
+        cmp = strncasecmp;
     }
     count = *array_p;
     for( ;; ) {
@@ -1252,12 +1254,13 @@ static walk_result SymSearch( imp_image_handle *ii, sym_walk_info swi,
     }
     if( sd->li->name.len != name_len ) return( WR_CONTINUE );
     sr = SR_NONE;
+    /* NB: CV sym names may not be null terminated, but we know the length */
     if( sd->li->case_sensitive ) {
-        if( memcmp( name, sd->li->name.start, name_len ) == 0 ) {
+        if( strncmp( name, sd->li->name.start, name_len ) == 0 ) {
             sr = SR_EXACT;
         }
     } else {
-        if( memicmp( name, sd->li->name.start, name_len ) == 0 ) {
+        if( strncasecmp( name, sd->li->name.start, name_len ) == 0 ) {
             sr = SR_EXACT;
         }
     }
