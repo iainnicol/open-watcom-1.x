@@ -1125,7 +1125,7 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     unsigned_32         *array_p;
     char                *name;
     unsigned            len;
-    int                 (*cmp)( const void *, const void *, size_t );
+    int                 (*cmp)( const char *, const char *, size_t );
     imp_sym_handle      *is;
 
     if( li->mod != NO_MOD && li->mod != MH_GBL ) {
