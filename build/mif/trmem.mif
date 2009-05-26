@@ -1,5 +1,7 @@
+!ifndef bootstrap
 trmem_cflag_i86 = -s -of+
 trmem_cflag_386 = -s -of+
+!endif
 
 trmem_cflags = -I"$(trmem_dir)"
 trmem_cover_cflags = -I"$(trmem_dir)"
