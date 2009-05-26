@@ -274,101 +274,97 @@ static int parse_options( int argc, char * const *argv )
     Segspec = 0;
     Hexoff = 0;
 
-    while( 1 ) {
-        while( (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
-            switch( c ) {
-            case 'A':
-                Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
-                Segspec = atoi( optarg );
-                if( Segspec == 0 ) {
-                    Options_dmp &= ~OS2_SEG_DMP;
-                } else {
-                    Options_dmp &= ~DOS_SEG_DMP;
-                }
-                break;
-            case 'a':
-                Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
-                break;
-            case 'B':
-                Hexoff = strtol( optarg, NULL, 16 );
-                /* fall through */
-            case 'b':
-                Options_dmp |= BINARY_DMP;
-                Options_dmp &= ~EXE_INFO;
-                break;
-            case 'D':
-                Debug_options = 0;
-                arg = optarg;
-                while( islower( *arg ) || isupper( *arg ) ) {
-                    debug_opts( *arg++ );
-                }
-                /* fall through */
-            case 'd':
-                Options_dmp |= DEBUG_INFO;
-                Options_dmp &= ~EXE_INFO;
-                break;
-            case 'e':
-                Options_dmp |= EXE_INFO;
-                break;
-            case 'f':
-                Options_dmp |= EXE_INFO;
-                Options_dmp |= FIX_DMP;
-                break;
-            case 'i':
-                Options_dmp |= IMPORT_LIB;
-                Options_dmp |= QUIET;
-                Options_dmp &= ~EXE_INFO;
-                break;
-            case 'p':
-                Options_dmp |= EXE_INFO | PAGE_DMP;
-                break;
-            case 'q':
-                Options_dmp |= QUIET;
-                break;
-            case 'r':
-                Options_dmp |= EXE_INFO | RESRC_DMP;
-                break;
-            case 'S':
-                Options_dmp |= EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
-                Segspec = atoi( optarg );
-                if( Segspec == 0 ) {
-                    Options_dmp &= ~OS2_SEG_DMP;
-                } else {
-                    Options_dmp &= ~DOS_SEG_DMP;
-                }
-                break;
-            case 's':
-                Options_dmp |= EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
-                break;
-            case 'x':
-                Options_dmp |= IMPORT_DEF;
-                Options_dmp |= QUIET;
-                Options_dmp &= ~EXE_INFO;
-                break;
-            case ':':
-                Wdputs( "wdump: option requires argument: -" );
-                Wdputc( optopt );
-                Wdputslc( "\n" );
-                return( 1 );
-            case '?':
-                usage();
-                return( 1 );
-            default:
-                Wdputs( "wdump: invalid option: -" );
-                Wdputc( c );
-                Wdputslc( "\n" );
-                return( 1 );
-            }
-        }
-        if( optind < argc ) {
-            if( Name == NULL ) {
-                Name = argv[optind++];
+    while( (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
+        switch( c ) {
+        case 'A':
+            Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
+            Segspec = atoi( optarg );
+            if( Segspec == 0 ) {
+                Options_dmp &= ~OS2_SEG_DMP;
             } else {
-                Wdputs( "wdump: multiple pathnames not accepted\n" );
-                return( 1 );
+                Options_dmp &= ~DOS_SEG_DMP;
             }
-        } else {
             break;
+        case 'a':
+            Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
+            break;
+        case 'B':
+            Hexoff = strtol( optarg, NULL, 16 );
+            /* fall through */
+        case 'b':
+            Options_dmp |= BINARY_DMP;
+            Options_dmp &= ~EXE_INFO;
+            break;
+        case 'D':
+            Debug_options = 0;
+            arg = optarg;
+            while( islower( *arg ) || isupper( *arg ) ) {
+                debug_opts( *arg++ );
+            }
+            /* fall through */
+        case 'd':
+            Options_dmp |= DEBUG_INFO;
+            Options_dmp &= ~EXE_INFO;
+            break;
+        case 'e':
+            Options_dmp |= EXE_INFO;
+            break;
+        case 'f':
+            Options_dmp |= EXE_INFO;
+            Options_dmp |= FIX_DMP;
+            break;
+        case 'i':
+            Options_dmp |= IMPORT_LIB;
+            Options_dmp |= QUIET;
+            Options_dmp &= ~EXE_INFO;
+            break;
+        case 'p':
+            Options_dmp |= EXE_INFO | PAGE_DMP;
+            break;
+        case 'q':
+            Options_dmp |= QUIET;
+            break;
+        case 'r':
+            Options_dmp |= EXE_INFO | RESRC_DMP;
+            break;
+        case 'S':
+            Options_dmp |= EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
+            Segspec = atoi( optarg );
+            if( Segspec == 0 ) {
+                Options_dmp &= ~OS2_SEG_DMP;
+            } else {
+                Options_dmp &= ~DOS_SEG_DMP;
+            }
+            break;
+        case 's':
+            Options_dmp |= EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
+            break;
+        case 'x':
+            Options_dmp |= IMPORT_DEF;
+            Options_dmp |= QUIET;
+            Options_dmp &= ~EXE_INFO;
+            break;
+        case ':':
+            Wdputs( "wdump: option requires argument: -" );
+            Wdputc( optopt );
+            Wdputslc( "\n" );
+            return( 1 );
+        case '?':
+            usage();
+            return( 1 );
+        default:
+            Wdputs( "wdump: invalid option: -" );
+            Wdputc( c );
+            Wdputslc( "\n" );
+            return( 1 );
+        }
+    }
+    while( optind < argc ) {
+        if( Name == NULL ) {
+            Name = argv[optind++];
+        } else {
+            Wdputs( "wdump: multiple pathnames not accepted\n" );
+            return( 1 );
         }
     }
     return( 0 );
