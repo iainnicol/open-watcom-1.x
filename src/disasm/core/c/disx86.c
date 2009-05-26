@@ -35,6 +35,7 @@
 #include "dis.h"
 
 extern long SEX( unsigned long v, unsigned bit );
+extern char *dis_strupr( char *str );
 
 extern const dis_range          X86RangeTable[];
 extern const int                X86RangeTablePos[];
@@ -4184,7 +4185,7 @@ static unsigned X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         len += sizeof( EMU_INT ) - 1;
         op_buff[ len ] = 0;
         if( flags & DFF_INS_UP )
-            strupr( op_buff );
+            dis_strupr( op_buff );
         len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len );
     }
     return( len );

@@ -69,6 +69,15 @@ long SEX( unsigned long v, unsigned bit )
     return( v );
 }
 
+char *dis_strupr( char *str )
+{
+    char        *s = str;
+
+    while( *s )
+        *s = toupper( *s );
+    return( str );
+}
+
 #define LENGTH_BIT      0x80
 
 unsigned DisGetString( unsigned index, char *buff, int upper )
@@ -335,7 +344,7 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
         p = &name[ strlen( name ) ];
         h->d->flag_hook( h, d, &ins, flags, p );
         if( flags & DFF_INS_UP ) {
-            strupr( name );
+            dis_strupr( name );
         }
     }
     if( opers != NULL ) {

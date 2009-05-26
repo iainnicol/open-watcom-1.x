@@ -64,11 +64,8 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
-#ifdef UNIX
-    #include "clibext.h"
-//    #include "wndregx.h"
-#endif
 #include "../h/regexp.h"
 
 
@@ -414,6 +411,7 @@ static char *reg( int paren, int *flagp )
         regnpar++;
         ret = regnode( OPEN + parno );
     } else {
+        parno = 0;  /* just to make gcc happy */
         ret = NULL;
     }
 
@@ -838,7 +836,7 @@ static int RegExec2( regexp *prog, char *string, bool anchflag )
         s = string;
         while( ( s = StrChr( s, prog->regmust[0] ) ) != NULL ) {
             if( CASEIGNORE ) {
-                if( strnicmp( s, prog->regmust, prog->regmlen ) == 0 ) {
+                if( strncasecmp( s, prog->regmust, prog->regmlen ) == 0 ) {
                     break;
                 }
             } else {
@@ -976,7 +974,7 @@ static int regmatch( char *prog )
                 len = strlen( opnd );
                 if( len > 1 ) {
                     if( CASEIGNORE ) {
-                        if( strnicmp( opnd, reginput, len ) != 0 ) {
+                        if( strncasecmp( opnd, reginput, len ) != 0 ) {
                             return( 0 );
                         }
                     } else {
