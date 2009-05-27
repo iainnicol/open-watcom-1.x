@@ -24,24 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  typedef for external signal routines and
-*               prototypes for other signal internal function
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#include "extfunc.h"
 
-typedef void (*__sigfpe_func)( int, int );
-#ifdef _M_IX86
-    #pragma aux (__outside_CLIB) __sig_func;
-    #pragma aux (__outside_CLIB) __sigfpe_func;
-#endif
+#include "variety.h"
+#include "widechar.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <io.h>
+#include <process.h>
+#include <errno.h>
+#include "rtdata.h"
+#include "seterrno.h"
 
-#if defined( __NT__ ) || defined( __OS2_386__ ) || defined( __RDOS__ )
-_WCRTLINK extern int __sigfpe_handler( int );
-#else
-_WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );
-#endif
-extern  void    __sigabort( void );
-extern  void    __restore_FPE_handler( void );
-extern  void    __grab_FPE_handler( void );
+_WCRTLINK int system( const CHAR_TYPE *cmd )
+{
+    register CHAR_TYPE *name;
+    int ret_code;
+
+    name = getenv("COMSPEC");
+    if( cmd == NULL ) {
+        return( 1 );
+    }
+    if( name == NULL ) {
+        name = "z:\\command.exe";
+    }
+
+    ret_code = spawnlp( 0, name, "command", "/c", cmd, NULL );
+    return( ret_code );
+}

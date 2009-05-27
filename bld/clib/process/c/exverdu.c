@@ -24,24 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  typedef for external signal routines and
-*               prototypes for other signal internal function
+* Description:  Implementation of execve() for RDOS.
 *
 ****************************************************************************/
 
-#include "extfunc.h"
 
-typedef void (*__sigfpe_func)( int, int );
-#ifdef _M_IX86
-    #pragma aux (__outside_CLIB) __sig_func;
-    #pragma aux (__outside_CLIB) __sigfpe_func;
-#endif
+#undef __INLINE_FUNCTIONS__
+#include "variety.h"
+#include "widechar.h"
+#include <rdos.h>
+#include <process.h>
+#include <errno.h>
+#include "rtdata.h"
+#include "seterrno.h"
+#include "_process.h"
 
-#if defined( __NT__ ) || defined( __OS2_386__ ) || defined( __RDOS__ )
-_WCRTLINK extern int __sigfpe_handler( int );
-#else
-_WCRTLINK extern void _WCI86FAR __sigfpe_handler( int );
-#endif
-extern  void    __sigabort( void );
-extern  void    __restore_FPE_handler( void );
-extern  void    __grab_FPE_handler( void );
+_WCRTLINK int execve( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
+{
+    spawnve( P_NOWAIT, path, argv, envp );
+    return( 0 );
+}
