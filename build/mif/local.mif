@@ -104,7 +104,7 @@ cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__LINUX__ -DBOOTSTRAP &
 $(cppflags_$(host_cpu)) -fno-asm -fno-common #-funsigned-char
 
-cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O0 -o $@
+cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
 !endif
 !endif
