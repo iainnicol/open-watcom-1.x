@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load strings, menus, etc. from resources.
 *
 ****************************************************************************/
 
@@ -77,7 +76,6 @@ static off_t GUIResSeek( int handle, off_t position, int where )
     }
 }
 
-#ifdef __WATCOMC__
 WResSetRtns( open,
              close,
              read,
@@ -86,16 +84,6 @@ WResSetRtns( open,
              tell,
              GUIMemAlloc,
              GUIMemFree );
-#else
-WResSetRtns( open,
-             close,
-             ( int (*) (WResFileID, void *, int) )read,
-             ( int (*) (WResFileID, const void *, int) )write,
-             GUIResSeek,
-             tell,
-             ( void* (*)(unsigned long) )GUIMemAlloc,
-             GUIMemFree );
-#endif
 
 bool GUIIsLoadStrInitialized( void )
 {
@@ -186,4 +174,3 @@ bool GUILoadMenuTemplate( int id, char **template, int *length )
 
     return( ok );
 }
-

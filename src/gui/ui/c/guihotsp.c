@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage hot spots.
 *
 ****************************************************************************/
 
@@ -66,7 +65,7 @@ bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
     if( info->control_class == GUI_DEFPUSH_BUTTON ) {
         hot_spot->flags = HOT_DEFAULT;
     } else {
-        hot_spot->flags = (unsigned short)NULL;
+        hot_spot->flags = 0;
    }
    return( TRUE );
 }

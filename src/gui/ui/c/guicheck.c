@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Get/set the checked state of a control.
 *
 ****************************************************************************/
 
@@ -76,7 +75,7 @@ bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
     a_check     *check;
     unsigned    prev_radio;
 
-    prev_radio = NULL;
+    prev_radio = 0;
     field = GUIGetField( wnd, id );
     if( field == NULL ) {
         return( FALSE );
