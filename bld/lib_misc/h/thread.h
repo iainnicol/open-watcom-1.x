@@ -198,7 +198,7 @@ extern thread_data *__MultipleThread( void );
         extern thread_data_vector *__ThreadData;
 
     #endif
-    #if defined(__NT__) || defined(_NETWARE_LIBC)
+    #if defined(__NT__) || defined(_NETWARE_LIBC) || defined(__RDOS__)
         #define NO_INDEX        0xffffffffL
     #endif
 

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__OS2__)
+#if defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
     #if defined( __SW_BM ) && (defined(__386__) || defined(__AXP__) || defined(__PPC__))
         #include "osthread.h"
         #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
