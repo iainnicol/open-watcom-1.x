@@ -401,9 +401,9 @@ static struct charmap default_tix[] = {
     {'/', 0x2195}, /* UI_UDARROW   */
 
     /* boxes */
-    {0xa0,0x2584}, /* UI_DBLOCK    */
+    {'x', 0x2584}, /* UI_DBLOCK    */
     {'0', 0x258c}, /* UI_LBLOCK    */
-    {0xa0,0x2590}, /* UI_RBLOCK    */
+    {'x', 0x2590}, /* UI_RBLOCK    */
     {'0', 0x2580}, /* UI_UBLOCK    */
     {'a', 0x2591}, /* UI_CKBOARD   */
     {'h', 0x2592}, /* UI_BOARD     */

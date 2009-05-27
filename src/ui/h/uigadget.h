@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Gadgets (scrollbars, min/max buttons) definitions.
 *
 ****************************************************************************/
 
@@ -35,6 +34,23 @@
 
 #include "uichars.h"
 
+#ifdef __UNIX__
+
+/* Portable definitions using UI library characters */
+#define UP_ARROW                { UI_UPOINT,    0 }
+#define DOWN_ARROW              { UI_DPOINT,    0 }
+#define RIGHT_ARROW             { UI_RPOINT,    0 }
+#define LEFT_ARROW              { UI_LPOINT,    0 }
+#define UP_POINT                { UI_UPOINT,    0 }
+#define DOWN_POINT              { UI_DPOINT,    0 }
+#define RIGHT_POINT             { UI_RPOINT,    0 }
+#define LEFT_POINT              { UI_LPOINT,    0 }
+#define SCROLL_FRAME            { UI_CKBOARD,   0 }
+#define SLIDER_CHAR             { UI_BLOCK,     0 }
+
+#else
+
+/* PC style definitions.*/
 #define UP_ARROW                {(char)PC_arrowup,0}
 #define DOWN_ARROW              {(char)PC_arrowdown,0}
 #define RIGHT_ARROW             {(char)PC_arrowright,0}
@@ -46,6 +62,9 @@
 #define SCROLL_FRAME            {(char)PC_sparseblock,0}
 #define SLIDER_CHAR             {(char)PC_solid,0}
 
+#endif
+
+/* Scrollbar drawing characters. Public, the GUI lib overrides these. */
 extern char VertScrollFrame[2];
 extern char HorzScrollFrame[2];
 extern char SliderChar[2];

@@ -34,7 +34,7 @@
 #include "uichars.h"
 #include "uidef.h"
 
-#ifdef __LINUX__
+#ifdef __UNIX__
 
 void intern DBCSCharacterMap( void ) {}
 
