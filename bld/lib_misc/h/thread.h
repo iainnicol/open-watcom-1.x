@@ -43,6 +43,8 @@
     #define __EXCEPTION_RECORD  int
   #elif defined(__NT__)
     #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
+  #elif defined(__RDOS__)
+    #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
   #else
     #define __EXCEPTION_RECORD unsigned
   #endif

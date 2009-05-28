@@ -24,32 +24,36 @@
 *
 *  ========================================================================
 *
-* Description:  Signal handling related globals.
+* Description:  prototypes for routines used in exception filter for RDOS.
+* Based on standard behavior of PE executables.
 *
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__OS2__)
-    #if defined( __SW_BM ) && (defined(__386__) || defined(__AXP__) || defined(__PPC__))
-        #include "osthread.h"
-        #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-        #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
-    #else
-        #include "sigdefn.h"
-        extern struct _EXCEPTIONREGISTRATIONRECORD *__XcptHandler;
-        #define __SIGNALTABLE   _SignalTable
-        #define __XCPTHANDLER   __XcptHandler
-    #endif
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
-#elif defined(__NETWARE__)
-    #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
-#elif defined(__RDOS__)
-    #include "osthread.h"
-    #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-    #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
-#else
-    #define __SIGNALTABLE       _SignalTable
-#endif
+/*
+ * MICROSOFT, as usual, refuses to document stuff that other compiler
+ * vendors need, so this had to be reverse engineered
+ */
+#define UNWINDING       0x6
+
+
+#define APP_ERR "Application Error: "
+
+unsigned int sw;
+#define FMT_STRING wsprintf
+
+extern long GetFromFS(long off);
+extern void  PutToFS(long value, long off);
+extern void  *GetFromSS( long *esp );
+
+#pragma aux GetFromFS = \
+    "mov        eax,fs:[eax]" \
+    parm[eax] value[eax];
+
+#pragma aux PutToFS = \
+    "mov        fs:[edx], eax" \
+    parm[eax] [edx];
+
+#pragma aux GetFromSS = \
+    "mov eax,ss:[eax]" \
+    parm [eax] value [eax]

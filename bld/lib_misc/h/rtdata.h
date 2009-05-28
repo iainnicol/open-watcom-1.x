@@ -159,6 +159,9 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #define _RWD_HShift         _HShift
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
+    #if defined(__RDOS__)
+        #define _RWD_osrelease  _osbuild
+    #endif
     #define _RWD_osmode         _osmode
     #if defined(__NT__)
         #define _RWD_osbuild    _osbuild

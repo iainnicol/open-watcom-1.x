@@ -40,7 +40,11 @@
 ifdef __NT__
 entry_point = __LibMain@12
 else
+ifdef __RDOS__
 entry_point = __LibMain
+else
+entry_point = __LibMain
+endif
 endif
         extrn   entry_point     : near
         extrn   ___begtext      : near

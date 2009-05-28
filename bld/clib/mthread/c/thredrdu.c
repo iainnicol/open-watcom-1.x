@@ -48,6 +48,7 @@
 #include "widechar.h"
 #include "initarg.h"
 #include "cthread.h"
+#include "rdosex.h"
 
 extern  void            __InitMultipleThread( void );
 
@@ -69,6 +70,7 @@ static void begin_thread_helper( void *param )
     void                *arg;
     thread_data         *tdata;
     int                 thread_handle;
+    REGISTRATION_RECORD rr;
 
     td->tid = RdosGetThreadHandle();    
     rtn = td->rtn;
@@ -96,7 +98,7 @@ static void begin_thread_helper( void *param )
         return;
     }
 
-/*    __NewExceptionFilter( &rr );  */
+    __NewExceptionFilter( &rr );
     __sig_init_rtn(); // fills in a thread-specific copy of signal table
     (*rtn)( arg );
     _endthread();
@@ -146,4 +148,6 @@ int __CBeginBeginThread( thread_fn *start_addr, const char *thread_name,
 void __CEndThread( void )
 /***********************/
 {
+    __sig_fini_rtn();
+    __DoneExceptionFilter();
 }

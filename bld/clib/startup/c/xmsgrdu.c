@@ -24,32 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  Signal handling related globals.
+* Description:  Fatal runtime error handler for RDOS.
 *
 ****************************************************************************/
 
 
-#if defined(__NT__) || defined(__OS2__)
-    #if defined( __SW_BM ) && (defined(__386__) || defined(__AXP__) || defined(__PPC__))
-        #include "osthread.h"
-        #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-        #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
-    #else
-        #include "sigdefn.h"
-        extern struct _EXCEPTIONREGISTRATIONRECORD *__XcptHandler;
-        #define __SIGNALTABLE   _SignalTable
-        #define __XCPTHANDLER   __XcptHandler
-    #endif
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
-#elif defined(__NETWARE__)
-    #define __SIGNALTABLE       (__THREADDATAPTR->signal_table)
-#elif defined(__RDOS__)
-    #include "osthread.h"
-    #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
-    #define __XCPTHANDLER   (__THREADDATAPTR->xcpt_handler)
-    _WCRTLINK extern void       (*__sig_init_rtn)( void );
-    _WCRTLINK extern void       (*__sig_fini_rtn)( void );
-#else
-    #define __SIGNALTABLE       _SignalTable
-#endif
+#include "variety.h"
+#include <rdos.h>
+#include <io.h>
+#include "iomode.h"
+#include "rtdata.h"
+
+_WCRTLINK void __exit_with_msg( char *msg, unsigned retcode )
+{
+    RdosWriteString( msg );
+    RdosWriteString( "\r\n" );
+    __exit( retcode );
+}
+
+_WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
+{
+    __exit_with_msg( msg, retcode );
+}

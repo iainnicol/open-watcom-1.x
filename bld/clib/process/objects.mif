@@ -19,6 +19,7 @@
 !inject exaddwnt.obj                     nt nta ntp
 !inject exaddrdu.obj                                                                                rdu
 !inject excptwnt.obj                     nt nta ntp
+!inject excptrdu.obj                                                                                rdu
 !inject execaddr.obj d16 d32
 !inject exl.obj      d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
 !inject exle.obj     d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
