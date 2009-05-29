@@ -30,6 +30,7 @@
 
 
 #include <string.h>
+#include <strings.h>
 #include "dfdip.h"
 #include "dfld.h"
 #include "dfmod.h"
@@ -140,6 +141,9 @@ unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
         }
         break;
     case SN_EXPRESSION:
+        return( 0 );
+    default:    /* invalid */
+        DCStatus( DS_FAIL );
         return( 0 );
     }
     return( len );
@@ -325,6 +329,7 @@ dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
     dr_handle        sym;
 
     base = NilAddr;
+    ret  = DS_FAIL;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( DRGetLowPc( is->sym, &base.mach.offset) ) {
         if( ii->mod_map[is->imx].is_segment == FALSE ) {
@@ -1083,7 +1088,7 @@ typedef struct {
 
 typedef struct {
     blk_wlk_com         com;
-    int                 (*comp)(const void *, const void *, unsigned);
+    int                 (*comp)(const char *, const char *, size_t);
     lookup_item         *li;
     search_result       sr;
     char                *buff;
@@ -1439,7 +1444,7 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
     df.com.kind = WLK_WLK;
     df.wlk.wk = wk;
     df.wlk.is = is;
-    df.wlk.wr = WR_CONTINUE;
+    df.wlk.wr = wr = WR_CONTINUE;
     switch( ss ) {
     case SS_TYPE: /* special case */
         wr = WalkTypeSymList( ii, (imp_type_handle *)source, wk, is, d );
@@ -1623,7 +1628,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 
     sr = SR_NONE;
     data.ii  = ii;
-    data.compare = li->case_sensitive ? &strcmp : &stricmp;
+    data.compare = li->case_sensitive ? &strcmp : &strcasecmp;
     data.sym = 0;
     len = QualifiedName(  buff, li, sizeof( buff ) );
     if( len <= sizeof( buff ) ) {
@@ -1686,7 +1691,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.containing = 0;
     df.com.cont = TRUE;
     df.com.kind = WLK_LOOKUP;
-    df.lookup.comp = li->case_sensitive ? &memcmp : &memicmp;
+    df.lookup.comp = li->case_sensitive ? &strncmp : &strncasecmp;
     df.lookup.li = li;
     df.lookup.len =  li->name.len+1;
     if( df.lookup.len <= sizeof( buff ) ) {
@@ -1694,7 +1699,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     } else {
         df.lookup.buff = DCAlloc( df.lookup.len );
     }
-    df.lookup.sr = SR_NONE;
+    sr = df.lookup.sr = SR_NONE;
     switch( ss ) {
     case SS_SCOPED:
         if( li->scope.len == 0 ) {

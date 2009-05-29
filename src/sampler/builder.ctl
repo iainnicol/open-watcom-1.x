@@ -9,7 +9,7 @@ set PROJNAME=wsample
 
 cdsay .
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================

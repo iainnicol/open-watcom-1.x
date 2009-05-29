@@ -427,6 +427,10 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, type_info *ti )
     case DR_TYPEK_FUNCTION:
         kind = TK_FUNCTION;
         break;
+    default:    /* invalid */
+        DCStatus( DS_ERR | DS_BAD_PARM );
+        kind = TK_NONE;
+        break;
     }
     ti->kind = kind;
     ti->size = typeinfo->size;
@@ -765,6 +769,7 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+    parm_type = 0;
     btype =  DRSkipTypeChain( proc->type ); /* skip modifiers and typedefs */
     if( n > 0 ){
         btype = GetParmN( ii, btype, n );
@@ -838,7 +843,7 @@ typedef struct {
 
 typedef struct {
     type_wlk_com     com;
-    int              (*comp)(const void *, const void *, unsigned);
+    int              (*comp)(const char *, const char *, size_t);
     lookup_item      *li;
     search_result     sr;
 }type_wlk_lookup;
@@ -1189,9 +1194,9 @@ extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     Cleaners = &cleanup;
     btype = DRSkipTypeChain( it->type );
     if( li->case_sensitive ) {
-        df.comp = memcmp;
+        df.comp = strncmp;
     } else {
-        df.comp = memicmp;
+        df.comp = strncasecmp;
     }
     df.li = li;
     df.sr = SR_NONE;
@@ -1341,6 +1346,7 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     ++num;
     len = 0;
+    name = NULL;
     dr_type = it->type;
     while( dr_type ) {
         name =  DRGetName( dr_type );
