@@ -1142,8 +1142,6 @@ rem    CSwitch  1, x??d?, " Link DLL", , ON
     VSwitch  1, nu?e?, "Reference names(,):", ref, " ", MULTI, REQ, "_wstart_"
     VSwitch  1, wm?d?, "Reference names(,):", ref, " ", MULTI, REQ, "__clib_WEP_"
     VSwitch  1, wa?d?, "Reference names(,):", ref, " ", MULTI, REQ, "__clib_WEP_"
-    VSwitch  1, r??d?, "Reference names(,):", ref, " ", MULTI, REQ, "_DllMain"
-    VSwitch  1, r??e?, "Reference names(,):", ref, " ", MULTI, REQ, "_wstart_"
     VSwitch  1, ?????, "Reference names(,):", ref, " ", MULTI, REQ, ""
     VSwitch  1, nm?e?, "Starting Address:", "op start", =, ONE, REQ, "_wstart_"
     VSwitch  1, na?e?, "Starting Address:", "op start", =, ONE, REQ, "_wstart_"

@@ -667,3 +667,23 @@ system begin dos16m
     format dos16m runtime auto ^
 :endsegment
 end
+system begin rdos
+:segment Pspecs
+    wcc386 -bt=rdos
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows nt ^
+:endsegment
+end
+system begin rdos_dll
+:segment Pspecs
+    wcc386 -bt=rdos -bd
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows nt dll ^
+:endsegment
+end

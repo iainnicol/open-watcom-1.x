@@ -54,8 +54,11 @@
 
 extern void __InitThreadData( thread_data *p );
 extern void __CMain( void );
+#pragma aux __CMain  "*"
+#pragma aux __RdosMain  "*"
 
 int __TlsIndex = NO_INDEX;
+char *_LpDllName = 0;
 
 _WCRTLINK int *__threadid( void )
 {
@@ -145,7 +148,6 @@ void __RdosMain()
     __InitThreadData( tdata );
 
     _LpPgmName = (char *)RdosGetExeName();
-    __DefaultExceptionHandler();
     __RdosInit( 0, tdata, RdosGetModuleHandle() );
     __NewExceptionFilter( &rr );
     __InitRtns( INIT_PRIORITY_LIBRARY+1 );
