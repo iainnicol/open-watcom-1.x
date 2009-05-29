@@ -265,6 +265,66 @@ static const char *LBLCommonBlock =         "Common Block";
 static const char *LBLVariable =            "Variable";
 static const char *LBLParameter =           "Parameter";
 
+/* Local variants of non-portable ltoa()/ultoa() and strrev() functions */
+static const char l2a_alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+static char *ul10toa( unsigned long value, char *buffer )
+/*******************************************************/
+{
+    char            *p = buffer;
+    char            *q;
+    unsigned long   rem;
+    unsigned long   quot;
+    char            buf[34];
+
+    buf[0] = '\0';
+    q = &buf[1];
+    do {
+        rem = value % 10;
+        quot = value / 10;
+        *q = l2a_alphabet[rem];
+        ++q;
+        value = quot;
+    } while( value != 0 );
+    while( (*p++ = *--q) )
+        ;
+    return( buffer );
+}
+
+static char *l10toa( long value, char *buffer )
+/*********************************************/
+{
+    char   *p = buffer;
+
+    if( value < 0 ) {
+        *p++ = '-';
+        value = -value;
+    }
+    ul10toa( value, p );
+    return( buffer );
+}
+
+static char *dwstrrev( char *s )
+/******************************/
+{
+    char       *p1;
+    char       *p2;
+    char       c1;
+    char       c2;
+
+    p1 = s;
+    p2 = p1 + strlen( p1 ) - 1;
+    while( p1 < p2 ) {
+        c1 = *p1;
+        c2 = *p2;
+        *p1 = c2;
+        *p2 = c1;
+        ++p1;
+        --p2;
+    }
+    return( s );
+}
+
 extern void DRDecorateLabel( dr_handle die, char *buf )
 /*****************************************************/
 {
@@ -279,6 +339,7 @@ extern void DRDecorateLabel( dr_handle die, char *buf )
 
     compunit = DWRFindCompileInfo( die );
     lang = DRGetLanguageAT( compunit->start + COMPILE_UNIT_HDR_SIZE );
+    label = LBLVariable;    /* preinit just to make gcc happy */
 
     switch( loc.tag ) {
     case DW_TAG_subprogram:
@@ -516,7 +577,7 @@ static void GrabName( dr_handle abbrev, dr_handle entry, String *name )
         *name->s = '\0';
     }
     name->l = strlen( name->s );
-    strrev( name->s );
+    dwstrrev( name->s );
 }
 
 static void GetClassName( dr_handle   entry,
@@ -544,7 +605,7 @@ static void GetClassName( dr_handle   entry,
         name = DWRALLOC( 1 );
         *name = '\0';
     }
-    strrev( name );
+    dwstrrev( name );
     containing_name->s = name;
     containing_name->l = strlen( name );
 }
@@ -672,7 +733,7 @@ static BrokenName_T *DecorateMember( BrokenName_T *decname, Loc_T *loc )
         tmp_str.s = DWRALLOC( 1 );
         *tmp_str.s = '\0';
     }
-    tmp_str.s = strrev( tmp_str.s );
+    tmp_str.s = dwstrrev( tmp_str.s );
     tmp_str.l = strlen( tmp_str.s );
     EndNode( &( decname->var_bas ), TRUE, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
@@ -1113,7 +1174,7 @@ static void SwapModifier( BrokenName_T *decname )
         target->next = decname->type_plg.head;
         decname->type_plg.head = target;
     }
-    strrev( target->buf.s );
+    dwstrrev( target->buf.s );
 }
 
 static BrokenName_T *AddPtrModifier( BrokenName_T *decname, Loc_T *loc )
@@ -1199,6 +1260,7 @@ static void AddTypeString( BrokenName_T *dn, String Kwd,
         break;
 
     default:
+        list = NULL;
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
@@ -1301,7 +1363,7 @@ BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
             *containing_name.s = '\0';
         }
 
-        containing_name.s = strrev( containing_name.s );
+        containing_name.s = dwstrrev( containing_name.s );
         containing_name.l = strlen( containing_name.s );
 
         EndNode( &( decname->var_plg ), TRUE, containing_entry, DR_SYM_CLASS );
@@ -1370,7 +1432,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
 
         buf[ 0 ] = '\0';
         strncat( buf, ArrayLeftKwd.s, ArrayLeftKwd.l );
-        ltoa( upper_bd, indx, 10 );
+        l10toa( upper_bd, indx );
         strcat( buf, indx );
         strncat( buf, ArrayRightKwd.s, ArrayRightKwd.l );
 
@@ -1380,7 +1442,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
         ReallocStr( &tmpStr );
         strncat( tmpStr.s, bounds.s, bounds.l );
     }
-    strrev( tmpStr.s );
+    dwstrrev( tmpStr.s );
 
     ListConcat( &(decname->var_elg), tmpStr );
 
@@ -1583,13 +1645,13 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_signed:
                 switch( len ) {
                 case sizeof(signed_32):
-                    ltoa( *(signed_32 *)buf, charBuf, 10 );
+                    l10toa( *(signed_32 *)buf, charBuf );
                     break;
                 case sizeof(signed_16):
-                    ltoa( *(signed_16 *)buf, charBuf, 10 );
+                    l10toa( *(signed_16 *)buf, charBuf );
                     break;
                 case sizeof(signed_8):
-                    ltoa( *(signed_8 *)buf, charBuf, 10 );
+                    l10toa( *(signed_8 *)buf, charBuf );
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1598,13 +1660,13 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             case DW_ATE_unsigned:
                 switch( len ) {
                 case sizeof(unsigned_32):
-                    ultoa( *(unsigned_32 *)buf, charBuf, 10 );
+                    ul10toa( *(unsigned_32 *)buf, charBuf );
                     break;
                 case sizeof(unsigned_16):
-                    ultoa( *(unsigned_16 *)buf, charBuf, 10 );
+                    ul10toa( *(unsigned_16 *)buf, charBuf );
                     break;
                 case sizeof(unsigned_8):
-                    ultoa( *(unsigned_8 *)buf, charBuf, 10 );
+                    ul10toa( *(unsigned_8 *)buf, charBuf );
                     break;
                 default:
                     DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1622,7 +1684,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             }
         }
 
-        value.s = strrev( charBuf );
+        value.s = dwstrrev( charBuf );
         value.l = strlen( charBuf );
         ListConcat( &(decname->var_elg), value );
         ListConcat( &(decname->var_elg), FOREqualKwd );
@@ -1666,7 +1728,7 @@ static void FORDecMember( BrokenName_T *decname, Loc_T *loc )
         tmp_str.s = DWRALLOC( 1 );
         *tmp_str.s = '\0';
     }
-    tmp_str.s = strrev( tmp_str.s );
+    tmp_str.s = dwstrrev( tmp_str.s );
     tmp_str.l = strlen( tmp_str.s );
     EndNode( &( decname->var_bas ), TRUE, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
@@ -1841,7 +1903,7 @@ static int FORAddNameListItem( dr_handle entry, int index, void *data )
     }
 
     GrabName( loc.abbrev_cr, loc.entry_cr, &itemName );
-    strrev( itemName.s );
+    dwstrrev( itemName.s );
 
     EndNode( &( decname->type_elg ), TRUE, loc.entry_st, DR_SYM_VARIABLE );
     ListConcat( &( decname->type_elg ), itemName );
@@ -1969,13 +2031,13 @@ static bool FORAddArrayIndex( dr_handle abbrev, dr_handle entry, void *data )
         strncat( bounds->s, add->s, add->l );
     } else {
         if( lower_bd != 1 ) {
-            ltoa( lower_bd, buf, 10 );
+            l10toa( lower_bd, buf );
             bounds->l += strlen( buf ) + 1;
             ReallocStr( bounds );
             strcat( bounds->s, buf );
             strcat( bounds->s, ":" );
         }
-        ltoa( upper_bd, buf, 10 );
+        l10toa( upper_bd, buf );
         bounds->l += strlen( buf );
         ReallocStr( bounds );
         strcat( bounds->s, buf );
@@ -2018,7 +2080,7 @@ static void FORDecArray( BrokenName_T *decname, Loc_T *loc )
     ReallocStr( &tmpStr );
     strncat( tmpStr.s, FORArrayRightKwd.s, FORArrayRightKwd.l );
 
-    strrev( tmpStr.s );
+    dwstrrev( tmpStr.s );
 
     ListConcat( &(decname->var_elg), tmpStr );
 
@@ -2107,14 +2169,14 @@ static void FORDecString( BrokenName_T *decname, Loc_T *loc )
 
     strcpy( buf, "(" );
     if( len ) {
-        ltoa( len, size, 10 );
+        l10toa( len, size );
     } else {
         strcpy( size, "*" );
     }
     strcat( buf, size );
     strcat( buf, ")" );
 
-    sizeExpr.s = strrev( buf );
+    sizeExpr.s = dwstrrev( buf );
     sizeExpr.l = strlen( buf );
 
     ListConcat( &( decname->type_bas ), SpaceKwd );
@@ -2183,7 +2245,7 @@ static List_T *ListTack( List_T *addto, List_T *add )
         if( add->end == LIST_HEAD ) {
             for( curr = add->head; curr != NULL; curr = curr->next ) {
                 if( curr->buf.s != NULL ) {
-                    curr->buf.s = strrev( curr->buf.s );
+                    curr->buf.s = dwstrrev( curr->buf.s );
                 }
             }
         }
@@ -2384,6 +2446,7 @@ static void ListConcat( List_T *list, String str )
         break;
 
     default:
+        strptr = NULL;
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
