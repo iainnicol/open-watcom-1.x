@@ -1,187 +1,90 @@
-# --------------------------------------------------------------------
+# Wlink Builder Control file
+# ==========================
+
+set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/bat/master.ctl ]
-[ LOG <DEVDIR>/<LOGFNAME>.<LOGEXT> ]
-
-set FULLBUILD=1
+[ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
-echo Languages Build: <1> <2> <3>
+[ BLOCK <1> build rel2 ]
+#=======================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
 
-[ BLOCK <BUILDMODE> bootstrap ]
-#==============================
-echo Bootstrapping compiler using GNU tools...
-[ INCLUDE <DEVDIR>/langlnx.ctl ]
+[ BLOCK <1> rel2 ]
+#=================
+    cdsay <PROJDIR>
+
+[ BLOCK <1> rel2 cprel2 ]
+#========================
+
+  [ IFDEF (os_dos "") <2*> ]
+    <CPCMD> <PROJDIR>/dos386/wl.exe                     <RELROOT>/binw/wlink.exe
+    <CPCMD> <PROJDIR>/dos386/wl.sym                     <RELROOT>/binw/wlink.sym
+    <CPCMD> <PROJDIR>/ms2wlink/dosi86/ms2wlink.exe      <RELROOT>/binw/ms2wlink.exe
+    <CPCMD> <PROJDIR>/fcenable/dosi86/fcenable.exe      <RELROOT>/binw/fcenable.exe
+    <CPCMD> <PROJDIR>/exe2bin/dosi86/exe2bin.exe        <RELROOT>/binw/exe2bin.exe
+    <CPCMD> <PROJDIR>/wlsystem.lnk                      <RELROOT>/binw/wlsystem.lnk
+    <CPCMD> <PROJDIR>/wlbin.lnk                         <RELROOT>/binw/wlink.lnk
+    <CPCMD> <PROJDIR>/ovlldr/dosi86/wovl.lib            <RELROOT>/lib286/dos/wovl.lib
+#    <CPCMD> <PROJDIR>/ovlldr/dosi86/wmovl.lib           <RELROOT>/lib286/dos/wmovl.lib
+
+  [ IFDEF (os_zdos) <2*> ]
+    <CPCMD> <PROJDIR>/zdos386/wl.exe                    <RELROOT>/binz/wlink.exe
+    <CPCMD> <PROJDIR>/zdos386/wl.sym                    <RELROOT>/binz/sym/wlink.sym
+    <CPCMD> <PROJDIR>/wlbinz.lnk                        <RELROOT>/binz/wlink.lnk
+
+  [ IFDEF (os_os2 "") <2*> ]
+    <CPCMD> <PROJDIR>/os2386.dll/wl.exe                 <RELROOT>/binp/wlink.exe
+    <CPCMD> <PROJDIR>/os2386.dll/wl.sym                 <RELROOT>/binp/wlink.sym
+    <CPCMD> <PROJDIR>/os2386.dll/wld.dll                <RELROOT>/binp/dll/wlinkd.dll
+    <CPCMD> <PROJDIR>/os2386.dll/wld.sym                <RELROOT>/binp/dll/wlinkd.sym
+    <CPCMD> <PROJDIR>/ms2wlink/os2i86/ms2wlink.exe      <RELROOT>/binp/ms2wlink.exe
+    <CPCMD> <PROJDIR>/fcenable/os2i86/fcenable.exe      <RELROOT>/binp/fcenable.exe
+    <CPCMD> <PROJDIR>/exe2bin/os2386/exe2bin.exe        <RELROOT>/binp/exe2bin.exe
+    <CPCMD> <PROJDIR>/wlsystem.lnk                      <RELROOT>/binw/wlsystem.lnk
+    <CPCMD> <PROJDIR>/wlbinp.lnk                        <RELROOT>/binp/wlink.lnk
+
+  [ IFDEF (os_nt "") <2*> ]
+    <CPCMD> <PROJDIR>/nt386.dll/wl.exe                  <RELROOT>/binnt/wlink.exe
+    <CPCMD> <PROJDIR>/nt386.dll/wl.sym                  <RELROOT>/binnt/wlink.sym
+    <CPCMD> <PROJDIR>/nt386.dll/wld.dll                 <RELROOT>/binnt/wlinkd.dll
+    <CPCMD> <PROJDIR>/nt386.dll/wld.sym                 <RELROOT>/binnt/wlinkd.sym
+    <CPCMD> <PROJDIR>/nt386.rtd/wl.exe                  <RELROOT>/binnt/rtdll/wlink.exe
+    <CPCMD> <PROJDIR>/nt386.rtd/wld.dll                 <RELROOT>/binnt/rtdll/wlinkd.dll
+    <CPCMD> <PROJDIR>/ms2wlink/nt386/ms2wlink.exe       <RELROOT>/binnt/ms2wlink.exe
+    <CPCMD> <PROJDIR>/fcenable/nt386/fcenable.exe       <RELROOT>/binnt/fcenable.exe
+    <CPCMD> <PROJDIR>/exe2bin/nt386/exe2bin.exe         <RELROOT>/binnt/exe2bin.exe
+    <CPCMD> <PROJDIR>/wlsystem.lnk                      <RELROOT>/binw/wlsystem.lnk
+    <CPCMD> <PROJDIR>/wlbinnt.lnk                       <RELROOT>/binnt/wlink.lnk
+
+  [ IFDEF (os_linux "") <2*> ]
+    <CPCMD> <PROJDIR>/linux386/wl.exe                   <RELROOT>/binl/wlink
+    <CPCMD> <PROJDIR>/linux386/wl.sym                   <RELROOT>/binl/wlink.sym
+    <CPCMD> <PROJDIR>/ms2wlink/linux386/ms2wlink.exe    <RELROOT>/binl/ms2wlink
+    <CPCMD> <PROJDIR>/fcenable/linux386/fcenable.exe    <RELROOT>/binl/fcenable
+    <CPCMD> <PROJDIR>/exe2bin/linux386/exe2bin.exe      <RELROOT>/binl/exe2bin
+    <CPCMD> <PROJDIR>/wlsystem.lnk                      <RELROOT>/binl/wlsystem.lnk
+    <CPCMD> <PROJDIR>/wlbinl.lnk                        <RELROOT>/binl/wlink.lnk
+
+  [ IFDEF (cpu_axp) <2*> ]
+    <CPCMD> <PROJDIR>/ntaxp.dll/wl.exe                  <RELROOT>/axpnt/wlink.exe
+    <CPCMD> <PROJDIR>/ntaxp.dll/wld.dll                 <RELROOT>/axpnt/wlinkd.dll
+    <CPCMD> <PROJDIR>/exe2bin/ntaxp/exe2bin.exe         <RELROOT>/axpnt/exe2bin.exe
+    <CPCMD> <PROJDIR>/wlsystem.lnk                      <RELROOT>/binw/wlsystem.lnk
+    <CPCMD> <PROJDIR>/wlaxpnt.lnk                       <RELROOT>/axpnt/wlink.lnk
+
+  [ IFDEF (os_qnx) <2*> ]
+    <CPCMD> <PROJDIR>/qnx386/wl.exe                     <RELROOT>/qnx/binq/wlink
+    <CPCMD> <PROJDIR>/qnx386/wl.sym                     <RELROOT>/qnx/sym/wlink.sym
+    <CPCMD> <PROJDIR>/qnx.lnk                           <RELROOT>/qnx/etc/wlink.lnk
+
+[ BLOCK <1> clean ]
+#==================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]
-#
-#        First of all build prerequisite utilities used in the build
-#
-[ INCLUDE <DEVDIR>/builder/lang.ctl ]
-[ INCLUDE <DEVDIR>/pmake/prereq.ctl ]
-[ INCLUDE <DEVDIR>/cc/wcl/prereq.ctl ]
-[ INCLUDE <DEVDIR>/w32loadr/prereq.ctl ]
-[ INCLUDE <DEVDIR>/yacc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/re2c/prereq.ctl ]
-# [ INCLUDE <DEVDIR>/wgml/prereq.ctl ]
-[ INCLUDE <DEVDIR>/whpcvt/prereq.ctl ]
-[ INCLUDE <DEVDIR>/helpcomp/prereq.ctl ]
-[ INCLUDE <DEVDIR>/hcdos/prereq.ctl ]
-[ INCLUDE <DEVDIR>/wipfc/prereq.ctl ]
-[ INCLUDE <DEVDIR>/bmp2eps/prereq.ctl ]
-[ INCLUDE <DEVDIR>/ssl/prereq.ctl ]
-[ INCLUDE <DEVDIR>/wstub/lang.ctl ]
-[ INCLUDE <DEVDIR>/wpack/prereq.ctl ]
-#        Prebuild new WLIB for build process
-[ INCLUDE <DEVDIR>/nwlib/prereq.ctl ]
-#        Prebuild POSIX tools for build process
-[ INCLUDE <DEVDIR>/posix/prereq.ctl ]
-#        Prebuild wres.lib and new WRC with OS/2 support for build process
-[ INCLUDE <DEVDIR>/sdk/rc/prereq.ctl ]
-#        Prebuild parsedlg tool for build process
-[ INCLUDE <DEVDIR>/parsedlg/prereq.ctl ]
-#
-#        Prebuild newest WASM version for build process
-[ INCLUDE <DEVDIR>/wasm/prereq.ctl ]
-#
-#        Before building anything for real, create up-to-date header files
-#
-[ INCLUDE <DEVDIR>/hdr/lang.ctl ]
-#        Same for OS/2 and Win32 headers/import libs
-[ INCLUDE <DEVDIR>/os2api/lang.ctl ]
-[ INCLUDE <DEVDIR>/w32api/lang.ctl ]
-#        Same for Win16 headers/import libs
-[ INCLUDE <DEVDIR>/w16api/lang.ctl ]
-#
-#        Next step, build libraries used by various projects
-#
-#        RC builds resource file libraries for everybody
-[ INCLUDE <DEVDIR>/fmedit/lang.ctl ]
-#        WPI needs to be done before SDK
-[ INCLUDE <DEVDIR>/wpi/lang.ctl ]
-#
-[ INCLUDE <DEVDIR>/causeway/lang.ctl ]
-#        SDK must be done after DISASM?
-[ INCLUDE <DEVDIR>/sdk/lang.ctl ]
-#        Librariess for different program are next
-#        WPI must be done before SDK and UI libs
-[ INCLUDE <DEVDIR>/ncurses/lang.ctl ]
-[ INCLUDE <DEVDIR>/ui/lang.ctl ]
-[ INCLUDE <DEVDIR>/gui/lang.ctl ]
-#        AUI needs to be built after UI/ncurses and GUI
-[ INCLUDE <DEVDIR>/aui/lang.ctl ]
-#        OWL/ORL must be done early so that clients are up-to-date
-[ INCLUDE <DEVDIR>/owl/lang.ctl ]
-#        AS must be done after OWL but before CFE
-[ INCLUDE <DEVDIR>/as/lang.ctl ]
-[ INCLUDE <DEVDIR>/orl/lang.ctl ]
-#        DWARF must be done early so that DWARF library users are up-to-date
-[ INCLUDE <DEVDIR>/dwarf/lang.ctl ]
-#
-#        Now build Open Watcom libraries
-#
-#        emu libraries must be made before C libraries
-[ INCLUDE <DEVDIR>/emu/lang.ctl ]
-[ INCLUDE <DEVDIR>/emu86/lang.ctl ]
-#        C libraries must be made after linker
-[ INCLUDE <DEVDIR>/lib_misc/lang.ctl ]
-[ INCLUDE <DEVDIR>/clib/lang.ctl ]
-[ INCLUDE <DEVDIR>/mathlib/lang.ctl ]
-[ INCLUDE <DEVDIR>/cfloat/lang.ctl ]
-[ INCLUDE <DEVDIR>/win386/lang.ctl ]
-#        src must be made after the C library
-[ INCLUDE <DEVDIR>/src/lang.ctl ]
-#        graphics library must be made after C library
-[ INCLUDE <DEVDIR>/graphlib/lang.ctl ]
-[ INCLUDE <DEVDIR>/nwlib/lang.ctl ]
-#        RCSDLL must be before VI and VIPER
-[ INCLUDE <DEVDIR>/rcsdll/lang.ctl ]
-#
-#       Now build the compilers
-#
-#       W32LDR must be done before EXEs that use the loader
-[ INCLUDE <DEVDIR>/w32loadr/lang.ctl ]
-#
-#        Starting with the code generators
-#
-#        WOMP must be done before WASM and F77, now it is not necessary
-#[ INCLUDE <DEVDIR>/womp/lang.ctl ]
-#        WASM must be done early so that inline assembler users are uptodate
-#        (no longer necessary, can be anywhere)
-[ INCLUDE <DEVDIR>/wasm/lang.ctl ]
-[ INCLUDE <DEVDIR>/cg/lang.ctl ]
-#        C front ends must be built after code generator
-[ INCLUDE <DEVDIR>/cc/lang.ctl ]
-[ INCLUDE <DEVDIR>/cc/wcl/lang.ctl ]
-[ INCLUDE <DEVDIR>/plusplus/lang.ctl ]
-[ INCLUDE <DEVDIR>/fe_misc/lang.ctl ]
-#        FORTRAN 77 compilers must be built after code generators
-[ INCLUDE <DEVDIR>/f77/lang.ctl ]
-#        FORTRAN 77 libraries
-[ INCLUDE <DEVDIR>/f77/f77lib/lang.ctl ]
-[ INCLUDE <DEVDIR>/f77/samples/lang.ctl ]
-[ INCLUDE <DEVDIR>/wl/lang.ctl ]
-#
-#        Now we can build the C++ libraries - must be done after C library
-#        as well as after the C++ compilers
-#
-[ INCLUDE <DEVDIR>/plusplus/cpplib/lang.ctl ]
-[ INCLUDE <DEVDIR>/wclass/lang.ctl ]
-#        rtdll must be made after all other libraries
-[ INCLUDE <DEVDIR>/rtdll/lang.ctl ]
-#
-#        Now let's build the utilities and other stuff
-#
-[ INCLUDE <DEVDIR>/vi/lang.ctl ]
-[ INCLUDE <DEVDIR>/wdisasm/lang.ctl ]
-[ INCLUDE <DEVDIR>/ndisasm/lang.ctl ]
-[ INCLUDE <DEVDIR>/bdiff/lang.ctl ]
-[ INCLUDE <DEVDIR>/misc/lang.ctl ]
-[ INCLUDE <DEVDIR>/techinfo/lang.ctl ]
-[ INCLUDE <DEVDIR>/help/lang.ctl ]
-[ INCLUDE <DEVDIR>/cmdedit/lang.ctl ]
-[ INCLUDE <DEVDIR>/brinfo/lang.ctl ]
-[ INCLUDE <DEVDIR>/trap/lang.ctl ]
-[ INCLUDE <DEVDIR>/dip/lang.ctl ]
-[ INCLUDE <DEVDIR>/mad/lang.ctl ]
-[ INCLUDE <DEVDIR>/wv/lang.ctl ]
-[ INCLUDE <DEVDIR>/wsample/lang.ctl ]
-[ INCLUDE <DEVDIR>/wprof/lang.ctl ]
-[ INCLUDE <DEVDIR>/wmake/lang.ctl ]
-[ INCLUDE <DEVDIR>/wtouch/lang.ctl ]
-[ INCLUDE <DEVDIR>/wstrip/lang.ctl ]
-[ INCLUDE <DEVDIR>/editdll/lang.ctl ]
-[ INCLUDE <DEVDIR>/browser/lang.ctl ]
-[ INCLUDE <DEVDIR>/idebatch/lang.ctl ]
-[ INCLUDE <DEVDIR>/viper/lang.ctl ]
-[ INCLUDE <DEVDIR>/mstools/lang.ctl ]
-[ INCLUDE <DEVDIR>/viprdemo/lang.ctl ]
-#[ INCLUDE <DEVDIR>/online/lang.ctl ]
-[ INCLUDE <DEVDIR>/posix/lang.ctl ]
-[ INCLUDE <DEVDIR>/cpp/lang.ctl ]
-[ INCLUDE <DEVDIR>/pgchart/lang.ctl ]
-[ INCLUDE <DEVDIR>/dig/lang.ctl ]
-[ INCLUDE <DEVDIR>/uiforms/lang.ctl ]
-[ INCLUDE <DEVDIR>/watcom/lang.ctl ]
-[ INCLUDE <DEVDIR>/pbide/lang.ctl ]
-[ INCLUDE <DEVDIR>/trmem/lang.ctl ]
-#[ INCLUDE <DEVDIR>/version/lang.ctl ]
-[ INCLUDE <DEVDIR>/dmpobj/lang.ctl ]
-[ INCLUDE <DEVDIR>/exedump/lang.ctl ]
-[ INCLUDE <DEVDIR>/cvpack/lang.ctl ]
-[ INCLUDE <DEVDIR>/wic/lang.ctl ]
-[ INCLUDE <DEVDIR>/redist/lang.ctl ]
-#[ INCLUDE <DEVDIR>/wgml/lang.ctl ]
-[ INCLUDE <DEVDIR>/parsedlg/lang.ctl ]
-[ INCLUDE <DEVDIR>/helpcomp/lang.ctl ]
-[ INCLUDE <DEVDIR>/wipfc/lang.ctl ]
-[ INCLUDE <DOC_ROOT>/lang.ctl ]
-#
-#        Do CDSAY to see end time
-#
-cdsay .
-#
-#        Clean build tools, must be last item (self destructs)
-#
-[ INCLUDE <DEVDIR>/builder/clean.ctl ]
+#============
+
+cdsay <PROJDIR>
