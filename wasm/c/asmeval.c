@@ -235,7 +235,7 @@ static int get_operand( expr_list *new, int *start, int end, bool (*is_expr)(int
     case T_NUM:
         new->empty = FALSE;
 #if defined( _STANDALONE_ )
-        if( ( Options.ideal ) && ( op_sq_bracket_level ) ) {
+        if( (Options.mode & MODE_IDEAL) && ( op_sq_bracket_level ) ) {
             new->type = EXPR_ADDR;
             new->indirect = TRUE;
         } else {
@@ -355,13 +355,13 @@ static int get_operand( expr_list *new, int *start, int end, bool (*is_expr)(int
         if( new->sym != NULL ) {
             new->sym->referenced = TRUE;
             if( ( new->sym->state == SYM_STRUCT  ) ||
-                ( ( Options.ideal ) && ( new->sym->mem_type == MT_STRUCT ) ) ) {
+                (Options.mode & MODE_IDEAL) && ( new->sym->mem_type == MT_STRUCT ) ) {
                 new->empty = FALSE;
                 new->value = new->sym->offset;
                 new->mbr = new->sym;
                 new->sym = NULL;
                 new->type = EXPR_ADDR;
-                if( ( Options.ideal ) && ( op_sq_bracket_level ) ) {
+                if( (Options.mode & MODE_IDEAL) && ( op_sq_bracket_level ) ) {
                     Definition.struct_depth++;
                     if( new->mbr->state == SYM_STRUCT ) {
                         Definition.curr_struct = (dir_node *)new->mbr;
@@ -374,7 +374,7 @@ static int get_operand( expr_list *new, int *start, int end, bool (*is_expr)(int
                 }
                 break;
             } else if( new->sym->state == SYM_STRUCT_FIELD ) {
-                if( ( Options.ideal ) && ( Definition.struct_depth ) ) {
+                if( (Options.mode & MODE_IDEAL) && ( Definition.struct_depth ) ) {
                     Definition.struct_depth--;
                     new->indirect = TRUE;
                 }
@@ -1078,7 +1078,7 @@ static int calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
         case T_SDWORD:
             if( ( ( AsmBuffer[index + 1]->token != T_RES_ID ) ||
                   ( AsmBuffer[index + 1]->u.value != T_PTR ) ) &&
-                  ( Options.ideal == 0 ) ) {
+                  ( (Options.mode & MODE_IDEAL) == 0 ) ) {
 #else
             if( ( AsmBuffer[index + 1]->token != T_RES_ID ) ||
                 ( AsmBuffer[index + 1]->u.value != T_PTR ) ) {
@@ -2184,14 +2184,16 @@ extern int EvalOperand( int *start_tok, int count, expr_list *result, bool flag_
     }
     op_sq_bracket_level = 0;
 #if defined( _STANDALONE_ )
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         Definition.struct_depth = 0;
+    }
 #endif
     error_msg = flag_msg;
     i = evaluate( result, start_tok, *start_tok + num, PROC_BRACKET, is_expr2 );
 #if defined( _STANDALONE_ )
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         Definition.struct_depth = 0;
+    }
 #endif
     return( i );
 }

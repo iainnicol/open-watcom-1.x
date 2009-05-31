@@ -5,9 +5,7 @@ align
 .alpha
 arg
 assume
-basic
 .break
-c
 casemap
 catstr
 .code
@@ -23,6 +21,7 @@ const
 .data
 dataseg
 .data?
+dataseg
 .dosseg
 dosseg
 dq
@@ -78,7 +77,6 @@ farstack
 flat
 for
 forc
-fortran
 ge
 global
 group
@@ -160,7 +158,6 @@ p8086
 p8087
 page
 para
-pascal
 pk3d
 pmmx
 popcontext
@@ -192,13 +189,11 @@ small
 stack
 .startup
 startupcode
-stdcall
 struc
 struct
 subtitle
 subttl
 sword
-syscall
 textequ
 .tfcond
 this
@@ -214,7 +209,6 @@ use32
 uses
 vararg
 warn
-watcom_c
 .while
 width
 .xcref

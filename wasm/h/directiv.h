@@ -357,6 +357,8 @@ extern int              Include( int );         // handle an INCLUDE statement
 extern int              IncludeLib( int );      // handle an INCLUDELIB statement
 extern int              Model( int );           // handle .MODEL statement
 
+extern int              CheckForLang( int );
+
 extern void             ModuleInit( void );
 /* Initializes the information about the module, which are contained in
    ModuleInfo */

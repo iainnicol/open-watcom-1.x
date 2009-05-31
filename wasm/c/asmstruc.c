@@ -62,7 +62,7 @@ int StructDef( int i )
     dir_node    *dir;
     int         n;
 
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
         if( ( AsmBuffer[i]->u.value == T_STRUC ) &&
             ( AsmBuffer[n]->token != T_ID ) ) {
@@ -76,8 +76,6 @@ int StructDef( int i )
             return( ERROR );
         }
     }
-    name = AsmBuffer[n]->string_ptr;
-    switch( AsmBuffer[i]->u.value ) {
     case T_STRUC:
     case T_STRUCT:
         dir = (dir_node *)AsmGetSymbol( name );
@@ -86,7 +84,7 @@ int StructDef( int i )
                 dir = dir_insert( name, TAB_STRUCT );
             } else if( dir->sym.state == SYM_UNDEFINED ) {
                 dir_change( dir, TAB_STRUCT );
-            } else if( ( dir->sym.state == SYM_STRUCT ) && ( Options.ideal ) ) {
+            } else if( ( dir->sym.state == SYM_STRUCT ) && (Options.mode & MODE_IDEAL) ) {
                /* Redefinition of structure */
                FreeInfo( dir );
                dir_init( dir, TAB_STRUCT );
@@ -96,12 +94,12 @@ int StructDef( int i )
             }
         }
         /* even if the current is null */
-        push( &( Definition.struct_stack ), Definition.curr_struct );
+        push( &Definition.struct_stack, Definition.curr_struct );
         Definition.curr_struct = dir;
         Definition.struct_depth++;
         break;
     case T_ENDS:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             switch( AsmBuffer[n]->token ) {
             case T_FINAL:   /* Name absent */
                 name = Definition.curr_struct->sym.name;
@@ -115,7 +113,7 @@ int StructDef( int i )
         if( Definition.curr_struct != NULL &&
             strcmp( name, Definition.curr_struct->sym.name ) == 0 ) {
             /* this is the right struct ... so end it */
-            Definition.curr_struct = pop( &( Definition.struct_stack ) );
+            Definition.curr_struct = pop( &Definition.struct_stack );
             Definition.struct_depth--;
         } else {
             AsmError( SYNTAX_ERROR );
@@ -210,11 +208,11 @@ int AddFieldToStruct( asm_sym *sym,  int loc )
             /* nothing to do */
         }
     }
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         f->sym = sym;   /* add the members symbol to the structure's list */
-    else
+    } else {
         f->sym = NULL;
-
+    }
     /* now add the initializer to the structure's list */
     f->initializer = AsmAlloc( strlen( AsmBuffer[loc]->string_ptr ) + 1 );
     strcpy( f->initializer, AsmBuffer[ loc ]->string_ptr );

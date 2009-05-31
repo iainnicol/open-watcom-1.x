@@ -1133,7 +1133,6 @@ static void writepass1stuff( char *name )
 static unsigned long OnePass( char *string )
 /******************************************/
 {
-    Options.ideal = 0;  /* Start pass in masm mode */
     CmdlParamsInit();
 
     AssumeInit();

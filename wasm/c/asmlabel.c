@@ -127,7 +127,7 @@ int MakeLabel( char *symbol_name, memtype mem_type )
     if( CurrSeg == NULL )
         AsmError( LABEL_OUTSIDE_SEGMENT );
     if( strncmp( symbol_name, "@@" , 2 ) == 0 ) {
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             if( ( symbol_name[2] == 0 ) || ( CurrProc == NULL ) ) {
                 AsmError( SYNTAX_ERROR );
                 return( ERROR );
@@ -227,10 +227,11 @@ int LabelDirective( int i )
 {
     int n;
 
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         n = ++i;
-    else
+    } else {
         n = i - 1;
+    }
     if( ( n < 0 ) || ( AsmBuffer[n]->token != T_ID ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( ERROR );

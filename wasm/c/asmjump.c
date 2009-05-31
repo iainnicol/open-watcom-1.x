@@ -163,11 +163,14 @@ static void FarCallToNear( void )
         AsmWarn( 4, CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
 #if defined( _STANDALONE_ )
-    if( Options.ideal )
+    if( Options.mode & MODE_IDEAL ) {
         strcpy( buffer, "CALL NEAR " );
-    else
-#endif
+    } else {
         strcpy( buffer, "CALL NEAR PTR " );
+    }
+#else
+    strcpy( buffer, "CALL NEAR PTR " );
+#endif
     for( i++; AsmBuffer[i]->token != T_FINAL; i++ ) {
         switch( AsmBuffer[i]->token ) {
         case T_NUM:
@@ -569,7 +572,7 @@ int jmp( expr_list *opndx )
 #if defined( _STANDALONE_ )
             if( ( Code->mem_type != MT_EMPTY ) &&
                 ( Code->mem_type != MT_SHORT ) &&
-                ( Options.ideal == 0 ) ) {
+                ( (Options.mode & MODE_IDEAL) == 0 ) ) {
 #else
             if( ( Code->mem_type != MT_EMPTY ) &&
                 ( Code->mem_type != MT_SHORT ) ) {

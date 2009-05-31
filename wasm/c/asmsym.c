@@ -151,16 +151,19 @@ static struct asm_sym **AsmFind( const char *name )
 #endif
     for( ; *sym; sym = &((*sym)->next) ) {
 #if defined( _STANDALONE_ )
-        if( Options.ideal ) {
-            if( strcmp( name, (*sym)->name ) == 0 )
+        if( Options.mode & MODE_IDEAL ) {
+            if( strcmp( name, (*sym)->name ) == 0 ) {
                 break;
+            }
         } else {
-            if( stricmp( name, (*sym)->name ) == 0 )
+            if( stricmp( name, (*sym)->name ) == 0 ) {
                 break;
+            }
         }
 #else
-        if( stricmp( name, (*sym)->name ) == 0 )
+        if( stricmp( name, (*sym)->name ) == 0 ) {
             break;
+        }
 #endif
     }
     return( sym );
@@ -179,7 +182,7 @@ struct asm_sym *AsmLookup( const char *name )
         return NULL;
     }
 #if defined( _STANDALONE_ )
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         if( name[0] == '@' && name[1] == '@' ) {
             if( CurrProc == NULL ) {
                 AsmError( LOCAL_LABEL_OUTSIDE_PROC );
@@ -343,7 +346,7 @@ struct asm_sym *AsmGetSymbol( const char *name )
     struct asm_sym  **sym_ptr, *structure;
 
 #if defined( _STANDALONE_ )
-    if( Options.ideal ) {
+    if( Options.mode & MODE_IDEAL ) {
         if( name[0] == '@' && name[1] == '@' ) {
             if( CurrProc == NULL ) {
                 AsmError( LOCAL_LABEL_OUTSIDE_PROC );

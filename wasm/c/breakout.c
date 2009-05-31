@@ -59,10 +59,10 @@ int directive( int i, long direct )
     /* no expansion on the following */
     switch( direct ) {
     case T_MASM:
-        Options.ideal = 0;
+        Options.mode &= ~MODE_IDEAL;
         return( NOT_ERROR );
     case T_IDEAL:
-        Options.ideal = 1;
+        Options.mode |= MODE_IDEAL;
         return( NOT_ERROR );
     case T_DOT_286C:
         direct = T_DOT_286;
@@ -87,7 +87,7 @@ int directive( int i, long direct )
     case T_DOT_XMM:
     case T_DOT_XMM2:
     case T_DOT_XMM3:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         } else {
@@ -123,7 +123,7 @@ int directive( int i, long direct )
             ret = NOT_ERROR;
         return( ret );
     case T_DOT_DOSSEG:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -160,7 +160,7 @@ int directive( int i, long direct )
     case T_DOT_ERRNB:
     case T_DOT_ERRNDEF:
     case T_DOT_ERRNZ:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -195,7 +195,7 @@ int directive( int i, long direct )
     case T_DOT_FARDATA:
     case T_DOT_FARDATA_UN:
     case T_DOT_CONST:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -230,7 +230,7 @@ int directive( int i, long direct )
     case T_TITLE:
     case T_SUBTITLE:
     case T_SUBTTL:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -246,7 +246,7 @@ int directive( int i, long direct )
     case T_DOT_REPEAT:
     case T_DOT_UNTIL:
     case T_DOT_WHILE:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -267,7 +267,7 @@ int directive( int i, long direct )
     case T_PROTO:
     case T_THIS:
     case T_WIDTH:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -283,7 +283,7 @@ int directive( int i, long direct )
         ExpandTheWorld( 0, FALSE, TRUE );
         break;
     case T_TEXTEQU:     /* TEXTEQU */
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -296,7 +296,7 @@ int directive( int i, long direct )
         break;
     case T_DOT_STARTUP:
     case T_DOT_EXIT:
-        if( Options.ideal ) {
+        if( Options.mode & MODE_IDEAL ) {
             AsmError( UNKNOWN_DIRECTIVE );
             return( ERROR );
         }
@@ -314,20 +314,23 @@ int directive( int i, long direct )
             return( AddAlias( i ) );
         return( NOT_ERROR );
     case T_EXTERN:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_EXTRN:
         return( Parse_Pass == PASS_1 ? ExtDef( i+1, FALSE ) : NOT_ERROR );
     case T_COMM:
         return( Parse_Pass == PASS_1 ? CommDef(i+1) : NOT_ERROR );
     case T_EXTERNDEF:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_GLOBAL:
         return( Parse_Pass == PASS_1 ? ExtDef( i+1, TRUE ) : NOT_ERROR );
     case T_DOT_MODEL:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_MODEL:
         return( Model(i) );
     case T_INCLUDE:
@@ -357,12 +360,13 @@ int directive( int i, long direct )
     case T_LOCAL:
         return( Parse_Pass == PASS_1 ? LocalDef(i) : NOT_ERROR );
     case T_COMMENT:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL )
             break;
         return( Comment( START_COMMENT, i ) );
     case T_STRUCT:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_STRUC:
         return( StructDef( i ) );
     case T_NAME:
@@ -375,18 +379,21 @@ int directive( int i, long direct )
     case T_EVEN:
         return( AlignDirective( direct, i ) );
     case T_FOR:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_IRP:
         return( ForDirective ( i+1, IRP_WORD ) );
     case T_FORC:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_IRPC:
         return( ForDirective ( i+1, IRP_CHAR ) );
     case T_REPEAT:
-        if( Options.ideal )
+        if( Options.mode & MODE_IDEAL ) {
             break;
+        }
     case T_REPT:
         return( ForDirective ( i+1, IRP_REPEAT ) );
     case T_DOT_STARTUP:
