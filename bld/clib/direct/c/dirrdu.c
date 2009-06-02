@@ -84,13 +84,47 @@ _WCRTLINK unsigned _getdrive( void )
 _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
 {
     unsigned stat;
+    long free_units;
+    int bytes_per_unit;
+    long total_units;
+    int disc;
+    long start_sector;
+    long total_sectors;
+    int sector_size;
+    int bios_sectors_per_cyl;
+    int bios_heads;
 
     stat = RdosGetDriveInfo( dnum, 
-                             &df->free_units, 
-                             &df->bytes_per_unit, 
-                             &df->total_units );
+                             &free_units, 
+                             &bytes_per_unit, 
+                             &total_units );
 
-    return( stat );
+    if( stat ) {
+        stat = RdosGetDriveDiscParam(  dnum,
+                                       &disc,
+                                       &start_sector,
+                                       &total_sectors );
+    }
+
+    if( stat ) {
+        stat = RdosGetDiscInfo(  disc,
+                                 &sector_size,
+                                 &total_sectors,
+                                 &bios_sectors_per_cyl,
+                                 &bios_heads );
+    }
+
+    if( stat ) {
+        df->total_clusters = total_units;
+        df->avail_clusters = free_units;
+        df->sectors_per_cluster = bytes_per_unit;
+        df->bytes_per_sector = sector_size;                             
+    }
+
+    if( stat ) 
+        return( 0 );
+    else
+        return( -1 );
 }
 
 _WCRTLINK struct dirent *opendir( const char *name )
