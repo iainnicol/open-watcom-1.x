@@ -200,14 +200,14 @@ treat all warnings as errors
 set warning level to maximum setting
 .endnote
 .*
-.section Assembler Directives, Operators and Assembly Opcodes
+.section Assembler Keywords
 .*
 .np
 It is not the intention of this chapter to describe assembly-language
 programming in any detail.
 You should consult a book that deals with this topic.
 However, we present an alphabetically ordered list of the directives,
-opcodes and register names that are recognized by the assembler.
+operators, instructions  and register names that are recognized by the assembler.
 .*
 :set symbol="wasmfull" value="1".
 :INCLUDE file='wasmitms'.
@@ -258,7 +258,6 @@ The following is a list of directives that are flagged by the
 .ix 'endmacro'
 .ix '.endif'
 .ix '.endw'
-.ix '.exit'
 .ix 'high'
 .ix 'highword'
 .ix '.if'
@@ -276,7 +275,6 @@ The following is a list of directives that are flagged by the
 .ix '.radix'
 .ix 'record'
 .ix '.repeat'
-.ix '.startup'
 .ix 'this'
 .ix 'typedef'
 .ix 'union'
@@ -286,13 +284,13 @@ The following is a list of directives that are flagged by the
 .millust begin
 addr           .break         casemap        catstr
 ~.continue      echo           .else          endmacro
-~.endif         .endw          .exit          high
-highword       .if            invoke         low
-lowword        lroffset       mask           opattr
-option         popcontext     proto          purge
-pushcontext    .radix         record         .repeat
-~.startup       this           typedef        union
-~.until         .while         width
+~.endif         .endw          high           highword
+~.if            invoke         low            lowword
+lroffset       mask           opattr         option
+popcontext     proto          purge          pushcontext
+~.radix         record         .repeat        this
+typedef        union          .until         .while
+width
 .millust end
 .*
 .section &asmname Specific
@@ -307,14 +305,14 @@ There are a few specific features in &asmname.
 Convention         Name        Name
 ---------------  ----------  ---------
 C                  '_*'        '_*'
-WATCOM_C         see section &company "C" name mangler
-SYSCALL             '*'         '*'
-STDCALL           '_*@nn'      '_*'
+WATCOM_C           see section &company "C" name mangler
+SYSCALL            '*'         '*'
+STDCALL            '_*@nn'     '_*'
 STDCALL            '_*'        '_*'    see note 1
-STDCALL             '*'         '*'    see note 2
-BASIC               '^'         '^'
-FORTRAN             '^'         '^'
-PASCAL              '^'         '^'
+STDCALL            '*'         '*'     see note 2
+BASIC              '^'         '^'
+FORTRAN            '^'         '^'
+PASCAL             '^'         '^'
 .millust end
 .autonote Notes:
 .note
@@ -350,10 +348,12 @@ PASCAL        no       stack       left to right    yes
 .millust end
 .autonote Notes:
 .note
-If any parameter is passed on the stack then WASM automaticaly cleanup caller stack.
+For WATCOM_C procedures WASM automatically cleanup caller stack,
+except case when vararg parameter type is used,
+in which case all parameters will be passed by stack.
 .note
 For STDCALL procedures WASM automaticaly cleanup caller stack,
-except case when vararg parameter is used.
+except case when vararg parameter type is used.
 .endnote
 .endlevel
 .*
@@ -465,6 +465,11 @@ except case when vararg parameter is used.
 .errnote 095 size not specified -- BYTE PTR is assumed
 .errnote 096 size not specified -- WORD PTR is assumed
 .errnote 097 size not specified -- DWORD PTR is assumed
+.errnote 098 Float is used as operand
+.errnote 099 Only SHORT and NEAR displacement is allowed
+.errnote 100 Missing 'PTR' operator
+.errnote 101 REPZ, REPNZ, REPE or REPNE prefix is not allowed on this instruction
+.errnote 102 Cannot use 386 operand size with current CPU setting
 .*
 .errnote 500 Segment parameter is defined already
 .errnote 501 Model parameter is defined already
@@ -568,5 +573,21 @@ except case when vararg parameter is used.
 .errnote 599 alignment request greater than segment alignment
 .errnote 600 '%s' is already defined
 .errnote 601 %u unclosed conditional directive(s) detected
+.errnote 602 Wrong CPU type for 32-bit segment
+.errnote 603 Procedure %s is not closed
+.errnote 604 Far call is converted to near call
+.errnote 605 CPU option %s is not valid for selected CPU
+.errnote 606 Segment is in another group already
+.errnote 607 Label is defined outside segment
+.errnote 608 Data label is expected
+.errnote 609 Invalid use of LENGTH/LENGTHOF/SIZE/SIZEOF operator
+.errnote 610 Symbol '%s' type conflict.
+.errnote 611 ARG may only be used within a PROC and before the first instruction
+.errnote 612 USES may only be used within a PROC and before the first instruction
+.errnote 613 Enum name is missing
+.errnote 614 Too many args
+.errnote 615 Local labels may only be used within a PROC
+.errnote 616 Argument size not supported
+.errnote 617 USES is meaningless without language
 .*
 .endnote
