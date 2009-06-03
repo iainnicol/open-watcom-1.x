@@ -33,6 +33,7 @@ cdsay .
 # Continue with the linker
 [ INCLUDE <SRCDIR>/dwarf/builder.ctl ]
 [ INCLUDE <SRCDIR>/link/builder.ctl ]
+[ INCLUDE <SRCDIR>/link/exe2bin/builder.ctl ]
 # Now we also have everything to build wasm and owcc
 [ INCLUDE <SRCDIR>/wasm/builder.ctl ]
 [ INCLUDE <SRCDIR>/cl/builder.ctl ]
