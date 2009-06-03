@@ -39,6 +39,7 @@
 #include "cmdphar.h"
 #include "cmddos.h"
 #include "cmd16m.h"
+#include "cmdrdos.h"
 #include "cmdline.h"
 
 
@@ -302,6 +303,7 @@ parse_entry    Models[] = {
 #ifdef _ELF
     "ELF",          &ProcELF,           MK_ELF, 0,
 #endif
+    "RDOS",         &ProcRdos,          MK_PE, 0,
     NULL
 };
 
