@@ -41,6 +41,8 @@ The following lists these executable file formats.
 .bull
 DOS executable files
 .bull
+ZDOS executable files
+.bull
 ELF executable files
 .bull
 executable files that run under CauseWay DOS extender, Tenberry Software's
@@ -73,6 +75,8 @@ Currently, the &lnkname runs under the following operating systems.
 .begbull
 .bull
 DOS
+.bull
+ZDOS
 .bull
 OS/2
 .bull
