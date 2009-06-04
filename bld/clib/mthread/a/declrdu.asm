@@ -41,9 +41,19 @@
                 PUBLIC  __tls_free
                 PUBLIC  __tls_set_value
                 PUBLIC  __tls_get_value
+                PUBLIC  __create_thread
 
+; Offsets within FS
+
+__pv_arbitrary = 14h
 __tls_bitmap = 28h
 __tls_array = 2Ch
+
+; RDOS gate definitions
+
+wait_milli_nr				= 25
+create_thread_nr	        = 28
+terminate_thread_nr         = 29
 
 DGROUP          GROUP   CONST,CONST2,_DATA,_BSS
 TLS             GROUP   '.tls','.tls$','.tls$ZZZ'
@@ -116,6 +126,47 @@ __tls_set_value:
 
 __tls_set_done:
     ret
+
+__task_end:
+	db 9Ah                  ; call to terminate thread
+	dd terminate_thread_nr
+	dw 2
+
+__task_start:
+	mov ax,ds
+	mov es,ax
+	push fs:__pv_arbitrary
+	push OFFSET __task_end
+	push edx
+	ret
+
+; IN: EDX   Task callback
+; IN: EDI   Task name
+; IN: EAX   Task data
+; IN: ECX   Stack size
+
+__create_thread:
+	push ds
+	pushad
+;
+	mov bx,cs
+	mov ds,bx
+	mov esi,OFFSET __task_start
+	mov fs:__pv_arbitrary,eax
+	mov bx,fs
+	mov ax,2
+	db 9Ah                  ; call to create thread
+	dd create_thread_nr
+	dw 2
+;
+	mov eax,10
+	db 9Ah                  ; call to wait milli
+	dd wait_milli_nr
+	dw 2
+;
+	popad
+	pop ds
+	ret
 
 _TEXT           ENDS
 

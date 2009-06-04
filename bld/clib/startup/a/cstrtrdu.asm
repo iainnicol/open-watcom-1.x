@@ -28,7 +28,7 @@
 ;*
 ;*****************************************************************************
 
-        name    cstart
+        name    cstrtrdu.asm
 
 .387
 .386p
@@ -53,6 +53,7 @@ get_exception_nr			= 14
 set_exception_nr			= 15
 unload_exe_nr				= 46
 notify_pe_exception_nr		= 70
+show_exception_text_nr      = 375
 
 ; exception event status codes
 
@@ -92,7 +93,7 @@ OUR_CNT	EQU	CONTEXT_X86+CONTEXT_CONTROL+CONTEXT_INTEGER+CONTEXT_SEGMENTS
 ContextRecord	STRUC
 		
 ContextFlags	dd ?
-DRSpace		dd 8 dup (?)	; not filled
+DRSpace		dd 6 dup (?)	; not filled
 FPUSpace	dd 28 dup (?)	; not filled
 CntSegGs	dd ?
 CntSegFs	dd ?
@@ -217,16 +218,17 @@ CPUExceptionHandler:
 	push Erec.ExceptionCode
 	call RaiseException
 ;
-	push offset Erec
-	push offset Cntx
-	xor eax,eax
+    mov eax,-1
 	db 9Ah                  ; call to UnloadExe
 	dd unload_exe_nr
 	dw 2
 
+ueSs    EQU 36
+ueEsp   EQU 32
 ueFlags	EQU 28
 ueCs	EQU 24
 ueEip	EQU 20
+ueExtra EQU 16
 ueCode	EQU 4
 
 UnwindException:
@@ -244,16 +246,21 @@ UnwindException:
 	jz short ChainDebugger
 
 	cmp eax, 3
-	jnz CheckForSecond
+	jnz TestDebugger
 ;
 	dec dword ptr [ebp].ueEip
 	jmp short ChainDebugger
 
-CheckForSecond:
-	mov eax, [ebp].ueEip
-	xchg eax, EAddress
-	cmp eax, EAddress
-	jz short NoDebugger
+TestDebugger:
+	db 9Ah                  ; call to RdosShowExceptionText
+	dd show_exception_text_nr
+	dw 2
+	or eax,eax
+	jz ChainDebugger
+;
+    mov eax,fs:[0]
+    cmp eax,-1
+    jnz NoDebugger
 
 ChainDebugger:
 	mov eax,[ebp].ueCode
@@ -274,17 +281,19 @@ NoDebugger:
 ;
 ; Save general registers
 ;
+	mov eax, [esp]
 	mov Cntx.CntEax, eax
 	mov Cntx.CntEbx, ebx
 	mov Cntx.CntEcx, ecx
 	mov Cntx.CntEdx, edx
 	mov Cntx.CntEsi, esi
 	mov Cntx.CntEdi, edi
-	mov Cntx.CntEbp, ebp
+    mov eax, 8[esp]	
+	mov Cntx.CntEbp, eax
 ;
 ; Save segment registers
 ;
-	mov eax, [esp]
+	mov eax, 4[esp]
 	mov Cntx.CntSegDs, eax
 	mov Cntx.CntSegEs, es
 	mov Cntx.CntSegFs, fs
@@ -292,21 +301,21 @@ NoDebugger:
 ;
 ; Get things pushed on stack by the DPMI host
 ;
-	mov eax, [esp+20]
+	mov eax,[ebp].ueEip
 	mov Cntx.CntEip, eax
 	mov Erec.ExceptionAddress, eax
-	mov eax, [esp+24]
+	mov eax,[ebp].ueCs
 	mov Cntx.CntSegCs, eax
-	mov eax, [esp+28]
+	mov eax,[ebp].ueFlags
 	mov Cntx.CntEflags, eax
-	mov eax, [esp+32]
+	mov eax,[ebp].ueEsp
 	mov Cntx.CntEsp, eax
-	mov eax, [esp+36]
+	mov eax,[ebp].ueSs
 	mov Cntx.CntSegSs, eax
 ;
 ; Get exception number
 ;
-	mov eax, [esp+4]
+	mov eax, [esp+12]
 
 ; translate into Win32 exception code
 
@@ -314,13 +323,16 @@ NoDebugger:
 	mov Erec.ExceptionCode, eax
 
 	mov Erec.NumParams, 1
-	mov eax, [esp+16]
-	mov DWORD PTR ds:[offset Erec.ExceptionInfo], eax
+	mov eax,[ebp].ueExtra
+	mov Erec.ExceptionInfo, eax
 
 ExcNocode:
-	mov DWORD PTR [esp+20], offset CPUExceptionHandler
-	add esp, 8  ; skip exception number and ds
-	retf  ; terminate exception handler
+    mov [ebp].ueEip, offset CPUExceptionHandler
+    pop eax
+    pop ds
+    pop ebp
+    add esp, 16
+	retf
 
 
 EcodeTab label dword
