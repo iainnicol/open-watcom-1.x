@@ -1051,6 +1051,7 @@ rem Other Netware variations?
     CSwitch  1, w?2d?, " Link DLL", , ON
     CSwitch  1, w?6d?, " Link DLL", , ON
     CSwitch  1, n??d?, " Link DLL", , ON
+    CSwitch  1, r??d?, " Link DLL", , ON
 rem    CSwitch  1, x??d?, " Link DLL", , ON
     CSwitch  1, ???d?, " Link DLL", dll, ON
     CSwitch  1, wm6d?, " InitInst", initi, ON
