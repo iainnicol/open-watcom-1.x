@@ -135,7 +135,7 @@ __task_end:
 __task_start:
 	mov ax,ds
 	mov es,ax
-	push fs:__pv_arbitrary
+	mov esi,fs:__pv_arbitrary
 	push OFFSET __task_end
 	push edx
 	ret
