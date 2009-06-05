@@ -32,11 +32,8 @@
 
 .387
 .386p
-                PUBLIC  __tls_region
-                PUBLIC  __tls_used
                 PUBLIC  __tls_index
                 PUBLIC  __tls_start
-                PUBLIC  __tls_end
                 PUBLIC  __tls_alloc
                 PUBLIC  __tls_free
                 PUBLIC  __tls_set_value
@@ -56,18 +53,9 @@ create_thread_nr	        = 28
 terminate_thread_nr         = 29
 
 DGROUP          GROUP   CONST,CONST2,_DATA,_BSS
-TLS             GROUP   '.tls','.tls$','.tls$ZZZ'
 
 _TEXT           SEGMENT BYTE PUBLIC USE32 'CODE'
                 ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
-__tls_region:
-    push      edx
-    mov       eax,dword ptr fs:__tls_array
-    mov       edx,dword ptr __tls_index
-    mov       eax,dword ptr [eax+edx*4]
-    sub       eax,dword ptr __tls_used
-    pop       edx
-    ret
 
 ; OUT: EAX = TLS index
 
@@ -177,10 +165,6 @@ CONST2          SEGMENT DWORD PUBLIC USE32 'DATA'
 CONST2          ENDS
 
 _DATA           SEGMENT DWORD PUBLIC USE32 'DATA'
-__tls_used:
-                DD      __tls_start
-                DD      __tls_end
-                DD      __tls_index
                 DD      0
                 DD      0
                 DD      0
@@ -188,22 +172,6 @@ __tls_used:
 _DATA           ENDS
 
 _BSS            SEGMENT DWORD PUBLIC USE32 'BSS'
-                ORG 0x00000000
-__tls_index     LABEL   BYTE
-                ORG 0x00000004
 _BSS            ENDS
-
-.tls            SEGMENT DWORD PUBLIC USE32 'TLS'
-__tls_start:
-                DD      __tls_start
-.tls            ENDS
-
-.tls$           SEGMENT DWORD PUBLIC USE32 'TLS'
-.tls$           ENDS
-
-.tls$ZZZ        SEGMENT DWORD PUBLIC USE32 'TLS'
-__tls_end:
-                DD      __tls_end
-.tls$ZZZ        ENDS
 
                 END

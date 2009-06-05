@@ -46,7 +46,7 @@ _WCRTLINK void free( void *stg )
 
 #endif
 
-struct miniheapblkp _WCNEAR     *__MiniHeapFreeRover;
+struct miniheapblkp _WCNEAR     *__MiniHeapFreeRover = 0;
 
 _WCRTLINK void _nfree( void _WCNEAR *stg )
 {
