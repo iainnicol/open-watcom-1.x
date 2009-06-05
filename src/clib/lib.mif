@@ -1,4 +1,10 @@
-# libname_(model)
+# Library naming. The basic convention is libname_(model), with optional
+# suffixes and/or infixes. 
+# Ideally all libraries should be built with final names used for distribution.
+# That avoids having builder.ctl to control the renaming and allows us to
+# point the linker directly at the build directories.
+
+# General naming convention
 libname_086_ms =s
 libname_286_ms =s
 libname_086_mm =m
@@ -16,7 +22,23 @@ libname_386_mf =$(libname_$(convention))
 libname_387_ms =$(libname_$(convention))
 libname_387_mf =$(libname_$(convention))
 libname_   =clib
-libname =clib$(libname_$(processor)_$(model))
+# Infixes
+!ifdef dll16
+libinfix =dl
+!endif
+!ifdef threading16
+libinfix =mt
+!endif
+!ifdef overlay
+libinfix =o
+!endif
+# Suffixes
+!ifeq clib_release 0
+libsuffix = d
+!endif
+
+# Final name
+libname =clib$(libinfix)$(libname_$(processor)_$(model))$(libsuffix)
 
 lib_flags  = -b-c-n-pa
 !ifeq release 1
