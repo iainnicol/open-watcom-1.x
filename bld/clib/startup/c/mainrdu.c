@@ -74,8 +74,6 @@ static void __NullAccessRtn( int handle )
     handle = handle;
 }
 
-static void __NullExitRtn() {}
-
 static void __NullAccIOBRtn(void) {}
 static void __NullAccHeapRtn(void) {}
 static void __NullAccTDListRtn(void) {}
