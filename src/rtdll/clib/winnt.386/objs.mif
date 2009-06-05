@@ -7,7 +7,7 @@ dll_libs = $+ &
     $-
 !else
 dll_libs = $+ &
-    $(pfx__)$(__ifx__)clib3$(dllname_$(convention)).lib &
+    $(pfx__)$(__ifx__)clib3$(dllname_$(convention))$(dllname_debug).lib &
     $-
 !endif
 

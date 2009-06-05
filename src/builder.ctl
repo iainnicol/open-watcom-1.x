@@ -143,7 +143,9 @@ cdsay .
 [ INCLUDE <SRCDIR>/vi/builder.ctl ]
 # Build the debugger and sampler
 [ INCLUDE <SRCDIR>/dip/builder.ctl ]
+[ INCLUDE <SRCDIR>/mad/builder.ctl ]
 [ INCLUDE <SRCDIR>/dbg/builder.ctl ]
+[ INCLUDE <SRCDIR>/trap/builder.ctl ]
 [ INCLUDE <SRCDIR>/sampler/builder.ctl ]
 # Other GUI tools
 [ INCLUDE <SRCDIR>/profiler/builder.ctl ]
