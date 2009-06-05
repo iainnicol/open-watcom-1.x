@@ -214,7 +214,7 @@ void disp_reltab( reloc_table *reltab )
         if( i % 6 == 0 ) {
             printf( "\n" );
         }
-        printf( "0x%08X  ", reltab->reloc[i] );
+        printf( "0x%08lX  ", reltab->reloc[i] );
     }
     printf( "\n" );
 }
