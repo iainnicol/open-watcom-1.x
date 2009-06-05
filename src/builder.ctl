@@ -52,6 +52,7 @@ cdsay .
 # Now miscellaneous utilities required during build
 [ INCLUDE <SRCDIR>/ssl/builder.ctl ]
 [ INCLUDE <SRCDIR>/win386/wbind/builder.ctl ]
+[ INCLUDE <SRCDIR>/causeway/cwc/builder.ctl ]
 [ INCLUDE <SRCDIR>/parsedlg/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/ctl/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/bind/builder.ctl ]

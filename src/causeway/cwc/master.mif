@@ -1,0 +1,13 @@
+proj_name = cwc
+
+cwc_autodepends = .AUTODEPEND
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c : ../../c
+
+objs = cwc.obj
+
+!include exetarg.mif
