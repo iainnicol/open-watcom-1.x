@@ -53,9 +53,6 @@
 #include "rdosex.h"
 
 extern void __InitThreadData( thread_data *p );
-extern void __CMain( void );
-#pragma aux __CMain  "*"
-#pragma aux __RdosMain  "*"
 
 int __TlsIndex = NO_INDEX;
 char *_LpDllName = 0;
@@ -96,7 +93,6 @@ void    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
 void    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
 void    (*_AccessFList)(void)    = &__NullAccIOBRtn;
 void    (*_ReleaseFList)(void)   = &__NullAccIOBRtn;
-void    (*_ThreadExitRtn)(void)  = &__NullExitRtn;
 
 void __sig_null_rtn(void) {}
 _WCRTLINK void  (*__sig_init_rtn)(void) = __sig_null_rtn;
@@ -113,8 +109,6 @@ int                     __Is_DLL;       /* TRUE => DLL, else not a DLL */
 static char             *_cmd_ptr;
 static wchar_t          *_wcmd_ptr;
 
-static char    DllName[_MAX_PATH];
-
 int __RdosInit( int is_dll, thread_data *tdata, int hdll )
 {
     int major, minor, release;
@@ -127,33 +121,7 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
 
     _LpCmdLine = (char *)RdosGetCmdLine();
 
-    if( is_dll ) {
-        RdosGetModuleName( hdll, DllName, sizeof( DllName ) );
-        _LpDllName = DllName;
-    }
-
     return( 1 );
-}
-
-void __RdosMain()
-{
-    thread_data             *tdata;
-    REGISTRATION_RECORD     rr;
- 
-    __InitRtns( INIT_PRIORITY_THREAD );
-    tdata = __alloca( __ThreadDataSize );
-    memset( tdata, 0, __ThreadDataSize );
-    tdata->__data_size = __ThreadDataSize;
-
-    __InitThreadData( tdata );
-
-    _LpPgmName = (char *)RdosGetExeName();
-    __RdosInit( 0, tdata, RdosGetModuleHandle() );
-    __NewExceptionFilter( &rr );
-    __InitRtns( INIT_PRIORITY_LIBRARY+1 );
-    __sig_init_rtn();
-    __InitRtns( 255 );
-    __CMain();
 }
 
 _WCRTLINK void __exit( unsigned ret_code )
@@ -161,10 +129,10 @@ _WCRTLINK void __exit( unsigned ret_code )
     if( !__Is_DLL ) {
         __DoneExceptionFilter();
         __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-        (*_ThreadExitRtn)();
     }
     // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
     // for multi-threaded apps
     __FirstThreadData = NULL;
-    RdosUnloadExe( ret_code );
+    if( !__Is_DLL )
+        RdosUnloadExe( ret_code );
 }

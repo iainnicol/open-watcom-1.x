@@ -38,7 +38,7 @@
 #include "exepe.h"
 #include "loadpe.h"
 
-bool ProcRdos( void )
+void ProcRdosAll( void )
 /****************************/
 {
     FmtData.u.pe.heapcommit = 4*1024;   // arbitrary non-zero default.
@@ -55,7 +55,22 @@ bool ProcRdos( void )
     FmtData.u.pe.sub_specd = TRUE;
 
     FmtData.u.pe.subsystem = PE_SS_RDOS;
+}
 
+bool ProcRdosExe( void )
+/****************************/
+{
+    ProcRdosAll();
+    FmtData.dll = FALSE;
+    Extension = E_LOAD;
     return( TRUE );
 }
 
+bool ProcRdosDll( void )
+/****************************/
+{
+    ProcRdosAll();
+    FmtData.dll = TRUE;
+    Extension = E_DLL;
+    return( TRUE );
+}

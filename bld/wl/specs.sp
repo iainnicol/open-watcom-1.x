@@ -675,7 +675,7 @@ system begin rdos
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
     op stub= rdosstub.exe
-    format rdos
+    format rdosexe
 :endsegment
 end
 system begin rdos_dll
@@ -686,6 +686,6 @@ system begin rdos_dll
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
     op stub= rdosstub.exe
-    format rdos
+    format rdosdll
 :endsegment
 end

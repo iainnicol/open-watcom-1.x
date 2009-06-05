@@ -50,6 +50,8 @@
 !inject dmaino16.obj                                                o16
 !inject dmaino32.obj                                                    o32
 !inject dmainwnt.obj                     nt nta ntp
+!inject dmainrdu.obj                                                                                        rdu
+!inject emainrdu.obj                                                                                        rdu
 !inject dpmihost.obj     d32
 !inject hpgrw086.obj d16
 !inject lmaino32.obj                                                    o32

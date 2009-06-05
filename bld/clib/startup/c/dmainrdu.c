@@ -24,10 +24,60 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS command processing function prototypes.
+* Description:  Win32 DLL startup code.
 *
 ****************************************************************************/
 
 
-extern bool     ProcRdosExe( void );
-extern bool     ProcRdosDll( void );
+#include "variety.h"
+#include <rdos.h>
+#include <process.h>
+#include <stdlib.h>
+#include "initfini.h"
+#include "osthread.h"
+#include "widechar.h"
+#include "initarg.h"
+#include "sigtab.h"
+
+extern int __stdcall LibMain( int, int, void * );
+extern void __CommonInit( void );
+
+static int  processes;
+
+#define DLL_PROCESS_DETACH  0
+#define DLL_PROCESS_ATTACH  1
+#define DLL_THREAD_ATTACH   2
+#define DLL_THREAD_DETACH   3
+
+static char    DllName[_MAX_PATH];
+
+int __stdcall _LibMain( int hdll, int reason, void *reserved )
+{
+    int rc;
+
+    switch( reason ) {
+    case DLL_THREAD_ATTACH:
+        rc = LibMain( hdll, reason, reserved );
+        break;
+    case DLL_PROCESS_ATTACH:
+        __Is_DLL = 1;
+        __InitRtns( 255 );
+        RdosGetModuleName( hdll, DllName, sizeof( DllName ) );
+        _LpDllName = DllName;
+        __CommonInit();
+        __sig_init_rtn();
+        rc = LibMain( hdll, reason, reserved );
+        if( !rc ) {
+            __FiniRtns( 0, 255 );
+        }
+        break;
+    case DLL_THREAD_DETACH:
+        rc = LibMain( hdll, reason, reserved );
+        break;
+    case DLL_PROCESS_DETACH:
+        rc = LibMain( hdll, reason, reserved );
+        __FiniRtns( 0, 255 );
+        break;
+    }
+    return( rc );
+}

@@ -1181,6 +1181,7 @@ rem     RSwitch  0, x??d?, "DGROUP is shared", "op one", OFF
         RSwitch  0, ?????, "DGROUP is shared", "op one", OFF
         RSwitch  0, n??d?, "DGROUP is not shared", "op many", OFF
         RSwitch  0, w??d?, "DGROUP is not shared", "op many", OFF
+        RSwitch  0, r??d?, "DGROUP is not shared", "op many", OFF
         RSwitch  0, ???d?, "DGROUP is not shared", "op many", ON
         RSwitch  0, ?????, "DGROUP is not shared", "op many", OFF
     RGroup "Runtime environment"
@@ -1247,7 +1248,7 @@ Tool WRC "Resource Compiler"
         RSwitch  0, o????, "Win16", -bt=windows, OFF
         RSwitch  0, o????, "Win32", -bt=nt, OFF
         RSwitch  0, o????, "OS/2", -bt=os2, ON
-        RSwitch  0, r????, "Win32", -bt=rdos, ON
+        RSwitch  0, r????, "RDOS", -bt=nt, ON
 :endsegment
     RGroup "Double Byte Character Support"
         RSwitch  0, ?????, "Single byte characters only", , ON
@@ -1447,6 +1448,12 @@ Rule WRESC, WRC, w????
   Command " *$<#> -r -fo=$&.res"
 
 Rule NRESC, WRC, n????
+  Source *.rc
+  Target *.res
+  Autodepend
+  Command " *$<#> -r -fo=$&.res"
+
+Rule WRESC, WRC, r????
   Source *.rc
   Target *.res
   Autodepend
@@ -1950,6 +1957,13 @@ Rule WRES, , w????
     Hint "Edit the .res file"
 
 Rule NRES, , n????
+  Target *.res
+  Action "&Edit Resources"
+    Default
+    Command "wre -n $!"
+    Hint "Edit the .res file"
+
+Rule RRES, , r????
   Target *.res
   Action "&Edit Resources"
     Default

@@ -303,7 +303,8 @@ parse_entry    Models[] = {
 #ifdef _ELF
     "ELF",          &ProcELF,           MK_ELF, 0,
 #endif
-    "RDOS",         &ProcRdos,          MK_PE, 0,
+    "RDOSEXE",      &ProcRdosExe,       MK_PE, 0,
+    "RDOSDLL",      &ProcRdosDll,       MK_PE, 0,
     NULL
 };
 

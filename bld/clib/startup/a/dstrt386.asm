@@ -41,7 +41,7 @@ ifdef __NT__
 entry_point = __LibMain@12
 else
 ifdef __RDOS__
-entry_point = __LibMain
+entry_point = __LibMain@12
 else
 entry_point = __LibMain
 endif
