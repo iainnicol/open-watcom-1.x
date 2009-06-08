@@ -1073,6 +1073,7 @@ rem    CSwitch  1, x??d?, " Link DLL", , ON
     VSwitch  1, ?????, "Stack:", "op st", =, ONE, REQ, ""
     VSwitch  1, wm?e?, "Heap:", "op heap", =, ONE, REQ, 1K
     VSwitch  1, wa?e?, "Heap:", "op heap", =, ONE, REQ, 1K
+    VSwitch  1, r????, "Image base:", "op offset", =, ONE, REQ, ""
     VSwitch  1, ?????, "Other options(,):",,, MULTI, REQ, ""
     CSwitch  1, ?????, "Map file", "op m", ON
     CSwitch  1, l????, "Incremental Linking", "op inc", OFF
