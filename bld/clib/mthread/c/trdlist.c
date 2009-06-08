@@ -49,7 +49,7 @@ typedef struct thread_data_list {
     int                      allocated_entry;
 } thread_data_list;
 
-static thread_data_list *__thread_data_list = 0;
+static thread_data_list *__thread_data_list;
 
 // lookup thread data
 thread_data *__GetThreadData( void )
