@@ -21,6 +21,7 @@ libs = $+ &
     $(pfx__)mthread$(__sfx) &
     $(pfx__)posix$(__sfx) &
     $(pfx__)process$(__sfx) &
+    $(pfx__)rdos$(__sfx) &
     $(pfx__)search$(__sfx) &
     $(pfx__)startup$(__sfx) &
     $(pfx__)streamio$(__sfx) &
