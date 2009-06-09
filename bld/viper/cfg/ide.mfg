@@ -5,6 +5,7 @@ rem     o OS/2
 rem     l Netware NLM
 rem     n Windows NT
 rem     q QNX
+rem     r RDOS
 rem     w Windows 3.x
 rem     x Linux
 rem  'm' modifies the system specified in 's'
