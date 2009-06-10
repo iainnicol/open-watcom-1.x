@@ -200,7 +200,7 @@ d : .SYMBOLIC $(trperr_h) $(jtrperr_h)
         @%make $(target)
 
 ./mkstr.exe: $(mkstr_c) $(trap_msg)
-        $(host_cl) $(host_cl_opts) $[@
+        $(host_cl) $(host_cl_opts) -I"$(trap_dir)/h" $[@
 
 !ifeq host_os nov
 
