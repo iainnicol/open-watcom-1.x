@@ -29,5 +29,4 @@
 ****************************************************************************/
 
 
-extern bool     ProcRdosExe( void );
-extern bool     ProcRdosDll( void );
+extern bool     ProcRdos( void );

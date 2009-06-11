@@ -674,7 +674,7 @@ system begin rdos
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format rdosexe
+    format windows pe rdos
 :endsegment
 end
 system begin rdos_dll
@@ -684,6 +684,6 @@ system begin rdos_dll
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format rdosdll
+    format windows pe rdos dll
 :endsegment
 end

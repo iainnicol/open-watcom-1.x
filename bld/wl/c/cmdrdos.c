@@ -38,14 +38,9 @@
 #include "exepe.h"
 #include "loadpe.h"
 
-void ProcRdosAll( void )
+bool ProcRdos( void )
 /****************************/
 {
-    FmtData.u.pe.heapcommit = 4*1024;   // arbitrary non-zero default.
-    FmtData.u.pe.os2.heapsize = 8*1024; // another arbitrary non-zero default
-    FmtData.u.pe.stackcommit = PE_DEF_STACK_COMMIT;
-    FmtData.u.pe.os2.segment_shift = 9;    // 512 byte arbitrary rounding
-
     FmtData.u.pe.osmajor = 8;
     FmtData.u.pe.osminor = 8;
     FmtData.u.pe.osv_specd = TRUE;
@@ -55,22 +50,5 @@ void ProcRdosAll( void )
     FmtData.u.pe.sub_specd = TRUE;
 
     FmtData.u.pe.subsystem = PE_SS_RDOS;
-}
-
-bool ProcRdosExe( void )
-/****************************/
-{
-    ProcRdosAll();
-    FmtData.dll = FALSE;
-    Extension = E_LOAD;
-    return( TRUE );
-}
-
-bool ProcRdosDll( void )
-/****************************/
-{
-    ProcRdosAll();
-    FmtData.dll = TRUE;
-    Extension = E_DLL;
     return( TRUE );
 }

@@ -303,8 +303,6 @@ parse_entry    Models[] = {
 #ifdef _ELF
     "ELF",          &ProcELF,           MK_ELF, 0,
 #endif
-    "RDOSEXE",      &ProcRdosExe,       MK_PE, 0,
-    "RDOSDLL",      &ProcRdosDll,       MK_PE, 0,
     NULL
 };
 
@@ -486,6 +484,7 @@ parse_entry  SubFormats[] = {
     "NT",           &ProcPE,            MK_PE, 0,
     "PE",           &ProcPE,            MK_PE, 0,
     "VXD",          &ProcVXD,           MK_WIN_VXD, 0,
+    "RDOS",         &ProcRdos,          MK_PE, 0,
     NULL
 };
 
