@@ -376,8 +376,8 @@ pick(    MSG_WINDOWS_HELP_19,   "            | (\"MOVeable\" | \"FIXed\") | \"DI
  */
 pick(    MSG_NT_HELP_0,     "\ncommands valid for the Microsoft Windows NT executable formats only:\n" ,
                 "Microsoft Windows NT実行可能形式に対してのみ有効なオプション:\n" )
-pick(    MSG_NT_HELP_1,     "form      ::= \"WIndows NT\" [\"TNT\"]" ,
-                "form      ::= \"WIndows NT\" [\"TNT\"]" )
+pick(    MSG_NT_HELP_1,     "form      ::= \"WIndows NT\" [\"TNT\" | \"RDOS\"]" ,
+                "form      ::= \"WIndows NT\" [\"TNT\" | \"RDOS\"]" )
 pick(    MSG_NT_HELP_2,     "              [\"DLl\"[\"INITGlobal\"|\"INITInstance\" [\"TERMInstance\"|\"TERMGlobal\"]]" ,
                 "              [\"DLl\"[\"INITGlobal\"|\"INITInstance\" [\"TERMInstance\"|\"TERMGlobal\"]]" )
 pick(    MSG_NT_HELP_3,     "directive ::= \"RUntime\"     runoption[\"=\"major[\".\"minor]]" ,
