@@ -1,9 +1,0 @@
-#                    zda zdd
-#===========================
-!inject absread.obj  zda zdd
-!inject abswrite.obj zda zdd
-!inject command.obj  zda zdd
-!inject dosidle.obj  zda zdd
-!inject fastcon.obj  zda zdd
-
-!include ../../../../objlist.mif
