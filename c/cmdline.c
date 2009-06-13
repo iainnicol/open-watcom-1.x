@@ -98,7 +98,7 @@ static  parse_entry   FormatHelp[] = {
     "NOVell",       ProcNovellHelp,         MK_ALL,     0,
 #endif
 #ifdef _DOS16M
-    "DOS16M",	    Proc16MHelp,	        MK_ALL,     0,
+    "DOS16M",       Proc16MHelp,            MK_ALL,     0,
 #endif
 #ifdef _QNXLOAD
     "QNX",          ProcQNXHelp,            MK_ALL,     0,
@@ -116,14 +116,14 @@ static  parse_entry   FormatHelp[] = {
 };
 
 file_defext     Extension;
-file_list **    CurrFList;
+file_list       **CurrFList;
 tok             Token;
 commandflag     CmdFlags;
-char *          Name;
-sysblock *      SysBlocks;
-sysblock *      LinkCommands;
+char            *Name;
+sysblock        *SysBlocks;
+sysblock        *LinkCommands;
 
-static sysblock *       PrevCommand;
+static sysblock         *PrevCommand;
 
 #define INIT_FILE_NAME  "wlink.lnk"
 #define INIT_FILE_ENV   "WLINK_LNK"
@@ -150,7 +150,7 @@ static void ResetCmdFile( void )
     Name = NULL;
     CmdFlags = CF_UNNAMED;
     Path = NULL;
-    memset( &FmtData, 0, sizeof(FmtData) );
+    memset( &FmtData, 0, sizeof( FmtData ) );
     FmtData.base = NO_BASE_SPEC;
     FmtData.objalign = NO_BASE_SPEC;
     FmtData.type = MK_ALL;
@@ -289,10 +289,10 @@ void DoCmdFile( char *fname )
     DBIInit();
 }
 
-char * GetNextLink( void )
+char *GetNextLink( void )
 /***********************/
 {
-    char *      cmd;
+    char        *cmd;
 
     cmd = NULL;
     _LnkFree( PrevCommand );
@@ -308,26 +308,26 @@ char * GetNextLink( void )
 
 struct extra_cmd_info {
     unsigned    type;
-    char        prefix[PREFIX_SIZE+1];
+    char        prefix[PREFIX_SIZE + 1];
     bool        retry;
 };
 
 static struct extra_cmd_info ExtraCmds[] = {
-        EXTRA_NAME_DIR, "name    ",     FALSE,
-        EXTRA_OBJ_FILE, "file    ",     TRUE,
-        EXTRA_LIB_FILE, "lib     ",     TRUE,
-        EXTRA_RES_FILE, "opt res=",     FALSE,
-        0,              "\0",           FALSE
+    EXTRA_NAME_DIR, "name    ",     FALSE,
+    EXTRA_OBJ_FILE, "file    ",     TRUE,
+    EXTRA_LIB_FILE, "lib     ",     TRUE,
+    EXTRA_RES_FILE, "opt res=",     FALSE,
+    0,              "\0",           FALSE
 };
 
 static void GetExtraCommands( void )
 /**********************************/
 {
     struct extra_cmd_info const        *cmd;
-    char                                buff[ _MAX_PATH + PREFIX_SIZE ];
+    char                                buff[_MAX_PATH + PREFIX_SIZE];
 
-    for( cmd = ExtraCmds; cmd->prefix[ 0 ] != '\0'; ++cmd ) {
-        for(;;) {
+    for( cmd = ExtraCmds; cmd->prefix[0] != '\0'; ++cmd ) {
+        for( ;; ) {
             memcpy( buff, cmd->prefix, PREFIX_SIZE );
             if( !GetAddtlCommand( cmd->type, buff + PREFIX_SIZE ) )
                 break;
@@ -660,14 +660,14 @@ void SetFormat( void )
 /***************************/
 // do final processing now that the executable format has been decided.
 {
-    char *      fname;
+    char        *fname;
 
     if( CmdFlags & CF_NO_EXTENSION ) {
         fname = Name;
     } else {
         unsigned    len = strlen( Name );
 
-        if ( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
+        if( FmtData.output_hex ) {  // override default extension if hex or raw (bin)
             Extension = E_HEX;       //   has been specified
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
@@ -700,7 +700,7 @@ struct select_format {
 static struct select_format PossibleFmt[] = {
     MK_DOS,         "LIBDOS",       NULL,           NULL,
 #ifdef _DOS16M
-    MK_DOS16M,	    "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
+    MK_DOS16M,      "LIBDOS16M",    SetD16MFmt,     FreeD16MFmt,
 #endif
 #ifdef _QNXLOAD
     MK_QNX,         "LIBQNX",       SetQNXFmt,      FreeQNXFmt,
@@ -740,8 +740,8 @@ void AddFmtLibPaths( void )
         }
     }
     if( possible != 0 ) {
-    AddEnvPaths( check->lib_var_name );
-}
+        AddEnvPaths( check->lib_var_name );
+    }
 }
 
 static void InitFmt( void (*set)(void) )
@@ -771,16 +771,16 @@ bool HintFormat( exe_format hint )
             break;
         }
     }
-        if( possible == 0 ) {
+    if( possible == 0 ) {
 #ifdef _OS2
-            if( (~(MK_OS2|MK_PE|MK_WIN_VXD) & FmtData.type) == 0 ) {
-                /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
-                   want the same structure */
-                InitFmt( SetOS2Fmt );
-            }
-#endif
-            return( TRUE );
+        if( (~(MK_OS2|MK_PE|MK_WIN_VXD) & FmtData.type) == 0 ) {
+            /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
+                want the same structure */
+            InitFmt( SetOS2Fmt );
         }
+#endif
+        return( TRUE );
+    }
     InitFmt( check->set_func );
     LinkState |= FMT_DECIDED;
     if( LinkState & SEARCHING_LIBRARIES )
@@ -832,7 +832,7 @@ void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
 /*********************************************************************/
 //  Add a library from a comment record.
 {
-    file_list * result;
+    file_list   *result;
 
     if( CmdFlags & CF_NO_DEF_LIBS )
         return;
@@ -887,7 +887,7 @@ void ExecSystem( char *name )
 /* run a system block with the given name (only called once!)
  * (this is called after the parser has already been stopped */
 {
-    sysblock *  sys;
+    sysblock    *sys;
 
     sys = FindSysBlock( name );
     if( sys != NULL ) {
@@ -911,9 +911,9 @@ static void CleanSystemList( bool check )
 /***************************************/
 /* clean up the list of system blocks */
 {
-    sysblock ** sys;
-    sysblock *  next;
-    char *      name;
+    sysblock    **sys;
+    sysblock    *next;
+    char        *name;
 
     sys = &SysBlocks;
     while( *sys != NULL ) {

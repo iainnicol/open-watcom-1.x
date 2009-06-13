@@ -79,7 +79,7 @@ static bool WriteBinSegGroup( group_entry *group )
             }
         }
     }
-    return repos;
+    return( repos );
 }
 
 
@@ -296,7 +296,7 @@ static bool WriteHexCopyGroups( void *_seg, void *_info )
         Ring2Lookup( seg->group->leaders, DoHexDupLeader, &info->addr);
         info->addr += seg->group->totalsize;
     }
-    return FALSE;
+    return( FALSE );
 }
 
 

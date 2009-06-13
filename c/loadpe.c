@@ -156,7 +156,7 @@ static offset CalcIDataSize( void )
     unsigned_32 iatsize;
     unsigned_32 size;
 
-    iatsize = (NumImports+NumMods) * sizeof( pe_va );
+    iatsize = ( NumImports + NumMods ) * sizeof( pe_va );
     if( 0 == iatsize ) {
         return( 0 );
     }
@@ -266,12 +266,12 @@ signed_32 FindSymPosInTocv( symbol *sym )
 static void GenPETransferTable( void )
 /************************************/
 {
-    offset      off;
-    offset      base;
-    symbol      *sym;
-    void*       data;
-    size_t      datalen;
-    group_entry *group;
+    offset          off;
+    offset          base;
+    symbol          *sym;
+    void*           data;
+    size_t          datalen;
+    group_entry     *group;
     local_import    *loc_imp;
     pe_va           addr;
 
@@ -280,40 +280,40 @@ static void GenPETransferTable( void )
     group = XFerSegData->u.leader->group;
     base = XFerSegData->u.leader->seg_addr.off + XFerSegData->a.delta;
     if( IDataGroup != NULL ) {
-    datalen = GetTransferGlueSize( LinkState );
-    data = GetTransferGlueCode( LinkState );
-    WALK_IMPORT_SYMBOLS(sym) {
-        if( LinkState & HAVE_ALPHA_CODE ) {
-            offset dest = FindIATSymAbsOff( sym );
-            AlphaJump.high = dest >> 16;
-            AlphaJump.low = dest;
-            if( LinkState & MAKE_RELOCS ) {
-                if( !(FmtData.objalign & 0xFFFF) ) {
-                    XFerReloc( sym->addr.off+offsetof(alpha_transfer, high),
-                               group, PE_FIX_HIGH );
-                } else {
-                    XFerReloc( sym->addr.off+offsetof(alpha_transfer, low),
-                               group, PE_FIX_LOW );
-                    XFerReloc( sym->addr.off+offsetof(alpha_transfer, high),
-                                group, PE_FIX_HIGHADJ );
+        datalen = GetTransferGlueSize( LinkState );
+        data = GetTransferGlueCode( LinkState );
+        WALK_IMPORT_SYMBOLS(sym) {
+            if( LinkState & HAVE_ALPHA_CODE ) {
+                offset dest = FindIATSymAbsOff( sym );
+                AlphaJump.high = dest >> 16;
+                AlphaJump.low = dest;
+                if( LinkState & MAKE_RELOCS ) {
+                    if( !(FmtData.objalign & 0xFFFF) ) {
+                        XFerReloc( sym->addr.off+offsetof(alpha_transfer, high),
+                                   group, PE_FIX_HIGH );
+                    } else {
+                        XFerReloc( sym->addr.off+offsetof(alpha_transfer, low),
+                                   group, PE_FIX_LOW );
+                        XFerReloc( sym->addr.off+offsetof(alpha_transfer, high),
+                                    group, PE_FIX_HIGHADJ );
+                    }
                 }
+            } else if( LinkState & HAVE_I86_CODE ) {
+                offset dest = FindIATSymAbsOff( sym );
+                I386Jump.dest = dest;
+                if( LinkState & MAKE_RELOCS ) {
+                    XFerReloc( sym->addr.off + offsetof(i386_transfer,dest),
+                                group, PE_FIX_HIGHLOW );
+                }
+            } else {
+                int_16 pos;
+                pos = FindSymPosInTocv(sym);
+                PPCJump[0] &= 0xffff0000;
+                PPCJump[0] |= 0x0000ffff & pos;
             }
-        } else if( LinkState & HAVE_I86_CODE ) {
-            offset dest = FindIATSymAbsOff( sym );
-            I386Jump.dest = dest;
-            if( LinkState & MAKE_RELOCS ) {
-                XFerReloc( sym->addr.off + offsetof(i386_transfer,dest),
-                            group, PE_FIX_HIGHLOW );
-            }
-        } else {
-            int_16 pos;
-            pos = FindSymPosInTocv(sym);
-            PPCJump[0] &= 0xffff0000;
-            PPCJump[0] |= 0x0000ffff & pos;
+            off = sym->addr.off - base;
+            PutInfo( XFerSegData->data + off, data, datalen );
         }
-        off = sym->addr.off - base;
-        PutInfo( XFerSegData->data + off, data, datalen );
-    }
     }
     /* dump the local addresses table */
     for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
@@ -605,7 +605,7 @@ static void WriteExportInfo( pe_header *header, pe_object *object )
     i = 0;
     next_ord = dir.ordinal_base;
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
-        sort[ i++ ] = exp;
+        sort[i++] = exp;
         eat = exp->addr.off;
         if( next_ord < exp->ordinal ) {
             PadLoad( (exp->ordinal - next_ord) * sizeof( pe_va ) );
@@ -886,15 +886,15 @@ static void WriteDebugTable( pe_header *header, pe_object *object, const char *s
 
     if( symfilename == NULL ) {
         /* write debug dir entry for DEBUG_TYPE_CODEVIEW */
-    dir.flags = 0;
+        dir.flags = 0;
         dir.time_stamp = header->time_stamp;
         dir.major = 0;
-    dir.minor = 0;
-    dir.debug_type = DEBUG_TYPE_CODEVIEW;
-    dir.debug_size = CVSize;
+        dir.minor = 0;
+        dir.debug_type = DEBUG_TYPE_CODEVIEW;
+        dir.debug_size = CVSize;
         dir.data_rva = 0;
         dir.data_seek = object->physical_offset + object->physical_size + sizeof( debug_misc_dbgdata );
-    WriteLoad( &dir, sizeof(debug_directory) );
+        WriteLoad( &dir, sizeof( debug_directory ) );
     }
 
     header->table[PE_TBL_DEBUG].size = num_entries * sizeof( debug_directory );
@@ -1165,7 +1165,7 @@ void FiniPELoadFile( void )
     WriteImportInfo();
     SetMiscTableEntries( &exe_head );
     WriteDataPages( &exe_head, object );
-    tbl_obj = &object[ NumGroups ];
+    tbl_obj = &object[NumGroups];
     if( FmtData.u.os2.exports != NULL ) {
         WriteExportInfo( &exe_head, tbl_obj );
         ++tbl_obj;
@@ -1367,15 +1367,15 @@ static void RegisterImport( dll_sym_info *sym )
             break;
         }
     }
-        if( mod == NULL ) {
-            ++NumMods;
-            _PermAlloc( mod, sizeof( struct module_import ) );
-            mod->next = PEImpList;
-            PEImpList = mod;
-            mod->mod = sym->m.modnum;
-            mod->imports = NULL;
-            mod->num_entries = 0;
-        }
+    if( mod == NULL ) {
+        ++NumMods;
+        _PermAlloc( mod, sizeof( struct module_import ) );
+        mod->next = PEImpList;
+        PEImpList = mod;
+        mod->mod = sym->m.modnum;
+        mod->imports = NULL;
+        mod->num_entries = 0;
+    }
     if( !sym->isordinal ) {
         os2_imp = sym->u.entry;
     } else {
@@ -1416,8 +1416,8 @@ static void CreateTransferSegment( class_entry *class )
     segdata     *sdata;
 
     size = 0;
-    glue_size = GetTransferGlueSize(LinkState);
-    WALK_IMPORT_SYMBOLS(sym) {
+    glue_size = GetTransferGlueSize( LinkState );
+    WALK_IMPORT_SYMBOLS( sym ) {
         size += glue_size;
         RegisterImport( sym->p.import );
         DBIAddGlobal( sym );
@@ -1485,9 +1485,9 @@ void AllocPETransferTable( void )
             break;
         }
     }
-        if( class == NULL ) {
-            return;
-        }
+    if( class == NULL ) {
+        return;
+    }
     lead = RingLast( class->segs );
     piece = RingLast( lead->pieces );
     CurrMod = FakeModule;
@@ -1501,19 +1501,19 @@ void AllocPETransferTable( void )
         loc_imp->iatsym->addr.seg = seg;
     }
     if( IDataGroup != NULL ) {
-    glue_size = GetTransferGlueSize( LinkState );
-    WALK_IMPORT_SYMBOLS( sym ) {
-        off -= glue_size;
-        sym->addr.seg = seg;
-        sym->addr.off = off;
-        save = sym->p.seg;
-        sym->p.seg = piece;
-        DBIGenGlobal( sym, Root );
-        sym->p.seg = save;
-    }
-    off = CalcIATAbsOffset();   // now calc addresses for IAT symbols
-    WalkImportsMods( CalcImpOff, &off );
-    SetTocAddr( IData.eof_ilt_off, IDataGroup ); // Set toc's address.
+        glue_size = GetTransferGlueSize( LinkState );
+        WALK_IMPORT_SYMBOLS( sym ) {
+            off -= glue_size;
+            sym->addr.seg = seg;
+            sym->addr.off = off;
+            save = sym->p.seg;
+            sym->p.seg = piece;
+            DBIGenGlobal( sym, Root );
+            sym->p.seg = save;
+        }
+        off = CalcIATAbsOffset();   // now calc addresses for IAT symbols
+        WalkImportsMods( CalcImpOff, &off );
+        SetTocAddr( IData.eof_ilt_off, IDataGroup ); // Set toc's address.
     }
     CurrMod = NULL;
 }
