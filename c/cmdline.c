@@ -107,10 +107,10 @@ static  parse_entry   FormatHelp[] = {
     "ELF",          ProcELFHelp,            MK_ALL,     0,
 #endif
 #ifdef _ZDOS
-    "ZDOS",         ProcZdosHelp,           MK_ALL,     0,
+    "ZDos",         ProcZdosHelp,           MK_ALL,     0,
 #endif
 #ifdef _RAW
-    "RAW",          ProcRawHelp,            MK_ALL,     0,
+    "Raw",          ProcRawHelp,            MK_ALL,     0,
 #endif
     NULL
 };
