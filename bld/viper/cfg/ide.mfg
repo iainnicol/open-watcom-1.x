@@ -32,6 +32,10 @@ rem     oc OS/2 PM Compatible
 rem     op OS/2 PM
 rem     of OS/2 Full screen
 rem     ov OS/2 Virtual device
+rem     rp RDOS, PE executable
+rem     rn RDOS, NE executable (not yet supported)
+rem     rd RDOS, DOS executable (not yet supported)
+rem     rk RDOS, kernel-mode device driver (not yet supported)
 rem     wm Windows 3.x MFC 2.X application, static linkage
 rem     wa Windows 3.x MFC 2.X application, DLL linkage
 rem     wp Windows 3.x PowerBuilder DLL
@@ -1012,8 +1016,8 @@ rem OS/2 dll?
     VSwitch  1, dp2??, "System:", SYS, " ", ONE, REQ, pharlap
     VSwitch  1, dt2??, "System:", SYS, " ", ONE, REQ, tnt
     VSwitch  1, o?2??, "System:", SYS, " ", ONE, REQ, os2v2
-    VSwitch  1, r?2e?, "System:", SYS, " ", ONE, REQ, rdos
-    VSwitch  1, r?2d?, "System:", SYS, " ", ONE, REQ, rdos_dll
+    VSwitch  1, r?2e?, "System:", SYS, " ", ONE, REQ, rdos_pe
+    VSwitch  1, r?2d?, "System:", SYS, " ", ONE, REQ, rdos_pe_dll
     CSwitch  1, op?e?, "", pm, ON
     CSwitch  1, of?e?, "", full, ON
     CSwitch  1, od6e?, "", phys, ON

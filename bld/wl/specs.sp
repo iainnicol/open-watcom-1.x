@@ -667,7 +667,7 @@ system begin dos16m
     format dos16m runtime auto ^
 :endsegment
 end
-system begin rdos
+system begin rdos_pe
 :segment Pspecs
     wcc386 -bt=rdos
 :elsesegment Pwlsystem
@@ -677,7 +677,7 @@ system begin rdos
     format windows pe rdos
 :endsegment
 end
-system begin rdos_dll
+system begin rdos_pe_dll
 :segment Pspecs
     wcc386 -bt=rdos -bd
 :elsesegment Pwlsystem
