@@ -511,6 +511,7 @@ parse_entry WindowsFormatKeywords[] = {
 
 parse_entry NTFormatKeywords[] = {
     "TNT",          &ProcTNT,           MK_PE, 0,
+    "RDOS",         &ProcRDOS,          MK_PE, 0,
     NULL
 };
 
@@ -596,17 +597,17 @@ parse_entry ELFFormatKeywords[] = {
 
 #ifdef _ZDOS
 parse_entry ZdosOptions[] = {
-        "SYS",          &ProcZdosSYS,           MK_ZDOS, 0,
-        "HWD",          &ProcZdosHWD,           MK_ZDOS, 0,
-        "FSD",          &ProcZdosFSD,           MK_ZDOS, 0,
-        NULL };
+    "SYS",          &ProcZdosSYS,           MK_ZDOS, 0,
+    "HWD",          &ProcZdosHWD,           MK_ZDOS, 0,
+    "FSD",          &ProcZdosFSD,           MK_ZDOS, 0,
+    NULL };
 #endif
 
 #ifdef _RAW
 parse_entry RawOptions[] = {
-        "BIN",          &ProcRawBIN,            MK_RAW, 0,
-        "HEX",          &ProcRawHEX,            MK_RAW, 0,
-        NULL };
+    "BIN",          &ProcRawBIN,            MK_RAW, 0,
+    "HEX",          &ProcRawHEX,            MK_RAW, 0,
+    NULL };
 #endif
 
 parse_entry OrderOpts[] = {
@@ -638,4 +639,3 @@ parse_entry OutputOpts[] = {
     "STartrec",     &ProcOutputStart,   MK_ALL, 0,
     NULL
 };
-

@@ -38,11 +38,13 @@
 *                   fb_finish()
 *                   fb_hline()
 *                   fb_new_section()
+*                   fb_output_textline()
 *                   fb_position()
 *                   fb_start()
 *                   fb_vline()
 *               plus these local variables:
 *                   bin_fonts
+*                   cur_token
 *                   ti_table
 *                   tr_table
 *               and these local functions:
@@ -55,9 +57,10 @@
 *                   get_cop_device()
 *                   get_cop_driver()
 *                   get_cop_font()
-*                   hex_character()
+*                   get_next_token()
 *                   scale_basis_to_horizontal_base_units()
 *                   update_translate_table()
+*                   validate_token()
 *
 * Note:         The Wiki should be consulted for any term whose meaning is
 *               not apparent and for how the various function blocks are used.
@@ -91,9 +94,10 @@
 
 /* Local data. */
 
-cop_font    *   bin_fonts;          // binary fonts being used (linked list)
-uint8_t         ti_table[0x100];    // .TI-controlled translation table
-uint8_t         tr_table[0x100];    // .TR-controlled translation table
+static cop_font        *   bin_fonts;       // binary fonts being used (linked list)
+static record_buffer   *   cur_token;       // Current token.
+static uint8_t             ti_table[0x100]; // .TI-controlled translation table
+static uint8_t             tr_table[0x100]; // .TR-controlled translation table
 
 /* Local function definitions. */
 
@@ -113,7 +117,7 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
                                                        wgml_font * in_font )
 {
     uint32_t    divisor;
-    uint32_t    units;
+    uint64_t    units;
     uint32_t    width;
 
     /* The conversion is done using this formula: 
@@ -163,6 +167,8 @@ static void compute_metrics( wgml_font * in_font )
         in_font->default_width = in_font->bin_font->char_width;
 
     } else {
+
+        /* The default_width is the char_width properly scaled. */
 
         in_font->default_width = scale_basis_to_horizontal_base_units( \
                                         in_font->bin_font->char_width, in_font );
@@ -229,7 +235,6 @@ static void compute_metrics( wgml_font * in_font )
 
     return;
 }
-
 
 /* Function get_cop_device().
  * Converts the defined name of a :DEVICE block into a cop_device struct
@@ -405,7 +410,7 @@ static cop_font * get_cop_font( char const * in_name )
     /* Acquire the file, if it exists. */
 
     if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
-        out_msg( "The file for the font %s was not found\n", in_name );
+        out_msg( "The file for the font '%s' was not found\n", in_name );
         err_count++;
         g_suicide();
     }
@@ -641,40 +646,114 @@ static void free_opt_fonts( void )
     return;
 }
 
-/* Function hex_character().
- * Ensures the parameter is a two-character hexadecimal value and converts it
- * to the equivalent character value.
+/* Function get_next_token().
+ * Extracts the next token from the buffer and returns in the supplied
+ * record_buffer *.
  *
- * Parameter:
- *      value contains a pointer to the two-character hexadecimal value.
+ * Parameters:
+ *      buffer points to the first character to be processed.
+ *      count contains the number of characters in the buffer.
+ *      in_out points to the record_buffer to be loaded with the token.
+ *
+ * Parameter Modified:
+ *      if a token is found, then in_out.current will contain its length
+ *          and in_out.text will point to its first character.
+ *      if a token is not found, then in_out.current will be "0".
  *
  * Returns:
- *      the equivalent character value.
+ *      The number of characters processed, including whitespace.
  *
- * Note:
- *      If either character in token is not a valid hexadecimal digit,
- *      an error is reported and the program quits.
+ * Notes:
+ *      mem_realloc() will not return unless it succeeds.
+ *      in_out.text will have null terminator (for use in error messages),
+ *          but in_out.current does not include it.
  */
 
-static uint8_t hex_character( uint8_t * value )
+static uint32_t get_next_token( uint8_t * buffer, uint32_t count, \
+                                        record_buffer * in_out )
 {
-    uint8_t retval[3];
+    int     i;
+    int     j;
+    size_t  token_length;
 
-    if( !isxdigit( value[0] ) || !isxdigit( value[1] ) ) {
-        uint8_t token[3];
-        memcpy_s( token, 2, value, 2 );
-        token[2] = '\0';
+    in_out->current = 0;
+
+    for( i = 0; i < count; i++ ) {
+        if( isspace( buffer[i] ) ) continue;
+
+        /* A token! */
+
+        token_length = 0;
+        for( j = i; j < count; j++) {
+            if( isspace( buffer[j] ) ) break;
+            token_length += 1;
+        }
+
+        if( in_out->length < (token_length + 1) ) {
+            realloc( in_out->text, token_length + 1 );
+            in_out->length = token_length + 1;
+        }
+        memcpy_s( in_out->text, token_length, &buffer[i], token_length );
+        in_out->current = token_length;
+        in_out->text[in_out->current] = '\0';
+        break;
+    }
+
+    return( j );
+}
+
+/* Function validate_token().
+ * Ensures the token is valid, that is, is either a single character or a
+ * two-character hexadecimal value and returns the character. 
+ *
+ * Parameter:
+ *      token contains a pointer to the token. 
+ *
+ * Returns:
+ *      The appropriate character value.
+ *
+ * Notes:
+ *      This will treat "set" as an error; .ti processing must identify "set"
+ *          through other means.
+ *      Several errors are trapped and reported, after which the program quits.
+ */
+
+static uint8_t validate_token( record_buffer * token )
+{
+    uint8_t retval;
+    uint8_t hex_string[3];
+
+    if( token->current > 2 ) {
+
+        /* The maximum allowed token length is 2. */
+
         out_msg( "A single character or a two character hexadecimal value "\
-                                        "must be specified: '%s'\n", token );
+                                    "must be specified: '%s'\n", token->text );
         err_count++;
         g_suicide();
     }
 
-    retval[0] = value[0];
-    retval[1] = value[1];
-    retval[2] = '\0';
+    /* If the token length is 2, it must be a hexadecimal number. */
 
-    return( (uint8_t) strtol( retval, NULL, 16 ) );
+    if( token->current == 2 ) {
+
+        if( !isxdigit( token->text[0] ) || !isxdigit( token->text[1] ) ) {
+            out_msg( "A single character or a two character hexadecimal value "\
+                                    "must be specified: '%s'\n", token->text );
+            err_count++;
+            g_suicide();
+        }
+
+        hex_string[0] = token->text[0];
+        hex_string[1] = token->text[1];
+        hex_string[2] = '\0';
+
+        retval = (uint8_t) strtol( hex_string, NULL, 16 );
+    } else {
+        retval = *token->text;
+    }
+
+    return( retval );
 }
 
 /* Function update_translate_table().
@@ -685,21 +764,15 @@ static uint8_t hex_character( uint8_t * value )
  *          if the tr_table is to be updated.
  *      data contains any data associated with the .TI or .TR control word.
  *      count contains the number of bytes to process.
- *
- * Notes:
- *      This version does treats "set" as an error; however, is_ti_table
- *          will eventually be used to process "set" for .TI only.
  */
 
 static void update_translate_table( bool is_ti_table, uint8_t * data, \
                                      uint32_t count )
 {
-    bool        first_found;
-    bool        no_data;
-    int         i;
-    int         j;
-    size_t      token_length;
-    uint8_t *   table;
+    bool        first_found = false;
+    bool        no_data     = true;
+    int         i           = 0;
+    uint8_t *   table       = NULL;
     uint8_t     token_char;
     uint8_t     first_char;
 
@@ -710,60 +783,112 @@ static void update_translate_table( bool is_ti_table, uint8_t * data, \
     if( is_ti_table ) table = ti_table;
     else table = tr_table;
     if( data == NULL ) count = 0;
-    no_data = true;
-    first_found = false;
 
-    for( i = 0; i < count; i++ ) {
-        if( isspace( data[i] ) ) continue;
+    if( count != 0 ) {
 
-        /* A token! */
+        /* Determine if this is a ".ti set" instance. */
 
-        token_length = 0;
-        for( j = i; j < count; j++) {
-            if( isspace( data[j] ) ) break;
-            token_length += 1;
+        if( is_ti_table ) {
+
+            /* Get the first token, if any. */
+
+            i = get_next_token( data, count, cur_token );
+
+            /* If the length of the token is "3", see if it is "set". */
+
+            if( cur_token->current == 3 ) {
+                if( !memicmp( cur_token->text, "set", 3 ) ) {
+
+                    /* Get the next token, if any. */            
+
+                    i += get_next_token( &data[i], count - i, cur_token );
+
+                    if( cur_token->current == 0 ) {
+
+                        /* If there was no token, clear the input escape. */
+
+                        ProcFlags.in_trans = false;
+                        in_esc = ' ';
+                    } else {
+
+                        /* Only a single character is valid; hex digits are
+                         * ignored by wgml 4.0.
+                         */
+
+                         if( cur_token->current > 1 ) {
+                            out_msg( ".ti set can only be used with a single "\
+                                     "character: '%s'\n", cur_token->text );
+                            err_count++;
+                            g_suicide();
+                        }
+
+                        /* Set the escape character. */
+
+                        ProcFlags.in_trans = true;
+                        in_esc = *cur_token->text;
+
+                        /* wgml 4.0 ignores any additional tokens. */
+
+                        get_next_token( &data[i], count - i, cur_token );
+                        if( cur_token->current != 0 ) {
+                            uint8_t * tail;
+
+                            tail = (uint8_t *) mem_alloc( count - i + 1);
+                            memcpy_s( tail, count - i, &data[i], count - i );
+                            tail[count - i] = '\0';
+                            out_msg( \
+    ".ti set cannot be used to set a translation: '%s'\n", tail );
+                            mem_free( tail );
+                            err_count++;
+                            g_suicide();
+                        }
+                    }
+
+                    /* Processing is done if this was ".ti set". */
+
+                    return; 
+                }
+            }
+
+            /* This was not ".ti set", and so, if not empty, the token found
+             * is either a first_char or invalid.
+             */
+
+            if( cur_token->current != 0 ) {
+                first_char = validate_token( cur_token );
+                first_found = true;
+                no_data = false;
+            }
         }
+            
+        /* This loop only deals with the non-".ti set" forms. */
 
-        /* This is where "set" processing will go. */
+        for( ; i < count; i++ ) {
 
-        if( is_ti_table ) {};
+            /* Get the next token, if any. */
 
-        /* Apart from "set", the maximum allowed token length is 2. */
+            i += get_next_token( &data[i], count - i, cur_token );
 
-        if( token_length > 2 ) {
-            uint8_t * token = mem_alloc( token_length + 1 );
-            memcpy_s( token, token_length, &data[i], token_length );
-            token[token_length] = '\0';
-            out_msg( "A single character or a two character hexadecimal value "\
-                                        "must be specified: '%s'\n", token );
-            mem_free( token );
-            err_count++;
-            g_suicide();
-        }
+            /* If there was no token, then we are done. */
 
-        /* If the token length is 2, it must be a hexadecimal number. */
+            if( cur_token->current == 0 ) break;
 
-        if( token_length == 2 ) {
-            token_char = hex_character( &data[i] );
-            i++;
-        } else {
-            token_char = data[i];
-        }
+            /* Validate the token and note that valid data was found. */
 
-        /* If we ever get this far, then valid data was found. */
+            token_char = validate_token( cur_token );
+            no_data = false;
 
-        no_data = false;
+            /* If we have an unused first_char, then we just found the char it
+             * is to be converted into. Otherwise, we found a new first_char.
+             */
 
-        /* If we have an unused first_char, then we just found the char it
-         * is to be converted into. Otherwise, we found a new first char.
-         */
-
-        if( first_found ) {
-            table[first_char] = token_char;
-            first_found = false;
-        } else {
-            first_char = token_char;
-            first_found = true;
+            if( first_found ) {
+                table[first_char] = token_char;
+                first_found = false;
+            } else {
+                first_char = token_char;
+                first_found = true;
+            }
         }
     }
 
@@ -794,7 +919,7 @@ static void update_translate_table( bool is_ti_table, uint8_t * data, \
  *      The appropriate character, which may be the same as in_char.
  */
 
-uint8_t cop_in_trans( uint8_t in_char, uint32_t font )
+uint8_t cop_in_trans( uint8_t in_char, uint8_t font )
 {
     intrans_block   *   block   = NULL;
     uint8_t             retval;
@@ -831,7 +956,7 @@ uint8_t cop_in_trans( uint8_t in_char, uint32_t font )
  */
 
 record_buffer * cop_out_trans( uint8_t * text, uint32_t count, \
-                               record_buffer * in_out, uint32_t font )
+                               record_buffer * in_out, uint8_t font )
 {
     outtrans_block  *   block   = NULL;
     uint8_t             byte;
@@ -916,12 +1041,18 @@ void cop_setup( void )
 
     bin_device = NULL;
     bin_driver = NULL;
-    bin_fonts = NULL;
     ps_device = false;
     wgml_font_cnt = 0;
     wgml_fonts = NULL;
 
-    /* Initialize the translation tables used with .TI and .TR. */
+    /* Initialize the local variables. */
+
+    bin_fonts = NULL;
+
+    cur_token = (record_buffer *) mem_alloc( sizeof( record_buffer ) );
+    cur_token->current = 0;
+    cur_token->length = 10;
+    cur_token->text = (uint8_t *) mem_alloc( cur_token->length );
 
     for( i = 0; i < 0x100; i++) {
         ti_table[i] = i;
@@ -946,7 +1077,7 @@ void cop_setup( void )
 
     if( bin_device->horizontal_base_units == 0 ) {
         out_msg( \
-        "Device library error: horizontal_base_units cannot have value \"0\"\n" );
+        "Device library error: horizontal_base_units cannot have value '0'\n" );
         err_count++;
         g_suicide();
     }
@@ -955,7 +1086,7 @@ void cop_setup( void )
 
     if( bin_device->vertical_base_units == 0 ) {
         out_msg( \
-            "Device library error: vertical_base_units cannot have value \"0\"\n" );
+            "Device library error: vertical_base_units cannot have value '0'\n" );
         err_count++;
         g_suicide();
     }
@@ -975,18 +1106,21 @@ void cop_setup( void )
         g_suicide();
     }
 
-    /* Sanity check: if either attribute in :PAGEADDRESS was "no", the
-     * corresponding value in :PAGESTART must not be "0". This prevents the
-     * generation of negative values for horizontal or vertical positions.
+    /* Attribute x_positive in :PAGEADDRESS cannot be "no", since horizontal
+     * positioning does not check this value or react to it. This prevents
+     * the generation of negative values for horizontal positions.
      */
 
     if( bin_driver->x_positive == 0 ) {
-        if( bin_device->x_start == 0 ) {
-            out_msg( "Horizontal start position cannot be 0\n" );
-            err_count++;
-            g_suicide();
-        }
+        out_msg( "The value 'no' is not supported for attribute 'x_positive'\n" );
+        err_count++;
+        g_suicide();
     }
+
+    /* If attribute y_positive in :PAGEADDRESS was "no", then attribute
+     * y_start in :PAGESTART must not be "0". This prevents the generation
+     * of negative values for vertical positions.
+     */
 
     if( bin_driver->y_positive == 0 ) {
         if( bin_device->y_start == 0 ) {
@@ -1028,7 +1162,7 @@ void cop_setup( void )
     /* If either :BOX or :UNDERSCORE provided a font name, increment the count.
      * If both :BOX and :UNDERSCORE provided a font name, increment the count
      * once if the font names were identical, twice if they were different.
-     * But not if the device is PS: for PS, such fonts are never used.
+     * But not if the device is PS: for PS, such fonts are never created.
      */
 
     if( !ps_device ) {
@@ -1068,12 +1202,14 @@ void cop_setup( void )
 
     cur_def_fonts = bin_device->defaultfonts.fonts;
     for( i = 0; i < bin_device->defaultfonts.font_count; i++ ) {
-        if( cur_def_fonts[i].font_name == NULL ) {
+        if( (cur_def_fonts[i].font_name == NULL) \
+                            || (strlen( cur_def_fonts[i].font_name ) == 0) ) {
             continue; /* Do not initialize skipped font numbers. */
         } else {
             wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
         }
-        if( cur_def_fonts[i].font_style == NULL ) {
+        if( (cur_def_fonts[i].font_style == NULL) \
+                            || (strlen( cur_def_fonts[i].font_style ) == 0) ) {
             wgml_fonts[i].font_style = find_style( "plain" );
         } else {
             wgml_fonts[i].font_style = find_style( cur_def_fonts[i].font_style );
@@ -1094,6 +1230,17 @@ void cop_setup( void )
         wgml_fonts[i].font_pause = cur_dev_font->font_pause;
         if( cur_dev_font->resident == 0x00 ) wgml_fonts[i].font_resident = 'n';
         else wgml_fonts[i].font_resident = 'y';
+
+        /* If scale_basis is not "0", then font_height must not be "0". */
+
+        if( (wgml_fonts[i].bin_font->scale_basis != 0) && \
+                                        (wgml_fonts[i].font_height == 0)) {
+            out_msg( "For default font %i, the font_height attribute\n", i );
+            out_msg( "must be specified when the font is scaled.\n" );
+            err_count++;
+            g_suicide();
+        }
+
         compute_metrics( &wgml_fonts[i] );
     }
 
@@ -1119,6 +1266,17 @@ void cop_setup( void )
         wgml_fonts[i].font_pause = cur_dev_font->font_pause;
         if( cur_dev_font->resident == 0x00 ) wgml_fonts[i].font_resident = 'n';
         else wgml_fonts[i].font_resident = 'y';
+
+        /* If scale_basis is not "0", then font_height must not be "0". */
+
+        if( (wgml_fonts[i].bin_font->scale_basis != 0) && \
+                                        (wgml_fonts[i].font_height == 0)) {
+            out_msg( "For the FONT option with font %i, the font_height\n", i );
+            out_msg( "attribute must be specified when the font is scaled.\n" );
+            err_count++;
+            g_suicide();
+        }
+
         compute_metrics( &wgml_fonts[i] );
         cur_opt = cur_opt->nxt;
     }
@@ -1154,6 +1312,16 @@ void cop_setup( void )
             wgml_fonts[i].default_width = 1;
             wgml_fonts[i].line_height = 1;
             wgml_fonts[i].line_space = 0;
+
+            /* The font used with the :UNDERSCORE block cannot be scaled. */
+
+            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
+                out_msg( "The UNDERSCORE block cannot specify a font which "\
+                                                            "is scaled.\n" );
+                err_count++;
+                g_suicide();
+            }
+
             break;
         }
         if( bin_device->box.font_name != NULL ) {
@@ -1175,6 +1343,15 @@ void cop_setup( void )
             wgml_fonts[i].default_width = 1;
             wgml_fonts[i].line_height = 1;
             wgml_fonts[i].line_space = 0;
+
+            /* The font used with the :BOX block cannot be scaled. */
+
+            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
+                out_msg( "The BOX block cannot specify a font which is scaled.\n" );
+                err_count++;
+                g_suicide();
+            }
+
             break;
         }
         break;
@@ -1199,6 +1376,16 @@ void cop_setup( void )
             wgml_fonts[i].default_width = 1;
             wgml_fonts[i].line_height = 1;
             wgml_fonts[i].line_space = 0;
+
+            /* The font used with the :UNDERSCORE block cannot be scaled. */
+
+            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
+                out_msg( "The UNDERSCORE block cannot specify a font which "\
+                                                            "is scaled.\n" );
+                err_count++;
+                g_suicide();
+            }
+
         }
         if( bin_device->box.font_name != NULL ) {
             font_base++;
@@ -1220,6 +1407,15 @@ void cop_setup( void )
             wgml_fonts[i].default_width = 1;
             wgml_fonts[i].line_height = 1;
             wgml_fonts[i].line_space = 0;
+
+            /* The font used with the :BOX block cannot be scaled. */
+
+            if( wgml_fonts[i].bin_font->scale_basis != 0 ) {
+                out_msg( "The BOX block cannot specify a font which is scaled.\n" );
+                err_count++;
+                g_suicide();
+            }
+
         }
         break;
     default:
@@ -1270,6 +1466,23 @@ void cop_setup( void )
         out_msg( "Device Library Error: No :FONT blocks loaded\n" );
         err_count++;
         g_suicide;
+    }
+
+    if( bin_driver->absoluteaddress.text == NULL ) {
+        uint32_t    test_height;
+
+        /* Verify that all line_height fields have the same value. */
+
+        test_height = wgml_fonts[0].line_height;
+        for( i = 1; i < wgml_font_cnt; i++ ) {
+            if( test_height != wgml_fonts[i].line_height ) {
+                out_msg( "     Computed line height values for devices\n" );
+                out_msg( "     which rely on :NEWLINE blocks must be the\n" );
+                out_msg( "     same for all fonts\n" );
+                err_count++;
+                g_suicide();
+            }
+        }
     }
 
     /* Set the base values for the "Em" and "Device Unit" ("DV") Horizontal
@@ -1326,6 +1539,15 @@ void cop_teardown( void )
         wgml_fonts = NULL;
     }
 
+    if( cur_token != NULL ) {
+        if( cur_token->text != NULL ) {
+            mem_free( cur_token->text);
+            cur_token->text = NULL;
+        }
+        mem_free( cur_token );
+        cur_token = NULL;
+    }
+
     /* Release any memory allocated by the dependent modules. */
 
     df_teardown();
@@ -1346,7 +1568,7 @@ void cop_teardown( void )
  *      the sum of the widths of the count characters starting with *text.
  */
  
-uint32_t cop_text_width( uint8_t * text, uint32_t count, uint32_t font )
+uint32_t cop_text_width( uint8_t * text, uint32_t count, uint8_t font )
 {
     int             i;
     uint32_t        units;
@@ -1355,14 +1577,31 @@ uint32_t cop_text_width( uint8_t * text, uint32_t count, uint32_t font )
 
     if( font > wgml_font_cnt ) font = 0;
 
+    /* Compute the number of units. This will be either horizontal base units
+     * or scale basis units, depending on whether the font is scaled.
+     */
+
     if( wgml_fonts[font].bin_font->width == NULL ) {
-        width = count * wgml_fonts[font].default_width;
+        units = count * wgml_fonts[font].default_width;
     } else {
         table = wgml_fonts[font].bin_font->width->table;
         units = 0;
         for( i = 0; i < count; i++ ) {
             units += table[text[i]];
         }
+    }
+
+    /* Convert from units to width. */
+
+    if( wgml_fonts[font].bin_font->scale_basis == 0 ) {
+
+        /* If the font is not scaled, the value of units is the width. */
+
+        width = units;
+    } else {
+
+        /* If the font is scaled, the width is the scaled value of units. */
+
         width = scale_basis_to_horizontal_base_units( units, &wgml_fonts[font] );
     }
 
@@ -1573,6 +1812,57 @@ void fb_hline( uint32_t h_start, uint32_t v_start, uint32_t h_len )
 void fb_new_section( uint32_t v_start )
 {
     df_new_section( v_start );
+    return;
+}
+
+/* Function fb_output_textline.
+ * Sends the text_line passed to the device via the output buffer.
+ *
+ * Parameter:
+ *      out_line points to a text_line instance specifying the text to be
+ *          sent to the device.
+ *
+ * Note:
+ *      This function deals with the normal output sequence only.
+ *      It is expected that lines drawn with :BOX characters will require
+ *          other, specialized fb_output_ functions.
+ */
+
+void fb_output_textline( text_line * out_line )
+{
+    int             i;
+    text_chars  *   current;
+    uint16_t        line_passes;
+
+    /* Ensure out_line has at least one text_chars instance. */
+
+    current = out_line->first;
+    if( current == NULL ) {
+        out_msg( "wgml internal error: output line with no text\n" );
+        err_count++;
+        g_suicide();
+    }
+
+    /* Determine the number of passes. */
+
+    line_passes = 0;
+    while( current != NULL ) {
+        if( wgml_fonts[current->font_number].font_style->line_passes > line_passes ) {
+            line_passes = wgml_fonts[current->font_number].font_style->line_passes;
+            current = current->next;
+        }
+    }
+
+    /* Do the first pass. */
+
+    fb_first_text_pass( out_line );
+
+    /* Do the subsequent passes */
+
+    for( i = 1; i < line_passes; i ++ ) {
+// still need to write this one!
+    }
+
     return;
 }
 

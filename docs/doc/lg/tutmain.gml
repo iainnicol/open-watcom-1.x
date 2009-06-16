@@ -46,38 +46,50 @@ necessary to create each specific executable file format.
 .notehd2 Description
 .note causeway
 32-bit x86 CauseWay executable
+.note cwdllr
+32-bit x86 CauseWay Dynamic Link Library (register calling convention)
+.note cwdlls
+32-bit x86 CauseWay Dynamic Link Library (stack calling convention)
 .note com
 16-bit x86 DOS ".COM" executable
 .note dos
 16-bit x86 DOS executable
+.note zdos
+32-bit X86 ZDOS executable
+.note zdosdev
+32-bit X86 ZDOS device driver
+.note zdosfsd
+32-bit X86 ZDOS file system driver
+.note zdoshwd
+32-bit X86 ZDOS hardware driver
 .note dos4g
 32-bit x86 DOS/4GW executable
 .note dos4gnz
 non-zero based 32-bit x86 DOS/4GW executable
 .note netware
-32-bit x86 NetWare Loadable Module. Uses original Novell developer kit 
-(NOVH + NOVI). This is a legacy system type. It is recommended to 
+32-bit x86 NetWare Loadable Module. Uses original Novell developer kit
+(NOVH + NOVI). This is a legacy system type. It is recommended to
 use one of the netware_clib or netware_libc system types instead.
 .note novell
-synonym for "netware". This is a legacy system type. It is recommended to 
+synonym for "netware". This is a legacy system type. It is recommended to
 use one of the netware_clib or netware_libc system types instead.
 .note netware_libc
-32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based 
-environment on NetWare 5 and later. Uses the full Open Watcom run-time 
+32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based
+environment on NetWare 5 and later. Uses the full Open Watcom run-time
 library for NetWare.
 .note netware_libc_lite
-32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based 
-environment on NetWare 5 and later. Uses the thin Open Watcom run-time 
+32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based
+environment on NetWare 5 and later. Uses the thin Open Watcom run-time
 library support for NetWare and consumes C library functionality from
 the server libraries.
 .note netware_clib
-32-bit x86 NetWare Loadable Module. Targetted for Novells traditional 
-CLIB based environment on NetWare 3 and later. Uses the full Open Watcom 
+32-bit x86 NetWare Loadable Module. Targetted for Novells traditional
+CLIB based environment on NetWare 3 and later. Uses the full Open Watcom
 run-time library for NetWare.
 .note netware_clib_lite
-32-bit x86 NetWare Loadable Module. Targetted for Novells traditional 
-CLIB based environment on NetWare 3 and later. Uses the thin Open Watcom 
-run-time library support for NetWare and consumes C library functionality 
+32-bit x86 NetWare Loadable Module. Targetted for Novells traditional
+CLIB based environment on NetWare 3 and later. Uses the thin Open Watcom
+run-time library support for NetWare and consumes C library functionality
 from the server libraries.
 .note os2
 16-bit x86 OS/2 executable
@@ -95,6 +107,10 @@ from the server libraries.
 32-bit x86 Phar Lap executable
 .note tnt
 32-bit x86 Phar Lap TNT executable
+.note rdos
+32-bit x86 RDOS executable
+.note rdos_dll
+32-bit x86 RDOS Dynamic Link Library
 .note qnx
 16-bit x86 QNX executable
 .note qnx386
@@ -299,6 +315,58 @@ executable files.
 .*
 .beglevel
 .*
+.section Linking 32-bit x86 ZDOS Executable Files
+.*
+.np
+.ix '32-bit ZDOS executables'
+To create this type of file, use the following structure.
+.millust begin
+system   zdos
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='zdoschap'..
+.*
+.section Linking 32-bit x86 ZDOS Device Driver Files
+.*
+.np
+.ix '32-bit ZDOS device drivers'
+To create this type of file, use the following structure.
+.millust begin
+system   zdosdev
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='zdoschap'..
+.*
+.section Linking 32-bit x86 ZDOS File System Driver Files
+.*
+.np
+.ix '32-bit ZDOS file system drivers'
+To create this type of file, use the following structure.
+.millust begin
+system   zdosfsd
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='zdoschap'..
+.*
+.section Linking 32-bit x86 ZDOS Hardware Driver Files
+.*
+.np
+.ix '32-bit ZDOS hardware drivers'
+To create this type of file, use the following structure.
+.millust begin
+system   zdoshwd
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='zdoschap'..
+.*
 .section Linking 32-bit x86 CauseWay Executable Files
 .*
 .np
@@ -306,6 +374,19 @@ executable files.
 To create this type of file, use the following structure.
 .millust begin
 system   causeway
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='os2chap'..
+.*
+.section Linking 32-bit x86 CauseWay Dynamic Link Libraries
+.*
+.np
+.ix '32-bit CauseWay DLL'
+To create this type of file, use the following structure.
+.millust begin
+system   cwdllr or cwdlls
 .im tutsteps
 .millust end
 .np
@@ -380,7 +461,7 @@ system   netware_(clib|libc)[_lite]
 .im tutsteps
 module   mod_name
 .millust end
-For more information, see the chapter entitled 
+For more information, see the chapter entitled
 :HDREF refid='novchap'..
 .*
 .section Linking 32-bit x86 OS/2 Executable Files
@@ -442,6 +523,32 @@ see the chapter entitled :HDREF refid='phrchap'..
 To create this type of file, use the following structure.
 .millust begin
 system   tnt
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='ntchap'..
+.*
+.section Linking 32-bit x86 RDOS Executable Files
+.*
+.np
+.ix '32-bit RDOS executables'
+To create this type of file, use the following structure.
+.millust begin
+system   rdos
+.im tutsteps
+.millust end
+.np
+For more information,
+see the chapter entitled :HDREF refid='ntchap'..
+.*
+.section Linking 32-bit x86 RDOS Dynamic Link Libraries
+.*
+.np
+.ix '32-bit RDOS DLLs'
+To create this type of file, use the following structure.
+.millust begin
+system   rdos_dll
 .im tutsteps
 .millust end
 .np

@@ -36,7 +36,7 @@ Windows 95, and Windows NT.
 .ix 'applications' 'creating for 32-bit Windows'
 .ix 'applications' 'creating for Windows NT'
 The Win32 executable file format will run under Windows 95,
-Windows NT, and Phar Lap's TNT DOS extender.
+Windows NT, Phar Lap's TNT DOS extender and RDOS.
 It may also run under Windows 3.x using the Win32S subsystem (you are
 restricted to a subset of the Win32 API).
 .do end

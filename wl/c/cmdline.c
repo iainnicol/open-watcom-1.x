@@ -107,10 +107,10 @@ static  parse_entry   FormatHelp[] = {
     "ELF",          ProcELFHelp,            MK_ALL,     0,
 #endif
 #ifdef _ZDOS
-    "ZDOS",         ProcZdosHelp,           MK_ALL,     0,
+    "ZDos",         ProcZdosHelp,           MK_ALL,     0,
 #endif
 #ifdef _RAW
-    "RAW",          ProcRawHelp,            MK_ALL,     0,
+    "Raw",          ProcRawHelp,            MK_ALL,     0,
 #endif
     NULL
 };
@@ -308,7 +308,7 @@ char * GetNextLink( void )
 
 struct extra_cmd_info {
     unsigned    type;
-    char        prefix[PREFIX_SIZE+1];
+    char        prefix[PREFIX_SIZE + 1];
     bool        retry;
 };
 
@@ -324,9 +324,9 @@ static void GetExtraCommands( void )
 /**********************************/
 {
     struct extra_cmd_info const        *cmd;
-    char                                buff[ _MAX_PATH + PREFIX_SIZE ];
+    char                                buff[_MAX_PATH + PREFIX_SIZE];
 
-    for( cmd = ExtraCmds; cmd->prefix[ 0 ] != '\0'; ++cmd ) {
+    for( cmd = ExtraCmds; cmd->prefix[0] != '\0'; ++cmd ) {
         for(;;) {
             memcpy( buff, cmd->prefix, PREFIX_SIZE );
             if( !GetAddtlCommand( cmd->type, buff + PREFIX_SIZE ) )

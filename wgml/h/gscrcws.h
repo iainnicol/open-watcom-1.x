@@ -76,7 +76,7 @@
 //pick( "ix",    scr_ix,       0           ) // index
   pick( "ju",    scr_ju,       cw_break    ) // justify
 //pick( "le",    scr_le,       0           ) // leading space
-//pick( "li",    scr_li,       0           ) // literal
+  pick( "li",    scr_li,       0           ) // literal
 //pick( "ll",    scr_ll,       cw_break    ) // line length
 //pick( "lt",    scr_lt,       cw_break    ) // leading tab
   pick( "me",    scr_me,       0           ) // macro exit
@@ -94,10 +94,10 @@
   pick( "sr",    scr_se,       0           ) // treat as .se as substitute is always on
 //pick( "sy",    scr_sy,       0           ) // system command
 //pick( "tb",    scr_tb,       cw_break    ) // define tab stops
-//pick( "ti",    scr_ti,       0           ) // translate on input
+  pick( "ti",    scr_ti,       0           ) // translate on input
   pick( "th",    scr_th,       0           ) // then
 //pick( "tm",    scr_tm,       cw_break    ) // top margin
-//pick( "tr",    scr_tr,       0           ) // translate table for output
+  pick( "tr",    scr_tr,       0           ) // translate table for output
   pick( "ty",    scr_ty,       0           ) // type
 //pick( "ul",    scr_ul,       0           ) // underline
 //pick( "us",    scr_us,       0           ) // underscore

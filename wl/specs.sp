@@ -529,10 +529,9 @@ system begin cwdlls
     wcc386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
-    option osname='CauseWay DLL (Stack parameter passing)'
+    option osname='CauseWay (stack calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    op stub=cwdstub.exe
     format os2 le dll ^
     libfile dllstrts.obj
 :endsegment
@@ -542,10 +541,9 @@ system begin cwdllr
     wcc386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
-    option osname='CauseWay DLL (Register parameter passing)'
+    option osname='CauseWay (register calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    op stub=cwdstub.exe
     format os2 le dll ^
     libfile dllstrtr.obj
 :endsegment
@@ -709,5 +707,25 @@ system begin zdosdev
     libpath %WATCOM%/lib386/zdosdrv
     libfile devstart.obj
     format zdos sys
+:endsegment
+end
+system begin rdos
+:segment Pspecs
+    wcc386 -bt=rdos
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows pe rdos ^
+:endsegment
+end
+system begin rdos_dll
+:segment Pspecs
+    wcc386 -bt=rdos -bd
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows pe rdos dll ^
 :endsegment
 end

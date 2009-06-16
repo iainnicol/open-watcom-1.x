@@ -9,6 +9,7 @@ describes how to use the &lnkname under
 DOS, ZDOS, OS/2, Windows 9x, Windows NT and QNX.
 The &lnkname can generate executable files that run under
 DOS,
+RDOS,
 ZDOS,
 CauseWay DOS extender,
 FlashTek's DOS extender,

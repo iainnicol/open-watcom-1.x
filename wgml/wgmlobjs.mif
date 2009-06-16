@@ -14,6 +14,7 @@ common_objs =  &
         gmemory.obj  &
         goptions.obj &
         gprocess.obj &
+        gproctxt.obj &
         gresrch.obj  &
         gscan.obj    &
         gsymvar.obj  &
@@ -75,9 +76,11 @@ scr_objs =  &
         gsgt.obj     &
         gsifdoel.obj &
         gsimbed.obj  &
+        gsli.obj     &
         gsmacro.obj  &
         gspe.obj     &
         gspu.obj     &
+        gstitr.obj   &
         gsty.obj
 
 objs = $(common_objs) $(scr_objs) $(gml_objs) $(dev_objs)

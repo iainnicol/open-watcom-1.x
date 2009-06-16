@@ -48,6 +48,7 @@ global  jmp_buf     *   environment;    // var for GSuicide()
 global  char        *   scan_start;
 global  char        *   scan_stop;
 global  char        *   scan_char_ptr;  // used by character scanning routines
+global  char        *   scan_restart;   // used by character scanning routines
 global  bool            scan_err;       // used by character scanning routines
 global char         *   tok_start;      // start of scanned token
 global size_t           arg_flen;       // arg length
@@ -148,8 +149,8 @@ global struct ProcFlags {
     unsigned        substituted     : 1;// & found in current input line
     unsigned        unresolved      : 1;// variable not (yet) resolved
     unsigned        late_subst      : 1;// special var found &gml, &amp,
-    unsigned        freeb           : 1;
-    unsigned        freec           : 1;
+    unsigned        literal         : 1;// .li is active
+    unsigned        in_trans        : 1;// esc char is specified (.ti set x)
     unsigned        freed           : 1;
     unsigned        freee           : 1;
     unsigned        freef           : 1;
@@ -181,10 +182,23 @@ global char             srnm[SYM_NAME_LENGTH + 1];// symbol name for getsym()
 global sub_index        srnmsub;        // subscript
 
 // the following to manage .gt * and .ga * * syntax
-global char        tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name
-global gtentry  *  tag_entry;           // ... entry in tag_dict
-global char        attname[ATT_NAME_LENGTH + 1];// last defined GML attribute
-global gaentry  *  att_entry;           // ... entry in tag_dict
+global char         tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name
+global gtentry  *   tag_entry;          // ... entry in tag_dict
+global char         attname[ATT_NAME_LENGTH + 1];// last defined GML attribute
+global gaentry  *   att_entry;          // ... entry in tag_dict
+
+global  long        li_cnt;             // remaining count for .li processing
+
+global  uint8_t     in_esc;             // input char for .ti processing
+
+global  text_line   words;              // for constructing output line
+#define max_buflist 100
+global  uint32_t    used_buflist;
+global  uint32_t    unused_buflist;
+global  buf_list    buflist[max_buflist];;
+global  text_chars  text_list;          // for reuse of text_chars
+
+global  uint8_t     curr_font_num;      // the font to use for current line
 
 
 /* Reset so can be reused with other headers. */

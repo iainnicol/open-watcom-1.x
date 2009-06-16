@@ -10,16 +10,16 @@ The format of the "FORMAT" directive (short form "FORM") is as follows.
     FORMAT form
 
     form ::= DOS [COM]
-		 | ZDOS [SYS | HWD | FSD]
-		 | RAW [BIN | HEX]
-                 | WINDOWS [win_dll] [MEMORY] [FONT]
-                 | WINDOWS VXD [DYNAMIC]
-                 | WINDOWS NT [TNT] [dll_attrs]
-                 | OS2 [os2_type] [dll_attrs | os2_attrs]
-                 | PHARLAP [EXTENDED | REX | SEGMENTED]
-                 | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
-                 | QNX [FLAT]
-                 | ELF [DLL]
+                | ZDOS [SYS | HWD | FSD]
+                | RAW [BIN | HEX]
+                | WINDOWS [win_dll] [MEMORY] [FONT]
+                | WINDOWS VXD [DYNAMIC]
+                | WINDOWS NT [TNT | RDOS] [dll_attrs]
+                | OS2 [os2_type] [dll_attrs | os2_attrs]
+                | PHARLAP [EXTENDED | REX | SEGMENTED]
+                | NOVELL [NLM | LAN | DSK | NAM | 'number'] 'description'
+                | QNX [FLAT]
+                | ELF [DLL]
 
     win_dll ::= DLL [INITGLOBAL | INITINSTANCE]
 
@@ -177,6 +177,10 @@ extender is created.
 A "PL" format (rather than "PE") executable is created so that
 the Phar Lap TNT DOS extender will always run the application
 (including under Windows NT).
+.np
+.ix 'RDOS'
+If "RDOS" is specified, an executable for the RDOS operating system
+is created.
 .np
 If "DLL" (short form "DL") is specified, a Dynamic Link Library will
 be generated in which case the name of the executable file will have
@@ -409,13 +413,13 @@ This is a 32 bit value that corresponds to Novell allocated NLM types.
 .np
 These are the current defined values:
 .begpoint
-.point 0
+.point 0 
 Specifies a standard NLM (default extension .NLM)
 .point 1
 Specifies a disk driver module (default extension .DSK)
-.point 2
+.point 2 
 Specifies a namespace driver module (default extension .NAM)
-.point 3
+.point 3 
 Specifies a LAN driver module (default extension .LAN)
 .point 4
 Specifies a utility NLM (default extension .NLM)
