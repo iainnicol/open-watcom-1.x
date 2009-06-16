@@ -32,7 +32,7 @@
 #ifndef _LSEEK_H_INCLUDED
 #define _LSEEK_H_INCLUDED
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__)
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) || defined(__ZDOS__)
 _WCRTLINK extern  long    __lseek( int handle, long offset, int origin );
 #else
 #define __lseek lseek

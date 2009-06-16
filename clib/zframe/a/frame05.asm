@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 2007 Zebor Technology.
+; ZDOS run time library function.
 ;
 		IDEAL
 		P486

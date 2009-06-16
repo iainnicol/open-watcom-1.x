@@ -1,6 +1,3 @@
-;
-; Copyright (C) 2005 Zebor Technology.
-;
 		IDEAL
 		P486
 		INCLUDE	'ZDOS.INC'
