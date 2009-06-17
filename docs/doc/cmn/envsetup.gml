@@ -28,7 +28,7 @@ Applications for various target systems
 (including DOS, Microsoft Windows 3.x, and OS/2 V1.x)
 .do end
 .if '&machine' eq '80386' .do begin
-(including extended DOS,
+(including extended DOS, ZDOS,
 .if '&cmpclass' ne 'load-n-go' .do begin
 Microsoft Windows 3.x,
 Microsoft Windows NT,
@@ -36,7 +36,7 @@ Microsoft Windows NT,
 and OS/2 2.0)
 .do end
 can be created using &cmpname and related tools on host systems
-including DOS,
+including DOS, ZDOS
 .if '&cmpclass' ne 'load-n-go' .do begin
 Microsoft Windows 3.x,
 .if '&machine' eq '80386' .do begin
@@ -77,7 +77,7 @@ In order for
 QNX
 .do end
 .el .do begin
-DOS
+DOS, ZDOS
 .if '&machine' eq '80386' .do begin
 .ct , Windows NT
 .do end
@@ -126,7 +126,20 @@ path=&dr3.&pathnam.&pc.binnt&ps.&dr3.&pathnam.&pc.binw
 Use the "System" icon in the
 .bd Control Panel
 to define environment variables.
-.do end
+.keep
+.np
+.us If your host system is ZDOS:
+.np
+.ix 'BINZ directory'
+.ix 'BINW directory'
+The default installation directories for &product ZDOS binaries and
+related files are
+called :FNAME.&pathnam.&pc.binz:eFNAME. and
+:FNAME.&pathnam.&pc.binw:eFNAME..
+.exam begin 1
+path=&dr3.&pathnam.&pc.binz&ps.&dr3.&pathnam.&pc.binw
+.exam end
+to define environment variables.
 .keep
 .np
 .us If your host system is OS/2:
