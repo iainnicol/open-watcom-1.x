@@ -338,7 +338,7 @@ Command line     Procedure   Variable
 Convention   Vararg    passed by       order         stack
 -----------  ------  ------------  ------------- --------------
 C             yes      stack       right to left    no
-WATCOM_C      yes      registers   right to left    see note 1
+WATCOM_C      yes      registers   right to left    yes see note 1
               yes      stack       right to left    no
 SYSCALL       yes      stack       right to left    no
 STDCALL       yes      stack       right to left    yes see note 2
@@ -355,6 +355,73 @@ in which case all parameters will be passed by stack.
 For STDCALL procedures WASM automaticaly cleanup caller stack,
 except case when vararg parameter type is used.
 .endnote
+.np
+.section CALL instruction expansion
+When TASM IDEAL mode is active, WASM handles the proper argument ordering and stack cleanup for you with
+the extended CALL instruction. The syntax for a calling a procedure with parameters is:
+.millust begin
+call expression language [,argumentlist]
+.millust end
+The parameter ordering and stack cleanup is handled as follows:
+.millust begin
+             Parameters    Parameters    Cleanup caller
+Language      passed by       order          stack
+-----------  ------------  -------------  --------------
+C              stack       right to left    yes
+WATCOM_C       registers   right to left    no  see note 1
+               stack       right to left    yes
+SYSCALL        stack       right to left    yes
+STDCALL        stack       right to left    no
+BASIC          stack       left to right    no
+FORTRAN        stack       left to right    no
+PASCAL         stack       left to right    no
+.millust end
+.autonote Notes:
+.note
+Parameters are passed by registers from left to right. Parameters that can not be assigned to registers
+will be passed by stack.
+.endnote
+.exam begin
+Calling Watcom C functions from WASM.
+CALL Watcom WATCOM_C,1,2,3,4,5,6 expands to the following code for 32-bit register mode:
+    mov         eax,1
+    mov         edx,2
+    mov         ebx,3
+    mov         ecx,4
+    push        6
+    push        5
+    call        Watcom_
+and to the following code for 32-bit stack mode:
+    push        6
+    push        5
+    push        4
+    push        3
+    push        2
+    push        1
+    call        Watcom
+    add         esp,24
+.exam end
+.exam begin
+Calling STDCALL functions from WASM.
+CALL Watcom STDCALL,[Value1],[Value2],esi,edi,[ebx] expands to the following code for 32-bit mode:
+    push        [dword ebx]
+    push        edi
+    push        esi
+    push        [dword Value2]
+    push        [dword Value1]
+    call        _Watcom@24
+.exam end
+.exam begin
+Calling FORTRAN functions from WASM.
+CALL Watcom FORTRAN,1,2,3,4,5,6 expands to the following code for 32-bit mode:
+    push        1
+    push        2
+    push        3
+    push        4
+    push        5
+    push        6
+    call        WATCOM
+.exam end
 .endlevel
 .*
 .section &asmname. Diagnostic Messages
