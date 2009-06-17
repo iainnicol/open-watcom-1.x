@@ -21,7 +21,7 @@ Therefore they can be used for embedded applications.
 The math functions are listed here because they are ROMable, however
 you must supply a different
 .id _matherr
-function if you are not running in the DOS, OS/2 or Windows NT
+function if you are not running in the DOS, ZDOS, OS/2 or Windows NT
 environment.
 .contents
 abs~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b
@@ -218,7 +218,7 @@ yn~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 The following functions in the C/C++ library directly or indirectly
 make use of operating system functions.
 They cannot be used on systems that are not running on one of the DOS,
-OS/2 or Windows NT operating systems.
+ZDOS, OS/2 or Windows NT operating systems.
 .contents
 abort~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 access~b~b~b~b~b~b~b~b~b~b~b~b~b

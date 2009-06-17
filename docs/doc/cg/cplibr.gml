@@ -53,7 +53,7 @@ upward-compatible processor-dependent libraries are placed under the
 directory.
 .np
 Since &product also supports several operating systems, including
-DOS, OS/2, Windows 3.x and Windows NT, system-dependent libraries are
+DOS, ZDOS, OS/2, Windows 3.x and Windows NT, system-dependent libraries are
 grouped under different directories underneath the processor-dependent
 directories.
 .np
@@ -63,6 +63,16 @@ For DOS applications, the system-dependent libraries are placed in
 (16-bit applications) and
 .fi &pathnamup\LIB386\DOS
 (32-bit applications).
+.np
+.ix 'ZDOS subdirectory'
+For ZDOS applications, the system-dependent libraries are placed in
+.fi &pathnamup\LIB386\ZDOS
+(32-bit applications).
+.np
+.ix 'ZDOSDRV subdirectory'
+For ZDOS drivers, the system-dependent libraries are placed in
+.fi &pathnamup\LIB386\ZDOSDRV
+(32-bit drivers).
 .np
 .ix 'OS2 subdirectory'
 For OS/2 applications, the system-dependent libraries are
@@ -98,10 +108,10 @@ are placed in
          |                            |
       lib286                       lib386
          |                            |
- .-------+-------.    .-------.-------+-------.-------.
- |       |       |    |       |       |       |       |
-dos     os2     win  dos     os2     win      nt   netware
- |       |       |    |       |       |       |       |
+ .-------+-------.    .-------.-------+-------.-------.-------.-------.
+ |       |       |    |       |       |       |       |       |       |
+dos     os2     win  dos     os2     win      nt   netware  zdos   zdosdrv
+ |       |       |    |       |       |       |       |       |       |
 .millust end
 .do end
 .* --------------------
@@ -283,6 +293,22 @@ GRAPH.LIB    (flat/small models, DOS graphics support)
 The graphics library
 .fi GRAPH.LIB
 is independent of the argument passing conventions.
+.np
+.cp 8
+.us Under
+.fi &pathnamup\LIB386\ZDOS
+.ix 'CLIB3R.LIB'
+.millust begin
+CLIB3R.LIB   (flat/small models, "3r", "4r" or "5r" option)
+.millust end
+.np
+.cp 8
+.us Under
+.fi &pathnamup\LIB386\ZDOSDRV
+.ix 'CLIB3R.LIB'
+.millust begin
+CLIB3R.LIB   (flat/small models, "3r", "4r" or "5r" option)
+.millust end
 .np
 .cp 8
 .us Under
@@ -1156,17 +1182,25 @@ WILDARGV.C   (wild card processing for argv)
 .ix 'CSTRT386.ASM'
 .ix 'CSTRTW32.ASM'
 .ix 'CSTRTX32.ASM'
+.ix 'APPSTART.ASM'
+.ix 'DEVSTART.ASM'
+.ix 'FSDSTART.ASM'
+.ix 'HWDSTART.ASM'
 .ix 'CMAIN386.C'
 .millust begin
 CSTRT386.ASM (startup for most DOS Extenders)
 CSTRTW32.ASM (startup for 32-bit Windows)
 CSTRTX32.ASM (startup for FlashTek DOS Extender)
+APPSTART.ASM (startup for ZDOS application)
+DEVSTART.ASM (startup for ZDOS device driver)
+FSDSTART.ASM (startup for ZDOS file system driver)
+HWDSTART.ASM (startup for ZDOS hardware driver)
 CMAIN386.C   (final part of initialization sequence)
 .millust end
 .np
 .ix 'CMAIN386.C'
 The assembler files
-.fi CSTRT*.ASM
+.fi CSTRT*.ASM, ???START.ASM
 contain the first part of the initialization code and the remainder is
 continued in the file
 .fi CMAIN386.C.

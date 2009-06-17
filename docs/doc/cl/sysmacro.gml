@@ -75,6 +75,14 @@ The program is being compiled for use on a DOS operating system.
 .keep end
 .*
 .pp
+.mkwix &mkwZDOS_sp.
+.mkwfont &mkwZDOS.
+.discuss begin
+The program is being compiled for use on the ZDOS
+operating system.
+.discuss end
+.*
+.pp
 .mkwix &mkwNET_sp.
 .mkwfont &mkwNET.
 .discuss begin

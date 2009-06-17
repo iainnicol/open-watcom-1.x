@@ -170,6 +170,14 @@ hosted OS/2 session.
 32-bit Tenberry Software DOS Extender executables
 .note DOS4GNZ
 32-bit Tenberry Software DOS Extender non-zero base executables
+.note ZDOS
+32-bit ZDOS executables
+.note ZDOSDEV
+32-bit ZDOS device drivers
+.note ZDOSFSD
+32-bit ZDOS file system drivers
+.note ZDOSHWD
+32-bit ZDOS hardware drivers
 .note NETWARE
 32-bit Novell NetWare 386 NLMs
 .note NOVELL

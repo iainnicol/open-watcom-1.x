@@ -132,7 +132,7 @@ If you have the 286 development system, 16-bit applications can be
 linked for DOS, Microsoft Windows, OS/2, and QNX depending on which
 libraries are selected.
 If you have the 386 development system, 32-bit applications can
-be linked for DOS Extender systems, Microsoft Windows and QNX.
+be linked for DOS Extender systems, ZDOS, Microsoft Windows and QNX.
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin

@@ -63,7 +63,7 @@ to build QNX applications.
 .el .do begin
 .us &product User's Guide
 describes how to use &product on Intel 80x86-based personal computers
-with DOS, Windows, Windows NT, or OS/2.
+with DOS, ZDOS; Windows, Windows NT, or OS/2.
 .if '&alpha' eq 'AXP' .do begin
 It also describes how to use &product on DEC Alpha AXP computers
 running Windows NT.
@@ -181,6 +181,9 @@ Inc.
 .np
 Phar Lap, 286|DOS-Extender and 386|DOS-Extender are trademarks of
 Phar Lap Software, Inc.
+.*
+.np
+ZDOS are registered trademarks of Zebor Technology.
 .*
 .np
 .tmarkqnx

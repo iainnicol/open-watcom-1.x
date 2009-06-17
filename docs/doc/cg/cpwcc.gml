@@ -680,6 +680,8 @@ The default build targets are:
 .begpoint
 .point DOS
 when the host operating system is DOS,
+.point ZDOS
+when the host operating system is ZDOS,
 .point OS2
 when the host operating system is OS/2,
 .point NT
@@ -911,7 +913,7 @@ See the
 manual for a description of the standard macros.
 .np
 The &product compilers run on various host operating systems
-including DOS, OS/2, Windows NT, Windows 95 and QNX.
+including DOS, ZDOS, OS/2, Windows NT, Windows 95 and QNX.
 Any of the supported host operating systems can be used to develop
 applications for a number of target systems.
 By default, the target operating system for the application is the
@@ -996,6 +998,10 @@ systems.
 .ix '__DOS__'
 .ix 'macros' 'MSDOS'
 .ix 'MSDOS'
+.ix 'macros' '_ZDOS'
+.ix '_ZDOS'
+.ix 'macros' '__ZDOS__'
+.ix '__ZDOS__'
 .ix 'macros' '__OS2__'
 .ix '__OS2__'
 .ix 'macros' '__QNX__'
@@ -1020,6 +1026,7 @@ systems.
 Target      Macros
 ======      ======================================
 DOS         __DOS__, _DOS, MSDOS
+ZDOS        __ZDOS__, _ZDOS
 OS/2        __OS2__
 QNX         __QNX__, __UNIX__
 Netware     __NETWARE__, __NETWARE_386__
@@ -1036,6 +1043,12 @@ and
 .kwm MSDOS
 macros are defined when the build target is "DOS" (16-bit DOS or
 32-bit extended DOS).
+.note
+The
+.kwm __ZDOS__
+and
+.kwm _ZDOS
+macros are defined when the build target is "ZDOS" (32-bit DOS).
 .note
 The
 .kwm __OS2__
@@ -2665,7 +2678,7 @@ In this example, any calls generated to the virtual methods 'method_a' or 'metho
 will use the THISCALL ( my_thiscall ) calling convention. Calls generated to 'method_c'
 will use the prefefined
 .kw __cdecl
-calling convention. 
+calling convention.
 .np
 It is also possible to forward define the class with modifiers for occasions where
 you do not want to change original source code.

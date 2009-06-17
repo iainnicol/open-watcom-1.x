@@ -385,6 +385,7 @@ __MAKEFILES__ = <list of makefiles>
 __VERSION__ = <version number>
 __LOADDLL__= defined if DLL loading supported
 __MSDOS__ =  defined if MS/DOS version
+__ZDOS__ = defined if ZDOS version
 __NT__ = defined if Windows NT version
 __NT386__ = defined if x86 Windows NT version
 .*__NTAXP__ = defined if Alpha AXP Windows NT version
@@ -616,6 +617,8 @@ The following macros are for more sophisticated makefiles.
 :DDHD.Expansion
 .point __MSDOS__
 This macro is defined in the MS/DOS environment.
+.point __ZDOS__
+This macro is defined in the ZDOS environment.
 .point __NT__
 This macro is defined in the Windows NT environment.
 .point __OS2__

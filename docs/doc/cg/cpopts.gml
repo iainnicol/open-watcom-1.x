@@ -1377,6 +1377,8 @@ The default build targets are:
 .begnote
 .note DOS
 when the host operating system is DOS,
+.note ZDOS
+when the host operating system is ZDOS,
 .note OS2
 when the host operating system is OS/2,
 .note NT
@@ -1411,6 +1413,8 @@ and prevent it from defining
 and
 .kwm __DOS__
 if the compiler was being run under DOS,
+.kwm __ZDOS__
+if using the ZDOS hosted compiler,
 .kwm __OS2__
 if using the OS/2 hosted compiler,
 .kwm __NT__
@@ -1454,6 +1458,9 @@ Defines the macros
 .kwm _DOS
 and
 .kwm MSDOS.
+.note ZDOS
+Defines the macro
+.kwm _ZDOS
 .note WINDOWS
 Same as specifying one of the "zw" options.
 Defines the macros
@@ -2826,7 +2833,7 @@ follows the rules specified for other files.
 :OPT refid='SWadhp' name='adhp[=<path_name>]'.
 .ix 'options' 'adhp'
 When including file with "" delimiters, the filename resulting in makefile
-type auto dependancy files will have no path.  This allows these files to 
+type auto dependancy files will have no path.  This allows these files to
 be given a path, and said path will may be relative.  This path_name is
 prepended to the filename exactly, so a trailing slash must be specified.
 .np
@@ -3089,7 +3096,7 @@ it will attempt to open a header file called
 :OPT refid='SWfti' name='fti'.
 .ix 'options' 'fti'
 (C only)
-Whenever a file is open as a result of 
+Whenever a file is open as a result of
 .id #include
 directive processing, an informational message is printed. The message
 contains the file name and line number identifying where the

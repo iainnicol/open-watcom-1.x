@@ -12,7 +12,7 @@ describes how to use &company's software development tools on Intel
 to build QNX applications.
 .do end
 .el .do begin
-with DOS, Windows, or OS/2.
+with DOS, ZDOS, Windows, or OS/2.
 .do end
 .*
 The
@@ -71,6 +71,9 @@ Inc.
 .np
 Phar Lap, 286|DOS-Extender, and 386|DOS-Extender are trademarks of
 Phar Lap Software, Inc.
+.*
+.np
+ZDOS is a registered trademarks of Zebor Technology.
 .*
 .np
 .tmarkqnx

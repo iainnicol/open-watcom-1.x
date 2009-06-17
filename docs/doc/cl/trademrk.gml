@@ -19,6 +19,9 @@ Microsoft and MS DOS are registered trademarks of Microsoft Corp.
 Windows is a trademark of Microsoft Corp.
 .*
 .pp
+ZDOS ia a registered trademark of Zebor Technology.
+.*
+.pp
 .tmarkqnx
 .*
 .pp

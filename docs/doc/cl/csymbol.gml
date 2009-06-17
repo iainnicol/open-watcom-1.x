@@ -147,6 +147,9 @@
 :SET symbol='mkwDOS'        value='__DOS__'.
 :SET symbol='mkwDOS_sp'     value='_&SYSRB._DOS_&SYSRB._'.
 :CMT.
+:SET symbol='mkwZDOS'       value='__ZDOS__'.
+:SET symbol='mkwZDOS_sp'    value='_&SYSRB._ZDOS_&SYSRB._'.
+:CMT.
 :SET symbol='mkwEXPRESS'    value='__EXPRESSC__'.
 :SET symbol='mkwEXPR_sp'    value='_&SYSRB._EXPRESSC_&SYSRB._'.
 :CMT.

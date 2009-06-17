@@ -611,7 +611,7 @@ OPEN( UNIT=1, FILE='TEST.DAT', ACTION='READ', SHARE='DENYWR', ... )
 .np
 .ix 'FAT file system'
 .ix 'HPFS file system'
-The FAT file system is supported by DOS and OS/2.
+The FAT file system is supported by DOS, ZDOS and OS/2.
 OS/2 also supports the High Performance File System (HPFS) which will
 be discussed in a later section.
 .ix 'file designation'
