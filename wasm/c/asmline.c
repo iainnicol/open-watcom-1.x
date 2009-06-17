@@ -126,7 +126,7 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
         case ' ':
             if( quote != 0 )
                 break;
-            if( *(ptr - 1) == '\\' )
+            if( ( got_something == TRUE ) && ( *( ptr - 1 ) == '\\' ) )
                 skip = TRUE;
             break;
         case '\'':
@@ -158,7 +158,7 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
             continue; /* don't store character in string */
         case '\n':
             /* if continuation character found, pass over newline */
-            if( (got_something == TRUE) && (*(ptr - 1) == '\\') ) {
+            if( ( got_something == TRUE ) && ( *( ptr - 1 ) == '\\' ) ) {
                 ptr--;
                 max++;
                 LineNumber++;
