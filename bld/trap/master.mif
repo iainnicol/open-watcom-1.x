@@ -67,6 +67,7 @@ additional_cleanup = *.d32 *.trp
 !include $(trap_dir)/trap.mif
 !endif
 
+
 # cflags stuff
 ###############
 extra_c_flags += -D$(which) -DMD_$(cpu) $(extra_cflags)
@@ -150,6 +151,8 @@ targ = dos
 targ = dos
 !else ifeq os os2v2
 targ = os2
+!else ifeq os rdos
+targ = rdos
 !else
 targ = $(os)
 !endif
@@ -228,6 +231,10 @@ objs = $($(which)_objs) mxutil.obj $(extra_dobjs)
 !endif
 
 !ifndef substitute_linker
+
+all:
+        @%append c:/log $(cc)
+        @%append c:/log $(cflags)
 
 $(target) : $(objs) $(extra_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__) $(nversion_tmp)
         %create $^&.lnk
