@@ -133,6 +133,9 @@ cdsay .
     <CPCMD> <DEVDIR>/trap/tcp/linux.trp/tcp.trp                     <RELROOT>/binl/
     <CPCMD> <DEVDIR>/trap/tcp/linux.srv/tcpserv.elf                 <RELROOT>/binl/tcpserv
 
+  [ IFDEF (os_rdos "") <2*> ]
+    <CPCMD> <DEVDIR>/trap/lcl/rdos/std/std.dll                      <RELROOT>/rdos/
+
 [ BLOCK <1> clean ]
 #==================
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean

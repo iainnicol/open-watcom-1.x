@@ -194,7 +194,8 @@
     #define     WANT_FILE
     #undef      WANT_OVL
     #define     WANT_THREAD
-    #define     WANT_RFX
+    #undef      WANT_RFX
+    #define     WANT_CAPABILITIES
     #define     TRAPENTRY TRAPFAR
 #else
     #error Unknown operating system
