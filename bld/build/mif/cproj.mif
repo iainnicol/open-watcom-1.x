@@ -130,7 +130,7 @@ default_memory_model_386_os2   = f
 default_memory_model_386_nt    = f
 default_memory_model_386_linux = f
 default_memory_model_386_nto   = f
-default_memory_model_386_rdos  = s
+default_memory_model_386_rdos  = f
 default_memory_model_386_      = f
 
 !ifndef memory_model_386
@@ -166,7 +166,7 @@ cflags_qnx      = -bt=qnx
 cflags_osi      = -bt=osi
 cflags_dos      = -bt=dos
 cflags_zdos     = -bt=zdos
-cflags_rdos     = -bt=rdos
+cflags_rdos     = -bt=rdos -3r -bm
 cflags_nov      = -bt=netware
 cflags_linux    = -bt=linux
 
@@ -313,7 +313,7 @@ lflags_os2_386   = sys os2v2
 lflags_os2_i86   = sys os2 pmc
 lflags_dos_386   = sys dos4g
 lflags_zdos_386  = sys zdos
-lflags_rdos_386  = sys rdos
+lflags_rdos_386  = sys rdos_pe
 lflags_qnx_386   = sys qnx386 flat
 lflags_qnx_i86   = sys qnx
 lflags_win_386   = sys win386
@@ -377,7 +377,7 @@ inc_dirs_sys_qnx   =
 inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
 inc_dirs_sys_zdos  = -I$(hdr_dir)/dos/zdos
-inc_dirs_sys_rdos  = -I$(hdr_dir)/rdos
+inc_dirs_sys_rdos  = -I"$(clib_dir)/h"
 
 inc_dirs_lang_osi     = -I$(hdr_dir)/dos
 inc_dirs_lang_qnx     = -I$(hdr_dir)/qnx
@@ -404,6 +404,7 @@ inc_dirs_sys_qnx   =
 inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
 inc_dirs_sys_zdos  = -I$(lang_root)/h/zdos
+inc_dirs_sys_rdos  = -I"$(clib_dir)/h"
 
 inc_dirs_lang_qnx     = -I$(lang_root)/qh
 inc_dirs_lang_linux   = -I$(lang_root)/lh
@@ -434,6 +435,7 @@ inc_dirs_sys_qnx   =
 inc_dirs_sys_linux =
 inc_dirs_sys_nto   =
 inc_dirs_sys_zdos  = -I$(lang_root)\h\zdos
+inc_dirs_sys_rdos  = -I"$(clib_dir)/h"
 
 inc_dirs_lang_qnx     = -I$(lang_root)\qh
 inc_dirs_lang_linux   = -I$(lang_root)\lh
