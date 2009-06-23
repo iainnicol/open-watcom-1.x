@@ -443,6 +443,14 @@ typedef         unsigned char           ATTR;
     typedef PIXEL *LPPIXEL;
     #define __FAR
     #undef HAVE_FAR
+#elif defined(__RDOS__)
+    typedef struct pixel {
+            unsigned char   ch;
+            ATTR            attr;
+    } PIXEL;
+    typedef PIXEL *LPPIXEL;
+    #define __FAR
+    #undef HAVE_FAR
 #elif defined( _M_IX86 )
     typedef struct pixel {
             char            ch;
