@@ -62,7 +62,7 @@ extern _WCRTLINK int __wsetenv( const wchar_t *name, const wchar_t *newvalue, in
 // the wide and MBCS environments consistent.
 _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newvalue, int overwrite )
 {
-#ifndef __UNIX__
+#if !defined(__UNIX__) && !defined(__RDOS__)
 #ifdef __WIDECHAR__
     char                *otherName;
     char                *otherNewval;
@@ -121,7 +121,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
     if( _RWD_wenviron == NULL )  __create_wide_environment();
 #endif
 
-#ifdef __UNIX__
+#if defined(__UNIX__) || defined(__RDOS__)
 
     rc = __F_NAME(_setenv,__wsetenv)( name, newvalue, overwrite );
 
