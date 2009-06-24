@@ -118,6 +118,8 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     _RWD_osminor = minor;
 
     _LpCmdLine = (char *)RdosGetCmdLine();
+    if( _LpCmdLine == 0 )
+        _LpCmdLine = "";
 
     return( 1 );
 }

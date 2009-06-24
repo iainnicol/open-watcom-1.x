@@ -56,10 +56,16 @@ static char       CmdData[256];
 
 void GUImain( void )
 {
+    const char *cmdline;
+
     // fix up env vars if necessary
     watcom_setup_env();
 
-    strcpy( CmdData, RdosGetCmdLine() );
+    cmdline = RdosGetCmdLine();
+    if( cmdline )
+        strcpy( CmdData, cmdline );
+    else
+        CmdData[0] = 0;
 
     DebugMain();
 }
@@ -89,7 +95,11 @@ char *GetCmdArg( int num )
 void SetCmdArgStart( int num, char *ptr )
 {
     num = num;
-    strcpy( CmdData, ptr );
+
+    if( ptr )
+        strcpy( CmdData, ptr );
+    else
+        CmdData[0] = 0;
 }
 
 void KillDebugger( int ret_code )
