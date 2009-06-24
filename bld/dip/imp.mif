@@ -1,0 +1,95 @@
+#
+# Master makefile for creating DIPs
+#
+
+proj_name = dip
+
+dip_autodepends = .autodepend
+
+additional_cleanup = *.d32 *.dip
+
+fpu_flags_dos_i86   = -fpc
+fpu_flags_dos_386   = -fpc
+fpu_flags_os2_i86   = -fpc
+fpu_flags_os2_386   = -fpc
+fpu_flags_qnx_i86   = -fpc
+fpu_flags_qnx_386   = -fpc
+fpu_flags_nt_386    = -fpc
+fpu_flags_linux_386 = -fpc
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+sys_nt_386_javavm       = op offset=0x6e800000
+sys_nt_386_export       = op offset=0x6ec00000
+sys_nt_386_codeview     = op offset=0x6ed00000
+sys_nt_386_watcom       = op offset=0x6ee00000
+sys_nt_386_dwarf        = op offset=0x6ef00000
+
+sys_os2_i86     = os2 dll export DIPLOAD
+sys_os2_386     = os2v2 dll export DIPLOAD
+sys_qnx_i86     = qnx disable 1023
+sys_qnx_386     = pharlap rex disable 1023,1014
+sys_linux_386   = pharlap rex disable 1023,1014
+sys_win_i86     = windows op modname=$(name),rwr
+sys_dos_386     = pharlap rex disable 1023,1014
+sys_nt_386      = nt_dll export DIPLOAD op modname=$(name) $(sys_nt_386_$(name))
+sys_nt_axp      = ntaxp_dll export DIPLOAD op modname=$(name)
+
+ext_os2_i86     = .dll
+ext_os2_386     = .d32
+ext_qnx_i86     = .dip
+ext_qnx_386     = .dip
+ext_linux_386   = .dip
+ext_win_i86     = .dll
+ext_dos_386     = .dip
+ext_nt_386      = .dll
+ext_nt_axp      = .dll
+
+!ifdef bootstrap
+lib_name = $(name).so
+!else
+lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
+!endif
+
+clib_os2_i86    = clibl
+clib_os2_386    = clib3r
+clib_qnx_i86    = clibl
+clib_qnx_386    = clib3r
+!ifdef __LINUX__
+clib_linux_386  = $(clib_dir)/library/linux.386/mf_r/clib3r.lib &
+$(mathlib_dir)/library/msdos.386/mf_r/math3r.lib
+!else
+clib_linux_386  = clib3r
+!endif
+clib_win_i86    = clibl
+clib_dos_386    = clib3r
+clib_nt_386     = clib3r
+clib_nt_axp     = clib
+
+extra_c_flags   = -s -D__DIP__ $(extra_cflags)
+!ifdef bootstrap
+extra_c_flags += -fPIC
+!else
+extra_c_flags += -s
+extra_c_flags_i86 = -zc -zu
+!endif
+
+inc_dirs = -I"../h" $(extra_incs) -I"$(dig_dir)/h"
+
+.c: ../c;../../c;$(extra_srcs)
+
+objs = dipimp.obj $(imp_objs)
+
+!ifdef bootstrap
+$(lib_name) : $(objs) $(imp_libs) $(__MAKEFILES__)
+        $(cl) -shared $(clflags) $(objs) $(imp_libs) $(cl_libs)
+!else
+$(lib_name) : $(objs) $(imp_libs) $(__MAKEFILES__)
+        $(linker) op map, symfile debug all &
+                sys $(sys_$(host_os)_$(host_cpu)) &
+                name $^@ &
+                file {$(objs)} &
+                library {$(clib_$(host_os)_$(host_cpu)) $(imp_libs)}
+!endif
