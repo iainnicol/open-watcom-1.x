@@ -252,3 +252,90 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
 
     return( RcSize );
 }
+
+int WResLoadString( int handle, unsigned int id, void *buf, int maxsize)
+{
+    char *RcPtr = 0;
+    int RcSize;
+    int ok;
+    int i;
+    char *src;
+    char *dst;
+    
+    if( handle == 0 ) {
+        _asm {
+            mov eax,fs:[0x24]
+            mov handle,eax
+        }
+    }
+
+    _asm {
+        push ds
+        mov ebx,handle
+        mov eax,id
+        mov edx,6
+    }
+    RdosGetModuleResourceBase();
+    _asm {
+        pop ds
+        mov RcSize,ecx
+        mov RcPtr,esi
+    }
+    ok = RdosCarryToBool();
+
+    if( !ok )
+        RcSize = 0;
+
+    if( RcSize ) {
+        if (RcSize > maxsize)
+            RcSize = maxsize;
+
+        src = RcPtr;
+        dst = buf;
+        for( i = 0; i < RcSize; i++ ) {
+            *dst = *src;
+            dst++;
+            src += 2;
+        }            
+    }    
+
+    return( RcSize );
+}
+
+int WResLoadResource( int handle, unsigned int type, unsigned int id, void *buf, int maxsize)
+{
+    char *RcPtr = 0;
+    int RcSize;
+    int ok;
+    
+    if( handle == 0 ) {
+        _asm {
+            mov eax,fs:[0x24]
+            mov handle,eax
+        }
+    }
+
+    _asm {
+        push ds
+        mov ebx,handle
+        mov eax,id
+        mov edx,type
+    }
+    RdosGetModuleResourceBase();
+    _asm {
+        pop ds
+        mov RcSize,ecx
+        mov RcPtr,esi
+    }
+    ok = RdosCarryToBool();
+    if( !ok )
+        RcSize = 0;
+
+    if( RcSize ) {
+        if( RcSize > maxsize )
+            RcSize = maxsize;
+        memcpy( buf, RcPtr, RcSize );            
+    }    
+
+    return( RcSize );
+}
