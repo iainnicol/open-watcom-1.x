@@ -110,3 +110,18 @@ void intern physupdate( SAREA *area )
         }
     }    
 }
+
+int global uiisdbcs( void )
+{
+    return( FALSE );
+}
+
+int global uionnec( void )
+{
+    return( FALSE );
+}
+
+int global uicharlen( int ch )
+{
+    return( 1 );
+}

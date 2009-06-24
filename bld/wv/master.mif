@@ -287,6 +287,8 @@ inc_dirs += -I"$(ncurses_dir)/h"
 dig_srcs +=;$(dig_dir)/c/dsx
 !else ifeq host_os dos
 dig_srcs +=;$(dig_dir)/c/dsx
+!else ifeq host_os rdos
+inc_dirs += -I"$(clib_dir)/h"
 !endif
 
 # libs
@@ -308,6 +310,7 @@ libs_qnx_i86        = $(aui_dir)/qnxi86/aui.lib $(gui_dir)/ui/qnxi86/gui.lib $(u
 libs_qnx_386        = $(aui_dir)/qnx386/aui.lib $(gui_dir)/ui/qnx386/gui.lib $(ui_dir)/qnx/qnx386/ui.lib
 libs_linux_386      = $(aui_dir)/linux386/aui.lib $(gui_dir)/ui/linux386/gui.lib $(ui_dir)/unix/linux386/ui.lib $(ncurses_dir)/linux386/ncurses.lib
 libs_nt_axp         = $(aui_dir)/ntaxp/aui.lib $(gui_dir)/ui/ntaxp/gui.lib $(ui_dir)/nt/ntaxp/ui.lib
+libs_rdos_386       = $(aui_dir)/rdos386/aui.lib $(gui_dir)/ui/rdos386/gui.lib $(ui_dir)/rdos/rdos386/ui.lib
 !endif
 
 !ifdef bootstrap
