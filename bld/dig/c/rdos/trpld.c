@@ -100,7 +100,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     InitFunc = RdosGetModuleProc( TrapFile, "TrapInit_" );
     FiniFunc = RdosGetModuleProc( TrapFile, "TrapFini_" );
-    ReqFunc  = RdosGetModuleProc( TrapFile, "TrapReq_" );
+    ReqFunc  = RdosGetModuleProc( TrapFile, "TrapRequest_" );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( InitFunc == NULL || FiniFunc == NULL || ReqFunc == NULL
         /* || LibListFunc == NULL */ ) {
