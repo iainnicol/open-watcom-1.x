@@ -26,6 +26,7 @@ ext_win_i86   = .dll
 ext_dos_386   = .mad
 ext_nt_386    = .dll
 ext_nt_axp    = .dll
+ext_rdos_386  = .dll
 
 !ifdef bootstrap
 lib_name = $(name).so
@@ -65,12 +66,14 @@ lflags_os2_386  = sys os2v2 dll
 lflags_win_i86  = sys windows op rwr
 lflags_nt_386   = sys nt_dll op offset=0x6eb00000
 lflags_nt_axp   = sys ntaxp_dll op dosseg
+lflags_rdos_386 = sys rdos_pe_dll op offset=0xd9000000
 
 extra_l_flags  = op map
 
 extra_l_flags_os2  = export MADLOAD op modname=$(name)
 extra_l_flags_nt   = export MADLOAD op modname=$(name)
 extra_l_flags_win  = op modname=$(name)
+extra_l_flags_rdos = export MADLOAD op modname=$(name)
 
 !ifndef bootstrap
 libs = clib3r

@@ -68,6 +68,9 @@ unsigned ConfigScreen( void )
 
 void InitScreen( void )
 {
+    if( uistart() ) {
+        GUIInitMouse( 1 );
+    }
 }
 
 bool UsrScrnMode( void )
@@ -98,7 +101,7 @@ void SaveMainWindowPos()
 void FiniScreen( void )
 {
     DebugScreen();
-    if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
+    GUIFiniMouse();
     uistop();
 }
 

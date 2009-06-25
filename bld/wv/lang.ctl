@@ -35,6 +35,8 @@ cdsay .
   [ IFDEF (os_rdos "") <2*> ]
     <CPCMD> <DEVDIR>/wv/rdos/rdos386/wv.exe       <RELROOT>/rdos/wd.exe
     <CPCMD> <DEVDIR>/wv/rdos/rdos386/wv.sym       <RELROOT>/rdos/wd.sym
+    <CPCMD> <DEVDIR>/wv/dbg/*.dbg                 <RELROOT>/rdos/
+    <CPCMD> <DEVDIR>/wv/ssl/*.prs                 <RELROOT>/rdos/
 
   [ IFDEF (os_os2 "") <2*> ]
     <CPCMD> <DEVDIR>/wv/rfx/os2386/rfx.exe      <RELROOT>/binp/rfx.exe
