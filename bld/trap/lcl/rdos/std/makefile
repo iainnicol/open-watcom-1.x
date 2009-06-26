@@ -28,12 +28,9 @@ extra_objs = &
         accmap.obj &
         accredir.obj &
         accmem.obj &
-        misc.obj &
         thread.obj &
-        peread.obj &
-        supp.obj &
-        dbgthrd.obj &
         supphdlr.obj &
+        supp.obj &
         core.obj
 
 inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(clib_dir)/h"

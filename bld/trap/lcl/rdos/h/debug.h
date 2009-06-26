@@ -31,6 +31,9 @@
 #ifndef _DEBUG_H
 #define _DEBUG_H
 
+struct TDebug *GetCurrentDebug();
+void SetCurrentDebug( struct TDebug *obj );
+
 // TDebugBreak data
 
 struct TDebugBreak

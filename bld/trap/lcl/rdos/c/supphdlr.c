@@ -24,16 +24,63 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Supplemental request handler.
 *
 ****************************************************************************/
 
 
-#include <rdos.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "stdrdos.h"
 
-#pragma off (unreferenced);
-int __stdcall LibMain( int hdll, long reason, void *reserved )
+unsigned ReqCapabilities_get_8b_bp( void )
 {
-    return( 1 );
+    capabilities_get_8b_bp_req  *req;
+    capabilities_get_8b_bp_ret  *ret;
+
+    req = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+
+    ret->err = 0;
+    ret->status = 1;            /* This signals we support 8 byte breakpoints */
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqCapabilities_set_8b_bp( void )
+{
+    capabilities_set_8b_bp_req  *req;
+    capabilities_set_8b_bp_ret  *ret;
+
+    req = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+
+    ret->err = 0;
+    ret->status = 1;   /* And are we supporting it? */
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqCapabilities_get_exact_bp( void )
+{
+    capabilities_get_exact_bp_req  *req;
+    capabilities_get_exact_bp_ret  *ret;
+
+    req = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+
+    ret->err = 0;
+    ret->status = 1;            /* This signals we support exact breakpoints */
+    return( sizeof( *ret ) );
+}
+
+unsigned ReqCapabilities_set_exact_bp( void )
+{
+    capabilities_set_exact_bp_req  *req;
+    capabilities_set_exact_bp_ret  *ret;
+
+    req = GetInPtr( 0 );
+    ret = GetOutPtr( 0 );
+
+    ret->err = 0;
+    ret->status = 1;
+    return( sizeof( *ret ) );
 }

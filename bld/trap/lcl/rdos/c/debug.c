@@ -86,6 +86,46 @@ struct TExceptionEvent
     unsigned short Cs;
 };    
 
+#define MAX_DEBUG_THREADS       16
+
+static struct TDebug    *DebugArr[MAX_DEBUG_THREADS];
+static int              ThreadArr[MAX_DEBUG_THREADS]; 
+
+
+struct TDebug *GetCurrentDebug()
+{
+    int i;
+    int handle = RdosGetThreadHandle();
+
+    for( i = 0; i < MAX_DEBUG_THREADS; i++ )
+        if( ThreadArr[i] == handle )
+            return( DebugArr[i] );
+
+    return( 0 );               
+}
+
+void SetCurrentDebug( struct TDebug *obj )
+{
+    int i;
+    int handle = RdosGetThreadHandle();
+
+    for( i = 0; i < MAX_DEBUG_THREADS; i++ ) {
+        if( ThreadArr[i] == handle ) {
+            ThreadArr[i] = 0;
+            DebugArr[i] = 0;
+        }
+    }
+
+    if( obj ) { 
+        for( i = 0; i < MAX_DEBUG_THREADS; i++ ) {
+            if( ThreadArr[i] == 0) {
+                ThreadArr[i] = handle;
+                DebugArr[i] = obj;
+            }
+        }
+    }
+}
+
 static void ReadThreadState( struct TDebugThread *obj )
 {
     struct ThreadState state;

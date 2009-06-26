@@ -43,6 +43,3 @@
 #define WORD  unsigned short int
 #define DWORD unsigned int
 #define TRPGLOBAL	extern
-
-struct TDebug *GetCurrentDebug();
-void SetCurrentDebug( struct TDebug *obj );

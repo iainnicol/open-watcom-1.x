@@ -30,10 +30,5 @@
 
 #include "debug.h"
 
-#define MAX_DEBUG_THREADS       16
-
-TRPGLOBAL char                  ExtensionList[] TRPGLOBINIT( ".exe\0" );
-TRPGLOBAL struct TDebug         DebugArr[MAX_DEBUG_THREADS];
-
 #undef TRPGLOBAL
 #undef TRPGLOBINIT
