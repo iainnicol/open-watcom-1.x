@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern void hlp_ut_position(struct sarea *,unsigned char ,unsigned char ,int ,int , bool);
+extern void hlp_ut_position(struct sarea *,ORD ,ORD ,int ,int , bool);
 extern void vvscroll( struct vscreen *, struct sarea, int );
