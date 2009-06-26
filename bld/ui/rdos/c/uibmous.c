@@ -29,100 +29,22 @@
 *
 ****************************************************************************/
 
-
+#include "rdos.h"
 #include "uidef.h"
 #include "uimouse.h"
-
-
-#define OFF_SCREEN      200
-
-extern MOUSEORD MouseRow, MouseCol;
-
-static MOUSEORD oldMouseRow, oldMouseCol = OFF_SCREEN;
-static bool     mouseOn = FALSE;
-#if 0
-static ATTR     OldAttr;
-
-static char __FAR *RegenPos( unsigned row, unsigned col )
-/*****************************************************/
-{
-    char        __FAR *pos;
-
-    pos = (char __FAR *)UIData->screen.origin
-          + (row*UIData->screen.increment+col)*sizeof(PIXEL) + 1;
-    vertretrace();
-    return( pos );
-}
-#endif
-
-static void uisetmouseoff( void )
-/*******************************/
-{
-//    char                __FAR *old;
-
-    if( mouseOn ) {
-#if 0
-        old = RegenPos( oldMouseRow, oldMouseCol );
-        *old = OldAttr;
-        {
-            SAREA       area;
-            area.row = oldMouseRow;
-            area.col = oldMouseCol;
-            area.height = 1;
-            area.width = 1;
-            physupdate( &area );
-        }
-#endif
-    }
-}
-
-static void uisetmouseon( MOUSEORD row, MOUSEORD col )
-/****************************************************/
-{
-//    char                __FAR *new;
-
-    if( mouseOn ){
-#if 0
-        new = RegenPos( row, col );
-        OldAttr = *new;
-        if( UIData->colour == M_MONO ){
-            *new = (OldAttr & 0x79) ^ 0x71;
-        } else {
-            *new = (OldAttr & 0x7f) ^ 0x77;
-        }
-        {
-            SAREA       area;
-            area.row = row;
-            area.col = col;
-            area.height = 1;
-            area.width = 1;
-            physupdate( &area );
-        }
-#endif
-        oldMouseRow = row;
-        oldMouseCol = col;
-    }
-}
-
-
 
 void global uisetmouse( MOUSEORD row, MOUSEORD col )
 /**************************************************/
 {
-    if( oldMouseRow == row && oldMouseCol == col ) return;
-    uisetmouseoff();
-    uisetmouseon( row, col );
+    RdosSetMousePosition( col, row );
 }
 
 
 void global uimouse( int func )
 /*****************************/
 {
-    if( func == MOUSE_ON ) {
-        mouseOn = TRUE;
-        uisetmouseon( oldMouseRow, oldMouseCol );
-    } else {
-        uisetmouseoff();
-        mouseOn = FALSE;
-    }
+    if( func == MOUSE_ON )
+        RdosShowMouse();
+    else
+        RdosHideMouse();
 }

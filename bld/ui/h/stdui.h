@@ -395,9 +395,19 @@ enum {
         in WVIDEO since values in the range 0-10000 are used.
         Only the data structures are use.. No UI functions are actually
         called for Windows so UI does not need to be rebuilt
+
 */
 
 typedef         unsigned int            ORD;
+
+#elif __RDOS__
+
+/*      This needs to be fixed so scaling for a mouse also need a larger range!!
+        An improper reference to __GUI__ is used. Fixed for now so it works for RDOS. 
+*/
+        
+
+typedef         int                     ORD;
 
 #else
 
@@ -606,8 +616,8 @@ extern          void            uiclose( VSCREEN _FARD * );
 extern          void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR,
                                             unsigned int, const char * );
 extern          bool            uiconfig( char *, char ** );
-extern          void            uicursor( VSCREEN _FARD *, unsigned char,
-                                          unsigned char, int );
+extern          void            uicursor( VSCREEN _FARD *, ORD,
+                                          ORD, int );
 extern          int             uidialogevent( VSCREEN _FARD * );
 extern          void            uidirty( SAREA );
 extern          void            uidrawbox( VSCREEN _FARD *, SAREA *area,
@@ -647,8 +657,8 @@ extern          VSCREEN _FARD  *uiopen( SAREA *, char *, unsigned int );
 extern          void            uihidemouse( void );
 extern          unsigned        uiclockdelay( unsigned milli );
 extern          EVENT   _FARD  *uipoplist( void );
-extern          void            uiposition( SAREA *, unsigned char,
-                                    unsigned char ,int ,int , bool );
+extern          void            uiposition( SAREA *, ORD,
+                                    ORD ,int ,int , bool );
 extern          void            uiprotect( VSCREEN _FARD* );
 extern          void            uipushlist( EVENT _FARD* );
 extern          void            uiputlist( EVENTLIST _FARD* );

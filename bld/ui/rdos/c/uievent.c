@@ -163,7 +163,7 @@ unsigned long global uiclock( void );
 #define VK_LMENU          0xA4
 #define VK_RMENU          0xA5
 
-static unsigned char ShftState;
+int                  WaitHandle;
 
 typedef struct {
     short int vk;
@@ -228,7 +228,8 @@ static const map events[] = {
     { VK_F12, EV_FUNC_12, EV_SHIFT_FUNC_12, EV_CTRL_FUNC_12, EV_ALT_FUNC_12 }
 };
 
-static int                  WaitHandle;
+
+static unsigned char        ShftState;
 static int                  KeyInstalled;
 
 static ORD                  currMouseRow;
@@ -260,6 +261,30 @@ int CompareEvents( const void *p1, const void *p2 )
     return( ((map*)p1)->vk - ((map*)p2)->vk );
 }
 
+static int IsStdKey( int ExtKey, int VirtualKey )
+{
+    if (ExtKey & 0x8000)
+        return FALSE;
+
+    switch (VirtualKey)
+    {
+        case VK_SHIFT:
+        case VK_CONTROL:
+        case VK_MENU:
+        case VK_CAPITAL:
+        case VK_LWIN:
+        case VK_RWIN:
+        case VK_LSHIFT:
+        case VK_RSHIFT:
+        case VK_LCONTROL:
+        case VK_RCONTROL:
+        case VK_LMENU:
+        case VK_RMENU:
+            return FALSE;
+    }
+    return TRUE;
+}
+
 static EVENT KeyEventProc()
 {
     int                 ext;
@@ -278,22 +303,25 @@ static EVENT KeyEventProc()
         has_alt = keystate & KEY_ALT_PRESSED;
         setshiftstate( has_shift, has_ctrl, has_alt );
         what.vk = (short int)vk;
-        
-        ev = bsearch( &what, events, sizeof( events )/sizeof( map ),
+
+        if( IsStdKey( ext, vk ) ) {
+            ev = bsearch( &what, events, sizeof( events )/sizeof( map ),
                       sizeof( what ), CompareEvents );
-        if( ev != NULL ) {
-            if( has_shift ) {
-                ascii = ev->shift;
-            } else if( has_ctrl ) {
-                ascii = ev->ctrl;
-            } else if( has_alt ) {
-                ascii = ev->alt;
-            } else {
-                ascii = ev->reg;
+            if( ev != NULL ) {
+                if( has_shift ) {
+                    ascii = ev->shift;
+                } else if( has_ctrl ) {
+                    ascii = ev->ctrl;
+                } else if( has_alt ) {
+                    ascii = ev->alt;
+                } else {
+                    ascii = ev->reg;
+                }
+            } else if( ascii == 0 ) {
+                ascii = EV_NO_EVENT;
             }
-        } else if( ascii == 0 ) {
-            ascii = EV_NO_EVENT;
-        }
+        } else
+            return( EV_NO_EVENT );
 
         if( ascii > EV_NO_EVENT ) {
             uihidemouse();
@@ -302,6 +330,40 @@ static EVENT KeyEventProc()
 
     } else
         return( EV_NO_EVENT );
+}
+
+static EVENT MouseEventProc()
+{
+    ORD stat = 0;
+    int row;
+    int col;
+    
+    if( RdosGetLeftButton() )
+        stat |= MOUSE_PRESS;
+
+    if( RdosGetRightButton() )
+        stat |= MOUSE_PRESS_RIGHT;
+
+    RdosGetMousePosition(  &col, &row );
+
+    if( stat != currMouseStatus ) {
+        if( !(stat & MOUSE_PRESS) && (currMouseStatus & MOUSE_PRESS) )
+            RdosGetLeftButtonReleasePosition( &col, &row );
+    
+        if( !(stat & MOUSE_PRESS_RIGHT) && (currMouseStatus & MOUSE_PRESS_RIGHT) )
+            RdosGetRightButtonReleasePosition( &col, &row );
+    
+        if( (stat & MOUSE_PRESS) && !(currMouseStatus & MOUSE_PRESS) )
+            RdosGetLeftButtonPressPosition( &col, &row );
+    
+        if( (stat & MOUSE_PRESS_RIGHT) && !(currMouseStatus & MOUSE_PRESS_RIGHT) )
+            RdosGetRightButtonPressPosition( &col, &row );
+    }
+    currMouseRow = row;
+    currMouseCol = col;
+    currMouseStatus = stat;
+    
+    return mouseevent();        
 }
 
 bool intern initkeyboard( void )
@@ -366,14 +428,16 @@ bool global initmouse( int install )
     if( install == 0 ) {
         return( FALSE );
     }
-    UIData->mouse_xscale = 1;  /* Craig -- do not delete or else! */
-    UIData->mouse_yscale = 1;  /* Craig -- do not delete or else! */
+    UIData->mouse_xscale = 8;
+    UIData->mouse_yscale = 8;
 
     if( !MouseInstalled ) {
         if( WaitHandle == 0 )
             WaitHandle = RdosCreateWait();
 
-        RdosAddWaitForMouse( WaitHandle, &mouseevent );
+        RdosAddWaitForMouse( WaitHandle, &MouseEventProc );
+        RdosSetMouseWindow( 0, 0, 8 * 80 - 1, 8 * 25 - 1 );
+        RdosSetMouseMickey( 8, 8 );
     }
 
     MouseOn = FALSE;
@@ -411,23 +475,6 @@ void intern checkmouse( unsigned short *pstatus, MOUSEORD *prow,
     *ptime = uiclock();
     uisetmouse( *prow, *pcol );
 }
-
-EVENT intern getanyevent( void )
-{
-    EVENT               ( *proc )();
-
-    proc = RdosCheckWait( WaitHandle );
-
-    if( proc == 0)
-        return( EV_NO_EVENT );
-    else
-        return (*proc)();
-}
-
-void intern waitforevent( void )
-{
-    RdosWaitForever( WaitHandle );
-} /* waitforevent */
 
 unsigned char global uicheckshift( void )
 /***************************************/
