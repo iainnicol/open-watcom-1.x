@@ -1,0 +1,71 @@
+proj_name = wzoom
+name = wzoom
+
+!ifndef wzoom_autodepends
+wzoom_autodepends = .AUTODEPEND
+!endif
+
+sys_windowed = 1
+
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
+objs =  zoom.obj zmglob.obj zmproc.obj zmscreen.obj zmconfig.obj &
+        mem.obj about.obj ldstr.obj inipath.obj
+
+extra_c_flags_mem = -DNO_WPI
+
+extra_l_flags     = option map
+extra_l_flags_nt  = op stack=64k
+extra_l_flags_win = op stack=7k, heapsize=2k
+
+inc_dirs = -I.. -I"$(sdk_dir)/misc"
+
+.c: ..;$(sdk_dir)/misc
+.h: ..;$(sdk_dir)/misc
+
+# systems where version resource must be added to .EXE
+build_rc_nt_386 = nt
+
+!ifdef build_rc_$(host_os)_$(host_cpu)
+res_objs = exever.res
+!endif
+
+$(name).exe : rcstr.gh $(objs) $(name).res $(res_objs)
+        $(linker) $(lflags) name $(name).exe file { $(objs) }
+!ifdef build_rc_$(host_os)_$(host_cpu)
+        $(rc) -k $(name).res $^@ -fr=exever.res
+!else
+        $(rc) -k $(name).res $^@
+!endif
+
+$(name)j.exe : $(name).exe $(name)j.res
+        cp $(name).exe $(name)j.exe
+        $(rc) -k $(name)j.res $^@
+
+rcstr.gh : rcstrmsg.gh
+        $(awk) -f $(misc_dir)/msgtoh.awk $[@ > $^@
+
+rcstrmsg.gh : ../wzoom.msg $(sdk_dir)/misc/about.msg
+        $(cc) $(preproc_opts) $(inc_path) -fo=$^@
+
+$(name).res : ../wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -r -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
+
+$(name)j.res : ../wzoom.rc .AUTODEPEND
+        $(rc) $(rc_flags) -r -ad -zk0 -I"../res/kanji" $(inc_path) -D_JAPANESE_ $[@ -fo=$^@
+
+exever.res: exever.rc
+        $(rc) $(rc_flags) -r $(inc_path) $[@ -fo=$^@
+
+./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
+        $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
+
+!ifndef patch_level
+patch_level=0
+!endif
+
+exever.rc : ./genverrc.exe ../exever.rc $(fe_misc_dir)/c/genverrc.c
+        $[@ ../exever.rc exever.rc $$ $(name) $(patch_level)
+
