@@ -33,6 +33,7 @@
 #include <math.h>
 #include "ifprag.h"
 #include "mathcode.h"
+#include "mathlib.h"
 
 #define log10_of_e    0.4342944819032518
 
@@ -53,7 +54,6 @@ _WMRTLINK double _IF_dlog10( double x )
 /*************************************/
 {
     if( x <= 0.0 ) {
-//        x = _matherr( x == 0.0 ? SING : DOMAIN, "log10", &x, &x, -HUGE_VAL );
         x = __log87_err( x, FUNC_LOG10 );
     } else {
         x =  log(x) * log10_of_e;

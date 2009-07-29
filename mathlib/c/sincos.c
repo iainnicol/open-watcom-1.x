@@ -37,26 +37,11 @@
 #include "ifprag.h"
 #include "mathcode.h"
 #include "rtdata.h"
+#include "mathlib.h"
 
 #define PI              3.14159265358979323846
 #define PIby2   (PI/2)
 #define PIby4   (PI/4)
-
-extern  double  _cos87(double);
-extern  double  _sin87(double);
-extern  double  _tan87(double);
-extern  void    __fprem( double, double, int *, double * );
-#if defined(__386__)
-#pragma aux     _cos87  "_*" parm [edx eax] value [edx eax];
-#pragma aux     _sin87  "_*" parm [edx eax] value [edx eax];
-#pragma aux     _tan87  "_*" parm [edx eax] value [edx eax];
-#pragma aux     __fprem "*_" parm [];
-#elif defined( _M_I86 )
-#pragma aux     _cos87  "_*" parm [ax bx cx dx] value [ax bx cx dx];
-#pragma aux     _sin87  "_*" parm [ax bx cx dx] value [ax bx cx dx];
-#pragma aux     _tan87  "_*" parm [ax bx cx dx] value [ax bx cx dx];
-#pragma aux     __fprem "*_" parm [];
-#endif
 
 extern  double  _EvalPoly( double, const double *, int );
 extern  double  _OddPoly( double, const double *, int );
@@ -89,7 +74,7 @@ static const double _cospoly[] = {
 static const int Degree[]    = { 0, 1, 2, 3, 4, 4, 5, 5, 6 };
 
 
-double __sincos( double x, int flag )
+static double __sincos( double x, int func )
 {
     int     i;
     int     exponent;
@@ -97,19 +82,16 @@ double __sincos( double x, int flag )
     double  y;
     double  siny, cosy;
     double  sinx, cosx;
-    static const int func_name[] = {
-        FUNC_SIN,
-        FUNC_TAN,
-        FUNC_COS
-    };
 
     frexp( x, &exponent );
     if( exponent >= 32 ) {
-//      return( _matherr( TLOSS, func_name[flag], &x, &x, 0.0 ) );
-        return( __math1err( func_name[flag] | M_TLOSS | V_ZERO, &x ) );
+        return( __math1err( func | M_TLOSS | V_ZERO, &x ) );
     }
     __fprem( x, PIby4, &i, &y );    /* 24-nov-88 */
-    i = (i + (flag & 2)) & 7;
+    if( func == FUNC_COS ) {
+        i += 2;
+    }
+    i = i & 7;
     if( i & 1 ) {                   /* if odd octant */
         y = PIby4 - y;
     }
@@ -129,10 +111,10 @@ double __sincos( double x, int flag )
         }
         index = Degree[ index ];
         /* only calculate the necessary polynomials */
-        if( ((i + 1) & 2) || flag == 1 ) {
+        if( ((i + 1) & 2) || func == FUNC_TAN ) {
             cosy = _EvalPoly( y * y, &_cospoly[index], 8 - index );
         }
-        if( (((i + 1) & 2) == 0) || flag == 1 ) {
+        if( (((i + 1) & 2) == 0) || func == FUNC_TAN ) {
             siny = _OddPoly( y, &_sinpoly[index], 8 - index );
         }
     }
@@ -156,7 +138,7 @@ double __sincos( double x, int flag )
     if( i & 4 ) {
         sinx = - sinx;      /* octants 4,5,6,7 */
     }
-    if( flag == 1 ) {           /* if "tan" */
+    if( func == FUNC_TAN ) {           /* if "tan" */
 
         /* cos is out of phase with sin by 2 octants */
 
@@ -171,14 +153,14 @@ double __sincos( double x, int flag )
         }
         if( cosx == 0.0 ) {
             __set_ERANGE();
-            if( sinx > 0.0 ) return( HUGE_VAL );
+            if( sinx > 0.0 )
+                return( HUGE_VAL );
             return( -HUGE_VAL );
         }
         sinx = sinx / cosx;         /* calculate value of tan function */
     }
     if( exponent >= 28 ) {
-//      return( _matherr( PLOSS, func_name[flag], &x, &x, sinx ) );
-        return( __math2err( func_name[flag] | M_PLOSS, &x, &sinx ) );
+        return( __math2err( func | M_PLOSS, &x, &sinx ) );
     }
     return( sinx );
 }
@@ -201,11 +183,11 @@ _WMRTLINK double _IF_dsin( double x )
 /************************/
 {
 #if defined(_M_IX86)
-    if( _RWD_real87 ) return( _sin87(x) );
+    if( _RWD_real87 )
+        return( _sin87(x) );
 #endif
-    return( __sincos( x, 0 ) );
+    return( __sincos( x, FUNC_SIN ) );
 }
-
 
 
 
@@ -225,11 +207,11 @@ _WMRTLINK double _IF_dcos( double x )
 /***********************************/
 {
 #if defined(_M_IX86)
-    if( _RWD_real87 ) return( _cos87(x) );
+    if( _RWD_real87 )
+        return( _cos87(x) );
 #endif
-    return( __sincos( x, 2 ) );
+    return( __sincos( x, FUNC_COS ) );
 }
-
 
 
 
@@ -249,7 +231,8 @@ _WMRTLINK double _IF_dtan( double x )
 /***********************************/
 {
 #if defined(_M_IX86)
-    if( _RWD_real87 ) return( _tan87(x) );
+    if( _RWD_real87 )
+        return( _tan87(x) );
 #endif
-    return( __sincos( x, 1 ) );
+    return( __sincos( x, FUNC_TAN ) );
 }

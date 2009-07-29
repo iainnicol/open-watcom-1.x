@@ -37,8 +37,8 @@
 #include "wgml.h"
 #include "gvars.h"
 
-#define sys(x)  sys##x                  // construct varname
-#define sysp(x) sys##x##fun             // construct access function name
+#define sys(x)  sys##x                  // construct symvar varname
+#define sysf(x) sys##x##fun             // construct access function name
 #define sys0(x) sys##x##0               // construct subscript 0 name
 #define syss(x) sys##x##str             // construct name for string value
 
@@ -69,7 +69,7 @@
 #define picc( var, next, flag )   picl( var, next, flag )
 #define pick( var, next, flag )   picl( var, next, flag )
 #define picl( var, next, flag )   \
-static void sysp( var )( symvar * entry );
+static void sysf( var )( symvar * entry );
 #include "gsyssym.h"
 #undef pick
 #undef pica
@@ -108,7 +108,7 @@ static char syss( var )[MAX_L_AS_STR];  // for long as string
 #define picc( var, next, flag )     picl( var, next, flag )
 #define picl( var, next, flag )     \
 static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysp( var ), flag \
+    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag \
 };\
 static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, &syss( var ) };
 
@@ -120,7 +120,7 @@ static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
 
 #define pick( var, next, flag )     \
 static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysp( var ), flag \
+    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag \
 };\
 static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
 
@@ -131,8 +131,12 @@ static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
 #undef picl
 
 
-static  char    str_on[]  = "ON";
-static  char    str_off[] = "OFF";
+/***************************************************************************/
+/*  The sequence of the the following strings must match the enum ju_enum  */
+/***************************************************************************/
+
+static  char    str[][8] = { "OFF", "ON", "HALF", "LEFT", "RIGHT", "CENTER",
+                            "INSIDE", "OUTSIDE" };
 
 static  char    dateval[20];
 static  char    dayofmval[3];
@@ -167,8 +171,9 @@ static void sysadoddfun( symvar * e )
     return;
 };
 
-static void sysapagefun( symvar * e )
+static void sysapagefun( symvar * e )   // absolute page
 {
+    utoa( apage, sysapagestr, 10 );
     return;
 };
 
@@ -245,9 +250,9 @@ static void sysclfun( symvar * e )
 static void syscofun( symvar * e )      // .co status
 {
     if( ProcFlags.concat ) {
-        sysco0.value = str_on;
+        sysco0.value = str[ju_on];
     } else {
-        sysco0.value = str_off;
+        sysco0.value = str[ju_off];
     }
     return;
 };
@@ -485,8 +490,10 @@ static void sysixreffun( symvar * e )
     return;
 };
 
-static void sysjufun( symvar * e )
+static void sysjufun( symvar * e )      // .ju status
 {
+    sysju0.value = str[ProcFlags.justify];
+    return;
     return;
 };
 
@@ -495,8 +502,9 @@ static void syslayoutfun( symvar * e )
     return;
 };
 
-static void syslcfun( symvar * e )
+static void syslcfun( symvar * e )      // remaining linecount on page
 {
+    utoa( lc, syslcstr, 10 );
     return;
 };
 
@@ -510,8 +518,9 @@ static void syslinbfun( symvar * e )
     return;
 };
 
-static void syslinefun( symvar * e )
+static void syslinefun( symvar * e )    // current lineno on page
 {
+    utoa( line, syslinestr, 10 );
     return;
 };
 
@@ -587,8 +596,9 @@ static void sysoutfun( symvar * e )
     return;
 };
 
-static void syspagefun( symvar * e )
+static void syspagefun( symvar * e )    // pageno in body
 {
+    utoa( page, syspagestr, 10 );
     return;
 };
 
@@ -903,11 +913,13 @@ static  void    init_predefined_symbols( void )
 {
     char    wkstring[MAX_L_AS_STR];
 
-    add_symvar( &global_dict, "amp", "&", no_subscript, predefined + late_subst );
+    add_symvar( &global_dict, "amp", "&", no_subscript,
+                predefined + late_subst );
 
     wkstring[1] = '\0';
     wkstring[0] = GML_CHAR_DEFAULT;
-    add_symvar( &global_dict, "gml", wkstring, no_subscript, predefined + late_subst );
+    add_symvar( &global_dict, "gml", wkstring, no_subscript,
+                predefined + late_subst );
 
 }
 
@@ -963,9 +975,9 @@ void    init_sys_dict( symvar * * dict )
     *(sysccstr +1) = 0;
 //  *syscccstr =
 //  *syscdstr  =
-    syschars0.value = str_off;
+    syschars0.value = str[ju_off];
 //  *sysclstr  =
-    sysco0.value    = str_on;
+    sysco0.value    = str[ju_on];
     *syscpstr  = 'N';
     *(syscpstr + 1) = 0;
 //  *syscpagesstr  =
@@ -981,7 +993,7 @@ void    init_sys_dict( symvar * * dict )
 //  *sysdhsetstr =
 //  *sysdocnumstr =
 //  *sysdpagestr =
-    sysduplex0.value = str_off;
+    sysduplex0.value = str[ju_off];
 //  *sysenvstr =
     *sysfbstr = 'N';
     *(sysfbstr + 1) = 0;
@@ -1004,7 +1016,7 @@ void    init_sys_dict( symvar * * dict )
     *(syshnstr + 1) = 0;
 //  *syshncstr =
 //  *syshsstr =
-    syshy0.value = str_off;
+    syshy0.value = str[ju_off];
 //  *syshycstr =
     *syshyphstr = 'N';                // hyphenation OFF not implemented  TBD
     *(syshyphstr + 1) = 0;
@@ -1014,9 +1026,10 @@ void    init_sys_dict( symvar * * dict )
     *sysixjstr = '-';
     *(sysixjstr + 1) = 0;
     *sysixrefstr = ',';
-    *(sysixrefstr + 1) = 0;
-    sysju0.value = str_on;
-    syslayout0.value = str_off;
+    *(sysixrefstr + 1) = ' ';
+    *(sysixrefstr + 2) = 0;
+    sysju0.value = str[ju_on];
+    syslayout0.value = str[ju_off];
 //  *syslcstr =
     *syslistr = '.';
     *(syslistr + 1) = 0;
@@ -1056,11 +1069,11 @@ void    init_sys_dict( symvar * * dict )
 //  *sysppagestr =
     *sysprsstr = '-';
     *(sysprsstr + 1) = 0;
-    sysprt0.value = str_on;
+    sysprt0.value = str[ju_on];
     *syspsstr  = '%';
     *(syspsstr + 1) = 0;
 //  *syspwstr =
-    sysquiet0.value = str_off;
+    sysquiet0.value = str[ju_off];
     *sysrbstr    = ' ';
     *(sysrbstr + 1) = 0;
 //  *sysrecnostr =
@@ -1078,7 +1091,7 @@ void    init_sys_dict( symvar * * dict )
 //  *sysslstr =
 //  *sysspcondstr =
 //  *sysstitlestr =
-    syssu0.value = str_on;
+    syssu0.value = str[ju_on];
     syssys0.value = "DOS";
     *systabstr = *systbstr = ' ';
     *(systabstr + 1) = *(systbstr + 1) = 0;

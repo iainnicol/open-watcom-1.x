@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implements the functions declared in dfinterp.h:
+* Description:  Implements the functions declared in devfuncs.h:
 *                   df_initialize_pages()
 *                   df_increment_pages()
 *                   df_interpret_device_functions()
@@ -60,12 +60,14 @@
 *                   device_function_table
 *                   driver_function_table
 *                   font_number
+*                   htab_done
 *                   line_pass_number
 *                   page_to
 *                   pages
 *                   set_margin
 *                   staging
 *                   tab_width
+*                   text_out_open
 *                   text_output
 *                   textpass
 *                   thickness
@@ -135,14 +137,24 @@
 *                   df_y_address()
 *                   df_y_size()
 *                   fb_absoluteaddress()
+*                   fb_first_text_chars()
 *                   fb_firstword()
+*                   fb_font_switch()
+*                   fb_htab()
+*                   fb_initial_horizontal_positioning()
+*                   fb_internal_horizontal_positioning()
+*                   fb_new_font_text_chars()
 *                   fb_newline()
 *                   fb_normal_vertical_positioning()
+*                   fb_subsequent_text_chars()
 *                   format_error()
 *                   get_parameters()
 *                   interpret_functions()
 *                   numeric_literal()
 *                   out_text_driver()
+*                   output_spaces()
+*                   post_text_output()
+*                   pre_text_output()
 *                   process_parameter()
 *                   skip_functions()
 *
@@ -207,35 +219,37 @@ typedef void * (*df_function) (void);
 
 /* These are set by device functions and for use in outputting text. */
 
-static bool             textpass        = false;
-static bool             uline           = false;
+static bool             textpass                = false;
+static bool             uline                   = false;
 
 /* These are used to control some aspects of device function operation. */
 
-static bool             at_start            = true;
-static bool             set_margin          = false;
-static bool             text_output         = false;
-static page_state       current_state       = { 0, 0, 0 };
-static page_state       desired_state       = { 0, 0, 0 };
-static uint32_t         line_pass_number    = 0;
-static uint32_t         page_top            = 0;
+static bool             at_start                = true;
+static bool             htab_done               = false;
+static bool             set_margin              = false;
+static bool             text_output             = false;
+static page_state       current_state           = { 0, 0, 0 };
+static page_state       desired_state           = { 0, 0, 0 };
+static uint32_t         line_pass_number        = 0;
+static uint32_t         page_top                = 0;
 
 /* These are used to hold values returned by device functions. */
 
-static char         *   date_val        = NULL;
-static char         *   time_val        = NULL;
-static char             wgml_header[]   = "V4.0 PC/DOS";
-static uint32_t         font_number     = 0;
-static uint32_t         pages           = 0;
-static uint32_t         tab_width       = 0;
-static uint32_t         thickness       = 0;
-static uint32_t         x_address       = 0;
-static uint32_t         x_size          = 0;
-static uint32_t         y_address       = 0;
-static uint32_t         y_size          = 0;
+static char         *   date_val                = NULL;
+static char         *   time_val                = NULL;
+static char             wgml_header[]           = "V4.0 PC/DOS";
+static uint32_t         font_number             = 0;
+static uint32_t         pages                   = 0;
+static uint32_t         tab_width               = 0;
+static uint32_t         thickness               = 0;
+static uint32_t         x_address               = 0;
+static uint32_t         x_size                  = 0;
+static uint32_t         y_address               = 0;
+static uint32_t         y_size                  = 0;
 
 /* These are used by the interpreter. */
-static uint32_t         active_font     = 0;
+static bool             text_out_open           = false;
+static uint32_t         active_font             = 0;
 static df_data          current_df_data;
 static df_function      device_function_table[MAX_FUNC_INDEX + 1];
 static df_function      driver_function_table[MAX_FUNC_INDEX + 1];
@@ -360,9 +374,10 @@ static void fb_newline( void )
 
     if( at_start ) {
         if( wgml_fonts[0].font_style->lineprocs != NULL ) {       
-            if( wgml_fonts[0].font_style->lineprocs[0].endvalue != NULL ) \
+            if( wgml_fonts[0].font_style->lineprocs[0].endvalue != NULL ) {
                 df_interpret_driver_functions( \
                     wgml_fonts[0].font_style->lineprocs[0].endvalue->text );
+            }
         }
         at_start = false;
     }
@@ -410,6 +425,89 @@ void format_error( void )
     out_msg( "Device library error: bad format\n" );
     err_count++;
     g_suicide();
+}
+
+/* Function output_spaces().
+ * This function inserts the spaces, if any, needed to move the print head
+ * from its current position to its desired position into the output buffer.
+ *
+ * Parameter:
+ *      count contains the number of spaces to emit.
+ * Global Modified:
+ *      current_state.x_address is set equal to desired_state.x_address.
+ *
+ * Note:
+ *      The calling function is responsible for detecting and handling
+ *          cases in which the desired horizontal space cannot be treated
+ *          as an exact multiple of the width of a space character.
+ */
+
+static void output_spaces( uint32_t count )
+{
+    int     i;
+
+    if( staging.length < count ) {
+        staging.text = (uint8_t *) mem_realloc( staging.text, count );
+        staging.length = count;
+    }
+
+    for( i = 0; i < count; i++) {
+        staging.text[staging.current] = ' ';
+        staging.current++;
+    }
+
+    ob_insert_block( staging.text, staging.current, true, true, active_font );
+    current_state.x_address = desired_state.x_address;
+    staging.current = 0;
+
+    return;
+}
+
+/* Function post_text_output().
+ * Performs any processing needed to terminate text output.
+ *
+ * Global Changed:
+ *      htab_done is set to false.
+ *      text_out_open is set to false.
+ */
+
+static void post_text_output( void )
+{
+    char    shwd_suffix[] = ") shwd ";
+    char    sd_suffix[] = ") sd ";
+    size_t  ps_suffix_size;
+
+    if( ps_device ) {
+        if( htab_done ) {
+            ps_suffix_size = strlen( sd_suffix );
+            ob_insert_block( sd_suffix, ps_suffix_size, false, false, \
+                                                                active_font );
+        } else {
+            ps_suffix_size = strlen( shwd_suffix );
+            ob_insert_block( shwd_suffix, ps_suffix_size, false, false, \
+                                                                active_font );
+        }
+    }
+
+    htab_done = false;
+    text_out_open = false;
+
+    return;
+}
+
+/* Function pre_text_output().
+ * Performs any processing needed to start text output.
+ *
+ * Global Changed:
+ *      text_out_open is set to true.
+ */
+
+static void pre_text_output( void )
+{
+    if( ps_device ) ob_insert_byte( '(' );
+    text_out_open = true;
+
+    return;
 }
 
 /* Function df_do_nothing_char().
@@ -482,8 +580,8 @@ static void * df_clearPC( void )
  
 static void * df_dotab( void )
 {
-            int         i;
     static  int         instance = 0;
+            uint32_t    spaces;
 
     /* Recursion is an error. */
 
@@ -496,41 +594,38 @@ static void * df_dotab( void )
 
     if( current_df_data.parameter_type != 0x00 ) format_error();
 
-    if( bin_driver->absoluteaddress.text != NULL ) \
+    if( has_aa_block ) {
         fb_absoluteaddress();
-    else {
-        char    ps_suffix[] = ") shwd ";
-        size_t  count;
-        size_t  ps_suffix_size;
+    } else {
 
-        count = (size_t) tab_width;
-        ps_suffix_size = sizeof( ps_suffix );
+        /* Spaces cannot be emitted "backwards". */
 
-        if( staging.length < count ) {
-            staging.text = (uint8_t *) mem_realloc( staging.text, count );
-            staging.length = count;
+        if( current_state.x_address > desired_state.x_address) {
+            out_msg( "Cannot move backwards within a text line!\n" );
+            err_count++;
+            g_suicide();
         }
 
-        if( ps_device ) {
-            staging.text[staging.current] = '(';
-            staging.current++;
+        /* Set tab_width and spaces. */
+
+        tab_width = desired_state.x_address - current_state.x_address;
+        spaces = tab_width / wgml_fonts[active_font].spc_width;
+
+        /* Warn of apparent use of justification. */
+
+        if( (tab_width % wgml_fonts[active_font].spc_width) > 0 ) {
+            out_msg( "Warning: justification not supported (dotab).\n" );
+            wng_count++;
         }
 
-        for( i = 0; i < count; i++) {
-            staging.text[staging.current] = ' ';
-            staging.current++;
-        }
+        /* Perform the %dotab() horizontal positioning. */
 
-        if( ps_device ) {
-            memcpy_s( &staging.text[staging.current], ps_suffix_size, \
-                                            ps_suffix, ps_suffix_size  );
-            staging.current += ps_suffix_size;
-        }
-
-        ob_insert_block( staging.text, staging.current, true, true, \
-                                                                active_font );
-        staging.current = 0;
+        if( !text_out_open ) pre_text_output();
+        output_spaces( spaces );
+        if( text_out_open ) post_text_output();
+        tab_width = 0;
     }
+
     instance--;
 
     return( NULL );
@@ -603,7 +698,7 @@ static void * df_flushpage( void )
 
     /* If :ABSOLUTEADDRESS is not available, do the vertical positioning. */
 
-    if( bin_driver->absoluteaddress.text == NULL ) fb_newline();
+    if( !has_aa_block ) fb_newline();
 
     /* If this is the Initial Vertical Positioning, interpret the :LINEPROC
      * :ENDVALUE block for line pass 1 of available font 0, unless it has
@@ -1097,7 +1192,7 @@ static void out_text_driver( bool out_trans, bool out_text )
         /* Now get and insert the parameter. */
 
         current_df_data.current = current_df_data.base + my_parameters.first;
-        first = process_parameter();
+        first = (char *) process_parameter();
         count = strlen( first );
         ob_insert_block( first, count, out_trans, out_text, active_font );
 
@@ -1732,7 +1827,7 @@ static void * df_divide( void )
 static void * df_getnumsymbol( void )
 {
     char        *   name    = NULL;
-    parameters  my_parameters;
+    parameters      my_parameters;
     symsub      *   sym_val = NULL;
     uint32_t        ret_val = 0;
 
@@ -1752,7 +1847,7 @@ static void * df_getnumsymbol( void )
 
     /* Free the memory allocated to the parameter. */
 
-    mem_free( name);
+    mem_free( name );
 
     return( (void *) ret_val );
 }
@@ -1785,7 +1880,7 @@ static void * df_getstrsymbol( void )
 
     /* Free the memory allocated to the parameter. */
 
-    mem_free( name);
+    mem_free( name );
 
     return( (void *) ret_val );
 }
@@ -1835,7 +1930,7 @@ static void * df_lower( void )
 
     /* Convert and return the parameter. */
 
-    return( (void *) _strlwr( first ) );
+    return( (void *) strlwr( first ) );
 }
 
 /* Function df_remainder().
@@ -2160,10 +2255,493 @@ static void interpret_functions( uint8_t * in_function )
 static void fb_firstword( line_proc * in_block )
 {
     if( in_block->firstword == NULL ) {
-        if( in_block->startword != NULL ) \
+        if( in_block->startword != NULL ) {
             df_interpret_driver_functions( in_block->startword->text );
+        }
     } else {
         df_interpret_driver_functions( in_block->firstword->text );
+    }
+
+    return;
+}
+
+/* Function fb_font_switch().
+ * Performs the font switch sequence as described in the Wiki.
+ */
+
+static void fb_font_switch( void )
+{
+    bool                    do_now;
+    char                *   from_string;
+    char                *   to_string;
+    fontswitch_block    *   font_switch;
+    uint32_t                save_font_number;
+    uintptr_t               from_numeric;
+    uintptr_t               to_numeric;
+    wgml_font           *   from_font;
+    wgml_font           *   to_font;
+
+    /* Acquire the "from" and "to" fonts and save the font_number. */
+
+    from_font = &wgml_fonts[current_state.font_number];
+    to_font = &wgml_fonts[desired_state.font_number];
+    save_font_number = font_number;
+
+    /* The first test: do the fonts use the same :FONTSWITCH block? */
+
+    do_now = (from_font->font_switch != to_font->font_switch);
+
+    /* font_switch will only be used if the "from" and "to" fonts both
+     * use the same :FONTSWITCH block (do_now is false here in that case).
+     */
+
+    if( do_now ) {
+        font_switch = NULL;
+    } else {
+        font_switch = from_font->font_switch;
+    }
+
+    /* The second test: given only one :FONTSWITCH block, is do_always true
+     * or false? Note: that :FONTSWITCH block could be NULL.
+     */
+
+    if( !do_now && (font_switch != NULL) ) do_now = font_switch->do_always;
+
+    /* The third test: evaluate the :FONTSWITCH block (if it exits) as
+     * described in the Wiki. The trick here, of course, is to ensure that,
+     * once set to "true", do_now is never reset to "false".
+     */
+
+    if( !do_now && (font_switch != NULL) ) {
+        if( font_switch->default_width_flag ) {
+
+            /* The default width is a numeric. */
+
+            font_number = current_state.font_number;
+            from_numeric = (uintptr_t) df_default_width();
+            font_number = desired_state.font_number;
+            to_numeric = (uintptr_t) df_default_width();
+            if( !do_now ) do_now = ( from_numeric != to_numeric );
+        }
+
+        if( font_switch->font_height_flag ) {
+
+            /* The font height is a numeric. */
+
+            font_number = current_state.font_number;
+            from_numeric = (uintptr_t) df_font_height();
+            font_number = desired_state.font_number;
+            to_numeric = (uintptr_t) df_font_height();
+            if( !do_now ) do_now = ( from_numeric != to_numeric );
+        }
+
+        if( font_switch->font_outname1_flag ) {
+
+            /* The font out name 1 is a string. */
+
+            font_number = current_state.font_number;
+            from_string = (char *) df_font_outname1();
+            font_number = desired_state.font_number;
+            to_string = (char *) df_font_outname1();
+            if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
+            mem_free( from_string );
+            mem_free( to_string );
+        }
+
+        if( font_switch->font_outname2_flag ) {
+
+            /* The font out name 2 is a string. */
+
+            font_number = current_state.font_number;
+            from_string = (char *) df_font_outname2();
+            font_number = desired_state.font_number;
+            to_string = (char *) df_font_outname2();
+            if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
+            mem_free( from_string );
+            mem_free( to_string );
+        }
+
+        if( font_switch->font_resident_flag ) {
+
+            /* The font resident flag is a string. */
+
+            font_number = current_state.font_number;
+            from_string = (char *) df_font_resident();
+            font_number = desired_state.font_number;
+            to_string = (char *) df_font_resident();
+            if( !do_now ) do_now = ( strcmp( from_string, to_string ) );
+            mem_free( from_string );
+            mem_free( to_string );
+        }
+
+        if( font_switch->font_space_flag ) {
+
+            /* The font space is a numeric. */
+
+            font_number = current_state.font_number;
+            from_numeric = (uintptr_t) df_font_space();
+            font_number = desired_state.font_number;
+            to_numeric = (uintptr_t) df_font_space();
+            if( !do_now ) do_now = ( from_numeric != to_numeric );
+        }
+
+        if( font_switch->line_height_flag ) {
+
+            /* The line height is a numeric. */
+
+            font_number = current_state.font_number;
+            from_numeric = (uintptr_t) df_line_height();
+            font_number = desired_state.font_number;
+            to_numeric = (uintptr_t) df_line_height();
+            if( !do_now ) do_now = ( from_numeric != to_numeric );
+        }
+
+        if( font_switch->line_space_flag ) {
+
+            /* The line space is a numeric. */
+
+            font_number = current_state.font_number;
+            from_numeric = (uintptr_t) df_line_space();
+            font_number = desired_state.font_number;
+            to_numeric = (uintptr_t) df_line_space();
+            if( !do_now ) do_now = ( from_numeric != to_numeric );
+        }
+    }
+
+    /* Restore the value of font_number. */
+
+    font_number = save_font_number;
+
+    /* Now for the font switch itself. */
+
+    if( from_font->font_style != NULL ) {
+        if( from_font->font_style->endvalue != NULL ) {
+            df_interpret_driver_functions( \
+                                    from_font->font_style->endvalue->text );
+        }
+    }
+
+    if( do_now ) {
+        if( from_font->font_switch != NULL ) {
+            if( from_font->font_switch->endvalue != NULL ) {
+                df_interpret_driver_functions( \
+                                    from_font->font_switch->endvalue->text );
+            }
+        }
+    }
+
+    if( to_font->font_pause != NULL ) \
+        df_interpret_device_functions( to_font->font_pause->text );
+
+    if( do_now ) {
+        if( to_font->font_switch != NULL ) {
+            if( to_font->font_switch->startvalue != NULL ) {
+                df_interpret_driver_functions( \
+                                    to_font->font_switch->startvalue->text );
+            }
+        }
+    }
+
+    if( to_font->font_style != NULL ) {
+        if( to_font->font_style->startvalue != NULL ) {
+            df_interpret_driver_functions( \
+                                    to_font->font_style->startvalue->text );
+        }
+    }
+
+    /* This ensures that switches from the new font will be detected. */
+
+    current_state.font_number = desired_state.font_number;
+
+    return;
+}
+
+/* Function fb_htab().
+ * Function fb_htab() inteprets the :HTAB block and sets htab_done to "true".
+ *
+ * Global Used:
+ *      tab_width must be set to the appropriate value, as this is
+ *          (presumably) what the :HTAB block will use to determine
+ *          how much horizontal movement is needed.
+ *
+ * Prerequisite:
+ *      The :HTAB block must have been defined for the current device.
+ */
+
+static void fb_htab( void )
+{
+    df_interpret_driver_functions( bin_driver->htab.text );
+    htab_done = true;
+    return;
+}
+
+/* Function fb_initial_horizontal_positioning().
+ * Performs the initial horizontal positioning as described in the Wiki.
+ */
+
+static void fb_initial_horizontal_positioning( void )
+{
+    uint32_t    spaces;
+
+    if( has_aa_block ) {
+        fb_absoluteaddress();
+    } else {
+
+        /* Spaces cannot be emitted and tabs cannot be done "backwards". */
+
+        if( current_state.x_address > desired_state.x_address) {
+            out_msg( "Cannot move backwards within a text line!\n" );
+            err_count++;
+            g_suicide();
+        }
+
+        /* Set tab_width and spaces. */
+
+        tab_width = desired_state.x_address - current_state.x_address;
+        spaces = tab_width / wgml_fonts[active_font].spc_width;
+
+        /* Warn of apparent use of justification. */
+
+        if( (tab_width % wgml_fonts[active_font].spc_width) > 0 ) {
+            out_msg( "Warning: justification not supported (initial).\n" );
+            wng_count++;
+        }
+
+        /* Perform the initial horizontal positioning. */
+
+        if( (bin_driver->htab.text != 0) && (tab_width > 8) ) {
+            fb_htab();
+        } else {
+            if( !text_out_open ) pre_text_output();
+            output_spaces( spaces );
+            if( text_out_open ) post_text_output();
+        }
+        tab_width = 0;
+    }
+    return;
+}
+
+/* Function fb_internal_horizontal_positioning().
+ * Performs the internal horizontal positioning as described in the Wiki.
+ */
+
+static void fb_internal_horizontal_positioning( void )
+{
+    uint32_t    spaces;
+
+    /* Spaces cannot be emitted and tabs cannot be done "backwards". */
+
+    if( current_state.x_address > desired_state.x_address) {
+        out_msg( "Cannot move backwards within a text line!\n" );
+        err_count++;
+        g_suicide();
+    }
+
+    /* Set tab_width and spaces. */
+
+    tab_width = desired_state.x_address - current_state.x_address;
+    spaces = tab_width / wgml_fonts[active_font].spc_width;
+
+    /* Warn of apparent use of justification. */
+
+    if( (tab_width % wgml_fonts[active_font].spc_width) > 0 ) {
+        out_msg( "Warning: justification not supported (internal).\n" );
+        wng_count++;
+    }
+
+    /* Perform the internal horizontal positioning. */
+
+    if( (bin_driver->htab.text != 0) && (spaces > 8) ) {
+        fb_htab();
+    } else {
+        if( !text_out_open ) pre_text_output();
+        output_spaces( spaces );
+        if( text_out_open ) post_text_output();
+    }
+    tab_width = 0;
+
+    return;
+}
+
+/* Function fb_first_text_chars().
+ * Performs the "first text_chars instance" sequence per the Wiki.
+ *
+ * Parameter:
+ *      in_chars points to the text_chars instance to be processed.
+ *
+ * Note:
+ *      The first step in the Wiki is omitted because that step is only
+ *      done on the first line pass, and this function will be used on
+ *      subsequent passes as well.
+ */
+
+static void fb_first_text_chars( text_chars * in_chars )
+{
+    bool            font_switch_needed  = true;
+    line_proc   *   cur_lineproc        = NULL;
+
+    /* Ensure textpass starts the line pass with value "false". */
+
+    textpass = false;
+
+    /* Initialize the locals. */
+
+    if( wgml_fonts[font_number].font_style != NULL ) {
+        if( wgml_fonts[font_number].font_style->lineprocs != NULL ) \       
+            cur_lineproc = &wgml_fonts[font_number].font_style->lineprocs[0];
+    }
+    if( current_state.font_number == desired_state.font_number ) \
+                                                    font_switch_needed = false;
+
+    /* Interpret the pre-font switch function blocks. */
+
+    if( text_out_open ) post_text_output();
+
+    /* Do the font switch, if needed. If a font switch is not needed,
+     * interpret the :FONTSTYLE block :STARTVALUE block.
+     */
+
+    if( font_switch_needed ) {
+        fb_font_switch();
+    } else {
+        if( wgml_fonts[font_number].font_style != NULL ) {
+            if( wgml_fonts[font_number].font_style->startvalue != NULL ) {
+                df_interpret_driver_functions( \
+                        wgml_fonts[font_number].font_style->startvalue->text );
+            }
+        }
+    }
+
+    /* If there is no :LINEPROC block, then set textpass to "true"; if there
+     * is a :LINEPROC block, set textpass only if device function
+     * %textpass() is processed.
+     */
+
+    if( cur_lineproc == NULL ) {
+        textpass = true;
+    } else {
+
+        if( cur_lineproc->startvalue != NULL ) \
+            df_interpret_driver_functions( cur_lineproc->startvalue ->text );
+
+        fb_firstword( cur_lineproc );
+
+        if( !font_switch_needed ) {
+            if( cur_lineproc->startword != NULL ) \
+                df_interpret_driver_functions( cur_lineproc->startword->text );
+        }
+    }
+
+    /* If textpass is "true", do the horizontal positioning and text or
+     * underscore output. If textpass is not "true", nothing appears in
+     * the document! The value of textpass is not changed: it will be used by
+     * fb_subsequent_text_chars().
+     */
+
+    if( textpass ) {
+        fb_initial_horizontal_positioning();
+
+        if( uline ) {
+            /* underscore output will go here when implemented */
+        } else {
+            if( !text_out_open ) pre_text_output();
+            ob_insert_block( in_chars->text, in_chars->count, true, true, \
+                                                        in_chars->font_number);
+        }
+    }
+
+    /* Update variables and interpret the post-output function block. */
+
+    current_state.x_address += in_chars->width;
+    x_address = current_state.x_address;
+
+    if( cur_lineproc != NULL ) {
+        if( text_out_open ) post_text_output();
+        if( cur_lineproc->endword != NULL ) {
+            df_interpret_driver_functions( cur_lineproc->endword->text );
+        }
+    }
+
+    return;
+}
+
+/* Function fb_new_font_text_chars().
+ * Performs the "new font text_chars instance" sequence per the Wiki.
+ *
+ * Parameter:
+ *      in_chars points to the text_chars instance to be processed.
+ */
+
+static void fb_new_font_text_chars( text_chars * in_chars )
+{
+    line_proc   *   cur_lineproc        = NULL;
+
+    /* Ensure textpass has the value "false" at the start of a new font. */
+
+    textpass = false;
+
+    /* Initialize cur_linproc and some globals. */
+
+    if( wgml_fonts[font_number].font_style != NULL ) {
+        if( wgml_fonts[font_number].font_style->lineprocs != NULL ) \       
+            cur_lineproc = &wgml_fonts[font_number].font_style->lineprocs[0];
+    }
+    desired_state.font_number = in_chars->font_number;
+    desired_state.x_address = in_chars->x_address;
+    font_number = desired_state.font_number;
+    active_font = desired_state.font_number;
+    
+    /* Interpret the pre-font switch function blocks. */
+
+    if( text_out_open ) post_text_output();
+    fb_lineproc_endvalue();
+
+    /* Do the font switch, which is needed by definition. */
+
+    fb_font_switch();
+
+    /* If there is no :LINEPROC block, then set textpass to "true"; if there
+     * is a :LINEPROC block, set textpass only if device function
+     * %textpass() is processed.
+     */
+
+    if( cur_lineproc == NULL ) {
+        textpass = true;
+    } else {
+        if( cur_lineproc->startvalue != NULL ) \
+            df_interpret_driver_functions( cur_lineproc->startvalue ->text );
+
+        fb_firstword( cur_lineproc );
+    }
+
+    /* If textpass is "true", do the horizontal positioning and text or
+     * underscore output. If textpass is not "true", nothing appears in
+     * the document! The value of textpass is not changed: it will be used by
+     * fb_subsequent_text_chars().
+     */
+
+    if( textpass ) {
+        fb_internal_horizontal_positioning();
+
+        if( uline ) {
+            /* underscore output will go here when implemented */
+        } else {
+            if( !text_out_open ) pre_text_output();
+            ob_insert_block( in_chars->text, in_chars->count, true, true, \
+                                                        in_chars->font_number);
+        }
+    }
+
+    /* Update variables and interpret the post-output function block. */
+
+    current_state.x_address += in_chars->width;
+    x_address = current_state.x_address;
+
+    if( cur_lineproc != NULL ) {
+        if( text_out_open ) post_text_output();
+        if( cur_lineproc->endword != NULL ) {
+            df_interpret_driver_functions( cur_lineproc->endword->text );
+        }
     }
 
     return;
@@ -2211,15 +2789,10 @@ static void fb_normal_vertical_positioning( void )
 
     if( current_state.y_address != desired_state.y_address ) {
 
-        /* Detect and process device pages. This is complicated by the fact
-         * that line and page numbers start at "1" but integer division treats
-         * them as starting at "0". The initial adjustments ensure that the
-         * last line on the page produces the correct value when the division
-         * is done, even if it equals a multiple of the divisor.
-         */
+        /* Detect and process device pages. */
 
-        current_lines = current_state.y_address + 1;
-        desired_lines = desired_state.y_address + 1;
+        current_lines = current_state.y_address;
+        desired_lines = desired_state.y_address;
         current_pages = current_lines / bin_device->page_depth;
         desired_pages = desired_lines / bin_device->page_depth;
         device_pages = desired_pages - current_pages;
@@ -2254,7 +2827,7 @@ static void fb_normal_vertical_positioning( void )
                  * occurred.
                  */
 
-                if( bin_driver->absoluteaddress.text != NULL ) {
+                if( has_aa_block ) {
                     if( at_start ) {
                         if( wgml_fonts[0].font_style->lineprocs != NULL ) {       
 
@@ -2277,14 +2850,38 @@ static void fb_normal_vertical_positioning( void )
             }
         }
 
-        /* Set the values returned by %x_address() and %y_address() to the
-         * current desired position and the value of current_state.y_address
-         * to the last line of the previous device page.
+        /* Set the value of current_state.x_address and the value returned by
+         * device function %x_address() start of the line.
          */
 
-        x_address = bin_device->x_start;
-        current_state.y_address = desired_pages * bin_device->page_depth;
-        y_address = desired_state.y_address % bin_device->page_depth;
+        current_state.x_address = bin_device->x_start;
+        x_address = current_state.x_address;
+
+        /* Only reset y_address if one or more device pages was emitted. */
+
+        if( device_pages > 0 ) {
+
+            /* Set the value of current_state.y_address to the last line of the
+             * previous device page and the value returned by device function
+             * %y_address() to the correct value for the current page.
+             */
+
+            if( bin_driver->y_positive == 0x00 ) {
+
+                /* y_address is formed by subtraction. */
+
+                current_state.y_address = (page_top + 1) - (desired_pages * \
+                                                    bin_device->page_depth);
+            } else {
+
+                /* y_address is formed by addition. */
+
+                current_state.y_address = desired_pages * \
+                                                        bin_device->page_depth;
+            }
+
+            y_address = desired_state.y_address % bin_device->page_depth;
+        }
 
         /* If at_start is still "true", then no device paging occurred. */
 
@@ -2295,7 +2892,74 @@ static void fb_normal_vertical_positioning( void )
 
         /* If :ABSOLUTEADDRESS is not available, do the vertical positioning. */
 
-        if( bin_driver->absoluteaddress.text == NULL ) fb_newline();
+        if( !has_aa_block ) fb_newline();
+    }
+
+    return;
+}
+
+/* Function fb_subsequent_text_chars().
+ * Performs the "subsequent text_chars instance" sequence per the Wiki.
+ *
+ * Parameter:
+ *      in_chars points to the text_chars instance to be processed.
+ */
+
+static void fb_subsequent_text_chars( text_chars * in_chars )
+{
+    line_proc   *   cur_lineproc        = NULL;
+
+    /* Initialize cur_lineproc and desired_state.x_address. */
+
+    if( wgml_fonts[font_number].font_style != NULL ) {
+        if( wgml_fonts[font_number].font_style->lineprocs != NULL ) \       
+            cur_lineproc = &wgml_fonts[font_number].font_style->lineprocs[0];
+    }
+    desired_state.x_address = in_chars->x_address;
+    
+    /* Interpret the pre-font switch function blocks. */
+
+    if( text_out_open ) post_text_output();
+
+    /* Since only the :STARTWORD (if present) is interpreted, and since device
+     * funtion %textpass() is not allowed in a :STARTWORD block, it cannot be
+     * set here. Instead, it retains its setting from the last time a new line
+     * started or a new font was encountered. 
+     */
+
+    if( cur_lineproc != NULL ) {
+        if( cur_lineproc->startword != NULL ) {
+            df_interpret_driver_functions( cur_lineproc->startword->text );
+        }
+    }
+
+    /* If textpass is "true", do the horizontal positioning and text or
+     * underscore output. If textpass is not "true", nothing appears in
+     * the document! The value of textpass is not changed: it will be used by
+     * the next invocation of fb_subsequent_text_chars().
+     */
+
+    if( textpass ) {
+        fb_internal_horizontal_positioning();
+
+        if( uline ) {
+            /* underscore output will go here when implemented */
+        } else {
+            if( !text_out_open ) pre_text_output();
+            ob_insert_block( in_chars->text, in_chars->count, true, true, \
+                                                        in_chars->font_number);
+        }
+    }
+
+    /* Update variables and interpret the post-output function block. */
+
+    current_state.x_address += in_chars->width;
+    x_address = current_state.x_address;
+
+    if( cur_lineproc != NULL ) {
+        if( text_out_open ) post_text_output();
+        if( cur_lineproc->endword != NULL ) \
+            df_interpret_driver_functions( cur_lineproc->endword->text );
     }
 
     return;
@@ -2309,7 +2973,8 @@ static void fb_normal_vertical_positioning( void )
  * variables to the top of a new document page.
  *
  * Parameter:
- *      page_top contains the vertical location of the top of a document page.
+ *      in_page_top contains the vertical location of the top of a
+ *          document page.
  */
 
 void df_initialize_pages( uint32_t in_page_top )
@@ -2614,6 +3279,7 @@ void fb_enterfont( void )
 
     old_active_font = active_font;
     old_font_number = font_number;
+    active_font = 0;
     font_number = 0;
 
     if( wgml_fonts[0].font_pause != NULL ) \
@@ -2659,13 +3325,13 @@ void fb_enterfont( void )
 
 void fb_first_text_pass( text_line * out_line )
 {
-    bool            font_switch_needed  = true;
-    line_proc   *   cur_lineproc        = NULL;
+    text_chars  *   current;
 
     /* Update the internal state for the new text_line. */
 
-    desired_state.font_number = out_line->first->font_number;
-    desired_state.x_address   = out_line->first->x_address;
+    current = out_line->first;
+    desired_state.font_number = current->font_number;
+    desired_state.x_address   = current->x_address;
     desired_state.y_address   = out_line->y_address;
 
     /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
@@ -2686,40 +3352,24 @@ void fb_first_text_pass( text_line * out_line )
     /* The "first text_chars instance" sequence. */
 
     x_address = desired_state.x_address;
+    fb_first_text_chars( current );
 
-    if( wgml_fonts[font_number].font_style != NULL ) \       
-        if( wgml_fonts[font_number].font_style->lineprocs != NULL ) \       
-            cur_lineproc = &wgml_fonts[font_number].font_style->lineprocs[0];
-    if( current_state.font_number == desired_state.font_number ) \
-                                                    font_switch_needed = false;
-    if( font_switch_needed ) {
+    /* Now do the remaining text_chars instances. */
 
-        /* A font switch is needed. */
-
-/* the font switch goes here! */
-
-    } else {
-
-        /* No font switch is needed. */
-
-        if( wgml_fonts[font_number].font_style != NULL ) {       
-            if( wgml_fonts[font_number].font_style->startvalue != NULL ) \
-                df_interpret_driver_functions( \
-                        wgml_fonts[font_number].font_style->startvalue->text );
+    current = current->next;
+    while( current != NULL ) {
+        desired_state.x_address = current->x_address;
+        if( current_state.font_number != current->font_number ) {
+            fb_new_font_text_chars( current );
+        } else {
+            fb_subsequent_text_chars( current );
         }
+        current = current->next;
     }
 
-    if( cur_lineproc != NULL ) {       
-        if( cur_lineproc->startvalue != NULL ) \
-            df_interpret_driver_functions( cur_lineproc->startvalue ->text );
-        fb_firstword( cur_lineproc );
-    }
+    /* Close text output if still open at end of line. */
 
-    if( !font_switch_needed ) {
-        if( cur_lineproc != NULL ) \
-            if( cur_lineproc->startword != NULL ) \
-                df_interpret_driver_functions( cur_lineproc->startword->text );
-    }
+    if( text_out_open ) post_text_output();
 
     return;
 }
@@ -2805,16 +3455,16 @@ void fb_line_block( line_block * in_line_block, uint32_t h_start, \
         out_msg("wgml internal error: The %s block must be defined if used\n", \
                                                                         name );
         err_count++;
-        g_suicide;
+        g_suicide();
     }
 
     /* As is a missing :ABSOLUTEADDRESS block. */
     
-    if( bin_driver->absoluteaddress.text == NULL ) {
+    if( !has_aa_block ) {
         out_msg("The :ABSOLUTEADDRESS must be defined if the %s is defined\n", \
                                                                         name );
         err_count++;
-        g_suicide;
+        g_suicide();
     }
 
     /* Set up for fb_absoluteaddress(). */
@@ -2852,6 +3502,7 @@ void fb_line_block( line_block * in_line_block, uint32_t h_start, \
 void fb_lineproc_endvalue( void )
 {
     if( text_output ) {
+        post_text_output();
         if( wgml_fonts[font_number].font_style->lineprocs != NULL ) {       
             if( wgml_fonts[font_number].font_style->\
                                     lineprocs[line_pass_number].endvalue != NULL ) \
@@ -2859,7 +3510,6 @@ void fb_lineproc_endvalue( void )
                     wgml_fonts[font_number].font_style->lineprocs[line_pass_number].\
                                                             endvalue->text );
         }
-        text_output = false;
     }
 
     return;

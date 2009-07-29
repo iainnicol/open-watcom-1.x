@@ -47,10 +47,6 @@ extern int              OrgDirective( int );
 extern int              AlignDirective( uint_16, int );
 extern int              ForDirective( int, enum irp_type );
 
-#if defined( _STANDALONE_ )
-extern global_options   Options;
-#endif
-
 int directive( int i, long direct )
 /* Handle all directives */
 {
@@ -135,6 +131,17 @@ int directive( int i, long direct )
         return( Parse_Pass == PASS_1 ? PubDef(i+1) : NOT_ERROR );
     case T_ELSE:
     case T_ELSEIF:
+    case T_ELSEIF1:
+    case T_ELSEIF2:
+    case T_ELSEIFB:
+    case T_ELSEIFDEF:
+    case T_ELSEIFE:
+    case T_ELSEIFNB:
+    case T_ELSEIFNDEF:
+    case T_ELSEIFDIF:
+    case T_ELSEIFDIFI:
+    case T_ELSEIFIDN:
+    case T_ELSEIFIDNI:
     case T_ENDIF:
     case T_IF:
     case T_IF1:
@@ -401,6 +408,9 @@ int directive( int i, long direct )
     case T_STARTUPCODE:
     case T_EXITCODE:
         return( Startup ( i ) );
+    case T_LOCALS:
+    case T_NOLOCALS:
+        return( Locals( i ) );
     }
     AsmError( UNKNOWN_DIRECTIVE );
     return( ERROR );

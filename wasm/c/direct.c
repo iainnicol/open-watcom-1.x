@@ -2841,7 +2841,7 @@ int LocalDef( int i )
 
             type = token_cmp( &(AsmBuffer[i]->string_ptr), TOK_EXT_BYTE,
                               TOK_EXT_TBYTE );
-            if( ( type == ERROR ) && (Options.mode & MODE_IDEAL) ) {
+            if( type == ERROR ) {
                 tmp = AsmGetSymbol( AsmBuffer[i]->string_ptr );
                 if( tmp != NULL ) {
                     if( tmp->state == SYM_STRUCT ) {
@@ -2855,10 +2855,11 @@ int LocalDef( int i )
                 return( ERROR );
             }
             sym->mem_type = TypeInfo[type].value;
-            if( type == MT_STRUCT )
+            if( type == MT_STRUCT ) {
                 local->size = ( ( dir_node *)tmp)->e.structinfo->size;
-            else
+            } else {
                 local->size = find_size( type );
+            }
         }
 
         info->localsize += ( local->size * local->factor );
@@ -3583,7 +3584,13 @@ int ProcEnd( int i )
     }
 }
 
-void CheckProcOpen( void )
+void ProcStackInit( void )
+/************************/
+{
+    ProcStack = NULL;
+}
+
+void ProcStackFini( void )
 /************************/
 {
     while( CurrProc != NULL ) {
@@ -3593,17 +3600,44 @@ void CheckProcOpen( void )
     }
 }
 
+static void push_registers( regs_list *regist )
+/*********************************************/
+/* Push the registers list */
+{
+    char        buffer[20];
+
+    if( regist == NULL )
+        return;
+    strcpy( buffer, "push " );
+    strcpy( buffer + strlen( buffer ), regist->reg );
+    InputQueueLine( buffer );
+    push_registers( regist->next );
+}
+
+static void pop_registers( regs_list *regist )
+/********************************************/
+/* Pop the registers list */
+{
+    char        buffer[20];
+
+    if( regist == NULL )
+        return;
+    pop_registers( regist->next );
+    strcpy( buffer, "pop " );
+    strcpy( buffer + strlen( buffer ), regist->reg );
+    InputQueueLine( buffer );
+}
+
 int WritePrologue( void )
 /***********************/
 {
     char                buffer[80];
-    regs_list           *regist;
-    int                 len;
     proc_info           *info;
     label_list          *curr;
     long                offset;
     unsigned long       size;
-    int                 register_count = 0, parameter_on_stack = TRUE;
+    int                 register_count = 0;
+    int                 parameter_on_stack = TRUE;
     int                 align = Use32 ? 4 : 2;
 
     /**/myassert( CurrProc != NULL );
@@ -3706,7 +3740,7 @@ int WritePrologue( void )
     in_prologue = TRUE;
     PushLineQueue();
     if( ( info->localsize != 0 ) || ( info->parasize != 0 ) ||
-        ( info->is_vararg ) ) {
+        ( info->is_vararg ) || Options.trace_stack == 2 ) {
         //
         // prolog code timmings
         //
@@ -3727,6 +3761,14 @@ int WritePrologue( void )
         // enter imm,0   4     -   11   10   14   11
         //
         // write prolog code
+        if( Options.trace_stack && info->mem_type == MT_FAR ) {
+            if( Use32 ) {
+                strcpy( buffer, "inc ebp" );
+            } else {
+                strcpy( buffer, "inc bp" );
+            }
+            InputQueueLine( buffer );
+        }
         if( Use32 ) {
             // write 80386 prolog code
             // PUSH EBP
@@ -3757,29 +3799,8 @@ int WritePrologue( void )
         InputQueueLine( buffer );
     }
     /* Push the registers */
-    if( info->regslist ) {
-        strcpy( buffer, "push " );
-        len = strlen( buffer );
-        for( regist = info->regslist; regist; regist = regist->next ) {
-            strcpy( buffer + len, regist->reg );
-            InputQueueLine( buffer );
-        }
-    }
+    push_registers( info->regslist );
     return( NOT_ERROR );
-}
-
-static void pop_register( regs_list *regist )
-/*******************************************/
-/* Pop the register when a procedure ends */
-{
-    char        buffer[20];
-
-    if( regist == NULL )
-        return;
-    pop_register( regist->next );
-    strcpy( buffer, "pop " );
-    strcpy( buffer + strlen( buffer ), regist->reg );
-    InputQueueLine( buffer );
 }
 
 static void write_epilogue( void )
@@ -3796,11 +3817,12 @@ static void write_epilogue( void )
     info = CurrProc->e.procinfo;
 
     /* Pop the registers */
-    pop_register( CurrProc->e.procinfo->regslist );
+    pop_registers( CurrProc->e.procinfo->regslist );
 
     if( ( info->localsize == 0 ) && ( info->parasize == 0 ) &&
-        ( !info->is_vararg ) )
+        ( !info->is_vararg ) && Options.trace_stack != 2 ) {
         return;
+    }
     // epilog code timmings
     //
     //                                                  best result
@@ -3881,6 +3903,14 @@ static void write_epilogue( void )
         strcpy( buffer, "pop bp" );
     }
     InputQueueLine( buffer );
+    if( Options.trace_stack && info->mem_type == MT_FAR ) {
+        if( Use32 ) {
+            strcpy( buffer, "dec ebp" );
+        } else {
+            strcpy( buffer, "dec bp" );
+        }
+        InputQueueLine( buffer );
+    }
 }
 
 int Ret( int i, int count, int flag_iret )
@@ -4117,3 +4147,27 @@ int CommDef( int i )
     }
     return( NOT_ERROR );
 }
+
+int Locals( int i )
+/*******************/
+{
+    if( i + 1 == Token_Count ) {
+        Options.locals_len = ( AsmBuffer[i]->u.value == T_LOCALS ) ? 2 : 0;
+        return( NOT_ERROR );
+    }
+    if( AsmBuffer[i]->u.value == T_LOCALS ) {
+        ++i;
+        if( i < Token_Count && AsmBuffer[i]->token == T_ID
+            && strlen( AsmBuffer[i]->string_ptr ) >= 2 ) {
+            Options.locals_prefix[0] = AsmBuffer[i]->string_ptr[0];
+            Options.locals_prefix[1] = AsmBuffer[i]->string_ptr[1];
+            Options.locals_len = 2;
+            if( Token_Count - i == 1 && strlen( AsmBuffer[i]->string_ptr ) == 2 ) {
+                return( NOT_ERROR );
+            }
+        }
+    }
+    AsmError( SYNTAX_ERROR );
+    return( ERROR );
+}
+

@@ -47,6 +47,7 @@
 
 
 #include "gtype.h"
+#include "gtypelay.h"
 #include "copfiles.h"                   // for text_line and text_vars
 
 
@@ -57,8 +58,9 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 
 //================= Function Prototypes ========================
 
-/* wgml.c                              */
+/* wgmlsupp.c                          */
 extern  bool    free_resources( errno_t in_errno );
+extern  void    free_some_mem( void );
 extern  void    g_banner( void );
 // extern  char  * get_filename_full_path( char * buff, char const * name, size_t max );
 extern  bool    get_line( void );
@@ -75,6 +77,7 @@ extern  condcode    getarg( void );
 extern  condcode    getqst( void );
 extern  bool        is_quote_char( char c );
 extern  bool        is_function_char( char c );
+extern  bool        is_lay_att_char( char c );
 extern  bool        is_id_char( char c );
 extern  bool        is_macro_char( char c );
 extern  bool        is_symbol_char( char c );
@@ -83,6 +86,12 @@ extern  void        unquote_if_quoted( char * * a, char * * z );
 
 /* gdata.c                              */
 extern  void    init_global_vars( void );
+extern  void    init_proc_flags( void );
+
+
+/* gdeflay.c                            */
+extern  void    init_def_lay( void );
+extern  void    init_def_margins( void );
 
 
 /* gerror.c                             */
@@ -101,6 +110,8 @@ extern  void    dc_opt_err( char * pa );
 extern  void    file_mac_info( void );
 extern  void    nottag_err( void );
 extern  void    numb_err( void );
+extern  void    parm_extra_err( char *cw, char *pa );
+extern  void    parm_miss_err( char *cw );
 extern  void    tag_name_missing_err( void );
 extern  void    tag_text_err( char * tagname );
 extern  void    tag_text_req_err( char * tagname );
@@ -109,6 +120,12 @@ extern  void    xx_opt_err( char *cw, char *pa );
 
 /* getnum.c                             */
 extern condcode     getnum( getnum_block * gn );
+
+
+/* glayutil.c                           */
+extern void         eat_lay_sub_tag( void );
+extern condcode     get_lay_sub_and_value( struct att_args * l_args );
+
 
 /* gmacdict.c                         */
 extern  void        add_macro_entry( mac_entry * * dict, mac_entry * me );
@@ -139,9 +156,12 @@ extern  void    process_line( void );
 extern  void    split_input( char * buf, char * split_pos );
 extern  void    split_input_LIFO( char * buf, char * split_pos );
 
-
-/* gproctxt.c                         */
-extern  void    process_text( void );
+#if 0
+/* gproctxt.c              TBD        */
+extern  void    add_text_word_to_pool( void );
+extern  void    do_justify( uint32_t left_margin, uint32_t right_margin );
+extern  void    process_text( char * text, uint8_t font_num );
+#endif
 
 
 /* gresrch.c                          */
@@ -152,6 +172,11 @@ extern  void    add_SCR_tag_research( char * tag );
 extern  void    free_SCR_tags_research( void );
 extern  void    print_SCR_tags_research( void );
 extern  void    printf_research( char * msg, ... );
+// extern  void    test_out_w_line( word_line  * a_line );   TBD
+
+
+/* gsbr.c                             */
+extern  void    scr_process_break( void );
 
 
 /* gscan.c                            */
@@ -176,6 +201,10 @@ extern  bool    gotarget_reached( void );
 
 /* gsgt.c                             */
 extern  void    init_tag_att( void );
+
+
+/* gsix.c                             */
+extern  void    free_index_dict( ix_h_blk ** dict );
 
 
 /* gsetvar.c                          */
@@ -235,7 +264,7 @@ extern  int     get_msg( msg_ids resourceid, char *buffer, size_t buflen );
 //extern  void Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
 
 /*
- * prototypes for the gml processing routines
+ * prototypes for the gml tag processing routines
  */
 
 #ifdef pick
@@ -244,6 +273,29 @@ extern  int     get_msg( msg_ids resourceid, char *buffer, size_t buflen );
 #define pick( name, length, routine, flags )  extern void routine( const gmltag * entry );
 
 #include "gtags.h"
+
+/*
+ * prototypes for the layout tag processing routines
+ */
+
+#define pick( name, length, routine, flags )  extern void routine( const gmltag * entry );
+
+#include "gtagslay.h"
+
+/*
+ * prototypes for the layout tag attribute processing routines
+ */
+
+#define pick( name, funci, funco, restype ) \
+extern  bool    funci( char * buf, lay_att attr, restype * result );
+
+#include "glayutil.h"
+
+
+#define pick( name, funci, funco, restype ) \
+extern  void    funco( FILE * f, lay_att attr, restype * in );
+
+#include "glayutil.h"
 
 /*
  * prototypes for the script control word processing routines

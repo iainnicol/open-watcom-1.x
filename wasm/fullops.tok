@@ -16,7 +16,6 @@ const
 .continue
 .cref
 .data
-dataseg
 .data?
 dataseg
 .dosseg
@@ -27,6 +26,17 @@ echo
 .else
 else
 elseif
+elseif1
+elseif2
+elseifb
+elseifdef
+elseifdif
+elseifdifi
+elseife
+elseifidn
+elseifidni
+elseifnb
+elseifndef
 end
 .endif
 endif
@@ -108,6 +118,7 @@ lengthof
 .listmacro
 .listmacroall
 local
+locals
 low
 lowword
 lroffset
@@ -120,8 +131,8 @@ model
 name
 ne
 .nocref
-nolanguage
 .nolist
+nolocals
 nowarn
 opattr
 option

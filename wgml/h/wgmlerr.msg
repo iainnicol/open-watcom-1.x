@@ -369,3 +369,30 @@ pick( ERR_NESTED_PE,            "Nested .pe not supported",
 pick( INF_ERROR_STOP,           "  Remaining pass(es) skipped due to error count",
                                 "  Remaining pass(es) skipped due to error count" )
 
+pick( ERR_PARM_MISSING,         "A control word parameter is required for %s",
+                                "A control word parameter is required for %s" )
+
+pick( ERR_EXTRA_IGNORED,        "Extra operand(s) for '%s' ignored: '%s'",
+                                "Extra operand(s) for '%s' ignored: '%s'" )
+
+pick( WNG_UNSUPP_CW,            "Unsupported SCRIPT control word: '%s'",
+                                "Unsupported SCRIPT control word: '%s'" )
+
+pick( WNG_UNSUPP_CW_OPT,        "Unsupported SCRIPT control word option: '%s %s'",
+                                "Unsupported SCRIPT control word option: '%s %s'" )
+
+pick( WNG_UNSUPP_TAG,           "Unsupported GML tag: ':%s'",
+                                "Unsupported GML tag: ':%s'" )
+
+pick( WNG_UNSUPP_LAY,           "Unsupported GML layout tag: ':%s'",
+                                "Unsupported GML layout tag: ':%s'" )
+
+pick( WNG_UNSUPP_LAY_ATT,       "Unsupported GML layout tag attribute: ':%s %s'",
+                                "Unsupported GML layout tag attribute: ':%s %s'" )
+
+pick( ERR_NESTED_LAY,           "Nested :LAYOUT not supported",
+                                "Nested :LAYOUT not supported" )
+
+pick( ERR_NO_LAY,               "No :LAYOUT active for '%s'",
+                                "No :LAYOUT active for '%s'" )
+

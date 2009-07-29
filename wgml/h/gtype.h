@@ -360,7 +360,8 @@ typedef enum {
     tag_text     = 4,                   // text line possible
     etag_req     = 8,                   // eTAG required
     etag_opt     = 16,                  // eTAG optional
-    tag_is_basic = 32                   // basic tag
+    tag_is_basic = 32,                  // basic tag
+    tag_layout   = 64                   // tag valid in layout
 } gmlflags;
 
 
@@ -444,7 +445,7 @@ typedef struct gaentry {
 
 /***************************************************************************/
 /*  GML tag options from the .gt Control word                              */
-/*  enum values have to be single bits 2**x                                */
+/*  enum values have to be single bits, powers of 2                        */
 /***************************************************************************/
 
 typedef enum {
@@ -557,14 +558,6 @@ typedef struct opt_font {
 } opt_font;
 
 /***************************************************************************/
-/*  struct used to hold buffers to be reused                               */
-/***************************************************************************/
-typedef struct  buf_list {
-    struct buf_list *   next;           // ptr to next buf_list or NULL
-    char            *   buf;            // ptr to buffer
-} buf_list;
-
-/***************************************************************************/
 /*  message numbers  + severities                                          */
 /***************************************************************************/
 typedef enum msg_ids  {
@@ -581,6 +574,28 @@ typedef enum {
     SEV_ERROR,
     SEV_FATAL_ERR
 } severity;
+
+
+
+/***************************************************************************/
+/*  Structures for storing index information from .ix control word         */
+/***************************************************************************/
+
+#define reflen  56                      // max length for pagenos in index
+
+typedef struct ix_e_blk {               // entry for pagenos
+    struct ix_e_blk * next;             // next entries (if any)
+    uint32_t        freelen;            // remainig len of etext
+    char            refs[reflen];       // the pagenos   3, 5, 8, 9, ...
+} ix_e_blk;
+
+typedef struct ix_h_blk {               // header with index text
+    struct ix_h_blk * next;             // next ix header blk same level
+    struct ix_h_blk * lower;            // next ix header blk next level
+           ix_e_blk * entry;            // first ix entry blk
+    uint32_t        len;                // header text length
+    char            text[1];            // variable length textfield
+} ix_h_blk;
 
 
 #endif                                  // GTYPE_H_INCLUDED

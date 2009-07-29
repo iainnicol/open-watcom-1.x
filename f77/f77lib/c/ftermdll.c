@@ -33,22 +33,12 @@
 #include "ftextfun.h"
 #include "fthread.h"
 #include "rmemmgr.h"
+#include "rtdata.h"
 
 void            __FTermDLL( void ) {
 //==================================
-
 #if defined( __NT__ )
     {
-  #if defined( _M_IX86 )
-        #pragma aux __ASTACKSIZ "*"
-        #pragma aux __ASTACKPTR "*"
-  #endif
-
-        extern  unsigned        __ASTACKSIZ;    // alternate stack size
-        extern  char            *__ASTACKPTR;   // alternate stack pointer
-
-        extern  void            RMemFree(void *);
-
         if( __ASTACKPTR != NULL ) {
             RMemFree( __ASTACKPTR - __ASTACKSIZ );
         }

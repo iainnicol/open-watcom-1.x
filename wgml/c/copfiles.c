@@ -134,13 +134,14 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, \
     units *= in_units;
     width = units / divisor;
 
-    /* This rounds width up if the division did not produce an integer.
-     * This produces correct results with the test values, but may need
-     * to be modified (or the entire algorithm reconsidered) when
+    /* This rounds width up if the division did not produce an integer and
+     * the decimal part, if computed, would be 0.1 or greater. This produces
+     * correct results when the tested with multiple copies of the same character,
+     * but may need to be modified (or the entire algorithm reconsidered) when
      * side-by-side comparisons of wgml 4.0 and our wgml become possible.
      */
 
-    if( (units % divisor) > 0 ) width++;
+    if( ((units % divisor) * 10) >= divisor ) width++;
 
     return( width );
 }
@@ -690,7 +691,7 @@ static uint32_t get_next_token( uint8_t * buffer, uint32_t count, \
         }
 
         if( in_out->length < (token_length + 1) ) {
-            realloc( in_out->text, token_length + 1 );
+            mem_realloc( in_out->text, token_length + 1 );
             in_out->length = token_length + 1;
         }
         memcpy_s( in_out->text, token_length, &buffer[i], token_length );
@@ -974,24 +975,27 @@ record_buffer * cop_out_trans( uint8_t * text, uint32_t count, \
             if( block == NULL ) block = bin_device->outtrans;
             if( block == NULL ) {
                 if( k >= in_out->length ) {
-                    in_out->text = realloc( in_out->text, 2 * in_out->length );
                     in_out->length *= 2;
+                    in_out->text = (uint8_t *) mem_realloc( in_out->text, \
+                                                            in_out->length );
                 }
                 in_out->text[k] = byte;
                 k++;
             } else {
                 if( block->table[text[i]] == NULL ) {
                     if( k >= in_out->length ) {
-                        in_out->text = realloc( in_out->text, 2 * in_out->length );
                         in_out->length *= 2;
+                        in_out->text = (uint8_t *) mem_realloc( in_out->text, \
+                                                                in_out->length );
                     }
                     in_out->text[k] = byte;
                     k++;
                 } else {
                     for( j = 0; j < block->table[text[i]]->count; j++ ) {
                         if( k >= in_out->length ) {
-                            in_out->text = realloc( in_out->text, 2 * in_out->length );
                             in_out->length *= 2;
+                            in_out->text = (uint8_t *) mem_realloc( \
+                                                in_out->text, in_out->length );
                         }
                         in_out->text[k] = block->table[text[i]]->data[j];
                         k++;
@@ -1000,8 +1004,9 @@ record_buffer * cop_out_trans( uint8_t * text, uint32_t count, \
             }
         } else {
             if( k >= in_out->length ) {
-                in_out->text = realloc( in_out->text, 2 * in_out->length );
                 in_out->length *= 2;
+                in_out->text = (uint8_t *) mem_realloc( in_out->text, \
+                                                        in_out->length );
             }
             in_out->text[k] = byte;
             k++;
@@ -1024,6 +1029,7 @@ void cop_setup( void )
     int                 font_base       = 0;
     int                 gen_cnt         = 0;
     int                 i;
+    int                 j;
     opt_font        *   cur_opt         = NULL;
     wgml_font           def_font;
 
@@ -1041,6 +1047,7 @@ void cop_setup( void )
 
     bin_device = NULL;
     bin_driver = NULL;
+    has_aa_block = false;
     ps_device = false;
     wgml_font_cnt = 0;
     wgml_fonts = NULL;
@@ -1129,6 +1136,12 @@ void cop_setup( void )
             g_suicide();
         }
     }
+
+    /* Set has_aa_block to "true" if the driver defines the
+     * :ABSOLUTEADDRESS block.
+     */
+
+    if( bin_driver->absoluteaddress.text != NULL ) has_aa_block = true;
 
     /* Set ps_device to "true" if the driver name begins with "ps" or "PS". */
 
@@ -1468,7 +1481,7 @@ void cop_setup( void )
         g_suicide;
     }
 
-    if( bin_driver->absoluteaddress.text == NULL ) {
+    if( !has_aa_block ) {
         uint32_t    test_height;
 
         /* Verify that all line_height fields have the same value. */
@@ -1485,17 +1498,40 @@ void cop_setup( void )
         }
     }
 
-    /* Set the base values for the "Em" and "Device Unit" ("DV") Horizontal
-     * Space Units, and record the width of the space character for quick
-     * reference. This is done after wgml_fonts is otherwise-initialized
-     * because cop_text_width() is written to work with a wgml_font struct 
-     * which has the certain of the other fields initialized.
+    /* Initialize the width_table entries. This is done here because it is
+     * not clear whether or not a more efficient method is needed. Note that
+     * all wgml_font instances will have a valid table, and that different
+     * wgml_font instances may have identical tables. However, since the
+     * conversion takes font_height into account, tables based on the same
+     * cop_font may still differ. Also set the base values for the "Em" and
+     * "Device Unit" ("DV") Horizontal Space Units, and record the width of
+     * the space character for quick reference. It is not clear if this is
+     * actually necessary, but it is a bit faster than using the width_table
+     * directly. 
      */
 
     for( i = 0; i < wgml_font_cnt; i++ ) {
-        wgml_fonts[i].dv_base = cop_text_width( "0", 1, i );
-        wgml_fonts[i].em_base = cop_text_width( "M", 1, i );
-        wgml_fonts[i].spc_width = cop_text_width( " ", 1, i );
+        if( wgml_fonts[i].bin_font->width == NULL ) {
+            for( j = 0; j < 0x100; j++ ) {
+                wgml_fonts[i].width_table[j] = wgml_fonts[i].default_width;
+            }
+        } else {
+            if( wgml_fonts[i].bin_font->scale_basis == 0 ) {
+                for( j = 0; j < 0x100; j++ ) {
+                    wgml_fonts[i].width_table[j] = \
+                                        wgml_fonts[i].bin_font->width->table[j];
+                }
+            } else {
+                for( j = 0; j < 0x100; j++ ) {
+                    wgml_fonts[i].width_table[j] = \
+                                    scale_basis_to_horizontal_base_units( \
+                        wgml_fonts[i].bin_font->width->table[j], &wgml_fonts[i] );
+                }
+            }                
+        }
+        wgml_fonts[i].dv_base = wgml_fonts[i].width_table['0'];
+        wgml_fonts[i].em_base = wgml_fonts[i].width_table['M'];
+        wgml_fonts[i].spc_width = wgml_fonts[i].width_table[' '];
     }
 
     /* Initialize the dependent modules. */
@@ -1565,44 +1601,29 @@ void cop_teardown( void )
  *      font is the font number of the available font to use.
  *
  * Returns:
- *      the sum of the widths of the count characters starting with *text.
+ *      The sum of the widths of the count characters starting with *text.
+ *
+ * Note:
+ *      This version simply adds up the widths, in horizontal_base_units, of
+ *          the first count characters in text. For :FONT blocks without
+ *          a :WIDTH block, it might be more efficient to use the
+ *          product of default_width and count. However, many counts will be
+ *          quite small, and the cost of determining whether or not the
+ *          bin_font contains a width table must be considered.
  */
  
 uint32_t cop_text_width( uint8_t * text, uint32_t count, uint8_t font )
 {
     int             i;
-    uint32_t        units;
-    uint32_t    *   table;
     uint32_t        width;
 
     if( font > wgml_font_cnt ) font = 0;
 
-    /* Compute the number of units. This will be either horizontal base units
-     * or scale basis units, depending on whether the font is scaled.
-     */
+    /* Compute the width. */
 
-    if( wgml_fonts[font].bin_font->width == NULL ) {
-        units = count * wgml_fonts[font].default_width;
-    } else {
-        table = wgml_fonts[font].bin_font->width->table;
-        units = 0;
-        for( i = 0; i < count; i++ ) {
-            units += table[text[i]];
-        }
-    }
-
-    /* Convert from units to width. */
-
-    if( wgml_fonts[font].bin_font->scale_basis == 0 ) {
-
-        /* If the font is not scaled, the value of units is the width. */
-
-        width = units;
-    } else {
-
-        /* If the font is scaled, the width is the scaled value of units. */
-
-        width = scale_basis_to_horizontal_base_units( units, &wgml_fonts[font] );
+    width = 0;
+    for( i = 0; i < count; i++ ) {
+        width += wgml_fonts[font].width_table[text[i]];
     }
 
     return( width );
@@ -1847,10 +1868,12 @@ void fb_output_textline( text_line * out_line )
 
     line_passes = 0;
     while( current != NULL ) {
-        if( wgml_fonts[current->font_number].font_style->line_passes > line_passes ) {
-            line_passes = wgml_fonts[current->font_number].font_style->line_passes;
-            current = current->next;
+        if( wgml_fonts[current->font_number].font_style->line_passes > \
+                                                                line_passes ) {
+                line_passes = \
+                    wgml_fonts[current->font_number].font_style->line_passes;
         }
+        current = current->next;
     }
 
     /* Do the first pass. */

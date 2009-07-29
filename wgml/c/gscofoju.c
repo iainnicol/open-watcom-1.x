@@ -220,8 +220,8 @@ static void process_co_ju( bool both , char *cwcurr )
             xx_opt_err( cwcurr, pa );
         }
         break;
-    case 6 :                            // centre or inside valid
-        if( !strnicmp( "CENTRE", pa, 6 ) ) {
+    case 6 :                            // center or inside valid
+        if( !strnicmp( "CENTER", pa, 6 ) || !strnicmp( "CENTRE", pa, 6 ) ) {
             if( both ) {
                 ProcFlags.concat = true;
             }
@@ -253,6 +253,25 @@ static void process_co_ju( bool both , char *cwcurr )
     default:
         xx_opt_err( cwcurr, pa );
         break;
+    }
+
+    /***********************************************************************/
+    /*  The following code is to warn about not (yet) implemented          */
+    /*  justification                                                     */
+    /***********************************************************************/
+
+    if( ProcFlags.justify != ju_off ) { // Warn about justification
+        static bool once = true;
+
+        if( once ) {
+            once = false;
+            if( *pa <= ' ' ) {          // option omitted  means ON
+                pa = "ON";
+            }
+            g_warn( wng_unsupp_cw_opt, cwcurr, pa );
+            show_include_stack();
+            wng_count++;
+        }
     }
     return;
 }

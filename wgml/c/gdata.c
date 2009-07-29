@@ -42,18 +42,10 @@
 
 void init_global_vars( void )
 {
-    int     k;
 
     memset( &GlobalFlags, 0, sizeof( GlobalFlags ) );
     GlobalFlags.wscript = 1;            // (w)script support + warnings
     GlobalFlags.warning = 1;
-    memset( &ProcFlags, 0, sizeof( ProcFlags ) );
-    ProcFlags.blanks_allowed = 1;       // blanks during scanning
-                                        // i.e. .se var  =    7
-                                        // .se var=7  without
-    ProcFlags.concat    = true;         // .co on default
-    ProcFlags.justify   = ju_on;        // .ju on default
-
     try_file_name       = NULL;
 
     master_fname        = NULL;         // Master input file name
@@ -92,12 +84,19 @@ void init_global_vars( void )
     LPI_units           = SU_lines;
 
     memset( &bind_odd, 0, sizeof( bind_odd ) ); // bind value odd pages
-    bind_odd.su_u        = SU_chars_lines;
+    bind_odd.su_u       = SU_chars_lines;
 
     memset( &bind_even, 0, sizeof( bind_even ) );   // bind value Even pages
-    bind_even.su_u       = SU_chars_lines;
+    bind_even.su_u      = SU_chars_lines;
 
     passes              = 1;            // default number of passes
+
+    apage               = 0;            // absolute pageno 1 - n
+    page                = 0;            // current pageno (in body 1 - n)
+    line                = 0;            // current output lineno on page
+    lc                  = 0;            // remaining lines on page
+
+    index_dict          = NULL;
 
     init_dict( &global_dict );
     init_macro_dict( &macro_dict );
@@ -112,13 +111,19 @@ void init_global_vars( void )
     buf_size            = BUF_SIZE;
     buff2               = mem_alloc( buf_size );
 
-    used_buflist        = 0;
-    unused_buflist      = 0;
-    for( k = 0; k < max_buflist; k++ ){
-        buflist[0].buf      = NULL;
-    }
-    words.y_address     = 0;
-    words.first         = NULL;
-    text_list.next      = NULL;
-    curr_font_num       = 0;
+
+}
+
+/***************************************************************************/
+/*  PorcFlags are initialized at each document pass start                  */
+/***************************************************************************/
+
+void init_proc_flags( void )
+{
+    memset( &ProcFlags, 0, sizeof( ProcFlags ) );
+    ProcFlags.blanks_allowed = 1;       // blanks during scanning
+                                        // i.e. .se var  =    7
+                                        // .se var=7  without
+    ProcFlags.concat    = true;         // .co on default
+    ProcFlags.justify   = ju_on;        // .ju on default
 }
