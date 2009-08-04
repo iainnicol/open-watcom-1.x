@@ -9,6 +9,9 @@ sys_windowed = 1
 
 memory_model_i86 = l
 
+# systems where version resource must be added to executable
+version_res_nt_386 = version.res
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
@@ -142,14 +145,14 @@ extra_l_flags_os2 = option stack=12k option heapsize=2k &
 inc_dirs  = -Ih -I"$(wimgedit_dir)/h" -I"$(wres_dir)/h" -I"$(wr_dir)/h"
 inc_dirs += -I"$(wpi_dir)/h" -I"$(sdk_dir)/misc"
 
-$(name).exe : $(name).res $(objs) $(libs)
+$(name).exe : $(name).res $(objs) $(libs) $(version_res_$(host_os)_$(host_cpu))
         $(linker) name $^@ $(lflags) file { $(objs) }
-        $(rc) -k $^&.res $^@
+        $(rc) -k $^&.res $^@ $(bind_version_res)
 
 !ifeq host_os os2
 
 $(name).res : $(wimgedit_dir)/objos2/res/$(name).rc $(rcdeps)
-        @$(%toolkit)/os2bin/rc -r -DBMP_DIR=$(sdk_dir)/wimgedit/res &
+        $(rc) $(rc_flags) -DBMP_DIR=$(sdk_dir)/wimgedit/res &
         -DMISC_DIR=$(sdk_dir)/misc $(inc_path) $(resinc) $[@ $^@
 
 !else
@@ -161,20 +164,17 @@ rcstrmsg.gh : $(wimgedit_dir)/h/wimgedit.msg $(msgfiles)
         $(cc) -zk0 -p $(inc_path) $[@ -fo=$^@
 
 $(name).res : ../res/$(name).rc rcstr.gh
-        $(rc) $(rc_flags) -r -ad -zk0 -I"$(wimgedit_dir)/res" $(inc_path) $[@ -fo=$^@
-
-exever.res: exever.rc
-        $(rc) $(rc_flags) -r $(inc_path) $[@ -fo=$^@
+        $(rc) $(rc_flags) -ad -zk0 -I"$(wimgedit_dir)/res" $(inc_path) $[@ -fo=$^@
 
 ./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-        $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
+        $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $<
 
 !ifndef patch_level
 patch_level=0
 !endif
 
-exever.rc : ./genverrc.exe ../res/exever.rc $(fe_misc_dir)/c/genverrc.c
-        $[@ ../res/exever.rc exever.rc $$ $(name) $(patch_level)
+version.res: ./genverrc.exe ../res/exever.rc $(fe_misc_dir)/c/genverrc.c
+        $[@ ../res/exever.rc version.rc $$ $(name) $(patch_level)
+        $(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
 
 !endif
-

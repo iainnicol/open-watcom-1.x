@@ -3,7 +3,7 @@
 host_os  = nt
 host_cpu = 386
 
-cc_dll   = 1
+#cc_dll   = 1
 
 cc_release = 0
 debug_cg   = 1

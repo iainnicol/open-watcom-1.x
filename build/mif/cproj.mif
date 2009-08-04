@@ -324,8 +324,12 @@ rc_flags_os2    = -bt=os2
 
 rc_flags_axp    = -D__AXP__
 
-rc_flags        = $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
+rc_flags        = -r $(rc_flags_$(host_os)) $(rc_flags_$(host_cpu)) $(extra_rc_flags) $(extra_rc_flags_$(host_os))
 
+# Macro to bind version resource (for PE images)
+!ifdef version_res_$(host_os)_$(host_cpu)
+bind_version_res   = -fr=$(version_res_$(host_os)_$(host_cpu)
+!endif
 
 # For bootstrap builds, include path configuration is compiler specific
 !ifdef bootstrap
