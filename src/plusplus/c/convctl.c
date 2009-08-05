@@ -546,6 +546,15 @@ void ConvCtlInitCast            // INITIALIZE CONVCTL FOR CAST EXPRESSION
     , CNV_DIAG* diag )          // - diagnosis
 {
     ConvCtlInit( ctl, expr, CNV_CAST, diag );
+    if( ( ctl->tgt.modflags & TF1_CV_MASK ) &&
+        ( ctl->tgt.unmod->id != TYP_CLASS ) ) {
+        type_flag flag;         // - accumulated flags
+
+        flag = TypeExplicitModFlags( ctl->tgt.orig );
+        if( flag & TF1_CV_MASK ) {
+            CErr2p( WARN_MEANINGLESS_QUALIFIER_IN_CAST, ctl->tgt.orig );
+        }
+    }
 }
 
 
@@ -745,8 +754,7 @@ boolean ConvCtlAnalysePoints    // ANALYSE CONVERSION INFORMATION FOR POINTS
             break;
         } else if( src.id != tgt.id ) {
             if( info->to_void
-             || info->from_void
-             || info->ptr_integral_ext ) {
+             || info->from_void ) {
                 retn = TRUE;
                 break;
             }
@@ -828,8 +836,7 @@ boolean ConvCtlAnalysePoints    // ANALYSE CONVERSION INFORMATION FOR POINTS
                 info->const_cast_ok = FALSE;
             } else if( info->to_base
                     || ( info->to_void & ! info->from_void )
-                    || info->diff_mptr_class
-                    || info->ptr_integral_ext ) {
+                    || info->diff_mptr_class ) {
                 info->const_cast_ok = FALSE;
             }
             break;
@@ -1401,19 +1408,6 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
                                  , ctl->src.pc_ptr
                                  , TRUE
                                  , ctl->req );
-    } else if( ctl->ptr_integral_ext ) {
-        // allow conversions from/to integral
-        // when integers have same size
-        if( ctl->req == CNV_CAST ) {
-            retn = CNV_OK;
-        } else {
-            PTreeErrorExpr( expr, ANSI_PTR_INTEGER_EXTENSION );
-            if( expr->op == PT_ERROR ) {
-                retn = CNV_ERR;
-            } else {
-                retn = CNV_OK;
-            }
-        }
     } else {
         retn = CNV_IMPOSSIBLE;
     }

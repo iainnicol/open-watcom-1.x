@@ -35,28 +35,8 @@
 #include "ifprag.h"
 #include "mathcode.h"
 #include "rtdata.h"
+#include "mathlib.h"
 
-
-_WMRTLINK float _IF_log( float x )
-/********************************/
-{
-    return( _IF_dlog( x ) );
-}
-
-_WMRTLINK double (log)( double x )
-/********************************/
-{
-    return( _IF_dlog( x ) );
-}
-
-#if defined(_M_IX86)
-  extern        double  _log87(double);
-  #if defined(__386__)
-    #pragma aux _log87  "_*" parm [edx eax] value [edx eax];
-  #else
-    #pragma aux _log87  "_*" parm [ax bx cx dx] value [ax bx cx dx];
-  #endif
-#endif
 
 extern  double  _EvalPoly( double, const double *, int );
 
@@ -78,6 +58,18 @@ static const double     BPoly[] = {
     -0.76949932108494879777e+3
 };
 
+_WMRTLINK float _IF_log( float x )
+/********************************/
+{
+    return( _IF_dlog( x ) );
+}
+
+_WMRTLINK double (log)( double x )
+/********************************/
+{
+    return( _IF_dlog( x ) );
+}
+
 _WMRTLINK double _IF_dlog( double x )
 /***********************************/
 {
@@ -85,7 +77,6 @@ _WMRTLINK double _IF_dlog( double x )
     double  z;
 
     if( x <= 0.0 ) {
-//      x = _matherr( x == 0.0 ? SING : DOMAIN, "log", &x, &x, -HUGE_VAL );
         x = __log87_err( x, FUNC_LOG );
 #if defined(_M_IX86)
     } else if( _RWD_real87 ) {

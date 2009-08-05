@@ -1284,6 +1284,8 @@ static PTREE diagnoseCast       // DIAGNOSE CASTING ERROR
             msg = ERR_CAST_AWAY_CONSTVOL;
             break;
         }
+    } else if( ctl->ptr_integral_ext && ctl->clscls_implicit ) {
+        msg = ERR_PTR_INTEGER_EXTENSION;
     } else if( ctl->size_ptr_to_int ) {
         msg = ERR_REINT_INTEGRAL_PTR;
     }
@@ -1435,12 +1437,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
                 result = DIAG_ALREADY;
                 break;
               case CNV_OK :
-                if( ( ctl->ptr_integral_ext && ! ctl->clscls_explicit )
-                 && ConvCtlWarning( ctl, ANSI_PTR_INTEGER_EXTENSION ) ) {
-                    result = DIAG_ALREADY;
-                } else {
-                    result = CAST_PTR_TO_PTR;
-                }
+                result = CAST_PTR_TO_PTR;
                 break;
             }
         }
@@ -2335,7 +2332,11 @@ PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
                 } else if( ctl.from_void ) {
                     result = CAST_DO_CGCONV;
                 } else {
-                    result = CAST_TO_SAME_PTR;
+                    if( ctl.ptr_integral_ext ) {
+                        result = DIAG_STATIC_CAST_PTR_TYPE;
+                    } else {
+                        result = CAST_TO_SAME_PTR;
+                    }
                 }
             } else {
                 result = DIAG_STATIC_CAST_PTR_TYPE;
@@ -2525,6 +2526,7 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
     uint_8 jump;                // - jump code
 
     ConvCtlInitCast( &ctl, expr, &diagExplicit );
+    CErr2p( WARN_C_STYLE_CAST, ctl.tgt.orig );
     ctl.clscls_explicit = TRUE;
     ctl.clscls_derived = TRUE;
     ctl.clscls_refundef = TRUE;

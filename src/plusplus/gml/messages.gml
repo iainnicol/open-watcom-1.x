@@ -9702,21 +9702,9 @@ comment end
 The compiler has detected a problem while trying to open the indicated
 file for write access.
 
-:MSGSYM. ANSI_PTR_INTEGER_EXTENSION
+:MSGSYM. ERR_PTR_INTEGER_EXTENSION
 :MSGTXT. implicit conversion of pointers to integral types of same size
 :MSGJTXT. ìØÇ∂ëÂÇ´ÇÃêÆêîå^Ç÷ÇÃÉ|ÉCÉìÉ^Ç÷ÇÃà√ñŸÇÃïœä∑Ç≈Ç∑
-:ANSI. 4
-The compiler allows, when extensions are enabled, implicit conversions
-between pointers to integral types when the size of the integral types
-are the same.  Thus, conversions from
-.kw unsigned char
-to either
-.kw char
-or
-.kw signed char
-would be allowed.  This is an extension as the ISO/ANSI Draft Working Paper
-permits implicit conversions only when the types pointed at are identical.
-.np
 According to the ISO/ANSI Draft Working Paper, a string literal is an array of
 .kw char.
 Consequently, it is illegal to initialize or assign the pointer resulting
@@ -9725,8 +9713,6 @@ from that literal to a pointer of either
 or
 .kw signed char,
 since these pointers point at objects of a different type.
-When extensions are enabled, this condition is diagnosed as a warning;
-otherwise, it is an error.
 
 :MSGSYM. ERR_INVALID_OPTION_NUMBER
 :MSGTXT. option requires a number
@@ -12149,4 +12135,37 @@ struct S {
     S() { }
     int S;   // Error!
 };
+:eerrbad.
+
+:MSGSYM. WARN_MEANINGLESS_QUALIFIER_IN_CAST
+:MSGTXT. cv-qualifier in cast to '%T' is meaningless
+:MSGJTXT.
+:WARNING. 10
+A top-level cv-qualifier for a non-class rvalue is meaningless.
+:errbad.
+const int i = (const int) 0;
+:eerrbad.
+
+:MSGSYM. WARN_MEANINGLESS_QUALIFIER_IN_RETURN_TYPE
+:MSGTXT. cv-qualifier in return type '%T' is meaningless
+:MSGJTXT.
+:WARNING. 10
+A top-level cv-qualifier for a non-class rvalue is meaningless.
+:errbad.
+const int f() {
+    return 0;
+}
+:eerrbad.
+
+:MSGSYM. WARN_C_STYLE_CAST
+:MSGTXT. use of C-style cast to '%T' is discouraged
+:MSGJTXT.
+:WARNING. 10
+Use of C-style casts "(type) (expr)" is discouraged in favour of
+explicit C++ casts like static_cast, const_cast, dynamic_cast and
+reinterpret_cast.
+:errbad.
+const signed int *f( unsigned int *psi ) {
+    return ( signed int * ) psi;
+}
 :eerrbad.

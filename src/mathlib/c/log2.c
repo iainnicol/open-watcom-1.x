@@ -33,6 +33,7 @@
 #include <math.h>
 #include "mathcode.h"
 #include "ifprag.h"
+#include "mathlib.h"
 
 #define log2_of_e    1.44269504888963407
 
@@ -45,7 +46,6 @@ _WMRTLINK double log2( double x )
 /*******************************/
 {
     if( x <= 0.0 ) {
-//        x = _matherr( x == 0.0 ? SING : DOMAIN, "log2", &x, &x, -HUGE_VAL );
         x = __log87_err( x, FUNC_LOG2 );
     } else {
         x =  log(x) * log2_of_e;

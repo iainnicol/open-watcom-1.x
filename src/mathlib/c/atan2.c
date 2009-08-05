@@ -54,8 +54,7 @@ otherwise: compute z = atan( y/x )
 #include "ifprag.h"
 #include "mathcode.h"
 #include "pdiv.h"
-
-extern  int             __sgn(double);   /* determine sgn(x) */
+#include "mathlib.h"
 
 
 _WMRTLINK float _IF_atan2( float y, float x )
@@ -81,7 +80,6 @@ _WMRTLINK double _IF_datan2( double y, double x )
     sgnx = __sgn( x );
     if( sgny == 0 ) {               /* case 1 */
         if( sgnx == 0 ) {
-//                x = _matherr( DOMAIN, "atan2", &y, &x, 0.0 );
             x = __math2err( FUNC_ATAN2 | M_DOMAIN | V_ZERO, &y, &x );
         } else if( sgnx < 0 ) {
             x = Pi;
