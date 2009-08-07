@@ -189,7 +189,7 @@ typedef enum {
     MOD_KILL            = 0x00040000, // module should be removed from list
     MOD_FLATTEN_DBI     = 0x00080000, // flatten DBI found in this mod.
     MOD_DONE_PASS_1     = 0x00100000, // module been through pass 1 already.
-    MOD_IS_FREE         = 0x80000000, // used for marking carve free blocks
+    MOD_IS_FREE      = EI(0x80000000),// used for marking carve free blocks
     MOD_CLEAR_ON_INC    = 0x00100000  // flags to clear when inc. linking.
 } module_flags;
 
@@ -288,7 +288,7 @@ typedef enum {
     CLASS_FIXED         = 0x00001000,   // Class should load at specified address
     CLASS_COPY          = 0x00002000,   // Class should use data from DupClass
     CLASS_NOEMIT        = 0x00004000,   // Class should not generate output
-    CLASS_IS_FREE       = 0x80000000,   // not used, but guarantees 4 byte enum
+    CLASS_IS_FREE       = 0x40000000    // not used, but guarantees 4 byte enum
 } class_status;
 
 typedef struct class_entry {

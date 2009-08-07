@@ -24,30 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  ZDOS executable header.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef _EXEZDOS_H
-#define _EXEZDOS_H
+// WARNING:  this value taken from Codewright's include\exports.h.
+//           while unlikely to change, it would be better to
+//           interrogate Codewright as to the value of SYSFLAG_WIN_MIN
+//           on-line.  hmm...
+#define     SYSFLAG_WIN_MINIMIZED       0x00000001L
 
-typedef struct _zdos_exe_header {
-    unsigned_32     signature;      /* signature to mark valid EXE file */
-    unsigned_32     EIP;            /* initial EIP value                */
-    unsigned_32     ESP;            /* initial ESP (marks end of BSS)   */
-    unsigned_32     hdr_size;       /* size of header in bytes          */
-    unsigned_32     chk_sum;        /* check sum                        */
-    unsigned_32     image_size;     /* size of load image in bytes      */
-    unsigned_32     image_offset;   /* offset of load image             */
-    unsigned_32     extra_size;     /* unitialized data size in bytes   */
-    unsigned_32     num_relocs;     /* number of relocation items       */
-    unsigned_32     reloc_offset;   /* offset of first relocation item  */
-    unsigned_32     reloc_base;     /* image base address               */
-    unsigned_32     debug_offset;   /* offset of debug information      */
-    unsigned_32     reserved[4];    /* reserved for future use          */
-} zdos_exe_header;
-
-#define ZDOS_SIGNATURE  0x20cd545a  /* 'ZT' followed by INT 20h         */
-
-#endif
+#define     CW_CLASS "PremiaCWrightWorkbench"

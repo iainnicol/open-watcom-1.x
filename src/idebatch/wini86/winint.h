@@ -24,30 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  ZDOS executable header.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef _EXEZDOS_H
-#define _EXEZDOS_H
+#define MENU_ABOUT              101
+#define MENU_EXIT               102
+#define PRESSED_ENTER           103
+#define MENU_CTRL_BREAK         104
 
-typedef struct _zdos_exe_header {
-    unsigned_32     signature;      /* signature to mark valid EXE file */
-    unsigned_32     EIP;            /* initial EIP value                */
-    unsigned_32     ESP;            /* initial ESP (marks end of BSS)   */
-    unsigned_32     hdr_size;       /* size of header in bytes          */
-    unsigned_32     chk_sum;        /* check sum                        */
-    unsigned_32     image_size;     /* size of load image in bytes      */
-    unsigned_32     image_offset;   /* offset of load image             */
-    unsigned_32     extra_size;     /* unitialized data size in bytes   */
-    unsigned_32     num_relocs;     /* number of relocation items       */
-    unsigned_32     reloc_offset;   /* offset of first relocation item  */
-    unsigned_32     reloc_base;     /* image base address               */
-    unsigned_32     debug_offset;   /* offset of debug information      */
-    unsigned_32     reserved[4];    /* reserved for future use          */
-} zdos_exe_header;
+#define LIST_BOX                110
+#define EDIT_CONTROL            111
 
-#define ZDOS_SIGNATURE  0x20cd545a  /* 'ZT' followed by INT 20h         */
+#define GOT_INTERRUPT           200
 
-#endif
+#define LISTBOX_X               10
+#define LISTBOX_Y               60
+
+#define TIMER_ID                666
+
+
+#define MAX_BUFF                512

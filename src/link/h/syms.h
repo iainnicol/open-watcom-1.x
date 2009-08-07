@@ -105,7 +105,7 @@ typedef enum {
     SYM_NAME_XLATED     = 0x01000000, // only used during permdata writing
     SYM_IS_FREE         = 0x10000000, // only used during permdata writing.
 
-    SYM_CLEAR_ON_P2     = 0xE00000A0, // bits to clear before pass 2 starts.
+    SYM_CLEAR_ON_P2  = EI(0xE00000A0),// bits to clear before pass 2 starts.
     SYM_CLEAR_ON_INC    = 0x010404F0,
     SYM_CLEAR_ON_ALT    = 0x00980010,
 
@@ -119,7 +119,7 @@ typedef enum {
     SYM_DISTRIB         = 0x20000000, // DOS ONLY: symbol is in a distrib. lib.
     SYM_VF_MARKED       = 0x20000000, // vf reference record seen for this sym.
     SYM_DCE_REF         = 0x40000000, // referenced for the purposes of dead code
-    SYM_VF_REFS_DONE    = 0x80000000  // ALL: vf refs added to call graph
+    SYM_VF_REFS_DONE = EI(0x80000000) // ALL: vf refs added to call graph
 } sym_info;
 
 // some handy macros for checking and setting symbol type bits
@@ -169,7 +169,7 @@ enum {
     FFIX_SS_OVERRIDE,
     FFIX_DS_OVERRIDE,
     FFIX_IGNORE,          // an overlapping fixup symbol.
-    FFIX_MASK = 0xe0000000
+    FFIX_MASK = EI(0xE0000000)
 };
 
 #define FFIX_SHIFT 29

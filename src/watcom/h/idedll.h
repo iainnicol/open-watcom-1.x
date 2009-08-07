@@ -199,7 +199,7 @@ typedef struct IDEMsgInfo2 {
         FileErr         file;
         SymbolFileErr   sym_file;
         SymbolErr       symbol;
-    };
+    } u;
 } IDEMsgInfo2;
 
 

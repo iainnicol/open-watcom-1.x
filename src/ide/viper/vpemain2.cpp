@@ -73,7 +73,6 @@ extern "C" {
 #include "wflashp.hpp"
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
-#include "ide.h"
 #include "mitem.hpp"
 #include "inifile.hpp"
 

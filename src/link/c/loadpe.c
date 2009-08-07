@@ -844,7 +844,7 @@ static void WritePEResources( pe_header *header, pe_object *object )
         FmtData.resource = NULL;
     }
     status = OpenResFiles( (ExtraRes *) FmtData.u.pe.resources, &rinfo,
-                           &allopen, RC_TARGET_OS_WIN32, Root->outfile->fname );
+                           &allopen, EXE_TYPE_PE, Root->outfile->fname );
     if( !status )               // we had a problem opening
         return;
     einfo.IsOpen = TRUE;

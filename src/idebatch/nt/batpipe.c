@@ -24,30 +24,40 @@
 *
 *  ========================================================================
 *
-* Description:  ZDOS executable header.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef _EXEZDOS_H
-#define _EXEZDOS_H
+#include <windows.h>
+#include "batpipe.h"
 
-typedef struct _zdos_exe_header {
-    unsigned_32     signature;      /* signature to mark valid EXE file */
-    unsigned_32     EIP;            /* initial EIP value                */
-    unsigned_32     ESP;            /* initial ESP (marks end of BSS)   */
-    unsigned_32     hdr_size;       /* size of header in bytes          */
-    unsigned_32     chk_sum;        /* check sum                        */
-    unsigned_32     image_size;     /* size of load image in bytes      */
-    unsigned_32     image_offset;   /* offset of load image             */
-    unsigned_32     extra_size;     /* unitialized data size in bytes   */
-    unsigned_32     num_relocs;     /* number of relocation items       */
-    unsigned_32     reloc_offset;   /* offset of first relocation item  */
-    unsigned_32     reloc_base;     /* image base address               */
-    unsigned_32     debug_offset;   /* offset of debug information      */
-    unsigned_32     reserved[4];    /* reserved for future use          */
-} zdos_exe_header;
+char                    *SharedMem;
+HANDLE                  SemReadUp;
+HANDLE                  SemWritten;
+HANDLE                  SemReadDone;
 
-#define ZDOS_SIGNATURE  0x20cd545a  /* 'ZT' followed by INT 20h         */
+unsigned BatservRead( void *buff, unsigned len )
+{
+    unsigned    bytes_read;
 
-#endif
+    ReleaseSemaphore( SemReadUp, 1, NULL );
+    WaitForSingleObject( SemWritten, INFINITE );
+    bytes_read = *(unsigned*)SharedMem;
+    if( bytes_read > len ) bytes_read = len;
+    memcpy( buff, SharedMem + sizeof( unsigned ), bytes_read );
+    ReleaseSemaphore( SemReadDone, 1, NULL );
+    return( bytes_read );
+}
+
+unsigned BatservWrite( void *buff, unsigned len )
+{
+    WaitForSingleObject( SemReadUp, INFINITE );
+    *(unsigned*)SharedMem = len;
+    memcpy( SharedMem + sizeof( unsigned ), buff, len );
+    ReleaseSemaphore( SemWritten, 1, NULL );
+    WaitForSingleObject( SemReadDone, INFINITE );
+    return( len );
+}
+

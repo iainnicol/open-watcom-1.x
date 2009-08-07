@@ -122,6 +122,9 @@ typedef long long               int_64;
     #define _WCUNALIGNED
 #endif
 
+/* A macro for forcing enumeration members to be integers. */
+#define EI( a )         ((int)(a))
+
 /* Macros for low/high end access on little and big endian machines */
 
 #if defined( __BIG_ENDIAN__ )

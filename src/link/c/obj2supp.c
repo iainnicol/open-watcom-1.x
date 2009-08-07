@@ -849,7 +849,7 @@ static bool CheckSpecials( fix_data *fix, frame_spec *targ )
         return( TRUE );
     } else if( special == FIX_IFGLUE ) {
         if( ( targ->type == FIX_FRAME_EXT ) && IS_SYM_IMPORTED( targ->u.sym ) ) {
-            enum { TOC_RESTORE_INSTRUCTION = 0x804b0004 };
+            enum { TOC_RESTORE_INSTRUCTION = EI(0x804b0004) };
             PUT_U32( fix->data, TOC_RESTORE_INSTRUCTION );
         }
         return( TRUE );

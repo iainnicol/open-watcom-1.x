@@ -240,7 +240,7 @@ enum {
     IMAGE_SCN_MEM_SHARED                = 0x10000000, // Section is shareable.
     IMAGE_SCN_MEM_EXECUTE               = 0x20000000, // Section is executable.
     IMAGE_SCN_MEM_READ                  = 0x40000000, // Section is readable.
-    IMAGE_SCN_MEM_WRITE                 = 0x80000000, // Section is writeable.
+    IMAGE_SCN_MEM_WRITE              = EI(0x80000000),// Section is writeable.
 
 //  COFF_SEC_FLAG_ALIGN_MASK            = 0x00700000, // replaced by IMAGE_SCN_ALIGN_MASK
     COFF_SEC_FLAG_ALIGN_SHIFT           = 20

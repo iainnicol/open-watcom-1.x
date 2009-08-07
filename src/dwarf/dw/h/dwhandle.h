@@ -45,7 +45,7 @@ typedef struct reloc_chain {
 #define    HANDLE_MASK         0x0fffffff    // only 2^28 handles ;)
 #else
 enum {
-    HANDLE_MODIFIED     = 0x80000000,   // handle is a type modifier
+    HANDLE_MODIFIED  = EI(0x80000000),  // handle is a type modifier
     HANDLE_MASK         = 0x0fffffff    // only 2^28 handles ;)
 };
 #endif
