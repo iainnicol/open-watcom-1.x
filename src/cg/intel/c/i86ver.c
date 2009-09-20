@@ -149,26 +149,42 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
     case V_LEA:
         if( op2->c.const_type != CONS_ABSOLUTE ) return( FALSE );
         switch( ins->head.opcode ) {
-        #if _TARGET & _TARG_80386
-            case OP_MUL:
-                switch( op2->c.int_value ) {
-                case 3:
-                case 5:
-                case 9:
+#if _TARGET & _TARG_80386
+        case OP_MUL:
+            switch( op2->c.int_value ) {
+            case 3:
+            case 5:
+            case 9:
+                return( TRUE );
+            }
+            break;
+        case OP_LSHIFT:
+            if( op1 == result && (_CPULevel( CPU_586 ) && !_CPULevel( CPU_686 )) )
+                return( FALSE );
+            if( OptForSize > 50 ) return( FALSE );
+            switch( op2->c.int_value ) {
+            case 1:
+            case 2:
+            case 3:
+                /* If the shift is *not* followed by an add, we're going to
+                 * end up with a huge lea instruction which is unlikely to
+                 * be any faster. See also GetNextAddConstant() in i86enc32.c.
+                 */
+                switch( ins->head.next->head.opcode ) {
+                case OP_ADD:
+                case OP_SUB:
+                    if( ins->head.next->operands[0] != ins->result ) break;
+                    if( ins->head.next->result != ins->result ) break;
+                    if( ins->head.next->operands[1]->n.class != N_CONSTANT ) break;
+                    if( ins->head.next->operands[1]->c.const_type != CONS_ABSOLUTE ) break;
+                    if( ins->head.next->ins_flags & INS_CC_USED ) break;
                     return( TRUE );
+                default:
+                    break;
                 }
-                break;
-            case OP_LSHIFT:
-                if( op1 == result && _CPULevel( CPU_586 ) ) return( FALSE );
-                if( OptForSize >= 50 ) return( FALSE );
-                switch( op2->c.int_value ) {
-                case 1:
-                case 2:
-                case 3:
-                    return( TRUE );
-                }
-                break;
-        #endif
+            }
+            break;
+#endif
         case OP_ADD:
         case OP_SUB:
             if( OptForSize < 50 && !_CPULevel( CPU_286 ) ) return( FALSE );
@@ -291,14 +307,14 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         if( ins->result != NULL && ins->type_class != FS ) return( FALSE );
         if( ins->head.opcode == OP_CMP_EQUAL ) return( TRUE );
         if( ins->head.opcode == OP_CMP_NOT_EQUAL ) return( TRUE );
-    #if _TARGET & _TARG_80386
+#if _TARGET & _TARG_80386
         // rINTCOMP reductions for 16-bit need work to handle < and >
         // comparisons - not worth it for now - BBB Apr 24, 1995
         if( ins->type_class != FS ) return( FALSE );
         if( ins->operands[ 1 ]->n.class == N_CONSTANT &&
             ins->operands[ 1 ]->c.const_type == CONS_ABSOLUTE &&
             CFTest( ins->operands[ 1 ]->c.value ) > 0 ) return( TRUE );
-    #endif
+#endif
         return( FALSE );
     default:
         return( OtherVerify( kind, ins, op1, op2, result ) );

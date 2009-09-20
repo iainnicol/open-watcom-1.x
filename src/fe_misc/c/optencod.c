@@ -149,12 +149,13 @@ static uint_8 const langMaxChar[] = {
 };
 
 static char *usageMsg[] = {
-    "optencod [-i] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
+    "optencod [-i] [-l <lang-n>] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
     "where:",
     "    <gml-file> is the tagged input GML file",
     "    <parse-h> is the output file for the command line parser",
     "    <usage-h> is the output file for the usage message",
     "    <usage-u> is the output file for the QNX usage file",
+    "    <lang> is the language(number) used for output data",
     "    <target> can be chosen from:",
     NULL
 };
@@ -164,6 +165,7 @@ static struct {
     unsigned    quiet : 1;
     unsigned    no_equal : 1;
     unsigned    alternate_equal : 1;
+    unsigned    lang : 12;
 } optFlag;
 
 typedef struct target TARGET;
@@ -376,6 +378,11 @@ static void procCmdLine( int argc, char **argv )
         optFlag.international = 1;
         --argc;
         ++argv;
+    }
+    if( strcmp( argv[1], "-l" ) == 0 ) {
+        optFlag.lang = atoi( argv[2] );
+        argc -= 2;
+        argv += 2;
     }
     if( strcmp( argv[1], "-q" ) == 0 ) {
         optFlag.quiet = 1;
@@ -921,7 +928,7 @@ static void doTITLE( char *p )
     *i = t;
     t->target = 0;
     t->ntarget = 0;
-    t->lang_title[ LANG_English ] = strdup( p );
+    t->lang_title[ LANG_English ] = pickUpRest( p );
     targetTitle = t;
 }
 
@@ -934,7 +941,7 @@ static void doJTITLE( char *p )
     if( t == NULL ) {
         fail( ":jtitle. must follow a :title.\n" );
     }
-    t->lang_title[ LANG_Japanese ] = strdup( p );
+    t->lang_title[ LANG_Japanese ] = pickUpRest( p );
 }
 
 // :timestamp.
@@ -1712,12 +1719,12 @@ static size_t genOptionUsageStart( OPTION *o )
     return( len );
 }
 
-static void fillOutSpaces( unsigned n )
+static void fillOutSpaces( char *buff, int n )
 {
     char *p;
 
-    p = &tokbuff[ strlen( tokbuff ) ];
-    while( n ) {
+    p = &buff[ strlen( buff ) ];
+    while( n > 0 ) {
         *p++ = ' ';
         --n;
     }
@@ -1760,7 +1767,7 @@ static void emitUsageH( void )
     fprintf( ufp, "%s\",\n", s );
 }
 
-static void createChainHeader( OPTION **o, unsigned language )
+static void createChainHeader( OPTION **o, unsigned language, int max )
 {
     int c;
     char *usage;
@@ -1786,6 +1793,7 @@ static void createChainHeader( OPTION **o, unsigned language )
         }
     }
     strcat( hdrbuff, "} " );
+    fillOutSpaces( hdrbuff, max - strlen( hdrbuff ) );
     usage = chainUsage[ c ][ language ];
     if( usage == NULL || *usage == '\0' ) {
         usage = chainUsage[ c ][ LANG_English ];
@@ -1820,8 +1828,6 @@ static void createUsageHeader( unsigned language, void (*process_line)( void ) )
                 *d++ = ' ';
                 *d++ = ' ';
                 *d++ = ' ';
-            } else if( ! isprint( *s ) ) {
-                // skip
             } else {
                 *d++ = *s;
             }
@@ -1888,14 +1894,14 @@ static void processUsage( unsigned language, void (*process_line)( void ) )
             if(! ( chainOption[ (int)o->name[0] ] & CHAIN_USAGE )) {
                 if( !o->nochain ) {
                     chainOption[ (int)o->name[0] ] |= CHAIN_USAGE;
-                    createChainHeader( &t[i], language );
+                    createChainHeader( &t[i], language, max );
                     process_line();
                 }
             }
         }
         tokbuff[0] = '\0';
         len = genOptionUsageStart( o );
-        fillOutSpaces( max - len );
+        fillOutSpaces( tokbuff, max - len );
         if( chainOption[ (int)o->name[0] ] & CHAIN_YES ) {
             if( !o->nochain ) {
                 strcat( tokbuff, "-> " );
@@ -1911,7 +1917,7 @@ static void processUsage( unsigned language, void (*process_line)( void ) )
 
 static void outputUsageH( void )
 {
-    processUsage( LANG_English, emitUsageH );
+    processUsage( optFlag.lang, emitUsageH );
 }
 
 static void emitUsageB( void )

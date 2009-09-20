@@ -24,34 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Configuration for Win32 x86 host, 16-bit x86 target.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <bios98.h>
-#include <dos.h>
-#include "nonibm.h"
+/*  size of data types on target machine */
 
-#ifdef __386__
-#include "extender.h"
+#ifndef _TARGET_INCLUDED
+#define _TARGET_INCLUDED
+#include "target16.h"
+#include "targdef.h"
+#include "langenvd.h"
+
+#define _CPU            8086
+
+#define __TGT_SYS       __TGT_SYS_X86
+
 #endif
-
-_WCRTLINK unsigned short __nec98_bios_memsize( void )
-{
-    int __data = 0;
-
-    if( !__NonIBM )  return( 0 );       // fail if not a NEC 98 machine
-
-#ifdef __386__
-    if( _ExtenderRealModeSelector ){
-        __data = *(unsigned char _WCFAR *)
-                MK_FP( _ExtenderRealModeSelector, 0xa3fea );
-    }
-#else
-    __data = *(unsigned char _WCFAR *)MK_FP(0xa000, 0x3fea);
-#endif
-    return( ( ( __data & 0x07 ) + 1 ) * 0x80 );
-}

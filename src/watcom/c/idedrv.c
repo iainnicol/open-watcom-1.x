@@ -41,10 +41,8 @@
 #include "errout.h"
 
 
-#ifndef USE_RUNYOURSELF_ARGV
-    #if defined(__UNIX__)
-        #define USE_RUNYOURSELF_ARGV
-    #endif
+#ifdef DLLS_IMPLEMENTED
+#undef DLLS_IMPLEMENTED
 #endif
 
 
@@ -72,7 +70,7 @@
         #define IDETOOL_GETVER          "_IDEGetVersion@0"
         #define IDETOOL_INITDLL         "_IDEInitDLL@12"
         #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelf@16"
+        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
         #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
         #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
         #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
@@ -84,7 +82,7 @@
         #define IDETOOL_GETVER          "_IDEGetVersion@0"
         #define IDETOOL_INITDLL         "_IDEInitDLL@12"
         #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelf@16"
+        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
         #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
         #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
         #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"
@@ -96,7 +94,7 @@
         #define IDETOOL_GETVER          "_IDEGetVersion@0"
         #define IDETOOL_INITDLL         "_IDEInitDLL@12"
         #define IDETOOL_RUNSELF         "_IDERunYourSelf@12"
-        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelf@16"
+        #define IDETOOL_RUNSELF_ARGV    "_IDERunYourSelfArgv@16"
         #define IDETOOL_FINIDLL         "_IDEFiniDLL@4"
         #define IDETOOL_STOPRUN         "_IDEStopRunning@0"
         #define IDETOOL_INITINFO        "_IDEPassInitInfo@8"

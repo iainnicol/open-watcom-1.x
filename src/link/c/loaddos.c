@@ -49,8 +49,8 @@
 
 unsigned_32             OvlTabOffset;
 
-static unsigned_32 WriteDOSRootRelocs( void )
-/*******************************************/
+static unsigned_32 WriteDOSRootRelocs( unsigned_32 mz_hdr_size )
+/**************************************************************/
 /* write all relocs to the file */
 {
     unsigned long       header_size;
@@ -58,7 +58,7 @@ static unsigned_32 WriteDOSRootRelocs( void )
     DumpRelocList( Root->reloclist );
     NullAlign( 0x10 );
     header_size = (unsigned long)Root->relocs * sizeof( dos_addr )
-                    + sizeof( dos_exe_header ) + sizeof( unsigned_32 );
+                    + mz_hdr_size;
     return( MAKE_PARA( header_size ) );
 }
 
@@ -104,8 +104,8 @@ static void AssignFileLocs( section *sect )
             sect->ovl_num, sect->u.file_loc, sect->outfile->fname ));
 }
 
-static unsigned long WriteDOSData( void )
-/***************************************/
+static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
+/**********************************************************/
 /* copy code from extra memory to loadfile */
 {
     group_entry         *group;
@@ -118,7 +118,7 @@ static unsigned long WriteDOSData( void )
     DEBUG(( DBG_BASE, "Writing data" ));
     OrderGroups( CompareDosSegments );
     CurrSect = Root;        // needed for WriteInfo.
-    header_size = WriteDOSRootRelocs();
+    header_size = WriteDOSRootRelocs( mz_hdr_size );
 
     Root->u.file_loc = header_size;
     if( Root->areas != NULL ) {
@@ -284,6 +284,7 @@ void FiniDOSLoadFile( void )
 /* terminate writing of load file */
 {
     unsigned_32         hdr_size;
+    unsigned_32         mz_hdr_size;
     unsigned_32         temp;
     unsigned_32         min_size;
     unsigned_32         root_size;
@@ -293,9 +294,13 @@ void FiniDOSLoadFile( void )
         WriteCOMFile();
         return;
     }
-    hdr_size = sizeof( dos_exe_header ) + sizeof( unsigned_32 );
-    SeekLoad( hdr_size );
-    root_size = WriteDOSData();
+    if( FmtData.u.dos.full_mz_hdr ) {
+        mz_hdr_size = 0x40;
+    } else {
+        mz_hdr_size = sizeof( dos_exe_header ) + sizeof( unsigned_32 );
+    }
+    SeekLoad( mz_hdr_size );
+    root_size = WriteDOSData( mz_hdr_size );
     if( FmtData.type & MK_OVERLAYS ) {
         PadOvlFiles();
     }
@@ -303,7 +308,7 @@ void FiniDOSLoadFile( void )
     CurrSect = Root;
     DBIWrite();
     hdr_size = MAKE_PARA( (unsigned long)Root->relocs * sizeof( dos_addr )
-                                                                 + hdr_size );
+                                                                 + mz_hdr_size );
     DEBUG((DBG_LOADDOS, "root size %l, hdr size %l", root_size, hdr_size ));
     SeekLoad( 0 );
     _HostU16toTarg( DOS_SIGNATURE, exe_head.signature );
@@ -323,8 +328,7 @@ void FiniDOSLoadFile( void )
     _HostU16toTarg( StackAddr.seg, exe_head.SS_offset );
     _HostU16toTarg( StackAddr.off, exe_head.SP );
     _HostU16toTarg( 0, exe_head.chk_sum );
-    _HostU16toTarg( sizeof( dos_exe_header ) + sizeof( unsigned_32 ),
-                    exe_head.reloc_offset );
+    _HostU16toTarg( mz_hdr_size, exe_head.reloc_offset );
     _HostU16toTarg( 0, exe_head.overlay_num );
     WriteLoad( &exe_head, sizeof( dos_exe_header ) );
     WriteLoad( &OvlTabOffset, sizeof( unsigned_32 ) );

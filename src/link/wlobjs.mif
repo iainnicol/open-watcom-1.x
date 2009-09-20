@@ -4,20 +4,20 @@
 drv_objs = &
     stidedrv.obj &
     idemsgfm.obj &
-    dlldrvr.obj
+    maindrv.obj
 
 #
 # stand-alone executable
 #
-exe_objs =
+exe_objs = &
+    stidedrv.obj &
+    idemsgfm.obj &
+    maindrv.obj
 
 #
 # DLL stuff
 #
-dll_objs = &
-    dllentry.obj &
-    idemsgpr.obj &
-    idedrv.obj
+dll_objs =
 
 #
 # common files
@@ -47,6 +47,8 @@ common_objs = &
     distrib.obj &
     global.obj &
     hash.obj &
+    ideentry.obj &
+    idemsgpr.obj &
     impexp.obj &
     libr.obj &
     libsupp.obj &
@@ -105,6 +107,10 @@ common_objs = &
 common_objs += virtmem.obj
 !else
 common_objs += virtpage.obj
+!endif
+
+!ifdef DLLS_IMPLEMENTED
+common_objs += idedrv.obj
 !endif
 
 #

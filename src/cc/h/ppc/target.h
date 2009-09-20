@@ -24,31 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  get switch char function
+* Description:  Configuration for Win32 x86 host, 32-bit PowerPC target.
 *
 ****************************************************************************/
 
 
-#include "swchar.h"
+/*  size of data types on target machine */
 
-#ifdef __DOS__
+#ifndef _TARGET_INCLUDED
+#define _TARGET_INCLUDED
+#include "target32.h"
+#include "targdef.h"
+#include "langenvd.h"
 
-extern unsigned char    _DOS_Switch_Char( void );
-#pragma aux     _DOS_Switch_Char = \
-    "mov ax,3700h"  \
-    "int 21h"       \
-    "mov al,dl"     \
-    modify [dx];
+#define _CPU            _PPC
+
+#define __TGT_SYS       __TGT_SYS_PPC_NT
 
 #endif
-
-unsigned char _dos_switch_char( void )
-{
-#ifdef __DOS__
-    return( _DOS_Switch_Char() );
-#elif defined( __UNIX__ )
-    return( '-' );
-#else
-    return( '/' );
-#endif
-}

@@ -24,38 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  Mainline for DLL-using build of linker.
+* Description:  Configuration for Win32 x86 host, Alpha AXP target.
 *
 ****************************************************************************/
 
 
-#include <process.h>
-#include "walloca.h"
-#include "idedrv.h"
+/*  size of data types on target machine */
 
+#ifndef _TARGET_INCLUDED
+#define _TARGET_INCLUDED
+#include "target32.h"
+#include "targdef.h"
+#include "langenvd.h"
 
-int main( void )
-{
-    IDEDRV          inf;
-    char            *cmdline;
-    int             cmdlen;
-    IDEDRV_STATUS   status;
+#define _CPU            _AXP
 
-    status = IDEDRV_ERR_LOAD;
-    IdeDrvInit( &inf, "wlinkd.dll", NULL );
+#define __TGT_SYS       __TGT_SYS_AXP_NT
 
-    cmdline = NULL;
-    cmdlen = _bgetcmd( NULL, 0 );
-    if( cmdlen != 0 ) {
-        cmdlen++;               // add 1 for null char
-        cmdline = alloca( cmdlen );
-        if( cmdline != NULL ) _bgetcmd( cmdline, cmdlen );
-    }
-    status = IdeDrvExecDLL( &inf, cmdline );
-    if( status != IDEDRV_SUCCESS && status != IDEDRV_ERR_RUN_EXEC
-                                 && status != IDEDRV_ERR_RUN_FATAL ) {
-        IdeDrvPrintError( &inf );
-    }
-    IdeDrvUnloadDLL( &inf );
-    return status != IDEDRV_SUCCESS;
-}
+#endif

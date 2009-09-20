@@ -66,7 +66,7 @@
 #include "objnode.h"
 #include "strtab.h"
 #include "permdata.h"
-#include "dllentry.h"
+#include "ideentry.h"
 #include "overlays.h"
 
 seg_leader      *StackSegPtr;
@@ -182,17 +182,16 @@ void FiniLoadFile( void )
     DoCVPack();
 }
 
-#if defined( __UNIX__ ) && !defined(__WATCOMC__)
-static void DoCVPack( void ) {}
-#else
 #if defined( __UNIX__ )
 #define CVPACK_EXE "cvpack"
 #else
 #define CVPACK_EXE "cvpack.exe"
 #endif
+
 static void DoCVPack( void )
 /**************************/
 {
+#if !defined( __UNIX__ ) || defined(__WATCOMC__)
     int         retval;
     char        *name;
 
@@ -208,8 +207,8 @@ static void DoCVPack( void )
             PrintIOError( ERR+MSG_CANT_EXECUTE, "12", CVPACK_EXE );
         }
     }
-}
 #endif
+}
 
 static seg_leader *FindStack( section *sect )
 /*******************************************/
@@ -715,13 +714,18 @@ void BuildImpLib( void )
     _LnkFree( ImpLib.dllname );
 }
 
-#if defined( __UNIX__ ) && !defined(__WATCOMC__)
-static void ExecWlib( void ) {}
-#elif defined( _DLLHOST )
+#if defined( DLLS_IMPLEMENTED )
+#define WLIB_EXE "wlibd.dll"
+#elif defined( __UNIX__ )
+#define WLIB_EXE "wlib"
+#else
+#define WLIB_EXE "wlib.exe"
+#endif
 
 static void ExecWlib( void )
 /**************************/
 {
+#if defined( DLLS_IMPLEMENTED )
     char        *cmdline;
     char        *temp;
     size_t      namelen;
@@ -730,7 +734,7 @@ static void ExecWlib( void )
     namelen = strlen(ImpLib.fname);
     impnamelen = strlen(FmtData.implibname);
 /*
- * in the following: +12 for options, +2 for spaces, +1 for @, +4 for quotes
+ * in the following: +15 for options, +2 for spaces, +1 for @, +4 for quotes
  *                  and +1 for nullchar
 */
     _ChkAlloc( cmdline, namelen + impnamelen +15 +2 +1 +4 +1 );
@@ -752,22 +756,11 @@ static void ExecWlib( void )
     temp += namelen;
     *temp++ = '"';
     *temp = '\0';
-    if( ExecWlibDLL( cmdline ) ) {
-        PrintIOError( ERR+MSG_CANT_EXECUTE, "12", "wlibd.dll" );
+    if( ExecDLLPgm( WLIB_EXE, cmdline ) ) {
+        PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
     _LnkFree( cmdline );
-}
-#else
-
-#if defined( __UNIX__ )
-#define WLIB_EXE "wlib"
-#else
-#define WLIB_EXE "wlib.exe"
-#endif
-
-static void ExecWlib( void )
-/**************************/
-{
+#elif !defined( __UNIX__ ) || defined(__WATCOMC__)
     char        *atfname;
     size_t      namelen;
     int         retval;
@@ -790,8 +783,8 @@ static void ExecWlib( void )
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
     _LnkFree( atfname );
-}
 #endif
+}
 
 void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
 /**************************************************************************/

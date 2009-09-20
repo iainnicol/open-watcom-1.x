@@ -44,6 +44,7 @@
 #include <malloc.h>
 #include <conio.h>
 
+#include "swchar.h"
 #include "cmdlhelp.h"
 #include "clcommon.h"
 #include "banner.h"
@@ -115,16 +116,6 @@ static  int     via_environment = FALSE;
  *  Static function prototypes
  */
 static int     Parse( char *Cmd );
-
-
-#if defined( __UNIX__ )
-    #define _dos_switch_char() '-'
-#elif defined( __OS2__ ) || defined( __NT__ )
-    #define _dos_switch_char() '/'
-#else
-    extern  int     _dos_switch_char( void );
-#endif
-
 
 #undef pick
 #define pick( code, english )   english

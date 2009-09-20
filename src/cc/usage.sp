@@ -36,12 +36,12 @@ Options:
 -6            optimize for Pentium Pro
 :endsegment
 -aa           allow non const initializers for local aggregates or unions
--ad[=<file>]  generate make style auto depend file
--add[=<file>] set source dependancy name in auto depend file
--adt[=<file>] set make style auto depend target name
--adhp[=<file>]set default for no header path
--adbs         force slashes to backward '\\' slashes (auto dep gen)
--adfs         force slashes to forward '/' slashes (auto dep gen)
+-ad[=<file>]  generate make style automatic dependency file
+-add[=<file>] specify first dependency in make style auto-depend file
+-adt[=<file>] specify target in make style auto-depend file
+-adhp[=<file>]specify default path for headers without one
+-adbs         force path separators to '\\' in auto-depend file
+-adfs         force path separators to '/' in auto-depend file
 -ai           turn off type checking on static initialization
 -aq           turn off qualifier mismatch warning for const/volatile
 :segment Taxp
@@ -159,7 +159,7 @@ Options:
 -o{a,b,c,d,e,f[+],h,i,k,l,m,n,o,p,r,s,t,u,x,z} control optimization
 :endsegment
   a           -> relax aliasing constraints
-  b           -> branch prediction
+  b           -> enable branch prediction
 :segment T386 | Ti86
   c           -> disable <call followed by return> to <jump> optimization
 :endsegment
@@ -169,9 +169,9 @@ Options:
   f           -> generate traceable stack frames as needed
   f+          -> always generate traceable stack frames
 :endsegment
-  h           -> enable expensive optimizations
+  h           -> enable expensive optimizations (longer compiles)
   i           -> expand intrinsic functions inline
-  k           -> push register saves into flow graph
+  k           -> include prologue/epilogue in flow graph
   l           -> enable loop optimizations
   l+          -> enable loop unrolling optimizations
 :segment T386 | Ti86

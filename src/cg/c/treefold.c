@@ -820,7 +820,11 @@ extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
 
                     li = CFGetInteger64Value( lv );
 
-                    U64ShiftR( &li, ri, &rsh );
+                    if( tipe->attr & TYPE_SIGNED ) {
+                        I64ShiftR( &li, ri, &rsh );
+                    } else {
+                        U64ShiftR( &li, ri, &rsh );
+                    }
                     fold = Int64ToType( rsh, tipe );
                 }
             }
@@ -904,8 +908,28 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
     if( rite->class == TN_CONS ) {
         rv = rite->u.name->c.value;
         if( HasBigConst( tipe ) ) {
+            lv = left->u.name->c.value;
             if( CFTest( rv ) != 0 && left->class == TN_CONS ) {
-                fold = CFToType( CFDiv( left->u.name->c.value, rv ), tipe );
+                if( tipe->attr & TYPE_FLOAT ) {
+                    fold = CFToType( CFDiv( lv, rv ), tipe );
+                } else {    /* Must be a 64-bit integer. */
+                    signed_64       div;
+                    signed_64       rem;
+                    signed_64       li;
+                    signed_64       ri;
+
+                    assert( CFIs64( lv ) );
+                    assert( CFIs64( rv ) );
+                    li = CFGetInteger64Value( lv );
+                    ri = CFGetInteger64Value( rv );
+
+                    if( tipe->attr & TYPE_SIGNED ) {
+                        I64Div( &li, &ri, &div, &rem );
+                    } else {
+                        U64Div( &li, &ri, &div, &rem );
+                    }
+                    fold = Int64ToType( div, tipe );
+                }
                 BurnTree( left );
                 BurnTree( rite );
             } else if( ( tipe->attr & TYPE_FLOAT ) &&
@@ -976,25 +1000,43 @@ extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
     fold = NULL;
     if( rite->class == TN_CONS ) {
         rv = rite->u.name->c.value;
-        if( CFTest( rv ) != 0
-         && left->class == TN_CONS && !HasBigConst( tipe ) ) {
+        if( CFTest( rv ) != 0 && left->class == TN_CONS ) {
             lv = left->u.name->c.value;
-            if( tipe->attr & TYPE_SIGNED ) {
-                if( CFIsI32( lv ) && CFIsI32( rv ) ) {
-                    li = CFConvertByType( lv, tipe );
-                    ri = CFConvertByType( rv, tipe );
-                    fold = IntToType( (signed_32)li % (signed_32)ri, tipe );
-                    BurnTree( left );
-                    BurnTree( rite );
+            if( CFIs64( lv ) && CFIs64( rv ) ) {
+                signed_64       div;
+                signed_64       rem;
+                signed_64       li;
+                signed_64       ri;
+
+                li = CFGetInteger64Value( lv );
+                ri = CFGetInteger64Value( rv );
+
+                if( tipe->attr & TYPE_SIGNED ) {
+                    I64Div( &li, &ri, &div, &rem );
+                } else {
+                    U64Div( &li, &ri, &div, &rem );
                 }
+                fold = Int64ToType( rem, tipe );
+                BurnTree( left );
+                BurnTree( rite );
             } else {
-                if( CFIsU32( lv ) && CFIsU32( rv ) ) {
-                    li = CFConvertByType( lv, tipe );
-                    ri = CFConvertByType( rv, tipe );
-                    li = U32ModDiv( &li, ri );
-                    fold = IntToType( li, tipe );
-                    BurnTree( left );
-                    BurnTree( rite );
+                if( tipe->attr & TYPE_SIGNED ) {
+                    if( CFIsI32( lv ) && CFIsI32( rv ) ) {
+                        li = CFConvertByType( lv, tipe );
+                        ri = CFConvertByType( rv, tipe );
+                        fold = IntToType( (signed_32)li % (signed_32)ri, tipe );
+                        BurnTree( left );
+                        BurnTree( rite );
+                    }
+                } else {
+                    if( CFIsU32( lv ) && CFIsU32( rv ) ) {
+                        li = CFConvertByType( lv, tipe );
+                        ri = CFConvertByType( rv, tipe );
+                        li = U32ModDiv( &li, ri );
+                        fold = IntToType( li, tipe );
+                        BurnTree( left );
+                        BurnTree( rite );
+                    }
                 }
             }
         } else if( !HasBigConst( tipe ) && rite->u.name->c.int_value == 1 ) {

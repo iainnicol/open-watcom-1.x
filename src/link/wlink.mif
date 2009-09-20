@@ -12,6 +12,9 @@ wlink_autodepends = .AUTODEPEND
 # get rid of the -zc
 suppress_zc = 1
 
+!ifndef bootstrap
+!include idedlls.mif
+!endif
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -30,6 +33,10 @@ common_objs += orlstubs.obj
 orl_lib = 
 !endif
 
+!ifeq bootstrap 1
+common_objs += clibext.obj
+!endif
+
 comp_objs_exe = $(common_objs) $(exe_objs)
 comp_objs_dll = $(common_objs) $(dll_objs)
 
@@ -41,26 +48,21 @@ inc_dirs = -I. -I"../h"
 # c flags stuff
 
 !ifeq bootstrap 1
-comp_objs_exe += clibext.obj
-!endif
-
-!ifeq bootstrap 1
 extra_c_flags = -I"$(lib_misc_dir)/h"
 !else
 extra_c_flags = -zp4
-!ifdef wlink_dll
-extra_c_flags += -D_DLLHOST
-!else ifdef wlink_rtdll
-extra_c_flags += -D_DLLHOST
+!ifdef DLLS_IMPLEMENTED
+extra_c_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifeq use_virtmem 1
 extra_c_flags += -DUSE_VIRTMEM
 !endif
 !endif
+!ifndef wlink_dll
+extra_c_flags += -DIDE_PGM
+!endif
 
-extra_c_flags_ntio       = -I"$(wres_dir)/h"
-extra_c_flags_posixio    = -I"$(wres_dir)/h"
-extra_c_flags_linkio     = -I"$(wres_dir)/h"
+
 extra_c_flags_objorl     = -I"$(orl_dir)/h"
 extra_c_flags_orlstubs   = -I"$(orl_dir)/h"
 extra_c_flags_dbgdwarf   = -I"$(dwarf_dir)/dw/h"
@@ -70,8 +72,11 @@ extra_c_flags_debug      = -DTRMEM
 extra_c_flags_loadpe     = -I. -I"../h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h"
 extra_c_flags_loados2    = -I"$(wrc_dir)/h" -I"$(wres_dir)/h"
 extra_c_flags_demangle   = -I"$(lib_misc_dir)/h"
-extra_c_flags_dllentry   = -bd
 extra_c_flags_idedrv     = -DCHAIN_CALLBACK
+extra_c_flags_ideentry   = -DCHAIN_CALLBACK
+!ifdef wlink_dll
+extra_c_flags_ideentry   += -bd
+!endif
 extra_c_flags_msg        = -I"$(lib_misc_dir)/h"
 extra_c_flags_rcstr      = -DINSIDE_WLINK -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
 extra_c_flags_exerespe   = -DINSIDE_WLINK -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
@@ -90,8 +95,7 @@ extra_l_flags_qnx = op res=wlink.u, st=24k, off=32k
 # linker .DLL options
 
 extra_l_flags_dll     = op map, noredefs
-extra_l_flags_dll_nt  = initinstance terminstance op modname='wlinkd.dll'
-extra_l_flags_dll_nt  += reference __DLLstart_ op offset=0x69c00000
+extra_l_flags_dll_nt  = initinstance terminstance op modname='wlinkd.dll', offset=0x69c00000
 extra_l_flags_dll_os2 = initinstance terminstance op modname='wlinkd'
 
 xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
