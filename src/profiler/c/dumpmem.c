@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Dump heap allocations.
+* Description:  Walk and dump the heap.
 *
 ****************************************************************************/
 
@@ -42,15 +42,15 @@
  * WalkMem - walk through the memory locations.   For the PC version only.
  */
 
-extern int WalkMem() {
-/********************/
-
-    char *                  str;
+extern int WalkMem( void ) 
+/************************/
+{
+    char                    * str;
     int                     heap_status;
     struct _heapinfo        h_info;
 
     h_info._pentry = NULL;
-    for(;;) {
+    for( ;; ) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK ) {
             if( heap_status == _HEAPBADBEGIN ) {
@@ -70,14 +70,13 @@ extern int WalkMem() {
 }
 
 
-
 /*
  * DumpMem - dump out memory locations.   For the PC version only.
  */
 
-extern void DumpMem() {
-/*********************/
-
+extern void DumpMem( void )
+/*************************/
+{
     unsigned int            curr_addr;
     unsigned int            total;
     unsigned int            start_size;
@@ -91,7 +90,7 @@ extern void DumpMem() {
     h_info._pentry = NULL;
     start_size = 0;
     total = 0;
-    for(;;) {
+    for( ;; ) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK ) break;
         if( start_size == 0 ) {
@@ -104,7 +103,7 @@ extern void DumpMem() {
     }
     loc_count = 60;
     h_info._pentry = NULL;
-    for(;;) {
+    for( ;; ) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK ) break;
         if( h_info._useflag == _USEDENTRY ) {
@@ -114,7 +113,7 @@ extern void DumpMem() {
         }
         curr_addr = (char __far *)h_info._pentry - (char __far *)0;
         loc_size = h_info._size;
-        for(;;) {
+        for( ;; ) {
             if( loc_count == 60 ) {
                 printf( "\n%.4x: ", curr_addr );
                 loc_count = 0;

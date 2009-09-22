@@ -23,6 +23,11 @@ inc_dirs = -I.. -I"$(dbg_dir)/h" -I"$(dig_dir)/h"
 
 extra_c_flags = -s -DBUILD_RFX
 
+# BUILD WORKAROUND because of insufficiently smart 1.8 compiler
+!ifeq __VERSION__ 1280
+extra_c_flags_dosfilio = -wcd112
+!endif
+
 extra_l_flags = op map
 
 objs = rfx.obj        &
