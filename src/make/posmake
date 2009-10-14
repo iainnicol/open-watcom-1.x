@@ -4,7 +4,7 @@
 
 INCS = -I../h -I../../watcom/h -I../../lib_misc/h -I. $(DEFS)
 DEFS = -D__UNIX__ -Dunix -DBOOTSTRAP
-CFLAGS = -g -O2 $(INCS)
+CFLAGS = -g -O2 $(INCS) $(FLAGS)
 
 all: $(OWBINDIR)/wmake
 
@@ -78,7 +78,7 @@ OBJS = macros.o main.o massert.o mautodep.o mautoomf.o mautoorl.o mautores.o \
  mtarget.o mupdate.o mvecstr.o autodept.o clibext.o
 
 wsplice: wsplice.o clibext.o
-	$(CC) -g wsplice.o clibext.o -o $@
+	$(CC) $(FLAGS) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice
 	./wsplice -kIS_RC -kENGLISH -f '{%+(MSG_USE_E_BASE+%#-1), "%s"},' ../h/usage.sp $@
@@ -98,7 +98,7 @@ $(OWBINDIR)/wmake: wmake
 	cp wmake $@
 
 wmake: usageend.gh isarray.gh $(OBJS)
-	$(CC) -g $(OBJS) -o $@
+	$(CC) $(FLAGS) -g $(OBJS) -o $@
 
 clean:
 	rm -f *.o *.gh

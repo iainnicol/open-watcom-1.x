@@ -100,6 +100,13 @@ const char FAR *BuiltIns = {
 #elif defined( __SOLARIS__ ) || defined( __SunOS ) || defined( __sun )
     "__SOLARIS__=\n"
     "__UNIX__=\n"
+    #if defined(__386__) || defined(__i386__) || defined(__i386)
+        "__SOLARIS386__=\n"
+    #elif defined(__X64__) || defined(__AMD64__) || defined(__amd64)
+        "__SOLARISX64__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
 
 #elif defined( __OSX__ ) || defined( __APPLE__ )
     "__OSX__=\n"

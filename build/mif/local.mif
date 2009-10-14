@@ -64,7 +64,7 @@ def_targ        = wcc$(target_cpu)c.exe
 !ifdef __UNIX__
 #common UNIXy stuff
 host_cl = cc
-host_cl_opts = -D__UNIX__ -I$(watcom_dir)/h $(inc_dirs) -o $^@ 
+host_cl_opts = $(clflags_$(host_cpu)) -D__UNIX__ -I$(watcom_dir)/h $(inc_dirs) -o $^@ 
 host_cl_objs = clibext.obj
 
 .c : $(watcom_dir)/c
@@ -74,7 +74,7 @@ librarian = ar
 libflags = crs $^@
 
 # options for linking via cc
-clflags = -o $@
+clflags = $(clflags_$(host_cpu)) -o $@
 cl_objs = clibext.obj
 !endif
 
@@ -140,7 +140,9 @@ cpp = CC
 cl = $(cc)
 clpp = $(cpp)
 
-cppflags_386  = -D_M_IX86 -D__386__
+cppflags_386  = -m32 -D__386__ -D_M_IX86
+cppflags_x64  = -m64 -D__X64__ -DLONG_IS_64BITS
+clflags_x64   = -m64 -DLONG_IS_64BITS
 
 cflags_wng =
 cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SOLARIS__ -DBOOTSTRAP &
