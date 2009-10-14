@@ -88,10 +88,10 @@ typedef union {
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
 #else
-#ifdef __386__
-#define YYFAR
-#else
+#ifdef _M_I86
 #define YYFAR           __far
+#else
+#define YYFAR
 #endif
 #endif
 

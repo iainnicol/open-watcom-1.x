@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  YACC driver for Windows resource script parser.
 *
 ****************************************************************************/
 
@@ -92,10 +91,10 @@ typedef union {
 #ifdef _I86FAR
 #define YYFAR           _I86FAR
 #else
-#if defined( __386__ ) || defined( __PPC__ ) || defined( __AXP__ )
-#define YYFAR
-#else
+#ifdef _M_I86
 #define YYFAR           __far
+#else
+#define YYFAR
 #endif
 #endif
 
