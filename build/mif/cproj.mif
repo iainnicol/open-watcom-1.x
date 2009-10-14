@@ -429,6 +429,7 @@ rtdll_libpath = &
 cc              = $(cc_$(host_cpu))
 cl              = *owcc
 cpp             = $(cpp_$(host_cpu))
+clpp            = $(cl)
 linker          = $(linker_$(host_cpu))
 librarian       = $(librarian_$(host_cpu))
 as              = $(as_$(host_cpu))
