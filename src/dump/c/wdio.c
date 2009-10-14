@@ -99,10 +99,10 @@ void Wread( void *buf, unsigned_32 amount )
 /*
  * lseek in the image
  */
-void Wlseek( long offset )
-/************************/
+void Wlseek( off_t offset )
+/*************************/
 {
-    long    nbuff;
+    off_t   nbuff;
 
     errno = 0;
     nbuff = offset / BSIZE;
