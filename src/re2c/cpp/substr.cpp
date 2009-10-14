@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of Str class.
 *
 ****************************************************************************/
 
@@ -58,5 +57,5 @@ Str::Str() : SubStr((char*) NULL, 0) {
 Str::~Str() {
     delete str;
     str = (char*)-1;
-    len = -1;
+    len = ~0;
 }

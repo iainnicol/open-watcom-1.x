@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Regular expression representation.
 *
 ****************************************************************************/
 
@@ -70,7 +69,7 @@ inline std::ostream& operator<<(std::ostream &o, const Range *r){
 
 class RegExp {
 public:
-    uint        size;
+    int         size;
 public:
     virtual char *typeOf() = 0;
     RegExp *isA(char *t)
