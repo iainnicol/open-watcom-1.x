@@ -79,6 +79,7 @@ enum {
 #define PHH_ARCHITECTURE_386    0x02
 #define PHH_ARCHITECTURE_AXP    0x03
 #define PHH_ARCHITECTURE_PPC    0x04
+#define PHH_ARCHITECTURE_X64    0x08
 
 #if _CPU == 386
 #define PHH_TARG_ARCHITECTURE   PHH_ARCHITECTURE_386
@@ -105,6 +106,8 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_386
 #elif defined(__AXP__)
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_AXP
+#elif defined(__X64__)
+#define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_X64
 #else
 #error missing host architecture check
 #endif

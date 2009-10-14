@@ -245,7 +245,7 @@ target_as_mps   = $(bas) -zq -w4
 
 xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
         $(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
-        $(linker) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+        $(linker_$(target_cpu)) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
         $(host_cl) $(host_cl_opts) $[@
