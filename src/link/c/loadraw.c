@@ -63,7 +63,7 @@ static bool WriteBinSegGroup( group_entry *group )
         CurrSect = sect;
         finfo = sect->outfile;
         loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-        if ( (long)loc >= 0) {  // Offset may make this go negative for NOEMIT classes or segments
+        if ( (signed_32)loc >= 0) {  // Offset may make this go negative for NOEMIT classes or segments
             diff = loc - finfo->file_loc;
             if( diff > 0 ) {
                 PadLoad( diff );

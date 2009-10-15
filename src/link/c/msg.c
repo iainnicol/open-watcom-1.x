@@ -61,7 +61,7 @@ static int              UseArgInfo( void );
 
 #define MSG_ARRAY_SIZE ((MSG_MAX_ERR_MSG_NUM / 8) + 1)
 
-unsigned long   MaxErrors;
+unsigned_32     MaxErrors;
 bool            BannerPrinted;
 
 byte MsgFlags[ MSG_ARRAY_SIZE ];

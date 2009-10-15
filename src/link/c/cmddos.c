@@ -364,10 +364,10 @@ bool ProcArea( void )
 /**************************/
 // process the area size directive.
 {
-    unsigned long   value;
+    unsigned_32     value;
     bool            ret;
 
-    ret = GetLong( &value );
+    ret = GetLong32( &value );
     if( ret ) {
         AreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
     }

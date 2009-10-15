@@ -354,7 +354,7 @@ bool ProcNLMFlags( void )
 {
     unsigned_32 value;
 
-    if( !GetLong( &value ) ) return FALSE;
+    if( !GetLong32( &value ) ) return FALSE;
     FmtData.u.nov.exeflags |= value;
     return( TRUE );
 }

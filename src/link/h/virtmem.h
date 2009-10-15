@@ -54,10 +54,10 @@ extern void WriteLoad( void *, unsigned long );
 #define PutNulls( v, l ) memset( (void *)(v), 0, l )
 #define CompareInfo( v, b, l ) (memcmp( (void *)(v), b, l ) == 0)
 
-#define GET32INFO( v, b ) b = *((unsigned_32 *)(v))
-#define GET16INFO( v, b ) b = *((unsigned_16 *)(v))
-#define PUT32INFO( v, b ) *((unsigned_32 *)(v)) = b
-#define PUT16INFO( v, b ) *((unsigned_16 *)(v)) = b
+#define GET32INFO( v, b ) b = *((unsigned_32 *)&(v))
+#define GET16INFO( v, b ) b = *((unsigned_16 *)&(v))
+#define PUT32INFO( v, b ) *((unsigned_32 *)&(v)) = b
+#define PUT16INFO( v, b ) *((unsigned_16 *)&(v)) = b
 
 #endif
 

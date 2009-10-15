@@ -348,7 +348,7 @@ bool HaveEquals( tokcontrol ctrl )
     return( TRUE );
 }
 
-bool GetLong( unsigned_32 *addr )
+bool GetLong32( unsigned_32 *addr )
 /**************************************/
 {
     unsigned_32     value;

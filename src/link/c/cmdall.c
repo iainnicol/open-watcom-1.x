@@ -278,7 +278,7 @@ bool ProcMaxErrors( void )
 /*******************************/
 /* set a maximum number of errors for the linker to generate */
 {
-    if( !GetLong( &MaxErrors ) )
+    if( !GetLong32( &MaxErrors ) )
         return( FALSE );
     LinkFlags |= MAX_ERRORS_FLAG;
     return( TRUE );
@@ -604,7 +604,7 @@ bool ProcStack( void )
 /* process STACK option */
 {
     LinkFlags |= STK_SIZE_FLAG;
-    return( GetLong( &StackSize ) );
+    return( GetLong32( &StackSize ) );
 }
 
 bool ProcNameLen( void )
@@ -614,7 +614,7 @@ bool ProcNameLen( void )
     unsigned_32     value;
     bool            ret;
 
-    ret = GetLong( &value );
+    ret = GetLong32( &value );
     if( ret ) {
         if( value == 0 ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "namelen" );

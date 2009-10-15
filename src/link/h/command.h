@@ -203,7 +203,7 @@ extern bool             MatchOne( parse_entry *, sep_type, char *, unsigned );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );
 extern bool             HaveEquals( tokcontrol );
-extern bool             GetLong( unsigned_32 * );
+extern bool             GetLong32( unsigned_32 * );
 extern char             *tostring( void );
 extern char             *totext( void );
 extern bool             GetToken( sep_type, tokcontrol );

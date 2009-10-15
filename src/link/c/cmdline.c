@@ -1063,7 +1063,7 @@ bool ProcHeapSize( void )
 bool ProcOffset( void )
 /****************************/
 {
-    if( !GetLong( &FmtData.base ) )
+    if( !GetLong32( &FmtData.base ) )
         return( FALSE );
     if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) ) {
         ChkBase( 64 * 1024 );
