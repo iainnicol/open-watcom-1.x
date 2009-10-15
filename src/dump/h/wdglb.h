@@ -45,6 +45,7 @@
 #include "macho.h"
 #include "ar.h"
 #include "lib.h"
+#include <sys/types.h>  /* For off_t */
 
 #define PERLINE                 16
 #define NUMLINE                 24
