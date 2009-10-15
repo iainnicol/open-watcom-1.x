@@ -754,7 +754,7 @@ static void AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
         switch( typ1->decl_type ) {
         case TYPE_FIELD:
         case TYPE_UFIELD:
-            high = 0xfffffffful >> (MAXSIZE - (typ1->u.f.field_width));
+            high = ~0UL >> (MAXSIZE - (typ1->u.f.field_width));
             if( opnd2->op.ulong_value > high ) {
                 if( (opnd2->op.ulong_value | (high >> 1)) != ~0UL ) {
                     CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
