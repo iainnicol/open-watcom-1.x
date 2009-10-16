@@ -69,6 +69,7 @@ static bool SearchAndProcLibFile( file_list *lib, char *name )
     } else {
         prev = &LibModules;
         while( *prev != NULL ) {/*  find end of list */
+            DbgAssert( *prev != lp );
             prev = &(*prev)->n.next_mod;
         }
         *prev = lp;

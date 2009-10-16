@@ -203,8 +203,8 @@ void *CarveAlloc( carve_t cv )
 void *CarveZeroAlloc( carve_t cv )
 /********************************/
 {
-    void *v;
-    unsigned *p;
+    void    *v;
+    size_t  *p;
 
     if( cv->free_list == NULL ) {
         MakeFreeList( cv, newBlk( cv ), 0 );
@@ -271,7 +271,7 @@ void CarveDebugFree( carve_t cv, void *elm )
         compare = start + cv->blk_top;
 #if ! ( defined(__COMPACT__) || defined(__LARGE__) )
         /* quick check */
-        if( elm < start || elm > compare ) {
+        if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
 #endif
