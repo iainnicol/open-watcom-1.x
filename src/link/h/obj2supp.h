@@ -110,7 +110,7 @@ typedef struct {
 } frame_spec;
 
 typedef struct {
-    unsigned_32 flags;
+    uintptr_t   flags;
     unsigned_32 off;
     void *      target;
 } save_fixup;

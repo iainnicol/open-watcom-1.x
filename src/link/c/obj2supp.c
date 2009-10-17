@@ -197,11 +197,11 @@ static unsigned CalcSavedFixSize( fix_type fixtype )
     unsigned    retval;
 
     if( fixtype & FIX_CHANGE_SEG ) {
-        retval = sizeof( unsigned_32 );
+        retval = sizeof( void * );
     } else {
         retval = sizeof( save_fixup ) + CalcAddendSize( fixtype );
         if( FRAME_HAS_DATA( FIX_GET_FRAME( fixtype ) ) ) {
-            retval += sizeof( unsigned_32 );
+            retval += sizeof( void * );
         }
     }
     return( retval );
@@ -425,9 +425,9 @@ unsigned IncExecRelocs( void *_save )
     frame_spec  frame;
 
     if( save->flags & FIX_CHANGE_SEG ) {
-        sdata = (segdata *)( save->flags & ~FIX_CHANGE_SEG );
+        sdata = (segdata *)( save->flags & ~(uintptr_t)FIX_CHANGE_SEG );
         if( LinkFlags & INC_LINK_FLAG ) {
-            save->flags = (unsigned_32) CarveGetIndex( CarveSegData, sdata );
+            save->flags = (uintptr_t) CarveGetIndex( CarveSegData, sdata );
             save->flags |= FIX_CHANGE_SEG;
         }
         if( !sdata->isdead ) {
@@ -479,8 +479,8 @@ unsigned RelocMarkSyms( void *_fix )
 
     if( fix->flags & FIX_CHANGE_SEG ) {
         sdata = CarveMapIndex( CarveSegData,
-                                (void *)( fix->flags & ~FIX_CHANGE_SEG ) );
-        fix->flags = (unsigned_32) sdata | FIX_CHANGE_SEG;
+                                (void *)( fix->flags & ~(uintptr_t)FIX_CHANGE_SEG ) );
+        fix->flags = (uintptr_t) sdata | FIX_CHANGE_SEG;
     } else {
         frame = FIX_GET_FRAME( fix->flags );
         if( FRAME_HAS_DATA( frame ) ) {
@@ -522,9 +522,9 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame,
     if( LastSegData != CurrRec.seg ) {
         DbgAssert( CurrRec.seg != NULL );
         LastSegData = CurrRec.seg;
-        save.flags = (unsigned_32) CurrRec.seg;
+        save.flags = (uintptr_t) CurrRec.seg;
         save.flags |= FIX_CHANGE_SEG;   // DANGER! assume pointers word aligned
-        PermSaveFixup( &save, sizeof( unsigned_32 ) );
+        PermSaveFixup( &save.flags, sizeof( save.flags ) );
     }
     save.flags = type;
     save.flags |= (unsigned_32)targ->type << FIX_TARGET_SHIFT;
@@ -551,7 +551,7 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame,
     }
     PermSaveFixup( &save, sizeof( save_fixup ) );
     if( FRAME_HAS_DATA( frame->type ) ) {
-        PermSaveFixup( &frame->u.abs, sizeof( unsigned_32 ) );
+        PermSaveFixup( &frame->u.abs, sizeof( void * ) );
     }
     if( !( save.flags & FIX_ADDEND_ZERO ) )  {
         PermSaveFixup( buff, CalcAddendSize( save.flags ) );
@@ -576,7 +576,7 @@ unsigned IncSaveRelocs( void *_save )
 
     fixsize = CalcSavedFixSize( save->flags );
     if( save->flags & FIX_CHANGE_SEG ) {
-        sdata = (segdata *)( save->flags & ~FIX_CHANGE_SEG );
+        sdata = (segdata *)( save->flags & ~(uintptr_t)FIX_CHANGE_SEG );
         if( !sdata->isdead ) {
             LastSegData = sdata;
         } else {

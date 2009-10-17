@@ -31,6 +31,7 @@
 
 #include <stddef.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <time.h>
 #include <watcom.h>
 
