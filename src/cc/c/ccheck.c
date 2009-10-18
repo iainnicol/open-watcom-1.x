@@ -769,7 +769,7 @@ static void AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             break;
         case TYPE_UCHAR:
             if( opnd2->op.ulong_value > 0xff) {
-                if( (opnd2->op.ulong_value | (0xff >> 1)) != ~0UL ) {
+                if( (opnd2->op.ulong_value | (0xff >> 1)) != ~0 ) {
                     CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                 }
             }
@@ -781,7 +781,7 @@ static void AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 )
             // fall throught
         case TYPE_USHORT:
             if( opnd2->op.ulong_value > 0xffff ) {
-                if( (opnd2->op.ulong_value | (0xffff >> 1)) != ~0UL ) {
+                if( (opnd2->op.ulong_value | (0xffff >> 1)) != ~0 ) {
                     CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                 }
             }

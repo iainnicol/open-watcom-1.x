@@ -24,12 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Determines type sizes/limits for 16 bit platform
+* Description:  Determines type sizes/limits for 16 bit platforms.
 *
 ****************************************************************************/
 
 
-/* target16.h: target types for 16-bit machine */
+#include <stdint.h>
+
 
 #define TARGET_CHAR     1
 #define TARGET_SHORT    2
@@ -60,10 +61,9 @@
 #define TARGET_UINT_MAX 0xFFFF
 #define TARGET_FLT_MAX  3.402823466e+38f
 
-typedef short           target_short;
-typedef unsigned short  target_ushort;
-typedef short           target_int;
-typedef unsigned short  target_uint;
-typedef long            target_long;
-typedef unsigned long   target_ulong;
-
+typedef int16_t         target_short;
+typedef uint16_t        target_ushort;
+typedef int16_t         target_int;
+typedef uint16_t        target_uint;
+typedef int32_t         target_long;
+typedef uint32_t        target_ulong;

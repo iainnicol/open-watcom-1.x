@@ -148,8 +148,8 @@ typedef struct  opnode {
         cg_sym_handle   sym_handle;     // OPR_PUSHSYM, OPR_PUSHADDR, ...
                                         // OPR_CALL_INDIRECT
         source_loc      src_loc;        // OPR_STMT
-        long            long_value;     // OPR_PUSHINT
-        unsigned long   ulong_value;    // OPR_PUSHINT
+        int32_t         long_value;     // OPR_PUSHINT
+        uint32_t        ulong_value;    // OPR_PUSHINT
         int64           long64_value;   // OPR_PUSHINT
         uint64          ulong64_value;  // OPR_PUSHINT
         FLOATVAL        *float_value;   // OPR_PUSHFLOAT

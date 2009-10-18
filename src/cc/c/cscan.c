@@ -527,7 +527,7 @@ static int ScanHex( int max, const unsigned char **pbuf )
     int                 c;
     int                 count;
     char                too_big;
-    unsigned long       value;
+    uint_32             value;
 
     too_big = 0;
     count = max;
@@ -570,7 +570,7 @@ static cnv_cc Cnv8( void )
     char    *curr;
     char    c;
     int     len;
-    long    value;
+    int_32  value;
     uint64  value64;
     cnv_cc  ret;
 
@@ -605,7 +605,7 @@ static cnv_cc Cnv16( void )
     unsigned char   *curr;
     unsigned char   c;
     int             len;
-    unsigned long   value;
+    uint_32         value;
     uint64          value64;
     cnv_cc          ret;
 
@@ -646,7 +646,7 @@ static cnv_cc Cnv10( void )
     char            *curr;
     char            c;
     int             len;
-    unsigned long   value;
+    uint_32         value;
     uint64          value64;
     cnv_cc          ret;
 
@@ -1221,7 +1221,7 @@ static TOKEN CharConst( int char_type )
     int         i;
     int         n;
     TOKEN       token;
-    long        value;
+    int_32      value;
     bool        error;
 
     c = SaveNextChar();
