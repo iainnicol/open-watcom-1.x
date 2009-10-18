@@ -36,7 +36,7 @@
 
 #include "memmgr.h"
 #include "idedll.h"
-#include "wcppdll.h"
+#include "ideentry.h"
 #include "cgmisc.h"
 #include "fmtsym.h"
 
@@ -600,7 +600,7 @@ char* CppGetEnv                 // COVER FOR getenv
     if( ! CompFlags.ignore_environment ) {
         cbs = CompInfo.dll_callbacks;
         if( (*cbs->GetInfo)( CompInfo.dll_handle
-                           , 6
+                           , IDE_GET_ENV_VAR
                            , (IDEGetInfoWParam) name
                            , (IDEGetInfoLParam) &env_val ) ) {
             env_val = NULL;

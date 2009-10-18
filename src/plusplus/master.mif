@@ -8,7 +8,7 @@ suppress_zc = 1
 plusplus_nosymfile = 1
  
 # Extra files to delete on clean
-additional_cleanup = *.u *.int y.out ytab.c ../bin/$(ref_name).exe ../bin/$(ref_name).sym
+additional_cleanup = *.u *.int y.out ytab.c
  
 !include cproj.mif
 !include defrule.mif
@@ -93,14 +93,16 @@ extra_c_flags_axp = -si
 cflags += -db
 !endif
 
-extra_c_flags_osi   = -D__OS2__
 !ifndef plusplus_dll
-extra_c_flags       = -DIDE_PGM
+extra_c_flags   += -DIDE_PGM
 !endif
 
+extra_c_flags_osi   = -D__OS2__
+
 !ifdef plusplus_dll
-idedlldriver_c_flags_dos = -DCAUSEWAY
+extra_c_flags_dos   += -DCAUSEWAY
 !endif
+
 extra_c_flags_carve    = -Dheader=$(fesupp_hdr) -Dheader2=$(carvecpp_hdr)
 !ifndef bootstrap
 !ifneq host_os linux
@@ -113,8 +115,11 @@ extra_c_flags_cmdlnany = -os
 !ifeq release 0
 extra_c_flags_dbgzap   = -Dheader=$(fesupp_hdr)
 !endif
-extra_c_flags_idedlld  = -bd $(idedlldriver_c_flags_$(host_os))
-extra_c_flags_idedrv   = -DSTATIC_LINKAGE $(idedlldriver_c_flags_$(host_os))
+!ifdef plusplus_dll
+extra_c_flags_ideentry = -bd -Dwpp_dll
+extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dll_name)
+!endif
+extra_c_flags_idedrv   = -DSTATIC_LINKAGE
 extra_c_flags_initfini = -Dheader=$(fesupp_hdr) -DSPLIT_REQD
 extra_c_flags_intlload = -D__header=$(fesupp_hdr)
 !ifeq plusplus_trmem 1
@@ -137,7 +142,6 @@ extra_c_flags_srcfile_386 = -4r
 extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
 extra_c_flags_vbuf     = -Dheader=$(fesupp_hdr)
 extra_c_flags_vstk     = -Dheader=$(fesupp_hdr)
-extra_c_flags_wppdlldd = -DDLL_NAME=$(dll_name)
  
 #
 # wlink .EXE options
@@ -216,13 +220,7 @@ target : .symbolic $(exe_name).exe
 # create reference compiler
 #
 reference : .symbolic $(ref_name).exe
-!ifdef __UNIX__
-    cp $(ref_name).exe ../bin/$(ref_name)
-!else
-    cp $(ref_name).exe ../bin/$(ref_name).exe
-!endif
-    cp $(ref_name).sym ../bin/$(ref_name).sym
-    rm -f $(ref_name).*
+    @%null
  
 #
 # output executables build rules
