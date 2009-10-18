@@ -88,9 +88,11 @@ carvecpp_hdr = "carvecpp.h"
 extra_c_flags += -D_CGDLL
 !endif
 
+!ifndef bootstrap
 !ifeq release 0
 extra_c_flags_axp = -si
 cflags += -db
+!endif
 !endif
 
 !ifndef plusplus_dll
