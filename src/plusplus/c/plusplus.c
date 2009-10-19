@@ -92,6 +92,10 @@ static struct {                     // flags:
 ,   FALSE
 };
 
+#if !defined( NDEBUG ) && !defined( __WATCOMC__ )
+/* Local definition to facilitate portable debug build. */
+_WCRTDATA char volatile DEBUG_PRESENT_NAME;
+#endif
 
 static void CloseFiles( void )
 {
@@ -470,7 +474,7 @@ static int front_end(           // FRONT-END PROCESSING
     } else {
         exit_status = makeExitStatus( WPP_FATAL );
     }
-    DbgStmt( if( DEBUG_PRESENT_NAME ) __trap() );
+    DbgStmt( CheckEnterDebugger() );
     return( exit_status );
 }
 

@@ -561,7 +561,7 @@ void CSuicide(                  // COMMIT SUICIDE
     void *env;
     SUICIDE_CALLBACK *ctl;
 
-    DbgStmt( if( DEBUG_PRESENT_NAME ) __trap() );
+    DbgStmt( CheckEnterDebugger() );
     CompFlags.compile_failed = TRUE;
     if( Environment ) {
         env = Environment;

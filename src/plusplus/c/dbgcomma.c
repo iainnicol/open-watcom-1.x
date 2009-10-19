@@ -31,9 +31,6 @@
 
 
 #include "plusplus.h"
-
-#include <process.h>
-
 #include "name.h"
 #include "cgfront.h"
 #include "initdefs.h"

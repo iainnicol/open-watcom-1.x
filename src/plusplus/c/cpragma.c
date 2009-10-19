@@ -49,6 +49,9 @@
 #include "initdefs.h"
 #include "asmstmt.h"
 #include "ialias.h"
+#ifndef NDEBUG
+#include "enterdb.h"
+#endif
 
 // from \watcom\h
 #include "rtprior.h"
@@ -813,7 +816,7 @@ static void pragDestruct(       // SPECIFY DESTRUCTION MECHANISM
 #ifndef NDEBUG
 static void pragBreak()
 {
-    __trap();
+    EnterDebugger();
 }
 #endif
 

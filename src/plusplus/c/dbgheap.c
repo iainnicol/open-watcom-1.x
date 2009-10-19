@@ -24,23 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap debugging routines.
 *
 ****************************************************************************/
 
 
 #include <malloc.h>
-#include <process.h>
 #include <stdio.h>
 
 
+#if 0
 typedef struct                  // ALLOCED -- allocated entry
 {   void __far *_pentry;        // - entry
     size_t _size;               // - size
 } ALLOCED;
 
-#if 0
 static ALLOCED* entries;        // - allocated entries
 static unsigned entry_count;    // - # entries
 #endif

@@ -51,12 +51,6 @@
 
 #ifndef NDEBUG
 #define OPT_BR          // OPTIMA-STYLE BROWSING
-#if defined( __X86__ )
-void __trap();
-#pragma aux __trap = "int 3h";
-#elif defined( __AXP__ )
-#define __trap()        _asm { call_pal 0x080 };
-#endif
 #endif
 
 #define  __FAR  #@should not be used anymore@#

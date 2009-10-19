@@ -45,6 +45,9 @@
 #include "initdefs.h"
 #include "yydriver.h"
 #include "carve.h"
+#ifndef NDEBUG
+#include "enterdb.h"
+#endif
 
 #define T_UNEXPANDABLE_ID       T_LAST_TOKEN
 
@@ -793,7 +796,7 @@ static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, int rescanning )
     ++macroDepth;
 #ifndef NDEBUG
     if( macroDepth > 100 ) {
-        __trap();
+        EnterDebugger();
     }
 #endif
     for(;;) {
