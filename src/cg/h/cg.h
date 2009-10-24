@@ -75,7 +75,7 @@ typedef void *          cg_name;        /* retval for CGName(),CGUnary()*/
 typedef void *          call_handle;    /* retval for CGInitCall(), etc. */
 
 #ifdef BY_CPP_FRONT_END
-typedef unsigned        cg_sym_handle;
+typedef unsigned long   cg_sym_handle;  /* must be big enough for a pointer */
 #else
 typedef void *          cg_sym_handle;
 #endif

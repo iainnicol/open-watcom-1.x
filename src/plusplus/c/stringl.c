@@ -31,6 +31,7 @@
 
 
 #include "plusplus.h"
+#include <stdint.h>
 #include "memmgr.h"
 #include "stringl.h"
 #include "escchars.h"
@@ -455,11 +456,11 @@ STRING_CONSTANT StringMapIndex( STRING_CONSTANT index )
         return( NULL );
     }
 #ifndef NDEBUG
-    if( ((unsigned) index) >= stringCount + PCH_FIRST_INDEX ) {
+    if( ((uintptr_t)index) >= stringCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid string index" );
     }
 #endif
-    return stringTranslateTable[ ((unsigned) index) - PCH_FIRST_INDEX ];
+    return stringTranslateTable[ ((uintptr_t)index) - PCH_FIRST_INDEX ];
 }
 
 static int cmpFindString( const void *kp, const void *tp )

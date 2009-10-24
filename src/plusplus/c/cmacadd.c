@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage storage for macros.
 *
 ****************************************************************************/
 
@@ -42,7 +41,7 @@
 
 
 #define MACRO_HASH_SIZE         NAME_HASH
-#define MAC_SEGMENT_SIZE        (0x8000 - sizeof( char *) )
+#define MAC_SEGMENT_SIZE        ( ( 0x2000 - 1 ) * sizeof( char *) )
 #define HASH_TABLE_SIZE         ( MACRO_HASH_SIZE * sizeof( macroHashTable ) )
 
 typedef struct macro_seg_list MACRO_SEG_LIST;

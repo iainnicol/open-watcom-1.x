@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <limits.h>
+#include <stdint.h>
 
 #include "errdefns.h"
 #include "memmgr.h"
@@ -400,11 +401,11 @@ char *NameMapIndex( char *index )
         return( NULL );
     }
 #ifndef NDEBUG
-    if( ((unsigned) index) >= nameCount + PCH_FIRST_INDEX ) {
+    if( ((uintptr_t)index) >= nameCount + PCH_FIRST_INDEX ) {
         CFatal( "invalid name index" );
     }
 #endif
-    return nameTranslateTable[ ((unsigned) index) - PCH_FIRST_INDEX ]->name;
+    return nameTranslateTable[ ((uintptr_t)index) - PCH_FIRST_INDEX ]->name;
 }
 
 static int cmpFindName( const void *kp, const void *tp )

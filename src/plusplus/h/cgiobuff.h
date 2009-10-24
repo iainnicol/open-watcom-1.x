@@ -49,8 +49,7 @@ struct cgiobuff {               // CGIOBUFF -- buffer in memory
     unsigned    active : 1;     // - block is active
     char        data[TMPBLOCK_BSIZE]; // - buffer in memory
 #ifndef NDEBUG
-
-    unsigned    check;          // - consistency check
+    size_t      check;          // - consistency check
 #endif
 };
 

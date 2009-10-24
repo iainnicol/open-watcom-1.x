@@ -498,7 +498,7 @@ typedef enum                            // PC_CALLIMPL -- PC call implementation
 ,   CALL_IMPL_ELL_C                     // - ellipsis, extern "C"
 } PC_CALLIMPL;
 
-typedef uint_32     dbg_handle;
+typedef unsigned long   dbg_handle;
 
 typedef struct {
     dbg_handle      handle;             // debug info handle

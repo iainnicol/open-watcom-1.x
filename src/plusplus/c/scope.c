@@ -7882,7 +7882,7 @@ static void readSymbols( void )
     CarveInitStart( carveSYMBOL, &data );
     for(;;) {
         PCHReadMapped( pch, sym, i, data );
-        if( i == (unsigned)pch->next ) {
+        if( i == (cv_index)pch->next ) {
             // most symbols are not overloaded
             sym->next = sym;
         } else {
