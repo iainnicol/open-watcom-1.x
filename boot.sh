@@ -2,16 +2,21 @@
 #
 # Script to build a subset of the Open Watcom tools
 # using the host platform's native C/C++ compiler tools.
+#
+# Expects POSIX tools.
 
 if [ -f setvars ]; then
-    . setvars
+    source setvars
+    echo setvars found
 else
-    . setvars.sh
+    source setvars.sh
+    echo setvars not found, running setvars.sh
 fi
-cd src/make
-$MAKE -f gnumake
-mkdir ../builder/$OBJDIR
-cd ../builder/$OBJDIR
+mkdir src/make/$OBJDIR
+cd src/make/$OBJDIR
+make -f ../posmake
+mkdir ../../builder/$OBJDIR
+cd ../../builder/$OBJDIR
 wmake -h -f ../bootmake builder.exe
 cd ../..
-builder boot 
+builder boot && builder build
