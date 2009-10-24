@@ -169,7 +169,7 @@ carve_t CarveCreate( size_t elm_size, size_t elm_count )
     cv->blk_map = NULL;
     DbgStmt( cv->zapped_free_list = NULL );
     DbgAssert( cv->elm_size != 0 );
-    DbgVerify( cv->blk_top < 0x10000, "carve: size * #/block > 64k" );
+    DbgVerify( cv->blk_top <= CV_MASK, "carve: size * #/block too large" );
     return( cv );
 }
 
@@ -252,7 +252,7 @@ static blk_t *withinABlock( carve_t cv, void *elm )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         start = block->data;
         compare = start + cv->blk_top;
-        if( elm < start || elm > compare ) {
+        if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
         return( block );
@@ -302,7 +302,7 @@ void CarveDebugFree( carve_t cv, void *elm )
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         start = block->data;
         compare = start + cv->blk_top;
-        if( elm < start || elm > compare ) {
+        if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
         for(;;) {
@@ -390,7 +390,7 @@ void *CarveGetIndex( carve_t cv, void *e )
     char *start;
     char *top;
     blk_t *block;
-    unsigned block_index;
+    cv_index block_index;
 
     if( elm == NULL ) {
         return( (void *) CARVE_NULL_INDEX );
@@ -460,12 +460,12 @@ carve_t CarveRestart( carve_t cv )
 void *CarveMapIndex( carve_t cv, void *aindex )
 /*********************************************/
 {
-    unsigned index = (unsigned) aindex;
+    cv_index index = (cv_index)aindex;
     blk_t *block;
     blk_t **block_map;
-    unsigned block_index;
-    unsigned block_offset;
-    unsigned block_count;
+    cv_index block_index;
+    cv_index block_offset;
+    size_t block_count;
 
     /* given an index; find and allocate the carve element */
     if( index == CARVE_NULL_INDEX ) {
@@ -552,8 +552,8 @@ void CarveWalkAll( carve_t cv, void (*rtn)( void *, carve_walk_base * ), carve_w
     char *compare;
     char *start;
     size_t esize;
-    unsigned block_index;
-    unsigned block_offset;
+    cv_index    block_index;
+    cv_index    block_offset;
 
     esize = cv->elm_size;
     block_index = cv->blk_count;
@@ -574,10 +574,10 @@ void CarveWalkAll( carve_t cv, void (*rtn)( void *, carve_walk_base * ), carve_w
 void CarveMapOptimize( carve_t cv, cv_index last_valid_index )
 /************************************************************/
 {
-    blk_t *block;
-    blk_t **init;
-    size_t nmaps;
-    unsigned mindex;
+    blk_t       *block;
+    blk_t       **init;
+    cv_index    nmaps;
+    cv_index    mindex;
 
     if( last_valid_index == CARVE_NULL_INDEX ) {
         return;
@@ -621,8 +621,8 @@ void *CarveInitElement( cvinit_t *data, cv_index index )
     blk_t *block;
     free_t *check;
     free_t **head;
-    unsigned want_block;
-    unsigned curr_block;
+    cv_index    want_block;
+    cv_index    curr_block;
     char *init_elm;
 
     DbgAssert( data->cv->blk_map != NULL );
@@ -694,11 +694,11 @@ struct slave2 {
     unsigned    free : 1;
 };
 
-MASTER *masterList;
+MASTER      *masterList;
 
-unsigned waste;
-SLAVE1 *waste1;
-SLAVE2 *waste2;
+cv_index    waste;
+SLAVE1      *waste1;
+SLAVE2      *waste2;
 
 SLAVE1 *newSLAVE1()
 {

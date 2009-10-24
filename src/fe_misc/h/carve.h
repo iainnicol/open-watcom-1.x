@@ -83,9 +83,23 @@ extern void CarveFree( carve_t cv, void *elm );
 
 #ifdef CARVEPCH
 
-#define MK_INDEX( b, o )        (((b)<<16)|(o))
-#define GET_BLOCK( i )          (((i)>>16)&0x0ffff)
-#define GET_OFFSET( i )         ((i)&0x0ffff)
+#ifdef LONG_IS_64BITS
+
+/* On 64-bit platforms, the buckets must be larger. */
+
+#define CV_SHIFT                (20)
+#define CV_MASK                 (0xfffff)
+
+#else
+
+#define CV_SHIFT                (16)
+#define CV_MASK                 (0xffff)
+
+#endif
+
+#define MK_INDEX( b, o )        (((b)<<CV_SHIFT)|(o))
+#define GET_BLOCK( i )          (((i)>>16)&CV_MASK)
+#define GET_OFFSET( i )         ((i)&CV_MASK)
 
 // block 0 is reserved for special indices
 
