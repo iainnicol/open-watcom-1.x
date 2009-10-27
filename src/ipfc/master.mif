@@ -20,7 +20,7 @@ inc_dirs = -I"../cpp"
 
 .cpp : ../cpp
 
-objs =  main.obj compiler.obj document.obj env.obj ipfbuff.obj ipffile.obj lexer.obj
+topobjs=main.obj compiler.obj document.obj env.obj ipfbuff.obj ipffile.obj lexer.obj
 
 objobjs=bitmap.obj btmpblk.obj cecmd.obj cell.obj ctrlbtn.obj ctrlgrp.obj controls.obj&
         errors.obj extfiles.obj fnt.obj fntcol.obj fts.obj gdword.obj gdict.obj gnames.obj&
@@ -34,5 +34,6 @@ tagobjs=element.obj text.obj entity.obj punct.obj whtspc.obj word.obj tag.obj ac
         lp.obj note.obj nt.obj ol.obj p.obj parml.obj pbutton.obj rm.obj sl.obj table.obj&
         title.obj ul.obj warning.obj xmp.obj
 
-wipfc.exe : $(objs) $(objobjs) $(tagobjs)
-    $(linker) $(lflags) name $@ file {$(objs) $(objobjs) $(tagobjs)}
+objs = $(topobjs) $(objobjs) $(tagobjs)
+
+!include exetargp.mif

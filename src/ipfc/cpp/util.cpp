@@ -28,8 +28,19 @@
 *
 ****************************************************************************/
 
+#if defined( __unix__ ) && !defined( __UNIX__ )
+    #define __UNIX__ __unix__
+#endif
+#include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <string>
+#ifdef __UNIX__
+    #include <unistd.h>
+#else
+    #include <direct.h>
+#endif
+#include "errors.hpp"
 
 void killQuotes( char * text )
 {
@@ -80,4 +91,98 @@ void splitAttribute( const std::wstring& text, std::wstring& key, std::wstring& 
     value = text.substr( index + 1 );
     killQuotes( value );
 }
-
+/*****************************************************************************/
+//Allow for files with non-native end-of-lines
+void killEOL( char * text )
+{
+    if( *text == '\n' || *text == '\r' ) {  //CR or LF
+        *text = '\0';
+        --text;
+    }
+    if( *text == '\n' || *text == '\r' ) {  //CRLF (or LFCR)
+        *text = '\0';
+    }
+}
+/*****************************************************************************/
+//Allow for files with non-native end-of-lines
+void killEOL( wchar_t * text )
+{
+    if( *text == L'\n' || *text == L'\r' ) {    //CR or LF
+        *text = L'\0';
+        --text;
+    }
+    if( *text == L'\n' || *text == L'\r' ) {    //CRLF (or LFCR)
+        *text = L'\0';
+    }
+}
+/*****************************************************************************/
+std::string canonicalPath( char* arg )
+{
+    std::auto_ptr< char > cwd( ::getcwd( 0, 0 ) );
+    std::string fullpath( cwd.get() );
+    std::string inFile( arg );
+#ifdef __UNIX__
+    const char* srchstr = "../";
+    char sep = '/';
+#else
+    const char* srchstr = "..\\";
+    char sep = '\\';
+#endif
+    std::string::size_type idx1( inFile.find( srchstr ) );
+    if( idx1 == 0 ) {
+        while( idx1 == 0 ) {                    //must be at start of line
+            std::string::size_type idx2( fullpath.rfind( sep ) );
+            if( idx2 != std::string::npos ) {
+                fullpath.erase( idx2 );
+                inFile.erase( idx1, 3 );
+            }
+            else if( !fullpath.empty() ) {
+#ifdef __UNIX__
+                idx2 = 0;
+#else
+                idx2 = fullpath.find( ':' );    //don't kill drive
+                if( idx2 != std::string::npos )
+                    ++idx2;
+#endif
+                fullpath.erase( idx2 );
+                inFile.erase( 0, 3 );
+                break;
+            }
+            idx1 = inFile.find( srchstr );
+        }
+        fullpath += sep;
+        fullpath += inFile;
+    }
+    else
+        fullpath = inFile;
+#ifndef __UNIX__
+    if( fullpath.size() > PATH_MAX )
+        throw FatalError( ERR_PATH_MAX );
+#endif
+    return fullpath;
+}
+/*****************************************************************************/
+void wtombstring( const std::wstring& input, std::string& output )
+{
+    for( size_t index = 0; index < input.size(); ++index ) {
+        char ch[ MB_CUR_MAX + 1 ];
+        int  bytes( std::wctomb( &ch[ 0 ], input[ index ] ) );
+        if( bytes == -1 )
+            throw FatalError( ERR_T_CONV );
+        ch[ bytes ] = '\0';
+        output += ch;
+    }
+}
+/*****************************************************************************/
+void mbtowstring( const std::string& input, std::wstring& output )
+{
+    size_t index( 0 );
+    while( index < input.size() ) {
+        wchar_t wch;
+        int consumed( std::mbtowc( &wch, input.data() + index, MB_CUR_MAX ) );
+        if( consumed == -1 )
+            throw FatalError( ERR_T_CONV );
+        output += wch;
+        index += consumed;
+    }
+}
