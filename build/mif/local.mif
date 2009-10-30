@@ -51,13 +51,6 @@ cpp_386         += $(bld_incs)
 !loaddll wppaxp $(lang_dll)\wppdaxp.dll
 !endif
 
-!ifeq proj_name cc
-extra_l_flags_nt = lib $(watcom_dir)/lib/ld.lib
-!endif
-!ifeq host_cpu axp
-def_targ        = wcc$(target_cpu)c.exe
-!endif
-
 # TODO: atomize this file and create separate files for various host
 # platforms/compilers
 
@@ -204,7 +197,15 @@ libflags = -nologo -out:$^@
 
 cppflags_386 = -D_M_IX86=400 -D__386__ -D__NT__ -D_X86_
 cppflags = $(defines) -DNDEBUG -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
-cflags = -c -nologo $(extra_c_flags) $(cppflags) -Fo$@
+
+cflags_rel = -Ox
+cflags_dbg = -Zi
+
+!ifeq release 1
+cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_rel) -Fo$@
+!else
+cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_dbg) -Fo$@
+!endif
 
 # options for linking via cl
 clflags = -nologo -Fe$@
