@@ -1,3 +1,5 @@
+/* WARNING: Message strings in this file must be sorted by message number! */
+
 pick( OUT_OF_MEMORY,                "Out of memory",
                                 "メモリが足りません" )
 pick( MAKE_ABORT,                "Make execution terminated",
@@ -105,6 +107,17 @@ pick( CHANGING_DIR,                "CD'ing to %E: %Z",
                                 "%E にディレクトリを変更します: %Z" )
 pick( CHANGING_DRIVE,                "Changing to drive %C:",
                                 "ドライフ %C: に変ります" )
+#if defined( __DOS__ )
+pick( OS_CORRUPTED,                "DOS memory inconsistency detected! System may halt ...",
+                                "DOSﾒﾓﾘ管理に矛盾が見つかりました！ｼｽﾃﾑがﾎｰﾙﾄするかもしれません･･･" )
+#else
+pick( OS_CORRUPTED,             "OS corruption detected",
+                                "ＯＳが壊れているのが、見つかりました" )
+#endif
+pick( READ_ERROR,                "While reading (%s): %Z",
+                                "(%s)を読み出しています: %Z" )
+pick( INCOMPATIBLE__OPTIONS,    "Incompatible options",
+                                "Incompatible options" )
 pick( PARSE_IFEXPR,             "!IF Parse Error",
                                 "!IF フェーズエラー" )
 pick( TMP_PATH_TOO_LONG,        "TMP Path/File Too Long",
@@ -117,10 +130,10 @@ pick( NON_MATCHING_QUOTE,       "Non-matching \"",
                                 "一致しません \"")
 pick( INVALID_STRING_SUBSTITUTE,"Invalid String Macro Substitution",
                                 "不適切な文字列マクロ置換です")
-pick( MAX_FILE_LENGTH_EXCEED,   "File Name Length Exceeded",
-                                "ファイル名の長さが制限を越えました")
 pick( DOT_DEFAULT_REDEFINITION, "Redefinition of .DEFAULT Command List",
                                 ".DEFAULT コマンド･･リストの再定義です")
+pick( MAX_FILE_LENGTH_EXCEED,   "File Name Length Exceeded",
+                                "ファイル名の長さが制限を越えました")
 pick( NON_MATCHING_CURL_PAREN,  "Non-matching { In Implicit Rule",
                                 "暗黙のルールの中の \{ が一致しません")
 pick( INVALID_SUFSUF,           "Invalid Implicit Rule Definition",
@@ -149,18 +162,6 @@ pick( MICROSOFT_MAKEFILE,       "Makefile may be Microsoft; try /ms switch",
                                 "Makefile may be Microsoft; try /ms switch")
 pick( ERROR_STRING_OPEN,    "Expecting double quote character to end open string.",
                 "Expecting double quote character to end open string.")
-
-#if defined( __DOS__ )
-pick( OS_CORRUPTED,                "DOS memory inconsistency detected! System may halt ...",
-                                "DOSﾒﾓﾘ管理に矛盾が見つかりました！ｼｽﾃﾑがﾎｰﾙﾄするかもしれません･･･" )
-#else
-pick( OS_CORRUPTED,             "OS corruption detected",
-                                "ＯＳが壊れているのが、見つかりました" )
-#endif
-pick( READ_ERROR,                "While reading (%s): %Z",
-                                "(%s)を読み出しています: %Z" )
-pick( INCOMPATIBLE__OPTIONS,    "Incompatible options",
-                                "Incompatible options" )
 
 /*
  * all msgs beyond here should not have a number printed with them
