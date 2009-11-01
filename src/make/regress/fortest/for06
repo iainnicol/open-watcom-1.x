@@ -3,5 +3,7 @@
 
 all : .symbolic
     for %i in (1 2 3) do echo %i
+!ifndef __UNIX__
+    # different shells print different error messages...
     for %i in (bogusa bogusb bogusc) do type %i
-
+!endif

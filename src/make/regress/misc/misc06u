@@ -14,6 +14,8 @@ all: .symbolic
     -rm foo < /dev/null
     rm -f foo
     rm -f foo
-    mkdir food
-    -rm -f food
-    rm -f -r food
+# This will call external 'rm' which does not print standardized messages;
+# that makes the output difficult to test, but also unnecessary.
+#    mkdir food
+#    -rm -f food
+#    rm -f -r food
