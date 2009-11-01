@@ -121,7 +121,7 @@ extern      short   __psp;
 
 #endif
 
-typedef unsigned_32     tag;
+typedef unsigned long   tag;
 
 extern bool     GetEnvVar( char*, char*, int );
 extern char     *CopyStr( char *src, char *dst );
@@ -150,7 +150,11 @@ static pointer_int  PeakAlloc    = 0;
 
 #define MAX_SIZE        14 /* 16384 */
 #define MIN_SIZE        4  /* 16 */
+#ifdef LONG_IS_64BITS
+#define WORD_SIZE       8  /* Needed to keep alignment. */
+#else
 #define WORD_SIZE       4
+#endif
 #define MAX_CLASS       (MAX_SIZE-MIN_SIZE)
 
 /* Free list structure - length holds the size of memory block, which
