@@ -78,7 +78,13 @@ TEST=6
 print_header
 rm tmp.out
 $1 -h -m -f long06 > tmp.out 2>&1
-diff -b long06.cmu tmp.out
+# The order in which files are reported is unpredictable. Sort the
+# final output instead.
+sort long06.cmu > tmp1s.out
+sort tmp.out > tmp2s.out
+diff -b tmp1s.out tmp2s.out
 do_check
 
 rm tmp.out
+rm tmp1s.out
+rm tmp2s.out
