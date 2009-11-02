@@ -1,3 +1,6 @@
 1
 2
 3
+sh: line 0: type: bogusa: not found
+sh: line 0: type: bogusb: not found
+sh: line 0: type: bogusc: not found
