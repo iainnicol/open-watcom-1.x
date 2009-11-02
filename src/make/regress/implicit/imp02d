@@ -16,7 +16,7 @@ all: hello.exe .symbolic
         @$(MAKE) $(__MAKEOPTS__) -f imp02d -h -y hello.exe
 
 hello.exe : hello.obj
-        bwcl386 -zq -fe=$@ $<
+        wcl386 -zq -fe=$@ $<
 
 hello.c : $(__MAKEFILES__)
         @cat << > hello0.h
