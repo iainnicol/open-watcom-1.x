@@ -131,6 +131,7 @@ static void HupHandler( int signo )
 
 static bool TryXWindows( void )
 {
+#ifdef __LINUX__
     int         slavefd;
     int         masterfd;
     char        buff[64];
@@ -221,6 +222,9 @@ static bool TryXWindows( void )
 
     signal( SIGHUP, &HupHandler );
     return( TRUE );
+#else
+    return( FALSE );
+#endif
 }
 
 static bool TryVC( void )

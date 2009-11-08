@@ -99,6 +99,10 @@ $(cppflags_$(host_cpu)) -fno-asm -fno-common #-funsigned-char
 
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
+# Flags for building shared libs
+cflags_shared  = -fPIC
+clflags_shared = -shared
+
 !endif
 !endif
 
@@ -117,6 +121,10 @@ cflags_wng =
 preflags = $(defines) -DNDEBUG -D__UNIX__ -D__OSX__ -DBOOTSTRAP &
 $(preflags_$(host_cpu)) -fno-common #-funsigned-char
 cflags = $(extra_c_flags) $(preflags) -g -c $(cflags_wng) -O2 -o $@
+
+# Flags for building shared libs; -fPIC is on by default, and the linking
+# flag on Darwin is different than everyone else's...
+clflags_shared = -dynamiclib
 
 !endif
 !endif
@@ -148,6 +156,10 @@ cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_rel) -o $@
 !else
 cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_dbg) -o $@
 !endif
+
+# Flags for building shared libs
+cflags_shared  = -fPIC
+clflags_shared = -shared
 
 !endif
 !endif

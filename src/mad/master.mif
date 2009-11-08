@@ -48,7 +48,7 @@ additional_cleanup = *.d32 *.mad
 extra_c_flags = -DMD_$(target_cpu) -DNDIS_$(target_cpu)
 
 !ifdef bootstrap
-extra_c_flags += -fPIC
+extra_c_flags += $(cflags_shared)
 !else
 extra_c_flags += -s
 extra_c_flags_i86 = -zu
@@ -98,7 +98,7 @@ objs =  madimp.obj $(dis_objs) $(imp_objs)
 ##################
 !ifdef bootstrap
 $(lib_name) : $(dis_prereq) $(objs) $(__MAKEFILES__)
-        $(cl) -shared -fPIC $(clflags) $(objs) $(cl_libs)
+        $(cl) $(clflags_shared) $(clflags) $(objs) $(cl_libs)
 !else
 $(lib_name) : $(dis_prereq) $(objs) $(__MAKEFILES__)
         $(linker) $(lflags) name $^@ file {$(objs)} library {$(libs)}

@@ -68,10 +68,8 @@ clib_dos_386    = clib3r
 clib_nt_386     = clib3r
 clib_nt_axp     = clib
 
-extra_c_flags   = -s -D__DIP__ $(extra_cflags)
-!ifdef bootstrap
-extra_c_flags += -fPIC
-!else
+extra_c_flags   = -s -D__DIP__ $(extra_cflags) $(cflags_shared)
+!ifndef bootstrap
 extra_c_flags += -s
 extra_c_flags_i86 = -zc -zu
 !endif
@@ -84,7 +82,7 @@ objs = dipimp.obj $(imp_objs)
 
 !ifdef bootstrap
 $(lib_name) : $(objs) $(imp_libs) $(__MAKEFILES__)
-        $(cl) -shared $(clflags) $(objs) $(imp_libs) $(cl_libs)
+        $(cl) $(clflags_shared) $(clflags) $(objs) $(imp_libs) $(cl_libs)
 !else
 $(lib_name) : $(objs) $(imp_libs) $(__MAKEFILES__)
         $(linker) op map, symfile debug all &
