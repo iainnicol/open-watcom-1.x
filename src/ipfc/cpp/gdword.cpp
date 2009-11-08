@@ -53,11 +53,11 @@ size_t GlobalDictionaryWord::writeWord( std::FILE* out ) const
     char buffer[ 256 ];
     size_t written;
     size_t length( std::wcstombs( buffer, text.c_str(), sizeof( buffer ) / sizeof( char ) ) );
-    if( length == -1 )
+    if( length == static_cast< size_t >( -1 ) )
         throw FatalError( ERR_T_CONV );
     if( length > 254 )
         length = 254;
-    if( std::fputc( static_cast< std::uint8_t >( length + 1 ), out) == EOF ||
+    if( std::fputc( static_cast< STD1::uint8_t >( length + 1 ), out) == EOF ||
         ( written = std::fwrite( buffer, sizeof( char ), length, out ) ) != length )
         throw FatalError( ERR_WRITE );
     return written + 1;
