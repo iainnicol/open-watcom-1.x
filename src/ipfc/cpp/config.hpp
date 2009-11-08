@@ -41,8 +41,8 @@
         #define STD1
     #endif
 #else
-    #include <cstdint>
-    #define STD1 std
+    #include <stdint.h>>
+    #define STD1
 #endif
 
 #endif //CONFIG_INCLUDED
