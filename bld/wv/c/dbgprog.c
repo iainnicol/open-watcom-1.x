@@ -1400,6 +1400,18 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
     }
     for( ;; ) {
         switch( addr->segment ) {
+>>>> ORIGINAL dbgprog.c#1
+==== THEIRS dbgprog.c#18
+        case MAP_FLAT_CODE_SELECTOR:
+            Format( TxtBuff, LIT( Map_Named_Selector ), "Flat Code", image->sym_name );
+            break;
+        case MAP_FLAT_DATA_SELECTOR:
+            Format( TxtBuff, LIT( Map_Named_Selector ), "Flat Data", image->sym_name );
+            break;
+        default:
+            Format( TxtBuff, LIT( Map_Selector ), addr->segment, image->sym_name );
+        }
+==== YOURS dbgprog.c
         case 0xFFFF:
             Format( TxtBuff, LIT( Map_Named_Selector ), "Flat Code", image->sym_name );
             break;
@@ -1409,6 +1421,7 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
         default:
             Format( TxtBuff, LIT( Map_Selector ), addr->segment, image->sym_name );
         }
+<<<<
         mapped.mach.segment = NO_SEG;
         mapped.mach.offset = 0;
         if( DlgGivenAddr( TxtBuff, &mapped ) ) {

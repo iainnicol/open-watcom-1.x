@@ -168,3 +168,9 @@
 
 !include ../../../../objlist.mif
 mbinit_postopts=-os
+
+# WORKAROUND: The _fxxx functions for flat model targets are essentially
+# useless, but they must be removed completely (not just some modules)
+fmbtowc_postopts = -wcd310
+fwctomb_postopts = -wcd310
+fwctom_s_postopts = -wcd310

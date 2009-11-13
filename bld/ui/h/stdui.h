@@ -398,7 +398,7 @@ enum {
 
 */
 
-typedef         unsigned int            ORD;
+typedef unsigned int    ORD;
 
 #elif __RDOS__
 
@@ -406,16 +406,15 @@ typedef         unsigned int            ORD;
         An improper reference to __GUI__ is used. Fixed for now so it works for RDOS. 
 */
         
-
-typedef         int                     ORD;
+typedef int    ORD;
 
 #else
 
-typedef         unsigned char           ORD;
+typedef unsigned char   ORD;
 
 #endif
 
-typedef         unsigned short          MOUSEORD;
+typedef unsigned short  MOUSEORD;
 
 typedef struct sarea {
         ORD             row;
@@ -424,7 +423,7 @@ typedef struct sarea {
         ORD             width;
 } SAREA;
 
-typedef         unsigned char           ATTR;
+typedef unsigned char   ATTR;
 
 #define         iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) \
                                        && ( ev <= EV_LAST_EDIT_CHAR ) )
@@ -434,7 +433,6 @@ typedef         unsigned char           ATTR;
             unsigned short  ch;
             unsigned short  attr;
     } PIXEL;
-    typedef PIXEL *LPPIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__OS2__) && defined(__386__)
@@ -442,7 +440,6 @@ typedef         unsigned char           ATTR;
             char            ch;
             ATTR            attr;
     } PIXEL;
-    typedef PIXEL *LPPIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__UNIX__)
@@ -450,7 +447,6 @@ typedef         unsigned char           ATTR;
             unsigned char   ch;
             ATTR            attr;
     } PIXEL;
-    typedef PIXEL *LPPIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined(__RDOS__)
@@ -458,7 +454,6 @@ typedef         unsigned char           ATTR;
             unsigned char   ch;
             ATTR            attr;
     } PIXEL;
-    typedef PIXEL *LPPIXEL;
     #define __FAR
     #undef HAVE_FAR
 #elif defined( _M_IX86 )
@@ -466,13 +461,13 @@ typedef         unsigned char           ATTR;
             char            ch;
             ATTR            attr;
     } PIXEL;
-
-    typedef PIXEL far *LPPIXEL;
     #define __FAR far
     #define HAVE_FAR
 #else
     #error pixel structure not configured for system
 #endif
+
+typedef PIXEL __FAR *LPPIXEL;
 
 typedef struct buffer {
     LPPIXEL     origin;
@@ -616,8 +611,7 @@ extern          void            uiclose( VSCREEN _FARD * );
 extern          void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR,
                                             unsigned int, const char * );
 extern          bool            uiconfig( char *, char ** );
-extern          void            uicursor( VSCREEN _FARD *, ORD,
-                                          ORD, int );
+extern          void            uicursor( VSCREEN _FARD *, ORD, ORD, int );
 extern          int             uidialogevent( VSCREEN _FARD * );
 extern          void            uidirty( SAREA );
 extern          void            uidrawbox( VSCREEN _FARD *, SAREA *area,
@@ -657,8 +651,7 @@ extern          VSCREEN _FARD  *uiopen( SAREA *, char *, unsigned int );
 extern          void            uihidemouse( void );
 extern          unsigned        uiclockdelay( unsigned milli );
 extern          EVENT   _FARD  *uipoplist( void );
-extern          void            uiposition( SAREA *, ORD,
-                                    ORD ,int ,int , bool );
+extern          void            uiposition( SAREA *, ORD, ORD, int, int, bool );
 extern          void            uiprotect( VSCREEN _FARD* );
 extern          void            uipushlist( EVENT _FARD* );
 extern          void            uiputlist( EVENTLIST _FARD* );

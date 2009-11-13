@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Low-level Windows 3.x file I/O.
 *
 ****************************************************************************/
 
@@ -108,7 +107,13 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, unsigned method )
     tiny_ret_t      ret;
     unsigned long   pos;
 
+>>>> ORIGINAL winfilio.c#1
+    ret = TinySeek( hdl, len, method );
+==== THEIRS winfilio.c#4
+    ret = TinyLSeek( hdl, len, method, &pos );
+==== YOURS winfilio.c
     ret = TinyLSeek( hdl, len, method, (void __near *)&pos );
+<<<<
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
         return( -1UL );

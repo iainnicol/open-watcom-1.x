@@ -66,6 +66,22 @@ LIBS = &
     $(wres_lib)
 
 # systems where version resource must be added to .EXE
+>>>> ORIGINAL master.mif#1
+==== THEIRS master.mif#32
+version_res_nt_386 = version.res
+
+all: $(prereq_ide_h) $(name).exe
+
+$(name).exe : $(OBJECTS) $(LIBS) viper.res $(version_res_$(host_os)_$(host_cpu))
+        %create $(name).lnk
+        %append $(name).lnk $(lflags)
+        %append $(name).lnk op map, de $(description)
+        %append $(name).lnk f {$(OBJECTS)}
+        %append $(name).lnk lib {$(LIBS)}	
+        $(linker) name $(name) @$(name).lnk
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k viper.res $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+==== YOURS master.mif
 build_rc_nt_386 = nt
 
 !ifdef build_rc_$(host_os)_$(host_cpu)
@@ -83,11 +99,28 @@ $(name).exe : $(OBJECTS) $(LIBS) viper.res $(res_objs)
         $(linker) name $(name) @$(name).lnk
 !ifdef build_rc_$(host_os)_$(host_cpu)
         $(rc) -k viper.res $^@ -fr=exever.res
+<<<<
 !else
         $(rc) -k viper.res $^@
 !endif
 
 viper.res : _guimsgs.gh $(gui_dir)/h/gui.rc viper.rc
+>>>> ORIGINAL master.mif#1
+==== THEIRS master.mif#32
+        $(rc) $(rc_flags) -I.. $(inc_path) $]@ -fo=$^@
+
+./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
+        $(bld_cl) -I"$(gui_dir)/h" $(wcl_util_opts) $[@
+
+_guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
+        $[@ $^@ $(gui_msg_id_modifier)
+
+./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
+        $(bld_cl) $[@ $(wcl_util_opts) -D_VERSION=$(bld_ver)
+
+!ifndef patch_level
+patch_level=0
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -I.. $(inc_path) $]@ -fo=$^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
@@ -104,10 +137,21 @@ exever.res: exever.rc
 
 !ifndef patch_level
 patch_level=0
+<<<<
 !endif
 
+>>>> ORIGINAL master.mif#1
+!ifeq host_OS win
+link.obj: link.c
+        $(cc) $(cflags) $(extra_c_flags_$(host_CPU)) -dSERVER $[@ -fo=$^@
+==== THEIRS master.mif#32
+version.res: ./genverrc.exe ../nt/exever.rc $(fe_misc_dir)/c/genverrc.c
+        $[@ ../nt/exever.rc version.rc $$ $(name) $(patch_level)
+        $(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
+==== YOURS master.mif
 exever.rc: ./genverrc.exe ../nt/exever.rc $(fe_misc_dir)/c/genverrc.c
         $[@ ../nt/exever.rc exever.rc $$ $(name) $(patch_level)
+<<<<
 
 !ifdef prereq_ide_h
 $(prereq_ide_h): .ALWAYS

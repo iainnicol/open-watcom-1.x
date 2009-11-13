@@ -24,7 +24,14 @@
 *
 *  ========================================================================
 *
+>>>> ORIGINAL cmddos.c#1
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
+==== THEIRS cmddos.c#13
+* Description:  Command line parsing for the DOS load file format.
+==== YOURS cmddos.c
 * Description:  command line parsing for the DOS load file format.
+<<<<
 *
 ****************************************************************************/
 
@@ -343,6 +350,13 @@ bool ProcNoIndirect( void )
 /********************************/
 {
     FmtData.u.dos.noindirect = TRUE;
+    return( TRUE );
+}
+
+bool ProcFullHeader( void )
+/*************************/
+{
+    FmtData.u.dos.full_mz_hdr = TRUE;
     return( TRUE );
 }
 

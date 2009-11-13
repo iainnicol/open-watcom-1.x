@@ -8,11 +8,15 @@
 :elsesegment Pspecs
 # default specs.owc file
 # 
+# NOTE: the -bt= options in here are just what I thought
+#   they should be.  Somebdoy please double-check!
+#
+# 
 # FIXME: should -bd and others also be passed?
 :endsegment
 system begin dos
 :segment Pspecs
-    wcc -bt=dos 
+    wcc -bt=dos
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
@@ -118,7 +122,7 @@ system begin win386
 end
 system begin os2
 :segment Pspecs
-    wcc -bt=os2 
+    wcc -bt=os2
 :elsesegment Pwlsystem
     option osname='OS/2 16-bit'
     library os2.lib
@@ -529,10 +533,9 @@ system begin cwdlls
     wcc386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
-    option osname='CauseWay DLL (Stack parameter passing)'
+    option osname='CauseWay (stack calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    op stub=cwdstub.exe
     format os2 le dll ^
     libfile dllstrts.obj
 :endsegment
@@ -542,10 +545,9 @@ system begin cwdllr
     wcc386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
-    option osname='CauseWay DLL (Register parameter passing)'
+    option osname='CauseWay (register calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    op stub=cwdstub.exe
     format os2 le dll ^
     libfile dllstrtr.obj
 :endsegment
@@ -658,13 +660,57 @@ system begin zrdx
 end
 system begin dos16m
 :segment Pspecs
-    wcc -bt=dos 
+    wcc -bt=dos
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
     libfile dos16m.obj
     libfile d16msels.obj
     format dos16m runtime auto ^
+:endsegment
+end
+system begin zdos
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS User Application'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdos
+    libfile appstart.obj
+    format zdos
+:endsegment
+end
+system begin zdosfsd
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS File System Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile fsdstart.obj
+    format zdos fsd
+:endsegment
+end
+system begin zdoshwd
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS Hardware Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile hwdstart.obj
+    format zdos hwd
+:endsegment
+end
+system begin zdosdev
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS Device Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile devstart.obj
+    format zdos sys
 :endsegment
 end
 system begin rdos_pe

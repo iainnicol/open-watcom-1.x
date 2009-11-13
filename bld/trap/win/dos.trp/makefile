@@ -6,8 +6,8 @@ os = dos
 srv = win
 cpu = x86
 which = TRAP
+type  = remote_link
 
-extra_objs = $(remote_objs)
 
 extra_c_flags_i86 = -3
 

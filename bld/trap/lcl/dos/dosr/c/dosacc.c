@@ -36,7 +36,6 @@
 #include "tinyio.h"
 #include "dbg386.h"
 #include "drset.h"
-#include "doshdl.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
@@ -50,6 +49,7 @@
 #include "madregs.h"
 #include "x86cpu.h"
 #include "misc7086.h"
+#include "dosredir.h"
 
 typedef enum {
     EXE_UNKNOWN,
@@ -121,9 +121,8 @@ typedef enum {
 #define USR_FLAGS (FLG_C | FLG_P | FLG_A | FLG_Z | FLG_S | \
             FLG_I | FLG_D | FLG_O)
 
-extern void             InitRedirect(void);
 extern addr_seg         DbgPSP(void);
-extern long             DOSLoadProg(char far *, pblock far *);
+extern tiny_ret_t       DOSLoadProg(char far *, pblock far *);
 extern addr_seg         DOSTaskPSP(void);
 extern void             EndUser(void);
 extern unsigned_8       RunProg(trap_cpu_regs *, trap_cpu_regs *);
@@ -144,15 +143,13 @@ extern void             Null87Emu( void );
 extern void             Read87EmuState( void far * );
 extern void             Write87EmuState( void far * );
 extern tiny_ret_t       FindFilePath( char *, char *, char * );
-extern unsigned         Redirect( bool );
 extern unsigned         ExceptionText( unsigned, char * );
 extern unsigned         StringToFullPath( char * );
 extern int              far NoOvlsHdlr( int, void * );
 extern bool             CheckOvl( addr32_ptr );
 extern int              NullOvlHdlr(void);
 
-
-extern word             far SegmentChain;
+extern word             __based(__segname("_CODE")) SegmentChain;
 
 static tiny_handle_t    EXEhandle;
 static tiny_ftime_t     EXETime;
@@ -542,7 +539,7 @@ static EXE_TYPE CheckEXEType( char *name )
     rc = TinyOpen( name, TIO_READ_WRITE );
     if( TINY_ERROR( rc ) )
         return( EXE_UNKNOWN );
-    EXEhandle = rc;
+    EXEhandle = TINY_INFO( rc );
     exe_time.rc = TinyGetFileStamp( EXEhandle );
     EXETime = exe_time.stamp.time;
     EXEDate = exe_time.stamp.date;
@@ -593,15 +590,15 @@ unsigned ReqProg_load( void )
 {
     addr_seg        psp;
     pblock          parmblock;
-    long            rc;
-    char            far *parm;
-    char            far *src;
+    tiny_ret_t      rc;
+    char            *parm;
+    char            *name;
     char            far *dst;
     char            exe_name[128];
     char            ch;
     EXE_TYPE        exe;
     prog_load_ret   *ret;
-    char            *end;
+    unsigned        len;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
@@ -610,37 +607,33 @@ unsigned ReqProg_load( void )
     /* build a DOS command line parameter in our PSP command area */
     Flags.BoundApp = FALSE;
     psp = DbgPSP();
-    parm = GetInPtr( sizeof( prog_load_req ) );
-    if( TINY_ERROR( FindFilePath( parm, exe_name, DosExtList ) ) ) {
+    parm = name = GetInPtr( sizeof( prog_load_req ) );
+    if( TINY_ERROR( FindFilePath( name, exe_name, DosExtList ) ) ) {
         exe_name[0] = '\0';
     }
-    while( *parm != '\0' )
-        ++parm;
-    src = ++parm;
-    dst = MK_FP( psp, CMD_OFFSET+1 );
-    end = (char *)GetInPtr( GetTotalSize()-1 );
-    for( ;; ) {
-        if( src > end )
-            break;
-        ch = *src;
-        if( ch == '\0' )
+    while( *parm++ != '\0' ) {}     // skip program name
+    len = GetTotalSize() - ( parm - name ) - sizeof( prog_load_req );
+    if( len > 126 )
+        len = 126;
+    dst = MK_FP( psp, CMD_OFFSET + 1 );
+    for( ; len > 0; --len ) {
+        ch = *parm++;
+        if( ch == '\0' ) {
+            if( len == 1 )
+                break;
             ch = ' ';
-        *dst = ch;
-        ++dst;
-        ++src;
+        }
+        *dst++ = ch;
     }
-    if( src > parm )
-        --dst;
     *dst = '\r';
-    parm = MK_FP( psp, CMD_OFFSET );
-    *parm = FP_OFF( dst ) - (CMD_OFFSET+1);
+    *(byte far *)MK_FP( psp, CMD_OFFSET ) = FP_OFF( dst ) - ( CMD_OFFSET + 1 );
     parmblock.envstring = 0;
     parmblock.commandln.segment = psp;
     parmblock.commandln.offset =  CMD_OFFSET;
     parmblock.fcb01.segment = psp;
     parmblock.fcb02.segment = psp;
-    parmblock.fcb01.offset  = 0X005C;
-    parmblock.fcb02.offset  = 0X006C;
+    parmblock.fcb01.offset  = 0x5C;
+    parmblock.fcb02.offset  = 0x6C;
     exe = CheckEXEType( exe_name );
     if( EXEhandle != 0 ) {
         TinyClose( EXEhandle );
@@ -657,8 +650,7 @@ unsigned ReqProg_load( void )
     SegmentChain = 0;
     BoundAppLoading = FALSE;
     rc = DOSLoadProg( exe_name, &parmblock );
-    if( rc >= 0 ) {
-        rc = 0;
+    if( TINY_OK( rc ) ) {
         TaskRegs.SS = parmblock.startsssp.segment;
         /* for some insane reason DOS returns a starting SP two less then
            normal */
@@ -676,7 +668,7 @@ unsigned ReqProg_load( void )
     }
     TaskRegs.DS = psp;
     TaskRegs.ES = psp;
-    if( rc == 0 ) {
+    if( TINY_OK( rc ) ) {
         if( Flags.NoOvlMgr || !CheckOvl( parmblock.startcsip ) ) {
             if( exe == EXE_OS2 ) {
                 byte    far *pbyte;
@@ -690,19 +682,18 @@ unsigned ReqProg_load( void )
                 BoundAppLoading = FALSE;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
-                    EXEhandle = rc;
+                    EXEhandle = TINY_INFO( rc );
                     SeekEXEset( StartByte );
                     WriteEXE( SavedByte );
                     TinySetFileStamp( EXEhandle, EXETime, EXEDate );
                     TinyClose( EXEhandle );
                     EXEhandle = 0;
-                    rc = 0;
                     Flags.BoundApp = TRUE;
                 }
             }
         }
     }
-    ret->err = rc;
+    ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     ret->task_id = psp;
     ret->flags = 0;
     ret->mod_handle = 0;
@@ -716,7 +707,7 @@ unsigned ReqProg_kill( void )
 
 out( "in AccKillProg\r\n" );
     ret = GetOutPtr( 0 );
-    InitRedirect();
+    RedirectFini();
     if( DOSTaskPSP() != NULL ) {
 out( "enduser\r\n" );
         EndUser();
@@ -1015,10 +1006,10 @@ unsigned ReqGet_err_text( void )
 
     acc = GetInPtr( 0 );
     err_txt = GetOutPtr( 0 );
-    if( (unsigned_16)acc->err > ( (sizeof(DosErrMsgs)/sizeof(char *)-1) ) ) {
+    if( acc->err > ( (sizeof(DosErrMsgs)/sizeof(char *)-1) ) ) {
         strcpy( err_txt, TRP_ERR_unknown_system_error );
     } else {
-        strcpy( err_txt, DosErrMsgs[ (unsigned_16)acc->err ] );
+        strcpy( err_txt, DosErrMsgs[ acc->err ] );
     }
     return( strlen( err_txt ) + 1 );
 }
@@ -1089,7 +1080,7 @@ out( "    done checking environment\r\n" );
     Null87Emu();
     NullOvlHdlr();
     TrapTypeInit();
-    InitRedirect();
+    RedirectInit();
     ExceptNum = -1;
     WatchCount = 0;
     ver.major = TRAP_MAJOR_VERSION;

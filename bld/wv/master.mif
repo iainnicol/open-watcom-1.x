@@ -275,6 +275,12 @@ extra_c_flags_regexp = -fi=wndregx.h
 
 extra_c_flags_nt += -DENABLE_TRAP_LOGGING
 
+
+# BUILD WORKAROUND because of insufficiently smart 1.8 compiler
+!ifeq __VERSION__ 1280
+extra_c_flags_winfilio = -wcd112
+!endif
+
 # inc_dirs
 ###########
 inc_dirs = -I. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(syshdir)" -I"$(hdir)"
@@ -370,17 +376,38 @@ resname=$+$(resname)$-dll
 resfile = $(resname).res
 
 # systems where version resource must be added to .EXE
+>>>> ORIGINAL master.mif#1
+        cp dv.map $(lnk2)
+        vi -d -q -s ..\mapfix.vi $(lnk2)
+        $(linker) $(symfile) $(%DEBUG) name $(bdir)/$(%NAME).$(EXE) @$(lnk) @$(lnk2) $(endsect)
+        @%null
+==== THEIRS master.mif#49
+version_res_nt_386 = version.res
+==== YOURS master.mif
 build_rc_nt_386 = nt
 
 !ifdef build_rc_$(host_os)_$(host_cpu)
 res_objs = exever.res
 !endif
+<<<<
 
 !ifdef bootstrap
 $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(cl_objs) $(libs)
         $(cl) $(clflags) fingmsg.obj $(objs) $(sysobjs) $(cl_objs) $(libs) $(cl_libs) -ldl
         wstrip -q -a -r $^@ . $(resfile)
 !else
+>>>> ORIGINAL master.mif#1
+==== THEIRS master.mif#49
+$(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk) $(version_res_$(host_os)_$(host_cpu))
+        $(linker) $(lflags) name $^@ @$(lnk) $(endsect)
+!ifneq sys_windowed 1
+        wstrip -q -a -r $^@ . $(resfile)
+!else
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(resfile) $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
+!else
+        $(rc) -k $(resfile) $^@
+==== YOURS master.mif
 $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk) $(res_objs)
         $(linker) $(lflags) name $^@ @$(lnk) $(endsect)
 !ifneq sys_windowed 1
@@ -390,6 +417,7 @@ $(exe_name) : $(resfile) fingmsg.obj $(objs) $(sysobjs) $(libs) $(lnk) $(res_obj
         $(rc) -k $(resfile) $^@ -fr=exever.res
 !else
         $(rc) -k $(resfile) $^@
+<<<<
 !endif
 !endif
 !if 0
@@ -560,22 +588,62 @@ wvui.res : $(hdir)/wvui.rc auistr.gh _guimsgs.gh $(rcfiles) usage.rc usagej.rc .
         $(rc_aui) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
 
 wvntdll.res : $(hdir)/strings.rc litdef.gh .autodepend
+>>>> ORIGINAL master.mif#1
+        set DOS4G=quiet
+        $[@ $^@
+==== THEIRS master.mif#49
+        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+<<<<
 
 wvpmdll.res : $(hdir)/strings.rc litdef.gh .autodepend
+>>>> ORIGINAL master.mif#1
+        *wrc -r -q -bt=windows -i="$(rcinclude);$(lang_root)/h/win" $[@ -fo=$^@
+==== THEIRS master.mif#49
+        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+<<<<
 
 wvwin.res : $(hdir)/wvwin.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+>>>> ORIGINAL master.mif#1
+        *wrc -r -q -bt=nt -i="$(rcinclude);$(lang_root)/h/win" $[@ -fo=$^@x
+==== THEIRS master.mif#49
+        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -ad $(rcinclude) $(inc_dirs_sys_win) $[@ -fo=$^@
+<<<<
 
 wvnt.res : $(hdir)/wvwin.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+>>>> ORIGINAL master.mif#1
+        *wrc -k -r -bt=windows -i="$(rcinclude);$(lang_root)/h/win" $[@ -fo=^@
+==== THEIRS master.mif#49
+        $(rc) $(rc_flags) -ad $(rcinclude) $(inc_dirs_sys_nt) $[@ -fo=$^@
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -ad $(rcinclude) $(inc_dirs_sys_nt) $[@ -fo=$^@
+<<<<
 
 wvpm.res : $(hdir)/wvpm.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+>>>> ORIGINAL master.mif#1
+        *wrc -k -r -bt=nt -i="$(rcinclude);$(lang_root)/h/nt" $[@ -fo=$^@
+==== THEIRS master.mif#49
+        $(rc) $(rc_flags) -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -ad -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+<<<<
 
 wvpmj.res : $(hdir)/wvpm.rc auistr.gh _guimsgs.gh $(bitmaps) $(rcfiles) .autodepend
+>>>> ORIGINAL master.mif#1
+        @set oinc=$(%include)
+        set include=$(inc_dirs_sys);$(rcinclude);$(%include)
+        *wcc -dRC -i"$(aui_dir)/os2386.pm;$(rcinclude)" -p -pw=0 -fo=wvpm.i $[@
+        *wcc -dRC -i"$(aui_dir)/os2386.pm;$(rcinclude)" -p -pw=0 -fo=wvpmj.i $[@ -dJAPANESE_MESSAGES
+==== THEIRS master.mif#49
+        $(rc) $(rc_flags) -ad -DJAPANESE_MESSAGES -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+==== YOURS master.mif
         $(rc) $(rc_flags) -r -ad -DJAPANESE_MESSAGES -I"$(aui_dir)/os2386.pm" $(rcinclude) $(inc_dirs_sys_os2) $[@ -fo=$^@
+<<<<
 
 !ifneq sys_windowed 1
 .dlg : $(hdir)
@@ -640,8 +708,15 @@ exever.res: exever.rc
 patch_level=0
 !endif
 
+>>>> ORIGINAL master.mif#1
+==== THEIRS master.mif#49
+version.res: ./genverrc.exe $(hdir)/exever.rc $(fe_misc_dir)/c/genverrc.c
+        $[@ $(hdir)/exever.rc version.rc $$ $(proj_name) $(patch_level)
+        $(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
+==== YOURS master.mif
 exever.rc : ./genverrc.exe $(hdir)/exever.rc $(fe_misc_dir)/c/genverrc.c
         $[@ $(hdir)/exever.rc exever.rc $$ $(proj_name) $(patch_level)
+<<<<
 
 ####################
 
