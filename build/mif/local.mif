@@ -94,7 +94,7 @@ inc_dirs_lang_osi =
 # Warning flags: all enabled except the ones that have no use besides annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__LINUX__ -DBOOTSTRAP &
+cppflags = $(defines) -D__UNIX__ -D__LINUX__ -DBOOTSTRAP &
 $(cppflags_$(host_cpu)) -fno-asm -fno-common #-funsigned-char
 
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
@@ -118,7 +118,7 @@ clpp = g++
 preflags_386  = -D_M_IX86 -D__386__
 
 cflags_wng =
-preflags = $(defines) -DNDEBUG -D__UNIX__ -D__OSX__ -DBOOTSTRAP &
+preflags = $(defines) -D__UNIX__ -D__OSX__ -DBOOTSTRAP &
 $(preflags_$(host_cpu)) -fno-common #-funsigned-char
 cflags = $(extra_c_flags) $(preflags) -g -c $(cflags_wng) -O2 -o $@
 
@@ -146,13 +146,13 @@ cppflags_x64  = -m64 -D__X64__ -DLONG_IS_64BITS
 clflags_x64   = -m64 -DLONG_IS_64BITS
 
 cflags_wng =
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__SOLARIS__ -DBOOTSTRAP &
+cppflags = $(defines) -D__UNIX__ -D__SOLARIS__ -DBOOTSTRAP &
 $(cppflags_$(host_cpu))
 cflags_rel = -g -O2 # Warning: O3 and higher may produce buggy code!
 cflags_dbg = -g -O0
 
 !ifeq release 1
-cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_rel) -o $@
+cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_rel) -DNDEBUG -o $@
 !else
 cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_dbg) -o $@
 !endif
@@ -187,7 +187,7 @@ inc_dirs_lang_osi =
 # Warning flags: all enabled except the ones that have no use besides annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
-cppflags = $(defines) -DNDEBUG -D__UNIX__ -D__QNX__ -D__SMALL__ &
+cppflags = $(defines) -D__UNIX__ -D__QNX__ -D__SMALL__ &
 -DUNIX -D__FLAT__ $(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
 cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
 
@@ -208,7 +208,7 @@ librarian = lib
 libflags = -nologo -out:$^@
 
 cppflags_386 = -D_M_IX86=400 -D__386__ -D__NT__ -D_X86_
-cppflags = $(defines) -DNDEBUG -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
+cppflags = $(defines) -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
 
 cflags_rel = -Ox
 cflags_dbg = -Zi
