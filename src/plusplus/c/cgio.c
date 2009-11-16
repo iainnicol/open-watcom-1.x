@@ -697,6 +697,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
         ++ics;
     }
     padOutICBlock( ics );
+    PCHFlushBuffer();   /* Force PCH buffer to be aligned. */
     CgioBuffRdClose( h );
 }
 

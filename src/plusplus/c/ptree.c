@@ -1801,7 +1801,7 @@ static void savePTree( void *p, carve_walk_base *d )
     SYMBOL save_symbol;
     CGVALUE save_value;
     CPP_FLOAT *save_float;
-    unsigned fp_len;
+    unsigned long fp_len;
     PTREE save_subtree[2];
     auto char buff[128];
 
@@ -1925,7 +1925,7 @@ pch_status PCHReadPTrees( void )
     cv_index i;
     PTREE r;
     PTREE pch;
-    unsigned len;
+    size_t len;
     auto cvinit_t data;
     auto char buff[128];
 
@@ -1953,7 +1953,7 @@ pch_status PCHReadPTrees( void )
             r->u.int64_constant.u._32[1] = pch->u.int64_constant.u._32[1];
             break;
         case PT_FLOATING_CONSTANT:
-            len = (unsigned) pch->u.floating_constant;
+            len = (size_t) pch->u.floating_constant;
             PCHRead( buff, len );
             DbgAssert( len > 1 );
             r->u.floating_constant = makeFPRep( buff, len - 1 );

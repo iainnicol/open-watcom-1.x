@@ -1217,7 +1217,7 @@ pch_status PCHReadRewrites( void )
         r->list = CarveMapIndex( carveREWRITE_TOKENS, r->list );
         r->curr = CarveMapIndex( carveREWRITE_TOKENS, r->curr );
         r->srcfiles_refd = NULL;
-        r->token = ((uint_8 *) r->curr) + (unsigned) r->token;
+        r->token = ((uint_8 *) r->curr) + (unsigned long) r->token;
         for(;;) {
             PCHRead( &srcfile, sizeof( srcfile ) );
             srcfile = SrcFileMapIndex( srcfile );

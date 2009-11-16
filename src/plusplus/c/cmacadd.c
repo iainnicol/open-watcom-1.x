@@ -160,8 +160,8 @@ void MacroWriteBrinf            // WRITE MACROS TO BRINF
 
 pch_status PCHWriteMacros( void )
 {
-    unsigned i;
-    unsigned wlen;
+    pch_uint i;
+    pch_uint wlen;
     MEPTR curr;
     MEPTR next;
     SRCFILE save_defn_src_file;
@@ -210,8 +210,8 @@ static void findMaxLength( MEPTR curr, void *data )
 
 static void writeMacroCheck( MEPTR curr, void *data )
 {
-    unsigned *phash = data;
-    unsigned wlen;
+    pch_uint *phash = data;
+    pch_uint wlen;
     MEPTR next;
 
     next = curr->next_macro;
@@ -227,7 +227,7 @@ static void forAllMacrosDefinedBeforeFirstInclude( void (*rtn)( MEPTR, void * ),
 {
     size_t len;
     unsigned i;
-    unsigned hash;
+    pch_uint hash;
     MEPTR curr;
 
     for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
@@ -313,7 +313,7 @@ boolean PCHVerifyMacroCheck(    // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         rlen = PCHReadUInt();
         if( rlen == 0 ) break;
         PCHRead( pch_macro, rlen );
-        pch_hash = (unsigned) pch_macro->next_macro;
+        pch_hash = (pch_uint)pch_macro->next_macro;
         //printf( "pch mac: %s\n", pch_macro->macro_name );
         matched_macro = NULL;
         RingIterBeg( macroHashTable[pch_hash], new_macro ) {
@@ -406,8 +406,8 @@ pch_status PCHReadMacros( void )
     MEPTR prev;
     MEPTR pch_prev;
     MEPTR pch_curr;
-    unsigned mlen;
-    unsigned hash;
+    pch_uint mlen;
+    pch_uint hash;
     void *mac_dest;
     MACRO_SEG_LIST *old_seglist;
     MEPTR *old_hashtab;
@@ -421,7 +421,7 @@ pch_status PCHReadMacros( void )
         mac_dest = macroAllocateInSeg( mlen );
         PCHRead( mac_dest, mlen );
         curr = (MEPTR) mac_dest;
-        hash = (unsigned) curr->next_macro;
+        hash = (pch_uint)curr->next_macro;
         curr->next_macro = NULL;
         curr->defn.src_file = SrcFileMapIndex( curr->defn.src_file );
         RingAppend( &macroHashTable[ hash ], curr );

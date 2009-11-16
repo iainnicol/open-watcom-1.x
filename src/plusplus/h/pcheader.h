@@ -181,10 +181,12 @@ typedef enum {
     PCHA_NULL
 } pch_absorb;
 
+/* Unsigned integer type big enough to store a pointer */
+typedef unsigned long           pch_uint;
 
 // MACROS
 
-#define _pch_align_size( x )    (((x)+(sizeof(unsigned)-1))&~(sizeof(unsigned)-1))
+#define _pch_align_size( x )    (((x)+(sizeof(pch_uint)-1))&~(sizeof(pch_uint)-1))
 
 
 #define PCHReadLocSize( tgt, src, size )        \
@@ -262,10 +264,10 @@ extern void* PCHRead( void *, size_t );
 extern void* PCHReadUnaligned( void *, size_t );
 extern void* PCHReadLocate( void *p, size_t size );
 extern void* PCHReadLocateUnaligned( void *p, size_t size );
-extern unsigned PCHReadUInt( void );
-extern unsigned PCHReadUIntUnaligned( void );
+extern pch_uint PCHReadUInt( void );
+extern pch_uint PCHReadUIntUnaligned( void );
 extern void* PCHReadPtr( void );
-extern void PCHWriteUInt( unsigned );
+extern void PCHWriteUInt( pch_uint );
 extern void PCHRelocStart( pch_reloc_index );
 extern void PCHRelocStop( pch_reloc_index );
 extern void PCHPerformReloc( pch_reloc_index );

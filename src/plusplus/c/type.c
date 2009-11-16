@@ -8708,9 +8708,9 @@ static unsigned pchCountHashes(
 
 static void pchWriteArgLists( type_pch_walk *data )
 {
-    unsigned count;
-    unsigned i;
-    unsigned except_spec_count;
+    pch_uint count;
+    pch_uint i;
+    pch_uint except_spec_count;
     TYPE *head;
     TYPE curr;
     TYPE tmp_type;
@@ -8828,8 +8828,8 @@ static arg_list *argListMapIndex( type_pch_walk *d, arg_list *index )
     if( index < (arg_list *) PCH_FIRST_INDEX ) {
         return( NULL );
     }
-    DbgAssert( !( ((unsigned) index) >= d->count + PCH_FIRST_INDEX ) );
-    return d->translate[ ((unsigned) index) - PCH_FIRST_INDEX ];
+    DbgAssert( !( ((unsigned long) index) >= d->count + PCH_FIRST_INDEX ) );
+    return d->translate[ ((unsigned long) index) - PCH_FIRST_INDEX ];
 }
 
 static arg_list *argListGetIndex( type_pch_walk *d, arg_list *arg )
@@ -8941,7 +8941,7 @@ static void saveType( void *e, carve_walk_base *d )
         s->u.f.args = save_args;
         break;
     case TYP_TYPENAME:
-        PCHWrite( save_string, (unsigned int) s->u.n.name );
+        PCHWrite( save_string, (size_t) s->u.n.name );
         s->u.n.name = save_string;
         break;
     }
@@ -9170,7 +9170,7 @@ static void readTypeHashed( TYPE* vector )
 static void readTypes( type_pch_walk *type_data )
 {
     cv_index i;
-    unsigned int l;
+    size_t l;
     TYPE t;
     TYPE pch;
     auto cvinit_t data;
@@ -9216,7 +9216,7 @@ static void readTypes( type_pch_walk *type_data )
             t->u.f.pragma = PragmaMapIndex( pch->u.f.pragma_idx );
             break;
         case TYP_TYPENAME:
-            l = (unsigned int) pch->u.n.name;
+            l = (size_t) pch->u.n.name;
             t->u.n.name = CMemAlloc( l + 1 );
             PCHRead( t->u.n.name, l );
             t->u.n.name[l] = '\0';
@@ -9302,12 +9302,12 @@ pch_status PCHReadTypes( void )
     unsigned i;
     unsigned j;
     unsigned tci;
-    unsigned arglist_count;
-    unsigned except_spec_count;
+    pch_uint arglist_count;
+    pch_uint except_spec_count;
     arg_list **translate;
     arg_list *args;
     arg_list **set;
-    unsigned tmp_pragma;
+    pch_uint tmp_pragma;
     auto type_pch_walk type_data;
     auto arg_list tmp_arglist;
 
@@ -9358,7 +9358,7 @@ pch_status PCHReadTypes( void )
         for( j = 0; j < tmp_arglist.num_args; ++j ) {
             args->type_list[j] = TypeMapIndex( PCHReadPtr() );
         }
-        except_spec_count = (unsigned) tmp_arglist.except_spec;
+        except_spec_count = (pch_uint) tmp_arglist.except_spec;
         if( except_spec_count != 0 ) {
             args->except_spec = CPermAlloc( ( except_spec_count + 1 ) * sizeof( TYPE ) );
             for( j = 0; j < except_spec_count; ++j ) {

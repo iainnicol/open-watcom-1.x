@@ -265,14 +265,17 @@ static off_t cursorWriteFilePosition( void )
 
 static void alignPCH( unsigned i, boolean writing )
 {
-    unsigned skip;
-    unsigned dummy;
+    pch_uint skip;
+    pch_uint dummy;
 
     if( writing ) {
         skip = - cursorWriteFilePosition();
-        skip &= sizeof( unsigned ) - 1;
+        skip &= sizeof( pch_uint ) - 1;
         PCHWriteUInt( skip );
+#if 0
+        // This assertion prevents any alignment whatsoever... not what we want!
         DbgAssert( skip == 0 );
+#endif
         if( skip != 0 ) {
             PCHWrite( &dummy, skip );
         }
@@ -284,10 +287,10 @@ static void alignPCH( unsigned i, boolean writing )
     }
 #ifndef NDEBUG
     if( writing ) {
-        unsigned w = -i;
+        pch_uint w = -i;
         PCHWriteUInt( w );
     } else {
-        unsigned r;
+        pch_uint r;
         r = PCHReadUInt();
         if( r != -i ) {
             printf( "index = %u\n", i );
@@ -415,7 +418,7 @@ void PCHWrite( void const *p, size_t size )
         amountLeft = 0;
         PCHFlushBuffer();
 #endif
-        DbgAssert(( aligned_size % sizeof( unsigned ) ) == 0 );
+        DbgAssert(( aligned_size % sizeof( pch_uint ) ) == 0 );
     }
 }
 
@@ -445,16 +448,16 @@ void PCHWriteUnaligned( void const *p, size_t size )
     }
 }
 
-void PCHWriteUInt( unsigned v )
+void PCHWriteUInt( pch_uint v )
 /*****************************/
 {
-    unsigned write_value;
+    pch_uint write_value;
 
-    if( sizeof( unsigned ) <= amountLeft ) {
-        DbgAssert((( (unsigned) bufferCursor ) & (sizeof(unsigned)-1)) == 0 );
-        *((unsigned*)bufferCursor) = v;
-        bufferCursor += sizeof( unsigned );
-        amountLeft -= sizeof( unsigned );
+    if( sizeof( pch_uint ) <= amountLeft ) {
+        DbgAssert((( (pch_uint)bufferCursor ) & (sizeof(pch_uint)-1)) == 0 );
+        *((pch_uint *)bufferCursor) = v;
+        bufferCursor += sizeof( pch_uint );
+        amountLeft -= sizeof( pch_uint );
         return;
     }
     write_value = v;
@@ -499,6 +502,7 @@ void PCHeaderCreate( char *include_file )
     bufferPosition = 0;
     ioBuffer = CMemAlloc( IO_BUFFER_SIZE );
     bufferCursor = ioBuffer;
+    DbgAssert((( (pch_uint)bufferCursor ) & (sizeof(pch_uint)-1)) == 0 );
     amountLeft = IO_BUFFER_SIZE;
     abortData = &restore_state;
     status = setjmp( restore_state );
@@ -762,9 +766,9 @@ static boolean stalePCH( char *include_file )
     return( FALSE );
 }
 
-static unsigned readBuffer( unsigned left_check )
+static size_t readBuffer( size_t left_check )
 {
-    unsigned left;
+    size_t left;
 
     left = read( pchFile, ioBuffer, IO_BUFFER_SIZE );
     if( left == -1 || left == left_check ) {
@@ -773,9 +777,9 @@ static unsigned readBuffer( unsigned left_check )
     return left;
 }
 
-static unsigned initialRead( void )
+static size_t initialRead( void )
 {
-    unsigned left;
+    size_t left;
 
     DbgAssert( pch_buff_eob == pch_buff_cur );
     left = readBuffer( -1 );
@@ -875,7 +879,7 @@ void* PCHRead( void *p, size_t size )
 /***********************************/
 {
     size_t aligned_size;
-    unsigned left;
+    size_t left;
     char *buff_ptr;
     void *retn;
 
@@ -896,14 +900,14 @@ void* PCHRead( void *p, size_t size )
         aligned_size -= left;
         left = readBuffer( 0 );
         buff_ptr = ioBuffer;
-        DbgAssert(( aligned_size % sizeof( unsigned ) ) == 0 );
+        DbgAssert(( aligned_size % sizeof( pch_uint ) ) == 0 );
     }
 }
 
 void* PCHReadUnaligned( void *p, size_t size )
 /********************************************/
 {
-    unsigned left;
+    size_t left;
     char *buff_ptr;
     void *retn;
 
@@ -959,18 +963,18 @@ void* PCHReadLocateUnaligned( void *p, size_t size )
     return PCHReadUnaligned( p, size );
 }
 
-static unsigned doReadUnsigned( void )
+static pch_uint doReadUnsigned( void )
 {
-    unsigned read_value;
+    pch_uint read_value;
     PCHRead( &read_value, sizeof( read_value ) );
     return( read_value );
 }
 
-unsigned PCHReadUInt( void )
+pch_uint PCHReadUInt( void )
 /**************************/
 {
-    unsigned value;
-    unsigned* p_value;
+    pch_uint value;
+    pch_uint *p_value;
     void* buff_ptr;
     void* end;
 
@@ -978,8 +982,8 @@ unsigned PCHReadUInt( void )
     buff_ptr = pch_buff_cur;
     end = (char*)buff_ptr + sizeof( value );
     if( end <= (void *)pch_buff_eob ) {
-        DbgAssert((((unsigned) buff_ptr ) % sizeof( unsigned ) ) == 0 );
-        p_value = (unsigned*)buff_ptr;
+        DbgAssert((((pch_uint)buff_ptr ) % sizeof( pch_uint ) ) == 0 );
+        p_value = (pch_uint *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
         return value;
@@ -987,11 +991,11 @@ unsigned PCHReadUInt( void )
     return doReadUnsigned();
 }
 
-unsigned PCHReadUIntUnaligned( void )
+pch_uint PCHReadUIntUnaligned( void )
 /***********************************/
 {
-    unsigned value;
-    unsigned* p_value;
+    pch_uint value;
+    pch_uint *p_value;
     void* buff_ptr;
     void* end;
 
@@ -999,7 +1003,7 @@ unsigned PCHReadUIntUnaligned( void )
     buff_ptr = pch_buff_cur;
     end = (char*)buff_ptr + sizeof( value );
     if( end <= (void *)pch_buff_eob ) {
-        p_value = (unsigned*)buff_ptr;
+        p_value = (pch_uint *)buff_ptr;
         pch_buff_cur = end;
         value = *p_value;
         return value;
@@ -1052,7 +1056,7 @@ pch_status PCHReadVerify( void )
 pch_status PCHWriteVerify( void )
 /*******************************/
 {
-    PCHWriteUInt( (unsigned) NameGetIndex( pchDebugInfoName ) );
+    PCHWriteUInt( (pch_uint) NameGetIndex( pchDebugInfoName ) );
     PCHWrite( "WATCOM-PCH", 10 );
     return( PCHCB_OK );
 }
