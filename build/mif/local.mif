@@ -214,7 +214,7 @@ cflags_rel = -Ox
 cflags_dbg = -Zi
 
 !ifeq release 1
-cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_rel) -Fo$@
+cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_rel) -DNDEBUG -Fo$@
 !else
 cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_dbg) -Fo$@
 !endif
