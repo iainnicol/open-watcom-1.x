@@ -55,7 +55,7 @@ cpp_386         += $(bld_incs)
 # platforms/compilers
 
 !ifdef __UNIX__
-#common UNIXy stuff
+#common UNIXy stuff - assumes a more or less POSIX compatible cc implementation
 host_cl = cc
 host_cl_opts = $(clflags_$(host_cpu)) -D__UNIX__ -I$(watcom_dir)/h $(inc_dirs) -o $^@ 
 host_cl_objs = clibext.obj
@@ -91,13 +91,12 @@ cppflags_mips = -D__MIPS__ -Umips
 inc_dirs_lang_linux =
 inc_dirs_lang_osi =
 
-# Warning flags: all enabled except the ones that have no use besides annoy people
+# Warning flags: all enabled except the ones that only annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
-cppflags = $(defines) -D__UNIX__ -D__LINUX__ -DBOOTSTRAP &
-$(cppflags_$(host_cpu)) -fno-asm -fno-common #-funsigned-char
+cppflags = -D__LINUX__ -DBOOTSTRAP
 
-cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
+cflags_comp = -fno-asm -fno-common -pipe
 
 # Flags for building shared libs
 cflags_shared  = -fPIC
@@ -115,15 +114,17 @@ cpp = cc
 cl = $(cc)
 clpp = g++
 
-preflags_386  = -D_M_IX86 -D__386__
+cppflags_386  = -D_M_IX86 -D__386__
 
 cflags_wng =
-preflags = $(defines) -D__UNIX__ -D__OSX__ -DBOOTSTRAP &
-$(preflags_$(host_cpu)) -fno-common #-funsigned-char
-cflags = $(extra_c_flags) $(preflags) -g -c $(cflags_wng) -O2 -o $@
+cppflags = -D__OSX__ -DBOOTSTRAP
+cflags_comp = -fno-common
+
+cflags_dbg = -g
+cflags_rel = -g -O2
 
 # Flags for building shared libs; -fPIC is on by default, and the linking
-# flag on Darwin is different than everyone else's...
+# flag on Darwin is different from everyone else's...
 clflags_shared = -dynamiclib
 
 !endif
@@ -146,16 +147,10 @@ cppflags_x64  = -m64 -D__X64__ -DLONG_IS_64BITS
 clflags_x64   = -m64 -DLONG_IS_64BITS
 
 cflags_wng =
-cppflags = $(defines) -D__UNIX__ -D__SOLARIS__ -DBOOTSTRAP &
-$(cppflags_$(host_cpu))
+cppflags = -D__SOLARIS__ -DBOOTSTRAP
+
 cflags_rel = -g -O2 # Warning: O3 and higher may produce buggy code!
 cflags_dbg = -g -O0
-
-!ifeq release 1
-cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_rel) -DNDEBUG -o $@
-!else
-cflags = -c $(extra_c_flags) $(cppflags) $(cflags_wng) $(cflags_dbg) -o $@
-!endif
 
 # Flags for building shared libs
 cflags_shared  = -fPIC
@@ -184,12 +179,32 @@ cppflags_mips = -D__MIPS__ -Umips
 inc_dirs_lang_nto =
 inc_dirs_lang_osi =
 
-# Warning flags: all enabled except the ones that have no use besides annoy people
+# Warning flags: all enabled except the ones that only annoy people
 cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
 
-cppflags = $(defines) -D__UNIX__ -D__QNX__ -D__SMALL__ &
--DUNIX -D__FLAT__ $(cppflags_$(host_cpu)) -funsigned-char -fno-asm -fno-common
-cflags = $(extra_c_flags) $(cppflags) -g -c $(cflags_wng) -pipe -O -o $@
+cppflags = -D__QNX__
+
+cflags_comp = -funsigned-char -fno-asm -fno-common -pipe
+
+cflags_rel = -g -O
+cflags_dbg = -g
+
+!endif
+!endif
+
+!ifdef __UNIX__
+!ifdef bootstrap
+
+# Final common UNIX bootstrap setup
+
+cflgs1= -c $(extra_c_flags) $(cppflags_$(host_cpu))
+cflgs2 = -D__UNIX__ $(defines) $(cppflags) $(cflags_wng) $(cflags_comp)
+
+!ifeq release 1
+cflags = $(cflgs1) $(cflgs2) -DNDEBUG $(cflags_rel) -o $@
+!else
+cflags = $(cflgs1) $(cflgs2) $(cflags_dbg) -o $@
+!endif
 
 !endif
 !endif
@@ -208,13 +223,13 @@ librarian = lib
 libflags = -nologo -out:$^@
 
 cppflags_386 = -D_M_IX86=400 -D__386__ -D__NT__ -D_X86_
-cppflags = $(defines) -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
+cppflags = -D__FLAT__ -DBOOTSTRAP $(cppflags_$(host_cpu))
 
-cflags_rel = -Ox
+cflags_rel = -Ox -DNDEBUG
 cflags_dbg = -Zi
 
 !ifeq release 1
-cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_rel) -DNDEBUG -Fo$@
+cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_rel) -Fo$@
 !else
 cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_dbg) -Fo$@
 !endif
