@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  draw various character graphics
+* Description:  Draw various character graphics.
 *
 ****************************************************************************/
 
@@ -142,7 +142,7 @@ extern gui_window *GUICurrWnd;
 
 void GUIInitDrawingChars( bool dbcs )
 {
-#ifdef __LINUX__
+#ifdef __UNIX__
     #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
     #include "guidraw.h"
     #undef draw_pick
