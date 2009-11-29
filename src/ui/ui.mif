@@ -106,8 +106,11 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
         %append sample.lnk import RESURRECTION GDI.122
         wlink @sample.lnk
 !else
-sample.exe : sample.obj sampdial.obj $(name).lib
-        $(linker) $(lflags) op q,m,st=32k library $(name).lib n sample f sample, sampdial
+!ifdef bootstrap
+ncurses_lib = $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+!endif
+sample.exe : sample.obj sampdial.obj $(name).lib $(ncurses_lib)
+        $(cl) $(clflags) $<
 !endif
 
 make: .SYMBOLIC

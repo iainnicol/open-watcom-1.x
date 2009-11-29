@@ -38,7 +38,9 @@
 
 #ifdef TRMEM
 #include "trmem.h"
+#ifdef __WATCOMC__
 #include <malloc.h>
+#endif
 
 _trmem_hdl  UIMemHandle;
 static int  UIMemFileHandle;   /* stream to put output on */
@@ -48,7 +50,7 @@ static int  UIMemOpened = 0;
 
 #endif
 
-#ifdef NLM
+#if !defined( __WATCOMC__ ) || defined( NLM )
 /* There is no equivalent expand function in NetWare. */
 #define _expand NULL
 #endif
@@ -81,7 +83,7 @@ extern void UIMemOpen( void )
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            UIMemFileHandle = open( tmpdir, O_RDWR+O_CREAT+O_TRUNC+O_BINARY, S_IWUSR+S_IRUSR );
+            UIMemFileHandle = open( tmpdir, O_RDWR+O_CREAT+O_TRUNC, S_IWUSR+S_IRUSR );
         }
         UIMemOpened = 1;
     }

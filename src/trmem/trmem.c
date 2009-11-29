@@ -151,6 +151,7 @@ static size_t getSize( entry_ptr p )
 }
 #pragma warning 579 4;  // reenable pointer truncated warning.
 
+#ifdef __WATCOMC__
 static char *stpcpy( char *dest, const char *src )
 {
     *dest = *src;
@@ -161,6 +162,7 @@ static char *stpcpy( char *dest, const char *src )
     }
     return( dest );
 }
+#endif
 
 static char *formHex( char *ptr, uint_32 data, uint size )
 {
