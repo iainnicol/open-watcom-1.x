@@ -8,6 +8,10 @@ proj_name = mad
 mad_autodepends = .autodepend
 !endif
 
+!include cproj.mif
+!include deftarg.mif
+!include defrule.mif
+
 fpu_flags_dos_i86   = -fpc
 fpu_flags_dos_386   = -fpc
 fpu_flags_os2_i86   = -fpc
@@ -28,7 +32,7 @@ ext_nt_386    = .dll
 ext_nt_axp    = .dll
 
 !ifdef bootstrap
-lib_name = $(name).so
+lib_name = $(name)$(shrlib_ext)
 !else
 lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
 !endif
@@ -36,10 +40,6 @@ lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
 all: $(lib_name) .SYMBOLIC
 
 additional_cleanup = *.d32 *.mad
-
-!include cproj.mif
-!include deftarg.mif
-!include defrule.mif
 
 !include $(disasm_dir)/mif/dis.mif
 
@@ -69,7 +69,7 @@ lflags_nt_axp   = sys ntaxp_dll op dosseg
 extra_l_flags  = op map
 
 extra_l_flags_os2  = export MADLOAD op modname=$(name)
-extra_l_flags_nt   = export MADLOAD op modname=$(name)
+extra_l_flags_nt   = op modname=$(name)
 extra_l_flags_win  = op modname=$(name)
 
 !ifndef bootstrap

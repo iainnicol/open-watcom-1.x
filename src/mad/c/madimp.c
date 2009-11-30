@@ -120,7 +120,7 @@ mad_imp_routines        MadImpInterface = {
 #if defined( __386__ )
 
 #if defined( __WATCOMC__ )
-#pragma aux MADLOAD "*"
+#pragma aux MADLOAD "*" export
 
 /* WD looks for this symbol to determine module bitness */
 int __nullarea;

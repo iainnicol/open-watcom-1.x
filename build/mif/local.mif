@@ -69,6 +69,8 @@ libflags = crs $^@
 # options for linking via cc
 clflags = $(clflags_$(host_cpu)) -o $@
 cl_objs = clibext.obj
+
+shrlib_ext     = .so
 !endif
 
 !endif
@@ -241,6 +243,11 @@ cl_objs = clibext.obj
 
 host_cl = cl
 host_cl_opts = -nologo -I"$(watcom_dir)/h" $(inc_dirs) -Fe$^@
+
+# Flags for building DLLs
+cflags_shared  =
+clflags_shared = -LD
+shrlib_ext     = .dll
 
 !endif
 !endif

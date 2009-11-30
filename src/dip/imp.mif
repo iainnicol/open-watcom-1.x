@@ -28,13 +28,13 @@ sys_nt_386_watcom       = op offset=0x6ee00000
 sys_nt_386_dwarf        = op offset=0x6ef00000
 
 sys_os2_i86     = os2 dll export DIPLOAD
-sys_os2_386     = os2v2 dll export DIPLOAD
+sys_os2_386     = os2v2 dll
 sys_qnx_i86     = qnx disable 1023
 sys_qnx_386     = pharlap rex disable 1023,1014
 sys_linux_386   = pharlap rex disable 1023,1014
 sys_win_i86     = windows op modname=$(name),rwr
 sys_dos_386     = pharlap rex disable 1023,1014
-sys_nt_386      = nt_dll export DIPLOAD op modname=$(name) $(sys_nt_386_$(name))
+sys_nt_386      = nt_dll op modname=$(name) $(sys_nt_386_$(name))
 sys_nt_axp      = ntaxp_dll export DIPLOAD op modname=$(name)
 
 ext_os2_i86     = .dll
@@ -48,7 +48,7 @@ ext_nt_386      = .dll
 ext_nt_axp      = .dll
 
 !ifdef bootstrap
-lib_name = $(name).so
+lib_name = $(name)$(shrlib_ext)
 !else
 lib_name = $(name)$(ext_$(host_os)_$(host_cpu))
 !endif
@@ -68,7 +68,7 @@ clib_dos_386    = clib3r
 clib_nt_386     = clib3r
 clib_nt_axp     = clib
 
-extra_c_flags   = -s -D__DIP__ $(extra_cflags) $(cflags_shared)
+extra_c_flags   = -D__DIP__ $(extra_cflags) $(cflags_shared)
 !ifndef bootstrap
 extra_c_flags += -s
 extra_c_flags_i86 = -zc -zu

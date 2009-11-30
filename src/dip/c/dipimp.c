@@ -124,7 +124,7 @@ dip_imp_routines        ImpInterface = {
 #if defined( __386__ )
 
 #if defined( __WATCOMC__ )
-#pragma aux DIPLOAD "*"
+#pragma aux DIPLOAD "*" export
 #endif
 
 #elif defined( __WINDOWS__ )
