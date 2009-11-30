@@ -84,6 +84,7 @@ void GUImain( void )
     */
     setegid( getgid() );
     seteuid( getuid() );
+    memset( &sa, 0, sizeof( sa ) );
     sa.sa_flags = SA_RESTART;
     sa.sa_handler = BrkHandler;
     sigaction( SIGINT, &sa, NULL );
