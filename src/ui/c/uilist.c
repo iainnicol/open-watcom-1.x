@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Event list management.
 *
 ****************************************************************************/
 
@@ -99,9 +98,13 @@ bool global uiinlist( EVENT ev )
     register    int                     index;
     register    bool                    found;
 
-    // EV_KILL_UI is implicitly pushed as part of every list
+    /* EV_KILL_UI is implicitly pushed as part of every list */
     if( ev == EV_KILL_UI ) {
         return( TRUE );
+    }
+    /* Check for empty event list */
+    if( UIData->events == NULL ) {
+        return( FALSE );
     }
     found = FALSE;
     for( index = UIData->events->num_lists-1; index >= 0; --index ) {
