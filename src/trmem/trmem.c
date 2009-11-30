@@ -501,9 +501,10 @@ static int isValidChunk( entry_ptr tr, const char *rtn,
 
     size = getSize( tr );
     mem = tr->mem;
+#if 0
+    /* This code can only possibly work with the Watcom clib! */
     blk_size = *(size_t*)_PtrSub( mem, sizeof( size_t ) );
 #ifndef __NETWARE__
-#if 0
     if(( blk_size & 1 ) == 0 ) {
         trPrt( hdl, MSG_UNDERRUN_ALLOCATION, rtn, who, mem, tr->who, size );
         return( 0 );
@@ -514,6 +515,8 @@ static int isValidChunk( entry_ptr tr, const char *rtn,
         return( 0 );
     }
 #endif
+#else
+    blk_size = 0;
 #endif
     if( *(unsigned char *)_PtrAdd( mem, size ) != ALLOC_BYTE ) {
         trPrt( hdl, MSG_OVERRUN_ALLOCATION, rtn, who, mem, tr->who, size );
