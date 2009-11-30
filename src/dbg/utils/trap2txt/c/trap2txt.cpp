@@ -202,6 +202,19 @@ extern int SSD_Threads( int , unsigned char * , unsigned short );
 extern int SSD_Overlays( int, unsigned char * , unsigned short );
 extern int SSD_Capabilities( int, unsigned char * , unsigned short );
 
+static char *mad_desc[] = {
+    "Unknown",
+#define pick_mad(enum,file,desc) desc,
+#include "madarch.h"
+#undef pick_mad
+};
+
+static char *mad_os_desc[] = {
+#define pick_mad(enum,desc) desc,
+#include "mados.h"
+#undef pick_mad
+};
+
 SVC_DECODE * get_supp_service_decoder( const char * service_name )
 {
     if( 0 == stricmp( service_name, "Files" ) )
@@ -563,9 +576,17 @@ int handle_REQ_GET_SYS_CONFIG_REPLY( unsigned char * pkt, unsigned short )
     printf( "    FPU:        %u\n", pr->fpu );
     printf( "    OS Major:   %u\n", pr->osmajor );
     printf( "    OS Minor:   %u\n", pr->osminor );
-    printf( "    OS:         %u\n", pr->os );
+    if( pr->os < MAD_OS_MAX ) {
+        printf( "    OS:         %s\n", mad_os_desc[pr->os] );
+    } else {
+        printf( "    OS:         %u\n", pr->os );
+    }
     printf( "    Huge Shift: %u\n", pr->huge_shift );
-    printf( "    MAD:        0x%.04x\n", pr->mad );
+    if( pr->mad < MAD_MAX ) {
+        printf( "    MAD:        %s\n", mad_desc[pr->mad] );
+    } else {
+        printf( "    MAD:        0x%.04x\n", pr->mad );
+    }
 
     /* Set so we can decode registers */
     read_mad_handle = pr->mad;
@@ -847,13 +868,24 @@ int handle_REQ_PROG_STEP_REPLY( unsigned char * pkt, unsigned short )
     return 1;
 }
 
-int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short )
+int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short len )
 {
-    prog_load_req * prq = ( prog_load_req * ) pkt;
-    char * prog = ( char * ) &prq[1];
+    prog_load_req   *prq = (prog_load_req *)pkt;
+    char            *p = (char *)pkt;
+    unsigned        idx;
     
     printf( "Debugger request: REQ_PROG_LOAD\n" );
-    printf( "    Program:    %s\n", prog );
+    idx = sizeof( prog_load_req );
+    printf( "    Program:    %s\n", p + idx );
+    idx += strlen( p + idx ) + 1;
+    if( idx < len ) {
+        printf( "    Args:       %s\n", p + idx );
+        idx += strlen( p + idx ) + 1;
+        while( idx < len ) {
+            printf( "                %s\n", p + idx );
+            idx += strlen( p + idx ) + 1;
+        }
+    }
     printf( "    True argv:  %u\n", prq->true_argv );
     
     return 1;
@@ -993,9 +1025,17 @@ int handle_REQ_GET_NEXT_ALIAS_REPLY( unsigned char * pkt, unsigned short )
     get_next_alias_ret * pr = ( get_next_alias_ret * ) pkt;
     
     printf( "Trap reply: REQ_GET_NEXT_ALIAS\n" );
-    printf( "    Segment:    %.04x\n", pr->seg );
-    printf( "    Alias:      %.04x\n", pr->alias );
-    
+    if( pr->seg ) {
+        printf( "    Segment:    %.04x\n", pr->seg );
+        if( pr->alias ) {
+            printf( "    Alias:      %.04x\n", pr->alias );
+        } else {
+            printf( "    *** DELETED ***\n" );
+        }
+    } else {
+        printf( "    *** END OF LIST ***\n" );
+    }
+
     return 1;
 }
 
@@ -1058,12 +1098,16 @@ int handle_REQ_GET_LIB_NAME_REPLY( unsigned char * pkt, unsigned short )
     char * name = ( char * ) &pr[1];
     
     printf( "Trap reply: REQ_GET_LIB_NAME\n" );
-    if( pr->handle && *name ) {
+    if( pr->handle ) {
         printf( "    MAD Handle: %u\n", pr->handle );
-        printf( "    Name:       %s\n", name );
-    }
-    else
+        if( *name ) {
+            printf( "    Name:       %s\n", name );
+        } else {
+            printf( "    *** DELETED ***\n" );
+        }
+    } else {
         printf( "    *** END OF LIST ***\n" );
+    }
     
     return 1;
 }
