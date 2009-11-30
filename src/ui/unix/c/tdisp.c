@@ -817,16 +817,19 @@ static EVENT td_sizeevent( void )
 {
     SAREA           area;
 
-    if (!SizePending) return (EV_NO_EVENT);
-    if (!uiinlist(EV_BACKGROUND_RESIZE)) return (EV_NO_EVENT);
-    if (!setupscrnbuff(0,0)) return (EV_NO_EVENT);
+    if( !SizePending )
+        return( EV_NO_EVENT );
+    if( !uiinlist( EV_BACKGROUND_RESIZE ) )
+        return( EV_NO_EVENT );
+    if( !setupscrnbuff( 0, 0 ) )
+        return( EV_NO_EVENT );
     SizePending = 0;
     area.row = 0;
     area.col = 0;
     area.height = UIData->height;
-    area.width = UIData->width;
-    uidirty(area);
-    return (EV_BACKGROUND_RESIZE);
+    area.width  = UIData->width;
+    uidirty( area );
+    return( EV_BACKGROUND_RESIZE );
 }
 
 static bool intern ti_initconsole( void )
@@ -913,8 +916,8 @@ static int new_attr(int nattr, int oattr)
         nval.attr = nattr;
         oval.attr = oattr;
 
-        if (oattr == -1) {
-                oval.attr = ~nval.attr;
+        if( oattr == -1 ) {
+            oval.attr = ~nval.attr;
         }
         if( _attr_bold(nval.bits) != _attr_bold(oval.bits) ||
             _attr_blink(nval.bits) != _attr_blink(oval.bits) ){
@@ -1024,7 +1027,7 @@ static struct {
 
 static int td_update(SAREA *area)
 {
-    if (!area) {
+    if( !area ) {
         UIDebugPrintf0( "td_update: no arg" );
         dirty.row0 = 0;
         dirty.col0 = 0;
@@ -1034,26 +1037,26 @@ static int td_update(SAREA *area)
     }
     UIDebugPrintf4( "td_update(%d,%d,%d,%d)", area->row, area->col, area->height,
                                         area->width );
-    if (area->row < dirty.row0) {
+    if( area->row < dirty.row0 ) {
         dirty.row0 = area->row;
     }
-    if (area->col < dirty.col0) {
+    if( area->col < dirty.col0 ) {
         dirty.col0 = area->col;
     }
-    if (area->row + area->height > dirty.row1) {
+    if( area->row + area->height > dirty.row1 ) {
         dirty.row1 = area->row + area->height;
     }
-    if (area->col + area->width > dirty.col1) {
+    if( area->col + area->width > dirty.col1 ) {
         dirty.col1 = area->col + area->width;
     }
-    return 0;
+    return( 0 );
 }
 
 static int ti_hwcursor( void )
 /****************************/
 {
     // Set cursor to correct visibility
-    switch( UIData->cursor_type ){
+    switch( UIData->cursor_type ) {
     case C_OFF:
         TI_CURSOR_OFF();
         break;
@@ -1065,7 +1068,7 @@ static int ti_hwcursor( void )
         break;
     }
 
-    if( UIData->cursor_type==C_OFF ){
+    if( UIData->cursor_type == C_OFF ) {
         // Since some terminals can't hide the cursor we'll also
         // move the cursor into an inconspicuous(sp?) location
         TI_CURSOR_MOVE( 0, UIData->height-1 );
@@ -1074,7 +1077,7 @@ static int ti_hwcursor( void )
     }
 
     __flush();
-    return 0;
+    return( 0 );
 }
 
 // The following macros are used to take advantage of the repeat_chars
@@ -1099,7 +1102,7 @@ void update_shadow(void)
     bufp= UIData->screen.origin;
     sbufp= shadow;
 
-    for(;dirty.row0<dirty.row1;dirty.row0++){
+    for( ; dirty.row0<dirty.row1; dirty.row0++ ) {
         memcpy( sbufp+incr*dirty.row0+dirty.col0,
                 bufp+incr*dirty.row0+dirty.col0,
                 (dirty.col1-dirty.col0)*sizeof(PIXEL) );
@@ -1139,7 +1142,7 @@ static int ti_refresh( int must )
     UserForcedTermRefresh= FALSE;
 
     // Move the cursor & return if dirty box contains no chars
-    if( dirty.row0==dirty.row1 && dirty.col0==dirty.col1 ){
+    if( dirty.row0==dirty.row1 && dirty.col0==dirty.col1 ) {
         ti_hwcursor();
         __flush();
         return 0;
@@ -1149,7 +1152,7 @@ static int ti_refresh( int must )
                                     dirty.col0, dirty.row1, dirty.col1 );
 
     // Disable cursor during draw if we can
-    if( UIData->cursor_type!=C_OFF ){
+    if( UIData->cursor_type != C_OFF ) {
         TI_CURSOR_OFF();
     }
 
@@ -1173,121 +1176,121 @@ static int ti_refresh( int must )
     } else {
         lastattr= -1;
 
-        if( !must ){
-            int         r,c;
+        if( !must ) {
+            int         r, c;
             int         pos;
-            bool        diff=FALSE;
+            bool        diff = FALSE;
 
-            while( dirty.col0<dirty.col1 ){
-                for(r=dirty.row0;r<dirty.row1;r++){
+            while( dirty.col0 < dirty.col1 ){
+                for( r = dirty.row0; r < dirty.row1; r++ ) {
                     pos= r*incr+dirty.col0;
-                    if( bufp[pos].ch!=sbufp[pos].ch
-                        || bufp[pos].attr!=sbufp[pos].attr ){
-                        diff= TRUE;
+                    if( bufp[pos].ch != sbufp[pos].ch
+                        || bufp[pos].attr != sbufp[pos].attr ) {
+                        diff = TRUE;
                         break;
                     }
                 }
-                if(diff) break;
+                if( diff ) break;
                 dirty.col0++;
             }
 
-            diff= FALSE;
-            while( dirty.col0<dirty.col1 ){
-                for(r=dirty.row0;r<dirty.row1;r++){
+            diff = FALSE;
+            while( dirty.col0 < dirty.col1 ) {
+                for( r = dirty.row0; r < dirty.row1; r++ ) {
                     pos= r*incr+dirty.col1-1;
-                    if( bufp[pos].ch!=sbufp[pos] .ch
-                        || bufp[pos].attr!=sbufp[pos].attr ){
-                        diff= TRUE;
+                    if( bufp[pos].ch != sbufp[pos] .ch
+                        || bufp[pos].attr != sbufp[pos].attr ) {
+                        diff = TRUE;
                         break;
                     }
                 }
-                if(diff) break;
+                if( diff ) break;
                 dirty.col1--;
             }
 
             diff= FALSE;
-            while( dirty.row0<dirty.row1 ){
-                for(c=dirty.col0;c<dirty.col1;c++){
+            while( dirty.row0 < dirty.row1 ) {
+                for( c = dirty.col0; c < dirty.col1; c++ ) {
                     pos= dirty.row0*incr+c;
-                    if( bufp[pos].ch!=sbufp[pos] .ch
-                        || bufp[pos].attr!=sbufp[pos].attr ){
-                        diff= TRUE;
+                    if( bufp[pos].ch != sbufp[pos].ch
+                        || bufp[pos].attr != sbufp[pos].attr ) {
+                        diff = TRUE;
                         break;
                     }
                 }
-                if(diff) break;
+                if( diff ) break;
                 dirty.row0++;
             }
 
-            diff= FALSE;
-            while( dirty.row0<dirty.row1 ){
-                for(c=dirty.col0;c<dirty.col1;c++){
+            diff = FALSE;
+            while( dirty.row0 < dirty.row1 ) {
+                for( c = dirty.col0; c < dirty.col1; c++ ) {
                     pos= (dirty.row1-1)*incr+c;
-                    if( bufp[pos].ch!=sbufp[pos] .ch
-                        || bufp[pos].attr!=sbufp[pos].attr ){
-                        diff= TRUE;
+                    if( bufp[pos].ch != sbufp[pos] .ch
+                        || bufp[pos].attr != sbufp[pos].attr ) {
+                        diff = TRUE;
                         break;
                     }
                 }
-                if(diff) break;
+                if( diff ) break;
                 dirty.row1--;
             }
         }
 
-        if( OptimizeTerminfo ){
+        if( OptimizeTerminfo ) {
             // Set cls if drawing box is bottom part (or whole) of screen
-            if( dirty.col0==0 &&
-                dirty.row1==UIData->height &&
-                dirty.col1==UIData->width &&
-                TCAP_CLS ){
+            if( dirty.col0 == 0 &&
+                dirty.row1 == UIData->height &&
+                dirty.col1 == UIData->width &&
+                TCAP_CLS ) {
 
-                if( _capable_of( clr_eos ) ){
-                    cls= dirty.row0;
-                } else if( dirty.row0==0 ){
-                    cls= 0;
+                if( _capable_of( clr_eos ) ) {
+                    cls = dirty.row0;
+                } else if( dirty.row0 == 0 ) {
+                    cls = 0;
                 }
             }
 
-            if( !must ){
+            if( !must ) {
                 // Adjust cls so refresh looks pretty
-                for(; cls<dirty.row1; cls++){
+                for( ; cls < dirty.row1; cls++ ) {
                     int         pos;
                     int         pos2;
 
                     pos= cls*incr;
                     pos2= pos+UIData->width-1;
-                    if( (bufp[pos].ch!=sbufp[pos].ch||
-                        bufp[pos].attr!=sbufp[pos].attr)&&
-                        (bufp[pos].ch!=sbufp[pos2].ch||
-                        bufp[pos].attr==sbufp[pos2].attr) ){
+                    if( (bufp[pos].ch != sbufp[pos].ch ||
+                        bufp[pos].attr != sbufp[pos].attr) &&
+                        (bufp[pos].ch != sbufp[pos2].ch ||
+                        bufp[pos].attr == sbufp[pos2].attr) ) {
                         break;
                     }
                 }
             }
             /*
-            if( cls<dirty.row1 ){
+            if( cls < dirty.row1 ) {
                 // If cls is set to by this point we've decided to clear the area
-                blankStart= bufEnd;
+                blankStart = bufEnd;
             }
             */
         }
     }
 
-    if( cls==0
+    if( cls == 0
         || (TI_FillColourSet && blankStart<bufp && TCAP_CLS) ) {
         // Clear the screen if cls is set to 0 or if the screen
         // is supposed to be blank
-        if(cls==0){
+        if( cls == 0 ) {
             TI_RESTORE_COLOUR();
         }
         TI_CLS();
     } else {
         // we still have work to do if it turned out we couldn't use the
         // blank start after all
-        done= FALSE;
+        done = FALSE;
     }
 
-    if( !done ){
+    if( !done ) {
         // If the screen isn't completely blank we have to do some work
         int             j;
         bool            ca_valid;       // is cursor address valid?
@@ -1297,14 +1300,14 @@ static int ti_refresh( int must )
         int             ralt = 0;       // if repeated character is in acs
         int             rcol = 0;       // starting column of repeated chars
 
-        bufp+= dirty.row0 * incr;
-        sbufp+= dirty.row0 * incr;
+        bufp  += dirty.row0 * incr;
+        sbufp += dirty.row0 * incr;
 
-        for( i= dirty.row0; i<dirty.row1; i++ ){
-            ca_valid= FALSE;
-            rcount= 0;
+        for( i = dirty.row0; i < dirty.row1; i++ ) {
+            ca_valid = FALSE;
+            rcount = 0;
 
-            if( i==cls ){
+            if( i == cls ) {
                 TI_RESTORE_COLOUR();
                 TI_CURSOR_MOVE( 0, i );
                 __putp( clr_eos );
@@ -1312,49 +1315,49 @@ static int ti_refresh( int must )
                 //assert( dirty.col0==0 && dirty.col1==UIData->width );
             }
 
-            for( j= dirty.col0; j<dirty.col1; j++ ){
-                pos= &bufp[j];
+            for( j = dirty.col0; j < dirty.col1; j++ ) {
+                pos = &bufp[j];
 
                 if( !must && (
-                    (cls<=i)
-                    ? (bufp[j].ch==' ' && ((bufp[j].attr&112)==0))
-                    : ( bufp[j].ch==sbufp[j].ch
-                        && bufp[j].attr==sbufp[j].attr
-                        && pos<=blankStart)) ){
-                    ca_valid= FALSE;
+                    (cls <= i)
+                    ? (bufp[j].ch == ' ' && ((bufp[j].attr&112) == 0))
+                    : ( bufp[j].ch == sbufp[j].ch
+                        && bufp[j].attr == sbufp[j].attr
+                        && pos <= blankStart)) ) {
+                    ca_valid = FALSE;
                     continue;
                 }
 
-                if( !ca_valid ){
+                if( !ca_valid ) {
                     UIDebugPrintf2( "cursor address %d, %d\n", j, i );
 
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
                     TI_CURSOR_MOVE( j, i );
-                    ca_valid= TRUE;
+                    ca_valid = TRUE;
                 }
 
-                if( bufp[j].attr!=lastattr ){
+                if( bufp[j].attr != lastattr ) {
                     // dump before changing attrs too...
                     TI_DUMPCHARS();
-                    lastattr= new_attr( bufp[j].attr, lastattr );
+                    lastattr = new_attr( bufp[j].attr, lastattr );
                 }
 
                 // Clear to end of screen if we can
-                if( pos>blankStart ){
-                    if( TI_FillColourSet ){
+                if( pos>blankStart ) {
+                    if( TI_FillColourSet ) {
                         // Dump before blank to end of screen...
                         TI_DUMPCHARS();
                         __putp( clr_eos );
                         update_shadow();
-                        return 0;
+                        return( 0 );
                     } else {
-                        pos= bufEnd;
+                        pos = bufEnd;
                     }
                 }
 
-                if( !TI_ignore_bottom_right || (j!=UIData->width-1) ||
-                                                    (i!=UIData->height-1) ){
+                if( !TI_ignore_bottom_right || (j != UIData->width-1) ||
+                                               (i != UIData->height-1) ) {
                     // Slurp up the char to be output. Will dump existing
                     // chars if new char is different.
                     unsigned c = bufp[j].ch;
@@ -1372,7 +1375,7 @@ static int ti_refresh( int must )
                     OldCol++;
 
                     // if we walk off the edge our position is undefined
-                    if( OldCol>=UIData->width ){
+                    if( OldCol >= UIData->width ) {
                         OldCol= -1;
                         OldRow= -1;
                     }
@@ -1380,14 +1383,14 @@ static int ti_refresh( int must )
             }
             // Make sure we dump any stragglers
             TI_DUMPCHARS();
-            bufp+= incr;
-            sbufp+= incr;
+            bufp  += incr;
+            sbufp += incr;
 
         }
     }
 
     update_shadow();
-    return 0;
+    return( 0 );
 }
 
 static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
@@ -1397,13 +1400,13 @@ static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
     *col = UIData->cursor_col;
     *type = UIData->cursor_type;
     *attr = 0;
-    return 0;
+    return( 0 );
 }
 
 static int td_setcur( ORD row, ORD col, int typ, int attr )
 /*********************************************************/
 {
-    extern void newcursor(void);
+    extern void newcursor( void );
     attr = attr;
 
     if( ( typ != UIData->cursor_type ) ||
@@ -1415,7 +1418,7 @@ static int td_setcur( ORD row, ORD col, int typ, int attr )
         newcursor();
         ti_hwcursor();
     }
-    return 0;
+    return( 0 );
 }
 
 
@@ -1435,7 +1438,7 @@ EVENT td_event( void )
     return( mouseevent() );
 }
 
-Display TInfDisplay= {
+Display TInfDisplay = {
     ti_init,
     ti_fini,
     td_update,
@@ -1444,4 +1447,3 @@ Display TInfDisplay= {
     td_setcur,
     td_event,
 };
-
