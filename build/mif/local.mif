@@ -100,6 +100,9 @@ cppflags = -D__LINUX__ -DBOOTSTRAP
 
 cflags_comp = -fno-asm -fno-common -pipe
 
+cflags_dbg = -g
+cflags_rel = -g -O2
+
 # Flags for building shared libs
 cflags_shared  = -fPIC
 clflags_shared = -shared
