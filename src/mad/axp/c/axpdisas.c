@@ -218,12 +218,12 @@ static int Cond( mad_disasm_data *dd, const mad_registers *mr, unsigned conditio
     reg = &mr->axp.r[TRANS_REG(dd->ins.op[0].base)];
     if( dd->ins.op[0].base >= DR_AXP_f0 && dd->ins.op[0].base <= DR_AXP_f31 ) {
         /* floating point */
-        if( reg->t.r < 0 ) {
-            cmp = -1;
-        } else if( reg->t.r > 0 ) {
-            cmp = +1;
-        } else {
+        if( reg->t.r == 0 ) {
             cmp = 0;
+        } else if( reg->t.f.sign ) {
+            cmp = -1;
+        } else {
+            cmp = +1;
         }
     } else {
         /* integer */
