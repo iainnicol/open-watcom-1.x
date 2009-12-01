@@ -533,7 +533,7 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
 static void reallocTokens( void )   // ALLOCATE STORAGE FOR TOKENS
 {                                   // - tokens need to be writable
 #ifndef __WATCOMC__
-    int i;
+    int     i;
 
     /* Quick hack: The tokens need to be writable, but string literals
      * often aren't. For Watcom we use -zc switch, otherwise allocate
@@ -542,7 +542,28 @@ static void reallocTokens( void )   // ALLOCATE STORAGE FOR TOKENS
      * to be writable.
      */
     for( i = 0; i < T_LAST_TOKEN; ++i ) {
-        Tokens[i] = strdup( Tokens[i] );
+        char    *s;
+        size_t  len;
+
+        /* KwLookup() accesses words at a time, make enough room... */
+        len = strlen( Tokens[i] ) + 1;
+        len = (len + sizeof( unsigned ) - 1) & ~(sizeof( unsigned ) - 1);
+        s = CMemAlloc( len );
+        memset( s, 0, len );
+        strcpy( s, Tokens[i] );
+        Tokens[i] = s;
+    }
+#endif
+}
+
+static void freeTokens( void )  // RELEASE STORAGE FOR TOKENS
+{
+#ifndef __WATCOMC__
+    int     i;
+
+     /* See reallocTokens() above. */
+    for( i = 0; i < T_LAST_TOKEN; ++i ) {
+        CMemFree( Tokens[i] );
     }
 #endif
 }
@@ -642,6 +663,7 @@ int PP_EXPORT WppCompile(       // MAIN-LINE (DLL)
             exit_status = WPP_FATAL;
         }
     }
+    freeTokens();
     DbgHeapFini();
     ExitPointRelease( mem_management );
     return exit_status;
