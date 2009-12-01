@@ -347,7 +347,9 @@ void SymReplace( SYMPTR sym, SYM_HANDLE sym_handle )
 
     ++SymStats.replace;
     if( sym_handle == CurFuncHandle ) {
-        memcpy( &CurFuncSym, sym, sizeof( SYM_ENTRY ) );
+        if( sym != &CurFuncSym ) {
+            memcpy( &CurFuncSym, sym, sizeof( SYM_ENTRY ) );
+        }
     }
     if( handle < PCH_MaxSymHandle ) {       /* 08-mar-94 */
         memcpy( PCH_SymArray[ handle ], sym, sizeof( SYM_ENTRY ) );
