@@ -83,7 +83,6 @@ typedef struct data_quad_list {
 
 static DATA_QUAD_LIST  *DataQuadSegs[MAX_DATA_QUAD_SEGS];/* segments for data quads*/
 static DATA_QUAD_LIST  *CurDataQuad;
-static DATA_QUAD_LIST  GuardQuad;
 static int             DataQuadSegIndex;
 static int             DataQuadIndex;
 
@@ -102,13 +101,18 @@ int DataQuadsAvailable( void )
     return( dql != NULL && dql->next != NULL );
 }
 
-void InitDataQuads( void )
+static void ClearDataQuads( void )
 {
     DataQuadIndex = DATA_QUADS_PER_SEG;
     DataQuadSegIndex = -1;
     memset( DataQuadSegs, 0, sizeof( DataQuadSegs ) );
+}
+
+void InitDataQuads( void )
+{
+    ClearDataQuads();
     /* put a guard at the start */
-    CurDataQuad = &GuardQuad;
+    CurDataQuad = NewDataQuad();
     CurDataQuad->prev = NULL;
     CurDataQuad->next = NULL;
     CurDataQuad->size = 0;
@@ -122,7 +126,7 @@ void FreeDataQuads( void )
         if( DataQuadSegs[i] == NULL ) break;
         FEfree( DataQuadSegs[i] );
     }
-    InitDataQuads();
+    ClearDataQuads();
 }
 
 int StartDataQuadAccess( void )
