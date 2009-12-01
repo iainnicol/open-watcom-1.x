@@ -83,6 +83,7 @@ typedef struct data_quad_list {
 
 static DATA_QUAD_LIST  *DataQuadSegs[MAX_DATA_QUAD_SEGS];/* segments for data quads*/
 static DATA_QUAD_LIST  *CurDataQuad;
+static DATA_QUAD_LIST  GuardQuad;
 static int             DataQuadSegIndex;
 static int             DataQuadIndex;
 
@@ -107,7 +108,7 @@ void InitDataQuads( void )
     DataQuadSegIndex = -1;
     memset( DataQuadSegs, 0, sizeof( DataQuadSegs ) );
     /* put a guard at the start */
-    CurDataQuad = NewDataQuad();
+    CurDataQuad = &GuardQuad;
     CurDataQuad->prev = NULL;
     CurDataQuad->next = NULL;
     CurDataQuad->size = 0;
