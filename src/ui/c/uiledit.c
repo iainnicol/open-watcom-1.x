@@ -263,10 +263,9 @@ unsigned uiendedit( void )
     unsigned            i;
     a_ui_edit           *edit;
 
-    uiedittrim( UIEdit->edit_buffer );
+    uiveditfini( UIEdit->edit_screen, &Eline );
     UIEdit->edit_screen = NULL;
     i = Eline.index - Eline.scroll;
-    uiveditfini( UIEdit->edit_screen, &Eline );
     edit = UIEdit;
     UIEdit = UIEdit->next;
     uifree( edit );
