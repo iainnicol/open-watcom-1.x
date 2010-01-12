@@ -174,6 +174,7 @@ char *sti64cpy(                 // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
     signed_64 value )           // - value to be concatenated
 ;
+#undef stpcpy                   // may be defined in string.h
 char *stpcpy(                   // CONCATENATE STRING AS STRING
     char *string,               // - target location
     const char *src_string )    // - source string

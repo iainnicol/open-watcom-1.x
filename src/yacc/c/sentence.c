@@ -384,6 +384,10 @@ void ShowSentence( a_state *s, a_sym *sym, a_pro *pro, a_state *to_state )
     }
 }
 
+
+/* stpcpy may be defined as a macro in string.h */
+#undef stpcpy
+
 char *stpcpy( char *d, char const *s )
 {
     size_t  len;
