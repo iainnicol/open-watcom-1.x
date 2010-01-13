@@ -62,7 +62,7 @@ static  char    IsStdIn;
 static  int     IncFileDepth;
 static  char    *FNameBuf = NULL;
 
-int PrintWhiteSpace;     // also refered from cmac2.c
+bool    PrintWhiteSpace;     // also refered from cmac2.c
 
 // local function prototypes
 static  void        DoCCompile( char **cmdline );
@@ -1408,7 +1408,7 @@ void CppPrtToken( void )
         case T_NULL:
             break;
         case T_WHITE_SPACE:
-            if( PrintWhiteSpace ) {
+            if( PrintWhiteSpace || CompFlags.in_pragma ) {
                 CppPrtf( "%s", Tokens[ CurToken ] );
             } else {
                 PrintWhiteSpace = TRUE; //Toggle

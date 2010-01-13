@@ -1152,7 +1152,7 @@ void CPragma( void )
         CppPrtf( "#pragma" );
         CppPrtf( " " );
         PreProcPrintToken();    /* PragRecogAhead sneaked a token */
-        CompFlags.pre_processing = 1;               /* 28-feb-89 */
+        CompFlags.pre_processing = 1;
         CompFlags.in_pragma = 1;
         for( ; ; ) {
             GetNextToken();
