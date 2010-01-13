@@ -24,21 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Integer type large enough for storing pointers.
 *
 ****************************************************************************/
 
+
 #ifndef PTRINT_H
 #define PTRINT_H
-#include "hostsys.h"
-#if defined(__LARGE__) || defined(__HUGE__) || defined(__COMPACT__) \
-   || (_HOST_INTEGER == 32)
-    typedef     unsigned_32             pointer_int;
-    typedef     signed_32               signed_pointer_int;
-#else
-    typedef     unsigned_16             pointer_int;
-    typedef     signed_16               signed_pointer_int;
-#endif
-#endif
 
+#include <stdint.h>
+
+typedef uintptr_t       pointer_int;
+
+#endif

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DWARF writer configuration.
 *
 ****************************************************************************/
 
@@ -33,11 +32,13 @@
 #ifndef DWCNF_H_INCLUDED
 #define DWCNF_H_INCLUDED
 
+#include <stdint.h>
+
 /*
     dw_sym_handle has a client defined meaning; the DW library will pass these
     back to the client in CLIRelocs for DW_W_STATIC
 */
-typedef uint_32         dw_sym_handle;
+typedef uintptr_t       dw_sym_handle;
 
 
 /*
