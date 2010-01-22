@@ -129,6 +129,7 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #pragma aux             _8087 "_*";
     #pragma aux             _real87 "_*";
 #endif
+extern unsigned char        __uselfn;   /* LFN support available flag */
 
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
@@ -170,9 +171,6 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #define _RWD_HShift         _HShift
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
-    #if defined(__RDOS__)
-        #define _RWD_osrelease  _osbuild
-    #endif
     #define _RWD_osmode         _osmode
     #if defined(__NT__)
         #define _RWD_osbuild    _osbuild
@@ -185,7 +183,7 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
 #endif
 #define _RWD_tmpfnext           __tmpfnext
 #if !defined(_RWD_errno)
-    #define _RWD_errno              _ERRNO
+    #define _RWD_errno          _ERRNO
 #endif
 #define _RWD_nexttok            _NEXTTOK
 #define _RWD_nextftok           _NEXTFTOK
@@ -218,6 +216,8 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
 #define _RWD_PureErrorFlag      _PureErrorFlag
 #define _RWD_UndefVfunFlag      _UndefVfunFlag
 #define _RWD_ModuleInit         _ModuleInit
+
+#define _RWD_uselfn             __uselfn
 
 /*
     For the sake of efficiency, tell the compiler

@@ -43,6 +43,7 @@
 #include "dosfunc.h"
 #include <direct.h>
 #include "fileacc.h"
+#define INCL_LONGLONG
 #include <wos2.h>
 #include <string.h>
 #include "openmode.h"
@@ -50,10 +51,7 @@
 #include "rtdata.h"
 #include "seterrno.h"
 #include "defwin.h"
-#ifdef __WIDECHAR__
-    #include <mbstring.h>
-    #include "mbwcconv.h"
-#endif
+#include "os2fil64.h"
 
 extern unsigned __NFiles;
 
@@ -72,16 +70,17 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
     int         perm = S_IREAD | S_IWRITE;
     unsigned    iomode_flags;
 #ifdef __WIDECHAR__
-    char        mbName[MB_CUR_MAX*_MAX_PATH];   /* single-byte char */
+    char        mbName[MB_CUR_MAX * _MAX_PATH];     /* single-byte char */
 #endif
 
-    while( *name == ' ' ) ++name;
-
-    /*** If necessary, convert the wide filename to multibyte form ***/
+    while( *name == ' ' )
+        ++name;
 #ifdef __WIDECHAR__
-    __filename_from_wide( mbName, name );
+    /*** If necessary, convert the wide filename to multibyte form ***/
+    if( wcstombs( mbName, name, sizeof( mbName ) ) == -1 ) {
+        mbName[0] = '\0';
+    }
 #endif
-                                                    /* 05-sep-91 */
     if( mode & O_CREAT ) {
         perm = va_arg( args, int );
         va_end( args );
@@ -98,7 +97,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
         openflag = OPENFLAG_OPEN_IF_EXISTS;
     }
     rwmode = mode & OPENMODE_ACCESS_MASK;
-#if defined( _M_I86 )
+#ifdef _M_I86
     if( rwmode == OPENMODE_ACCESS_WRONLY && !_RWD_osmode ) {
         /* Can't open WRONLY file in bound application under DOS */
         rwmode = OPENMODE_ACCESS_RDWR;
@@ -117,12 +116,16 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
         fileattr = _A_NORMAL;
     }
 
-#ifdef __WIDECHAR__
-    error = DosOpen( (PSZ)mbName, &handle, &actiontaken, 0ul,
-                        fileattr, openflag, openmode, 0ul );
-#else
-    error = DosOpen( (PSZ)name, &handle, &actiontaken, 0ul,
-                        fileattr, openflag, openmode, 0ul );
+#ifndef _M_I86
+    if( __os2_DosOpenL != NULL ) {
+        error = __os2_DosOpenL( (PSZ)__F_NAME(name,mbName), &handle,
+                    &actiontaken, 0ULL, fileattr, openflag, openmode, 0ul );
+    } else {
+#endif
+        error = DosOpen( (PSZ)__F_NAME(name,mbName), &handle,
+                    &actiontaken, 0ul, fileattr, openflag, openmode, 0ul );
+#ifndef _M_I86
+    }
 #endif
     if( error ) {
         return( __set_errno_dos( error ) );
@@ -149,17 +152,10 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
     __SetIOMode( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != 0 ) {
-    #ifdef __WIDECHAR__
-        if( ( _wcsicmp( name, L"con" ) == 0 ) ||
-            ( _wcsicmp( name, L"\\dev\\con" ) == 0 ) ) {
+        if( ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||
+            ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "\\dev\\con" ) ) == 0 ) ) {
             _WindowsNewWindow( NULL, handle, -1 );
         }
-    #else
-        if( ( stricmp( name, "con" ) == 0 ) ||
-            ( stricmp( name, "\\dev\\con" ) == 0 ) ) {
-            _WindowsNewWindow( NULL, handle, -1 );
-        }
-    #endif
     }
 #endif
     return( handle );

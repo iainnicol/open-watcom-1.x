@@ -36,26 +36,36 @@
 #include "fileacc.h"
 
 
+#ifdef __INT64__
+_WCRTLINK long long _ftelli64( FILE *fp )
+{
+    long long   pos;
+#else
 _WCRTLINK long ftell( FILE *fp )
 {
-    long    pos;
+    long        pos;
+#endif
 
     _ValidFile( fp, -1 );
     if( fp->_flag & _APPEND  &&  fp->_flag & _DIRTY ) {
         fflush( fp );   /* if data written in append mode, OS must know */
     }
+#ifdef __INT64__
+    pos = _telli64( fileno( fp ) );
+    if( pos != -1LL ) {
+#else
     pos = tell( fileno( fp ) );
-    if( pos == -1 ) {
-        return( -1L );
-    }
-    _AccessFile( fp );
-    if( fp->_cnt != 0 ) {                   /* if something in buffer */
-        if( fp->_flag & _DIRTY ) {          /* last operation was a put */
-            pos += fp->_cnt;
-        } else {                            /* last operation was a get */
-            pos -= fp->_cnt;
+    if( pos != -1L ) {
+#endif
+        _AccessFile( fp );
+        if( fp->_cnt != 0 ) {                   /* if something in buffer */
+            if( fp->_flag & _DIRTY ) {          /* last operation was a put */
+                pos += fp->_cnt;
+            } else {                            /* last operation was a get */
+                pos -= fp->_cnt;
+            }
         }
+        _ReleaseFile( fp );
     }
-    _ReleaseFile( fp );
     return( pos );
 }

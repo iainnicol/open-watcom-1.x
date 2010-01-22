@@ -132,7 +132,8 @@ endif   ; ACAD
         extrn   "C",_STACKLOW       : dword
         extrn   "C",_STACKTOP       : dword
         extrn   "C",_child          : dword
-        extrn   __no87              : word
+        extrn   __no87              : byte
+        extrn   "C",__uselfn        : byte
         extrn   "C",_Extender       : byte
         extrn   "C",_ExtenderSubtype: byte
         extrn   "C",_Envptr         : dword
@@ -385,17 +386,16 @@ pharlap:mov   dx,ENV_SEG                ; - PharLap environment segment
 haveenv:                                ; endif
         mov     es: _Envseg,dx          ; save segment of environment area
         mov     ds,dx                   ; get segment addr of environment area
-        sub     ebp,ebp                 ; assume "no87" env. var. not present
+        sub     ebp,ebp                 ; assume "NO87" env. var. not present
         sub     esi,esi                 ; offset 0
         mov     es: _Envptr,esi         ; save offset of environment area
 L1:     mov     eax,[esi]               ; get first 4 characters
-        or      eax,20202020h           ; map to lower case
-        ;cmp    eax,'78on'              ; check for "no87"
+        or      eax,2020h               ; map to lower case
         cmp     eax,37386f6eh           ; check for "no87"
         jne     short L2                ; skip if not "no87"
         cmp     byte ptr 4[esi],'='     ; make sure next char is "="
         jne     short L2                ; no
-        inc     ebp                     ; - indicate "no87" was present
+        inc     ebp                     ; - indicate "NO87" was present
 L2:     cmp     byte ptr [esi],0        ; end of string ?
         lodsb
         jne     L2                      ; until end of string
@@ -418,12 +418,14 @@ L3:     cmp     byte ptr [esi],0        ; end of pgm name ?
         assume  ds:DGROUP
 if      ACAD
  ifdef   EADI
-        mov     bp,1                    ; force "no87" env. var as present
+        mov     bp,1                    ; force "NO87" env. var as present
  endif
 endif   ; ACAD
-        mov     __no87,bp               ; set state of "no87" environment var
+        mov     eax,ebp
+        mov     __no87,al               ; set state of "NO87" environment var
+        and     __uselfn,ah             ; set "LFN" support status
 
-        mov      _STACKLOW,edi          ; save low address of stack
+        mov     _STACKLOW,edi           ; save low address of stack
 
 if      ACAD
 
