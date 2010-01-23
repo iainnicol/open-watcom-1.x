@@ -263,8 +263,6 @@ int main( int argc, char ** argv )
         
         if( type > 3 ) {
             time_valid = 1;
->>>> ORIGINAL trap2txt.cpp#1
-==== THEIRS trap2txt.cpp#8
             if( sizeof( WORD ) != fread( &st.wHour, 1, sizeof(WORD), fil ) ) {
                 fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
                 break;
@@ -292,35 +290,6 @@ int main( int argc, char ** argv )
         if( type == 5 )
             type = 3;
         
-==== YOURS trap2txt.cpp
-    	    if( sizeof( WORD ) != fread( &st.wHour, 1, sizeof(WORD), fil ) ) {
-                fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
-                break;
-            }
-            offset += sizeof( WORD );
-    	    if( sizeof( WORD ) != fread( &st.wMinute, 1, sizeof(WORD), fil ) ) {
-                fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
-                break;
-            }
-            offset += sizeof( WORD );
-    	    if( sizeof( WORD ) != fread( &st.wSecond, 1, sizeof(WORD), fil ) ) {
-                fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
-                break;
-            }
-            offset += sizeof( WORD );
-    	    if( sizeof( WORD ) != fread( &st.wMilliseconds, 1, sizeof(WORD), fil ) ) {
-                fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
-                break;
-            }
-            offset += sizeof( WORD );
-        }
-        
-        if( type == 4 )
-            type = 1;
-        if( type == 5 )
-            type = 3;
-        
-<<<<
         if( sizeof( type ) != fread( &len, 1, sizeof( len ), fil ) ) {
             fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
             break;

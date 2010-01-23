@@ -473,18 +473,11 @@ The :F.mad:eF. field specifies the MAD (Machine Architecture Description) in use
 and determines how the other fields will be interpreted. Currently the following
 MADs are used:
 :XMP.
->>>> ORIGINAL trap.gml#1
-==== THEIRS trap.gml#13
     MAD_X86  - Intel Architecture IA-32 compatible
     MAD_AXP  - Alpha Architecture
     MAD_PPC  - PowerPC Architecture
     MAD_MIPS - MIPS Architecture
     MAD_MSJ  - Java Virtual Machine (Microsoft)
-==== YOURS trap.gml
-    MAD_X86 - Intel IA-32 compatible
-    MAD_AXP - Alpha AXP
-    MAD_PPC - PowerPC
-<<<<
 :eXMP.
 :PC.
 The :F.cpu:eF. fields returns the type of the remote CPU. The size of that field
