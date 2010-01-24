@@ -379,6 +379,7 @@ void RDOSAPI RdosDeleteTcpConnection(int Handle);
 void RDOSAPI RdosAbortTcpConnection(int Handle);
 void RDOSAPI RdosPushTcpConnection(int Handle);
 int RDOSAPI RdosIsTcpConnectionClosed(int Handle);
+int RDOSAPI RdosIsTcpConnectionIdle(int Handle);
 long RDOSAPI RdosGetRemoteTcpConnectionIP(int Handle);
 int RDOSAPI RdosGetRemoteTcpConnectionPort(int Handle);
 int RDOSAPI RdosGetLocalTcpConnectionPort(int Handle);
@@ -521,18 +522,21 @@ void RDOSAPI RdosLockUsbPipe(int handle);
 void RDOSAPI RdosUnlockUsbPipe(int handle);
 void RDOSAPI RdosAddWaitForUsbPipe(int Handle, int PipeHandle, void *ID);
 void RDOSAPI RdosWriteUsbControl(int Handle, const char *buf, int size);
-void RDOSAPI RdosReqUsbData(int Handle, int Maxsize);
-int RDOSAPI RdosGetUsbData(int Handle, char *buf, int maxsize);
+void RDOSAPI RdosReqUsbData(int Handle, char *buf, int maxsize);
+int RDOSAPI RdosGetUsbDataSize(int Handle);
 void RDOSAPI RdosWriteUsbData(int Handle, const char *buf, int size);
 void RDOSAPI RdosReqUsbStatus(int Handle);
 void RDOSAPI RdosWriteUsbStatus(int Handle);
-int RDOSAPI RdosIsUsbPipeIdle(int Handle);
+int RDOSAPI RdosIsUsbTransactionDone(int Handle);
+int RDOSAPI RdosWasUsbTransactionOk(int Handle);
 
 int RDOSAPI RdosOpenICSP(int DeviceID);
 void RDOSAPI RdosCloseICSP(int Handle);
 int RDOSAPI RdosWriteICSPCommand(int Handle, int Cmd);
 int RDOSAPI RdosWriteICSPData(int Handle, int Data);
 int RDOSAPI RdosReadICSPData(int Handle, int *Data);
+
+void RDOSAPI RdosSetCodecGpio0(int Value);
 
 void RDOSAPI RdosGetMasterVolume(int *Left, int *Right);
 void RDOSAPI RdosSetMasterVolume(int Left, int Right);
@@ -972,11 +976,13 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     
 #pragma aux RdosReadFile = \
     CallGate_read_file  \
+    ValidateEax \
     parm [ebx] [edi] [ecx]  \
     value [eax];
 
 #pragma aux RdosWriteFile = \
     CallGate_write_file  \
+    ValidateEax \
     parm [ebx] [edi] [ecx]  \
     value [eax];
 
@@ -1614,6 +1620,12 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
 #pragma aux RdosIsTcpConnectionClosed = \
     CallGate_is_tcp_connection_closed  \
     "cmc"   \
+    CarryToBool \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosIsTcpConnectionIdle = \
+    CallGate_is_tcp_connection_idle  \
     CarryToBool \
     parm [ebx] \
     value [eax];
@@ -2292,12 +2304,12 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
 
 #pragma aux RdosReqUsbData = \
     CallGate_req_usb_data \
-    parm [ebx] [ecx];
+    parm [ebx] [edi] [ecx];
 
-#pragma aux RdosGetUsbData = \
-    CallGate_get_usb_data \
+#pragma aux RdosGetUsbDataSize = \
+    CallGate_get_usb_data_size \
     "movzx eax,ax" \
-    parm [ebx] [edi] [ecx] \
+    parm [ebx] \
     value [eax];
 
 #pragma aux RdosWriteUsbData = \
@@ -2312,9 +2324,14 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     CallGate_write_usb_status \
     parm [ebx];
 
-#pragma aux RdosIsUsbPipeIdle = \
-    CallGate_is_usb_pipe_idle \
-    "cmc" \
+#pragma aux RdosIsUsbTransactionDone = \
+    CallGate_is_usb_trans_done \
+    CarryToBool \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosWasUsbTransactionOk = \
+    CallGate_was_usb_trans_ok \
     CarryToBool \
     parm [ebx] \
     value [eax];
@@ -2347,6 +2364,11 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     CarryToBool \
     parm [ebx] [edi] \
     value [eax];
+
+#pragma aux RdosSetCodecGpio0 = \
+    CallGate_set_codec_gpio0 \
+    parm [eax] \
+    modify [eax];
 
 #pragma aux RdosGetMasterVolume = \
     CallGate_get_master_volume \
@@ -2844,11 +2866,13 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     
 #pragma aux RdosReadFile = \
     CallGate_read_file  \
+    ValidateAx \
     parm [ebx] [edi] [ecx]  \
     value [eax];
 
 #pragma aux RdosWriteFile = \
     CallGate_write_file  \
+    ValidateAx \
     parm [ebx] [edi] [ecx]  \
     value [eax];
 
