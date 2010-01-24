@@ -1621,7 +1621,7 @@ Rule REXE, WINLINK, r??e?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 op resource=$<RES!>"
+  Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#WLINK> @$'.lk1"
 
@@ -1829,7 +1829,7 @@ Rule RDLL, WLINK, r??d?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 op resource=$<RES!>"
+  Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#> @$'.lk1"
   Command " wlib -q -n -b $*.lib +$*.dll"
