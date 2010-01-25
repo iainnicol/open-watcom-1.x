@@ -91,44 +91,44 @@ _WCRTLINK extern int execvpe( const char *__file, const char *const __argv[],
 :segment QNX | LINUX
 #if defined(__386__)
  _WCRTLINK extern int  _beginthread( void (*__start_address)(void *),
-     void *__stack_bottom, unsigned __stack_size, void *__arglist );
- #pragma intrinsic(_beginthread);
+   void *__stack_bottom, unsigned __stack_size, void *__arglist );
+#pragma intrinsic(_beginthread);
  _WCRTLINK extern void _endthread( void );
 :elsesegment
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__)
- #if defined(__NT__)
-  _WCRTLINK extern unsigned long _beginthread(
+#if defined(__NT__)
+_WCRTLINK extern unsigned long _beginthread(
                 void (*__start_address)(void *),
                 unsigned __stack_size, void *__arglist );
-  _WCRTLINK extern unsigned long _beginthreadex( void *__security,
+_WCRTLINK extern unsigned long _beginthreadex( void *__security,
                 unsigned __stack_size,
                 unsigned (__stdcall *__start_address)(void *),
                 void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
-  #pragma intrinsic(_beginthread,_beginthreadex);
-  _WCRTLINK extern void _endthreadex( unsigned __retval );
-  _WCRTLINK extern unsigned long __threadhandle( void );
+#pragma intrinsic(_beginthread,_beginthreadex);
+_WCRTLINK extern void _endthreadex( unsigned __retval );
+_WCRTLINK extern unsigned long __threadhandle( void );
  #elif defined(__RDOS__)
   _WCRTLINK extern int _beginthread(
                 void (*__start_address)(void *),
                 const char *thread_name,
                 unsigned __stack_size, void *__arglist );
- #else
+#else
   _WCRTLINK extern int _beginthread( void (*__start_address)(void *),
-      void *__stack_bottom, unsigned __stack_size, void *__arglist );
-  #pragma intrinsic(_beginthread);
- #endif
+   void *__stack_bottom, unsigned __stack_size, void *__arglist );
+#pragma intrinsic(_beginthread);
+#endif
  _WCRTLINK extern void _endthread( void );
 #else
- _WCRTLINK extern int _WCFAR  _beginthread(
+_WCRTLINK extern int _WCFAR  _beginthread(
     void (_WCFAR *__start_address)(void _WCFAR *),
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
- #pragma intrinsic(_beginthread);
+#pragma intrinsic(_beginthread);
  _WCRTLINK extern void _WCFAR _endthread( void );
- #ifndef __SW_ZU
+#ifndef __SW_ZU
   _WCRTLINK void _WCFAR *__chkstack( void _WCFAR * );
   #define _beginthread( __sa, __sb, __ss, __al ) \
           _beginthread( __sa, __chkstack(__sb), __ss, __al )
- #endif
+#endif
 :endsegment
 #endif
 :segment !QNX
@@ -167,9 +167,9 @@ _WCRTLINK extern void  _exit( int __status );
 :segment QNX | LINUX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
-_WCRTLINK extern char  *getcmd( char *__buffer );
+_WCRTLINK extern char *getcmd( char *__buffer );
 _WCRTLINK extern int   _bgetcmd( char *__buffer, int __len );
-_WCRTLINK extern char  *_cmdname( char *__name );
+_WCRTLINK extern char *_cmdname( char *__name );
 :segment QNX | LINUX
 #endif
 :endsegment
@@ -193,11 +193,11 @@ _WCRTLINK extern int   spawnvpe( int __mode, const char *__path,
                                 const char * const *__argv,
                                 const char * const *__envp );
 
-_WCRTLINK extern wchar_t *_wgetenv( const wchar_t *__name );
-_WCRTLINK extern int    _wsetenv( const wchar_t *__name,
+_WCRTLINK extern wchar_t *  _wgetenv( const wchar_t *__name );
+_WCRTLINK extern int        _wsetenv( const wchar_t *__name,
                                       const wchar_t *__newvalue,
                                       int __overwrite );
-_WCRTLINK extern int    _wputenv( const wchar_t *__env_string );
+_WCRTLINK extern int        _wputenv( const wchar_t *__env_string );
 
 _WCRTLINK extern int    _wexecl( const wchar_t *__path, const wchar_t *__arg0, ... );
 _WCRTLINK extern int    _wexecle( const wchar_t *__path, const wchar_t *__arg0, ... );
@@ -235,13 +235,13 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
  // this function pointer will be called after the C library startup
  // and before the C++ library startup.
  #if defined(_WINDOWS_)
-  extern BOOL (WINAPI   *_pRawDllMain)( HANDLE, DWORD, LPVOID );
+  extern BOOL (WINAPI *_pRawDllMain)( HANDLE, DWORD, LPVOID );
  #else
   extern int (__stdcall *_pRawDllMain)( void *, unsigned, void * );
  #endif
 #endif
-_WCRTLINK extern int    getpid( void );
-_WCRTLINK extern int    wait( int *__status );
+_WCRTLINK extern int getpid( void );
+_WCRTLINK extern int wait( int *__status );
 :elsesegment QNX | LINUX
 _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
