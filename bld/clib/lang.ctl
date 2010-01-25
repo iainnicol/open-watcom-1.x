@@ -137,7 +137,7 @@ cdsay .
     <CPCMD> startup/library/qnx.386/ms_r/commode.obj        <RELROOT>/lib386/qnx/commode.obj
   [ ENDIF]
 
-  [ IFDEF (os_nt "") <2*> ]
+  [ IFDEF (os_rdos "") <2*> ]
     <CPCMD> library/rdos.386/mf_r/clib3r.lib                <RELROOT>/lib386/rdos/clib3r.lib
     <CPCMD> library/rdos.386/mf_s/clib3s.lib                <RELROOT>/lib386/rdos/clib3s.lib
   [ ENDIF]
