@@ -11,7 +11,6 @@ sys_x86_os2v2 = sys os2v2
 sys_x86_win   = sys windows
 sys_x86_nt    = sys nt
 sys_x86_dos   = sys dos
-sys_x86_rdos  = sys rdos_pe_dll
 sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 
@@ -23,7 +22,6 @@ targ_x86_qnx   = $(xname)cli.qnx
 targ_x86_linux = $(xname)cli.exe
 targ_x86_win   = $(xname)cliw.exe
 targ_x86_dos   = $(xname)cli.exe
-targ_x86_rdos  = $(xname)cli.exe
 targ_x86_nt    = $(xname)cli.exe
 targ_x86_nto   = $(xname)cli.exe
 
@@ -81,14 +79,6 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 !endif
 
 sys_x86_dos  = sys dos
-
-
-sys_x86_rdos = sys rdos_pe_dll &
-               export TrapInit_ &
-               export TrapFini_ &
-               export TrapRequest_ &
-               op offset=0xdb000000
-
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
 # For now Linux is linked as a PE DLL file since we have code to load
@@ -133,7 +123,6 @@ targ_x86_linux  = $(xname).trp
 !endif
 targ_x86_win    = $(xname).dll
 targ_x86_dos    = $(xname).trp
-targ_x86_rdos   = $(xname).dll
 targ_x86_nt     = $(xname).dll
 !ifdef bootstrap
 targ_x86_nto    = $(xname).so

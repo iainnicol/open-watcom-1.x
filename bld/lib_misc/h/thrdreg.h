@@ -39,13 +39,8 @@ typedef void _WCI86FAR thread_fn( void _WCI86FAR * );
 #endif
 
 #if defined(__386__) || defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    #ifdef __RDOS__
-        typedef int     beginner( thread_fn *start_addr, const char *thread_name,
-                                  unsigned stack_size, void *arglist );
-    #else                                
-        typedef int     beginner( thread_fn *start_addr, void *stack_bottom,
-                                  unsigned stack_size, void *arglist );
-    #endif
+    typedef int     beginner( thread_fn *start_addr, void *stack_bottom,
+                                unsigned stack_size, void *arglist );
     typedef void    ender( void );
     typedef int     initializer( void *p );
 

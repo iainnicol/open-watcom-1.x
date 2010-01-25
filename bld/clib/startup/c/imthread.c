@@ -40,8 +40,6 @@
 #elif defined(__LINUX__)
 #elif defined(__WARP__)
   extern void *__InitThreadProcessing( void );
-#elif defined(__RDOS__)
-  extern unsigned __RdosThreadInit( void );
 #endif
 #if defined(__OS2_286__) || defined(__NETWARE__)
     #if defined(__SW_BM)
@@ -59,8 +57,6 @@
         #elif defined(__LINUX__)
         #elif defined(__WARP__)
             if( __InitThreadProcessing() == 0 ) return;
-        #elif defined(__RDOS__)            
-            if( !__RdosThreadInit() ) return;
         #endif
         __InitMultipleThread();
     }

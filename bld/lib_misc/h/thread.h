@@ -43,8 +43,6 @@
     #define __EXCEPTION_RECORD  int
   #elif defined(__NT__)
     #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
-  #elif defined(__RDOS__)
-    #define __EXCEPTION_RECORD struct _REGISTRATION_RECORD
   #else
     #define __EXCEPTION_RECORD unsigned
   #endif
@@ -89,8 +87,6 @@ typedef struct  semaphore_object {
         sem_t           semaphore;
   #elif defined(__LINUX__)
     // TODO: Linux semaphore goes here!
-  #elif defined(__RDOS__)
-        int             semaphore; // RDOS only have critical sections, which should work
   #else
         unsigned long   semaphore;
   #endif
@@ -164,9 +160,6 @@ typedef struct thread_data {
         unsigned long           thread_id;
     #elif defined(__UNIX__)
         pid_t                   thread_id;
-    #elif defined(__RDOS__)
-        int                     thread_id;
-        char                    thread_name[256];
     #endif
     #if defined(__NT__)
         void                    *thread_handle;
@@ -200,7 +193,7 @@ extern thread_data *__MultipleThread( void );
         extern thread_data_vector *__ThreadData;
 
     #endif
-    #if defined(__NT__) || defined(_NETWARE_LIBC) || defined(__RDOS__)
+    #if defined(__NT__) || defined(_NETWARE_LIBC)
         #define NO_INDEX        0xffffffffL
     #endif
 

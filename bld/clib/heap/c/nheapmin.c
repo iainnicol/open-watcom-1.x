@@ -45,9 +45,6 @@
 #if defined(__OS2__)
  #include <wos2.h>
 #endif
-#if defined(__RDOS__)
- #include <rdos.h>
-#endif
 #if defined(__WINDOWS_386__)
  extern int __pascal DPMIFree(unsigned long);   // windows extender function
 #endif
@@ -78,8 +75,7 @@ _WCRTLINK int _nheapmin( void )
     defined(__WINDOWS_286__) || \
     defined(__WINDOWS_386__) || \
     defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__RDOS__)
+    defined(__CALL21__)
 static int __ReturnMemToSystem( mheapptr mhp )
 {
         mheapptr pnext;
@@ -98,8 +94,6 @@ static int __ReturnMemToSystem( mheapptr mhp )
 #elif defined(__CALL21__)
         // No way to free storage under OSI
         if( mhp ) return( -1 );
-#elif defined(__RDOS__)
-        RdosFreeMem(mhp);
 #endif
         if( __MiniHeapRover == mhp ) {  // Update rovers
             if( pnext ) {
@@ -146,8 +140,7 @@ _WCRTLINK int _nheapshrink( void )
     !defined(__WINDOWS_286__) && \
     !defined(__WINDOWS_386__) && \
     !defined(__NT__)          && \
-    !defined(__CALL21__)      && \
-    !defined(__RDOS__)
+    !defined(__CALL21__)
     // Shrink by adjusting _curbrk
 
     frlptr last_free;

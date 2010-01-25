@@ -41,10 +41,6 @@ cdsay .
     <CPCMD> <DEVDIR>/emu/stub386/emu387.lib <RELROOT>/lib386/netware/emu387.lib
   [ ENDIF ]
 
-  [ IFDEF (os_nt "") <2*> ]
-    <CPCMD> <DEVDIR>/emu/stub386/emu387.lib <RELROOT>/lib386/rdos/emu387.lib
-  [ ENDIF ]
-
 # Libs not built by default
     <CCCMD> <DEVDIR>/emu/stub386/emu387.lib <RELROOT>/lib386/qnx/emu387.lib
     <CCCMD> <DEVDIR>/emu/qnx386/emu387      <RELROOT>/qnx/binq/emu387
