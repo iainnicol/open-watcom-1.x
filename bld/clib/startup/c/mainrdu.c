@@ -121,9 +121,8 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     if( _LpCmdLine == 0 )
         _LpCmdLine = "";
     else {
-       while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != '    ' ) {
+       while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 ) 
            _LpCmdLine++;
-       }       
     }
 
     return( 1 );
