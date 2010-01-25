@@ -30,26 +30,4 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "stacklow.h"
-#include "liballoc.h"
-#include "thread.h"
-
-thread_data *__AllocInitThreadData( thread_data *tdata )
-/******************************************************/
-{
-    if( tdata == NULL ) {
-        tdata = lib_calloc( 1, __ThreadDataSize );
-        if( tdata != NULL ) {
-            tdata->__allocated = 1;
-            tdata->__data_size = __ThreadDataSize;
-        }
-    }
-    __InitThreadData( tdata );
-    return( tdata );
-}
-
-int __NTThreadInit( void ) { return( 1 ); }
-int __NTAddThread( thread_data *t ) { t = t; return( 1 ); }
-void __NTRemoveThread( int c ) { c = c; }
-void __InitMultipleThread( void ) {}
+#include <secure.h>

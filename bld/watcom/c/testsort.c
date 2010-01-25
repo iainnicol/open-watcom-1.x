@@ -30,26 +30,48 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "stacklow.h"
-#include "liballoc.h"
-#include "thread.h"
+#include <stdlib.h>
+#include <stddef.h>
+#include "sortlist.h"
 
-thread_data *__AllocInitThreadData( thread_data *tdata )
-/******************************************************/
+typedef struct x {
+    int i;
+    struct x *next;
+} x;
+
+int compare( x **a, x **b )
 {
-    if( tdata == NULL ) {
-        tdata = lib_calloc( 1, __ThreadDataSize );
-        if( tdata != NULL ) {
-            tdata->__allocated = 1;
-            tdata->__data_size = __ThreadDataSize;
-        }
-    }
-    __InitThreadData( tdata );
-    return( tdata );
+    return( (*a)->i - (*b)->i );
 }
 
-int __NTThreadInit( void ) { return( 1 ); }
-int __NTAddThread( thread_data *t ) { t = t; return( 1 ); }
-void __NTRemoveThread( int c ) { c = c; }
-void __InitMultipleThread( void ) {}
+void *myalloc( unsigned size )
+{
+    if( size > 50 ) return( NULL );
+    return( malloc( size ) );
+}
+
+void main( void )
+{
+    x   *head,*new;
+
+    int         i;
+
+    head = NULL;
+    for( i = 0; i < 100; ++i ) {
+        new = malloc( sizeof( *new ) );
+        new->next = head;
+        new->i = rand();
+        head = new;
+    }
+    printf( "before " );
+    for( new = head; new != NULL; new = new->next ) {
+        printf( "%d ", new->i );
+    }
+    printf( "\n" );
+    head = SortLinkedList( head, offsetof( x, next ), compare, myalloc, free );
+    printf( "after " );
+    for( new = head; new != NULL; new = new->next ) {
+        printf( "%d ", new->i );
+    }
+    printf( "\n" );
+}

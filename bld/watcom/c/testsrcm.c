@@ -30,26 +30,25 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "stacklow.h"
-#include "liballoc.h"
-#include "thread.h"
+#include <stdio.h>
+#include "srcmgt.h"
+#include "srcmgt.def"
 
-thread_data *__AllocInitThreadData( thread_data *tdata )
-/******************************************************/
+main()
 {
-    if( tdata == NULL ) {
-        tdata = lib_calloc( 1, __ThreadDataSize );
-        if( tdata != NULL ) {
-            tdata->__allocated = 1;
-            tdata->__data_size = __ThreadDataSize;
-        }
-    }
-    __InitThreadData( tdata );
-    return( tdata );
-}
+    char        buff[256];
+    struct browser *fp;
+    int         len;
+    int         i;
+    int         got;
 
-int __NTThreadInit( void ) { return( 1 ); }
-int __NTAddThread( thread_data *t ) { t = t; return( 1 ); }
-void __NTRemoveThread( int c ) { c = c; }
-void __InitMultipleThread( void ) {}
+    fp = FOpenSource( "testsrcm.c", 0, 0 );
+    if( fp == NULL ) return;
+    for( i = 1; FReadLine( fp, i, 0, buff, 256 ) != -1; ++i ) {
+    }
+    for( --i; i >= 1; --i ) {
+        buff[ FReadLine( fp, i, 0, buff, 256 ) ] = '\0';
+        printf( "%s\n", buff );
+    }
+    FDoneSource( fp );
+}

@@ -30,26 +30,35 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "stacklow.h"
-#include "liballoc.h"
-#include "thread.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-thread_data *__AllocInitThreadData( thread_data *tdata )
-/******************************************************/
+#include "tinyio.h"
+
+void main( void )
 {
-    if( tdata == NULL ) {
-        tdata = lib_calloc( 1, __ThreadDataSize );
-        if( tdata != NULL ) {
-            tdata->__allocated = 1;
-            tdata->__data_size = __ThreadDataSize;
-        }
-    }
-    __InitThreadData( tdata );
-    return( tdata );
-}
+    union {
+        tiny_file_stamp_t stamp;
+        tiny_ret_t rc;
+    } u;
+    tiny_date_t date;
+    tiny_time_t time;
+    tiny_handle_t fh;
+    tiny_ret_t rc;
 
-int __NTThreadInit( void ) { return( 1 ); }
-int __NTAddThread( thread_data *t ) { t = t; return( 1 ); }
-void __NTRemoveThread( int c ) { c = c; }
-void __InitMultipleThread( void ) {}
+    date = TinyGetDate();
+    time = TinyGetTime();
+    rc = TinyOpen( __FILE__, TIO_READ );
+    if( TINY_ERROR( rc ) ) {
+        puts( "open error" );
+        exit( 1 );
+    }
+    fh = TINY_INFO( rc );
+    u.rc = TinyGetFileStamp( fh );
+    printf("current time is %02u:%02u:%02u\n",time.hour,time.minutes,time.seconds);
+    printf("current date is %02u-%02u-%02u\n",date.year,date.month,date.day_of_month);
+    printf("file stamp is: %02u-%02u-%02u\n", u.stamp.date.year + 80, u.stamp.date.month,
+                                        u.stamp.date.day );
+    printf("file stamp is: %02u:%02u:%02u\n", u.stamp.time.hours, u.stamp.time.minutes,
+                                        u.stamp.time.twosecs * 2 );
+}
