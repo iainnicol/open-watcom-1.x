@@ -62,9 +62,12 @@ void GUImain( void )
     watcom_setup_env();
 
     cmdline = RdosGetCmdLine();
-    if( cmdline )
+    if( cmdline ) {
+        while( *cmdline != 0 && *cmdline != ' ' && *cmdline != 0x9 ) 
+            cmdline++;
+    
         strcpy( CmdData, cmdline );
-    else
+    } else
         CmdData[0] = 0;
 
     DebugMain();

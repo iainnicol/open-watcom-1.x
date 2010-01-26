@@ -820,7 +820,7 @@ static void DebugThread( void *Param )
         RdosAddWaitForDebugEvent( WaitHandle, obj->FHandle, obj );
         
         while( obj->FInstalled )
-            if( RdosWaitForever( obj->FHandle ) )
+            if( RdosWaitForever( WaitHandle ) )
                 SignalDebugData( obj );
 
         RdosCloseWait( WaitHandle );
