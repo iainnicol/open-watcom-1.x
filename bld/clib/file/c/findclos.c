@@ -36,10 +36,6 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #include <os2.h>
-#elif __RDOS__
-    #include <rdos.h>
-    #include "find.h"
-    #include "liballoc.h"
 #else
     #include <dos.h>
     #include "liballoc.h"
@@ -56,12 +52,6 @@ _WCRTLINK int _findclose( long handle )
     if( DosFindClose( (HDIR)handle ) ) {
         return( -1 );
     }
-#elif defined( __RDOS__ )
-    RDOSFINDTYPE * handlebuf = ( RDOSFINDTYPE * )handle;
-
-    RdosCloseDir( handlebuf->handle );    
-    lib_free( (void*) handle );
-    return( 0 );
 #else   /* DOS */
     unsigned        rc;
 

@@ -24,14 +24,7 @@
 *
 *  ========================================================================
 *
->>>> ORIGINAL command.h#1
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-==== THEIRS command.h#11
 * Description:  Command line parser enumerations, structures, constants and
-==== YOURS command.h
-* Description:  Command line parser enumerations, structures, constants and 
-<<<<
 *               prototypes, including CmdTble function call prototypes
 *
 ****************************************************************************/
