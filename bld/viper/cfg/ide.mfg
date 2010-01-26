@@ -1051,8 +1051,8 @@ rem Other Netware variations?
     VSwitch  1, ds2??, "System:", sys, " ", ONE, REQ, x32sv
     VSwitch  1, ds2??, "System:", sys, " ", ONE, REQ, x32s
     VSwitch  1, x?2??, "System:", sys, " ", ONE, REQ, linux
-    VSwitch  1, r?2e?, "System:", sys, " ", ONE, REQ, rdos_pe
-    VSwitch  1, r?2d?, "System:", sys, " ", ONE, REQ, rdos_pe_dll
+    VSwitch  1, r?2e?, "System:", sys, " ", ONE, REQ, rdos
+    VSwitch  1, r?2d?, "System:", sys, " ", ONE, REQ, rdos_dll
     CSwitch  1, d?2d?, " Link DLL", , ON
     CSwitch  1, w?2d?, " Link DLL", , ON
     CSwitch  1, w?6d?, " Link DLL", , ON
