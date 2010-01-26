@@ -48,41 +48,7 @@ void ovl3( void ) {
     puts( "overlay file closed" );
 }
 
->>>> ORIGINAL ovl3.c#1
-int cg24( unsigned short c ) {
-switch( c ) {
-case 0:
-case 3:
-case 6:
-case 9:
-case 12:
-case 15:
-case 18:
-case 21:
-case 24:
-case 27:
-case 30:
-case 33:
-case 36:
-case 39:
-case 42:
-case 45:
-case 48:
-case 51:
-case 54:
-case 57:
-case 60:
-case 63:
-case 66:
-case 69:
-return( 1 );
-default:
-return( 0 );
-==== THEIRS ovl3.c#4
 void cg24( unsigned short c ) {
-==== YOURS ovl3.c
-int cg24( unsigned short c ) {
-<<<<
 }
 
 int cg26( unsigned short c ) {
