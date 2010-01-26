@@ -11,7 +11,7 @@ sys_x86_os2v2 = sys os2v2
 sys_x86_win   = sys windows
 sys_x86_nt    = sys nt
 sys_x86_dos   = sys dos
-sys_x86_rdos  = sys rdos_pe_dll
+sys_x86_rdos  = sys rdos_dll
 sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 
@@ -83,7 +83,7 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 sys_x86_dos  = sys dos
 
 
-sys_x86_rdos = sys rdos_pe_dll &
+sys_x86_rdos = sys rdos_dll &
                export TrapInit_ &
                export TrapFini_ &
                export TrapRequest_ &

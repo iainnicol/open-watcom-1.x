@@ -40,7 +40,7 @@ sys_win_i86     = windows op modname=$(name),rwr
 sys_dos_386     = pharlap rex disable 1023,1014
 sys_nt_386      = nt_dll export DIPLOAD op modname=$(name) $(sys_nt_386_$(name))
 sys_nt_axp      = ntaxp_dll export DIPLOAD op modname=$(name)
-sys_rdos_386    = rdos_pe_dll export DIPLOAD op modname=$(name) $(sys_rdos_386_$(name))
+sys_rdos_386    = rdos_dll export DIPLOAD op modname=$(name) $(sys_rdos_386_$(name))
 
 ext_os2_i86     = .dll
 ext_os2_386     = .d32
