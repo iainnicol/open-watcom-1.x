@@ -41,7 +41,6 @@
 #include "cmdzdos.h"
 #include "cmdraw.h"
 #include "cmd16m.h"
-#include "cmdrdos.h"
 #include "cmdline.h"
 
 
@@ -493,7 +492,6 @@ parse_entry  SubFormats[] = {
     "NT",           &ProcPE,            MK_PE, 0,
     "PE",           &ProcPE,            MK_PE, 0,
     "VXD",          &ProcVXD,           MK_WIN_VXD, 0,
-    "RDOS",         &ProcRdos,          MK_PE, 0,
     NULL
 };
 
