@@ -45,7 +45,7 @@ void __InitFiles( void )
     FILE                        *fp;
 
     fp = _RWD_iob;
-#if defined( __NETWARE__ ) || defined( __RDOS__ )
+#ifdef __NETWARE__
     stdout->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
     stdout->_flag |= _IONBF;
 #endif

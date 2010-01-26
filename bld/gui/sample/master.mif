@@ -100,23 +100,9 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(rcname).res $(LNK)
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
->>>> ORIGINAL master.mif#1
-        wbind $* -s $(%watcom)\binw\win386.ext -R -k $(rcopt) $(sysdep)
-!else ifeq os pm
-        $(lang_root)\binp\rc -p -x $(rcname).res $(name).exe
-==== THEIRS master.mif#7
         wbind $* -s $(%watcom)/binw/win386.ext -R -k $(rcopt) $(rcname).res
-==== YOURS master.mif
-        wbind $* -s $(%watcom)\binw\win386.ext -R -k $(rcopt) $(sysdep)
-<<<<
 !else
->>>> ORIGINAL master.mif#1
-        $(rc) $(rcopt) -k $(sysdep)
-==== THEIRS master.mif#7
         $(rc) $(rcname).res $@
-==== YOURS master.mif
-        $(rc) $(rc_flags) $(rcopt) -k $(sysdep) $@
-<<<<
 !endif
 !else
 !ifeq sys pharlap
@@ -135,64 +121,15 @@ samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
         @%append $(LNK) file samp2.obj
         $(linker) @$(LNK)
 
->>>> ORIGINAL master.mif#1
-.CONTINUE
-.ERASE
-
-==== THEIRS master.mif#7
 .c:     $(guidir)/sample/c;$(os_source_dir);$(os_extra_dir)
 .h:     ../h
 
-==== YOURS master.mif
-<<<<
->>>> ORIGINAL master.mif#1
-.c:     $(source_dir);$(os_source_dir);$(os_extra_dir)
-.h:     ..\h
-
-$(rcname).res : _guimsgs.gh ../$(rcname).rc ../$(rcname).dlg
-!ifeq os pm
-        @set oinc=$(%include)
-        #set include=$(watcom_dir)\os220_h;$(%include)
-        set include=$(inc_dirs_sys_os2);$(%include)
-        copy $(sdk_dir)\misc\closebmp.bmp
-        wcc -p -i..;..\h;$(guidir)\$(type) ..\$(rcname).rc -fo=tmp.rc
-        @%write $(rcname).rc $#include <os2.h>
-        copy $(rcname).rc+tmp.rc
-        del tmp.rc
-        set opath=$(%path)
-        set path=$(lang_root)\binp
-        #@$(lang_root)\binp\rc -r $(rcname).rc
-        rc -r $(rcname).rc
-        del $(rcname).rc
-        set path=$(%opath)
-        @set include=$(%oinc)
-        del closebmp.bmp
-==== THEIRS master.mif#7
 $(rcname).res : ../$(rcname).rc ../$(rcname).dlg _guimsgs.gh
-==== YOURS master.mif
-.c:     $(source_dir);$(os_source_dir);$(os_extra_dir)
-.h:     ..\h
-
-<<<<
 !ifeq type win
->>>> ORIGINAL master.mif#1
-==== THEIRS master.mif#7
         $(rc) $(rc_flags) $(rcopt) $[@ -fo=$^@
-==== YOURS master.mif
-rcflags = $(rc_flags)
-<<<<
 !else
->>>> ORIGINAL master.mif#1
-        $(rc) $(rcopt) -r $[@ -fo=$^@
-==== THEIRS master.mif#7
         $(rc_aui) $(rcopt) $[@ -fo=$^@
-==== YOURS master.mif
-rcflags = -bt=windows
-<<<<
 !endif
-
-$(rcname).res : ../$(rcname).rc ../$(rcname).dlg _guimsgs.gh
-        $(rc) $(rcflags) $(rcopt) -r $[@ -fo=$^@
 
 ./guimkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
         $(bld_cl) -i"$(gui_dir)/h" $(wcl_util_opts) $[@

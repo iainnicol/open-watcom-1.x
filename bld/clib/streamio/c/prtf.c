@@ -31,7 +31,7 @@
 
 #define __LONG_LONG_SUPPORT__
 
-#if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined(__RDOS__)
+#if !defined( __NETWARE__ ) && !defined( __UNIX__ )
     #define USE_MBCS_TRANSLATION
 #endif
 
@@ -461,9 +461,6 @@ static int far_strlen( FAR_STRING s, int precision )
 
 static int far_other_strlen( FAR_STRING s, int precision )
 {
-#ifdef __RDOS__
-    return( 0 );  // RDOS doesn't support unicode
-#else
     int                 len = 0;
     _FAR_OTHER_STRING   ptr = (_FAR_OTHER_STRING)s;
 
@@ -494,7 +491,6 @@ static int far_other_strlen( FAR_STRING s, int precision )
         ++len;
 
     return( len );
-#endif
 #endif
 }
 

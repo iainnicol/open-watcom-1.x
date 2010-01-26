@@ -37,8 +37,6 @@
     #endif
 #elif defined(__NT__)
     #include <windows.h>
-#elif defined(__RDOS__)
-    #include "rdos.h"
 #endif
 #include <string.h>
 #include <stdio.h>
@@ -324,21 +322,6 @@ static drive_type getDriveType( int drv )
     }
 
     return ( type );
-}
-#elif defined( __RDOS__ )
-static drive_type getDriveType( int drv )
-{
-    drive_type type;
-    int        CurDrive = RdosGetCurDrive();
-
-    if( RdosSetCurDrive( drv - 'A' ) )
-        type = DRIVE_IS_FIXED;
-    else
-        type = DRIVE_NONE;
-
-    RdosSetCurDrive( CurDrive );
-
-    return( type );
 }
 #else
 extern short CheckRemovable( char );
