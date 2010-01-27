@@ -56,6 +56,11 @@ unsigned ReqProg_load( void )
 	char            fname[100];
 	char            ext[10];
 	char            curdir[256];
+	char            argstr[256];
+    char            *src;
+    char            *dst;
+    int             len;
+    char            ch;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -75,10 +80,28 @@ unsigned ReqProg_load( void )
     ret->task_id = 0;
     ret->mod_handle = 0;
     ret->flags = 0;
+
+    dst = argstr;
+    src = parm;
+    while( *src != 0 ) {
+        ++src;
+    }
+    src++;
+
+    // parm layout
+    // <--parameters-->0<--program_name-->0<--arguments-->0
+    //
+    for( len = GetTotalSize() - sizeof( *acc ) - (src - parm) - 1; len > 0; --len ) {
+        ch = *src;
+        *dst = ch;
+        ++dst;
+        ++src;
+    }
+    *dst = 0;
     
     if( access( name, 0 ) == 0 ) {
 	    obj = (struct TDebug *)malloc( sizeof( struct TDebug ) );
-	    InitDebug( obj, name, "", getcwd( curdir, 255 ) );
+	    InitDebug( obj, name, argstr, getcwd( curdir, 255 ) );
 	    WaitForLoad( obj );
 
         if( obj->ThreadList && obj->ModuleList ) {
