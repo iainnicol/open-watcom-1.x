@@ -28,6 +28,7 @@ extra_objs = &
         accmap.obj &
         accredir.obj &
         accmem.obj &
+        accrdos.obj &
         thread.obj &
         supphdlr.obj &
         supp.obj &
