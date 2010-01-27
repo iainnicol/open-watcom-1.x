@@ -43,7 +43,7 @@ void Output( char *str )
 
 void SayGNiteGracey( int return_code )
 {
-    UnloadExe( return_code );
+    RdosUnloadExe( return_code );
 }
 
 void StartupErr( char *err )

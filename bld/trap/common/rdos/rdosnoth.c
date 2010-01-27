@@ -34,6 +34,6 @@
 
 void NothingToDo()
 {
-    RdosSwap();
+    RdosWaitMilli(25);
 }
 
