@@ -297,7 +297,7 @@ static EVENT KeyEventProc()
     map                 what;
 
     if( RdosReadKeyEvent( &ext, &keystate, &vk, &scan ) ) {
-        ascii = vk;
+        ascii = ext & 0x7F;
         has_shift = keystate & KEY_SHIFT_PRESSED;
         has_ctrl = keystate & KEY_CTRL_PRESSED;
         has_alt = keystate & KEY_ALT_PRESSED;
