@@ -280,15 +280,8 @@ _WCRTLINK struct dirent *opendir( const char *name )
     }
 
     parent->d_handle = handle;
-    parent->d_entry_nr = 0;
-
-    if (GetSingleFile( parent ) ) 
-        return( parent );
-    else {
-        RdosCloseDir( handle );
-        lib_free( parent );
-        return( NULL );
-    }
+    parent->d_entry_nr = -1;
+    return( parent );
 }
 
 
