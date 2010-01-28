@@ -138,6 +138,8 @@ cdsay .
   [ IFDEF (os_rdos "") <2*> ]
     <CPCMD> <DEVDIR>/trap/lcl/rdos/std/std.dll                      <RELROOT>/rdos/
     <CPCMD> <DEVDIR>/trap/lcl/rdos/std/std.sym                      <RELROOT>/rdos/
+    <CPCMD> <DEVDIR>/trap/tcp/rdos.srv/tcpserv.exe                  <RELROOT>/rdos/
+    <CPCMD> <DEVDIR>/trap/tcp/rdos.srv/tcpserv.sym                  <RELROOT>/rdos/
 
 [ BLOCK <1> clean ]
 #==================
