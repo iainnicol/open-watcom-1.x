@@ -99,9 +99,22 @@ extern      void            (*__FPE_handler_exit)( void );
     extern  unsigned        _curbrk;
     extern  int             _commode;
 #endif
+#if !defined(__SW_BM)
+    extern  unsigned        _STACKLOW;
+#endif
 #if !defined (_NETWARE_LIBC)
 extern      unsigned        _STACKTOP;
 #endif
+/* alternate stack for F77 compiler */
+#if !defined( _M_I86 )
+extern  unsigned            __ASTACKSIZ;
+extern  char                *__ASTACKPTR;
+#if defined( _M_IX86 ) && defined(__WATCOMC__)
+ #pragma aux                __ASTACKPTR "*"
+ #pragma aux                __ASTACKSIZ "*"
+#endif
+#endif
+
 #if !defined(__QNX__) && !defined(__LINUX__) && defined(_M_IX86)
     extern void         (*__Save8087)(_87state *);/* Ptr to FP state save rtn (spawn) */
     extern void         (*__Rest8087)(_87state *);/* Ptr to FP state restore rtn (spawn) */
@@ -116,9 +129,7 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #pragma aux             _8087 "_*";
     #pragma aux             _real87 "_*";
 #endif
-#if !defined(__SW_BM)
-    extern  unsigned        _STACKLOW;
-#endif
+extern unsigned char        __uselfn;   /* LFN support available flag */
 
 #define _RWD_ostream            __OpenStreams
 #define _RWD_cstream            __ClosedStreams
@@ -144,6 +155,7 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #define _RWD_dynend         _dynend
     #define _RWD_psp            _psp
 #endif
+#define _RWD_stacklow           _STACKLOW
 #if !defined (_NETWARE_LIBC)
 #define _RWD_stacktop           _STACKTOP
 #endif
@@ -159,9 +171,6 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #define _RWD_HShift         _HShift
     #define _RWD_osmajor        _osmajor
     #define _RWD_osminor        _osminor
-    #if defined(__RDOS__)
-        #define _RWD_osrelease  _osbuild
-    #endif
     #define _RWD_osmode         _osmode
     #if defined(__NT__)
         #define _RWD_osbuild    _osbuild
@@ -174,7 +183,7 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
 #endif
 #define _RWD_tmpfnext           __tmpfnext
 #if !defined(_RWD_errno)
-    #define _RWD_errno              _ERRNO
+    #define _RWD_errno          _ERRNO
 #endif
 #define _RWD_nexttok            _NEXTTOK
 #define _RWD_nextftok           _NEXTFTOK
@@ -201,13 +210,14 @@ extern unsigned char        _real87;    /* 8087 coprocessor hardware present */
     #define _RWD_tmpnambuf      _tmpname
     #define _RWD_randnextinit   THREAD_PTR.__randnextinit
 #endif
-#define _RWD_stacklow           _STACKLOW
 #define _RWD_randnext           _RANDNEXT
 #define _RWD_ThreadData         _ThreadData
 #define _RWD_StaticInitSema     _StaticInitSema
 #define _RWD_PureErrorFlag      _PureErrorFlag
 #define _RWD_UndefVfunFlag      _UndefVfunFlag
 #define _RWD_ModuleInit         _ModuleInit
+
+#define _RWD_uselfn             __uselfn
 
 /*
     For the sake of efficiency, tell the compiler

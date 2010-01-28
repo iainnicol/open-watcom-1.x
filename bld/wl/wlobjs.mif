@@ -4,20 +4,20 @@
 drv_objs = &
     stidedrv.obj &
     idemsgfm.obj &
-    dlldrvr.obj
+    maindrv.obj
 
 #
 # stand-alone executable
 #
-exe_objs =
+exe_objs = &
+    stidedrv.obj &
+    idemsgfm.obj &
+    maindrv.obj
 
 #
 # DLL stuff
 #
-dll_objs = &
-    dllentry.obj &
-    idemsgpr.obj &
-    idedrv.obj
+dll_objs =
 
 #
 # common files
@@ -34,6 +34,8 @@ common_objs = &
     cmdnov.obj &
     cmdos2.obj &
     cmdphar.obj &
+    cmdzdos.obj &
+    cmdraw.obj &
     cmdtable.obj &
     cmdutils.obj &
     cmdqnx.obj &
@@ -45,6 +47,8 @@ common_objs = &
     distrib.obj &
     global.obj &
     hash.obj &
+    ideentry.obj &
+    idemsgpr.obj &
     impexp.obj &
     libr.obj &
     libsupp.obj &
@@ -61,6 +65,7 @@ common_objs = &
     loadphar.obj &
     loadqnx.obj &
     loadraw.obj &
+    loadzdos.obj &
     lsymtab.obj &
     mapio.obj &
     mem.obj &
@@ -104,6 +109,10 @@ common_objs += virtmem.obj
 common_objs += virtpage.obj
 !endif
 
+!ifdef DLLS_IMPLEMENTED
+common_objs += idedrv.obj
+!endif
+
 #
 # target OS dependent files
 #
@@ -114,5 +123,6 @@ wlink_objs_osx   = posixio.obj
 wlink_objs_bsd   = posixio.obj
 wlink_objs_nt    = ntio.obj
 wlink_objs_os2   = ntio.obj
+wlink_objs_zdos  = zdosio.obj
 
 common_objs += $(wlink_objs_$(host_os))

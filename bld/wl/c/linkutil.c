@@ -45,99 +45,14 @@
 #include "wlnkmsg.h"
 #include "linkutil.h"
 #include "fileio.h"
+#include "ideentry.h"
 #include "ring.h"
 #include "overlays.h"
 #include "strtab.h"
 #include "loadfile.h"
 #include "permdata.h"
 #include "mapio.h"
-#include "wressetr.h"   // from wres project
 
-
-static ssize_t ResWrite( int dummy, const void *buff, size_t size )
-/*****************************************************************/
-/* redirect wres write to writeload */
-{
-    dummy = dummy;
-    DbgAssert( dummy == Root->outfile->handle );
-    WriteLoad( (void *) buff, size );
-    return( size );
-}
-
-//extern int WLinkItself;
-static off_t ResSeek( int handle, off_t position, int where )
-/***********************************************************/
-/* Workaround wres bug */
-{
-    if( ( where == SEEK_SET ) && ( handle == WLinkItself ) ) {
-        return( QLSeek( handle, position + FileShift, where, NULL ) - FileShift );
-    } else {
-        return( QLSeek( handle, position, where, NULL ) );
-    }
-}
-
-static int ResClose( int handle )
-/*******************************/
-{
-    return( close( handle ) );
-}
-
-static ssize_t ResRead( int handle, void *buffer, size_t len )
-/************************************************************/
-{
-    return( QRead( handle, buffer, len, NULL ) );
-}
-
-static off_t ResPos( int handle )
-/*******************************/
-{
-    return( QPos( handle ) );
-}
-
-WResSetRtns( ResOpen, ResClose, ResRead, ResWrite, ResSeek, ResPos, ChkLAlloc, LFree );
-
-#if !defined( _DLLHOST )
-void WriteStdOut( char *str )
-/**********************************/
-{
-    QWrite( STDOUT_HANDLE, str, strlen( str ), NULL );
-}
-
-void WriteNLStdOut( void )
-/*******************************/
-{
-    QWriteNL( STDOUT_HANDLE, NULL );
-}
-
-void WriteInfoStdOut( char *str, unsigned level, char *sym )
-/*****************************************************************/
-{
-    level = level;
-    sym = sym;
-    WriteStdOut( str );
-    WriteNLStdOut();
-}
-
-char *GetEnvString( char *envname )
-/*****************************************/
-{
-    return( getenv( envname ) );
-}
-
-bool GetAddtlCommand( unsigned cmd, char *buf )
-/****************************************************/
-{
-    cmd = cmd;
-    buf = buf;
-    return( FALSE );
-}
-
-bool IsStdOutConsole( void )
-/*********************************/
-{
-    return( QIsDevice( STDOUT_HANDLE ) );
-}
-#endif
 
 void WriteNulls( f_handle file, unsigned_32 len, char *name )
 /*******************************************************************/
@@ -389,29 +304,27 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-char *RemovePath( char *name, unsigned *len )
+char *RemovePath( char *namestart, unsigned *len )
 /**********************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
  * the extension */
 {
     char    *dotpoint;
-    char    *namestart;
     char    *string;
     char    ch;
 
     dotpoint = NULL;
-    string = namestart = name;
-    while( *string != '\0' ) {    // ignore path & extension in module name.
-        ch = *string;
+    // ignore path & extension in module name.
+    for( string = namestart; (ch = *string) != '\0'; string++ ) {
         if( ch == '.' ) {
             dotpoint = string;
+            continue;
         }
         if( IS_PATH_SEP( ch ) ) {
             namestart = string + 1;
             dotpoint = NULL;
         }
-        string++;
     }
     if( dotpoint != NULL ) {
         *len = dotpoint - namestart;

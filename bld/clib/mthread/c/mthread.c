@@ -455,6 +455,8 @@ struct thread_data *__MultipleThread( void )
     #elif defined( __RDOS__ )
         thread_data *tdata;
         tdata = (thread_data *)__tls_get_value( __TlsIndex );
+        if( tdata == NULL )
+            tdata = __GetThreadData();
         return( tdata );
     #else
         return( __ThreadData[GetCurrentThreadId()].data );
@@ -667,17 +669,8 @@ int __RdosThreadInit( void )
     if( __TlsIndex == NO_INDEX ) {
         return( 0 );
     }
+    __tls_set_value( __TlsIndex, NULL );
     return( 1 );
-}
-
-
-static void __RdosThreadFini( void )
-/********************************/
-{
-    if( __TlsIndex != NO_INDEX ) {
-        __tls_free( __TlsIndex );
-        __TlsIndex = NO_INDEX;
-    }
 }
 
 
@@ -714,13 +707,6 @@ void __RdosRemoveThread( int close_handle )
         __RemoveThreadData( tdata->thread_id );
         __tls_set_value( __TlsIndex, NULL );
     }
-}
-
-static void __ThreadExit( void )
-/******************************/
-{
-    __RdosRemoveThread( 1 );
-    __RdosThreadFini();
 }
 
 #endif
@@ -798,7 +784,6 @@ void __InitMultipleThread( void )
         #elif defined( __RDOS__ )
             InitSemaphore.semaphore = RdosCreateSection();
             InitSemaphore.initialized = 1;
-            _ThreadExitRtn = &__ThreadExit;
             __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
             __tls_set_value( __TlsIndex, __FirstThreadData );
         #else

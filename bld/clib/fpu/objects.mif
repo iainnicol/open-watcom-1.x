@@ -12,7 +12,7 @@
 !inject chipr32.obj      d32             nt         nvc     nvl         o32     q32     w32     l32         rdu
 !inject cntrl87.obj  d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32     l32         rdu
 !inject cntrlfp.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
-!inject fclex387.obj                     nt
+!inject fclex387.obj                     nt                                                                 rdu
 !inject fenv.obj     d16 d32             nt         nvc     nvl     o16 o32 q16 q32 w16 w32     l32         rdu
 !inject fpe87.obj    d16                                            o16
 !inject fpe387.obj       d32
@@ -57,3 +57,8 @@ fpeinth_postopts=$(fpi87_postopts)
 fenv_postopts=$(fpi87_postopts) -za99
 cntrl87_postopts=$(fpi87_postopts)
 dosinite_postopts=$(fpi87_postopts)
+
+# BUILD WORKAROUND because of insufficiently smart 1.8 compiler
+!ifeq __VERSION__ 1280
+cntrl87_postopts = $(fpi87_postopts) -wcd112
+!endif
