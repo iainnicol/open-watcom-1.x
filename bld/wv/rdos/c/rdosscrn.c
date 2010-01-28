@@ -35,16 +35,21 @@
 #include <stddef.h>
 #include "dbgtoggl.h"
 #include "dbglit.h"
+#include "dbginfo.h"
 #include <rdos.h>
 #include <stdui.h>
 
-extern void     *ExtraAlloc( unsigned );
-extern void     ExtraFree( void * );
-extern int      GUIInitMouse( int );
-extern void     GUIFiniMouse( void );
+extern void         *ExtraAlloc( unsigned );
+extern void         ExtraFree( void * );
+extern int          GUIInitMouse( int );
+extern void         GUIFiniMouse( void );
+extern image_entry  *ImagePrimary(void);
 
 static unsigned ScrnLines=25;
 static unsigned ScrnColumns=80;
+
+static char my_key = 0;
+static char debug_key = 0;
 
 
 void SetNumLines( int num )
@@ -80,6 +85,16 @@ bool UsrScrnMode( void )
 
 bool DebugScreen( void )
 {
+    int handle;
+    
+    if( my_key == 0) {
+        handle = RdosGetModuleHandle();
+        my_key = RdosGetModuleFocusKey( handle );
+    }
+    
+    if( my_key )
+        RdosSetFocus( my_key );
+        
     return( FALSE );
 }
 
@@ -91,6 +106,20 @@ bool DebugScreenRecover()
 
 bool UserScreen()
 {
+    int handle;
+    image_entry *img;
+        
+    if( debug_key == 0 ) {
+        img = ImagePrimary();
+        if( img ) {
+            handle = img->system_handle;
+            debug_key = RdosGetModuleFocusKey( handle );
+        }        
+    }
+
+    if( debug_key )
+        RdosSetFocus( debug_key );
+
     return( FALSE );
 }
 

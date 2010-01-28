@@ -113,6 +113,7 @@ void SetCurrentDebug( struct TDebug *obj )
         if( ThreadArr[i] == handle ) {
             ThreadArr[i] = 0;
             DebugArr[i] = 0;
+            break;            
         }
     }
 
