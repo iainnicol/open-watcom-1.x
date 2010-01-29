@@ -51,9 +51,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined ( __RDOS__ )
-    #include "rdos.h"
-#else
 #if defined(__NT__) || defined(__WINDOWS__)
     #include <winsock.h>
 #else
@@ -80,7 +77,6 @@
     #elif defined(__UNIX__) || defined(__DOS__) || defined(__OS2__)
         #include <arpa/inet.h>
     #endif
-#endif
 #endif
 
 #include <watcom.h>
@@ -115,16 +111,6 @@
 
 #define DEFAULT_PORT    0xDEB
 
-#ifdef __RDOS__
-
-#define SOCKET_BUFFER   0x7000
-
-static int listen_handle = 0;
-static int wait_handle = 0;
-static int socket_handle = 0;
-
-#else
-
 #ifndef IPPROTO_TCP
     #define IPPROTO_TCP 6
 #endif
@@ -149,8 +135,6 @@ static bool die = FALSE;
 static int                  control_socket;
 #endif
 
-#endif
-
 #if  defined(SERVER)
 extern void     ServMessage( char * );
 #endif
@@ -165,7 +149,6 @@ extern void     ServMessage( char * );
 
 bool Terminate( void )
 {
-#ifndef __RDOS__
     struct linger       linger;
 
     die = TRUE;
@@ -174,11 +157,8 @@ bool Terminate( void )
     setsockopt( data_socket, (int)SOL_SOCKET, SO_LINGER, (void*)&linger, sizeof( linger ) );
     soclose( data_socket );
     data_socket = -1;
-#endif
-    return( TRUE );    
+    return( TRUE );
 }
-
-#ifndef __RDOS__
 
 static unsigned FullGet( void *get, unsigned len )
 {
@@ -201,38 +181,13 @@ static unsigned FullGet( void *get, unsigned len )
     return( got );
 }
 
-#endif
-
 unsigned RemoteGet( char *rec, unsigned len )
 {
     unsigned_16         rec_len;
-#ifdef __RDOS__    
-    int                 size;
-#endif
 
     _DBG_NET(("RemoteGet\r\n"));
+
     len = len;
-
-#ifdef __RDOS__
-
-    if( socket_handle && !RdosIsTcpConnectionClosed( socket_handle ) ) {
-        size = RdosReadTcpConnection( socket_handle, &rec_len, 2 );
-
-        if( size == 2 ) {
-            CONV_LE_16( rec_len );
-
-            if( rec_len ) {
-                size = RdosReadTcpConnection( socket_handle, rec, rec_len );
-
-                if( size == rec_len ) {
-                    _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
-                    return( rec_len );
-                }
-            }
-        }
-    }   
-    return( REQUEST_FAILED );
-#else
     if( FullGet( &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) ) {
         return( REQUEST_FAILED );
     }
@@ -244,7 +199,6 @@ unsigned RemoteGet( char *rec, unsigned len )
     }
     _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
     return( rec_len );
-#endif
 }
 
 unsigned RemotePut( char *rec, unsigned len )
@@ -253,18 +207,6 @@ unsigned RemotePut( char *rec, unsigned len )
 
     _DBG_NET(("RemotePut\r\n"));
 
-#ifdef __RDOS__
-    if( socket_handle && !RdosIsTcpConnectionClosed( socket_handle ) ) {
-        send_len = len;
-        CONV_LE_16( send_len );
-        RdosWriteTcpConnection( socket_handle, &send_len, 2 );
-        RdosWriteTcpConnection( socket_handle, rec, len );
-        RdosPushTcpConnection( socket_handle );
-        _DBG_NET(("RemotePut...OK\r\n"));
-        return( len );
-    } else
-        return( REQUEST_FAILED );
-#else
     send_len = len;
     CONV_LE_16( send_len );
     if( die || send( data_socket, (void *)&send_len, sizeof( send_len ), 0 ) == -1 ) {
@@ -277,10 +219,7 @@ unsigned RemotePut( char *rec, unsigned len )
     }
     _DBG_NET(("RemotePut...OK\r\n"));
     return( len );
-#endif
 }
-
-#ifndef __RDOS__
 
 static void nodelay( void )
 {
@@ -294,24 +233,9 @@ static void nodelay( void )
     setsockopt( data_socket, p, TCP_NODELAY, (void *)&delayoff, sizeof( delayoff ) );
 }
 
-#endif
-
 char RemoteConnect( void )
 {
 #ifdef SERVER
-#ifdef __RDOS__
-    void *obj;
-
-    obj = RdosWaitTimeout( wait_handle, 250 );
-
-    if( obj )
-        socket_handle = RdosGetTcpListen( listen_handle );
-
-    if( socket_handle ) {
-        _DBG_NET(("Found a connection\r\n"));
-        return( 1 );
-    }
-#else
     struct      timeval timeout;
     fd_set ready;
     struct      sockaddr dummy;
@@ -329,10 +253,6 @@ char RemoteConnect( void )
             return( 1 );
         }
     }
-#endif
-#else
-#ifdef __RDOS__
-// todo: Add code for connect!
 #else
     data_socket = socket( AF_INET, SOCK_STREAM, 0 );
     if( data_socket >= 0 ) {
@@ -343,41 +263,28 @@ char RemoteConnect( void )
         }
     }
 #endif
-#endif
     return( 0 );
 }
 
 void RemoteDisco( void )
 {
     _DBG_NET(("RemoteDisco\r\n"));
-
-#ifdef __RDOS__
-    if( socket_handle ) {
-        RdosCloseTcpConnection( socket_handle );
-        socket_handle = 0;
-    }
-#else
     if( data_socket != -1 ) soclose( data_socket );
-#endif
 }
 
 
 char *RemoteLink( char *name, char server )
 {
-    unsigned            port;
-#ifndef __RDOS__    
     struct servent      *sp;
-#endif    
+    unsigned            port;
 
 #ifdef SERVER
-#ifndef __RDOS__
     socklen_t           length;
 #if !defined(__LINUX__)   /* FIXME */
     struct ifi_info     *ifi, *ifihead;
     struct sockaddr     *sa;
 #endif
     char                buff2[128];
-#endif
 
     _DBG_NET(("SERVER: Calling into RemoteLink\r\n"));
 
@@ -391,40 +298,24 @@ char *RemoteLink( char *name, char server )
     }
 #endif
 
-#ifndef __RDOS__
     control_socket = socket(AF_INET, SOCK_STREAM, 0);
     if( control_socket < 0 ) {
         return( TRP_ERR_unable_to_open_stream_socket );
     }
-#endif   
- 
     port = 0;
     if( name == NULL || name[0] == '\0' )
         name = "tcplink";
-
-#ifndef __RDOS__
     sp = getservbyname( name, "tcp" );
     if( sp != NULL ) {
         port = sp->s_port;
-    } else
-#endif 
-    {
+    } else {
         while( isdigit( *name ) ) {
             port = port * 10 + (*name - '0');
             ++name;
         }
         if( port == 0 ) port = DEFAULT_PORT;
-
-#ifndef __RDOS__        
         port = htons( port );
-#endif
     }
-
-#ifdef __RDOS__
-    wait_handle = RdosCreateWait( );
-    listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
-    RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
-#else
     /* Name socket using wildcards */
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -441,6 +332,7 @@ char *RemoteLink( char *name, char server )
     }
     sprintf( buff2, "%s%d", TRP_TCP_socket_number, ntohs( socket_address.sin_port ) );
     ServMessage( buff2 );
+
     _DBG_NET(("TCP: "));
     _DBG_NET((buff2));
     _DBG_NET(("\r\n"));
@@ -461,16 +353,10 @@ char *RemoteLink( char *name, char server )
     }
     free_ifi_info( ifihead );
 #endif
-#endif
 
     _DBG_NET(("Start accepting connections\r\n"));
     /* Start accepting connections */
-#ifndef __RDOS__    
     listen( control_socket, 5 );
-#endif
-#else
-#ifdef __RDOS__
-// Todo: handle connect
 #else
     char        *sock;
 
@@ -528,7 +414,6 @@ char *RemoteLink( char *name, char server )
     }
     socket_address.sin_port = port;
 #endif
-#endif
     server = server;
     return( NULL );
 }
@@ -537,32 +422,10 @@ char *RemoteLink( char *name, char server )
 void RemoteUnLink( void )
 {
 #ifdef SERVER
-
-#ifdef __RDOS__
-    if( wait_handle ) {
-        RdosCloseWait( wait_handle );
-        wait_handle = 0;
-    }
-    
-    if( listen_handle ) {
-        RdosCloseTcpListen( listen_handle );
-        listen_handle = 0;
-    }
-#else
     soclose( control_socket );
-#endif
 #else
     Terminate();
 #endif
-
-#ifdef __RDOS__
-    if( socket_handle ) {
-        RdosPushTcpConnection( socket_handle );
-        RdosCloseTcpConnection( socket_handle );
-        socket_handle = 0;
-    }
-#endif
-
 #if defined(__NT__) || defined(__WINDOWS__)
     WSACleanup();
 #endif
@@ -570,8 +433,6 @@ void RemoteUnLink( void )
     sock_exit();
 #endif
 }
-
-#ifndef __RDOS__
 
 #ifdef SERVER
 
@@ -712,8 +573,6 @@ static struct ifi_info * get_ifi_info(int family, int doaliases)
 static void free_ifi_info(struct ifi_info *ifihead)
 {
 }
-
-#endif
 
 #endif
 
