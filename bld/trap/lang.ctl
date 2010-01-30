@@ -87,6 +87,8 @@ cdsay .
 
   [ IFDEF (os_nt "") <2*> ]
     <CPCMD> <DEVDIR>/trap/lcl/nt/std/std.dll                        <RELROOT>/binnt/
+    <CPCMD> <DEVDIR>/trap/net/nt.trp/net.dll                        <RELROOT>/binnt/
+    <CPCMD> <DEVDIR>/trap/net/nt.srv/netserv.exe                    <RELROOT>/binnt/
 #    <CPCMD> <DEVDIR>/trap/nmp/nt.trp/nmp.dll                       <RELROOT>/binnt/
     <CPCMD> <DEVDIR>/trap/nov/nt.trp/nov.dll                        <RELROOT>/binnt/
     <CPCMD> <DEVDIR>/trap/nov/nt.srv/novserv.exe                    <RELROOT>/binnt/
@@ -132,10 +134,6 @@ cdsay .
     <CPCMD> <DEVDIR>/trap/par/linux.srv/parserv.elf                 <RELROOT>/binl/parserv
     <CPCMD> <DEVDIR>/trap/tcp/linux.trp/tcp.trp                     <RELROOT>/binl/
     <CPCMD> <DEVDIR>/trap/tcp/linux.srv/tcpserv.elf                 <RELROOT>/binl/tcpserv
-
-  [ IFDEF (os_rdos "") <2*> ]
-    <CPCMD> <DEVDIR>/trap/lcl/rdos/std/std.dll                      <RELROOT>/rdos/
-    <CPCMD> <DEVDIR>/trap/lcl/rdos/std/std.sym                      <RELROOT>/rdos/
 
 [ BLOCK <1> clean ]
 #==================

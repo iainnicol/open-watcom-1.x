@@ -32,10 +32,6 @@ cdsay .
     <CPCMD> <DEVDIR>/wv/win/wini86.gui/wv.exe   <RELROOT>/binw/wdw.exe
     <CPCMD> <DEVDIR>/wv/win/wini86.gui/wv.sym   <RELROOT>/binw/wdw.sym
 
-  [ IFDEF (os_rdos "") <2*> ]
-    <CPCMD> <DEVDIR>/wv/rdos/rdos386/wv.exe       <RELROOT>/rdos/wd.exe
-    <CPCMD> <DEVDIR>/wv/rdos/rdos386/wv.sym       <RELROOT>/rdos/wd.sym
-
   [ IFDEF (os_os2 "") <2*> ]
     <CPCMD> <DEVDIR>/wv/rfx/os2386/rfx.exe      <RELROOT>/binp/rfx.exe
     <CPCMD> <DEVDIR>/wv/os2/os2386/wv.exe       <RELROOT>/binp/wd.exe

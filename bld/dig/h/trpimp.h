@@ -196,6 +196,7 @@
     #define     WANT_THREAD
     #undef      WANT_RFX
     #define     WANT_CAPABILITIES
+    #define     WANT_RDOS_DEBUG
     #define     TRAPENTRY TRAPFAR
 #else
     #error Unknown operating system
@@ -339,6 +340,13 @@ extern unsigned ReqCapabilities_get_8b_bp(void);
 extern unsigned ReqCapabilities_set_8b_bp(void);
 extern unsigned ReqCapabilities_get_exact_bp(void);
 extern unsigned ReqCapabilities_set_exact_bp(void);
+
+#endif
+
+#ifdef WANT_RDOS_DEBUG
+#include "trprdos.h"
+
+extern unsigned ReqRdos_poll(void);
 
 #endif
 
