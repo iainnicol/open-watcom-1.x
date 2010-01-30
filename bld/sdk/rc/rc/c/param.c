@@ -804,8 +804,8 @@ static void getCodePage( void ) {
     } else {
 #ifdef NT_HOSTED
         if(DB_NONE == CmdLineParms.DBCharSupport){
-        SetNativeLeadBytes();
-        ConvToUnicode = NativeDBStringToUnicode;
+            SetNativeLeadBytes();
+            ConvToUnicode = NativeDBStringToUnicode;
         }
 #endif
     }
@@ -925,12 +925,12 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
         char                    buf[1]; /* dynamic array */
     } EnvVarInfo;
 
-    unsigned    argc;
-    EnvVarInfo  *info;
+    unsigned            argc;
+    EnvVarInfo          *info;
     static EnvVarInfo   *stack = 0; // Needed to detect recursion.
-    unsigned    argvsize;
-    unsigned    argbufsize;
-    char        *env;
+    unsigned            argvsize;
+    unsigned            argbufsize;
+    char                *env;
     size_t              varlen;     // size to hold varname copy.
     bool                result;     // doScanParams Result.
 
