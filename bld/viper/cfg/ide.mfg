@@ -269,43 +269,15 @@ rem binw\wd is used because wdw doesn't load trap files
     CSwitch 0, ?????, "Use symbol file", :$*.sym, OFF
 :segment !C_FOR_PB
     CSwitch 0, ?????, "Don't process symbolic info", -nosy, OFF
->>>> ORIGINAL ide.mfg#1
-    CSwitch 0, ?????, "Ignore any floating point hdwr", /nof, OFF
-    CSwitch 0, ?????, "Ignore any attached mouse", /nom, OFF
-    CSwitch 0, ?????, "Don't use graphical mouse", /nog, OFF
-    CSwitch 0, ?????, "Don't do char remapping", /noch, OFF
-    VSwitch 1, ?????, "Dip files:", /di, =, MULTI, REQ, ""
-    VSwitch 1, ?????, "Dynamic memory:", /dy, =, ONE, REQ, ""
-    VSwitch 1, ?????, "Free guarantee:", /ch, =, ONE, REQ, ""
-==== THEIRS ide.mfg#4
     CSwitch 0, ?????, "Ignore any floating point hardware", -nof, OFF
-==== YOURS ide.mfg
-    CSwitch 0, ?????, "Ignore any floating point hdwr", -nof, OFF
-<<<<
     CSwitch 0, ?????, "Ignore any attached mouse", -nom, OFF
     CSwitch 0, ?????, "Don't use graphical mouse", -nog, OFF
->>>> ORIGINAL ide.mfg#1
-==== THEIRS ide.mfg#4
     CSwitch 0, ?????, "Don't do character remapping", -noch, OFF
-==== YOURS ide.mfg
-    CSwitch 0, ?????, "Don't do char remapping", -noch, OFF
-<<<<
     VSwitch 1, ?????, "Dip files:", -di, =, MULTI, REQ, ""
     VSwitch 1, ?????, "Dynamic memory:", -dy, =, ONE, REQ, ""
     VSwitch 1, ?????, "Free guarantee:", -ch, =, ONE, REQ, ""
 :endsegment
   Family "Debugger Display"
->>>> ORIGINAL ide.mfg#1
-    VSwitch 0, ?????, "Lines of char mode screen:", /li, =, ONE, REQ, ""
-    VSwitch 0, ?????, "Columns of char mode screen:", /co, =, ONE, REQ, ""
-    RGroup "Char Mode Screen"
-        RSwitch 0, ?????, "Default Adapter", , ON
-        RSwitch 0, ?????, "Monochrome Adapter", /m, OFF
-        RSwitch 0, ?????, "Color Adapter", /c, OFF
-        RSwitch 0, ?????, "43 line EGA Adapter", /e, OFF
-        RSwitch 0, ?????, "50 line VGA Adapter", /v, OFF
-    RGroup "Char Mode Screen Protocol"
-==== THEIRS ide.mfg#4
     VSwitch 0, ?????, "Lines of character mode screen:", -li, =, ONE, REQ, ""
     VSwitch 0, ?????, "Columns of character mode screen:", -co, =, ONE, REQ, ""
     RGroup "Character mode screen"
@@ -315,17 +287,6 @@ rem binw\wd is used because wdw doesn't load trap files
         RSwitch 0, ?????, "43-line EGA adapter", -e, OFF
         RSwitch 0, ?????, "50-line VGA adapter", -v, OFF
     RGroup "Character mode screen protocol"
-==== YOURS ide.mfg
-    VSwitch 0, ?????, "Lines of char mode screen:", -li, =, ONE, REQ, ""
-    VSwitch 0, ?????, "Columns of char mode screen:", -co, =, ONE, REQ, ""
-    RGroup "Char Mode Screen"
-        RSwitch 0, ?????, "Default Adapter", , ON
-        RSwitch 0, ?????, "Monochrome Adapter", -m, OFF
-        RSwitch 0, ?????, "Color Adapter", -c, OFF
-        RSwitch 0, ?????, "43 line EGA Adapter", -e, OFF
-        RSwitch 0, ?????, "50 line VGA Adapter", -v, OFF
-    RGroup "Char Mode Screen Protocol"
-<<<<
         RSwitch 1, ?????, "Default protocol", , ON
 :segment !C_FOR_PB
         RSwitch 1, ?????, "Overwrite protocol", -o, OFF
@@ -384,16 +345,7 @@ Tool RDEBUG "Remote Debugging"
         RSwitch 0, ????8, "Character mode", "!Fullscreen $(%watcom)\\n98bw\\wdc.exe", OFF
         RSwitch 0, ????a, "Character mode", "!Fullscreen $(%watcom)\\axpnt\\wd.exe", OFF
     VSwitch 1, ?????, "Local trap file:", -tr, =, ONE, REQ, ""
->>>> ORIGINAL ide.mfg#1
-    RGroup "Target Location"
-        RSwitch 1, ?????, "Exists on target", /rem, OFF
-        RSwitch 2, ?????, "Download to target", /do, ON
-    VSwitch 1, ?????, "Local info:", /lo, =, MULTI, REQ, ""
-==== THEIRS ide.mfg#4
     RGroup "Target location"
-==== YOURS ide.mfg
-    RGroup "Target Location"
-<<<<
         RSwitch 1, ?????, "Exists on target", -rem, OFF
         RSwitch 2, ?????, "Download to target", -do, ON
     VSwitch 1, ?????, "Local info:", -lo, =, MULTI, REQ, ""
@@ -405,31 +357,11 @@ Tool RDEBUG "Remote Debugging"
     CSwitch 0, ?????, "Don't invoke configuration", -noi, OFF
     CSwitch 0, ?????, "Use symbol file", :$*.sym, OFF
     CSwitch 0, ?????, "Don't process symbolic info", -nosy, OFF
->>>> ORIGINAL ide.mfg#1
-    CSwitch 0, ?????, "Ignore any floating point hdwr", /nof, OFF
-    CSwitch 0, ?????, "Don't do char remapping", /noch, OFF
-    VSwitch 0, ?????, "Dip files:", /di, =, MULTI, REQ, ""
-    VSwitch 0, ?????, "Dynamic memory:", /dy, =, ONE, REQ, ""
-==== THEIRS ide.mfg#4
     CSwitch 0, ?????, "Ignore any floating point hardware", -nof, OFF
     CSwitch 0, ?????, "Don't do character remapping", -noch, OFF
-==== YOURS ide.mfg
-    CSwitch 0, ?????, "Ignore any floating point hdwr", -nof, OFF
-    CSwitch 0, ?????, "Don't do char remapping", -noch, OFF
-<<<<
     VSwitch 0, ?????, "Dip files:", -di, =, MULTI, REQ, ""
     VSwitch 0, ?????, "Dynamic memory:", -dy, =, ONE, REQ, ""
     CSwitch 0, ?????, " Name", $., ON
->>>> ORIGINAL ide.mfg#1
-    VSwitch 1, ?????, "Lines of char mode screen:", /li, =, ONE, REQ, ""
-    VSwitch 1, ?????, "Columns of char mode screen:", /co, =, ONE, REQ, ""
-    RGroup "Char Mode Screen"
-        RSwitch 1, ?????, "Default Adapter", , ON
-        RSwitch 1, ?????, "Monochrome Adapter", /m, OFF
-        RSwitch 1, ?????, "Color Adapter", /c, OFF
-        RSwitch 1, ?????, "43 line EGA Adapter", /e, OFF
-        RSwitch 1, ?????, "50 line VGA Adapter", /v, OFF
-==== THEIRS ide.mfg#4
     VSwitch 1, ?????, "Lines of character mode screen:", -li, =, ONE, REQ, ""
     VSwitch 1, ?????, "Columns of character mode screen:", -co, =, ONE, REQ, ""
     RGroup "Character mode screen"
@@ -438,16 +370,6 @@ Tool RDEBUG "Remote Debugging"
         RSwitch 1, ?????, "Color adapter", -c, OFF
         RSwitch 1, ?????, "43-line EGA adapter", -e, OFF
         RSwitch 1, ?????, "50-line VGA adapter", -v, OFF
-==== YOURS ide.mfg
-    VSwitch 1, ?????, "Lines of char mode screen:", -li, =, ONE, REQ, ""
-    VSwitch 1, ?????, "Columns of char mode screen:", -co, =, ONE, REQ, ""
-    RGroup "Char Mode Screen"
-        RSwitch 1, ?????, "Default Adapter", , ON
-        RSwitch 1, ?????, "Monochrome Adapter", -m, OFF
-        RSwitch 1, ?????, "Color Adapter", -c, OFF
-        RSwitch 1, ?????, "43 line EGA Adapter", -e, OFF
-        RSwitch 1, ?????, "50 line VGA Adapter", -v, OFF
-<<<<
     VSwitch 1, ?????, "Application parameters:",,, ONE, REQ, ""
 ::
 :segment !C_FOR_PB
@@ -579,43 +501,19 @@ Tool WCG "Code Generator"
     CSwitch 0, nu???, "Multithreaded application", -bm, ON
     CSwitch 0, o????, "Multithreaded application", -bm, OFF
     CSwitch 0, n????, "Multithreaded application", -bm, OFF
-    CSwitch 0, w????, "Default-window application", -bw, OFF
     CSwitch 0, r????, "Multithreaded application", -bm, ON
+    CSwitch 0, w????, "Default-window application", -bw, OFF
 :endsegment
     RGroup "Floating-point level"
         RSwitch 0, ?????, "Compiler default", , ON
->>>> ORIGINAL ide.mfg#1
-        RSwitch 0, ?????, "In-line 80287 instructions", -fp2, OFF
-        RSwitch 0, ?????, "In-line 80387 instructions", -fp3, OFF
-        RSwitch 0, ?????, "In-line Pentium instructions", -fp5, OFF
-        RSwitch 0, ?????, "In-line Pentium Pro instructions", -fp6, OFF
-    RGroup "Floating-point Model"
-==== THEIRS ide.mfg#4
         RSwitch 0, ?????, "Inline 80287 instructions", -fp2, OFF
         RSwitch 0, ?????, "Inline 80387 instructions", -fp3, OFF
         RSwitch 0, ?????, "Inline Pentium instructions", -fp5, OFF
         RSwitch 0, ?????, "Inline Pentium Pro instructions", -fp6, OFF
     RGroup "Floating-point model"
-==== YOURS ide.mfg
-        RSwitch 0, ?????, "In-line 80287 instructions", -fp2, OFF
-        RSwitch 0, r????, "In-line 80387 instructions", -fp3, ON
-        RSwitch 0, ?????, "In-line 80387 instructions", -fp3, OFF
-        RSwitch 0, ?????, "In-line Pentium instructions", -fp5, OFF
-        RSwitch 0, ?????, "In-line Pentium Pro instructions", -fp6, OFF
-    RGroup "Floating-point Model"
-<<<<
         RSwitch 1, ?????, "Compiler default", , ON
->>>> ORIGINAL ide.mfg#1
-        RSwitch 1, ?????, "In-line with emulator", -fpi, OFF
-        RSwitch 1, ?????, "In-line with coprocessor", -fpi87, OFF
-==== THEIRS ide.mfg#4
         RSwitch 1, ?????, "Inline with emulator", -fpi, OFF
         RSwitch 1, ?????, "Inline with coprocessor", -fpi87, OFF
-==== YOURS ide.mfg
-        RSwitch 1, ?????, "In-line with emulator", -fpi, OFF
-        RSwitch 1, r????, "In-line with coprocessor", -fpi87, ON
-        RSwitch 1, ?????, "In-line with coprocessor", -fpi87, OFF
-<<<<
         RSwitch 1, ?????, "Floating-point calls", -fpc, OFF
     RGroup "Floating-point rounding"
         RSwitch, 1, ?????, "Default rounding", , ON
@@ -671,22 +569,7 @@ Tool WCG "Code Generator"
         RSwitch 0, ??6??, "80486", -4, OFF
         RSwitch 0, ??6??, "Pentium", -5, OFF
         RSwitch 0, ??6??, "Pentium Pro", -6, OFF
->>>> ORIGINAL ide.mfg#1
-        RSwitch 0, ??2??, "80386 Register based calling", -3r, OFF
-        RSwitch 0, ??2??, "80386 Stack based calling", -3s, OFF
-        RSwitch 0, ??2??, "80486 Register based calling", -4r, OFF
-        RSwitch 0, ??2??, "80486 Stack based calling", -4s, OFF
-        RSwitch 0, ??2??, "Pentium Register based calling", -5r, OFF
-        RSwitch 0, ??2??, "Pentium Stack based calling", -5s, OFF
-        RSwitch 0, ds2??, "Pentium Pro Register based calling", -6r, OFF
-        RSwitch 0, dy2??, "Pentium Pro Register based calling", -6r, OFF
-        RSwitch 0, l?2??, "Pentium Pro Register based calling", -6r, OFF
-        RSwitch 0, ??2??, "Pentium Pro Register based calling", -6r, ON
-        RSwitch 0, ds2??, "Pentium Pro Stack based calling", -6s, ON
-        RSwitch 0, dy2??, "Pentium Pro Stack based calling", -6s, ON
-        RSwitch 0, l?2??, "Pentium Pro Stack based calling", -6s, ON
-        RSwitch 0, ??2??, "Pentium Pro Stack based calling", -6s, OFF
-==== THEIRS ide.mfg#4
+        RSwitch 0, r?2??, "80386 register-based calling", -3r, ON
         RSwitch 0, ??2??, "80386 register-based calling", -3r, OFF
         RSwitch 0, ??2??, "80386 stack-based calling", -3s, OFF
         RSwitch 0, ??2??, "80486 register-based calling", -4r, OFF
@@ -696,28 +579,12 @@ Tool WCG "Code Generator"
         RSwitch 0, ds2??, "Pentium Pro register-based calling", -6r, OFF
         RSwitch 0, dy2??, "Pentium Pro register-based calling", -6r, OFF
         RSwitch 0, l?2??, "Pentium Pro register-based calling", -6r, OFF
+        RSwitch 0, r?2??, "Pentium Pro register-based calling", -6r, OFF
         RSwitch 0, ??2??, "Pentium Pro register-based calling", -6r, ON
         RSwitch 0, ds2??, "Pentium Pro stack-based calling", -6s, ON
         RSwitch 0, dy2??, "Pentium Pro stack-based calling", -6s, ON
         RSwitch 0, l?2??, "Pentium Pro stack-based calling", -6s, ON
         RSwitch 0, ??2??, "Pentium Pro stack-based calling", -6s, OFF
-==== YOURS ide.mfg
-        RSwitch 0, r????, "80386 Register based calling", -3r, ON
-        RSwitch 0, ??2??, "80386 Register based calling", -3r, OFF
-        RSwitch 0, ??2??, "80386 Stack based calling", -3s, OFF
-        RSwitch 0, ??2??, "80486 Register based calling", -4r, OFF
-        RSwitch 0, ??2??, "80486 Stack based calling", -4s, OFF
-        RSwitch 0, ??2??, "Pentium Register based calling", -5r, OFF
-        RSwitch 0, ??2??, "Pentium Stack based calling", -5s, OFF
-        RSwitch 0, ds2??, "Pentium Pro Register based calling", -6r, OFF
-        RSwitch 0, dy2??, "Pentium Pro Register based calling", -6r, OFF
-        RSwitch 0, l?2??, "Pentium Pro Register based calling", -6r, OFF
-        RSwitch 0, ??2??, "Pentium Pro Register based calling", -6r, ON
-        RSwitch 0, ds2??, "Pentium Pro Stack based calling", -6s, ON
-        RSwitch 0, dy2??, "Pentium Pro Stack based calling", -6s, ON
-        RSwitch 0, l?2??, "Pentium Pro Stack based calling", -6s, ON
-        RSwitch 0, ??2??, "Pentium Pro Stack based calling", -6s, OFF
-<<<<
     CSwitch 0, w????, "", -bt=windows, ON
     CSwitch 0, d????, "", -bt=dos, ON
     CSwitch 0, o????, "", -bt=os2, ON
@@ -740,23 +607,10 @@ Tool WCG "Code Generator"
         RSwitch 1, dc6e?, "Large model", -ml, OFF
         RSwitch 1, ??6??, "Large model", -ml, ON
         RSwitch 1, ??6??, "Huge model", -mh, OFF
->>>> ORIGINAL ide.mfg#1
-        RSwitch 1, l?2??, "32bit Flat model", -mf, OFF
-        RSwitch 1, ??2??, "32bit Flat model", -mf, ON
-        RSwitch 1, l?2??, "32bit Small model", -ms, ON
-        RSwitch 1, ??2??, "32bit Small model", -ms, OFF
-==== THEIRS ide.mfg#4
         RSwitch 1, l?2??, "32-bit flat model", -mf, OFF
         RSwitch 1, ??2??, "32-bit flat model", -mf, ON
         RSwitch 1, l?2??, "32-bit small model", -ms, ON
         RSwitch 1, ??2??, "32-bit small model", -ms, OFF
-==== YOURS ide.mfg
-        RSwitch 1, l?2??, "32bit Flat model", -mf, OFF
-        RSwitch 1, r?2??, "32bit Flat model", -mf, ON
-        RSwitch 1, ??2??, "32bit Flat model", -mf, ON
-        RSwitch 1, l?2??, "32bit Small model", -ms, ON
-        RSwitch 1, ??2??, "32bit Small model", -ms, OFF
-<<<<
 :endsegment
     CSwitch 1, wp6d?, "", -ml, ON
 
@@ -837,22 +691,13 @@ Tool WLANG "Languages"
     CSwitch 0, nu???, "Force enums to be type int", -ei, ON
     CSwitch 0, ?????, "Force enums to be type int", -ei, OFF
     RGroup "Structure alignment"
-        RSwitch 1, nm???, "Default byte alignment", , OFF
-        RSwitch 1, na???, "Default byte alignment", , OFF
-        RSwitch 1, no???, "Default byte alignment", , OFF
-        RSwitch 1, nu???, "Default byte alignment", , OFF
-        RSwitch 1, ?????, "Default byte alignment", , ON
->>>> ORIGINAL ide.mfg#1
-        RSwitch 1, ?????, "1 byte alignment", -zp1, OFF
-        RSwitch 1, ?????, "2 byte alignment", -zp2, OFF
-        RSwitch 1, nm???, "4 byte alignment", -zp4, ON
-        RSwitch 1, na???, "4 byte alignment", -zp4, ON
-        RSwitch 1, no???, "4 byte alignment", -zp4, ON
-        RSwitch 1, nu???, "4 byte alignment", -zp4, ON
-        RSwitch 1, ?????, "4 byte alignment", -zp4, OFF
-        RSwitch 1, ?????, "8 byte alignment", -zp8, OFF
-        RSwitch 1, ?????, "16 byte alignment", -zp16, OFF
-==== THEIRS ide.mfg#4
+        RSwitch 1, nm???, "Compiler default", , OFF
+        RSwitch 1, na???, "Compiler default", , OFF
+        RSwitch 1, no???, "Compiler default", , OFF
+        RSwitch 1, nu???, "Compiler default", , OFF
+        RSwitch 1, r????, "Compiler default", , OFF
+        RSwitch 1, ?????, "Compiler default", , ON
+        RSwitch 1, r????, "1-byte alignment", -zp1, ON
         RSwitch 1, ?????, "1-byte alignment", -zp1, OFF
         RSwitch 1, ?????, "2-byte alignment", -zp2, OFF
         RSwitch 1, nm???, "4-byte alignment", -zp4, ON
@@ -862,18 +707,6 @@ Tool WLANG "Languages"
         RSwitch 1, ?????, "4-byte alignment", -zp4, OFF
         RSwitch 1, ?????, "8-byte alignment", -zp8, OFF
         RSwitch 1, ?????, "16-byte alignment", -zp16, OFF
-==== YOURS ide.mfg
-        RSwitch 1, r????, "1 byte alignment", -zp1, ON
-        RSwitch 1, ?????, "1 byte alignment", -zp1, OFF
-        RSwitch 1, ?????, "2 byte alignment", -zp2, OFF
-        RSwitch 1, nm???, "4 byte alignment", -zp4, ON
-        RSwitch 1, na???, "4 byte alignment", -zp4, ON
-        RSwitch 1, no???, "4 byte alignment", -zp4, ON
-        RSwitch 1, nu???, "4 byte alignment", -zp4, ON
-        RSwitch 1, ?????, "4 byte alignment", -zp4, OFF
-        RSwitch 1, ?????, "8 byte alignment", -zp8, OFF
-        RSwitch 1, ?????, "16 byte alignment", -zp16, OFF
-<<<<
   Family Miscellaneous
     VSwitch 0, ??6??, "Data Threshold:", -zt,, ONE, REQ, ""
     RGroup "Double byte characters"
@@ -1171,19 +1004,6 @@ Tool WLINK "Linker"
     CSwitch  1, dc6e?, "", com, ON
     VSwitch  1, o?6??, "System:", sys, " ", ONE, REQ, os2
 rem OS/2 dll?
->>>> ORIGINAL ide.mfg#1
-    VSwitch  1, w?2??, "System:", SYS, " ", ONE, REQ, win386
-    VSwitch  1, dr2??, "System:", SYS, " ", ONE, REQ, dos4g
-    VSwitch  1, dw2??, "System:", SYS, " ", ONE, REQ, causeway
-    VSwitch  1, dx2??, "System:", SYS, " ", ONE, REQ, cwdllr
-    VSwitch  1, dy2??, "System:", SYS, " ", ONE, REQ, cwdlls
-    VSwitch  1, dm2??, "System:", SYS, " ", ONE, REQ, pmodew
-    VSwitch  1, da2??, "System:", SYS, " ", ONE, REQ, dos32a
-    VSwitch  1, db2??, "System:", SYS, " ", ONE, REQ, dos32x
-    VSwitch  1, dp2??, "System:", SYS, " ", ONE, REQ, pharlap
-    VSwitch  1, dt2??, "System:", SYS, " ", ONE, REQ, tnt
-    VSwitch  1, o?2??, "System:", SYS, " ", ONE, REQ, os2v2
-==== THEIRS ide.mfg#4
     VSwitch  1, w?2??, "System:", sys, " ", ONE, REQ, win386
     VSwitch  1, dr2??, "System:", sys, " ", ONE, REQ, dos4g
     VSwitch  1, dw2??, "System:", sys, " ", ONE, REQ, causeway
@@ -1195,21 +1015,6 @@ rem OS/2 dll?
     VSwitch  1, dp2??, "System:", sys, " ", ONE, REQ, pharlap
     VSwitch  1, dt2??, "System:", sys, " ", ONE, REQ, tnt
     VSwitch  1, o?2??, "System:", sys, " ", ONE, REQ, os2v2
-==== YOURS ide.mfg
-    VSwitch  1, w?2??, "System:", SYS, " ", ONE, REQ, win386
-    VSwitch  1, dr2??, "System:", SYS, " ", ONE, REQ, dos4g
-    VSwitch  1, dw2??, "System:", SYS, " ", ONE, REQ, causeway
-    VSwitch  1, dx2??, "System:", SYS, " ", ONE, REQ, cwdllr
-    VSwitch  1, dy2??, "System:", SYS, " ", ONE, REQ, cwdlls
-    VSwitch  1, dm2??, "System:", SYS, " ", ONE, REQ, pmodew
-    VSwitch  1, da2??, "System:", SYS, " ", ONE, REQ, dos32a
-    VSwitch  1, db2??, "System:", SYS, " ", ONE, REQ, dos32x
-    VSwitch  1, dp2??, "System:", SYS, " ", ONE, REQ, pharlap
-    VSwitch  1, dt2??, "System:", SYS, " ", ONE, REQ, tnt
-    VSwitch  1, o?2??, "System:", SYS, " ", ONE, REQ, os2v2
-    VSwitch  1, r?2e?, "System:", SYS, " ", ONE, REQ, rdos_pe
-    VSwitch  1, r?2d?, "System:", SYS, " ", ONE, REQ, rdos_pe_dll
-<<<<
     CSwitch  1, op?e?, "", pm, ON
     CSwitch  1, of?e?, "", full, ON
     CSwitch  1, od6e?, "", phys, ON
@@ -1245,6 +1050,8 @@ rem Other Netware variations?
     VSwitch  1, ds2??, "System:", sys, " ", ONE, REQ, x32sv
     VSwitch  1, ds2??, "System:", sys, " ", ONE, REQ, x32s
     VSwitch  1, x?2??, "System:", sys, " ", ONE, REQ, linux
+    VSwitch  1, r?2e?, "System:", sys, " ", ONE, REQ, rdos
+    VSwitch  1, r?2d?, "System:", sys, " ", ONE, REQ, rdos_dll
     CSwitch  1, d?2d?, " Link DLL", , ON
     CSwitch  1, w?2d?, " Link DLL", , ON
     CSwitch  1, w?6d?, " Link DLL", , ON
@@ -1368,7 +1175,7 @@ rem PackCode, PackData for DOS, OS/2, QNX, Win16?
         RSwitch  0, n??d?, "Use linker default", "", ON
 rem     RSwitch  0, x??d?, "Use linker default", "", ON
         RSwitch  0, w?6d?, "Use linker default", "", ON
-        RSwitch  0, r????, "Use linker default", "", ON
+        RSwitch  0, r??d?, "Use linker default", "", ON
         RSwitch  0, ???d?, "Use linker default", "", OFF
         RSwitch  0, ?????, "Use linker default", "", ON
         RSwitch  0, w?2d?, "DGROUP is shared", "op one", OFF
@@ -1392,7 +1199,7 @@ rem     RSwitch  0, x??d?, "DGROUP is shared", "op one", OFF
         RSwitch  0, n?2d?, "Character mode:", "ru con=4.0", OFF
         RSwitch  0, n?2d?, "Win32s Windows 3.x:", "ru win=3.10", OFF
         RSwitch  0, r????, "Default character mode", "", ON
-   VSwitch  0, o????, "Stub executable", "op stub", =, ONE, REQ, ""
+    VSwitch  0, o????, "Stub executable", "op stub", =, ONE, REQ, ""
     CSwitch  0, na?e?, "Eliminate dead code", "op el", ON, OFF
     CSwitch  0, no?e?, "Eliminate dead code", "op el", ON, OFF
     CSwitch  0, nu?e?, "Eliminate dead code", "op el", ON, OFF
@@ -1750,7 +1557,6 @@ Rule NHLP, WINHC, n??h?
   Symbol H, *.h
   Symbol BMP, *.bmp
   Command " $<#> $<HPJ!>"
-
 ::
 :endsegment
 ::
@@ -1796,7 +1602,7 @@ Rule NEXE, WINLINK, n??e?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 op resource=$<RES!>"
+  Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#WLINK> @$'.lk1"
 
@@ -1814,7 +1620,7 @@ Rule REXE, WINLINK, r??e?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 op resource=$<RES!>"
+  Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#WLINK> @$'.lk1"
 
@@ -1909,7 +1715,11 @@ Rule WPBDLL, WLINK, wp6d?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
+:segment FOR_NT
+  Command " @%append $*.lk1 $<RES,>"
+:elsesegment
   Command " @%append $*.lk1 op resource=$<RES!>"
+:endsegment
   Command "!endif"
   Command " *$<#> @$'.lk1"
 :segment FOR_NT
@@ -1999,7 +1809,7 @@ Rule NDLL, WLINK, n??d?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 op resource=$<RES!>"
+  Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#> @$'.lk1"
   Command " wlib -q -n -b $*.lib +$*.dll"
@@ -2018,7 +1828,7 @@ Rule RDLL, WLINK, r??d?
   Command " @%append $*.lk1 LIBR $'.imp"
   Command "!endif"
   Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 op resource=$<RES!>"
+  Command " @%append $*.lk1 $<RES,>"
   Command "!endif"
   Command " *$<#> @$'.lk1"
   Command " wlib -q -n -b $*.lib +$*.dll"

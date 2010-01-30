@@ -36,15 +36,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include <dos.h>
 #include "liballoc.h"
 #include "tinyio.h"
 #include "seterrno.h"
 #include "msdos.h"
+#include "_direct.h"
+#include "strdup.h"
 
 #define SEEK_ATTRIB (TIO_HIDDEN | TIO_SYSTEM | TIO_SUBDIRECTORY)
 
-static  int     is_directory( const char *name ) {
-/**************************************************/
+static  int     is_directory( const char *name )
+/**********************************************/
+{
     if( name[0] == '\0' )
         return( 0 );
     while( name[1] != '\0' ){
@@ -59,93 +63,109 @@ static  int     is_directory( const char *name ) {
     return( 0 );
 }
 
-_WCRTLINK DIR_TYPE *_opendir( const char *name, unsigned attr )
+_WCRTLINK DIR_TYPE *_opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp )
+/********************************************************************************/
 {
-    DIR_TYPE    *parent;
+    DIR_TYPE    tmp;
     int         i;
-    tiny_ret_t  rc;
-    auto char   pathname[_MAX_PATH+6];
+    char        pathname[_MAX_PATH+6];
+    const char  *p;
+    int         flag_opendir = ( dirp == NULL );
+    int         opened;
 
-    parent = lib_malloc( sizeof( *parent ) );
-    if( parent == NULL ) {
-        return( parent );
-    }
-    if( ! is_directory( name ) ) {
-        rc = TinyFindFirstDTA( name, attr, &parent->d_dta );
-        if( TINY_ERROR( rc ) ) {
-            __set_errno_dos( TINY_INFO( rc ) );
-            lib_free( parent );
+    tmp.d_attr = _A_SUBDIR;
+    opened = 0;
+    if( !is_directory( dirname ) ) {
+        if( _dos_findfirst( dirname, attr, (struct _find_t *)tmp.d_dta ) ) {
             return( NULL );
         }
-    } else {
-        parent->d_attr = _A_SUBDIR;
+        opened = 1;
     }
-    if( parent->d_attr & _A_SUBDIR ) {                  /* 05-apr-91 */
+    if( tmp.d_attr & _A_SUBDIR ) {                  /* 05-apr-91 */
+        p = dirname;
         for( i = 0; i < _MAX_PATH; i++ ) {
-            pathname[i] = *name;
-            if( *name == '\0' ) {
+            pathname[i] = *p;
+            if( *p == '\0' ) {
                 if( i != 0  &&  pathname[i-1] != '\\' && pathname[i-1] != '/' ){
                     pathname[i++] = '\\';
                 }
                 strcpy( &pathname[i], "*.*" );
-                rc = TinyFindFirstDTA( pathname, attr, &parent->d_dta );
-                if( TINY_ERROR( rc ) ) {
-                    __set_errno_dos( TINY_INFO( rc ) );
-                    lib_free( parent );
+                if( opened ) {
+                    _dos_findclose( (struct _find_t *)tmp.d_dta );
+                }
+                if( _dos_findfirst( pathname, attr, (struct _find_t *)tmp.d_dta ) ) {
                     return( NULL );
                 }
+                opened = 1;
                 break;
             }
-            if( *name == '*' )
+            if( *p == '*' )
                 break;
-            if( *name == '?' )
+            if( *p == '?' )
                 break;
-            ++name;
+            ++p;
         }
     }
-    parent->d_first = 1;
-    return( parent );
+    if( flag_opendir ) {
+        dirp = lib_malloc( sizeof( DIR_TYPE ) );
+        if( dirp == NULL ) {
+            if( opened ) {
+                _dos_findclose( (struct _find_t *)tmp.d_dta );
+            }
+            __set_errno_dos( E_nomem );
+            return( NULL );
+        }
+        tmp.d_openpath = __clib_strdup( dirname );
+    } else {
+        _dos_findclose( (struct _find_t *)dirp->d_dta );
+        tmp.d_openpath = dirp->d_openpath;
+    }
+    tmp.d_first = _DIR_ISFIRST;
+    *dirp = tmp;
+    return( dirp );
 }
 
 
-_WCRTLINK DIR_TYPE *opendir( const char *name )
+_WCRTLINK DIR_TYPE *opendir( const char *dirname )
 {
-    return( _opendir( name, SEEK_ATTRIB ) );
+    return( _opendir( dirname, SEEK_ATTRIB, NULL ) );
 }
 
 
-_WCRTLINK DIR_TYPE *readdir( DIR_TYPE *parent )
+_WCRTLINK DIR_TYPE *readdir( DIR_TYPE *dirp )
 {
-    tiny_ret_t rc;
-
-    if( parent == NULL ) {
+    if( dirp == NULL || dirp->d_first >= _DIR_INVALID )
         return( NULL );
-    }
-    if( parent->d_first ) {
-        parent->d_first = 0;
-        return( parent );
-    }
-    rc = TinyFindNextDTA( &parent->d_dta );
-    if( TINY_ERROR( rc ) ) {
-        if( TINY_INFO( rc ) != E_nomore ) {
-            __set_errno_dos( TINY_INFO( rc ) );
+    if( dirp->d_first == _DIR_ISFIRST ) {
+        dirp->d_first = _DIR_NOTFIRST;
+    } else {
+        if( _dos_findnext( (struct _find_t *)dirp->d_dta ) ) {
+            return( NULL );
         }
-        return( NULL );
     }
-    return( parent );
+    return( dirp );
 }
 
 
 _WCRTLINK int closedir( DIR_TYPE *dirp )
 {
-    if( dirp == NULL ) {
-        return( 1 );
+    if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
+        return( __set_errno_dos( E_ihandle ) );
     }
-    if( dirp->d_first > 1 ) {
-        return( 1 );
-    }
-    TinyFindCloseDTA( &dirp->d_dta );
-    dirp->d_first = 2;
+    _dos_findclose( (struct _find_t *)dirp->d_dta );
+    dirp->d_first = _DIR_CLOSED;
+    if( dirp->d_openpath != NULL )
+        free( dirp->d_openpath );
     lib_free( dirp );
     return( 0 );
+}
+
+
+_WCRTLINK void rewinddir( DIR_TYPE *dirp )
+{
+    if( dirp == NULL || dirp->d_openpath == NULL )
+        return;
+    if( _opendir( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
+        dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
+    }
 }

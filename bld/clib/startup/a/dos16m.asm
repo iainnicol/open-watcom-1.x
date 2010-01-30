@@ -214,6 +214,7 @@ YIE     ends
 _DATA   segment word public 'DATA'
 
         extrn   ___d16_selectors:far
+        extrn   "C",__uselfn:byte
 
         public  __ovlflag
         public  __intno
@@ -247,7 +248,7 @@ _STACKLOW   dw 0                ; lowest address in stack
 _STACKTOP   dw 0                ; highest address in stack
 _cbyte      dw 0                ; used by getch, getche
 _child      dw 0                ; non-zero => a spawned process is running
-__no87      dw 0                ; non-zero => "NO87" enviroment var present
+__no87      db 0                ; non-zero => "NO87" enviroment var present
 __get_ovl_stack dw 0,0          ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer
 __close_ovl_file dw 0,0         ; close the overlay file handle
@@ -429,7 +430,9 @@ nopgmname:                              ; endif
         mov     dx,DGROUP
         mov     ds,dx
         mov     es,dx
-        mov     __no87,bp               ; set state of "NO87" environment var
+        mov     ax,bp
+        mov     __no87,al               ; set state of "NO87" environment var
+        and     __uselfn,ah             ; set "LFN" support status
         mov     _STACKLOW,di            ; save low address of stack
 
         mov     cx,offset DGROUP:_end   ; end of _BSS segment (start of STACK)

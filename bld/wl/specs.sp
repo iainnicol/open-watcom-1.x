@@ -7,11 +7,7 @@
 # example linker initialization file.
 :elsesegment Pspecs
 # default specs.owc file
-# 
-# NOTE: the -bt= options in here are just what I thought
-#   they should be.  Somebdoy please double-check!
 #
-# 
 # FIXME: should -bd and others also be passed?
 :endsegment
 system begin dos
@@ -399,11 +395,13 @@ system begin linuxmips
 end
 system begin nt
 :segment Pspecs
-    wcc386 -bt=nt 
+    wcc386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows NT character-mode'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime console=4.0
@@ -416,6 +414,8 @@ system begin nt_win
     option osname='Windows NT windowed'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -428,6 +428,8 @@ system begin nt_dll
     option osname='Windows NT'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt dll ^
     runtime windows=4.0
@@ -440,6 +442,8 @@ system begin win95
     option osname='Windows 95'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -452,6 +456,8 @@ system begin win32
     option osname='Win32'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -713,23 +719,23 @@ system begin zdosdev
     format zdos sys
 :endsegment
 end
-system begin rdos_pe
+system begin rdos
 :segment Pspecs
     wcc386 -bt=rdos
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos
+    format windows pe rdos ^
 :endsegment
 end
-system begin rdos_pe_dll
+system begin rdos_dll
 :segment Pspecs
     wcc386 -bt=rdos -bd
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos dll
+    format windows pe rdos dll ^
 :endsegment
 end

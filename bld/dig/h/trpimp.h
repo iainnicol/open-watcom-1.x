@@ -187,16 +187,6 @@
     #define     WANT_THREAD
     #undef      WANT_RFX
     #define     TRAPENTRY TRAPFAR
-#elif defined(__RDOS__)
-    #define     WANT_FILE_INFO
-    #define     WANT_ENV
-    #undef      WANT_ASYNC
-    #define     WANT_FILE
-    #undef      WANT_OVL
-    #define     WANT_THREAD
-    #undef      WANT_RFX
-    #define     WANT_CAPABILITIES
-    #define     TRAPENTRY TRAPFAR
 #else
     #error Unknown operating system
 #endif

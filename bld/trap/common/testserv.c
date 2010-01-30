@@ -75,7 +75,6 @@ void ServMessage( char *msg )
     Output( "\n" );
 }
 
-
 void RunTime( void )
 {
     unsigned long   iter_count;
@@ -125,10 +124,6 @@ int main( int argc, char *argv[] )
         if( RemoteConnect() ) {
             printf( "\nCONNECT\n" );
             for( ;; ) {
->>>> ORIGINAL testserv.c#1
-                len = RemoteGet( &Data, sizeof( Data ) );
-                if( Data[0] == TEST_OVER ) break;
-==== THEIRS testserv.c#8
                 len = RemoteGet( (char *)&Data, sizeof( Data ) );
                 if( len == -1 ) {
                     printf( "\nlink broken\n" );
@@ -136,14 +131,6 @@ int main( int argc, char *argv[] )
                 }
                 if( Data[0] == TEST_OVER )
                     break;
-==== YOURS testserv.c
-                len = RemoteGet( &Data, sizeof( Data ) );
-		if( len == -1 ) {
-		    printf( "\nlink broken\n" );
-		    break;
-		}
-                if( Data[0] == TEST_OVER ) break;
-<<<<
                 if( Data[0] == TEST_STRING ) {
                     printf( "'%s' - %d bytes\n", &Data[1], len );
                     RemotePut( (char *)&Data, len );

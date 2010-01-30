@@ -24,20 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 DLL startup code.
+* Description:  RDOS DLL startup code.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <rdos.h>
-#include <process.h>
-#include <stdlib.h>
-#include "initfini.h"
-#include "osthread.h"
 #include "widechar.h"
-#include "initarg.h"
+#include "variety.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
+#include <rdos.h>
 #include "sigtab.h"
+#include "initfini.h"
+#include "initarg.h"
+#include "rdosex.h"
+
+
+extern void __InitThreadData( thread_data * );
+extern int __RdosInit( int is_dll, thread_data *tdata, int hdll );
 
 extern int __stdcall LibMain( int, int, void * );
 extern void __CommonInit( void );
@@ -49,21 +55,28 @@ static int  processes;
 #define DLL_THREAD_ATTACH   2
 #define DLL_THREAD_DETACH   3
 
-static char    DllName[_MAX_PATH];
+#pragma aux __LibMain "*" \
+        value [eax] \
+        parm [ebx] [edx] [eax]
 
-int __stdcall _LibMain( int hdll, int reason, void *reserved )
+int __LibMain( int hdll, int reason, void *reserved )
 {
-    int rc;
+    thread_data             *tdata;
+    int                     rc;
 
     switch( reason ) {
     case DLL_THREAD_ATTACH:
         rc = LibMain( hdll, reason, reserved );
         break;
     case DLL_PROCESS_ATTACH:
-        __Is_DLL = 1;
+        __InitRtns( INIT_PRIORITY_THREAD );
+        tdata = __alloca( __ThreadDataSize );
+        memset( tdata, 0, __ThreadDataSize );
+        tdata->__data_size = __ThreadDataSize;
+        __InitThreadData( tdata );
+        __RdosInit( 1, tdata, hdll );
+
         __InitRtns( 255 );
-        RdosGetModuleName( hdll, DllName, sizeof( DllName ) );
-        _LpDllName = DllName;
         __CommonInit();
         __sig_init_rtn();
         rc = LibMain( hdll, reason, reserved );
