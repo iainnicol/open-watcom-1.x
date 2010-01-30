@@ -100,23 +100,13 @@
 !inject maino32.obj                                                     o32
 !inject mainqnx.obj                                                             q32
 !inject mainwnt.obj                      nt nta ntp
-!inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32
-!inject nomem.obj        d32             nt nta ntp nvc     nvl         o32         w16 w32 osi
-!inject nonibm.obj   d16 d32             nt                         o16 o32         w16 w32
-!inject nullargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi
-!inject onexit.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
-!inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32
-!inject nomem.obj        d32             nt nta ntp nvc     nvl         o32         w16 w32 osi
-!inject nonibm.obj   d16 d32             nt                         o16 o32         w16 w32
-!inject nullargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi
-!inject onexit.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
-!inject os2fil64.obj                                                    o32
 !inject mainrdu.obj                                                                                         rdu
 !inject mtype.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32                 rdu
 !inject nomem.obj        d32             nt nta ntp nvc     nvl         o32         w16 w32 osi             rdu
 !inject nonibm.obj   d16 d32             nt                         o16 o32         w16 w32                 rdu
 !inject nullargv.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu
 !inject onexit.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject os2fil64.obj                                                    o32
 !inject osbdptr.obj                      nt
 !inject osinf086.obj                                                        q16
 !inject osinf386.obj                                                            q32
