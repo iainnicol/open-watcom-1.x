@@ -99,7 +99,7 @@ void intern physupdate( SAREA *area )
 
     for( i = 0; i < area->height; i++ ) {
         pos = UIData->width * (i + area->row) + area->col;
-        scrptr = (short int __based( void ) *)pos;
+        scrptr = (short int __based( void ) *)(2 * pos);
         bufptr = (short int *)UIData->screen.origin + pos;
 
         for( j = 0; j < area->width; j++ ) {
@@ -109,4 +109,19 @@ void intern physupdate( SAREA *area )
             scrptr++;
         }
     }    
+}
+
+int global uiisdbcs( void )
+{
+    return( FALSE );
+}
+
+int global uionnec( void )
+{
+    return( FALSE );
+}
+
+int global uicharlen( int ch )
+{
+    return( 1 );
 }

@@ -36,6 +36,7 @@
 #include "command.h"
 #include "wlnkmsg.h"
 #include "fileio.h"
+#include "ideentry.h"
 #include "mapio.h"
 #include "loadfile.h"
 #include "demangle.h"
@@ -374,7 +375,7 @@ static void LocateFile( unsigned num )
 }
 
 unsigned CalcMsgNum( unsigned num )
-/****************************************/
+/*********************************/
 // map the internal enum onto the value that the user sees.
 {
     unsigned    class;
@@ -384,41 +385,62 @@ unsigned CalcMsgNum( unsigned num )
     return class * 1000 + (num & NUM_MSK);
 }
 
-/* Here's the deal with _DLLHOST: If linker is "DLL style", the
- * message output is different. It is tailored to the IDE, and
- * it helps the IDE to invoke online help for error messages and
- * link to symbols associated with the errors/warnings. In
- * non-DLL mode, a message will contain a prefix (a string such
- * as "Warning! W1014: " and the actual error message; in DLL mode,
- * this prefix is handled differently and in other code. For map
- * files however, we always want the prefix logged. Hence all the
- * hoops we jump through.
- */
-
-static void MessageFini( unsigned num, char *buff, unsigned len,
-    char *prefix, unsigned prefixlen, bool waserror )
-/**************************************************************/
+unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
+/*****************************************************************/
 {
+    unsigned    prefixlen;
+    unsigned    class;
+    char        rc_buff[RESOURCE_MAX_SIZE];
+
+    prefixlen = 0;
+    *buff = '\0';
+    class = num & CLASS_MSK;
+    if( class >= (WRN & CLASS_MSK) ) {
+        if( class == (WRN & CLASS_MSK) ) {
+            Msg_Get( MSG_WARNING, rc_buff );
+        } else {
+            Msg_Get( MSG_ERROR, rc_buff );
+        }
+        prefixlen = FmtStr( buff, max_len, rc_buff, CalcMsgNum( num ) );
+    }
+    return( prefixlen );
+}
+
+static void MessageFini( unsigned num, char *buff, unsigned len )
+/***************************************************************/
+{
+    unsigned    prefixlen;
+    unsigned    class;
+    char        prefix[ MAX_MSG_SIZE ];
+
+    prefixlen = 0;
+    class = num & CLASS_MSK;
+    if( class >= (ERR & CLASS_MSK) ) {
+        LinkState |= LINK_ERROR;
+    }
     if( num & OUT_TERM ) {
         if( !(LinkFlags & QUIET_FLAG) ) {
             WLPrtBanner();
             WriteInfoStdOut( buff, num, CurrSymName );
-        } else if( (num & CLASS_MSK) != (CLASS_MSK & INF)) {
+        } else if( class != (INF & CLASS_MSK)) {
             WriteInfoStdOut( buff, num, CurrSymName );
         }
     }
     if( (num & OUT_MAP) && (MapFile != NIL_HANDLE) ) {
-#if defined( _DLLHOST )
+        prefixlen = GetMsgPrefix( prefix, MAX_MSG_SIZE, num );
         BufWrite( prefix, prefixlen );
-#endif
         BufWrite( buff, len );
         WriteMapNL( 1 );
     }
-    if( (num & CLASS_MSK) == (FTL&~OUT_MSK) ) Suicide();
-    if( waserror && LinkFlags & MAX_ERRORS_FLAG ) {
-        MaxErrors--;
-        if( MaxErrors == 0 ) {
-            LnkMsg( FTL+MSG_TOO_MANY_ERRORS, NULL );
+    if( class == (FTL & CLASS_MSK) )
+        Suicide();
+    /* yells are counted as errors for limits */
+    if(( class == (YELL & CLASS_MSK) ) || ( class >= (MILD_ERR & CLASS_MSK) )) {
+        if( LinkFlags & MAX_ERRORS_FLAG ) {
+            MaxErrors--;
+            if( MaxErrors == 0 ) {
+                LnkMsg( FTL+MSG_TOO_MANY_ERRORS, NULL );
+            }
         }
     }
 }
@@ -437,41 +459,14 @@ void LnkMsg(
     va_list     args;
     int         which_file = 0;
     unsigned    len;
-    unsigned    prefixlen;
-    unsigned    class;
-    bool        waserror;
     char        rc_buff[ RESOURCE_MAX_SIZE ];
     char        buff[ MAX_MSG_SIZE ];
-    char        prefix[ MAX_MSG_SIZE ];
 
     if( !TestBit( MsgFlags, num & NUM_MSK ) )
         return;
     CurrSymName = NULL;
     LocateFile( num );
     len = 0;
-    prefixlen = 0;
-    waserror = FALSE;
-    class = num & CLASS_MSK;
-    if( class == (YELL & CLASS_MSK) ) {
-        waserror = TRUE;        /* yells are counted as errors for limits */
-    } else if( class >= (MILD_ERR & CLASS_MSK) ) {
-        waserror = TRUE;
-        if( class >= (ERR & CLASS_MSK) ) {
-            LinkState |= LINK_ERROR;
-        }
-    }
-    if( class >= (WRN & CLASS_MSK) ) {
-        if( class == (WRN & CLASS_MSK) ) {
-            Msg_Get( MSG_WARNING, rc_buff );
-        } else {
-            Msg_Get( MSG_ERROR, rc_buff );
-        }
-#if !defined( _DLLHOST )
-        len = FmtStr( buff, MAX_MSG_SIZE - len, rc_buff, CalcMsgNum( num ));
-#else
-        prefixlen = FmtStr( prefix, MAX_MSG_SIZE, rc_buff, CalcMsgNum( num ));
-#endif
-    }
     if( LocFile != NULL ) {
         which_file += 1;
     }
@@ -510,7 +505,7 @@ void LnkMsg(
     Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
     va_end( args );
     len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
-    MessageFini( num, buff, len, prefix, prefixlen, waserror );
+    MessageFini( num, buff, len );
 }
 
 static void HandleRcMsg( unsigned num, va_list *args )
@@ -518,25 +513,15 @@ static void HandleRcMsg( unsigned num, va_list *args )
 /* getting an error message from resource compiler code */
 {
     unsigned    len;
-    unsigned    prefixlen;
     char        rc_buff[RESOURCE_MAX_SIZE];
     char        buff[ MAX_MSG_SIZE ];
-    char        prefix[ MAX_MSG_SIZE ];
 
     num |= ERR;
     len = 0;
-    prefixlen = 0;
-    LinkState |= LINK_ERROR;
     CurrSymName = NULL;
-    Msg_Get( MSG_ERROR, rc_buff );
-#if !defined( _DLLHOST )
-    len = FmtStr( buff, MAX_MSG_SIZE - len, rc_buff, CalcMsgNum( num ));
-#else
-    prefixlen = FmtStr( prefix, MAX_MSG_SIZE, rc_buff, CalcMsgNum( num ));
-#endif
     Msg_Get( num & NUM_MSK, rc_buff );
     len += DoFmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff, args );
-    MessageFini( num, buff, len, prefix, prefixlen, TRUE );
+    MessageFini( num, buff, len );
 }
 
 void RcWarning( unsigned num, ... )

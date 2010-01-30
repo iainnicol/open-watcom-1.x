@@ -8,10 +8,20 @@ proj_name = wlink
 !ifndef wlink_autodepends
 wlink_autodepends = .AUTODEPEND
 !endif
+!ifdef prebuild
+!ifdef wlink_dll
+!undef wlink_dll
+!endif
+!endif
 
 # get rid of the -zc
 suppress_zc = 1
 
+!ifndef bootstrap
+!ifndef prebuild
+!include idedlls.mif
+!endif
+!endif
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -30,6 +40,10 @@ common_objs += orlstubs.obj
 orl_lib = 
 !endif
 
+!ifeq bootstrap 1
+common_objs += clibext.obj
+!endif
+
 comp_objs_exe = $(common_objs) $(exe_objs)
 comp_objs_dll = $(common_objs) $(dll_objs)
 
@@ -41,26 +55,21 @@ inc_dirs = -I. -I"../h"
 # c flags stuff
 
 !ifeq bootstrap 1
-comp_objs_exe += clibext.obj
-!endif
-
-!ifeq bootstrap 1
 extra_c_flags = -I"$(lib_misc_dir)/h"
 !else
 extra_c_flags = -zp4
-!ifdef wlink_dll
-extra_c_flags += -D_DLLHOST
-!else ifdef wlink_rtdll
-extra_c_flags += -D_DLLHOST
+!ifdef DLLS_IMPLEMENTED
+extra_c_flags += -DDLLS_IMPLEMENTED
 !endif
 !ifeq use_virtmem 1
 extra_c_flags += -DUSE_VIRTMEM
 !endif
 !endif
+!ifndef wlink_dll
+extra_c_flags += -DIDE_PGM
+!endif
 
-extra_c_flags_ntio       = -I"$(wres_dir)/h"
-extra_c_flags_posixio    = -I"$(wres_dir)/h"
-extra_c_flags_linkio     = -I"$(wres_dir)/h"
+
 extra_c_flags_objorl     = -I"$(orl_dir)/h"
 extra_c_flags_orlstubs   = -I"$(orl_dir)/h"
 extra_c_flags_dbgdwarf   = -I"$(dwarf_dir)/dw/h"
@@ -70,8 +79,11 @@ extra_c_flags_debug      = -DTRMEM
 extra_c_flags_loadpe     = -I. -I"../h" -I"$(wrc_dir)/h" -I"$(wres_dir)/h"
 extra_c_flags_loados2    = -I"$(wrc_dir)/h" -I"$(wres_dir)/h"
 extra_c_flags_demangle   = -I"$(lib_misc_dir)/h"
-extra_c_flags_dllentry   = -bd
 extra_c_flags_idedrv     = -DCHAIN_CALLBACK
+extra_c_flags_ideentry   = -DCHAIN_CALLBACK
+!ifdef wlink_dll
+extra_c_flags_ideentry   += -bd
+!endif
 extra_c_flags_msg        = -I"$(lib_misc_dir)/h"
 extra_c_flags_rcstr      = -DINSIDE_WLINK -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
 extra_c_flags_exerespe   = -DINSIDE_WLINK -I"$(wrc_dir)/h" -I"$(wres_dir)/h" -I"$(watcom_dir)/h"
@@ -90,8 +102,7 @@ extra_l_flags_qnx = op res=wlink.u, st=24k, off=32k
 # linker .DLL options
 
 extra_l_flags_dll     = op map, noredefs
-extra_l_flags_dll_nt  = initinstance terminstance op modname='wlinkd.dll'
-extra_l_flags_dll_nt  += reference __DLLstart_ op offset=0x69c00000
+extra_l_flags_dll_nt  = initinstance terminstance op modname='wlinkd.dll', offset=0x69c00000
 extra_l_flags_dll_os2 = initinstance terminstance op modname='wlinkd'
 
 xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
@@ -99,18 +110,14 @@ xlibs = $(wres_lib) $(dwarf_dw_lib) $(orl_lib)
 ###########
 # rc stuff
 
-extra_rc_flags_qnx = -D_UNIX
+extra_rc_flags_qnx   = -D_UNIX
 extra_rc_flags_linux = -D_UNIX
-extra_rc_flags_osx = -D_UNIX
-extra_rc_flags_bsd = -D_UNIX
+extra_rc_flags_osx   = -D_UNIX
+extra_rc_flags_bsd   = -D_UNIX
 extra_rc_flags = $(extra_rc_flags_$(host_os))
 
 # systems where version resources must be added to .DLL
-build_rc_nt_386 = nt
-
-!ifdef build_rc_$(host_os)_$(host_cpu)
-rc_objs = version.rc
-!endif
+version_res_nt_386 = version.res
 
 #################
 # explicit rules
@@ -131,10 +138,10 @@ wl.exe : wlink.res $(comp_objs_exe) $(xlibs) exe.lnk
     wstrip -q -a -r $@ . wlink.res
 !endif
 
-wld.dll : wlink.res $(comp_objs_dll) $(xlibs) $(rc_objs) dll.lnk
+wld.dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_$(host_os)_$(host_cpu)) dll.lnk
     $(linker) name $@ @dll.lnk
-!ifdef build_rc_$(host_os)_$(host_cpu)
-    $(rc) -bt=$(build_rc_$(host_os)_$(host_cpu)) $(inc_path) version.rc $@
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $@
 !endif
     wstrip -q -a -r $@ . wlink.res
 
@@ -172,11 +179,12 @@ dll.lnk: $(__MAKEFILES__)
 patch_level=0
 !endif
 
-version.rc : ./genverrc.exe ../h/wlver.rc $(fe_misc_dir)/c/genverrc.c
+version.res : ./genverrc.exe ../h/wlver.rc
         $[@ ../h/wlver.rc version.rc $$ wlink $(patch_level)
+	$(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
 
 wlink.res : rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg ../h/wlink.rc
-        $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$@
+        $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
 rcmsg.gh : $(wrc_dir)/h/rc.msg
         $(awk) -v rcbase=800 -f $(misc_dir)/msgtoh.awk $[@ > $^@

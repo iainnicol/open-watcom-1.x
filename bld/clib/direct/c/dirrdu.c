@@ -127,37 +127,161 @@ _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
         return( -1 );
 }
 
+static int IsMatch( struct dirent *dir, const char *fname )
+{
+    char       tmp[NAME_MAX + 1];
+    const char *sptr = dir->d_match_mask;
+    const char *fptr;
+    const char *lsptr = 0;
+    const char *lfptr = 0;
+    char       ch;
+
+    strcpy( tmp, fname );
+    strupr( tmp );
+    fptr = tmp;
+
+    if( strlen( sptr ) == 0 )
+        return( 1 );
+
+    if( !strcmp( sptr, "*.*" ) )
+        return( 1 );
+
+    if( !strcmp( sptr, "*." ) ) {
+        if( strchr( fptr, '.' ) )
+            return( 0 );
+        else
+            return( 1 );
+    }
+
+	for( ;; ) {
+		while( *sptr && *fptr ) {
+			switch( *sptr ) {
+				case '*':
+					ch = *(sptr + 1);
+					if( ch ) {
+						if( ch == *fptr ) {
+						    lsptr = sptr;
+							sptr += 2;
+							fptr++;
+							lfptr = fptr;
+						}
+						else
+							fptr++;
+					}
+					else
+						fptr++;
+					break;
+	
+				case '?':
+					sptr++;
+					fptr++;
+					break;
+
+				default:
+					if( *sptr == *fptr )	{
+						sptr++;
+						fptr++;
+					} else {
+						if( lfptr ) {
+							fptr = lfptr;
+							sptr = lsptr;
+							lfptr = 0;
+							lsptr = 0;
+						}
+						else
+							return( 0 );
+					}
+					break;
+			}
+		}
+
+		if( *sptr == 0 && *fptr == 0 )
+			return( 1 );
+		else {
+			if( *sptr == '*' && *(sptr+1) == 0 )
+				return( 1 );
+
+			if( lfptr ) {
+				fptr = lfptr;
+				sptr = lsptr;
+				lfptr = 0;
+				lsptr = 0;
+			}
+			else
+				return( 0 );
+		}
+	}
+}
+
+static int GetSingleFile( struct dirent *dir )
+{
+    for( ;; ) {
+        if( RdosReadDir( dir->d_handle, 
+                     dir->d_entry_nr, 
+                     NAME_MAX, 
+                     dir->d_name,
+                     &dir->d_size, 
+                     &dir->d_attr,
+                     &dir->d_msb_time,
+                     &dir->d_lsb_time ) ) {
+
+            if( IsMatch( dir, dir->d_name ) )
+                return( 1 );
+            else
+                dir->d_entry_nr++;
+        } else
+            return( 0 );
+    }
+}
+
 _WCRTLINK struct dirent *opendir( const char *name )
 {
     struct dirent   *parent;
     int             handle;
+    char            *ptr;
+    int             size;
+    char            tmp[NAME_MAX + 1];
+        
+    parent = lib_malloc( sizeof( *parent ) );
+    if( parent == NULL )
+        return( NULL );
 
     handle = RdosOpenDir( name );
 
-    if( handle == 0)
-        return( NULL );
-    
-    parent = lib_malloc( sizeof( *parent ) );
-    if( parent == NULL )
-        return( parent );
+    if( handle == 0) {
+        strcpy( tmp, name );
+        ptr = tmp;
+        size = strlen( tmp );
+        if( size ) {
+            ptr += size - 1;
+            while( size ) {
+                if( *ptr == '\\' || *ptr == '/')
+                    break;
+                ptr--;
+            }
+            ptr++;
+            strupr( ptr );
+            strcpy( parent->d_match_mask, ptr );
+            *ptr = 0;
+            handle = RdosOpenDir( tmp );
+        } else {
+            handle = RdosOpenDir( "." );       
+            strcpy( tmp, name );
+            strupr( tmp );
+            strcpy( parent->d_match_mask, tmp );
+        }
+    } else {
+        strcpy( parent->d_match_mask, "*" );    
+    }
 
-    parent->d_handle = handle;
-    parent->d_entry_nr = 0;
-
-    if (RdosReadDir( handle, 
-                     0, 
-                     NAME_MAX, 
-                     parent->d_name,
-                     &parent->d_size, 
-                     &parent->d_attr,
-                     &parent->d_msb_time,
-                     &parent->d_lsb_time ))
-        return( parent );
-    else {
-        RdosCloseDir( handle );
+    if( handle == 0 ) {
         lib_free( parent );
         return( NULL );
     }
+
+    parent->d_handle = handle;
+    parent->d_entry_nr = -1;
+    return( parent );
 }
 
 
@@ -168,14 +292,7 @@ _WCRTLINK struct dirent *readdir( struct dirent *parent )
 
     parent->d_entry_nr++;
 
-    if (RdosReadDir( parent->d_handle, 
-                     parent->d_entry_nr, 
-                     NAME_MAX,
-                     parent->d_name,
-                     &parent->d_size, 
-                     &parent->d_attr,
-                     &parent->d_msb_time, 
-                     &parent->d_lsb_time ))
+    if (GetSingleFile( parent ) ) 
         return( parent );
     else
         return( NULL );

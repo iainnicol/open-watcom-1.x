@@ -10,16 +10,13 @@ name = rsihelp
 which = SERVER
 
 extra_objs = &
-        $(dosx_serv_objs) &
-        dosredir.obj &
-        x86cpu.obj &
         rsiacc.obj &
-        misc7086.obj &
-        realmode.obj &
         dbglib.obj &
         dbgliba.obj &
         rmhdlr.obj &
-        sbrk.obj
+        sbrk.obj &
+        segs_16m.obj &
+        magicstr.obj
 
 extra_c_flags        = -DDOS4G -zu -zdp
 extra_c_flags_rsiacc = -3
@@ -30,16 +27,20 @@ extra_a_flags_dbgliba = -zcm
 extra_srcs = $(rsilib);
 inc_dirs = -I$(rsilib)
 
+extra_libs = $(rsilib)/d16libc.lib
+
+!ifndef rsi_wlink
 !define substitute_linker
+!endif
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
 !include $(trap_dir)/master.mif
 
-objs += $(lang_root)/lib286/dos/dos16m.obj &
-        segs_16m.obj &
-        magicstr.obj
+!ifndef rsi_wlink
 
-libs = $(rsilib)/d16libc.lib $(lang_root)/lib286/dos/clibc.lib $(extra_libs)
+objs += $(lang_root)/lib286/dos/dos16m.obj
+
+libs = $(lang_root)/lib286/dos/clibc.lib $(extra_libs)
 
 $(target) : $(libs) $(objs) $(__MAKEFILES__)
     @%create tmp.lnk
@@ -51,3 +52,5 @@ $(target) : $(libs) $(objs) $(__MAKEFILES__)
     @for %i in ($(objs)) do @%append tmp.lnk %i
     @for %i in ($(libs)) do @%append tmp.lnk %i
     -!$(tools_root)\glu @tmp.lnk
+
+!endif

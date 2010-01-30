@@ -37,7 +37,7 @@
 #include "uiforce.h"
 
 extern EVENT    Event;
-extern void intern waitforevent( void );
+extern int      WaitHandle;
 
 void global uiflush( void )
 {
@@ -54,20 +54,24 @@ unsigned long global uiclock( void )
     return( lsb );
 }
 
-extern EVENT intern getanyevent( void );
-
 EVENT global uieventsource( int update )
 {
     EVENT                   ev;
-    static      int                     ReturnIdle = 1;
-    unsigned long                       start;
+    static      int         ReturnIdle = 1;
+    unsigned long           start;
+    EVENT                   ( *proc )();
 
     start = uiclock();
     for( ; ; ) {
         ev = forcedevent();
         if( ev > EV_NO_EVENT ) break;
-        ev = getanyevent();
-        if( ev > EV_NO_EVENT ) break;
+
+        proc = RdosWaitTimeout( WaitHandle, 25 );
+        if( proc != 0) {
+            ev = (*proc)();
+            if( ev > EV_NO_EVENT ) break;
+        }
+        
         if( ReturnIdle ) {
             ReturnIdle--;
             return( EV_IDLE );
@@ -79,7 +83,13 @@ EVENT global uieventsource( int update )
                 return( EV_SINK );
             }
         }
-        waitforevent();
+
+        proc = RdosWaitForever( WaitHandle );
+        if( proc != 0) {
+            ev = (*proc)();
+            if( ev > EV_NO_EVENT ) break;
+        }
+
     }
     ReturnIdle = 1;
     return( ev );
