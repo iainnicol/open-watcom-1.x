@@ -273,14 +273,7 @@ INT main( int argc, char **argv )
            + WinQuerySysValue( HWND_DESKTOP, SV_CYTITLEBAR );
     AbortIf( ( hwndFrame = WinCreateStdWindow( HWND_DESKTOP, 0L,
                &flCreate, "MyWindow", "", 0L,
->>>> ORIGINAL pmhelp.c#1
-               NULL, ID_WINDOW, &hwndClient ) ) == 0L );
-    WinSetWindowText(hwndFrame, TRP_The_WATCOM_Debugger );
-==== THEIRS pmhelp.c#3
                0, ID_WINDOW, &hwndClient ) ) == 0L );
-==== YOURS pmhelp.c
-               NULL, ID_WINDOW, &hwndClient ) ) == 0L );
-<<<<
     WinSetWindowText( hwndFrame, TRP_The_WATCOM_Debugger );
 
     width = WinQuerySysValue( HWND_DESKTOP, SV_CXSCREEN );
