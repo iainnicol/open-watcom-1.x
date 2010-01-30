@@ -5,32 +5,45 @@ set PROJDIR=<CWD>
 
 cdsay .
 
-set TMP_BUILD_PLATFORM=<BUILD_PLATFORM>
+set BUILDP=<BUILD_PLATFORM>
+[ BLOCK <1> clean ]
+#==================
+    set BUILDP=<BUILDP>clean
 
 [ BLOCK <OWLINUXBUILD> bootstrap ]
 #=================================
-    set BUILD_PLATFORM=<BUILD_PLATFORM>boot
+    set BUILDP=boot<BUILDP>
 
-[ BLOCK <1> clean ]
-#==================
+[ BLOCK <BUILDP> bootlinux386clean ]
+#===================================
     echo rm -f -r <PROJDIR>/<OBJDIR>
     rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f <OWBINDIR>/wlink
+    rm -f <OWBINDIR>/wlink<CMDEXT>
     wmake -h clean
-    set BUILD_PLATFORM=
 
-[ BLOCK <BUILD_PLATFORM> linux386boot ]
-#======================================
+[ BLOCK <BUILDP> bootlinux386 ]
+#==============================
     wmake -h
     <CPCMD> wlsystem.lnk <RELROOT>/binw/wlsystem.lnk
     mkdir <PROJDIR>/<OBJDIR>
     cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../linux386/makefile bootstrap=1
+    wmake -h -f ../<BUILD_PLATFORM>/makefile bootstrap=1
     <CPCMD> wl.exe <OWBINDIR>/wlink
+
+[ BLOCK <BUILDP> dos386clean os2386clean nt386clean linux386clean ]
+#==================================================================
+    echo rm -f -r <PROJDIR>/<PREOBJDIR>
+    rm -f -r <PROJDIR>/<PREOBJDIR>
+
+[ BLOCK <BUILDP> dos386 os2386 nt386 linux386 ]
+#==============================================
+    mkdir <PROJDIR>/<PREOBJDIR>
+    cdsay <PROJDIR>/<PREOBJDIR>
+    wsplice -k Pwlsystem ../specs.sp wlsystem.lnk
+    wmake -h -f ../<BUILD_PLATFORM>/makefile prebuild=1
 
 [ BLOCK . . ]
 #============
-set BUILD_PLATFORM=<TMP_BUILD_PLATFORM>
-set TMP_BUILD_PLATFORM=
+set BUILDP=
 
 cdsay <PROJDIR>

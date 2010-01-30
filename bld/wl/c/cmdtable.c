@@ -640,4 +640,3 @@ parse_entry OutputOpts[] = {
     "STartrec",     &ProcOutputStart,   MK_ALL, 0,
     NULL
 };
-

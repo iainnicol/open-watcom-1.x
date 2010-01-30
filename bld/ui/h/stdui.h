@@ -395,7 +395,6 @@ enum {
         in WVIDEO since values in the range 0-10000 are used.
         Only the data structures are use.. No UI functions are actually
         called for Windows so UI does not need to be rebuilt
-
 */
 
 typedef unsigned int    ORD;
