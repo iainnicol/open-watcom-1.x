@@ -6,9 +6,10 @@ os = qnx
 srv = tcp
 cpu = x86
 which = TRAP
+type  = remote_link
 
-extra_objs = $(remote_objs) qtcpsupp.obj
+extra_objs = qtcpsupp.obj
 extra_libs = $(watcom_dir)/lib/qnx/socket3r.lib
-inc_dirs = $(watcom_dir)/qnx_h
+inc_dirs = -I"$(watcom_dir)/qnx_h"
 
 !include $(trap_dir)/master.mif

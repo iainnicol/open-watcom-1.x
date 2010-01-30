@@ -53,6 +53,7 @@
 #include "loadqnx.h"
 #include "loadnov.h"
 #include "loadelf.h"
+#include "loadzdos.h"
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
@@ -62,7 +63,7 @@
 #include "carve.h"
 #include "permdata.h"
 #include "toc.h"
-#if defined( _DLLHOST )
+#if defined( __WATCOMC__ )
     #include <malloc.h>
 #endif
 #include "dbgall.h"
@@ -105,23 +106,6 @@ static char     *ArgSave;
 // Not sure what this is for - doesn't seem to be referenced
 //extern int              __nheapblk;
 
-#if !defined( _DLLHOST )           // it's the standalone linker
-int main( int argc, char ** argv )
-/***************************************/
-{
-    argc = argc;        /* to avoid a warning */
-    argv = argv;
-#ifndef __WATCOMC__
-    _argv = argv;
-    _argc = argc;
-#endif
-    InitSubSystems();
-    LinkMainLine( NULL );
-    FiniSubSystems();
-    return( (LinkState & LINK_ERROR) ? 1 : 0 );
-}
-#endif
-
 static void LinkMeBaby( void )
 /****************************/
 {
@@ -139,7 +123,7 @@ void LinkMainLine( char *cmds )
         cmds = GetNextLink();
         if( cmds == NULL ) break;
     }
-#if defined( _DLLHOST )
+#if defined( __WATCOMC__ )
     _heapshrink();
 #endif
 }
@@ -231,7 +215,11 @@ static void DoLink( char *cmdline )
 // cmdline is only used when we are running under watfor.
 {
 #ifndef __OSI__
-    signal( SIGINT, &TrapBreak ); /* so we can clean up */
+  #ifdef __ZDOS__
+    signal( SIGBREAK, &TrapBreak ); /* so we can clean up */
+  #else
+    signal( SIGINT, &TrapBreak );   /* so we can clean up */
+  #endif
 #endif
     StartTime();
     DoCmdFile( cmdline );
@@ -276,7 +264,11 @@ static void DoLink( char *cmdline )
     BuildImpLib();
     EndTime();
 #ifndef __OSI__
-    signal( SIGINT, SIG_IGN ); /* we're going to clean up anyway */
+  #ifdef __ZDOS__
+    signal( SIGBREAK, SIG_IGN );    /* we're going to clean up anyway */
+  #else
+    signal( SIGINT, SIG_IGN );      /* we're going to clean up anyway */
+  #endif
 #endif
 }
 

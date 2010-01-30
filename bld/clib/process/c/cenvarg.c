@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Build environment and arguments for new process.
 *
 ****************************************************************************/
 
@@ -50,8 +49,8 @@ extern _WCRTLINK void   __create_wide_environment( void );
 #endif
 
 
-static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src ) {
-
+static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
+{
     while( *dest = *src ) {
         ++dest;
         ++src;
@@ -60,7 +59,7 @@ static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src ) {
 }
 
 
-int __F_NAME(__cenvarg,__wcenvarg)( 
+int __F_NAME(__cenvarg,__wcenvarg)(
 /*
  *  Build environment and command line for new process.  Length of environment
  *  (in bytes) is returned on success.  -1 is returned on failure.
@@ -76,6 +75,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     unsigned            length;
     unsigned            oamblksiz;
     CHAR_TYPE           *p;
+    CHAR_TYPE _WCNEAR   *np;
     unsigned            len;
     int                 i;
 
@@ -101,8 +101,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 
     oamblksiz = _RWD_amblksiz;
     _RWD_amblksiz = 16; /* force allocation in 16 byte increments */
-    p = lib_nmalloc( length*sizeof(CHAR_TYPE) );
-    if( (void _WCNEAR *)p == NULL ){            /* 03-aug-88 */
+    p = np = lib_nmalloc( length*sizeof(CHAR_TYPE) );
+    if( np == NULL ){   /* 03-aug-88 */
         p = lib_malloc( length*sizeof(CHAR_TYPE) );
         if( p == NULL ){
             __set_errno( ENOMEM );
@@ -113,20 +113,20 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     }
     _RWD_amblksiz = oamblksiz;
     *envptr = p;
-#if defined(__386__) || defined(__AXP__) || defined(__OS2__) || defined(__PPC__)
-    *envseg = 0;
-#else
-#if defined(__SMALL_DATA__)
+#if defined( _M_I86 )
+  #if defined(__SMALL_DATA__)
     p = (char *) (((unsigned) p + 15) & 0xfff0);
-#else           /* large data models */         /* 12-aug-88 */
+  #else           /* large data models */         /* 12-aug-88 */
     p = MK_FP( FP_SEG(p), (( FP_OFF(p) + 15) & 0xfff0) );
-#endif
+  #endif
     {
         CHAR_TYPE _WCFAR *temp;
 
         temp = p;
         *envseg = FP_SEG( temp ) + FP_OFF( temp )/16;
     }
+#else
+    *envseg = 0;
 #endif
     *envstrings = p;            /* save ptr to env strings. 07-oct-92 */
     if( envp != NULL ){
@@ -162,7 +162,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 #endif
     *cmdline_len = len;
 
-    return( length/16 );
+    return( length / 16 );
 }
 
 

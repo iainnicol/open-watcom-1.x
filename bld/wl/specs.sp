@@ -7,12 +7,12 @@
 # example linker initialization file.
 :elsesegment Pspecs
 # default specs.owc file
-# 
+#
 # FIXME: should -bd and others also be passed?
 :endsegment
 system begin dos
 :segment Pspecs
-    wcc -bt=dos 
+    wcc -bt=dos
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
@@ -118,7 +118,7 @@ system begin win386
 end
 system begin os2
 :segment Pspecs
-    wcc -bt=os2 
+    wcc -bt=os2
 :elsesegment Pwlsystem
     option osname='OS/2 16-bit'
     library os2.lib
@@ -395,11 +395,13 @@ system begin linuxmips
 end
 system begin nt
 :segment Pspecs
-    wcc386 -bt=nt 
+    wcc386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows NT character-mode'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime console=4.0
@@ -412,6 +414,8 @@ system begin nt_win
     option osname='Windows NT windowed'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -424,6 +428,8 @@ system begin nt_dll
     option osname='Windows NT'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt dll ^
     runtime windows=4.0
@@ -436,6 +442,8 @@ system begin win95
     option osname='Windows 95'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -448,6 +456,8 @@ system begin win32
     option osname='Win32'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/nt
+    libpath %WATCOM%/lib386/nt/directx
+    libpath %WATCOM%/lib386/nt/ddk
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -529,10 +539,9 @@ system begin cwdlls
     wcc386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
-    option osname='CauseWay DLL (Stack parameter passing)'
+    option osname='CauseWay (stack calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    op stub=cwdstub.exe
     format os2 le dll ^
     libfile dllstrts.obj
 :endsegment
@@ -542,10 +551,9 @@ system begin cwdllr
     wcc386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
-    option osname='CauseWay DLL (Register parameter passing)'
+    option osname='CauseWay (register calling convention)'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/dos
-    op stub=cwdstub.exe
     format os2 le dll ^
     libfile dllstrtr.obj
 :endsegment
@@ -658,7 +666,7 @@ system begin zrdx
 end
 system begin dos16m
 :segment Pspecs
-    wcc -bt=dos 
+    wcc -bt=dos
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
@@ -667,23 +675,67 @@ system begin dos16m
     format dos16m runtime auto ^
 :endsegment
 end
-system begin rdos_pe
+system begin zdos
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS User Application'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdos
+    libfile appstart.obj
+    format zdos
+:endsegment
+end
+system begin zdosfsd
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS File System Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile fsdstart.obj
+    format zdos fsd
+:endsegment
+end
+system begin zdoshwd
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS Hardware Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile hwdstart.obj
+    format zdos hwd
+:endsegment
+end
+system begin zdosdev
+:segment Pspecs
+    wcc386 -bt=zdos
+:elsesegment Pwlsystem
+    option osname='ZDOS Device Driver'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/zdosdrv
+    libfile devstart.obj
+    format zdos sys
+:endsegment
+end
+system begin rdos
 :segment Pspecs
     wcc386 -bt=rdos
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos
+    format windows pe rdos ^
 :endsegment
 end
-system begin rdos_pe_dll
+system begin rdos_dll
 :segment Pspecs
     wcc386 -bt=rdos -bd
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
     libpath %WATCOM%/lib386/rdos
-    format windows pe rdos dll
+    format windows pe rdos dll ^
 :endsegment
 end

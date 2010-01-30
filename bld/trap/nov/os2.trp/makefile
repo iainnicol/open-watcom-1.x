@@ -6,9 +6,10 @@ os  = os2
 srv = nov
 cpu = x86
 which = TRAP
+type  = remote_link
 
-extra_objs = $(remote_objs) novos2.obj
-inc_dirs = $(nwos2dir)
+extra_objs = novos2.obj
+inc_dirs = -I$(nwos2dir)
 extra_libs = $(nwos2dir)/ipxcalls.lib $(nwos2dir)/nwcallsp.lib $(nwos2dir)/spxcalls.lib
 
 !include $(trap_dir)/master.mif

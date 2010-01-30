@@ -66,3 +66,6 @@ pick1(  E_ELF,      ".elf"  )
 pick1(  E_ILK,      ".ilk"  )
 pick1(  E_HEX,      ".hex"  )
 pick1(  E_BIN,      ".bin"  )
+pick1(  E_SYS,      ".sys"  )   /* ZDOS device driver */
+pick1(  E_HWD,      ".hwd"  )   /* ZDOS hardware driver */
+pick1(  E_FSD,      ".fsd"  )   /* ZDOS file system driver */

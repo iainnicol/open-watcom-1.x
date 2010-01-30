@@ -98,6 +98,3 @@ type="e" dir="nlm"	usr="novserv3.nlm"	cond="nlmtarg"				where="c f77"
 type="e" dir="nlm"	usr="novserv4.nlm"	cond="nlmtarg"				where="c f77"
 # Not shipping yet, but added to list as aide memoire
 #type="e" dir="nlm"	usr="tcpserv5.nlm"	cond="nlmtarg"				where="c f77"
-
-# RDOS
-type="d" dir="binw"	usr="std.dll"		cond="rdostarg"				where="c ac f77"
