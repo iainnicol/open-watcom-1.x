@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Target types for 32-bit machine.
 *
 ****************************************************************************/
 
 
-/* target32.h: target types for 32-bit machine */
+#include <stdint.h>
 
 #define TARGET_BOOL             1
 #define TARGET_CHAR             1
@@ -60,15 +59,15 @@
 #define TARGET_PACKING  8
 #define TARGET_MAX_PACKING      8
 
-typedef signed char     target_schar;
-typedef unsigned char   target_uchar;
-typedef unsigned short  target_wchar;
-typedef short           target_short;
-typedef unsigned short  target_ushort;
-typedef long            target_int;
-typedef unsigned long   target_uint;
-typedef long            target_long;
-typedef unsigned long   target_ulong;
+typedef int8_t          target_schar;
+typedef uint8_t         target_uchar;
+typedef uint16_t        target_wchar;
+typedef int16_t         target_short;
+typedef uint16_t        target_ushort;
+typedef int32_t         target_int;
+typedef uint32_t        target_uint;
+typedef int32_t         target_long;
+typedef uint32_t        target_ulong;
 
-typedef unsigned long   target_size_t;
-typedef unsigned long   target_offset_t;
+typedef uint32_t        target_size_t;
+typedef uint32_t        target_offset_t;

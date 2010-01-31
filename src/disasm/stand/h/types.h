@@ -216,9 +216,9 @@ typedef struct sa_disasm_struct sa_disasm_struct;
 typedef sa_disasm_struct *sa_disasm;
 
 // hash table definitions
-typedef uint_32         hash_value;
+typedef uintptr_t       hash_value;
 typedef uint_32         hash_table_size;
-typedef uint_32         hash_data;
+typedef uintptr_t       hash_data;
 
 typedef enum {
     HASH_STRING,

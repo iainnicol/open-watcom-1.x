@@ -478,7 +478,7 @@ int main( int argc, char *argv[] )
      * use by the loader)
      */
     lseek( out, MAGIC_OFFSET, SEEK_SET );
-    write( out, &tsize, sizeof( tsize ) );
+    write( out, &tsize, sizeof( unsigned_32 ) );
     len = strlen( fname );
     memset( &fname[len],' ',8-len );
     updateNHStuff( out, fname, desc );

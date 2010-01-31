@@ -72,7 +72,7 @@ ExtraRptCtr( cgio_locates_thunk );
     static void _dump( CGFILE* cgfile, const char* prefix )
     {
         if( PragDbgToggle.callgraph ) {
-            printf( "Cgio: %x %s - %s\n"
+            printf( "Cgio: %p %s - %s\n"
                   , cgfile
                   , prefix
                   , DbgSymNameFull( cgfile->symbol ) );
@@ -85,8 +85,8 @@ ExtraRptCtr( cgio_locates_thunk );
             CGFILE* curr;
             printf( "\n%s\n", msg );
             RingIterBeg( ring, curr ) {
-                printf( "\nCGFILE[%x] %s\n"
-                        "     first[%x] offset[%x] buffer[%x] cursor[%x]"
+                printf( "\nCGFILE[%p] %s\n"
+                        "     first[%lx] offset[%x] buffer[%p] cursor[%p]"
                         " cond_flags(%d)\n"
                         "     delayed(%d) refed(%d) stgen(%d)"
                         " oe_inl(%d) state_table(%d) once_inl(%d)\n"

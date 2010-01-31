@@ -29,11 +29,15 @@
 ****************************************************************************/
 
 
-#include <malloc.h>
+#undef DEBUG_HEAP
+
 #include <stdio.h>
+#ifdef DEBUG_HEAP
+#include <malloc.h>
+#endif
 
 
-#if 0
+#ifdef DEBUG_HEAP
 typedef struct                  // ALLOCED -- allocated entry
 {   void __far *_pentry;        // - entry
     size_t _size;               // - size
@@ -47,7 +51,7 @@ static unsigned entry_count;    // - # entries
 void DbgHeapInit                // INITIALIZATION
     ( void )
 {
-#if 0
+#ifdef DEBUG_HEAP
     unsigned count;             // - # of entries
     _HEAPINFO hi;               // - heap information
     ALLOCED* ae;                // - allocated entry
@@ -127,7 +131,7 @@ void DbgHeapInit                // INITIALIZATION
 void DbgHeapFini                // COMPLETION
     ( void )
 {
-#if 0
+#ifdef DEBUG_HEAP
     unsigned count;             // - # of entries
     _HEAPINFO hi;               // - heap information
     ALLOCED* ae;                // - allocated entry

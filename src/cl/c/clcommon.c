@@ -40,22 +40,30 @@
 #else
 #include <dirent.h>
 #endif
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #ifndef __WATCOMC__
 #include "clibext.h"
 #endif
 
+#include "diskos.h"
+#include "pathgrp.h"
 #include "cmdlhelp.h"
 #include "clcommon.h"
+#ifdef TRMEM
+#include "trmem.h"
+#endif
 
 #ifndef __UNIX__
 #define ATTR_MASK   _A_HIDDEN + _A_SYSTEM + _A_VOLID + _A_SUBDIR
 #endif
 
-struct  flags   Flags;
+flags   Flags;
 FILE    *Fp;                /* file pointer for Temp_Link         */
-char    Libs[MAX_CMD];      /* list of libraires from Cmd         */
+list    *Libs_List;         /* list of libraires from Cmd         */
 char    *Map_Name;          /* name of map file                   */
-struct  list *Obj_List;     /* linked list of object filenames    */
+list    *Obj_List;          /* linked list of object filenames    */
 char    *Obj_Name;          /* object file name pattern           */
 char    Exe_Name[_MAX_PATH];/* name of executable                 */
 
@@ -67,6 +75,15 @@ char *DebugOptions[] = {
     "debug codeview\n",
     "debug dwarf\n",
 };
+
+#ifdef TRMEM
+static _trmem_hdl   TRMemHandle;
+
+static void memLine( int *fh, const char *buf, size_t size )
+{
+    PrintMsg( buf );
+}
+#endif
 
 void PrintMsg( const char *fmt, ... )
 /***********************************/
@@ -82,20 +99,24 @@ void PrintMsg( const char *fmt, ... )
     len = 0;
     for( ;; ) {
         c = *fmt++;
-        if( c == '\0' ) break;
+        if( c == '\0' )
+            break;
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
                 p = va_arg( args, char * );
                 for( ;; ) {
                     c = *p++;
-                    if( c == '\0' ) break;
+                    if( c == '\0' )
+                        break;
                     putchar(c);
                 }
             } else if( c == 'd' ) {
                 i = va_arg( args, int );
                 itoa( i, buf, 10 );
-                for( len = 0; buf[len] != '\0'; ++len ) putchar(buf[len]);
+                for( len = 0; buf[len] != '\0'; ++len ) {
+                    putchar(buf[len]);
+                }
             }
         } else {
             putchar(c);
@@ -110,14 +131,26 @@ void  Fputnl( char *text, FILE *fptr )
     fputs( "\n", fptr );
 }
 
+void FputnlQuoted( char *text, FILE *fptr )
+/****************************************/
+{
+    if( strchr( text, ' ' ) != NULL ) {
+        fputs( "'", fptr );
+        fputs( text, fptr );
+        fputs( "'\n", fptr );
+    } else {
+        fputs( text, fptr );
+        fputs( "\n", fptr );
+    }
+}
+
 void BuildLinkFile( void )
 /************************/
 {
-    char    quoted[_MAX_PATH ];
+    list    *itm;
 
     fputs( "name ", Fp );
-    BuildQuotedFName( quoted, sizeof( quoted ), "", Exe_Name, "'" );
-    Fputnl( quoted, Fp );
+    FputnlQuoted( Exe_Name, Fp );
     if( Flags.keep_exename ) {
         Fputnl( "option noextension", Fp );
     }
@@ -126,13 +159,12 @@ void BuildLinkFile( void )
             Fputnl( "option map", Fp );
         } else {
             fputs( "option map=", Fp );
-            BuildQuotedFName( quoted, sizeof( quoted ), "", Map_Name, "'" );
-            Fputnl( quoted, Fp );
+            FputnlQuoted( Map_Name, Fp );
         }
     }
-    if( Libs[0] != '\0' ) {
+    for( itm = Libs_List; itm != NULL; itm = itm->next ) {
         fputs( "library ", Fp );
-        Fputnl( Libs, Fp );
+        FputnlQuoted( itm->item, Fp );
     }
     if( Flags.two_case ) {
         Fputnl( "option caseexact", Fp );
@@ -141,74 +173,177 @@ void BuildLinkFile( void )
     Fp = NULL;
 }
 
+void print_line( int * handle, const char * buff, size_t len )
+/*************************************************************/
+{
+    write( *handle, buff, len );
+}
+
+void  MemInit( void )
+/*******************/
+{
+#ifdef TRMEM
+    TRMemHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memLine,
+            _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
+            _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+#endif
+}
+
+void  MemFini( void )
+/*******************/
+{
+#ifdef TRMEM
+    _trmem_prt_usage( TRMemHandle );
+    _trmem_prt_list( TRMemHandle );
+    _trmem_close( TRMemHandle );
+#endif
+}
 
 void  *MemAlloc( unsigned size )
 /******************************/
 {
     void        *ptr;
 
-    if( ( ptr = malloc( size ) ) == NULL ) {
-        PrintMsg( WclMsgs[ OUT_OF_MEMORY ] );
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = malloc( size );
+#endif
+    if( ptr == NULL ) {
+        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
         exit( 1 );
     }
     return( ptr );
 }
 
+char *MemStrDup( const char *str )
+/********************************/
+{
+    char        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_strdup( str, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = strdup( str );
+#endif
+    if( ptr == NULL ) {
+        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
+        exit( 1 );
+    }
+    return( ptr );
+}
+
+void  *MemReAlloc( void *p, int size )
+/************************************/
+{
+    void        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_realloc( p, size, _trmem_guess_who(), TRMemHandle );
+#else
+    ptr = realloc( p, size );
+#endif
+    if( ptr == NULL ) {
+        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
+        exit( 1 );
+    }
+    return( ptr );
+}
+
+void  MemFree( void *ptr )
+/************************/
+{
+#ifdef TRMEM
+        _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );;
+#else
+        free( ptr );
+#endif
+}
+
+void ListAppend( list **itm_list, list *new )
+/*********************************************/
+{
+    list    *itm;
+
+    if( *itm_list == NULL ) {
+        *itm_list = new;
+    } else {
+        itm = *itm_list;
+        while( itm->next != NULL ) {
+            itm = itm->next;
+        }
+        itm->next = new;
+    }
+}
+
+void ListFree( list *itm_list )
+/*****************************/
+{
+    list    *next;
+
+    while( itm_list != NULL ) {
+        next = itm_list->next;
+        MemFree( itm_list->item );
+        MemFree( itm_list );
+        itm_list = next;
+    }
+}
 
 void  AddName( char *name, FILE *link_fp )
 /****************************************/
 {
-    struct list *curr_name, *last_name, *new_name;
+    list        *curr_name;
+    list        *last_name;
+    list        *new_name;
     char        path  [_MAX_PATH ];
-    char        quoted[_MAX_PATH ];
-    char        buff1 [_MAX_PATH2];
-    char        buff2 [_MAX_PATH2];
-    char        *fname;
+    PGROUP      pg1;
+    PGROUP      pg2;
 
     last_name = NULL;
     curr_name = Obj_List;
     while( curr_name != NULL ) {
-        if( strcmp( name, curr_name->filename ) == 0 ) return;
+#ifdef __UNIX__
+        if( strcmp( name, curr_name->item ) == 0 )  // Case-sensitive
+#else
+        if( stricmp( name, curr_name->item ) == 0 ) // Case-insensitive
+#endif
+            return;
         last_name = curr_name;
         curr_name = curr_name->next;
     }
-    new_name = MemAlloc( sizeof( struct list ) );
+    new_name = MemAlloc( sizeof( list ) );
     if( Obj_List == NULL ) {
         Obj_List = new_name;
     } else {
         last_name->next = new_name;
     }
-    new_name->filename = strdup( name );
+    new_name->item = MemStrDup( name );
     new_name->next = NULL;
-    fputs( "file ", link_fp );
     if( Obj_Name != NULL ) {
-        char        *drive;
-        char        *drive2;
-        char        *dir;
-        char        *dir2;
-        char        *extension;
-        char        *ext2;
-        
         /* construct full name of object file from Obj_Name information */
-        _splitpath2( Obj_Name, buff1, &drive, &dir, &fname, &extension );
-        if( extension[0] == '\0' )  extension = OBJ_EXT;
-        
-        if( fname[0] == '\0' || fname[0] == '*' ) {
+        _splitpath2( Obj_Name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
+        if( pg1.ext[0] == '\0' )
+            pg1.ext = OBJ_EXT;
+        if( pg1.fname[0] == '\0' || pg1.fname[0] == '*' ) {
             /* there's no usable basename in the -fo= pattern, but there drive and directory
              * and extension should still be applied.
              * OTOH the input name may have its own, explicitly given
              * drive, directory and extension, so let those take precedence */
-            _splitpath2( name, buff2, &drive2, &dir2, &fname, &ext2 );
-            if( ext2[0] != '\0' )  extension = ext2;
-            if( drive2[0] != '\0' ) drive = drive2;
-            if( dir2[0] != '\0' ) dir = dir2;
-           
+            _splitpath2( name, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+            pg1.fname = pg2.fname;
+            if( pg2.ext[0] != '\0' )
+                pg1.ext = pg2.ext;
+            if( pg2.drive[0] != '\0' )
+                pg1.drive = pg2.drive;
+            if( pg2.dir[0] != '\0' ) {
+                pg1.dir = pg2.dir;
+            }
         }
-        _makepath( path, drive, dir, fname, extension );
+        _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
         name = path;
     }
-    BuildQuotedFName( quoted, sizeof( quoted ), "", name, "'" );
-    Fputnl( quoted, link_fp );
+    fputs( "file ", link_fp );
+    FputnlQuoted( name, link_fp );
 }
 
 
@@ -216,23 +351,23 @@ char  *MakePath( char *path )
 /***************************/
 {
     char        *p;
+    int         len;
 
-    p = strrchr( path ,PATH_SEP );
-    if( p != NULL ) {
-        p[ 1 ] = NULLCHAR;
-    } else {
-#ifdef __UNIX__
-        *path = NULLCHAR;
-#else
+    p = strrchr( path, SYS_DIR_SEP_CHAR );
+#ifndef __UNIX__
+    if( p == NULL ) {
         p = strchr( path, ':' );
-        if( p != NULL ) {
-            p[ 1 ] = NULLCHAR;
-        } else {
-            *path = NULLCHAR;
-        }
-#endif
     }
-    return( strdup( path ) );
+#endif
+    if( p == NULL ) {
+        return( MemStrDup( "" ) );
+    } else {
+        len = p + 1 - path;
+        p = MemAlloc( len + 1 );
+        strncpy( p, path, len );
+        p[len] = '\0';
+        return( p );
+    }
 }
 
 char  *GetName( char *path )
@@ -243,18 +378,18 @@ char  *GetName( char *path )
     struct      dirent  *direntp;
 
     if( path != NULL ) {                /* if given a filespec to open,  */
-        if( *path == NULLCHAR ) {       /*   but filespec is empty, then */
+        if( *path == '\0' ) {           /*   but filespec is empty, then */
             closedir( dirp );           /*   close directory and return  */
             return( NULL );             /*   (for clean up after error)  */
         }
         dirp = opendir( path );         /* try to find matching filenames */
         if( dirp == NULL ) {
-            PrintMsg( WclMsgs[ UNABLE_TO_OPEN ], path );
+            PrintMsg( WclMsgs[UNABLE_TO_OPEN], path );
             return( NULL );
         }
     }
 
-    while( ( direntp = readdir( dirp ) ) != NULL ) {
+    while( (direntp = readdir( dirp )) != NULL ) {
         if( ( direntp->d_attr & ATTR_MASK ) == 0 ) {    /* valid file? */
             return( direntp->d_name );
         }
@@ -266,12 +401,13 @@ char  *GetName( char *path )
 
     if( path == NULL )
             return( NULL );
-    name = strrchr(path, '/');
-    if( name == NULL )
+    name = strrchr( path, '/' );
+    if( name == NULL ) {
         name = path;
-    else
+    } else {
         name++;
-    return( strdup(name) );
+    }
+    return( MemStrDup(name) );
 #endif
 }
 
@@ -280,20 +416,24 @@ void FindPath( char *name, char *buf )
 {
     _searchenv( name, "PATH", buf );
     if( buf[0] == '\0' ) {
-        PrintMsg( WclMsgs[ UNABLE_TO_FIND ], name );
+        PrintMsg( WclMsgs[UNABLE_TO_FIND], name );
         exit( 1 );
     }
 }
 
 int iswsOrOpt( char ch, char opt, char *Switch_Chars )
 {
-    if( isblank( ch ) ) return( 1 );
+    if( isblank( ch ) )
+        return( 1 );
 
     if( opt == '-'  ||  opt == Switch_Chars[1] ) {
         /* if we are processing a switch, stop at a '-' */
-        if( ch == '-' ) return( 1 );
+        if( ch == '-' )
+            return( 1 );
 #ifndef __UNIX__
-        if( ch == Switch_Chars[1] ) return( 1 );
+        if( ch == Switch_Chars[1] ) {
+            return( 1 );
+        }
 #endif
     }
     return( 0 );
@@ -324,7 +464,8 @@ char *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars )
                 if( string_open ) {
                     str++;
                 } else {
-                    if( iswsOrOpt( *str, opt, Switch_Chars ) ) break;
+                    if( iswsOrOpt( *str, opt, Switch_Chars ) )
+                        break;
                     str++;
                 }
             }

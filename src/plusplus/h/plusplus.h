@@ -115,8 +115,8 @@ typedef struct type     *TYPE;      // type pointer
 #define PCH_struct      struct      // use to indicate struct is saved in PCH
 
 union cgvalue {                     // CGVALUE: one of
-    target_ulong        uvalue;     // - unsigned integer
-    target_long         ivalue;     // - signed integer
+    uintptr_t           uvalue;     // - unsigned integer (must be ptr sized)
+    intptr_t            ivalue;     // - signed integer (must be ptr sized)
     void                *pvalue;    // - pointer
 };
 

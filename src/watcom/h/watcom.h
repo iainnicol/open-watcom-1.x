@@ -30,10 +30,24 @@
 ****************************************************************************/
 
 
-#ifndef _WATCOM_H_INCLUDED_
-#define _WATCOM_H_INCLUDED_
+#ifndef WATCOM_H_INCLUDED
+#define WATCOM_H_INCLUDED
+
+#ifndef LONG_IS_64BITS
+  #ifdef __LP64__
+    #define LONG_IS_64BITS
+  #endif
+#endif
+
+/* Sanity check */
+#if defined( __x86_64__ ) || defined( __amd64 ) || defined( _LP64 )
+  #ifndef LONG_IS_64BITS
+    #error Bitness mismatch
+  #endif
+#endif
 
 #include <errno.h>
+#include <stdint.h>
 #ifndef __WATCOMC__
 #include "clibext.h"
 #endif

@@ -3873,7 +3873,7 @@ pch_status PCHReadTemplates( void )
         ti->next = TemplateClassInfoMapIndex( ti->next );
         ti->sym = SymbolMapIndex( ti->sym );
 
-        defarg_list_size = (unsigned int) ti->defarg_list;
+        defarg_list_size = (size_t) ti->defarg_list;
         defarg_list = CPermAlloc( defarg_list_size * sizeof( REWRITE * ) );
         ti->defarg_list = defarg_list;
         PCHRead( defarg_list, defarg_list_size * sizeof( REWRITE * ) );
@@ -3941,7 +3941,7 @@ pch_status PCHReadTemplates( void )
                 addMemberEntry( ts, scope, memb_defn, memb_arg_names );
             }
             if( ts->ordering != NULL ) {
-                j = 16 * ( ( ( (unsigned) ts->ordering ) - 2 ) / 128 + 1 );
+                j = 16 * ( ( ( (uintptr_t) ts->ordering ) - 2 ) / 128 + 1 );
                 ts->ordering = CMemAlloc( j );
                 PCHRead( ts->ordering, j );
             }

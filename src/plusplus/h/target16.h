@@ -24,13 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Target types for 16-bit machines.
 *
 ****************************************************************************/
 
 
-/* target16.h: target types for 16-bit machine */
+#include <stdint.h>
 
 #define TARGET_BOOL             1
 #define TARGET_CHAR             1
@@ -60,15 +59,15 @@
 #define TARGET_PACKING  2
 #define TARGET_MAX_PACKING      8
 
-typedef signed char     target_schar;
-typedef unsigned char   target_uchar;
-typedef unsigned short  target_wchar;
-typedef short           target_short;
-typedef unsigned short  target_ushort;
-typedef short           target_int;
-typedef unsigned short  target_uint;
-typedef long            target_long;
-typedef unsigned long   target_ulong;
+typedef int8_t          target_schar;
+typedef uint8_t         target_uchar;
+typedef uint16_t        target_wchar;
+typedef int16_t         target_short;
+typedef uint16_t        target_ushort;
+typedef int16_t         target_int;
+typedef uint16_t        target_uint;
+typedef int32_t         target_long;
+typedef uint32_t        target_ulong;
 
-typedef unsigned long   target_size_t;
-typedef unsigned short  target_offset_t;
+typedef uint32_t        target_size_t;
+typedef uint16_t        target_offset_t;

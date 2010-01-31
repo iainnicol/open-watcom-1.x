@@ -1061,7 +1061,7 @@ static void listPrint( FILE *fp, char *str, ... )
 static void listNewLine( FILE *fp )
 {
     if( fp ) {
-        fprintf( fp, listMsg );
+        fputs( listMsg, fp );
         fputc( '\n', fp );
     } else {
         Message( listMsg );

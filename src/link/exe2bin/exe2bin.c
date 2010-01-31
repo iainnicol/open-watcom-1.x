@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "watcom.h"             // unsigned_16, ..., endian-macros, ...
 #include "exedos.h"             // dos_exe_header, ...
@@ -214,7 +215,7 @@ void disp_reltab( reloc_table *reltab )
         if( i % 6 == 0 ) {
             printf( "\n" );
         }
-        printf( "0x%08lX  ", reltab->reloc[i] );
+        printf( "0x%08"PRIx32"  ", reltab->reloc[i] );
     }
     printf( "\n" );
 }

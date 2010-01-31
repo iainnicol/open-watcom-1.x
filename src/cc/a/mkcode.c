@@ -58,7 +58,7 @@ struct bursts {
 
 static unsigned char *buff;
 
-static char usage[] = "Usage: inp.file out.file\n";
+static char usage[] = "Usage: inp.file out.file";
 
 #define Xptr(x) (unsigned char *)(buff + x)
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         fp = fopen( argv[2], "w" );
         stat( argv[1], &bufstat );
     } else {
-        printf( usage );
+        puts( usage );
     }
     buff = malloc( bufstat.st_size );
     read( fi, buff, bufstat.st_size );

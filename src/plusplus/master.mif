@@ -328,9 +328,11 @@ dll.lnk : $(__MAKEFILES__)
  
 wpp$(target_cpu)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ wpp$(target_cpu)
- 
+
+# Don't warn about missing translations
+msgencod_opts = -s
 #!ifeq release 1
-#msgencod_opts = -w
+#msgencod_opts += -w
 #!endif
  
 ./msgencod.exe: $(fe_misc_dir)/c/msgencod.c

@@ -171,6 +171,8 @@ ptree_op_t;
 #define PT_ERROR PT_NULL
 
 typedef struct parse_tree_node {
+    unsigned long       pch_filler;     /* Hacky way to ensure there is enough
+                                        room to store a pointer before 'op' */
     PTF_FLAG            flags;
     ptree_op_t          op;
     CGOP                cgop;

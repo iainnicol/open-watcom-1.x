@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  ORL hash table definition.
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@ typedef enum {
     ORL_HASH_NUMBER
 } orl_hash_table_type;
 
-typedef uint_32         orl_hash_value;
+typedef uintptr_t       orl_hash_value;
 typedef uint_32         orl_hash_table_size;
 typedef void *          orl_hash_data;
 
