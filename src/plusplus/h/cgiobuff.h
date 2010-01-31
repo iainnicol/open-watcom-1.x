@@ -67,7 +67,7 @@ struct cgfile_ins               // CGFILE_INS -- location of instruction
     DISK_OFFSET offset;         // - offset in the block
 };
 
-#define CGINTER_BLOCKING        (sizeof(unsigned))
+#define CGINTER_BLOCKING        (sizeof(void *))
 
 // structure is written out to a file
 #include <pushpck1.h>
