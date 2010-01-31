@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -55,11 +56,11 @@ char    magic_cookie[] = "CGEXXX";
 
 char    *dats[MAX_DATA_FILES];
 
-short   FileCount;
-long    *idx;
-short   *entries;
-short   sflag = FALSE;
-short   qflag = FALSE;
+int16_t  FileCount;
+int32_t *idx;
+int16_t *entries;
+int     sflag = FALSE;
+int     qflag = FALSE;
 char    _bf[] = "edbind.dat";
 char    *bindfile = _bf;
 
@@ -107,12 +108,12 @@ void MyPrintf( char *str, ... )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long tocopy )
+void AddDataToEXE( char *exe, char *buffer, int len, unsigned long tocopy )
 {
     int                 h, i, newh;
     char                buff[MAGIC_COOKIE_SIZE + 3];
-    long                shift;
-    short               taillen;
+    int32_t             shift;
+    int16_t             taillen;
     char                *copy;
     char                foo[128];
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];
@@ -157,8 +158,8 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
-        taillen = *( (unsigned short *)&(buff[MAGIC_COOKIE_SIZE + 1]) );
-        shift = (long)-((long)taillen + (long)MAGIC_COOKIE_SIZE + 3);
+        taillen = *( (uint16_t *)&(buff[MAGIC_COOKIE_SIZE + 1]) );
+        shift = -((int32_t)taillen + MAGIC_COOKIE_SIZE + 3);
         tocopy += shift;
     }
     i = lseek( h, 0, SEEK_SET );
@@ -206,8 +207,8 @@ void AddDataToEXE( char *exe, char *buffer, unsigned short len, unsigned long to
         if( i != MAGIC_COOKIE_SIZE + 1 ) {
             Abort( "write 2 error on \"%s\"", exe );
         }
-        i = write( newh, &len, sizeof( short ) );
-        if( i != sizeof( short ) ) {
+        i = write( newh, &len, sizeof( int16_t ) );
+        if( i != sizeof( int16_t ) ) {
             Abort( "write 3 error on \"%s\"", exe );
         }
     }
@@ -269,7 +270,7 @@ void Usage( char *msg )
 /*
  * EliminateFirstN - eliminate first n chars from buff
  */
-static void EliminateFirstN( char *buff, short n  )
+static void EliminateFirstN( char *buff, int n  )
 {
     char        *buff2;
 
@@ -286,7 +287,7 @@ static void EliminateFirstN( char *buff, short n  )
  */
 void RemoveLeadingSpaces( char *buff )
 {
-    short       k = 0;
+    int         k = 0;
 
     if( buff[0] == 0 ) {
         return;
@@ -405,18 +406,18 @@ int main( int argc, char *argv[] )
             }
         }
         fclose( f );
-        idx = MyAlloc( FileCount * sizeof( long ) );
-        entries = MyAlloc( FileCount * sizeof( short ) );
+        idx = MyAlloc( FileCount * sizeof( int32_t ) );
+        entries = MyAlloc( FileCount * sizeof( int16_t ) );
 
         buffn = buff;
         cnt = 0;
 
-        *(short *)buffn = FileCount;
-        buffn += sizeof( short );
-        cnt += sizeof( short );
+        *(int16_t *)buffn = FileCount;
+        buffn += sizeof( int16_t );
+        cnt += sizeof( int16_t );
         buffs = buffn;
-        buffn += sizeof( short );
-        cnt += sizeof( short );
+        buffn += sizeof( int16_t );
+        cnt += sizeof( int16_t );
         k = 0;
         for( i = 0; i < FileCount; i++ ) {
 //          j = strlen( dats[i] ) + 1;
@@ -429,13 +430,13 @@ int main( int argc, char *argv[] )
             cnt += j;
             k += j;
         }
-        *(short *)buffs = k + 1;    /* size of token list */
+        *(int16_t *)buffs = k + 1;  /* size of token list */
         *buffn = 0;                 /* trailing zero */
         buffn++;
         cnt++;
         buffs = buffn;
-        buffn += FileCount * (sizeof( short ) + sizeof( long ));
-        cnt += FileCount * (sizeof( short ) + sizeof( long ));
+        buffn += FileCount * (sizeof( int16_t ) + sizeof( int32_t ));
+        cnt += FileCount * (sizeof( int16_t ) + sizeof( int32_t ));
 
         for( j = 0; j < FileCount; j++ ) {
             MyPrintf( "Loading" );
@@ -445,7 +446,7 @@ int main( int argc, char *argv[] )
             }
             setvbuf( f, buff2, _IOFBF, 32000 );
             bytes = lines = 0;
-            idx[j] = (long)cnt;
+            idx[j] = cnt;
             while( fgets( buff3, MAX_LINE_LEN, f ) != NULL ) {
                 for( i = strlen( buff3 ); i && isWSorCtrlZ( buff3[i - 1] ); --i )
                     buff3[i - 1] = '\0';
@@ -470,9 +471,9 @@ int main( int argc, char *argv[] )
             MyPrintf( "Added %d lines (%d bytes)\n", lines, bytes );
         }
         i = FileCount;
-        memcpy( buffs, idx, FileCount * sizeof( long ) );
-        buffs += FileCount * sizeof( long );
-        memcpy( buffs, entries, FileCount * sizeof( short ) );
+        memcpy( buffs, idx, FileCount * sizeof( int32_t ) );
+        buffs += FileCount * sizeof( int32_t );
+        memcpy( buffs, entries, FileCount * sizeof( int16_t ) );
     }
 
     AddDataToEXE( path, buff, cnt, fs.st_size );

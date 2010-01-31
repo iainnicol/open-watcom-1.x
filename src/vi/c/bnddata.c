@@ -47,10 +47,10 @@ static char magicCookie[] = "CGEXXX";
 
 #define MAGIC_COOKIE_SIZE sizeof( magicCookie )
 
-static long     *dataOffsets;
-static short    *entryCounts, dataFcnt;
+static int32_t  *dataOffsets;
+static int16_t  *entryCounts, dataFcnt;
 static char     *dataFnames;
-static long     dataStart;
+static int32_t  dataStart;
 
 /*
  * CheckForBoundData - check if data is bound to our exe
@@ -75,8 +75,8 @@ void CheckForBoundData( void )
         close( h );
         return;
     }
-    taillen = *((short *) &(buff[MAGIC_COOKIE_SIZE + 1]));
-    dataStart = (long) -((long) taillen + (long) MAGIC_COOKIE_SIZE + 3);
+    taillen = *((int16_t *) &(buff[MAGIC_COOKIE_SIZE + 1]));
+    dataStart = -((int32_t) taillen + MAGIC_COOKIE_SIZE + 3);
     lseek( h, dataStart, SEEK_END );
 
     /*
@@ -89,15 +89,15 @@ void CheckForBoundData( void )
     /*
      * get number of files, and get space to store data
      */
-    dataFcnt = *(short *) BndMemory;
-    dataOffsets = MemAlloc( dataFcnt * sizeof( long ) );
-    entryCounts = MemAlloc( dataFcnt * sizeof( short ) );
+    dataFcnt = *(int16_t *) BndMemory;
+    dataOffsets = MemAlloc( dataFcnt * sizeof( int32_t ) );
+    entryCounts = MemAlloc( dataFcnt * sizeof( int16_t ) );
 
     /*
      * get file names
      */
     tmp = BndMemory + 2;
-    i = *(short *) tmp;
+    i = *(int16_t *) tmp;
     tmp += 2;
     dataFnames = MemAlloc( i );
     memcpy( dataFnames, tmp, i );
@@ -106,10 +106,10 @@ void CheckForBoundData( void )
     /*
      * copy over file offset and linenumber data
      */
-    i = dataFcnt * sizeof( long );
+    i = dataFcnt * sizeof( int32_t );
     memcpy( dataOffsets, tmp, i );
     tmp += i;
-    memcpy( entryCounts, tmp , dataFcnt * sizeof( short ) );
+    memcpy( entryCounts, tmp , dataFcnt * sizeof( int16_t ) );
 
     EditFlags.BoundData = TRUE;
 
