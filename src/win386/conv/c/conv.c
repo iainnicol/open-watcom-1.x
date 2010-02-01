@@ -1172,12 +1172,12 @@ void GenerateThunkTable( fcn *tmpf )
  */
 void CloseHeader( FILE *f )
 {
-    fprintf( f, ";***                                                                      ***\n" );
-    fprintf( f, ";*** By:  Craig Eisler                                                    ***\n" );
-    fprintf( f, ";***      December 1990-November 1992                                     ***\n" );
-    fprintf( f, ";*** By:  F.W.Crigger May 1993                                            ***\n" );
-    fprintf( f,blank );
-    fprintf( f,line );
+    fputs( ";***                                                                      ***\n", f );
+    fputs( ";*** By:  Craig Eisler                                                    ***\n", f );
+    fputs( ";***      December 1990-November 1992                                     ***\n", f );
+    fputs( ";*** By:  F.W.Crigger May 1993                                            ***\n", f );
+    fputs( blank, f );
+    fputs( line, f );
 
 } /* CloseHeader */
 
@@ -1222,8 +1222,8 @@ void DLLThunkHeader( void )
 {
     int      i;
 
-    fprintf( dllthunk, line );
-    fprintf( dllthunk, blank );
+    fputs( line, dllthunk );
+    fputs( blank, dllthunk );
     fprintf( dllthunk, ";*** DLLTHK.ASM - thunking layer to Windows 3.1 DLLs                      ***\n" );
     fprintf( dllthunk, ";***              This set of functions makes sure that the proper dll    ***\n" );
     fprintf( dllthunk, ";***              is loaded, and gets the real address of the function    ***\n" );
@@ -1353,8 +1353,8 @@ void FunctionHeader( void )
     char        *thunkstr;
     char        *th1,*th2;
 
-    fprintf( stubs, line );
-    fprintf( stubs, blank );
+    fputs( line, stubs );
+    fputs( blank, stubs );
     fprintf( stubs, ";*** WINGLUE.ASM - windows glue functions                                 ***\n" );
     fprintf( stubs, ";***               This set of functions encompasses all possible types   ***\n" );
     fprintf( stubs, ";***               of calls.  Each API call has a little                  ***\n" );
@@ -1735,7 +1735,7 @@ void AddCommentTrailer( char *tmp )
     }
     strcat( tmp, tmp2 );
     strcat( tmp, "***\n" );
-    fprintf( stubs,tmp );
+    fputs( tmp, stubs );
 
 } /* AddCommentTrailer */
 

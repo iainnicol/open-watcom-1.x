@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Manage a string table.
 *
 ****************************************************************************/
 
@@ -178,7 +177,7 @@ static void patDump( patricia *tree, unsigned indent ) {
     for( i = 0; i < indent; i++ ) {
         printf( "\t" );
     }
-    printf( "%x (%d,'%s',l=%x,r=%x)\n", tree, tree->bit, tree->text, tree->left, tree->right );
+    printf( "%p (%d,'%s',l=%p,r=%p)\n", tree, tree->bit, tree->text, tree->left, tree->right );
     child = tree->right;
     if( child != NULL && child->bit > tree->bit ) {
         patDump( child, indent + 1 );

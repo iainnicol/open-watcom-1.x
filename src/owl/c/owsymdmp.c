@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump the symbol table.
 *
 ****************************************************************************/
 
@@ -80,9 +79,9 @@ static void dumpSym( owl_file_handle file, owl_symbol_handle sym ) {
 
     char        buffer[ MAX_LINE_LEN ];
 
-    sprintf( &buffer[ 0 ], "%s[%x]:\n", symbolName( sym ), sym );
+    sprintf( &buffer[ 0 ], "%s[%p]:\n", symbolName( sym ), sym );
     DumpString( &buffer[ 0 ] );
-    sprintf( &buffer[ 0 ], "\tsection\t\t%s[%x]\n", sectionName( file, sym ), sym->section );
+    sprintf( &buffer[ 0 ], "\tsection\t\t%s[%p]\n", sectionName( file, sym ), sym->section );
     DumpString( &buffer[ 0 ] );
     sprintf( &buffer[ 0 ], "\ttype\t\t%s[%x]\n", symbolType( sym ), sym->type );
     DumpString( &buffer[ 0 ] );
