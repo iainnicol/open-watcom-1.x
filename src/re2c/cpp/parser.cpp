@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Parser for re2c (created with help from YACC).
 *
 ****************************************************************************/
 
@@ -39,7 +38,7 @@
 #include "parser.h"
 int yyparse();
 int yylex();
-void yyerror(char*);
+void yyerror(const char*);
 
 static uint accept;
 static RegExp *spec;
