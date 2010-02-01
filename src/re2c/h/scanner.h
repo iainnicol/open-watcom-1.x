@@ -47,7 +47,7 @@ class Scanner {
     Scanner(int);
     int echo(std::ostream&);
     int scan();
-    void fatal(char*);
+    void fatal(const char *);
     SubStr token();
     uint line();
 };

@@ -80,7 +80,7 @@ uint RegExp::fixedLength(){
     return ~0;
 }
 
-char *NullOp::type = "NullOp";
+const char *NullOp::type = "NullOp";
 
 void NullOp::calcSize(Char*){
     size = 0;
@@ -183,7 +183,7 @@ MatchOp *merge(MatchOp *m1, MatchOp *m2){
     return new MatchOp(doUnion(m1->match, m2->match));
 }
 
-char *MatchOp::type = "MatchOp";
+const char *MatchOp::type = "MatchOp";
 
 void MatchOp::display(std::ostream &o) const{
     o << match;
@@ -280,7 +280,7 @@ RegExp *mkAlt(RegExp *e1, RegExp *e2){
     return doAlt(merge(m1, m2), doAlt(e1, e2));
 }
 
-char *AltOp::type = "AltOp";
+const char *AltOp::type = "AltOp";
 
 void AltOp::calcSize(Char *rep){
     exp1->calcSize(rep);
@@ -311,7 +311,7 @@ void AltOp::split(CharSet &s){
     exp2->split(s);
 }
 
-char *CatOp::type = "CatOp";
+const char *CatOp::type = "CatOp";
 
 void CatOp::calcSize(Char *rep){
     exp1->calcSize(rep);
@@ -337,7 +337,7 @@ void CatOp::split(CharSet &s){
     exp2->split(s);
 }
 
-char *CloseOp::type = "CloseOp";
+const char *CloseOp::type = "CloseOp";
 
 void CloseOp::calcSize(Char *rep){
     exp->calcSize(rep);
@@ -428,7 +428,7 @@ RegExp *ranToRE(SubStr s){
     return new MatchOp(r);
 }
 
-char *RuleOp::type = "RuleOp";
+const char *RuleOp::type = "RuleOp";
 
 RuleOp::RuleOp(RegExp *e, RegExp *c, Token *t, uint a)
         : ins(NULL), exp(e), ctx(c), code(t), accept(a) {

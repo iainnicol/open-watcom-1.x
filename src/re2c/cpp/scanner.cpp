@@ -467,7 +467,7 @@ yy86:
 
 }
 
-void Scanner::fatal(char *msg){
+void Scanner::fatal(const char *msg){
     std::cerr << "line " << tline << ", column " << (tchar + 1) << ": "
         << msg << std::endl;
     exit(1);

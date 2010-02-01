@@ -71,8 +71,8 @@ class RegExp {
 public:
     int         size;
 public:
-    virtual char *typeOf() = 0;
-    RegExp *isA(char *t)
+    virtual const char *typeOf() = 0;
+    RegExp *isA(const char *t)
         { return typeOf() == t? this : NULL; }
     virtual void split(CharSet&) = 0;
     virtual void calcSize(Char*) = 0;
@@ -94,9 +94,9 @@ inline std::ostream& operator<<(std::ostream &o, const RegExp *re){
 
 class NullOp: public RegExp {
 public:
-    static char *type;
+    static const char   *type;
 public:
-    char *typeOf()
+    const char *typeOf()
         { return type; }
     void split(CharSet&);
     void calcSize(Char*);
@@ -109,12 +109,12 @@ public:
 
 class MatchOp: public RegExp {
 public:
-    static char *type;
-    Range       *match;
+    static const char   *type;
+    Range               *match;
 public:
     MatchOp(Range *m) : match(m)
         { }
-    char *typeOf()
+    const char *typeOf()
         { return type; }
     void split(CharSet&);
     void calcSize(Char*);
@@ -127,15 +127,15 @@ class RuleOp: public RegExp {
 private:
     RegExp      *exp;
 public:
-    RegExp      *ctx;
-    static char *type;
-    Ins         *ins;
-    uint        accept;
-    Token       *code;
-    uint        line;
+    RegExp              *ctx;
+    static const char   *type;
+    Ins                 *ins;
+    uint                accept;
+    Token               *code;
+    uint                line;
 public:
     RuleOp(RegExp*, RegExp*, Token*, uint);
-    char *typeOf()
+    const char *typeOf()
         { return type; }
     void split(CharSet&);
     void calcSize(Char*);
@@ -152,11 +152,11 @@ class AltOp: public RegExp {
 private:
     RegExp      *exp1, *exp2;
 public:
-    static char *type;
+    static const char   *type;
 public:
     AltOp(RegExp *e1, RegExp *e2)
         { exp1 = e1;  exp2 = e2; }
-    char *typeOf()
+    const char *typeOf()
         { return type; }
     void split(CharSet&);
     void calcSize(Char*);
@@ -172,11 +172,11 @@ class CatOp: public RegExp {
 private:
     RegExp      *exp1, *exp2;
 public:
-    static char *type;
+    static const char   *type;
 public:
     CatOp(RegExp *e1, RegExp *e2)
         { exp1 = e1;  exp2 = e2; }
-    char *typeOf()
+    const char *typeOf()
         { return type; }
     void split(CharSet&);
     void calcSize(Char*);
@@ -191,11 +191,11 @@ class CloseOp: public RegExp {
 private:
     RegExp      *exp;
 public:
-    static char *type;
+    static const char   *type;
 public:
     CloseOp(RegExp *e)
         { exp = e; }
-    char *typeOf()
+    const char *typeOf()
         { return type; }
     void split(CharSet&);
     void calcSize(Char*);

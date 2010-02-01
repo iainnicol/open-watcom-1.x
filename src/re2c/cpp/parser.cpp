@@ -213,7 +213,7 @@ YYSTYPE yyvs[YYSTACKSIZE];
 #define yystacksize YYSTACKSIZE
 #line 119 "parser.y"
 
-void yyerror(char* s){
+void yyerror(const char* s){
     in->fatal(s);
 }
 

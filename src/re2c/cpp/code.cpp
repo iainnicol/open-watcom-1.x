@@ -184,7 +184,7 @@ void genGoTo(std::ostream &o, State *to){
     o  << "\tgoto yy" << to->label << ";\n";
 }
 
-void genIf(std::ostream &o, char *cmp, uint v){
+void genIf(std::ostream &o, const char *cmp, uint v){
     o << "\tif(yych " << cmp << " '";
     prtCh(o, (uchar)v);
     o << "')";

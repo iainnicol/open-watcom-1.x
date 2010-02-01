@@ -39,9 +39,9 @@
 #include "parser.h"
 #include "dfa.h"
 
-char *fileName;
-bool sFlag = false;
-bool bFlag = false;
+const char   *fileName;
+bool         sFlag = false;
+bool         bFlag = false;
 
 int main(int argc, char *argv[]){
     fileName = NULL;
