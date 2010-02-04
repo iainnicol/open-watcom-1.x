@@ -80,7 +80,7 @@ static void begin_thread_helper( void *param )
     thread_handle = td->thread_handle;
     RdosSetSignal( td->signal );
 
-    tdata = (thread_data *)alloca( __ThreadDataSize );
+    tdata = ( thread_data * )RdosAllocateMem( __ThreadDataSize );
 
     if ( tdata ) {
         memset( tdata, 0, __ThreadDataSize );
@@ -104,6 +104,7 @@ static void begin_thread_helper( void *param )
     __sig_init_rtn(); // fills in a thread-specific copy of signal table
     (*rtn)( arg );
     _endthread();
+    RdosFreeMem(tdata);
      return;
 }
 

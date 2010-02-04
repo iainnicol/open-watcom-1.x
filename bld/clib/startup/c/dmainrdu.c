@@ -70,7 +70,7 @@ int __LibMain( int hdll, int reason, void *reserved )
         break;
     case DLL_PROCESS_ATTACH:
         __InitRtns( INIT_PRIORITY_THREAD );
-        tdata = __alloca( __ThreadDataSize );
+        tdata = ( thread_data * )RdosAllocateMem( __ThreadDataSize );
         memset( tdata, 0, __ThreadDataSize );
         tdata->__data_size = __ThreadDataSize;
         __InitThreadData( tdata );
