@@ -32,8 +32,8 @@
 #ifndef _SIGDEFN_H_INCLUDED
 #define _SIGDEFN_H_INCLUDED
 
-#if !defined(__NT__) && !defined(__OS2__) && !defined(__NETWARE__) && !defined(__GENERIC__) && !defined(__SNAP__)
-#error Must be bt=NT or bt=OS2 or bt=NETWARE or bt=GENERIC of bt=SNAP
+#if !defined(__NT__) && !defined(__OS2__) && !defined(__NETWARE__) && !defined(__GENERIC__) && !defined(__SNAP__) && !defined(__RDOS__)
+#error Must be bt=NT or bt=OS2 or bt=NETWARE or bt=GENERIC of bt=SNAP or bt=RDOS
 #endif
 
 #include "variety.h"

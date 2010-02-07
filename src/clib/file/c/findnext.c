@@ -31,17 +31,28 @@
 
 
 #include "variety.h"
-#include "int64.h"
 #include "widechar.h"
 #include <io.h>
-#include "find.h"
-#include "seterrno.h"
-#ifdef __NT__
+#if defined( __NT__ )
     #include <windows.h>
     #include "libwin32.h"
     #include "ntex.h"
-#else
+#elif defined( __OS2__ )
+    #include <wos2.h>
 #endif
+#include "find.h"
+#include "seterrno.h"
+
+#ifdef __NT__
+  #ifdef __WIDECHAR__
+    #define FIND_NEXT               __lib_FindNextFileW
+    #define CHECK_FIND_NEXT_ATTR    _w__NTFindNextFileWithAttr
+  #else
+    #define FIND_NEXT               FindNextFileA
+    #define CHECK_FIND_NEXT_ATTR    __NTFindNextFileWithAttr
+  #endif
+#endif
+
 
 #ifdef __WIDECHAR__
  #ifdef __INT64__
@@ -62,44 +73,54 @@
     BOOL            rc;
 
     /*** Try to find another matching file ***/
- #ifdef __WIDECHAR__
-    rc = __lib_FindNextFileW( (HANDLE)handle, &ffb );
- #else
-    rc = FindNextFileA( (HANDLE)handle, &ffb );
- #endif
+    rc = FIND_NEXT( (HANDLE)handle, &ffb );
     if( rc == FALSE ) {
-        __set_errno_nt();
-        return( -1 );
+        return( __set_errno_nt() );
     }
-    if( !__NTFindNextFileWithAttr( (HANDLE)handle, FIND_ATTR, &ffb ) ) {
-        __set_errno_dos( ERROR_FILE_NOT_FOUND );
-        return( -1 );
+    if( !CHECK_FIND_NEXT_ATTR( (HANDLE)handle, FIND_ATTR, &ffb ) ) {
+        return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
-
     /*** Got one! ***/
- #ifdef __INT64__
+  #ifdef __INT64__
     __F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt)( &ffb, fileinfo );
- #else
+  #else
     __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffb, fileinfo );
- #endif
-    return( 0 );
-#else
-    DOSFINDTYPE *   findbuf = (DOSFINDTYPE*) handle;
-    unsigned        rc;
+  #endif
+#elif defined( __OS2__ )
+    APIRET          rc;
+    FF_BUFFER       ffb;
+    OS_UINT         searchcount = 1;
 
-#ifdef __WATCOM_LFN__
-    findbuf->lfnax = (int)handle;
-#endif
-    rc = __F_NAME(_dos_findnext,_wdos_findnext)( findbuf );
+    rc = DosFindNext( (HDIR)handle, &ffb, sizeof( ffb ), &searchcount );
     if( rc != 0 ) {
-        return( -1 );
-    } else {
- #ifdef __INT64__
-        __F_NAME(__dos_finddatai64_cvt,__dos_wfinddatai64_cvt)( findbuf, fileinfo );
- #else
-        __F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt)( findbuf, fileinfo );
- #endif
-        return( 0 );
+        return( __set_errno_dos( rc ) );
     }
+    /*** Got one! ***/
+  #ifdef __INT64__
+    __F_NAME(__os2_finddatai64_cvt,__os2_wfinddatai64_cvt)( &ffb, fileinfo );
+  #else
+    __F_NAME(__os2_finddata_cvt,__os2_wfinddata_cvt)( &ffb, fileinfo );
+  #endif
+
+#elif defined( __RDOS__ )
+    RDOSFINDTYPE *   findbuf = (RDOSFINDTYPE*) handle;
+
+    findbuf->entry++;
+
+    if( __rdos_finddata_get( findbuf, fileinfo ) )
+        return( 0 );
+    else
+        return( -1 );
+
+#else   /* DOS */
+    if( __F_NAME(_dos_findnext,_wdos_findnext)( (DOSFINDTYPE *)handle ) ) {
+        return( -1 );
+    }
+  #ifdef __INT64__
+    __F_NAME(__dos_finddatai64_cvt,__dos_wfinddatai64_cvt)( (DOSFINDTYPE *)handle, fileinfo );
+  #else
+    __F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt)( (DOSFINDTYPE *)handle, fileinfo );
+  #endif
 #endif
+    return( 0 );
 }

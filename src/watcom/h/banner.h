@@ -168,3 +168,9 @@
 #define _WJDUMP_VERSION_        JAVA_BAN_VER_STR
 #define _JLIB_VERSION_          JAVA_BAN_VER_STR
 #define _JAVAC_VERSION_         JAVA_BAN_VER_STR
+
+/*
+ * Versions of Microsoft tools with OW clones are compatible
+ */
+#define _MS_CL_VERSION_         "13.0.0"
+#define _MS_LINK_VERSION_       "7.0.0"

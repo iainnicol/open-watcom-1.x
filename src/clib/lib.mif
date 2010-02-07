@@ -40,7 +40,7 @@ libsuffix = d
 # Final name
 libname =clib$(libinfix)$(libname_$(processor)_$(model))$(libsuffix)
 
-lib_flags  = -b-c-n-pa
+lib_flags  = -b-c-n-pa$(extra_libflags)
 !ifeq release 1
 lib_flags += -s-t-zld
 !endif

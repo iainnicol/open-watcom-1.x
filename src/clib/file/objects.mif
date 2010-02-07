@@ -1,35 +1,40 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
-#==================================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+#======================================================================================================
 !inject 64findfi.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi
 !inject 64findne.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi
-!inject 64stat.obj   d16 d32                                o16 o32         w16 w32
+!inject 64stat.obj   d16 d32                                                w16 w32
+!inject 64staos2.obj                                        o16 o32
 !inject 64stawnt.obj                     nt nta ntp
 !inject accss.obj    d16 d32                                                w16 w32 osi
 !inject accssos2.obj                                        o16 o32
 !inject accsswnt.obj                     nt nta ntp
+!inject accssrdu.obj                                                                                rdu
 !inject chmod.obj    d16 d32                                                w16 w32 osi
 !inject chmodos2.obj                                        o16 o32
 !inject chmodwnt.obj                     nt nta ntp
-!inject filtmcvt.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
+!inject chmodrdu.obj                                                                                rdu
 !inject findclos.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
 !inject findfirs.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
 !inject findnext.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
-!inject __fn2mbs.obj d16 d32             nt nta ntp         o16 o32         w16 w32 osi
 !inject mkstemp.obj  d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi l32 lpc lmp
 !inject mktemp.obj   d16 d32             nt nta ntp         o16 o32         w16 w32 osi
 !inject remove.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject remrdu.obj                                                                                  rdu
 !inject renam.obj    d16 d32                                                w16 w32 osi
 !inject renamos2.obj                                        o16 o32
 !inject renamwnt.obj                     nt nta ntp
+!inject renamrdu.obj                                                                                rdu
 !inject stat.obj     d16 d32                                                w16 w32 osi
 !inject statos2.obj                                         o16 o32
 !inject statwnt.obj                      nt nta ntp
+!inject statrdu.obj                                                                                 rdu
 !inject tempnam.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi
 !inject tmpnm.obj    d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 !inject tmpnm_s.obj  d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 !inject u64findf.obj d16 d32             nt nta ntp         o16 o32         w16 w32
 !inject u64findn.obj d16 d32             nt nta ntp         o16 o32         w16 w32
-!inject u64stat.obj  d16 d32                                o16 o32         w16 w32
+!inject u64stat.obj  d16 d32                                                w16 w32
+!inject u64stos2.obj                                        o16 o32
 !inject u64stwnt.obj                     nt nta ntp
 !inject uaccs.obj    d16 d32                                                w16 w32
 !inject uaccsos2.obj                                        o16 o32
@@ -59,15 +64,6 @@
 !inject uutimwnt.obj                     nt nta ntp
 
 !include ../../../../objlist.mif
-
-stat_opts    =-I"$(clib_dir)/handleio/h"
-statos2_opts =-I"$(clib_dir)/handleio/h"
-statwnt_opts =-I"$(clib_dir)/handleio/h"
-64stawnt_opts=-I"$(clib_dir)/handleio/h"
-ustat_opts   =-I"$(clib_dir)/handleio/h"
-ustatos2_opts=-I"$(clib_dir)/handleio/h"
-ustatwnt_opts=-I"$(clib_dir)/handleio/h"
-u64stwnt_opts=-I"$(clib_dir)/handleio/h"
 
 stat_postopts   =-os
 statos2_postopts=-os

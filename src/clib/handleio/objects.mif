@@ -1,12 +1,12 @@
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 #==========================================================================================================
-!inject 64lseek.obj  d16 d32                                        o16 o32 q16 q32 w16 w32 osi l32 lpc
-!inject 64lskwnt.obj                     nt nta ntp
-!inject 64fillen.obj d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc
-!inject 64fstat.obj  d16 d32                                        o16 o32         w16 w32 osi
+!inject 64lseek.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject 64_lseek.obj d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject 64fillen.obj d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject 64fstat.obj  d16 d32                                                        w16 w32 osi
+!inject 64fstos2.obj                                                o16 o32
 !inject 64fstwnt.obj                     nt nta ntp
-!inject 64tell.obj   d16 d32                                        o16 o32 q16 q32 w16 w32 osi l32 lpc
-!inject 64telwnt.obj                     nt nta ntp
+!inject 64tell.obj   d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 !inject chsiz.obj    d16 d32                                                        w16 w32
 !inject chsizos2.obj                                                o16 o32
 !inject chsizqnx.obj                                                        q16 q32
@@ -29,7 +29,8 @@
 !inject finfoptr.obj                     nt nta ntp
 !inject fileinfo.obj                     nt nta ntp
 !inject filelen.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
-!inject fileno.obj   d16 d32             nt nta ntp nvc ncl nvl nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject fileno.obj   d16 d32             nt nta ntp nvc ncl nvl nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject filerdu.obj                                                                                         rdu
 !inject fstat.obj    d16 d32                                                        w16 w32 osi
 !inject fstatos2.obj                                                o16 o32
 !inject fstatwnt.obj                     nt nta ntp
@@ -43,10 +44,8 @@
 !inject lockqnx.obj                                                         q16 q32
 !inject locklnx.obj                                                                             l32 lpc lmp
 !inject lockwnt.obj                      nt nta ntp
-!inject lseek.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
-!inject lseekdos.obj d16 d32                                                        w16 w32 osi
-!inject lseekos2.obj                                                o16 o32
-!inject lseekwnt.obj                     nt nta ntp
+!inject __lseek.obj  d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
+!inject lseek.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi l32 lpc lmp
 !inject mkfilstr.obj                     nt nta ntp
 !inject open.obj     d16 d32                                                        w16 w32 osi
 !inject openlnx.obj                                                                             l32 lpc lmp
@@ -54,8 +53,8 @@
 !inject openwnt.obj                      nt nta ntp
 !inject oshdl.obj    d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32
 !inject pipe.obj                         nt nta ntp                 o16 o32
-!inject plusfsta.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32 lpc lmp
-!inject plusopen.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32 lpc lmp
+!inject plusfsta.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
+!inject plusopen.obj d16 d32             nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu
 !inject qread.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject qreadunx.obj                                                        q16 q32             l32 lpc lmp
 !inject qwrit.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
@@ -64,16 +63,8 @@
 !inject setmd.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject setmdunx.obj                                                        q16 q32             l32 lpc lmp
 !inject stiomode.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
-!inject tell.obj     d16 d32                                                        w16 w32 osi
-!inject tellos2.obj                                                 o16 o32
-!inject tellunx.obj                                                         q16 q32             l32 lpc lmp
-!inject tellwnt.obj                      nt nta ntp
-!inject u64fstat.obj d16 d32                                        o16 o32         w16 w32 osi
-!inject u64fswnt.obj                     nt nta ntp
+!inject tell.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 !inject ucreat.obj   d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
-!inject ufsta.obj    d16 d32
-!inject ufstaos2.obj                                                o16 o32
-!inject ufstawnt.obj                     nt nta ntp
 !inject umask.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32
 !inject umaskval.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject umkfilst.obj                     nt nta ntp
@@ -95,9 +86,9 @@
 
 !include ../../../../objlist.mif
 
-qread_opts=-I"$(clib_dir)/streamio/h"
+qread_opts   =-I"$(clib_dir)/streamio/h"
 qreadunx_opts=-I"$(clib_dir)/streamio/h"
-qwrit_opts=-I"$(clib_dir)/streamio/h"
+qwrit_opts   =-I"$(clib_dir)/streamio/h"
 qwritunx_opts=-I"$(clib_dir)/streamio/h"
 
 # BUILD WORKAROUND because of insufficiently smart 1.8 compiler

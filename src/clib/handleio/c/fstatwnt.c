@@ -31,15 +31,7 @@
 
 #include "variety.h"
 #include "int64.h"
-#include "widechar.h"
 #include <windows.h>
-/* gross hack for building 11.0 libraries with 10.6 compiler */
-#ifndef __WATCOM_INT64__
-    #include <limits.h>         /* a gross hack to make a gross hack work */
-    #define __WATCOM_INT64__
-    #define __int64             double
-#endif
-/* most includes should go after this line */
 #include <stdio.h>
 #include <stddef.h>
 #include <io.h>
@@ -63,18 +55,10 @@
     );
  */
 
-#ifdef __WIDECHAR__
- #ifdef __INT64__
-  _WCRTLINK int _wfstati64( int hid, struct _stati64 *buf )
- #else
-  _WCRTLINK int _wfstat( int hid, struct _stat *buf )
- #endif
+#ifdef __INT64__
+ _WCRTLINK int _fstati64( int hid, struct _stati64 *buf )
 #else
- #ifdef __INT64__
-  _WCRTLINK int _fstati64( int hid, struct _stati64 *buf )
- #else
-  _WCRTLINK int fstat( int hid, struct stat *buf )
- #endif
+ _WCRTLINK int fstat( int hid, struct stat *buf )
 #endif
 {
     DWORD                       size;
@@ -99,13 +83,13 @@
     _AccessFileH( hid );
 
     buf->st_mode = 0;                           /* 12-apr-94 */
-    #ifdef DEFAULT_WINDOWING
-        if( _WindowsIsWindowedHandle != 0 ) {
-            if( _WindowsIsWindowedHandle( hid ) != 0 ) {
-                buf->st_mode |= S_IFCHR;        /* it's a console */
-            }
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsIsWindowedHandle != 0 ) {
+        if( _WindowsIsWindowedHandle( hid ) != 0 ) {
+            buf->st_mode |= S_IFCHR;        /* it's a console */
         }
-    #endif
+    }
+#endif
     __ChkTTYIOMode( hid );
     iomode_flags = __GetIOMode( hid );
     if( iomode_flags & _READ ) {
@@ -124,12 +108,12 @@
             don't want to call GetFileSize()
          */
         (ftype == FILE_TYPE_UNKNOWN) ) {
-        #ifdef __INT64__
-            _clib_U32ToU64( 0L, tmp );
-            buf->st_size = GET_REALINT64(tmp);
-        #else
-            buf->st_size = 0;
-        #endif
+#ifdef __INT64__
+        _clib_U32ToU64( 0L, tmp );
+        buf->st_size = GET_REALINT64(tmp);
+#else
+        buf->st_size = 0;
+#endif
         buf->st_atime = buf->st_ctime = buf->st_mtime = 0;
         buf->st_attr = 0;
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
@@ -155,12 +139,12 @@
 
         /*** Get the file size ***/
         if( buf->st_mode & S_IFDIR ) {
-            #ifdef __INT64__
-                _clib_U32ToU64( 0L, tmp );
-                buf->st_size = GET_REALINT64(tmp);
-            #else
-                buf->st_size = 0;
-            #endif
+#ifdef __INT64__
+            _clib_U32ToU64( 0L, tmp );
+            buf->st_size = GET_REALINT64(tmp);
+#else
+            buf->st_size = 0;
+#endif
         } else {
             size = GetFileSize( h, __I64NAME(NULL,&highorder) );
 #ifdef __INT64__
@@ -188,7 +172,7 @@
             return( __set_errno_nt() );
         }
         __MakeDOSDT( &mtime, &md, &mt );
-        buf->st_mtime = _d2ttime( TODDATE( md ), TODTIME( mt ) );
+        buf->st_mtime = _d2ttime( md, mt );
         if(( ctime.dwLowDateTime == mtime.dwLowDateTime ) &&
            ( ctime.dwHighDateTime == mtime.dwHighDateTime )) {
             buf->st_ctime = buf->st_mtime;
@@ -197,7 +181,7 @@
             if( d == md && t == mt ) {
                 buf->st_ctime = buf->st_mtime;
             } else {
-                buf->st_ctime = _d2ttime( TODDATE( d ), TODTIME( t ) );
+                buf->st_ctime = _d2ttime( d, t );
             }
         }
         if(( atime.dwLowDateTime == mtime.dwLowDateTime ) &&
@@ -208,7 +192,7 @@
             if( d == md && t == mt ) {
                 buf->st_atime = buf->st_mtime;
             } else {
-                buf->st_atime = _d2ttime( TODDATE( d ), TODTIME( t ) );
+                buf->st_atime = _d2ttime( d, t );
             }
         }
 
