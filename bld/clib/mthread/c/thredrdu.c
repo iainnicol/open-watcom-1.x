@@ -153,4 +153,5 @@ void __CEndThread( void )
 {
     __sig_fini_rtn();
     __DoneExceptionFilter();
+    __RdosRemoveThread();
 }
