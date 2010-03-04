@@ -11,7 +11,7 @@ BEGIN {
    num = num + 1   # Increment counter
 }
 
-# Slithglty different for lines beginning with 'wdpick'
+# Slightly different for lines beginning with 'wdpick'
 /^ *wdpick/ {
    gsub( /,/, "" ) # Remove commas
    print "#define __" $2 " (MSG_RC_BASE + " num ")"  
