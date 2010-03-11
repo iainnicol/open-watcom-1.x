@@ -8,6 +8,7 @@
 #define _RICHEDIT_
 
 :include readonly.sp
+
 :include cpluspro.sp
 
 /* Rich edit version number */
@@ -203,6 +204,7 @@
 #define IMF_AUTOFONTSIZEADJUST  0x0010
 #define IMF_UIFONTS             0x0020
 #define IMF_DUALFONT            0x0080
+#define IMF_NORTFFONTSUBSTITUTE 0x0400
 
 /* IME composition modes */
 #define ICM_NOTOPEN     0x0000
@@ -1057,4 +1059,3 @@ typedef struct tagHyphenateInfo {
 :include cplusepi.sp
 
 #endif /* _RICHEDIT_ */
-

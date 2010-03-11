@@ -23,6 +23,7 @@ AddAce@20
 AddAuditAccessAce@24
 AddAuditAccessAceEx@28
 AddAuditAccessObjectAce@36
+AddConditionalAce@32
 AddMandatoryAce@20
 AddUsersToEncryptedFile@8
 AdjustTokenGroups@24
@@ -43,9 +44,13 @@ AuditLookupCategoryNameA@8
 AuditLookupCategoryNameW@8
 AuditLookupSubCategoryNameA@8
 AuditLookupSubCategoryNameW@8
+AuditQueryGlobalSaclA@8
+AuditQueryGlobalSaclW@8
 AuditQueryPerUserPolicy@16
 AuditQuerySecurity@8
 AuditQuerySystemPolicy@12
+AuditSetGlobalSaclA@8
+AuditSetGlobalSaclW@8
 AuditSetPerUserPolicy@12
 AuditSetSecurity@8
 AuditSetSystemPolicy@8
@@ -155,6 +160,7 @@ DuplicateToken@12
 DuplicateTokenEx@24
 EnableTrace@24
 EnableTraceEx@48
+EnableTraceEx2@44
 EncryptFileA@4
 EncryptFileW@4
 EncryptionDisable@8
@@ -175,6 +181,7 @@ EventProviderEnabled@20
 EventRegister@16
 EventUnregister@8
 EventWrite@20
+EventWriteEx@40
 EventWriteString@24
 EventWriteTransfer@28
 FileEncryptionStatusA@8
@@ -423,6 +430,7 @@ RegQueryValueA@16
 RegQueryValueExA@24
 RegQueryValueExW@24
 RegQueryValueW@16
+RegRenameKey@12
 RegReplaceKeyA@16
 RegReplaceKeyW@16
 RegRestoreKeyA@12
@@ -494,6 +502,7 @@ TraceEvent@12
 TraceEventInstance@20
 TraceMessage
 TraceMessageVa@24
+TraceSetInformation@20
 TreeResetNamedSecurityInfoA@44
 TreeResetNamedSecurityInfoW@44
 TreeSetNamedSecurityInfoA@44
@@ -502,6 +511,4 @@ UnlockServiceDatabase@4
 UnregisterTraceGuids@8
 UpdateTraceA@16
 UpdateTraceW@16
-Wow64Win32ApiEntry@12
 WriteEncryptedFileRaw@12
-

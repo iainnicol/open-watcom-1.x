@@ -48,25 +48,10 @@ static  void            DoData( oc_entry *instr );
 static  void            DoLabel( oc_handle *instr );
 static  void            DoRef( oc_handle *instr );
 
-extern  ins_entry       *FirstIns;
-
 static char * Names[] = {
-    "OC_DEAD   ",
-    "OC_INFO   ",
-    "OC_CODE   ",
-    "OC_DATA   ",
-    "OC_RCODE  ",
-    "OC_BDATA  ",
-    "OC_LABEL  ",
-    "OC_LREF   ",
-    "OC_CALL   ",
-    "OC_CALLI  ",
-    "OC_JCOND  ",
-    "OC_JCONDI ",
-    "OC_JMP    ",
-    "OC_JMPI   ",
-    "OC_RET    ",
-    "OC_IDATA  ",
+#define pick_class(x) #x ,
+#include "occlasss.h"
+#undef pick_class
     ""
 };
 

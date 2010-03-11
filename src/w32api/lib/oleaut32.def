@@ -23,6 +23,7 @@ LoadRegTypeLib@20
 LoadTypeLib@8
 LoadTypeLibEx@12
 OaBuildVersion@0
+OaEnablePerUserTLibRegistration@0
 OleCreateFontIndirect@12
 OleCreatePictureIndirect@16
 OleCreatePropertyFrame@44
@@ -377,4 +378,3 @@ VariantInit@4
 VariantTimeToDosDateTime@16
 VariantTimeToSystemTime@12
 VectorFromBstr@8
-

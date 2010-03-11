@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,16 +48,18 @@ int NumErrors = 0;                              /* number of errors */
 
 #include <wdefwin.h>
 
-int main( void )
+int main( int argc, char **argv )
 {
     FILE                *my_stdout;
 
+    strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
         exit( EXIT_FAILURE );
     }
 
+    printf( "Tests completed (%s).\n", ProgramName );
     fprintf( stderr, "Tests completed (%s).\n", ProgramName );
     fclose( my_stdout );
     _dwShutDown();
@@ -87,6 +91,9 @@ int main( void )
 #define ARG2            "my"
 #define ARG3            "child!"
 
+#define ARG_REDIR       "Redir"
+#define REDIR_TEXT      "This text should not be written to stdout"
+
 #define VAR_NAME        "CHILD_ENV_VAR"
 #define VAR_TEXT        "Test v@ri@ble"
 
@@ -112,6 +119,10 @@ int main( int argc, char * const argv[] )
 {
     char                myfile[ sizeof __FILE__ ];
     int                 child = argc > 1;
+    int                 handle;
+    int                 status;
+    int                 handle_out;
+    long                size;
 
 
     /*** Initialize ***/
@@ -122,23 +133,40 @@ int main( int argc, char * const argv[] )
 
     if( child ) {
         char    *env_var;
-        
+
+        if( argc == 4 ) {        
         /* Verify expected command line contents */
-        VERIFY( argc == 4 );
-        VERIFY( !strcmp( argv[1], ARG1 ) );
-        VERIFY( !strcmp( argv[2], ARG2 ) );
-        VERIFY( !strcmp( argv[3], ARG3 ) );
+            VERIFY( !strcmp( argv[1], ARG1 ) );
+            VERIFY( !strcmp( argv[2], ARG2 ) );
+            VERIFY( !strcmp( argv[3], ARG3 ) );
 
         /* Verify expected environment contents */
-        env_var = getenv( VAR_NAME );
-        VERIFY( env_var );
-        VERIFY( !strcmp( env_var, VAR_TEXT ) );
+            env_var = getenv( VAR_NAME );
+            VERIFY( env_var );
+            VERIFY( !strcmp( env_var, VAR_TEXT ) );
 
-        if( NumErrors != 0 ) {
-            return( EXIT_FAILURE );
+            if( NumErrors != 0 ) {
+                return( EXIT_FAILURE );
+            } else {
+                return( CHILD_RC );
+            }
         } else {
-            return( CHILD_RC );
-        }
+            if( argc == 2 ) {
+            /* Verify expected command line contents */
+                VERIFY( !strcmp( argv[1], ARG_REDIR ) );
+
+            /* Write text to stdout */
+                printf( REDIR_TEXT );
+
+                if( NumErrors != 0 ) {
+                    return( EXIT_FAILURE );
+                } else {
+                    return( CHILD_RC );
+                }
+            }
+            else
+                return( EXIT_FAILURE );
+        }                   
     } else {
         int         rc;
         char        **env;
@@ -151,10 +179,16 @@ int main( int argc, char * const argv[] )
          */
         env = environ;
         while( env ) {
-            if( !strncmp( *env, "PATH=", 5 ) ) {
-                path = *env;
+            if( *env ) {
+                if( !strncmp( *env, "PATH=", 5 ) ) {
+                    path = *env;
+                    break;
+                }
+            } else {
+                path = "";
                 break;
             }
+            
             ++env;
         }
 
@@ -187,6 +221,36 @@ int main( int argc, char * const argv[] )
 
         rc = spawnvp( P_WAIT, ProgramName, child_args );
         VERIFY( rc == CHILD_RC );
+
+        /* Check inherited output redirection */
+        handle_out = dup( STDOUT_FILENO );
+        
+        handle = creat( "test.fil", S_IREAD|S_IWRITE );
+        VERIFY( handle != -1 );
+
+        status = dup2( handle, STDOUT_FILENO );
+        VERIFY( status != -1 );
+
+        status = close( handle );
+        VERIFY( status == 0 );
+
+        rc = spawnl( P_WAIT, ProgramName, ProgramName, ARG_REDIR, NULL );
+        VERIFY( rc == CHILD_RC );
+
+        status = dup2( handle_out, STDOUT_FILENO );
+        VERIFY( status != -1 );
+        
+        handle = open( "test.fil", O_RDWR );
+        VERIFY( handle != -1 );
+
+        size = filelength( handle );
+        VERIFY( size == strlen( REDIR_TEXT ) );
+
+        status = close( handle );
+        VERIFY( status == 0 );
+
+        status = unlink( "test.fil" );
+        VERIFY( status == 0 );
 
         signal_count = 0;
         signal_number = 0;

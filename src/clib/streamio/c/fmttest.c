@@ -217,27 +217,42 @@ int Test_scan_std_xmp( void )
 int Test_print_float( void )
 /**************************/
 {
-    char    buf[128];
+    char        buf[128];
+    long double lval;
+    double      dval;
+    float       fval;
 
     VERIFY( sprintf( buf, "%+#22.14e", 123456789.0 ) == 22 );
     VERIFY( !strcmp( buf, " +1.23456789000000e+08" ) );
 
-    VERIFY( sprintf( buf, "%2.4f", 4.5 ) == 6 );
+    fval = 4.5;
+    VERIFY( sprintf( buf, "%2.4f", fval ) == 6 );
     VERIFY( !strcmp( buf, "4.5000" ) );
 
-    VERIFY( sprintf( buf, "%05.2f", 4.5 ) == 5 );
+    VERIFY( sprintf( buf, "%05.2f", 4.5f ) == 5 );
     VERIFY( !strcmp( buf, "04.50" ) );
 
-    VERIFY( sprintf( buf, "%0f", 0.8 ) == 8 );
+    dval = 0.8;
+    VERIFY( sprintf( buf, "%0f", dval ) == 8 );
     VERIFY( !strcmp( buf, "0.800000" ) );
 
-    VERIFY( sprintf( buf, "%.0f", 0.8 ) == 1 );
+    VERIFY( sprintf( buf, "%.0f", dval ) == 1 );
     VERIFY( !strcmp( buf, "1" ) );
+
+    lval = 4.5123;
+    VERIFY( sprintf( buf, "%2.4Lf", lval ) == 6 );
+    VERIFY( !strcmp( buf, "4.5123" ) );
+
+    VERIFY( sprintf( buf, "%05.2Lf", 4.5123L ) == 5 );
+    VERIFY( !strcmp( buf, "04.51" ) );
 
     VERIFY( sprintf( buf, "%2.4e", 4.5 ) == 10 );
     VERIFY( !strcmp( buf, "4.5000e+00" ) );
 
     VERIFY( sprintf( buf, "%2.4g", 4.5 ) == 3 );
+    VERIFY( !strcmp( buf, "4.5" ) );
+
+    VERIFY( sprintf( buf, "%2.4Lg", 4.5l ) == 3 );
     VERIFY( !strcmp( buf, "4.5" ) );
 
     /* Test rounding */

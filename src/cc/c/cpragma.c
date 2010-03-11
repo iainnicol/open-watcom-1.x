@@ -55,40 +55,64 @@ static struct toggle ToggleNames[] = {
     };
 
 
-void CPragmaInit( void ) {
-//********************************//
-// Init any general pragma things //
-//********************************//
+void CPragmaInit( void )
+{
     TextSegList = NULL;
-
-/* Pragma Pack init */
     PackInfo = NULL;
-
-/* Pragma Enum init */
     EnumInfo = NULL;
-
-/* Pragma Aux init */
-    WatcallInfo.use = 2;        /* so they don't get freed */
-
-    CdeclInfo   = WatcallInfo;
-    PascalInfo  = WatcallInfo;
-    SyscallInfo = WatcallInfo;
-    StdcallInfo = WatcallInfo;
-    OptlinkInfo = WatcallInfo;
-    FortranInfo = WatcallInfo;
-    FastcallInfo= WatcallInfo;
-
-#if _INTEL_CPU
-    PragmaAuxInit();
-#endif
-
-/* Pragma Alias init */
     AliasHead = NULL;
+    HeadLibs = NULL;
+    ExtrefInfo = NULL;
 
-    SetAuxDefaultInfo();
+    PragmaAuxInit();
 
-/* call target specific init */
     PragmaInit();
+}
+
+void CPragmaFini( void )
+/**********************/
+{
+    void    *junk;
+
+    PragmaFini();
+
+    PragmaAuxFini();
+
+    while( TextSegList != NULL ) {
+        junk = TextSegList;
+        TextSegList = TextSegList->next;
+        CMemFree( junk );
+    }
+
+    while( PackInfo != NULL ) {
+        junk = PackInfo;
+        PackInfo = PackInfo->next;
+        CMemFree( junk );
+    }
+
+    while( EnumInfo != NULL ) {
+        junk = EnumInfo;
+        EnumInfo = EnumInfo->next;
+        CMemFree( junk );
+    }
+
+    while( HeadLibs != NULL ) {
+        junk = HeadLibs;
+        HeadLibs = HeadLibs->next;
+        CMemFree( junk );
+    }
+
+    while( AliasHead != NULL ) {
+        junk = AliasHead;
+        AliasHead = AliasHead->next;
+        CMemFree( junk );
+    }
+
+    while( ExtrefInfo != NULL ) {
+        junk = ExtrefInfo;
+        ExtrefInfo = ExtrefInfo->next;
+        CMemFree( junk );
+    }
 }
 
 local void EndOfPragma( void )
@@ -1027,10 +1051,25 @@ static void PragSTDC( void )
     }
 }
 
-local void PragAddExtRef ( char *symbol )
-/***************************************/
+static int parseExtRef ( void )
+/*****************************/
 {
-    SpcSymbol( symbol, SC_EXTERN  );
+    SYM_HANDLE          extref_sym;
+    struct extref_info  **extref;
+    struct extref_info  *new_extref;
+
+    extref_sym = SymLook( HashValue, Buffer );
+    if( extref_sym == 0 ) {
+       CErr2p( ERR_UNDECLARED_SYM, Buffer );
+       return( 1 );
+    }
+    for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
+        ; /* nothing to do */
+    new_extref = CMemAlloc( sizeof( struct extref_info ) );
+    new_extref->next = NULL;
+    new_extref->symbol = extref_sym;
+    *extref = new_extref;
+    return( 0 );
 }
 
 // #pragma extref symbolname
@@ -1038,12 +1077,26 @@ local void PragAddExtRef ( char *symbol )
 static void PragExtRef( void )
 /****************************/
 {
-    while( CurToken == T_ID ) {
-        PragAddExtRef( Buffer );
-        NextToken();
-        if( CurToken == T_SEMI_COLON ) {
+    if( CurToken == T_LEFT_PAREN ) {
+        do {
+            CompFlags.pre_processing = 1;
             NextToken();
-        }
+            CompFlags.pre_processing = 2;
+            if( CurToken != T_ID )
+                break;
+            if( parseExtRef() )
+                break;
+            NextToken();
+        } while( CurToken == T_COMMA );
+        MustRecog( T_RIGHT_PAREN );
+    } else {
+        do {
+            if( CurToken != T_ID )
+                break;
+            if( parseExtRef() )
+                break;
+            NextToken();
+        } while( CurToken == T_COMMA );
     }
 }
 

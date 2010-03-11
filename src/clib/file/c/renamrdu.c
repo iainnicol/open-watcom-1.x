@@ -33,7 +33,9 @@
 #include "widechar.h"
 #include <stdio.h>
 #include <rdos.h>
+#include <errno.h>
 #include "liballoc.h"
+#include "seterrno.h"
 
 _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
 {
@@ -46,6 +48,13 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
     char *buf;
     int rdsize;
     int wrsize;
+
+    dst = RdosOpenFile( new, 0 );
+    if ( dst ) {
+        __set_errno( EEXIST );
+        RdosCloseFile( dst );
+        return( -1 );
+    }
 
     if( RdosGetFileAttribute( old, &attrib ) )
     {
@@ -69,11 +78,14 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
         if( ok ) {
             RdosGetFileTime( src, &msb, &lsb );
             RdosSetFileTime( dst, msb, lsb );
+            RdosCloseFile( src );
+            RdosCloseFile( dst );
             RdosDeleteFile( old );
         }
-
-        RdosCloseFile( src );
-        RdosCloseFile( dst );
+        else {
+            RdosCloseFile( src );
+            RdosCloseFile( dst );
+        }
         
         lib_free( buf );        
 
@@ -81,5 +93,6 @@ _WCRTLINK int rename( const CHAR_TYPE *old, const CHAR_TYPE *new )
             return( 0 );
     }
 
+    __set_errno( ENOENT );
     return( -1 );
 }

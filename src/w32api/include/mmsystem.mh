@@ -8,6 +8,7 @@
 #define _INC_MMSYSTEM
 
 :include readonly.sp
+
 #include <pshpack1.h>
 
 :include cpluspro.sp
@@ -218,6 +219,7 @@ typedef HWAVEOUT    *LPHWAVEOUT;
     #define SND_APPLICATION 0x00000080
 #endif
 #define SND_SENTRY          0x00080000
+#define SND_RING            0x00100000
 #define SND_SYSTEM          0x00200000
 
 /* Sound alias base */
@@ -264,6 +266,7 @@ typedef HWAVEOUT    *LPHWAVEOUT;
     #define WAVE_MAPPED                 0x0004
     #define WAVE_FORMAT_DIRECT          0x0008
     #define WAVE_FORMAT_DIRECT_QUERY    (WAVE_FORMAT_QUERY | WAVE_FORMAT_DIRECT)
+    #define WAVE_FORMAT_DEFAULT_COMMUNICATION_DEVICE    0x0010
 #endif
 
 /* Wave header flags */
@@ -1104,7 +1107,7 @@ typedef HWAVEOUT    *LPHWAVEOUT;
 #define MCI_VD_SPIN_UP      0x00010000L
 #define MCI_VD_SPIN_DOWN    0x00020000L
 
-/* MCI_SPIN items for videodiscs */
+/* MCI_GETDEVCAPS items for videodiscs */
 #define MCI_VD_GETDEVCAPS_CAN_REVERSE   0x00004002L
 #define MCI_VD_GETDEVCAPS_FAST_RATE     0x00004003L
 #define MCI_VD_GETDEVCAPS_SLOW_RATE     0x00004004L
@@ -1195,7 +1198,7 @@ typedef HWAVEOUT    *LPHWAVEOUT;
 /* MCI_OPEN flags for animation */
 #define MCI_ANIM_OPEN_WS        0x00010000L
 #define MCI_ANIM_OPEN_PARENT    0x00020000L
-#define MCI_ANIM_OEPN_NOSTATIC  0x00040000L
+#define MCI_ANIM_OPEN_NOSTATIC  0x00040000L
 
 /* MCI_PLAY flags for animation */
 #define MCI_ANIM_PLAY_SPEED     0x00010000L
@@ -3190,4 +3193,3 @@ WINMMAPI MMRESULT WINAPI    waveOutSetVolume( HWAVEOUT, DWORD );
 #include <poppack.h>
 
 #endif /* _INC_MMSYSTEM */
-

@@ -31,7 +31,6 @@
 
 #include "optwif.h"
 
-extern    ins_entry     *FirstIns;
 extern    byte          OptForSize;
 
 extern  void            TryScrapLabel(code_lbl*);
@@ -115,6 +114,7 @@ static  void    HndlRedirect( code_lbl *new )
         _SetStatus( new, REDIRECTION );
     }
   optend
+}
 
 
 static  bool    InRange( void )
@@ -167,6 +167,7 @@ static  void    BigBranch( ins_entry *add, ins_entry *jmp )
         HndlRedirect( AddNewLabel( FirstIns, 0 ) );
     }
   optend
+}
 
 
 static  void    SetShort( void )
@@ -202,6 +203,7 @@ static  void    SetShort( void )
         _SetAttr( l_ins, ATTR_SHORT );
     }
   optend
+}
 
 
 extern  void    SetBranches( void )
@@ -250,3 +252,4 @@ extern  void    SetBranches( void )
         }
     }
   optend
+}

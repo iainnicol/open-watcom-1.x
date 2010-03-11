@@ -33,8 +33,6 @@
 #include "optwif.h"
 #include "zoiks.h"
 
-extern    code_lbl     *Handles;
-
 extern  void            GenKillLabel(pointer);
 
 
@@ -51,6 +49,7 @@ extern  void    TellByPassOver( void )
 /************************************/
 {
   optend
+}
 
 
 extern  void    TellAddress( code_lbl *lbl, offset addr )
@@ -60,6 +59,7 @@ extern  void    TellAddress( code_lbl *lbl, offset addr )
     _ValidLbl( lbl );
     lbl->lbl.address = addr;
   optend
+}
 
 
 extern  void    TellDonePatch( code_lbl *lbl )
@@ -69,6 +69,7 @@ extern  void    TellDonePatch( code_lbl *lbl )
     _ValidLbl( lbl );
     lbl->lbl.patch = NULL;
   optend
+}
 
 
 extern  void    TellReachedLabel( code_lbl *lbl )
@@ -78,6 +79,7 @@ extern  void    TellReachedLabel( code_lbl *lbl )
     _ValidLbl( lbl );
     _SetStatus( lbl, REACHED );
   optend
+}
 
 extern  void    TellProcLabel( code_lbl *lbl )
 /********************************************/
@@ -94,6 +96,7 @@ extern  void    TellCommonLabel( code_lbl *lbl, unsigned hdl )
     lbl->lbl.sym = (sym_handle) hdl;
     _SetStatus( lbl, COMMON_LBL );
   optend
+}
 
 
 extern  void    TellKeepLabel( code_lbl *lbl )
@@ -103,6 +106,7 @@ extern  void    TellKeepLabel( code_lbl *lbl )
     _ValidLbl( lbl );
     _SetStatus( lbl, KEEPLABEL );
   optend
+}
 
 
 extern  void    TellNoSymbol( code_lbl *lbl )
@@ -117,6 +121,7 @@ extern  void    TellNoSymbol( code_lbl *lbl )
         }
     }
   optend
+}
 
 static  void    ReallyScrapLabel( code_lbl *lbl )
 /***********************************************/
@@ -133,6 +138,7 @@ static  void    ReallyScrapLabel( code_lbl *lbl )
     *owner = lbl->lbl.link;
     CGFree( lbl );
   optend
+}
 
 
 extern  void    TellScrapLabel( code_lbl *lbl )
@@ -144,6 +150,7 @@ extern  void    TellScrapLabel( code_lbl *lbl )
         ReallyScrapLabel( lbl );
     }
   optend
+}
 
 
 extern  void    TellCondemnedLabel( code_lbl *lbl )
@@ -153,6 +160,7 @@ extern  void    TellCondemnedLabel( code_lbl *lbl )
     _ValidLbl( lbl );
     _SetStatus( lbl, CONDEMNED );
   optend
+}
 
 
 static  code_lbl       *NextCondemned( code_lbl *lbl )
@@ -183,6 +191,7 @@ extern  void    TellBeginExecutions( void )
         GenKillLabel( dead );
     }
   optend
+}
 
 
 extern  void    TellFreeAllLabels( void )
@@ -205,6 +214,7 @@ extern  void    TellFreeAllLabels( void )
         ReallyScrapLabel( Handles );
     }
   optend
+}
 
 
 extern  void    TellUnreachLabels( void )
@@ -222,6 +232,7 @@ extern  void    TellUnreachLabels( void )
         }
     }
   optend
+}
 
 extern  void    KillLblRedirects( void )
 /**************************************/
@@ -236,4 +247,4 @@ extern  void    KillLblRedirects( void )
 #endif
     TellUnreachLabels();        // a little too conservative - stop gap
   optend
-
+}

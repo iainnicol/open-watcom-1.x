@@ -8,6 +8,7 @@
 #define _LMSNAME_
 
 :include readonly.sp
+
 :include cpluspro.sp
 
 /* LAN Manager service names */
@@ -79,8 +80,8 @@
 #define SERVICE_LM20_ISMSERV        SERVICE_ISMSERV
 #define SERVICE_NTDS                TEXT( "NTDS" )
 #define SERVICE_LM20_NTDS           SERVICE_NTDS
+#define SERVICE_ADWS                TEXT( "ADWS" )
 
 :include cplusepi.sp
 
 #endif /* _LMSNAME_ */
-

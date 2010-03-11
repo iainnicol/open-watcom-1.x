@@ -6,7 +6,8 @@
 *
 *  ========================================================================
 *
-* Description:  RDOS API Call in-line assembly code definition
+* Description:  RDOS API Call in-line assembly code definition. This file
+*               is generated automatically, do not edit it.
 *
 ****************************************************************************/
 
@@ -473,4 +474,11 @@
 #define CallGate_is_tcp_connection_idle 0x9a 123 1 0 0 2 0
 
 #define CallGate_set_codec_gpio0 0x9a 124 1 0 0 2 0
+
+#define CallGate_free_proc_handle 0x9a 125 1 0 0 2 0
+#define CallGate_add_wait_for_proc_end 0x9a 126 1 0 0 2 0
+#define CallGate_get_proc_exit_code 0x9a 127 1 0 0 2 0
+
+#define CallGate_get_cpu_version 0x9a 128 1 0 0 2 0
+#define CallGate_get_options 0x9a 129 1 0 0 2 0
 

@@ -8,6 +8,7 @@
 #define _INC_REGSTR
 
 :include readonly.sp
+
 :include cpluspro.sp
 
 /* Registry key names */
@@ -351,6 +352,7 @@
 #define REGSTR_VAL_CUSTOM_PROPERTY_CACHE_DATE   TEXT( "CustomPropertyCacheDate" )
 #define REGSTR_VAL_CUSTOM_PROPERTY_HW_ID_KEY    TEXT( "CustomPropertyHwIdKey" )
 #define REGSTR_VAL_LAST_UPDATE_TIME             TEXT( "LastUpdateTime" )
+#define REGSTR_VAL_CONTAINERID                  TEXT( "ContainerID" )
 #define REGSTR_VALUE_DEVICE_OBJECT_NAME         TEXT( "DeviceObjectName" )
 #define REGSTR_VALUE_DEVICE_SYMBOLIC_NAME       TEXT( "DeviceSymbolicName" )
 #define REGSTR_VAL_EJECT_PRIORITY               TEXT( "EjectPriority" )
@@ -408,6 +410,8 @@
 #define REGSTR_VAL_LASTALIVESTAMPPOLICYINTERVAL TEXT( "LastAliveStampPolicyInterval" )
 #define REGSTR_VAL_LASTALIVEUPTIME              TEXT( "LastAliveUptime" )
 #define REGSTR_VAL_LASTALIVEPMPOLICY            TEXT( "LastAlivePMPolicy" )
+#define REGSTR_VAL_REASONCODE                   TEXT( "ReasonCode" )
+#define REGSTR_VAL_COMMENT                      TEXT( "Comment" )
 #define REGSTR_VAL_SHUTDOWNREASON               TEXT( "ShutdownReason" )
 #define REGSTR_VAL_SHUTDOWNREASON_CODE          TEXT( "ShutdownReasonCode" )
 #define REGSTR_VAL_SHUTDOWNREASON_COMMENT       TEXT( "ShutdownReasonComment" )
@@ -1172,4 +1176,3 @@ typedef DSKTLSYSTEMTIME *LPDSKTLSYSTEMTIME;
 :include cplusepi.sp
 
 #endif /* _INC_REGSTR */
-

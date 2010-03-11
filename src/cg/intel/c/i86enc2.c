@@ -74,7 +74,7 @@ extern  void            AddByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  type_def        *TypeAddress(cg_type);
 extern  void            AddToTemp(byte);
-extern  void            DoFESymRef( sym_handle, cg_class, offset, int);
+extern  void            DoFESymRef( sym_handle, cg_class, offset, fe_fixup_types);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
@@ -165,23 +165,27 @@ extern unsigned DepthAlign( unsigned depth )
         Copy( FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT ), AlignArray,
                     sizeof( AlignArray ) );
     }
-    if( OptForSize ) return( 1 );
+    if( OptForSize )
+        return( 1 );
     if( _CPULevel( CPU_486 ) ) {
-        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN ) return( 16 );
+        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN )
+            return( 16 );
         return( 1 );
     }
     if( _CPULevel( CPU_386 ) ) {
-        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN ) return( 4 );
+        if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN )
+            return( 4 );
         return( 1 );
     }
     if( depth == PROC_ALIGN ) {
         return( AlignArray[1] );
     }
-    if( depth == 0 ) depth = 1;
+    if( depth == 0 )
+        depth = 1;
     if( depth >= AlignArray[0] ) {
         depth = AlignArray[0] - 1;
     }
-    return( AlignArray[depth+1] );
+    return( AlignArray[depth + 1] );
 }
 
 extern  byte    CondCode( instruction *cond ) {
@@ -196,10 +200,10 @@ extern  byte    CondCode( instruction *cond ) {
     } else {
         is_signed = SIGNED_86;
     }
-    if( is_signed & Signed[  cond->type_class  ] ) {
-        return( SCondTable[ cond->head.opcode-FIRST_CONDITION ] );
+    if( is_signed & Signed[cond->type_class] ) {
+        return( SCondTable[cond->head.opcode - FIRST_CONDITION] );
     } else {
-        return( UCondTable[ cond->head.opcode-FIRST_CONDITION ] );
+        return( UCondTable[cond->head.opcode - FIRST_CONDITION] );
     }
 }
 
@@ -224,7 +228,7 @@ extern  byte    ReverseCondition( byte cond ) {
     reverse the sense of a conditional jump (already encoded)
 */
 
-    return( RevCond[  cond  ] );
+    return( RevCond[cond] );
 }
 
 extern  void    DoCall( label_handle lbl, bool imported,
@@ -264,53 +268,39 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
     offset      off = 0;
     fe_attr     attr = 0;
     name        *temp;
+    bool        emit_data;
 
     endp = p + len;
-    while( p != endp ) {
+    while( p < endp ) {
         _Code;
-        if( p[0] == FLOATING_FIXUP_BYTE
-                && p[1] != FLOATING_FIXUP_BYTE
-                && p[1] != FIX_SYM_OFFSET
-                && p[1] != FIX_SYM_SEGMENT
-                && p[1] != FIX_SYM_RELOFF ) {
-            /* floating point fixup */
-            ++p;
-            if( _IsEmulation() ) {
-                if( ( p[0] == 0x90 ) && ( p[1] == 0x9B ) ) { // inline FWAIT
-                    FPPatchType = FPP_WAIT;
-                } else {
-                    FPPatchType = FPP_NORMAL;
-                }
-                Used87 = TRUE;
-            }
-        }
         first = TRUE;
+        emit_data = 1;
         startp = p;
-        for( ;; ) {
-            if( p == endp ) break;
-            if( ( p - startp ) >= ( INSSIZE - 5 ) ) break;
+        for( ; p < endp && emit_data; ) {
+            if( ( p - startp ) >= ( INSSIZE - 5 ) )
+                break;
             if( p[0] == FLOATING_FIXUP_BYTE ) {
                 type = p[1];
-                if( type != FLOATING_FIXUP_BYTE ) {
-                    switch( type ) {
-                    case FIX_SYM_OFFSET:
-                    case FIX_SYM_SEGMENT:
-                    case FIX_SYM_RELOFF:
-                        p += 2;
-                        sym = (sym_handle)*(unsigned long *)p;
-                        p += sizeof( unsigned long );
-                        off = (offset)*(unsigned long *)p;
-                        p += sizeof( unsigned long );
-                        attr = FEAttr( sym );
-                    }
+                switch( type ) {
+                case FLOATING_FIXUP_BYTE:
+                    ++p;
+                    break;
+                case FIX_SYM_OFFSET:
+                case FIX_SYM_SEGMENT:
+                case FIX_SYM_RELOFF:
+                    p += 2;
+                    sym = (sym_handle)*(unsigned long *)p;
+                    p += sizeof( unsigned long );
+                    off = (offset)*(unsigned long *)p;
+                    p += sizeof( unsigned long );
+                    attr = FEAttr( sym );
                     switch( type ) {
                     case FIX_SYM_SEGMENT:
                         ILen += 2;
                         if( attr & (FE_STATIC | FE_GLOBAL) ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_BASE );
                         } else {
-                            FEMessage( MSG_ERROR,
-                                        "aux seg used with local symbol" );
+                            FEMessage( MSG_ERROR, "aux seg used with local symbol" );
                         }
                         break;
                     case FIX_SYM_OFFSET:
@@ -320,11 +310,9 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                         } else {
                             temp = DeAlias( AllocUserTemp( sym, U1 ) );
                             if( temp->t.location != NO_LOCATION ) {
-                                EmitOffset( NewBase( temp )
-                                                - temp->v.offset + off );
+                                EmitOffset( NewBase( temp ) - temp->v.offset + off );
                             } else {
-                                FEMessage( MSG_ERROR,
-                                    "aux offset used with register symbol" );
+                                FEMessage( MSG_ERROR, "aux offset used with register symbol" );
                             }
                         }
                         break;
@@ -333,14 +321,27 @@ static  void    CodeSequence( byte *p, byte_seq_len len ) {
                         if( attr & FE_PROC ) {
                             DoFESymRef( sym, CG_FE, off, FE_FIX_SELF );
                         } else {
-                            FEMessage( MSG_ERROR,
-                                        "aux reloff used with data symbol" );
+                            FEMessage( MSG_ERROR, "aux reloff used with data symbol" );
                         }
                         break;
                     }
-                    break; /* back to top of while for floating fixup */
-                } else {
+                    continue;
+                default:
+                    if( !first ) {
+                        emit_data = 0;
+                        continue;
+                    }
+                    /* floating point fixup */
                     ++p;
+                    if( _IsEmulation() ) {
+                        if( ( p[0] == 0x90 ) && ( p[1] == 0x9B ) ) { // inline FWAIT
+                            FPPatchType = FPP_WAIT;
+                        } else {
+                            FPPatchType = FPP_NORMAL;
+                        }
+                        Used87 = TRUE;
+                    }
+                    break;
                 }
             }
             if( first ) {
@@ -372,7 +373,7 @@ extern  void    GenCall( instruction *ins ) {
     if( ins->flags.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    op = ins->operands[ CALL_OP_ADDR ];
+    op = ins->operands[CALL_OP_ADDR];
     class = *(call_class *)FindAuxInfo( op, CALL_CLASS );
     code = FindAuxInfo( op, CALL_BYTES );
     if( code != NULL ) {
@@ -405,7 +406,7 @@ extern  void    GenCall( instruction *ins ) {
         sym = op->v.symbol;
         if( op->m.memory_type == CG_FE ) {
             DoCall( FEBack( sym )->lbl,
-                  (FEAttr(sym) & (FE_COMMON|FE_IMPORT)) != 0, big, pop_bit );
+                  (FEAttr( sym ) & (FE_COMMON | FE_IMPORT)) != 0, big, pop_bit );
         } else {
             DoCall( sym, TRUE, big, pop_bit );
         }
@@ -433,8 +434,8 @@ extern  void    GenICall( instruction *ins ) {
     } else {
         entry |= OC_CALLI;
     }
-    if( ins->operands[ CALL_OP_ADDR ]->n.name_class == PT
-     || ins->operands[ CALL_OP_ADDR ]->n.name_class == CP ) {
+    if( ins->operands[CALL_OP_ADDR]->n.name_class == PT
+     || ins->operands[CALL_OP_ADDR]->n.name_class == CP ) {
         entry |= ATTR_FAR;
         opcode = M_CJILONG;
     } else {
@@ -442,7 +443,7 @@ extern  void    GenICall( instruction *ins ) {
     }
     ReFormat( entry );
     LayOpword( opcode );
-    LayModRM( ins->operands[ CALL_OP_ADDR ] );
+    LayModRM( ins->operands[CALL_OP_ADDR] );
     _Emit;
 }
 
@@ -465,7 +466,7 @@ extern  void    GenRCall( instruction *ins ) {
     }
     ReFormat( OC_CALLI | pop_bit );
     LayOpword( M_CJINEAR );
-    op = ins->operands[ CALL_OP_ADDR ];
+    op = ins->operands[CALL_OP_ADDR];
     LayRegRM( op->r.reg );
     _Emit;
 }
@@ -598,10 +599,10 @@ extern  void    GenMJmp( instruction *ins ) {
         ReFormat( OC_JMPI );
         LayOpword( M_CJINEAR );
     }
-    LayModRM( ins->operands[ 0 ] );
+    LayModRM( ins->operands[0] );
     if( ins->head.opcode == OP_SELECT &&
-        ins->operands[ 0 ]->n.class == N_INDEXED ) {
-        base = ins->operands[ 0 ]->i.base;
+        ins->operands[0]->n.class == N_INDEXED ) {
+        base = ins->operands[0]->i.base;
         if( base != NULL ) {
             lbl = AskForSymLabel( base->v.symbol, CG_TBL );
             if( AskAddress( lbl ) != ADDR_UNKNOWN ) {
@@ -616,7 +617,7 @@ extern  void    GenRJmp( instruction *ins ) {
     Generate a jump to register instruction (eg: jmp eax)
 */
 
-    JumpReg( ins, ins->operands[ 0 ] );
+    JumpReg( ins, ins->operands[0] );
 }
 
 
@@ -660,15 +661,15 @@ static  void    DoCodeBytes( byte *src, byte_seq_len len, oc_class class ) {
     temp->reclen = sizeof( oc_header ) + len;
     while( len > MAX_OBJ_LEN ) {
         temp->objlen = MAX_OBJ_LEN;
-        temp->reclen = sizeof( oc_header  )+ MAX_OBJ_LEN;
-        Copy( src, &temp->data[ 0 ], MAX_OBJ_LEN );
+        temp->reclen = sizeof( oc_header ) + MAX_OBJ_LEN;
+        Copy( src, &temp->data[0], MAX_OBJ_LEN );
         InputOC( (any_oc *)temp );
         src += MAX_OBJ_LEN;
         len -= MAX_OBJ_LEN;
     }
     temp->objlen = len;
     temp->reclen = sizeof( oc_header ) + len;
-    Copy( src, &temp->data[ 0 ], len );
+    Copy( src, &temp->data[0], len );
     InputOC( (any_oc *)temp );
     CGFree( temp );
 }

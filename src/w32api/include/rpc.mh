@@ -4,7 +4,9 @@
 :include crwatcnt.sp
  */
 
-#include <windows.h>
+#ifndef RPC_NO_WINDOWS_H
+    #include <windows.h>
+#endif
 
 #ifndef __RPC_H__
 #define __RPC_H__
@@ -50,4 +52,3 @@ typedef long    RPC_STATUS;
 #include <rpcasync.h>
 
 #endif /* __RPC_H__ */
-

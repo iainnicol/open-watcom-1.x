@@ -11,6 +11,7 @@
 #define _OBJBASE_H_
 
 :include readonly.sp
+
 #include <stdlib.h>
 
 /* Macros to specify OLE functions */
@@ -328,6 +329,9 @@ WINOLEAPI               CoRevokeInitializeSpy( ULARGE_INTEGER );
 #if (_WIN32_WINNT >= 0x0600)
 WINOLEAPI               CoDisconnectContext( DWORD );
 #endif
+#if (_WIN32_WINNT >= 0x0601)
+WINOLEAPI               CoGetApartmentType( APTTYPE *, APTTYPEQUALIFIER * );
+#endif
 
 /* Functions in DFLAYOUT.DLL */
 WINOLEAPI   StgOpenLayoutDocfile( OLECHAR const *, DWORD, DWORD, IStorage ** );
@@ -339,4 +343,3 @@ WINOLEAPI   StgOpenLayoutDocfile( OLECHAR const *, DWORD, DWORD, IStorage ** );
     ((x).HighPart = 0, (x).LowPart = (p))
 
 #endif /* _OBJBASE_H_ */
-

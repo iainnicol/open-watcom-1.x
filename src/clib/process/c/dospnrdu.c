@@ -46,16 +46,19 @@
 #include "seterrno.h"
 #include "_process.h"
 
+extern char * __CreateInheritString( void );
+
 int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-                                  CHAR_TYPE *envpar, const CHAR_TYPE * const argv[] )
+                                  CHAR_TYPE *envpar, 
+                                  const CHAR_TYPE * const argv[] )
 {
     int tid;
-    int pid;
+    int handle;
+    int wait;
+    int rc = -1;
     int fh;
     int len;
     char *p;
-    int curdrive;
-    char *startdir;
     char *drive;
     char *dir;
     char *fname;
@@ -63,7 +66,12 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *envdata;
     char *envp;
     char *ep;
+    char *options;
     int ok;
+
+    options = __CreateInheritString();
+
+    __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
     ok = 0;
 
@@ -102,16 +110,28 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok ) {
-        startdir = lib_malloc( _MAX_PATH );
-        curdrive = RdosGetCurDrive();
-        RdosGetCurDir( curdrive, startdir );
-        pid = RdosSpawn( pgmname, cmdline, startdir, &tid );
-        lib_free( startdir );
-    }
-    else
-        pid = 0;
+        handle = RdosSpawn( pgmname, cmdline, 0, envpar, options, &tid );
 
+        if( !handle )
+            ok = 0;
+    }
+
+    if( ok ) {
+        if( mode == P_WAIT ) {
+            wait = RdosCreateWait();
+            RdosAddWaitForProcessEnd( wait, handle, 0 );
+            RdosWaitForever( wait );
+            rc = RdosGetProcessExitCode( handle );
+            RdosCloseWait( wait );
+        } 
+        else
+            rc = tid;
+            
+        RdosFreeProcessHandle( handle );                        
+    }
+
+    lib_free( options );
     lib_free( p );
 
-    return( pid );
+    return( rc );
 }

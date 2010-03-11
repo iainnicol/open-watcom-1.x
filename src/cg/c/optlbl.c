@@ -35,8 +35,6 @@
 extern  ins_entry       *DelInstr(ins_entry*);
 extern  void            DelRef(ins_entry**,ins_entry*);
 
-extern    code_lbl      *Handles;
-
 extern  void    TryScrapLabel( code_lbl *old );
 static  void    ScrapCodeLabel( code_lbl *lbl );
 
@@ -55,6 +53,7 @@ extern  void    AddLblDef( ins_entry *instr ) {
         if( lbl == NULL ) break;
     }
   optend
+}
 
 
 extern  void    DelLblDef( ins_entry *instr ) {
@@ -70,6 +69,7 @@ extern  void    DelLblDef( ins_entry *instr ) {
     if( _TstStatus( lbl, REDIRECTION ) ) optreturnvoid;
     ScrapCodeLabel( lbl );
   optend
+}
 
 
 extern  void    AddLblRef( ins_entry *instr ) {
@@ -86,6 +86,7 @@ extern  void    AddLblRef( ins_entry *instr ) {
     _LblRef( instr ) = lbl->refs;
     lbl->refs = instr;
   optend
+}
 
 
 extern  void    DelLblRef( ins_entry *instr ) {
@@ -98,6 +99,7 @@ extern  void    DelLblRef( ins_entry *instr ) {
     DelRef( &old->refs, instr );
     TryScrapLabel( old );
   optend
+}
 
 
 extern  void    ChgLblRef( ins_entry *instr, code_lbl *new ) {
@@ -123,6 +125,7 @@ extern  void    ChgLblRef( ins_entry *instr, code_lbl *new ) {
         TryScrapLabel( old );
     }
   optend
+}
 
 
 extern  bool    UniqueLabel( code_lbl *lbl ) {
@@ -227,6 +230,7 @@ static  void    KillDeadLabels( ins_entry *instr ) {
         DelInstr( instr );
     }
   optend
+}
 
 
 static  void    ScrapCodeLabel( code_lbl *lbl ) {
@@ -252,6 +256,7 @@ static  void    ScrapCodeLabel( code_lbl *lbl ) {
     _ClrStatus( redir, REDIRECTION );
     TryScrapLabel( redir );
   optend
+}
 
 
 extern  void    TryScrapLabel( code_lbl *old ) {
@@ -266,3 +271,4 @@ extern  void    TryScrapLabel( code_lbl *old ) {
         ScrapCodeLabel( old );
     }
   optend
+}

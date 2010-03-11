@@ -30,9 +30,6 @@ inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 .h: $(include_path)
 .asm: $(asm_path)
 
-libfile: .PROCEDURE
-        $(librarian) $(libflags) $<
-
 # TODO: use common preprocessing rules/macros
 !ifdef bootstrap
 protos_opts = -E

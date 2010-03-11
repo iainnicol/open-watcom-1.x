@@ -958,6 +958,7 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
     const uint_8    *p;
     uint_32         tmp;
     uint_32         attr;
+    uint_32         abbr_off;
     bool            start;
 
     if( Sections[ DW_DEBUG_ABBREV ].data == 0 ) {
@@ -966,23 +967,18 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
         memcpy( Sections[ DW_DEBUG_ABBREV ].data, input, length );
     }
     p = input;
-    start = TRUE;
     for( ;; ) {
         if( p > input + length ) break;
-        if( start ) {
-            tmp = p-input;
-            Wdputs( "Offset:" );
-            Puthex( tmp, 8 );
-            Wdputslc( "\n" );
-            start = FALSE;
-        }
+        abbr_off = tmp = p - input;
         p = DecodeULEB128( p, &tmp );
         if( tmp == 0 ) {
             Wdputslc( "End_CU\n" );
             start = TRUE;
             continue; /* compile unit separator */
         }
-        Wdputs( "Code: " );
+        Wdputs( "Offset: " );
+        Puthex( abbr_off, 8 );
+        Wdputs( "  Code: " );
         Puthex( tmp, 8 );
         Wdputslc( "\n" );
         if( p >= input + length ) break;

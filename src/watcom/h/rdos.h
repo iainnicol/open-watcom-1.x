@@ -185,6 +185,7 @@ typedef struct _EXCEPTION_POINTERS {
     CONTEXT *ContextRecord;
 } EXCEPTION_POINTERS;
 
+
 // API functions
 
 void RDOSAPI RdosDebug();
@@ -311,15 +312,19 @@ int RDOSAPI RdosSuspendThread(int Thread);
 int RDOSAPI RdosSuspendAndSignalThread(int Thread);
 
 void RDOSAPI RdosCpuReset();
+int RDOSAPI RdosGetCpuVersion(char *VendorStr, int *FeatureFlags, int *freq);
 void RDOSAPI RdosGetVersion(int *Major, int *Minor, int *Release);
 void RDOSAPI RdosCreateThread(void (*Start)(void *Param), const char *Name, void *Param, int StackSize);
 void RDOSAPI RdosCreatePrioThread(void (*Start)(void *Param), int Prio, const char *Name, void *Param, int StackSize);
 void RDOSAPI RdosTerminateThread();
 int RDOSAPI RdosGetThreadHandle();
-int RDOSAPI RdosExec(const char *prog, const char *param);
-int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, int *thread);
-int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, int *thread);
+int RDOSAPI RdosExec(const char *prog, const char *param, const char *options);
+int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread);
+int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread);
 void RDOSAPI RdosUnloadExe(int ExitCode);
+void RDOSAPI RdosFreeProcessHandle(int handle);
+int RDOSAPI RdosGetProcessExitCode(int handle);
+void RDOSAPI RdosAddWaitForProcessEnd(int Handle, int ProcessHandle, void *ID);
 int RDOSAPI RdosShowExceptionText();
 void RDOSAPI RdosWaitMilli(int ms);
 void RDOSAPI RdosWaitMicro(int us);
@@ -470,6 +475,7 @@ unsigned short int RDOSAPI RdosCalcCrc(int Handle, unsigned short int CrcVal, co
 int RDOSAPI RdosGetModuleHandle();
 const char *RDOSAPI RdosGetExeName();
 const char *RDOSAPI RdosGetCmdLine();
+const char *RDOSAPI RdosGetOptions();
 int RDOSAPI RdosLoadDll(const char *Name);
 void RDOSAPI RdosFreeDll(int handle);
 int RDOSAPI RdosGetModuleName(int handle, char *Buf, int Size);
@@ -479,7 +485,7 @@ int RDOSAPI RdosReadBinaryResource(int handle, int ID, char *Buf, int Size);
 void * RDOSAPI RdosGetModuleProc(int handle, const char *ProcName);
 char RDOSAPI RdosGetModuleFocusKey(int handle);
 
-void RDOSAPI RdosAddWaitForDebugEvent(int Handle, int ModuleHandle, void *ID);
+void RDOSAPI RdosAddWaitForDebugEvent(int Handle, int ProcessHandle, void *ID);
 char RDOSAPI RdosGetDebugEvent(int handle, int *thread);
 void RDOSAPI RdosGetDebugEventData(int handle, void *buf);
 void RDOSAPI RdosClearDebugEvent(int handle);
@@ -1155,6 +1161,14 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     parm [ebx] [esi] [edi]  \
     modify [eax ecx edx];
 
+#pragma aux RdosGetCpuVersion = \
+    CallGate_get_cpu_version  \
+    "movzx  eax,al" \
+    "mov [esi],edx" \
+    "mov [ecx],ebx" \
+    parm [edi] [esi] [ecx] \
+    value [eax];
+
 #pragma aux RdosTerminateThread = \
     CallGate_terminate_thread;
 
@@ -1164,43 +1178,33 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     value [eax];
 
 #pragma aux RdosExec = \
+    "push gs" \
+    "mov ax,ds" \
+    "mov gs,ax" \
     CallGate_load_exe  \
+    "pop gs" \
     CallGate_get_exit_code  \
     "movzx eax,ax"  \
-    parm [esi] [edi] \
+    parm [esi] [edi] [ebx] \
     value [eax];
-
-#pragma aux RdosSpawn = \
-    "xor edx,edx"   \
-    "push fs"   \
-    "mov ax,ds" \
-    "mov fs,ax" \
-    CallGate_spawn_exe  \
-    "pop fs"    \
-    "movzx eax,ax"  \
-    "mov [ecx],eax" \
-    "movzx eax,dx"  \
-    parm [esi] [edi] [ebx] [ecx] \
-    value [eax] \
-    modify [edx];
-
-#pragma aux RdosSpawnDebug = \
-    "mov edx,fs:[0x24]"  \
-    "push fs"   \
-    "mov ax,ds" \
-    "mov fs,ax" \
-    CallGate_spawn_exe  \
-    "pop fs"    \
-    "movzx eax,ax"  \
-    "mov [ecx],eax" \
-    "movzx eax,dx"  \
-    parm [esi] [edi] [ebx] [ecx] \
-    value [eax] \
-    modify [edx];
 
 #pragma aux RdosUnloadExe = \
     CallGate_unload_exe  \
     parm [eax];
+
+#pragma aux RdosFreeProcessHandle = \
+    CallGate_free_proc_handle  \
+    parm [ebx];
+
+#pragma aux RdosAddWaitForProcessEnd = \
+    CallGate_add_wait_for_proc_end  \
+    parm [ebx] [eax] [ecx];
+
+#pragma aux RdosGetProcessExitCode = \
+    CallGate_get_proc_exit_code  \
+    "movsx eax,ax" \
+    parm [ebx]  \
+    value [eax];
 
 #pragma aux RdosShowExceptionText = \
     CallGate_show_exception_text  \
@@ -2037,6 +2041,11 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     ValidateEdi \
     value [edi];
 
+#pragma aux RdosGetOptions = \
+    CallGate_get_options  \
+    ValidateEdi \
+    value [edi];
+
 #pragma aux RdosLoadDll = \
     CallGate_load_dll  \
     ValidateHandle \
@@ -2384,38 +2393,111 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
 
 #pragma aux RdosGetMasterVolume = \
     CallGate_get_master_volume \
-    "movzx ebx,al" \
-    "mov [esi],ebx" \
-    "movzx ebx,ah" \
-    "mov [edi],ebx" \    
+    "mov cx,ax" \
+    "mov dl,0x7F" \
+    "sub dl,al" \
+    "movsx edx,dl" \ 
+    "mov eax,200" \
+    "imul edx" \
+    "sar eax,8" \
+    "mov [esi],eax" \    
+    "mov dl,0x7F" \
+    "sub dl,ch" \
+    "movsx edx,dl" \ 
+    "mov eax,200" \
+    "imul edx" \
+    "sar eax,8" \
+    "mov [edi],eax" \    
     parm [esi] [edi] \
-    modify [eax ebx];
+    modify [eax cx edx];
 
 #pragma aux RdosSetMasterVolume = \
-    "mov ah,dl" \
+    "mov ecx,edx" \
+    "mov esi,eax" \
+    "xor edx,edx" \
+    "shl eax,8" \
+    "sbb edx,0" \
+    "mov esi,200" \
+    "idiv esi" \
+    "mov bl,0x7F" \
+    "sub bl,al" \
+    "adc bl,0" \
+    "mov eax,ecx" \
+    "mov esi,eax" \
+    "xor edx,edx" \
+    "shl eax,8" \
+    "sbb edx,0" \
+    "mov esi,200" \
+    "idiv esi" \
+    "mov bh,0x7F" \
+    "sub bh,al" \
+    "adc bh,0" \
+    "mov ax,bx" \
     CallGate_set_master_volume \
     parm [eax] [edx] \
-    modify [eax];
+    modify [eax ebx ecx edx esi];
 
 #pragma aux RdosGetLineOutVolume = \
     CallGate_get_line_out_volume \
-    "movzx ebx,al" \
-    "mov [esi],ebx" \
-    "movzx ebx,ah" \
-    "mov [edi],ebx" \    
+    "mov cx,ax" \
+    "mov dl,0x7F" \
+    "sub dl,al" \
+    "movsx edx,dl" \ 
+    "mov eax,200" \
+    "imul edx" \
+    "sar eax,8" \
+    "mov [esi],eax" \    
+    "mov dl,0x7F" \
+    "sub dl,ch" \
+    "movsx edx,dl" \ 
+    "mov eax,200" \
+    "imul edx" \
+    "sar eax,8" \
+    "mov [edi],eax" \    
     parm [esi] [edi] \
-    modify [eax ebx];
+    modify [eax cx edx];
 
 #pragma aux RdosSetLineOutVolume = \
-    "mov ah,dl" \
+    "mov ecx,edx" \
+    "mov esi,eax" \
+    "xor edx,edx" \
+    "shl eax,8" \
+    "sbb edx,0" \
+    "mov esi,200" \
+    "idiv esi" \
+    "mov bl,0x7F" \
+    "sub bl,al" \
+    "adc bl,0" \
+    "mov eax,ecx" \
+    "mov esi,eax" \
+    "xor edx,edx" \
+    "shl eax,8" \
+    "sbb edx,0" \
+    "mov esi,200" \
+    "idiv esi" \
+    "mov bh,0x7F" \
+    "sub bh,al" \
+    "adc bh,0" \
+    "mov ax,bx" \
     CallGate_set_line_out_volume \
     parm [eax] [edx] \
-    modify [eax];
+    modify [eax ebx ecx edx esi];
 
 #pragma aux RdosCreateAudioOutChannel = \
+    "push eax" \
+    "mov eax,edx" \
+    "shl eax,16" \
+    "xor edx,edx" \
+    "mov ebx,100" \
+    "div ebx" \
+    "sub eax,1" \
+    "adc eax,0" \
+    "mov dx,ax" \
+    "pop eax" \
     CallGate_create_audio_out_channel \
     ValidateHandle \
     parm [eax] [ecx] [edx] \
+    modify [ebx] \
     value [ebx];
 
 #pragma aux RdosCloseAudioOutChannel = \
@@ -3034,6 +3116,14 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
 #pragma aux RdosCpuReset = \
     CallGate_cpu_reset;
 
+#pragma aux RdosGetCpuVersion = \
+    CallGate_get_cpu_version  \
+    "movzx  eax,al" \
+    "mov [esi],edx" \
+    "mov [ecx],ebx" \
+    parm [edi] [esi] [ecx] \
+    value [eax];
+
 #pragma aux RdosGetVersion = \
     CallGate_get_version  \
     "movzx edx,dx"  \
@@ -3057,40 +3147,25 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
     CallGate_load_exe  \
     CallGate_get_exit_code  \
     "movzx eax,ax"  \
-    parm [esi] [edi] \
+    parm [esi] [edi] [ebx] \
     value [eax];
-
-#pragma aux RdosSpawn = \
-    "xor edx,edx"   \
-    "push fs"   \
-    "mov ax,ds" \
-    "mov fs,ax" \
-    CallGate_spawn_exe  \
-    "pop fs"    \
-    "movzx eax,ax"  \
-    "mov [ecx],eax" \
-    "movzx eax,dx"  \
-    parm [esi] [edi] [ebx] [ecx] \
-    value [eax] \
-    modify [edx];
-
-#pragma aux RdosSpawnDebug = \
-    "mov edx,fs:[0x24]"  \
-    "push fs"   \
-    "mov ax,ds" \
-    "mov fs,ax" \
-    CallGate_spawn_exe  \
-    "pop fs"    \
-    "movzx eax,ax"  \
-    "mov [ecx],eax" \
-    "movzx eax,dx"  \
-    parm [esi] [edi] [ebx] [ecx] \
-    value [eax] \
-    modify [edx];
 
 #pragma aux RdosUnloadExe = \
     CallGate_unload_exe  \
     parm [eax];
+
+#pragma aux RdosFreeProcessHandle = \
+    CallGate_free_proc_handle  \
+    parm [bx];
+
+#pragma aux RdosAddWaitForProcessEnd = \
+    CallGate_add_wait_for_proc_end  \
+    parm [bx] [ax] [ecx];
+
+#pragma aux RdosGetProcessExitCode = \
+    CallGate_get_proc_exit_code  \
+    parm [bx]  \
+    value [ax];
 
 #pragma aux RdosShowExceptionText = \
     CallGate_show_exception_text  \
@@ -3918,6 +3993,11 @@ void RDOSAPI RdosPlayFmNote(int Handle, long double Freq, int PeakLeftVolume, in
 
 #pragma aux RdosGetCmdLine = \
     CallGate_get_cmd_line  \
+    ValidateDi \
+    value [edi];
+
+#pragma aux RdosGetOptions = \
+    CallGate_get_options  \
     ValidateDi \
     value [edi];
 

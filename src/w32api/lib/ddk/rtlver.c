@@ -30,8 +30,6 @@
 
 #include <ntddk.h>
 
-/* Temporary stuff to get this file to compile with MinGW headers */
-
 typedef NTSTATUS (NTAPI *PRTLGETVERSION)( PRTL_OSVERSIONINFOW );
 
 BOOLEAN NTAPI WdmlibRtlIsNtDdiVersionAvailable( ULONG ulVersion )
@@ -81,4 +79,3 @@ BOOLEAN NTAPI WdmlibRtlIsServicePackVersionInstalled( ULONG ulVersion )
     return( ulVersion <= ((ulMajorVersion << 24) | (ulMinorVersion << 16) | 
         (usServicePack << 8)) );
 }
-

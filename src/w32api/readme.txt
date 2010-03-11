@@ -24,6 +24,13 @@ is not defined.  These errors will also occur when compiling such code with
 the Microsoft headers.  They can be eliminated by defining WIN32_LEAN_AND_MEAN
 to suppress inclusion of winsock.h by windows.h
 
+There are several instances in which the headers that shipped with previous
+version of Open Watcom contained undocumented functions that are no longer
+available in current versions of Windows.  These functions have been removed
+from the headers.  Any code that used these functions should be rewritten to
+avoid using them or to access them through GetProcAddress() or those platforms
+where they are available.
+
 Documentation for the Win32 API is available over the Internet from Microsoft
 at http://msdn.microsoft.com/en-us/library/default.aspx.
 

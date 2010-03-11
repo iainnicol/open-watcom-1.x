@@ -79,7 +79,9 @@ int     NumViolations = 0;  /* runtime-constraint violation counter */
 /* Runtime-constraint handler for tests; doesn't abort program. */
 void my_constraint_handler( const char *msg, void *ptr, errno_t error )
 {
+#ifdef DEBUG_MSG
     fprintf( stderr, "Runtime-constraint in %s", msg );
+#endif
     ++NumViolations;
 }
 
@@ -170,7 +172,7 @@ void main( int argc, char *argv[] )
     // filename[1] is now read-only
     VERIFY( access( filename[1], W_OK ) == -1 );
     EXPECT( errno == EACCES );
-#ifndef __UNIX__    // remove would succeed
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )    // remove would succeed
     VERIFY( remove( filename[1] ) != 0 );
     EXPECT( errno == EACCES );
 #endif

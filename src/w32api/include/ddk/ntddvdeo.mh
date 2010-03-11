@@ -8,6 +8,7 @@
 #define _NTDDVDEO_
 
 :include readonly.sp
+
 #include <tvout.h>
 
 :include cpluspro.sp
@@ -276,6 +277,7 @@ typedef struct tagVIDEO_MONITOR_DEVICE {
     ULONG   flag;
     HANDLE  pdo;
     ULONG   HwID;
+    BOOLEAN Internal;
 } VIDEO_MONITOR_DEVICE;
 typedef VIDEO_MONITOR_DEVICE    *PVIDEO_MONITOR_DEVICE;
 
@@ -295,14 +297,18 @@ typedef enum _VIDEO_WIN32K_CALLBACKS_PARAMS_TYPE {
     VideoWakeupCallout                  = 5,
     VideoChangeDisplaySettingsCallout   = 6,
     VideoPnpNotifyCallout               = 7,
-    VideoDxgkDisplaySwitchCallout       = 8
+    VideoDxgkDisplaySwitchCallout       = 8,
+    VideoDxgkMonitorEventCallout        = 9,
+    VideoDxgkFindAdapterTdrCallout      = 10
 } VIDEO_WIN32K_CALLBACKS_PARAMS_TYPE;
 
 /* DirectX WIN32K parameter data */
 typedef struct _DXGK_WIN32K_PARAM_DATA {
-    PVOID   PhysicalDeviceObject;
-    PVOID   DisplayMode;
-    ULONG   Flags;
+    PVOID   PathsArray;
+    PVOID   ModesArray;
+    ULONG   NumPathArrayElements;
+    ULONG   NumModeArrayElements;
+    ULONG   SDCFlags;
 } DXGK_WIN32K_PARAM_DATA;
 typedef DXGK_WIN32K_PARAM_DATA  *PDXGK_WIN32K_PARAM_DATA;
 
@@ -790,4 +796,3 @@ typedef VIDEO_QUERY_PERFORMANCE_COUNTER *PVIDEO_QUERY_PERFORMANCE_COUNTER;
 :include cplusepi.sp
 
 #endif /* _NTDDVDEO_ */
-

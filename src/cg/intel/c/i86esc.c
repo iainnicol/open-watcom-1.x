@@ -90,13 +90,13 @@ extern bool             UseImportForm(fe_attr);
 extern bool             AskIfCommonLabel(label_handle);
 extern void             OutSpecialCommon(int,fix_class,bool);
 
-extern void             DoLblRef( label_handle lbl, seg_id seg,
-                                  offset val, byte kind );
-static void             DoRelocRef( sym_handle sym, cg_class class,
-                                    seg_id seg, offset val, byte kind );
+extern void             DoLblRef( label_handle lbl, seg_id seg, offset val,
+                                                            escape_class kind );
+static void             DoRelocRef( sym_handle sym, cg_class class, seg_id seg,
+                                                offset val, escape_class kind );
 static  void            OutShortDisp( label_handle lbl );
-static  void            OutCodeDisp( label_handle lbl, fix_class f,
-                                     bool rel, oc_class class );
+static  void            OutCodeDisp( label_handle lbl, fix_class f, bool rel,
+                                                            oc_class class );
 
 extern byte             *NopLists[];
 
@@ -122,11 +122,13 @@ extern  bool    CodeHasAbsPatch( oc_entry *code ) {
     byte        *curr;
     byte        *final;
 
-    curr = &code->data[ 0 ];
+    curr = &code->data[0];
     final = curr + code->reclen - sizeof( oc_header );
     while( curr < final ) {
         if( *curr++ == ESC ) {
-            if( *curr++ == ABS ) return( TRUE );
+            if( *curr++ == ABS ) {
+                return( TRUE );
+            }
         }
     }
     return( FALSE );
@@ -161,11 +163,11 @@ extern  void    DoFunnyRef( int segover ) {
 
 
 extern  void  DoFESymRef( sym_handle sym, cg_class class, offset val,
-                                int fixup ) {
+                                fe_fixup_types fixup ) {
 /*******************************************************************/
 
     fe_attr             attr;
-    byte                kind;
+    escape_class        kind;
 
     kind = 0;
     switch( fixup ) {
@@ -223,9 +225,9 @@ extern  void    DoSegRef( seg_id seg ) {
 }
 
 static  void    DoRelocRef( sym_handle sym, cg_class class,
-                            seg_id seg, offset val, byte kind ) {
+                      seg_id seg, offset val, escape_class kind )
 /***************************************************************/
-
+{
     offset              addr;
     label_handle        lbl;
 
@@ -257,9 +259,9 @@ static  void    DoRelocRef( sym_handle sym, cg_class class,
 }
 
 extern  void    DoLblRef( label_handle lbl, seg_id seg,
-                          offset val, byte kind ) {
-/*************************************************/
-
+                        offset val, escape_class kind )
+/*****************************************************/
+{
     EmitByte( ESC );
     EmitByte( LBL | kind );
     EmitSegId( seg );
@@ -269,10 +271,12 @@ extern  void    DoLblRef( label_handle lbl, seg_id seg,
     }
 }
 
-static void SendBytes( byte *ptr, unsigned len ) {
-/************************************************/
-
-    if( len != 0 ) OutDBytes( len, ptr );
+static void SendBytes( byte *ptr, unsigned len )
+/**********************************************/
+{
+    if( len != 0 ) {
+        OutDBytes( len, ptr );
+    }
 }
 
 #define INFO_NOT_DEBUG      INFO_SELECT
@@ -352,7 +356,7 @@ static  void    ExpandCJ( any_oc *oc ) {
             f = F_PTR;
             rel = FALSE;
             if( ( class & GET_BASE ) == OC_CALL ) {
-                if( oc->oc_entry.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ){
+                if( oc->oc_entry.objlen == OptInsSize(OC_CALL, OC_DEST_CHEAP) ) {
                     f = F_OFFSET;
                     rel = TRUE;
                     class &= ~ ATTR_FAR;
@@ -439,8 +443,8 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 static  label_handle    ExpandObj( byte *cur, int explen ) {
 /**********************************************************/
 
-    byte               *fini;
-    byte                key;
+    byte                *fini;
+    escape_class        key;
     label_handle        lbl;
     sym_handle          sym;
     offset              val = 0;
@@ -455,12 +459,16 @@ static  label_handle    ExpandObj( byte *cur, int explen ) {
         len = 0;
         while( cur[len] != ESC ) {
             ++len;
-            if( cur + len >= fini ) break;
+            if( cur + len >= fini ) {
+                break;
+            }
         }
         if( len != 0 ) {
             OutDBytes( len, cur );
             cur += len;
-            if( cur >= fini ) break;
+            if( cur >= fini ) {
+                break;
+            }
         }
         cur++;
         key = *cur++;
@@ -580,7 +588,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
     switch( base ) {
     case OC_CODE:
     case OC_DATA:
-        ExpandObj( oc->oc_entry.data, oc->oc_entry.reclen-sizeof(oc_header) );
+        ExpandObj( oc->oc_entry.data, oc->oc_entry.reclen - sizeof( oc_header ) );
         break;
     case OC_IDATA:
         if( next_lbl != NULL ) { /* cause next_lbl to need no alignment */
@@ -589,11 +597,11 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             DoAlignment( len );
         }
         OutSelect( TRUE );
-        SendBytes( &oc->oc_entry.data[ 0 ], oc->oc_entry.objlen );
+        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.objlen );
         OutSelect( FALSE );
         break;
     case OC_BDATA:
-        SendBytes( &oc->oc_entry.data[ 0 ], oc->oc_entry.objlen );
+        SendBytes( &oc->oc_entry.data[0], oc->oc_entry.objlen );
         break;
     case OC_LABEL:
         /* figure out number of bytes to pad */
@@ -658,7 +666,7 @@ extern  void    OutputOC( any_oc *oc, any_oc *next_lbl ) {
             *ptr |= B_IND_RMR_JMP;
         }
         OutDataByte( *ptr++ );
-        lbl = ExpandObj( ptr, oc->oc_entry.reclen - sizeof(oc_header) - 1 - len );
+        lbl = ExpandObj( ptr, oc->oc_entry.reclen - sizeof( oc_header ) - 1 - len );
         if( lbl != NULL && base == OC_JMPI ) {
             TellKeepLabel( lbl ); /* make sure label comes out*/
             GenKillLabel( lbl );  /* but kill it when it does*/

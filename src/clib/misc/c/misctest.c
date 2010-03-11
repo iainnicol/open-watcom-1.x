@@ -45,7 +45,7 @@
                 ProgramName, __LINE__,                  \
                 strlwr(__FILE__) );                     \
         NumErrors++;                                    \
-        exit(-1);                                       \
+        exit( EXIT_FAILURE );                           \
     }
 
 void TestCompare( void );
@@ -61,7 +61,19 @@ char    ProgramName[128];                       /* executable filename */
 int     NumErrors = 0;                          /* number of errors */
 
 #ifdef __SW_BW
-    FILE *my_stdout;
+FILE    *my_stdout;
+
+/*
+ * Local run-time error message output implementation. Needed
+ * to avoid popping up a dialog box when an assertion is hit. Also
+ * sends the message to stdout instead of the usual stderr.
+ */
+void __rterr_msg( const char *hdr, const char *msg )
+{
+    fputs( hdr, stdout );
+    fputs( ": ", stdout );
+    fputs( msg, stdout );
+}
 #endif
 
 /****
@@ -140,7 +152,7 @@ void TestLibgen( void )
 #include <assert.h>
 void TestAssert1( int i )
 {
-    assert(i == 1);                             /* must pass */
+    assert( i == 1 );                           /* must pass */
 }
 
 #undef  NDEBUG
@@ -148,19 +160,19 @@ void TestAssert1( int i )
 #include <assert.h>
 void TestAssert2( int i )
 {
-    assert(i == 0);                             /* must not do nothing */
+    assert( i == 0 );                           /* must not do nothing */
 }
 
 #undef NDEBUG
 #include <assert.h>
 void TestAssert3( int i )
 {
-    assert(i == 1);                             /* must pass again */
+    assert( i == 1 );                           /* must pass again */
 }
 
 void TestAssert( int i )
 {
-    assert(i == 0);                             /* must fail */
+    assert( i == 0 );                           /* must fail */
 }
 
 /* This signal handler should be called at the end of this program */
@@ -170,28 +182,27 @@ void abort_handler( int sig )
 
     /*** Print a pass/fail message and quit ***/
     VERIFY( NumErrors == 0 );
-    #ifdef __SW_BW
-        fprintf( stderr, "Tests completed (%s).\n", ProgramName );
-        fclose( my_stdout );
-        _dwShutDown();
-    #else
-        printf( "Tests completed (%s).\n", ProgramName );
-    #endif
-    exit( 0 );
+    printf( "Tests completed (%s).\n", ProgramName );
+#ifdef __SW_BW
+    fprintf( stderr, "Tests completed (%s).\n", ProgramName );
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+    exit( EXIT_SUCCESS );
 }
 
 int main( int argc, char *argv[] )
 {
-    #ifdef __SW_BW
-        my_stdout = freopen( "tmp.log", "a", stdout );
-        if( my_stdout == NULL ) {
-            fprintf( stderr, "Unable to redirect stdout\n" );
-            exit( -1 );
-        }
-    #endif
+#ifdef __SW_BW
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        exit( EXIT_FAILURE );
+    }
+#endif
 
     /*** Initialize ***/
-    strcpy( ProgramName, strlwr(argv[0]) );     /* store filename */
+    strcpy( ProgramName, strlwr( argv[0] ) );   /* store filename */
 
     /*** Test various functions ***/
     TestRot();
@@ -201,9 +212,15 @@ int main( int argc, char *argv[] )
     TestAssert1( 1 );
     TestAssert2( 1 );
     TestAssert3( 1 );
+
+#ifdef __RDOS__ /* RDOS does not support signals! */
+    printf( "Tests completed (%s).\n", ProgramName );
+    return( 0 );
+#else    
     signal( SIGABRT, abort_handler );           /* will be called via abort() */
     TestAssert( 1 );
 
     VERIFY( 0 );                                /* should never get here! */
-    return( -1 );
+    return( EXIT_FAILURE );
+#endif    
 }

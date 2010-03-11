@@ -11,6 +11,7 @@
 #define __shtypes_h__
 
 :include readonly.sp
+
 :include cpluspro.sp
 
 /* Perceived flag data type */
@@ -19,14 +20,15 @@ typedef DWORD   PERCEIVEDFLAG;
 #endif
 
 /* Known folder identifier data type */
-#if (NTDDI_VERSION >= 0x06000000)
 typedef GUID    KNOWNFOLDERID;
 #ifdef __cplusplus
     #define REFKNOWNFOLDERID    const KNOWNFOLDERID &
 #else
     #define REFKNOWNFOLDERID    const KNOWNFOLDERID * const
 #endif
-#endif
+
+/* Known folder redirection flags data type */
+typedef DWORD   KF_REDIRECT_FLAGS;
 
 /* Folder type identifier data type */
 typedef GUID    FOLDERTYPEID;
@@ -176,6 +178,7 @@ typedef struct tagDOMAIN_RELATIVE_OBJECTID {
 
 /* Shell column states */
 typedef enum tagSHCOLSTATE {
+    SHCOLSTATE_DEFAULT              = 0x00000000,
     SHCOLSTATE_TYPE_STR             = 0x00000001,
     SHCOLSTATE_TYPE_INT             = 0x00000002,
     SHCOLSTATE_TYPE_DATE            = 0x00000003,
@@ -200,4 +203,3 @@ typedef enum tagSHCOLSTATE {
 :include cplusepi.sp
 
 #endif /* __shtypes_h__ */
-

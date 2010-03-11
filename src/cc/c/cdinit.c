@@ -129,13 +129,21 @@ void FreeDataQuads( void )
     ClearDataQuads();
 }
 
-int StartDataQuadAccess( void )
+void *StartDataQuadAccess( void )
 {
+    void    *cur_dqp;
+
     if( DataQuadsAvailable() ) {
+        cur_dqp = CurDataQuad;
         CurDataQuad = DataQuadSegs[ 0 ]->next;
-        return( 1 );                    // indicate data quads exist
+        return( cur_dqp );              // indicate data quads exist
     }
-    return( 0 );                        // indicate no data quads
+    return( NULL );                     // indicate no data quads
+}
+
+void EndDataQuadAccess( void *p )
+{
+    CurDataQuad = p;
 }
 
 DATA_QUAD *NextDataQuad( void )
@@ -216,6 +224,7 @@ local void SplitDataQuad( DATA_QUAD_LIST *dql, unsigned long size )
     }
     if( size != 0 ) {
         /* can't happen ! */
+        CErr2p( ERR_FATAL_ERROR, "Bad initializer quad" );
         CSuicide();
     }
 }

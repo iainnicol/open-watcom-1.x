@@ -34,7 +34,9 @@
 #include "widechar.h"
 #include <io.h>
 #include <direct.h>
+#include <errno.h>
 #include <rdos.h>
+#include "seterrno.h"
 
 
 _WCRTLINK int remove( CHAR_TYPE const *filename )
@@ -43,6 +45,8 @@ _WCRTLINK int remove( CHAR_TYPE const *filename )
 
     if( RdosDeleteFile( filename ) )
         return( 0 );
-    else
+    else {
+        __set_errno( ENOENT );
         return( -1 );  
+    }
 }

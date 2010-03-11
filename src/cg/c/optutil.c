@@ -43,12 +43,6 @@ extern  void            AddLblDef(ins_entry*);
 extern  void            InsertQueue(ins_entry*,ins_entry*);
 extern  void            FreeInstr(ins_entry*);
 
-extern    ins_entry     *FirstIns;
-extern    ins_entry     *LastIns;
-extern    ins_entry     *RetList;
-extern    ins_entry     *PendingDeletes;
-extern    bool          InsDelete;
-
 
 extern  ins_entry       *ValidIns( ins_entry *instr ) {
 /****************************************************/
@@ -158,6 +152,7 @@ extern  void    AddInstr( ins_entry *instr, ins_entry *insert ) {
         break;
     }
   optend
+}
 
 
 extern  void    DelRef(  ins_entry **owner, ins_entry *instr  ) {
@@ -173,6 +168,7 @@ extern  void    DelRef(  ins_entry **owner, ins_entry *instr  ) {
     }
     *owner = _LblRef( curr );
   optend
+}
 
 
 extern  void    UnLinkInstr( ins_entry *old ) {
@@ -184,6 +180,7 @@ extern  void    UnLinkInstr( ins_entry *old ) {
     old->ins.prev = PendingDeletes;
     PendingDeletes = old;
   optend
+}
 
 
 static  pointer DelInstr_Helper( pointer olde ) {
@@ -256,3 +253,4 @@ extern  void    FreePendingDeletes() {
         PendingDeletes = temp;
     }
   optend
+}

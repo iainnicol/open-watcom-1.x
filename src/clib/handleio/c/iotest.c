@@ -91,7 +91,7 @@ int main( int argc, char *argv[] )
     TestSize();                                 /* file size stuff */
     TestFileno();                               /* fileno() */
     TestDup();                                  /* handle duplication */
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )
     TestLocking();                              /* file locking */
     TestOsHandle();                             /* OS <--> POSIX handles */
 #endif
@@ -320,7 +320,7 @@ void TestDup( void )
 }
 
 
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )
 
 /****
 ***** Test lock(), locking(), and unlock().
@@ -396,7 +396,7 @@ void TestUnlink( void )
     status = close( handle );
     VERIFY( status == 0 );
 
-#ifndef __UNIX__ // This call would succeed
+#if !defined( __UNIX__ ) && !defined( __RDOS__ ) // This call would succeed
     status = unlink( "test.fil" );
     VERIFY( status != 0 );
 #endif
