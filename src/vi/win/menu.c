@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#define INCLUDE_SHELLAPI_H
 #include "vi.h"
 #include <malloc.h>
 #include "source.h"
@@ -1025,12 +1024,10 @@ static void addFileList( menu *cmenu )
     nextAvail = FILE_LIST_ID;
     initMenuBottom( cmenu, (InfoHead != NULL) );
 
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( addToMenuBottom( cinfo->CurrentFile->name, cinfo == CurrentInfo ) ) {
             break;
         }
-        cinfo = cinfo->next;
     }
     nextAvail = old_avail;
 

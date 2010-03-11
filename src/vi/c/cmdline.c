@@ -700,15 +700,13 @@ vi_rc RunCommandLine( char *cl )
     case PCL_T_TILE:
         if( NextWord1( dataBuff, st ) > 0 ) {
             if( st[0] == 'v' ) {
-                x = y = 1;
-                cinfo = InfoHead;
-                while( (cinfo = cinfo->next) != NULL ) {
+                y = 1;
+                for( x = 0, cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
                     x++;
                 }
             } else if( st[0] == 'h' ) {
-                x = y = 1;
-                cinfo = InfoHead;
-                while( (cinfo = cinfo->next) != NULL ) {
+                x = 1;
+                for( y = 0, cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
                     y++;
                 }
             } else {
@@ -1108,6 +1106,12 @@ vi_rc ProcessWindow( int tkn, char *data )
         break;
     case PCL_T_STRING:
         rc = setSyntaxStyle( SE_STRING, data );
+        break;
+    case PCL_T_VARIABLE:
+        rc = setSyntaxStyle( SE_VARIABLE, data );
+        break;
+    case PCL_T_REGEXP:
+        rc = setSyntaxStyle( SE_REGEXP, data );
         break;
     case PCL_T_FLOAT:
         rc = setSyntaxStyle( SE_FLOAT, data );

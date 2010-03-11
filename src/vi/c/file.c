@@ -51,7 +51,7 @@ void SaveInfo( info *ci  )
     }
     ci->CurrentFile = CurrentFile;
     ci->CurrentPos = CurrentPos;
-    ci->ColumnDesired = ColumnDesired;
+    ci->VirtualColumnDesired = VirtualColumnDesired;
     ci->LeftTopPos = LeftTopPos;
     ci->CurrentWindow = CurrentWindow;
     ci->UndoStack = UndoStack;
@@ -93,16 +93,13 @@ static void cRestoreFileDisplayBits( void )
 {
     fcb *tfcb;
 
-    if( CurrentFile == NULL ) {
-        return;
-    }
-    tfcb = CurrentFile->fcb_head;
-    while( tfcb != NULL ) {
-        tfcb->on_display = tfcb->was_on_display;
-        if( tfcb->on_display && !tfcb->in_memory ) {
-            FetchFcb( tfcb );
+    if( CurrentFile != NULL ) {
+        for( tfcb = CurrentFile->fcbs.head; tfcb != NULL; tfcb = tfcb->next ) {
+            tfcb->on_display = tfcb->was_on_display;
+            if( tfcb->on_display && !tfcb->in_memory ) {
+                FetchFcb( tfcb );
+            }
         }
-        tfcb = tfcb->next;
     }
 
 } /* cRestoreFileDisplayBits */
@@ -121,7 +118,7 @@ bool RestoreInfo( info *ci  )
         ci->CurrNumWindow = NO_WINDOW;
         ci->CurrentPos.line = 1;
         ci->CurrentPos.column = 1;
-        ci->ColumnDesired = 1;
+        ci->VirtualColumnDesired = 1;
         ci->LeftTopPos.line = 1;
         ci->LeftTopPos.column = 0;
         CurrentLine = NULL;
@@ -144,7 +141,7 @@ bool RestoreInfo( info *ci  )
     HScrollBarScale = ci->HScrollBarScale;
 #endif
     CurrentPos = ci->CurrentPos;
-    ColumnDesired = ci->ColumnDesired;
+    VirtualColumnDesired = ci->VirtualColumnDesired;
     LeftTopPos = ci->LeftTopPos;
     CurrentWindow = ci->CurrentWindow;
     CurrNumWindow = ci->CurrNumWindow;
@@ -216,11 +213,11 @@ static int getFileInfoString( char *st, int is_small )
             strcat( st, " [lf]" );
         }
 #endif
-        pc = (CurrentPos.line * 100L) / CurrentFile->fcb_tail->end_line;
+        pc = (CurrentPos.line * 100L) / CurrentFile->fcbs.tail->end_line;
         MySprintf( st + strlen( st ), " line %l of %l  -- %l%%%% --",
-            CurrentPos.line, CurrentFile->fcb_tail->end_line, pc );
+            CurrentPos.line, CurrentFile->fcbs.tail->end_line, pc );
         if( EditFlags.ColumnInFileStatus ) {
-            MySprintf( st + strlen( st  ), " (col %d)", VirtualCursorPosition() );
+            MySprintf( st + strlen( st  ), " (col %d)", VirtualColumnOnCurrentLine( CurrentPos.column ) );
         }
     } else {
         if( EditFlags.NewFile ) {
@@ -251,9 +248,9 @@ static int getFileInfoString( char *st, int is_small )
         }
 #endif
         MySprintf( st + strlen( st ), " line %l of %l",
-            CurrentPos.line, CurrentFile->fcb_tail->end_line );
+            CurrentPos.line, CurrentFile->fcbs.tail->end_line );
         if( EditFlags.ColumnInFileStatus ) {
-            MySprintf( st + strlen( st ), " (col %d)", VirtualCursorPosition() );
+            MySprintf( st + strlen( st ), " (col %d)", VirtualColumnOnCurrentLine( CurrentPos.column ) );
         }
     }
     return( strlen( st ) );
@@ -342,14 +339,11 @@ void CTurnOffFileDisplayBits( void )
 {
     fcb *tfcb;
 
-    if( !CurrentFile ) {
-        return;
-    }
-    tfcb = CurrentFile->fcb_head;
-    while( tfcb != NULL ) {
-        tfcb->was_on_display = tfcb->on_display;
-        tfcb->on_display = FALSE;
-        tfcb = tfcb->next;
+    if( CurrentFile != NULL ) {
+        for( tfcb = CurrentFile->fcbs.head; tfcb != NULL; tfcb = tfcb->next ) {
+            tfcb->was_on_display = tfcb->on_display;
+            tfcb->on_display = FALSE;
+        }
     }
 
 } /* CTurnOffFileDisplayBits */
@@ -423,10 +417,8 @@ int GimmeFileCount( void )
     info        *cinfo;
     int         cnt = 0;
 
-    cinfo = InfoHead;
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         cnt++;
-        cinfo = cinfo->next;
     }
     return( cnt );
 

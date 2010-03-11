@@ -172,25 +172,23 @@ static void doPaint( window *w, RECT *r, window_data *wd )
     int         max_lines;
 
     new_info = wd->info;
-    if( new_info != NULL ) {
-        old_info = CurrentInfo;
-        if( new_info != old_info ) {
-            SaveCurrentInfo();
-            RestoreInfo( new_info );
-        }
-        height = FontHeight( WIN_FONT( w ) );
-        start = r->top / height;
-        stop = (r->bottom + height - 1) / height;
-        max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
-        if( stop + 1 > max_lines ) {
-            stop = max_lines - 1;
-        }
-        DCInvalidateSomeLines( start, stop );
-        DCDisplaySomeLines( start, stop );
-        DCUpdate();
-        if( new_info != old_info ) {
-            RestoreInfo( old_info );
-        }
+    old_info = CurrentInfo;
+    if( new_info != old_info ) {
+        SaveCurrentInfo();
+        RestoreInfo( new_info );
+    }
+    height = FontHeight( WIN_FONT( w ) );
+    start = r->top / height;
+    stop = (r->bottom + height - 1) / height;
+    max_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
+    if( stop + 1 > max_lines ) {
+        stop = max_lines - 1;
+    }
+    DCInvalidateSomeLines( start, stop );
+    DCDisplaySomeLines( start, stop );
+    DCUpdate();
+    if( new_info != old_info ) {
+        RestoreInfo( old_info );
     }
 
 } /* doPaint */
@@ -291,7 +289,7 @@ static bool isMouseButtonDown( void )
 static bool jumpToCoord( int row, int col )
 {
     GoToLineRelCurs( LeftTopPos.line + row - 1 );
-    col = RealCursorPosition( col + LeftTopPos.column );
+    col = RealColumnOnCurrentLine( col + LeftTopPos.column );
     GoToColumnOnCurrentLine( col );
     return( TRUE );
 
@@ -594,7 +592,7 @@ void EditDrawScrollBars( HWND hwnd )
     wd = DATA_FROM_ID( hwnd );
     if( wd->info != NULL ) {
         PositionVerticalScrollThumb( hwnd, wd->info->LeftTopPos.line,
-                                     wd->info->CurrentFile->fcb_tail->end_line );
+                                     wd->info->CurrentFile->fcbs.tail->end_line );
         PositionHorizontalScrollThumb( hwnd, wd->info->LeftTopPos.column );
     }
 
@@ -741,7 +739,11 @@ LONG WINEXP EditWindowProc( HWND hwnd, unsigned msg, UINT wparam, LONG lparam )
         if( GetUpdateRect( hwnd, &rect, FALSE ) ) {
             data = DATA_FROM_ID( hwnd );
             hdc = BeginPaint( hwnd, &ps );
-            doPaint( w, &rect, data );
+            if( data->info != NULL ) {
+                doPaint( w, &rect, data );
+            } else {
+                BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );
+            }
             EndPaint( hwnd, &ps );
             if( IntersectRect( &rect, &rect, &data->extra ) ) {
                 BlankRectIndirect( hwnd, SEType[SE_WHITESPACE].background, &rect );

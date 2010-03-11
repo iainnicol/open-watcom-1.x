@@ -36,6 +36,20 @@
 extern char _NEAR META[];
 
 /*
+ * IsMagicCharRegular - check if character is magic and regular (no-magic meaning)
+ */
+bool IsMagicCharRegular( char ch )
+{
+    if( !EditFlags.Magic && Majick != NULL ) {
+        if( strchr( Majick, ch ) != NULL ) {
+            return( TRUE );
+        }
+    }
+    return( FALSE );
+
+} /* IsMagicCharRegular */
+
+/*
  * CurrentRegComp - compile current regular expression
  */
 int CurrentRegComp( char *str )
@@ -71,21 +85,6 @@ int GetCurrRegExpLength( void )
 } /* GetCurrRegExpLength */
 
 /*
- * SetMajickString - set up the Majick string
- */
-void SetMajickString( char *str )
-{
-    if( str == NULL ) {
-        if( Majick != NULL ) {
-            return;
-        }
-        str = "()~@";
-    }
-    AddString2( &Majick, str );
-
-} /* SetMajickString */
-
-/*
  * MakeExpressionNonRegular - escape out all magical chars
  */
 void MakeExpressionNonRegular( char *str )
@@ -100,10 +99,8 @@ void MakeExpressionNonRegular( char *str )
             foo[j++] = '\\';
         } else if( strchr( META, str[i] ) != NULL ) {
             foo[j++] = '\\';
-            if( !EditFlags.Magic && Majick != NULL ) {
-                if( strchr( Majick, str[i] ) != NULL ) {
-                    j--;
-                }
+            if( IsMagicCharRegular( str[i] ) ) {
+                j--;
             }
         }
         foo[j++] = str[i];
@@ -114,16 +111,31 @@ void MakeExpressionNonRegular( char *str )
 
 } /* MakeExpressionNonRegular */
 
-/*
- * SetMagicFlag - set up the Magic flag
- */
-bool SetMagicFlag( bool new )
+
+static bool old_CaseIgnore = FALSE;
+static bool old_Magic      = TRUE;
+static char *old_Majick    = NULL;
+
+void RegExpAttrSave( int caseignore, char *majick )
 {
-    bool    old;
+    old_CaseIgnore  = EditFlags.CaseIgnore;
+    old_Magic       = EditFlags.Magic;
+    old_Majick      = Majick;
 
-    old = EditFlags.Magic;
-    EditFlags.Magic = new;
-    return( old );
+    if( caseignore != -1 ) {
+        EditFlags.CaseIgnore = caseignore;
+    }
+    if( majick == NULL ) {
+        EditFlags.Magic      = TRUE;
+    } else {
+        EditFlags.Magic      = FALSE;
+        Majick               = majick;
+    }
+}
 
-} /* SetMagicFlag */
-
+void RegExpAttrRestore( void )
+{
+    EditFlags.CaseIgnore = old_CaseIgnore;
+    EditFlags.Magic      = old_Magic;
+    Majick               = old_Majick;
+}

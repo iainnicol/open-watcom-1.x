@@ -120,7 +120,7 @@ void InitSelectedRegion( void )
     SelRgn.lines = FALSE;
     SelRgn.start = CurrentPos;
     SelRgn.end = CurrentPos;
-    SelRgn.start_col_v = VirtualCursorPosition();
+    SelRgn.start_col_v = VirtualColumnOnCurrentLine( CurrentPos.column );
 #ifdef __WIN__
     last_start_line = CurrentPos.line;
     last_end_line = CurrentPos.line;
@@ -204,8 +204,8 @@ void UpdateDrag( window_id id, int win_x, int win_y )
     if( id == CurrentWindow && InsideWindow( id, win_x, win_y ) ) {
 #endif
         ny = LeftTopPos.line + win_y - 1;
-        if( ny > CurrentFile->fcb_tail->end_line ) {
-            ny = CurrentFile->fcb_tail->end_line;
+        if( ny > CurrentFile->fcbs.tail->end_line ) {
+            ny = CurrentFile->fcbs.tail->end_line;
             moveCursor = 1;
         } else if( ny < 1 ) {
             ny = 1;
@@ -213,7 +213,7 @@ void UpdateDrag( window_id id, int win_x, int win_y )
         }
         GoToLineRelCurs( ny );
         win_x += LeftTopPos.column;
-        nx = RealCursorPosition( win_x );
+        nx = RealColumnOnCurrentLine( win_x );
         GoToColumnOnCurrentLine( nx );
     } else {
 #ifndef __WIN__
@@ -234,8 +234,8 @@ void UpdateDrag( window_id id, int win_x, int win_y )
             GetClientRect( CurrentWindow, &rect );
             if( MouseY > rect.bottom ) {
                 ny = LeftTopPos.line + height;
-                if( ny > CurrentFile->fcb_tail->end_line ) {
-                    ny = CurrentFile->fcb_tail->end_line;
+                if( ny > CurrentFile->fcbs.tail->end_line ) {
+                    ny = CurrentFile->fcbs.tail->end_line;
                     moveCursor = 1;
                 }
                 GoToLineRelCurs( ny );
@@ -264,7 +264,7 @@ void UpdateDrag( window_id id, int win_x, int win_y )
     if( moveCursor == -1 ) {
         GoToColumnOnCurrentLine( 1 );
     } else if( moveCursor == 1 ) {
-        GoToColumnOnCurrentLine( CurrentFile->fcb_tail->line_tail->len + 1 );
+        GoToColumnOnCurrentLine( CurrentFile->fcbs.tail->lines.tail->len + 1 );
     }
 
 } /* UpdateDrag */
@@ -724,3 +724,25 @@ void NormalizeRange( range *r )
     r->end.column -= 1;
 
 } /* NormalizeRange */
+
+/*
+ * SelectAll - select the entire contents of the file
+ */
+vi_rc SelectAll( void )
+{
+    range   r;
+    vi_rc   rc;
+    r.line_based = TRUE;
+    r.start.line = 1;
+    CFindLastLine( &r.end.line );
+    rc = SetSelectedRegion( &r );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
+    }
+    rc = GoToLineNoRelCurs( r.end.line );
+    if( rc != ERR_NO_ERR ) {
+        return( rc );
+    }
+    return( GoToColumnOK( LineLength( r.end.line ) + 1 ) );
+
+} /* SelectAll */

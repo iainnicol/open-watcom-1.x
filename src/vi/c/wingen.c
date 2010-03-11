@@ -94,6 +94,31 @@ void Message1( char *str, ... )
 } /* Message1 */
 
 /*
+ * Message1Box - display message on line 1 (differs from Message1 only on Windows)
+ */
+void Message1Box( char *str, ... )
+{
+    va_list     al;
+    char        tmp[MAX_STR];
+
+    if( !EditFlags.EchoOn || MessageWindow < 0 ) {
+        return;
+    }
+    ClearWindow( MessageWindow );
+    va_start( al, str );
+    MyVSprintf( tmp, str, al );
+    va_end( al );
+    tmp[WindMaxWidth - 1] = 0;
+
+    if( !EditFlags.LineDisplay ) {
+        DisplayLineInWindow( MessageWindow, 1, tmp );
+    } else {
+        MyPrintf( "%s\n", tmp );
+    }
+
+} /* Message1 */
+
+/*
  * Message2 - display message on line 2
  */
 void Message2( char *str, ... )
@@ -161,16 +186,16 @@ void SetWindowCursorForReal( void )
     }
 #ifndef __WIN__
     SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
-                            VirtualCursorPosition() - LeftTopPos.column );
+                            VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
 #else
     // for windows assume tabs to be of lenght 1
     if( !EditFlags.RealTabs ){
         SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
-                                VirtualCursorPosition() - LeftTopPos.column );
+                                VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
     } else {
 
         SetGenericWindowCursor( CurrentWindow, (int) (CurrentPos.line - LeftTopPos.line + 1),
-                                VirtualCursorPosition() );
+                                VirtualColumnOnCurrentLine( CurrentPos.column ) );
     }
 #endif
 
@@ -302,7 +327,7 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
         }
     }
     PositionVerticalScrollThumb( CurrentWindow, LeftTopPos.line,
-                                 CurrentFile->fcb_tail->end_line );
+                                 CurrentFile->fcbs.tail->end_line );
 
     return( ERR_NO_ERR );
 
@@ -338,14 +363,11 @@ void ResetAllWindows( void )
     info        *cinfo;
     info        *oldcurr;
 
-    cinfo = InfoHead;
     oldcurr = CurrentInfo;
-
-    while( cinfo != NULL ) {
+    for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         SaveCurrentInfo();
         BringUpFile( cinfo, FALSE );
         ResetWindow( &CurrentWindow );
-        cinfo = cinfo->next;
     }
 
     if( oldcurr != NULL ) {

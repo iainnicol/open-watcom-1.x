@@ -99,7 +99,8 @@ sysobjs +=             &
 !else
 sysobjs +=             &
           fontstr.obj  &
-          windlg.obj
+          windlg.obj   &
+	  wwinhelp.obj
 !endif
 
 # memory tracker cover routines

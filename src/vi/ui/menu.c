@@ -514,14 +514,10 @@ static void addFileList( menu *cmenu )
     buff[0] = 0;
     MenuItem( buff );
 
-    cinfo = InfoHead;
-    cnt = 1;
-    while( cinfo != NULL && cnt < 10 ) {
+    for( cnt = 1, cinfo = InfoHead; cinfo != NULL && cnt < 10; cinfo = cinfo->next, ++cnt ) {
         MySprintf( buff, "\"&%d %s\" edit %s", cnt,
                    cinfo->CurrentFile->name, cinfo->CurrentFile->name );
         MenuItem( buff );
-        cinfo = cinfo->next;
-        cnt++;
     }
     if( cinfo != NULL ) {
         strcpy( buff, "\"&More Windows ...\" files" );
@@ -737,9 +733,14 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
             x1 = ws;
             arl = NULL;
         }
-        x2 = x1 + cmenu->maxwidth + 1;
         y1 = ypos;
-        y2 = y1 + (int) cmenu->itemcnt + 1;
+        if( menuw_info.has_border ) {
+            x2 = x1 + cmenu->maxwidth + 1;
+            y2 = y1 + (int) cmenu->itemcnt + 1;
+        } else {
+            x2 = x1 + cmenu->maxwidth - 1;
+            y2 = y1 + (int) cmenu->itemcnt - 1;
+        }
 
         /*
          * make sure menu will be valid!

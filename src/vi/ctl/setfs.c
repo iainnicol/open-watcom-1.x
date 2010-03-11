@@ -36,9 +36,11 @@
 #include "ctltype.h"
 #include "dyntpl.h"
 #include "fts.h"
-#include "lang.h"
 #include "rcstr.gh"
 #include <assert.h>
+
+#define VI_LANG_FIRST   VI_LANG_LANG0
+#define VI_LANG_LAST    VI_LANG_LANG14
 
 #define TAGFILENAMEWIDTH        129
 #define GREPDEFAULTWIDTH        20
@@ -47,8 +49,7 @@
 
 
 typedef struct {
-    BOOL        LanguageBool;
-    int         Language;
+    lang_t      Language;
     BOOL        PPKeywordOnly;
     BOOL        CMode;
     BOOL        ReadEntireFile;
@@ -73,20 +74,21 @@ static dlg_data     dlg_dataArray[MAX_FT_ENTRIES];
 
 static dlg_data     cancelData;
 
-static dyn_dim_type dynGetLanguageButton( HWND hwndDlg, BOOL initial )
+static dyn_dim_type dynGetLanguage( HWND hwndDlg, BOOL initial )
 {
     int sel;
     
     initial = initial;
     sel = (int)SendDlgItemMessage( hwndDlg, SETFS_LANGUAGESELECT, CB_GETCURSEL, 0, 0L );
-    if( IsDlgButtonChecked( hwndDlg, SETFS_LANGUAGE ) &&
-        (sel + 1 == LANG_C || sel + 1 == LANG_CPP) ) {
-        return( DYN_VISIBLE );
+    switch( sel ) {
+    case LANG_NONE:
+    case LANG_USER:
+        return( DYN_DIM );
     }
-    return( DYN_DIM );
+    return( DYN_VISIBLE );
 }
 
-static BOOL dynIsLanguageButton( UINT wParam, LONG lParam, HWND hwndDlg )
+static BOOL dynIsLanguage( UINT wParam, LONG lParam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
@@ -95,8 +97,7 @@ static BOOL dynIsLanguageButton( UINT wParam, LONG lParam, HWND hwndDlg )
     lParam = lParam;
     id = LOWORD( wParam );
     cmd = GET_WM_COMMAND_CMD( wParam, lParam );
-    if( (id == SETFS_LANGUAGE && cmd == BN_CLICKED) ||
-        (id == SETFS_LANGUAGESELECT && cmd == CBN_SELCHANGE) ) {
+    if( id == SETFS_LANGUAGESELECT && cmd == CBN_SELCHANGE ) {
         return( TRUE );
     }
     return( FALSE );
@@ -109,7 +110,6 @@ static void globalTodlg_data( dlg_data *data, info *envInfo )
 {
     if( envInfo ) {
         data->Language = envInfo->Language;
-        data->LanguageBool = (envInfo->Language > 0) ? TRUE : FALSE;
         data->PPKeywordOnly = EditFlags.PPKeywordOnly;
         data->CMode = EditFlags.CMode;
         data->ReadEntireFile = EditFlags.ReadEntireFile;
@@ -135,8 +135,7 @@ static void globalTodlg_data( dlg_data *data, info *envInfo )
 
 static void dlg_dataDefault( dlg_data *data )
 {
-    data->Language = 1;
-    data->LanguageBool = FALSE;
+    data->Language = LANG_NONE;
     data->PPKeywordOnly = FALSE;
     data->CMode = FALSE;
     data->ReadEntireFile = FALSE;
@@ -166,7 +165,7 @@ static void filldlg_dataArray( int index, char *match, info *useInfo )
     globalTodlg_data( &(dlg_dataArray[index]), useInfo );
 }
 
-void fillFileType( HWND hwndDlg )
+static void fillFileType( HWND hwndDlg )
 {
     HWND        hwndCB;
     ft_src      *fts;
@@ -177,15 +176,11 @@ void fillFileType( HWND hwndDlg )
     info        envInfo, *oldCurrentInfo;
 
     oldCurrentInfo = CurrentInfo;
-    if( CurrentInfo == NULL ) {
-        memset( &envInfo, 0, sizeof( envInfo ) );
-        CurrentInfo = &envInfo;
-    }
+    memset( &envInfo, 0, sizeof( envInfo ) );
+    CurrentInfo = &envInfo;
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
-    fts = FTSGetFirst();
-    index = 0;
-    while( fts ) {
+    for( index = 0, fts = FTSGetFirst(); fts != NULL; fts = FTSGetNext( fts ), ++index ) {
         template1 = template = FTSGetFirstTemplate( fts );
         str[0] = '\0';
         strLen = 0;
@@ -200,15 +195,20 @@ void fillFileType( HWND hwndDlg )
         }
         filldlg_dataArray( index, template1->data, CurrentInfo );
         SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(str + 1) );
-        index++;
-        fts = FTSGetNext( fts );
     }
-    SendMessage( hwndCB, CB_SETCURSEL, 0, 0L );
+    index = 0;
+    if( oldCurrentInfo != NULL && oldCurrentInfo->CurrentFile != NULL ) {
+        index = FTSSearchFTIndex( oldCurrentInfo->CurrentFile->name );
+        if( index == -1 ) {
+            index = 0;
+        }
+    }
+    SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
 
     CurrentInfo = oldCurrentInfo;
 }
 
-void fillLanguage( HWND hwndDlg )
+static void fillLanguage( HWND hwndDlg )
 {
     HWND    hwndCB;
     char    str[_MAX_PATH];
@@ -221,7 +221,7 @@ void fillLanguage( HWND hwndDlg )
     }
 }
 
-void updateDialogSettings( HWND hwndDlg, BOOL title )
+static void updateDialogSettings( HWND hwndDlg, BOOL title )
 {
     HWND    hwndCB;
     int     index;
@@ -249,7 +249,7 @@ void updateDialogSettings( HWND hwndDlg, BOOL title )
     dyn_tpl_init( &Dyn_setfs, hwndDlg );
 }
 
-void dumpCommands( int i )
+static void dumpCommands( int i )
 {
     FTSAddBoolean( dlg_dataArray[i].ReadEntireFile, "readentirefile" );
     FTSAddBoolean( dlg_dataArray[i].ReadOnlyCheck, "readonlycheck" );
@@ -265,11 +265,8 @@ void dumpCommands( int i )
     FTSAddBoolean( dlg_dataArray[i].ShowMatch, "showmatch" );
     FTSAddBoolean( dlg_dataArray[i].PPKeywordOnly, "ppkeywordonly" );
 
-    if( !dlg_dataArray[i].LanguageBool ) {
-        FTSAddInt( 0, "language" );
-    } else {
-        FTSAddInt( dlg_dataArray[i].Language, "language" );
-    }
+    FTSAddInt( dlg_dataArray[i].Language, "language" );
+
     FTSAddInt( dlg_dataArray[i].TabAmount, "tabamount" );
 
     FTSAddInt( dlg_dataArray[i].HardTab, "hardtab" );
@@ -279,7 +276,7 @@ void dumpCommands( int i )
     FTSAddStr( dlg_dataArray[i].GrepDefault, "grepdefault" );
 }
 
-void writeSettings( HWND hwndDlg )
+static void writeSettings( HWND hwndDlg )
 {
     // dump our little structure back into source line for fts
     HWND    hwndCB;
@@ -308,7 +305,7 @@ void writeSettings( HWND hwndDlg )
     }
 }
 
-long deleteSelectedFT( HWND hwndDlg )
+static long deleteSelectedFT( HWND hwndDlg )
 {
     HWND    hwndCB;
     int     i, len, rc;
@@ -355,7 +352,7 @@ long deleteSelectedFT( HWND hwndDlg )
     return( 1L );
 }
 
-long insertFT( HWND hwndDlg )
+static long insertFT( HWND hwndDlg )
 {
     HWND    hwndCB;
     char    *text;
@@ -395,19 +392,6 @@ long insertFT( HWND hwndDlg )
     return( 1L );
 }
 
-BOOL WINEXP EnumChildProc( HWND hwndChild, DWORD lParam )
-{
-    char    szClass[5];
-    lParam = lParam;
-    GetClassName( hwndChild, szClass, 5 );
-    if( !strcmp( szClass, "Edit" ) ) {
-        //hwndEdit = hwndChild;
-        return( FALSE );
-    }
-    return( TRUE );
-}
-
-
 static void cancelSettings( void )
 {
     LangInit( cancelData.Language );
@@ -445,13 +429,10 @@ BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
 
     switch( msg ) {
     case WM_INITDIALOG:
-        EditFlags.Quiet = TRUE;
         globalTodlg_data( &cancelData, CurrentInfo );
         CenterWindowInRoot( hwndDlg );
         fillFileType( hwndDlg );
-        if( !msg ) {
-            fillLanguage( hwndDlg );
-        }
+        fillLanguage( hwndDlg );
         updateDialogSettings( hwndDlg, TRUE );
         return( TRUE );
 
@@ -492,21 +473,18 @@ BOOL WINEXP SetFSProc( HWND hwndDlg, unsigned msg, UINT wParam, LONG lParam )
             }
             writeSettings( hwndDlg );
             EndDialog( hwndDlg, TRUE );
-            EditFlags.Quiet = FALSE;
             return( TRUE );
         case IDCANCEL:
             if( CurrentInfo ) {
                 cancelSettings();
             }
             EndDialog( hwndDlg, TRUE );
-            EditFlags.Quiet = FALSE;
             return( TRUE );
         }
 
         ctl_dlg_process( &Ctl_setfs, wParam, lParam );
         dyn_tpl_process( &Dyn_setfs, hwndDlg, wParam, lParam );
     }
-
     return( FALSE );
 }
 

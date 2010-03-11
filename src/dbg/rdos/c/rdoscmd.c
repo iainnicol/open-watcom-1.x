@@ -30,12 +30,29 @@
 ****************************************************************************/
 
 
-#ifdef __WIN__
+#include "dbgdefn.h"
+#include "dbgtoggl.h"
+#include "rdos.h"
 
-#ifndef CTLRTNS_INCLUDED
-#define CTLRTNS_INCLUDED
+bool OptDelim( char ch )
+{
+    return( ch == '/' || ch == '-' );
+}
 
-bool GetSetFSDialog( void );
-bool GetSetScrDialog( void );
+/*
+ * ProcSysOption -- process system option
+ */
 
-#endif
+bool ProcSysOption( char *start, unsigned len, int pass )
+{
+    return( FALSE );
+}
+
+
+/*
+ * ProcSysOptInit -- initial system options
+ */
+
+void ProcSysOptInit()
+{
+}

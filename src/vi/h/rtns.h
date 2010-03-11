@@ -262,6 +262,7 @@ void    FatalError( vi_rc );
 void    Die( const char *, ... );
 char    *GetErrorMsg( vi_rc );
 void    Error( char *, ... );
+void    ErrorBox( char *, ... );
 void    FreeErrorMsgData( void );
 void    ErrorFini( void );
 
@@ -277,9 +278,8 @@ int     FcbSize( fcb * );
 vi_rc FindFcbWithLine( linenum, file *, fcb ** );
 
 /* fcb3.c */
-vi_rc CMergeFcbs( fcb *, fcb * );
-vi_rc CMergeAllFcbs( void );
-vi_rc JoinFcbs( fcb *, fcb * );
+vi_rc MergeFcbs( fcb_list *, fcb *, fcb * );
+vi_rc MergeAllFcbs( fcb_list * );
 
 /* fcbdmp.c */
 vi_rc WalkUndo( void );
@@ -290,7 +290,7 @@ vi_rc LineInfo( void );
 vi_rc SanityCheck( void );
 
 /* fcbdup.c */
-void    CreateDuplicateFcbList( fcb *, fcb **, fcb ** );
+void    CreateDuplicateFcbList( fcb *, fcb_list * );
 
 /* fcbmem.c */
 fcb     *FcbAlloc( file * );
@@ -477,7 +477,7 @@ void    KeyAddString( char *str );
 void    AddCurrentMouseEvent( void );
 
 /* linecfb.c */
-bool    CreateLinesFromBuffer( int, line **, line **, int *, int *, short * );
+bool    CreateLinesFromBuffer( int, line_list *, int *, int *, short * );
 
 /* linedel.c */
 void    UpdateLineNumbers( linenum amt, fcb *cfcb  );
@@ -504,8 +504,8 @@ vi_rc   FindCharOnCurrentLine( bool, int, int *, int );
 vi_rc   FancyGotoLine( void );
 
 /* lineins.c */
-vi_rc InsertLines( linenum, fcb *, fcb *, undo_stack * );
-vi_rc InsertLinesAtCursor( fcb *, fcb *, undo_stack * );
+vi_rc InsertLines( linenum, fcb_list *, undo_stack * );
+vi_rc InsertLinesAtCursor( fcb_list *, undo_stack * );
 
 /* linemisc.c */
 int     FindStartOfCurrentLine( void );
@@ -530,7 +530,7 @@ vi_rc ValidateCurrentLine( void );
 
 /* linenew.c */
 void    AddNewLineAroundCurrent( char *, int, insert_dir );
-void    InsertNewLine( line *, line **, line **, char *, int, insert_dir );
+void    InsertNewLine( line *, line_list *, char *, int, insert_dir );
 void    CreateNullLine( fcb * );
 line    *LineAlloc( char *, int );
 
@@ -544,7 +544,7 @@ void    DisplayWorkLine( bool );
 
 /* lineyank.c */
 vi_rc   YankLineRange( linenum, linenum );
-vi_rc   GetCopyOfLineRange( linenum, linenum, fcb **, fcb ** );
+vi_rc   GetCopyOfLineRange( linenum, linenum, fcb_list * );
 void    LineYankMessage( linenum, linenum );
 
 /* llrtns.c */
@@ -584,6 +584,7 @@ void    SetMarkContext( void );
 vi_rc   DoMatching( range *, long count );
 vi_rc   FindMatch( i_mark * );
 vi_rc   AddMatchString( char * );
+void    MatchInit( void );
 void    MatchFini( void );
 
 /* mem.c */
@@ -709,7 +710,7 @@ void    InitSavebufs( void );
 void    AddLineToSavebuf( char *, int, int );
 vi_rc   AddSelRgnToSavebuf( void );
 vi_rc   AddSelRgnToSavebufAndDelete( void );
-void    AddFcbsToSavebuf( fcb *, fcb *, int );
+void    AddFcbsToSavebuf( fcb_list *, int );
 vi_rc   SwitchSavebuf( void );
 vi_rc   DoSavebufNumber( void );
 vi_rc   SetSavebufNumber( char * );
@@ -751,6 +752,7 @@ void    SelRgnInit( void );
 void    SelRgnFini( void );
 void    GetFixedSelectedRegion( select_rgn *);
 void    NormalizeRange( range * );
+vi_rc   SelectAll( void );
 
 /* shove.c */
 vi_rc Shift( linenum, linenum, char, bool );
@@ -780,14 +782,13 @@ bool    ExpandTabsInABufferUpToColumn( int, char *, int, char *, int );
 bool    ExpandTabsInABuffer( char *, int, char *, int );
 int     InsertTabSpace( int, char *, bool * );
 int     GetVirtualCursorPosition( char *, int );
-int     VirtualCursorPosition( void );
-int     VirtualCursorPosition2( int );
-int     RealCursorPosition( int );
+int     VirtualColumnOnCurrentLine( int );
+int     RealColumnOnCurrentLine( int );
 int     RealCursorPositionInString( char *, int );
 int     RealCursorPositionOnLine( linenum, int );
 int     WinRealCursorPosition( char *, int );
 int     WinVirtualCursorPosition( char *, int );
-int     RealLineLen( char * );
+int     VirtualLineLen( char * );
 bool    AddLeadingTabSpace( short *, char *, int );
 bool    ConvertSpacesToTabsUpToColumn( int, char *, int, char *, int );
 
@@ -806,7 +807,7 @@ void    GetDateTimeString( char *st );
 void    StartUndoGroup( undo_stack * );
 void    StartUndoGroupWithPosition( undo_stack *stack, linenum lne, linenum top, int col );
 vi_rc   UndoReplaceLines( linenum, linenum );
-void    UndoDeleteFcbs( linenum, fcb *, fcb *, undo_stack * );
+void    UndoDeleteFcbs( linenum, fcb_list *, undo_stack * );
 void    UndoInsert( linenum, linenum, undo_stack * );
 void    PatchDeleteUndo( undo_stack * );
 void    EndUndoGroup( undo_stack * );
@@ -839,6 +840,7 @@ vi_rc   DisplayExtraInfo( window_info *, window_id *, char  _NEAR * _NEAR *, int
 vi_rc   NewMessageWindow( void );
 vi_rc   NewWindow2( window_id *, window_info * );
 void    Message1( char *, ... );
+void    Message1Box( char *, ... );
 void    Message2( char *, ... );
 vi_rc   WPrintfLine( window_id, int, char *, ... );
 bool    ColumnInWindow( int, int * );

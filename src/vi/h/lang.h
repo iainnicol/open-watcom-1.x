@@ -32,25 +32,12 @@
 #ifndef _LANG_INCLUDED
 #define _LANG_INCLUDED
 
-enum {
-    LANG_NONE,          // LANG_NONE always first
-    LANG_C,
-    LANG_CPP,
-    LANG_FORTRAN,
-    LANG_JAVA,
-    LANG_SQL,
-    LANG_BAT,
-    LANG_BASIC,
-    LANG_PERL,
-    LANG_HTML,
-    LANG_WML,
-    LANG_GML,
-    LANG_DBTEST,
-    LANG_MAKEFILE,
-    LANG_RC,
-    LANG_USER,
-    LANG_MAX            // LANG_MAX always last
-};
+typedef enum {
+#define pick_lang(enum,enumrc,name,namej,fname) enum,
+#include "langdef.h"
+#undef pick_lang
+    LANG_MAX
+} lang_t;
 
 typedef struct tag_hash_entry {
     bool                    real;
@@ -66,8 +53,10 @@ typedef struct tag_lang_info {
 } lang_info;
 
 bool    IsKeyword( char *keyword, bool case_ignore );
-void    LangInit( int );
-void    LangFini( int );
+bool    IsPragma( char *pragma );
+bool    IsDeclspec( char *keyword );
+void    LangInit( lang_t );
+void    LangFini( lang_t );
 void    LangFiniAll( void );
 
 #endif

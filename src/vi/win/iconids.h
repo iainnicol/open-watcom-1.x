@@ -40,4 +40,5 @@
 #define IDI_OBJFILE     108
 #define IDI_RCFILE      109
 #define IDI_RHFILE      110
-
+#define IDI_LIBFILE     111
+#define IDI_AWKFILE     112

@@ -189,7 +189,7 @@ void SetCurrentLineNumber( linenum l )
 
     if( CurrentFile != NULL ) {
         height = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
-        last = CurrentFile->fcb_tail->end_line - height + 1;
+        last = CurrentFile->fcbs.tail->end_line - height + 1;
         if ( LeftTopPos.line > last ){
              last = LeftTopPos.line;
         }
@@ -251,7 +251,7 @@ vi_rc GoToColumn( int colno, int maxcol )
     /*
      * compute new location, and re-display text if needed
      */
-    ColumnDesired = VirtualCursorPosition2( colno );
+    VirtualColumnDesired = VirtualColumnOnCurrentLine( colno );
     CurrentPos.column = colno;
     if( !CheckLeftColumn() ) {
         DCDisplayAllLines();
@@ -259,7 +259,7 @@ vi_rc GoToColumn( int colno, int maxcol )
     }
 
     SetWindowCursor();
-    vc = VirtualCursorPosition();
+    vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     UpdateStatusWindow();
     VarAddGlobalLong( "C", (long) vc );
     UpdateCursorDrag();
@@ -314,7 +314,7 @@ bool CheckLeftColumn( void )
     int     diff, wc, pad;
     bool    rc;
 
-    wc = VirtualCursorPosition() - LeftTopPos.column;
+    wc = VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column;
 
     rc = ColumnInWindow( wc, &diff );
     if( !rc ) {
@@ -372,17 +372,17 @@ bool CheckCurrentColumn( void )
     int     clen, vcp;
     bool    dispall = FALSE;
 
-    clen = RealLineLen( CurrentLine->data );
+    clen = VirtualLineLen( CurrentLine->data );
     if( clen == 0 ) {
         clen = 1;
     }
     ValidateCurrentColumn();
 
-    vcp = VirtualCursorPosition();
+    vcp = VirtualColumnOnCurrentLine( CurrentPos.column );
 
-    if( vcp != ColumnDesired ) {
-        if( clen >= ColumnDesired ) {
-            CurrentPos.column = RealCursorPosition( ColumnDesired );
+    if( vcp != VirtualColumnDesired ) {
+        if( clen >= VirtualColumnDesired ) {
+            CurrentPos.column = RealColumnOnCurrentLine( VirtualColumnDesired );
         } else {
             if( EditFlags.InsertModeActive || EditFlags.Modeless ) {
                 CurrentPos.column = CurrentLine->len + 1;
@@ -494,7 +494,7 @@ vi_rc LocateCmd( char *data )
 
     GoToLineNoRelCurs( r );
 
-    c = RealCursorPosition( c );
+    c = RealColumnOnCurrentLine( c );
     GoToColumnOnCurrentLine( c + len );
 
 #ifdef __WIN__

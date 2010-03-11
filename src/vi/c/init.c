@@ -286,13 +286,9 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * initial configuration
      */
-    SetMajickString( NULL );
+    Majick = MemStrDup( "()~@" );
     FileEndString = MemStrDup( "[END_OF_FILE]" );
-
-    MatchData[0] = MemStrDup( "{" );
-    MatchData[1] = MemStrDup( "}" );
-    MatchData[2] = MemStrDup( "\\(" );
-    MatchData[3] = MemStrDup( "\\)" );
+    MatchInit();
 
     if( cfgFN[0] != 0 ) {
         c[0] = 0;
@@ -337,7 +333,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( TagFileName == NULL ) {
         AddString( &TagFileName, "tags" );
     }
-    WorkLine = MemAlloc( LINE_SIZE + MaxLine + 2 );
+    WorkLine = MemAlloc( sizeof( line ) + MaxLine + 2 );
     DotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
     AltDotBuffer = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );
     DotCmd = MemAlloc( (maxdotbuffer + 2) * sizeof( vi_key ) );

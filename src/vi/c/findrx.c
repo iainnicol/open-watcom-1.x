@@ -35,13 +35,13 @@
 #include "rxsupp.h"
 
 static char wrapMsg[] = "Wrapped past %s of file";
-static bool wrapMsgPrinted;
+static bool wrapMsgPrinted = FALSE;
 
 /*
  * FindRegularExpression - do a forward search for a regular expression
  */
 vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
-                                                    linenum termline, int sw )
+                             linenum termline, find_type flags )
 {
     vi_rc       rc;
     int         found;
@@ -61,7 +61,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         ClearWindow( MessageWindow );
     }
     sline = pos1->line;
-    if( sw ) {
+    if( flags & FINDFL_WRAP ) {
         ilineno = sline;
     }
     rc = CGimmeLinePtr( sline, &cfcb, &cline );
@@ -91,7 +91,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             ++sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( !sw ) {
+            if( !(flags & FINDFL_WRAP) ) {
                 return( ERR_FIND_END_OF_FILE );
             } else {
                 Message1( wrapMsg, "bottom" );
@@ -132,7 +132,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
  * FindRegularExpressionBackwards - do a reverse search for a regular expression
  */
 vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
-                                                             linenum termline, int sw )
+                                      linenum termline, find_type flags )
 {
     vi_rc       rc;
     char        *data;
@@ -158,7 +158,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( sw ) {
+    if( flags & FINDFL_WRAP ) {
         ilineno = sline;
     }
     scol = pos1->column;
@@ -207,7 +207,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             --sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( !sw ) {
+            if( !(flags & FINDFL_WRAP) ) {
                 return( ERR_FIND_TOP_OF_FILE );
             } else {
                 Message1( wrapMsg, "top" );

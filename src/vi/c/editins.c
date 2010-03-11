@@ -91,7 +91,7 @@ static int trimWorkLine( void )
             i--;
         }
         if( i == -1 ) {
-            len = RealLineLen( WorkLine->data );
+            len = VirtualLineLen( WorkLine->data );
         }
         WorkLine->len = i + 1;
         WorkLine->data[i + 1] = 0;
@@ -613,7 +613,7 @@ vi_rc IMTabs( void )
         /*
          * get position of cursor on virtual line
          */
-        vc = VirtualCursorPosition();
+        vc = VirtualColumnOnCurrentLine( CurrentPos.column );
         if( CurrentPos.column - 1 == WorkLine->len && !EditFlags.Modeless ) {
             add = 1;
         } else {
@@ -639,7 +639,7 @@ vi_rc IMTabs( void )
         }
         if( back && (vc - j < 1) ) {
             break;
-        } else if( RealLineLen( WorkLine->data ) + j >= MaxLine ) {
+        } else if( VirtualLineLen( WorkLine->data ) + j >= MaxLine ) {
             break;
         }
 
@@ -685,7 +685,7 @@ vi_rc IMTabs( void )
         }
         WorkLine->len = strlen( WorkLine->data );
         StaticFree( buff );
-        cp = RealCursorPosition( cp ) + add;
+        cp = RealColumnOnCurrentLine( cp ) + add;
         GoToColumn( cp, WorkLine->len + 1 );
         DisplayWorkLine( FALSE );
         break;
@@ -784,15 +784,14 @@ static vi_rc getBracketLoc( i_mark *pos )
     char        tmp[3];
     int         len;
     linenum     lne;
-    bool        oldmagic;
 
     tmp[0] = '\\';
     tmp[1] = ')';
     tmp[2] = 0;
     lne = CurrentPos.line;
-    oldmagic = SetMagicFlag( TRUE );
-    rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR);
-    SetMagicFlag( oldmagic );
+    RegExpAttrSave( -1, NULL );
+    rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );
+    RegExpAttrRestore();
     if( pos->line != CurrentPos.line ) {
         return( ERR_FIND_NOT_FOUND );
     }
@@ -876,11 +875,11 @@ vi_rc IMCloseBrace( void )
             ReplaceCurrentLine();
             rc = findMatchingBrace( &pos );
             if( rc == ERR_NO_ERR ) {
-                newcol = VirtualCursorPosition();
+                newcol = VirtualColumnOnCurrentLine( CurrentPos.column );
                 CGimmeLinePtr( pos.line, &cfcb, &cline );
                 i = FindStartOfALine( cline );
                 i = GetVirtualCursorPosition( cline->data, i );
-                j = i - VirtualCursorPosition2( CurrentPos.column );
+                j = i - VirtualColumnOnCurrentLine( CurrentPos.column );
                 ts = ShiftWidth;
                 if( j > 0 ) {
                     ShiftWidth = j;
@@ -890,7 +889,7 @@ vi_rc IMCloseBrace( void )
                     Shift( CurrentPos.line, CurrentPos.line, '<', FALSE );
                 }
                 ShiftWidth = ts;
-                newcol = 1 + RealCursorPosition( j + newcol );
+                newcol = 1 + RealColumnOnCurrentLine( j + newcol );
             }
             GetCurrentLine();
         }
