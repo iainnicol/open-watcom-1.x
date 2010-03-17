@@ -1,5 +1,4 @@
 BEGIN {
-    ORS = "\r\n";
     print "[OPTIONS]";
     print "Compatibility=1.1 or later";
     if( length( hhcfile ) > 0 ) {

@@ -1,5 +1,4 @@
 BEGIN {
-    ORS = "\r\n";
     print "<HTML>";
     print "<BODY>";
     print "<OBJECT TYPE=\"text/site properties\">";

@@ -209,39 +209,26 @@ static  void    PathOption( opt_entry *optn, char *ptr ) {
 
     char        *tmp;
     int         len;
-    int         len1;
 
     optn = optn;
-    len1 = strlen( ptr );
-    // skip quotes
-    if( ptr[0] == '"' && ptr[len1 - 1] == '"' ) {
-        len1 -= 2;
-        ++ptr;
-    }
-    // skip leading INCLUDE_SEP
-    while( ptr[0] == INCLUDE_SEP ) {
-        --len1;
-        ++ptr;
-    }
-    if( len1 == 0 )
-        return;
     if( !IncludePath ) {
-        len = 0;
-        IncludePath = FMemAlloc( len1 + 1 );
+        IncludePath = FMemAlloc( strlen( ptr ) + 1 );
+        *IncludePath = '\0';
     } else {
         len = strlen( IncludePath );
-        tmp = FMemAlloc( len + len1 + 2 );
-        memcpy( tmp, IncludePath, len );
+        tmp = FMemAlloc( strlen( ptr ) + len + 2 );
+        strcpy( tmp, IncludePath );
         FMemFree( IncludePath );
         IncludePath = tmp;
         // We must glue the strings together correctly.
-        if( ( tmp[len - 1] != INCLUDE_SEP ) ) {
-            tmp[len++] = INCLUDE_SEP;
-            tmp[len] = NULLCHAR;
+        if( ( tmp[ len - 1 ] != INCLUDE_SEP ) && ( *ptr != INCLUDE_SEP ) ) {
+            tmp[ len ] = INCLUDE_SEP;
+            tmp[ len + 1 ] = '\0';
+        } else if( (tmp[len - 1] == INCLUDE_SEP) && (*ptr == INCLUDE_SEP) ) {
+            tmp[ len - 1 ] = '\0';
         }
     }
-    memcpy( IncludePath + len, ptr, len1 );
-    IncludePath[len + len1] = NULLCHAR;
+    strcat( IncludePath, ptr );
 }
 
 
