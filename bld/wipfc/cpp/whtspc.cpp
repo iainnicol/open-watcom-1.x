@@ -35,7 +35,7 @@
 
 WhiteSpace::WhiteSpace( Document* d, Element* p, const std::wstring* f, unsigned int r,
     unsigned int c, const std::wstring& tx, Tag::WsHandling w, bool ts ) :
-    Text( d, p, f, r, c, w, ts )
+    Text( d, p, f, r, c, ts ), whiteSpace( w )
 {
     if( tx[0] != L'\n' )
         spaces = static_cast< unsigned char >( tx.size() );
@@ -56,7 +56,7 @@ Lexer::Token WhiteSpace::parse( Lexer* lexer )
             text = document->addWord( word );   //insert into global dictionary
         }
     }
-    if( whiteSpace != Tag::SPACES && !document->autoSpacing() ) {
+    if( !document->autoSpacing() ) {
         document->toggleAutoSpacing();
         Lexer::Token t( document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION )
