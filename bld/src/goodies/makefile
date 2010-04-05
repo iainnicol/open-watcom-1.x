@@ -18,9 +18,9 @@ MODEL = l       # large
 !endif
 
 # options to use
-CFLAGS = -m$(MODEL) -zq -wx
+CFLAGS = -m$(MODEL) -zq
 FFLAGS = -m$(MODEL) -noterm -quiet
-AFLAGS = -zq
+AFLAGS =
 LNKOPT = option quiet
 
 .EXTENSIONS:
@@ -56,8 +56,6 @@ exes = &
     screen.exe &
     screenpl.exp &
     simulate.exe &
-    spwnrcw.exe &
-    spwndcw.exe &
     spwnrd4g.exe &
     spwndd4g.exe &
     spwnrpls.exp &
@@ -111,7 +109,7 @@ mempls40.exp : mempls40.obj .PRECIOUS
         wlink $(LNKOPT) system pharlap file mempls40 name mempls40
 
 memwin.exe : memwin.rex .PRECIOUS
-        wbind -q -n memwin
+        wbind -n memwin
 
 memwin.rex : memwin.wbj .PRECIOUS
         wlink $(LNKOPT) system win386 file memwin.wbj name memwin
@@ -127,12 +125,6 @@ screenpl.exp : screenpl.obj .PRECIOUS
 
 simulate.exe : simulate.obj .PRECIOUS
         wlink $(LNKOPT) system dos4g file simulate name simulate
-
-spwnrcw.exe : spwndcw.exe spwnrcw.obj .PRECIOUS
-        wlink $(LNKOPT) system causeway file spwnrcw name spwnrcw
-
-spwndcw.exe : spwndcw.obj .PRECIOUS
-        wlink $(LNKOPT) system causeway file spwndcw name spwndcw
 
 spwnrd4g.exe : spwndd4g.exe spwnrd4g.obj .PRECIOUS
         wlink $(LNKOPT) system dos4g file spwnrd4g name spwnrd4g

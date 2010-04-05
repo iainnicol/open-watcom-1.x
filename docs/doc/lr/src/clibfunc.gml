@@ -259,7 +259,7 @@ manual.
 .section Default Signals
 .bigterm
 If the equivalent of
-.ix SIG_DFL
+.ix 'SIG_DFL'
 .kw signal
 .ct ( sig, SIG_DFL );
 is not executed prior to the call of a signal handler,
@@ -569,7 +569,8 @@ function if the size requested is zero (7.10.3).
 .bigdesc
 .np
 The value returned will be
-.kw NULL.
+.kw NULL
+.ct .li .
 No actual memory is allocated.
 .*-------------------------
 .section The abort Function

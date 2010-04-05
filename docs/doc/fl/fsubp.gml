@@ -33,8 +33,10 @@ identifies the program unit where execution is to begin.
 A main program is a program unit which has as its first statement a
 .kw PROGRAM
 statement or one which does not have a
-.kw PROGRAM,
-.kw FUNCTION,
+.kw PROGRAM
+.ct ,
+.kw FUNCTION
+.ct ,
 .kw SUBROUTINE
 or
 .kw BLOCK DATA
@@ -43,11 +45,12 @@ Complete execution of the main program implies the complete execution
 of the program.
 Each executable program can contain only one main program.
 .np
-.ix subprogram
+.ix 'subprogram'
 A
 .us subprogram
 is a program unit that either has a
-.kw FUNCTION,
+.kw FUNCTION
+.ct ,
 .kw SUBROUTINE
 or
 .kw BLOCK DATA
@@ -68,7 +71,7 @@ The statement defining a statement function is not an executable
 statement.
 .np
 .ix 'statement function'
-.ix function statement
+.ix 'function' 'statement'
 A
 .us statement function
 has the following form.
@@ -103,7 +106,8 @@ is completed.
 A name that is a statement function dummy argument can also be the
 name of a variable, a common block, the dummy argument of another
 statement function or appear in the dummy argument list of a
-.kw FUNCTION,
+.kw FUNCTION
+.ct ,
 .kw SUBROUTINE
 or
 .kw ENTRY
@@ -294,7 +298,7 @@ unless the operand is a symbolic constant.
 .*
 .np
 .ix 'intrinsic function'
-.ix function intrinsic
+.ix 'function' 'intrinsic'
 An
 .us intrinsic function
 is a function that is provided by &product..
@@ -356,7 +360,7 @@ the generic name of the sine function.
 .*
 .np
 .ix 'external function'
-.ix function external
+.ix 'function' 'external'
 An
 .us external function
 is a program unit that has a
@@ -500,9 +504,12 @@ external function subprogram.
 .note
 The name of a dummy argument is a name local to the subprogram and must
 not appear in an
-.kw EQUIVALENCE,
-.kw PARAMETER,
-.kw SAVE,
+.kw EQUIVALENCE
+.ct ,
+.kw PARAMETER
+.ct ,
+.kw SAVE
+.ct ,
 .kw INTRINSIC
 or
 .kw DATA
@@ -523,7 +530,7 @@ statement.
 .section Subroutines
 .*
 .np
-.ix subroutine
+.ix 'subroutine'
 A
 .us subroutine
 is a program unit that has a
@@ -616,7 +623,8 @@ neither has a type.
 .setptnt 0 5
 .note
 A subroutine subprogram can contain any statement except a
-.kw FUNCTION,
+.kw FUNCTION
+.ct ,
 .kw BLOCK DATA
 or
 .kw PROGRAM
@@ -629,9 +637,12 @@ same name as the subroutine.
 .note
 The name of a dummy argument is local to the subroutine subprogram
 and must not appear in an
-.kw EQUIVALENCE,
-.kw PARAMETER,
-.kw SAVE,
+.kw EQUIVALENCE
+.ct ,
+.kw PARAMETER
+.ct ,
+.kw SAVE
+.ct ,
 .kw INTRINSIC
 or
 .kw DATA
@@ -693,7 +704,8 @@ The order, number, type and names of the dummy argument lists
 of an
 .kw ENTRY
 statement may be different from that of a
-.kw FUNCTION,
+.kw FUNCTION
+.ct ,
 .kw SUBROUTINE
 or other
 .kw ENTRY
@@ -815,9 +827,10 @@ statement must not appear in an executable statement preceding
 the
 .kw ENTRY
 statement unless it has also appeared in a
-.kw FUNCTION,
-.kw SUBROUTINE,
-or
+.kw FUNCTION
+.ct ,
+.kw SUBROUTINE
+.ct , or
 .kw ENTRY
 statement that precedes the executable statement.
 .endnote
@@ -988,14 +1001,14 @@ Arguments are passed to subprograms through argument lists and
 are received by subprograms through argument lists.
 .ix 'actual argument list'
 .ix 'actual argument'
-.ix argument actual
+.ix 'argument' 'actual'
 The argument list used to pass arguments to a subprogram is called the
 .us actual argument list
 and the arguments are called
 .us actual arguments.
 .ix 'dummy argument list'
 .ix 'dummy argument'
-.ix argument dummy
+.ix 'argument' 'dummy'
 The argument list of the receiving subprogram is called the
 .us dummy argument list
 and the arguments are called
@@ -1034,17 +1047,22 @@ a subroutine subprogram.
 Dummy arguments that are variables of type INTEGER can be used in
 dummy array declarators.
 No dummy argument may appear in an
-.kw EQUIVALENCE,
-.kw DATA,
-.kw PARAMETER,
-.kw SAVE,
+.kw EQUIVALENCE
+.ct ,
+.kw DATA
+.ct ,
+.kw PARAMETER
+.ct ,
+.kw SAVE
+.ct ,
 .kw INTRINSIC
 or
 .kw COMMON
 statement except as a common block name.
 A dummy argument must not be the same name as the subprogram name
 specified in the
-.kw FUNCTION,
+.kw FUNCTION
+.ct ,
 .kw SUBROUTINE
 or
 .kw ENTRY
@@ -1148,7 +1166,7 @@ actual array.
 .section Variables as Dummy Arguments
 .*
 .np
-.ix 'dummy argument' variable
+.ix 'dummy argument' 'variable'
 A dummy argument that is a variable may be associated with an actual
 argument that is a variable, array element, substring or expression.
 Only if the actual argument is a variable, array element or substring
@@ -1157,7 +1175,7 @@ can the corresponding actual argument be redefined.
 .section Arrays as Dummy Arguments
 .*
 .np
-.ix 'dummy argument' array
+.ix 'dummy argument' 'array'
 A dummy argument that is an array may be associated with an actual
 argument that is an array, array element or array element substring.
 The number and size of the dimensions in the actual argument array
@@ -1280,7 +1298,7 @@ is an external subroutine or function.
 .section Asterisks as Dummy Arguments
 .*
 .np
-.ix 'dummy argument' asterisk
+.ix 'dummy argument' 'asterisk'
 A dummy argument that is an asterisk may only appear in the dummy
 argument list of a
 .kw SUBROUTINE
