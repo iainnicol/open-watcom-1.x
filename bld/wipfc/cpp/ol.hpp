@@ -28,7 +28,6 @@
 *
 *   :ol / :eol
 *       compact (else blank line between items)
-*       verycompact (no extra lines at all; a wipfc extension)
 *   If nested, indent 4 spaces
 *
 ****************************************************************************/
@@ -43,7 +42,7 @@ class Ol : public Tag {
 public:
     Ol( Document* d, Element *p, const std::wstring* f, unsigned int r,
         unsigned int c, unsigned char l, unsigned char i ) : Tag( d, p, f, r, c ),
-        nestLevel( l ), indent( i ), compact( false ), veryCompact( false ) { };
+        nestLevel( l ), indent( i ), compact( false ) { };
     ~Ol() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
@@ -56,7 +55,6 @@ private:
     unsigned char nestLevel;    //counts from 0
     unsigned char indent;       //in character spaces
     bool compact;
-    bool veryCompact;
 };
 
 class EOl : public Tag {

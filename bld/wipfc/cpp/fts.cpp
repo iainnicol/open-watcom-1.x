@@ -119,7 +119,6 @@ void FTSElement::build()
 /***************************************************************************/
 //The number of pages can never exceed 65535 because the count is stored in
 //an STD1::uint16_t (unsigned short int)
-//TODO: Rework so only runs of 3 or more are done
 void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
 {
     std::vector< STD1::uint8_t > dif;
@@ -162,18 +161,16 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
                     }
                     difSize -= 128;
                 }
-                if( difSize > 0 ) {
-                    if( difSize > 1 )
-                        code = static_cast< STD1::uint8_t >( difSize - 1 ) | 0x80;
-                    else
-                        code = 0;
-                    rle.push_back( code );
-                    for( size_t count = 0; count < difSize; ++count ) {
-                        rle.push_back( *byte );
-                        ++byte;
-                    }
-                    dif.clear();
+                if( difSize > 1 )
+                    code = static_cast< STD1::uint8_t >( difSize - 1 ) | 0x80;
+                else
+                    code = 0;
+                rle.push_back( code );
+                for( size_t count = 0; count < difSize; ++count ) {
+                    rle.push_back( *byte );
+                    ++byte;
                 }
+                dif.clear();
                 same = true;
                 sameCount = 2;
             }
