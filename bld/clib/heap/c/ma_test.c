@@ -924,7 +924,7 @@ void TranslateResult( test_result *result )
         }
     } else if( result->status != TEST_PASS ) {
         printf( "INTERNAL: UNEXPECTED TEST RESULT.\n" );
-        exit( EXIT_FAILURE );
+        exit(-1);
     }
 #if defined( _M_I86 ) && !defined(__WINDOWS__)
     if( memrecord != memavail ) {
@@ -974,16 +974,16 @@ void ParseArgs( int argc, char *argv[] )
     *buffer = '\0';
     if( argv[1][0] == '?' ) {
         Usage( argv[0] );
-        exit( EXIT_FAILURE );
+        exit(-1);
     } else if( argv[1][0] != '/' && argv[1][0] != '-' ) {
         cprintf( "Invalid option '%s'.\r\n", argv[1] );
-        exit( EXIT_FAILURE );
+        exit(-1);
     }
     for( ctr = 1, charcount = 0; ctr < argc; ++ctr ) {
         charcount += ( strlen( argv[ctr] ) + 1 );
         if( charcount >= ARGLENGTH ) {
             fprintf( stderr, "Argument list too long.\n" );
-            exit( EXIT_FAILURE );
+            exit(-1);
         }
         strcat( buffer, argv[ctr] );
     }
@@ -1014,11 +1014,11 @@ void ParseArgs( int argc, char *argv[] )
                 break;
             case '?':
                 Usage( argv[0] );
-                exit( EXIT_FAILURE );
+                exit(-1);
                 break;
             default:
                 cprintf( "Invalid option '%s'.\r\n", p );
-                exit( EXIT_FAILURE );
+                exit(-1);
                 break;
         }
         p = strtok( NULL, delims );
@@ -1039,7 +1039,7 @@ void DisplayConstants( void )
     printf( "=================================================\n" );
 }
 
-int main( int argc, char *argv[] )
+void main( int argc, char *argv[] )
 {
     test_result result;
 
@@ -1048,7 +1048,7 @@ int main( int argc, char *argv[] )
     my_stdout = freopen( "tmp.log", "a", stdout );
     if( my_stdout == NULL ) {
         fprintf( stderr, "Unable to redirect stdout\n" );
-        return( EXIT_FAILURE );
+        exit(-1);
     }
 #endif
     ParseArgs( argc, argv );
@@ -1103,5 +1103,4 @@ int main( int argc, char *argv[] )
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    return( EXIT_SUCCESS );
 }
