@@ -25,7 +25,7 @@ int _usetenv( const wchar_t *name,
 .do end
 .funcend
 .desc begin
-.ix environment
+.ix 'environment'
 The environment list consists of a number of environment names,
 each of which has a value associated with it.
 Entries can be added to the environment list
@@ -47,13 +47,13 @@ or with the &func function.
 .if '&machsys' eq 'PP' .do begin
 .do end
 .el .if '&machsys' eq 'QNX' .do begin
-.ix environment
+.ix 'environment'
 All entries in the environment list can be displayed by using the
 .qnxcmd export
 with no arguments.
 .do end
 .el .do begin
-.ix environment
+.ix 'environment'
 All entries in the environment list can be displayed by using the
 .doscmd set
 with no arguments.
@@ -65,7 +65,8 @@ function.
 .np
 The &func function searches the environment list for an entry of the
 form
-.arg name=value.
+.arg name=value
+.ct .li .
 If no such string is present, &func adds an entry of the form
 .arg name=newvalue
 to the environment list.
@@ -76,7 +77,8 @@ argument is non-zero, &func either will change the existing value to
 or will delete the string
 .arg name=value
 and add the string
-.arg name=newvalue.
+.arg name=newvalue
+.ct .li .
 .np
 If the
 .arg newvalue
@@ -93,7 +95,8 @@ may change across a call to the &func function.
 The &func function will make copies of the strings associated with
 .arg name
 and
-.arg newvalue.
+.arg newvalue
+.ct .li .
 .np
 .if '&machsys' eq 'QNX' .do begin
 The matching is case-sensitive; all lowercase letters are treated
@@ -124,7 +127,7 @@ or with the
 .kw putenv
 or &func functions.
 .do end
-.ix environment
+.ix 'environment'
 All entries in the environment list can be obtained by using the
 .kw getenv
 function.

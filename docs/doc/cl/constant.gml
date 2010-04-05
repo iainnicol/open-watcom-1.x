@@ -135,38 +135,38 @@ in which its value can be accurately represented.
 ..do end
 .* .cp 15
 .boxbeg
-›Constant              ›Type
+$Constant              $Type
 .boxline
 .monoon
-›:HP0.unsuffixed decimal:eHP0.    ›int:HP0.,:eHP0. long:HP0.,:eHP0. unsigned long
+$:HP0.unsuffixed decimal:eHP0.    $int:HP0.,:eHP0. long:HP0.,:eHP0. unsigned long
 .monooff
 .boxline
 .monoon
-›:HP0.unsuffixed octal:eHP0.      ›int:HP0.,:eHP0. unsigned int:HP0.,:eHP0. long:HP0.,:eHP0. unsigned long
+$:HP0.unsuffixed octal:eHP0.      $int:HP0.,:eHP0. unsigned int:HP0.,:eHP0. long:HP0.,:eHP0. unsigned long
 .monooff
 .boxline
 .monoon
-›:HP0.unsuffixed hexadecimal:eHP0.›int:HP0.,:eHP0. unsigned int:HP0.,:eHP0. long:HP0.,:eHP0. unsigned long
+$:HP0.unsuffixed hexadecimal:eHP0.$int:HP0.,:eHP0. unsigned int:HP0.,:eHP0. long:HP0.,:eHP0. unsigned long
 .monooff
 .boxline
 .monoon
-›:HP0.suffix:eHP0. U :HP0.only:eHP0.         ›unsigned int:HP0.,:eHP0. unsigned long
+$:HP0.suffix:eHP0. U :HP0.only:eHP0.         $unsigned int:HP0.,:eHP0. unsigned long
 .monooff
 .boxline
 .monoon
-›:HP0.suffix:eHP0. L :HP0.only:eHP0.         ›long:HP0.,:eHP0. unsigned long
+$:HP0.suffix:eHP0. L :HP0.only:eHP0.         $long:HP0.,:eHP0. unsigned long
 .monooff
 .boxline
 .monoon
-›:HP0.suffixes:eHP0. U :HP0.and:eHP0. L›unsigned long
+$:HP0.suffixes:eHP0. U :HP0.and:eHP0. L$unsigned long
 .monooff
 .boxline
 .monoon
-›:HP0.suffix:eHP0. LL :HP0.only:eHP0.        ›long long:HP0.,:eHP0. unsigned long long
+$:HP0.suffix:eHP0. LL :HP0.only:eHP0.        $long long:HP0.,:eHP0. unsigned long long
 .monooff
 .boxline
 .monoon
-›:HP0.suffixes:eHP0. U :HP0.and:eHP0. LL›unsigned long long
+$:HP0.suffixes:eHP0. U :HP0.and:eHP0. LL$unsigned long long
 .monooff
 .boxend
 .do end
@@ -218,21 +218,21 @@ interpretation and type:
 ..do end
 .* .cp 20
 .boxbeg
-›››Hexa›
-››Decimal›  -decimal›&wc286.›&wc386.
-› Constant› Value› Value› Type› Type
+$$$Hexa$
+$$Decimal$  -decimal$&wc286.$&wc386.
+$ Constant$ Value$ Value$ Type$ Type
 .boxline
 .smonoon
-›33        ›33        ›21      ›signed int   ›signed int
-›033       ›27        ›1B      ›signed int   ›signed int
-›0x33      ›51        ›33      ›signed int   ›signed int
-›33333     ›33333     ›8235    ›signed long  ›signed int
-›033333    ›14043     ›36DB    ›signed int   ›signed int
-›0xA000    ›40960     ›A000    ›unsigned int ›signed int
-›0x33333   ›209715    ›33333   ›signed long  ›signed int
-›0x80000000›2147483648›80000000›unsigned long›unsigned int
-›2147483648›2147483648›80000000›unsigned long›unsigned int
-›4294967295›4294967295›FFFFFFFF›unsigned long›unsigned int
+$33        $33        $21      $signed int   $signed int
+$033       $27        $1B      $signed int   $signed int
+$0x33      $51        $33      $signed int   $signed int
+$33333     $33333     $8235    $signed long  $signed int
+$033333    $14043     $36DB    $signed int   $signed int
+$0xA000    $40960     $A000    $unsigned int $signed int
+$0x33333   $209715    $33333   $signed long  $signed int
+$0x80000000$2147483648$80000000$unsigned long$unsigned int
+$2147483648$2147483648$80000000$unsigned long$unsigned int
+$4294967295$4294967295$FFFFFFFF$unsigned long$unsigned int
 .smonooff
 .boxend
 .do end
@@ -266,21 +266,21 @@ interpretation and type:
 .boxcol 13
 .* .cp 20
 .boxbeg
-›        ›       ›        ›          ›&wc386.
-›        ›       ›Hexa    ›          ›    and
-›        ›Decimal›-decimal›  &wc286. › &wlooc.
-›Constant›Value  ›Value   ›    Type  ›    Type
+$        $       $        $          $&wc386.
+$        $       $Hexa    $          $    and
+$        $Decimal$-decimal$  &wc286. $ &wlooc.
+$Constant$Value  $Value   $    Type  $    Type
 .boxline
 .monoon
-›33        ›33        ›21      ›signed int   ›signed int
-›033       ›27        ›1B      ›signed int   ›signed int
-›0x33      ›51        ›33      ›signed int   ›signed int
-›33333     ›33333     ›8235    ›signed long  ›signed int
-›033333    ›14043     ›36DB    ›signed int   ›signed int
-›0xA000    ›40960     ›A000    ›unsigned int ›signed int
-›0x33333   ›209715    ›33333   ›signed long  ›signed int
-›0x80000000›2147483648›80000000›unsigned long›unsigned int
-›2147483648›2147483648›80000000›unsigned long›unsigned int
+$33        $33        $21      $signed int   $signed int
+$033       $27        $1B      $signed int   $signed int
+$0x33      $51        $33      $signed int   $signed int
+$33333     $33333     $8235    $signed long  $signed int
+$033333    $14043     $36DB    $signed int   $signed int
+$0xA000    $40960     $A000    $unsigned int $signed int
+$0x33333   $209715    $33333   $signed long  $signed int
+$0x80000000$2147483648$80000000$unsigned long$unsigned int
+$2147483648$2147483648$80000000$unsigned long$unsigned int
 .monooff
 .boxend
 .do end
@@ -374,14 +374,14 @@ and their type:
 ..do end
 .* .cp 12
 .boxbeg
-› Constant ›   Value    › Type
+$ Constant $   Value    $ Type
 .boxline
 .monoon
-›3.14159265›3.14159265E0›double
-›11E24     ›1.1E25      ›double
-›.5L       ›5E-1        ›long double
-›7.234E-22F›7.234E-22   ›float
-›0.        ›0E0         ›double
+$3.14159265$3.14159265E0$double
+$11E24     $1.1E25      $double
+$.5L       $5E-1        $long double
+$7.234E-22F$7.234E-22   $float
+$0.        $0E0         $double
 .monooff
 .boxend
 .do end
@@ -431,15 +431,15 @@ sequences:
 ..do end
 .* .cp 15
 .boxbeg
-›Character›  Character Name ›Escape Sequence
+$Character$  Character Name $Escape Sequence
 .boxline
 .monoon
-›'›:HP0.single quote:eHP0.     ›\'
-›"›:HP0.double quote:eHP0.     ›" :HP0.or:eHP0. \"
-›?›:HP0.question mark:eHP0.    ›? :HP0.or:eHP0. \?
-›\›:HP0.backslash:eHP0.        ›\\
-› ›:HP0.octal value:eHP0.      ›\:ITAL.octal digits:eITAL.:HP0. (max 3):eHP0.
-› ›:HP0.hexadecimal value:eHP0.›\x:ITAL.hexadecimal digits:eITAL.
+$'$:HP0.single quote:eHP0.     $\'
+$"$:HP0.double quote:eHP0.     $" :HP0.or:eHP0. \"
+$?$:HP0.question mark:eHP0.    $? :HP0.or:eHP0. \?
+$\$:HP0.backslash:eHP0.        $\\
+$ $:HP0.octal value:eHP0.      $\:ITAL.octal digits:eITAL.:HP0. (max 3):eHP0.
+$ $:HP0.hexadecimal value:eHP0.$\x:ITAL.hexadecimal digits:eITAL.
 .monooff
 .boxend
 .do end
@@ -680,7 +680,7 @@ constant is preceded by the character
 ..ct ..li .
 .pp
 The type of a wide character constant is
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 ..ct ,
 which is one of the integral types, and is described in the header
@@ -692,7 +692,7 @@ which is one of the integral types, and is described in the header
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
 .shade begin
 With &wcboth.,
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 is defined as
 .kw unsigned short
@@ -701,7 +701,7 @@ is defined as
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
 With &wlooc.,
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 is defined as
 .kw ??????????????
@@ -716,7 +716,7 @@ For example, the constant
 is a wide character constant containing the letter
 .mono a
 from the source character set, and has type
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 ..ct ..li .
 In contrast, the constant
@@ -765,7 +765,7 @@ escape sequence.
 .pp
 The value of a string
 literal is the sequence of characters within the quotes, plus a
-.ix null character
+.ix 'null character'
 null character at the end.
 .pp
 The type of a string literal is "array of
@@ -887,10 +887,10 @@ string is preceded by the character
 ..ct ..li .
 .pp
 The type of a wide string literal is "array of
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 ..ct ".
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 is one of the integral types, and is described in the header
 .hdr <stddef.h>
@@ -901,7 +901,7 @@ is one of the integral types, and is described in the header
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
 .shade begin
 With &wcboth.,
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 is defined as
 .kw unsigned short
@@ -910,7 +910,7 @@ is defined as
 ..do end
 ..if '&target' eq 'PC 370' ..th ..do begin
 With &wlooc.,
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 is defined as
 .kw ??????????????
@@ -928,7 +928,7 @@ and
 .mono b
 ..ct ..li .
 Its type is "array [3] of
-.ix wchar_t
+.ix 'wchar_t'
 .kw wchar_t
 ..ct ", and the values of its elements are
 .mono L'a'

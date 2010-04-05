@@ -969,7 +969,8 @@ function to acquire memory; in a large data model, the
 function is used.
 .np
 It is also possible to allocate memory from a based heap using
-.kw _bmalloc.
+.kw _bmalloc
+.ct .li .
 Based heaps are similar to far heaps in that they are located
 outside the normal data segment.
 Based pointers only store the offset portion of the full address,
@@ -1260,27 +1261,27 @@ When a program begins execution, there are a number of streams
 already open for use:
 .begnote
 .note stdin
-.ix '&KbIo' stdin
-.ix stdin
+.ix '&KbIo' 'stdin'
+.ix 'stdin'
 Standard Input: input from the
 console
 .note stdout
 Standard Output: output to the
 console
-.ix '&KbIo' stdout
-.ix stdout
+.ix '&KbIo' 'stdout'
+.ix 'stdout'
 .note stderr
-.ix '&Errs' stderr
-.ix stderr
+.ix '&Errs' 'stderr'
+.ix 'stderr'
 Standard Error: output to the
 console (used for error messages)
 .if '&machsys' ne 'QNX' .do begin
 .note stdaux
-.ix stdaux
+.ix 'stdaux'
 Standard Auxiliary: auxiliary port, available for use by a program
 (not available in some Windows platforms)
 .note stdprn
-.ix stdprn
+.ix 'stdprn'
 Standard Printer: available for use by a program
 (not available in some Windows platforms)
 .do end
@@ -2541,8 +2542,8 @@ The hour may be between 0 and 24, and the minutes (and seconds)
 - if present - between 0 and 59.
 If preceded by a "&minus", the time zone will be east of the
 .ix 'Prime Meridian'
-.us Prime Meridian;;
-otherwise it will be west (which may be indicated by an optional
+.us Prime Meridian
+.'ct ; otherwise it will be west (which may be indicated by an optional
 preceding "+").
 .note rule
 indicates when to change to and back from summer time.
@@ -2598,9 +2599,12 @@ is omitted, is
 .endnote
 .np
 Whenever
-.kw ctime,
-.kw _ctime,
-.kw localtime,
+.kw ctime
+.ct ,
+.kw _ctime
+.ct ,
+.kw localtime
+.ct ,
 .kw _localtime
 or
 .kw mktime

@@ -6,7 +6,8 @@ int fileno( FILE *stream );
 .desc begin
 The &func function returns the number of the file &handle for the file
 designated by
-.arg stream.
+.arg stream
+.ct .li .
 This number can be used in POSIX input/output calls anywhere the
 value returned by
 .kw open
@@ -15,29 +16,29 @@ The following symbolic values in
 .hdrfile &iohdr
 define the file &handle.s that are associated with the C language
 .if '&machsys' eq 'PP' .do begin
-.ix stdin
-.ix stdout
-.ix stderr
+.ix 'stdin'
+.ix 'stdout'
+.ix 'stderr'
 .us stdin,
 .us stdout,
 and
 .us stderr
 .do end
 .el .if '&machsys' eq 'QNX' .do begin
-.ix stdin
-.ix stdout
-.ix stderr
+.ix 'stdin'
+.ix 'stdout'
+.ix 'stderr'
 .us stdin,
 .us stdout,
 and
 .us stderr
 .do end
 .el .do begin
-.ix stdin
-.ix stdout
-.ix stderr
-.ix stdaux
-.ix stdprn
+.ix 'stdin'
+.ix 'stdout'
+.ix 'stderr'
+.ix 'stdaux'
+.ix 'stdprn'
 .us stdin,
 .us stdout,
 .us stderr,
@@ -87,7 +88,8 @@ Standard printer file number,
 .return begin
 The &func function returns the number of the file &handle for the file
 designated by
-.arg stream.
+.arg stream
+.ct .li .
 If an error occurs, a value of -1 is returned and
 .kw errno
 is set to indicate the error.
