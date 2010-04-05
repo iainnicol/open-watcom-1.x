@@ -28,7 +28,6 @@
 *
 *   :sl / :esl
 *       compact (else blank line between items)
-*       verycompact (no extra lines at all; a wipfc extension)
 *   If nested, indent 4 spaces
 *
 ****************************************************************************/
@@ -50,7 +49,6 @@ Lexer::Token Sl::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     unsigned int itemCount( 0 );
-    bool needLine( true );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
             switch( lexer->tagId() ) {
@@ -61,7 +59,6 @@ Lexer::Token Sl::parse( Lexer* lexer )
                         indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
-                    needLine = true;
                 }
                 break;
             case Lexer::OL:
@@ -71,18 +68,15 @@ Lexer::Token Sl::parse( Lexer* lexer )
                         nestLevel + 1, indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
-                    needLine = true;
                 }
                 break;
             case Lexer::LI:
                 {
                     Element* elt( new SlLi( document, this, document->dataName(),
                         document->dataLine(), document->dataCol(),
-                        itemCount++, nestLevel, indent, veryCompact ||
-                        ( compact && !needLine ) ) );
+                        itemCount++, nestLevel, indent, compact ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
-                    needLine = false;
                 }
                 break;
             case Lexer::LP:
@@ -100,7 +94,6 @@ Lexer::Token Sl::parse( Lexer* lexer )
                         indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
-                    needLine = true;
                 }
                 break;
             case Lexer::SL:
@@ -110,7 +103,6 @@ Lexer::Token Sl::parse( Lexer* lexer )
                         nestLevel + 1, indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
-                    needLine = true;
                 }
                 break;
             case Lexer::ESL:
@@ -131,7 +123,6 @@ Lexer::Token Sl::parse( Lexer* lexer )
                         nestLevel + 1, indent == 1 ? 4 : indent + 4 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
-                    needLine = true;
                 }
                 break;
             default:
@@ -153,8 +144,6 @@ Lexer::Token Sl::parseAttributes( Lexer* lexer )
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"compact" )
                 compact = true;
-            else if( lexer->text() == L"verycompact" )
-                veryCompact = true;
             else
                 document->printError( ERR1_ATTRNOTDEF );
         }

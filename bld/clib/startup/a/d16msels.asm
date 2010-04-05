@@ -61,34 +61,34 @@ ___d16_selectors label  word
 
 _DATA   ENDS
 
-GDTSEG      segment at 08h
+GDTSEG      segment para public 'FAR_DATA'
 GDTSEG      ends
 
-IDTSEG      segment at 10h
+IDTSEG      segment para public 'FAR_DATA'
 IDTSEG      ends
 
-RTCODESEG   segment at 18h
+RTCODESEG   segment para public 'FAR_DATA'
 RTCODESEG   ends
 
-RTDATASEG   segment at 20h
+RTDATASEG   segment para public 'FAR_DATA'
 RTDATASEG   ends
 
-PSPSEG      segment at 28h
+PSPSEG      segment para public 'FAR_DATA'
 PSPSEG      ends
 
-ENVSEG      segment at 30h
+ENVSEG      segment para public 'FAR_DATA'
 ENVSEG      ends
 
-MEM0SEG     segment at 38h
+MEM0SEG     segment para public 'FAR_DATA'
 MEM0SEG     ends
 
-BIOSDATSEG  segment at 40h
+BIOSDATSEG  segment para public 'FAR_DATA'
 BIOSDATSEG  ends
 
-VIDB0SEG    segment at 58h
+VIDB0SEG    segment para public 'FAR_DATA'
 VIDB0SEG    ends
 
-DUMMY14     segment at 70h
+DUMMY14     segment para public 'FAR_DATA'
 DUMMY14     ends
 
         end
