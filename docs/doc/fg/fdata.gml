@@ -8,33 +8,35 @@ The following table summarizes these data types.
 .sr c2=&c1+17
 .sr c3=&c2+10
 .sr c4=&c3+13
-.tb set ›
+.tb set $
 .tb &c1+2 &c2+2 &c3+2
 .keep begin
 .bx &c1 &c2 &c3 &c4
-›Data Type›Size›FORTRAN 77
-››(in bytes)›Standard
+$Data Type$Size$FORTRAN 77
+$$(in bytes)$Standard
 .tb &c1+2 &c2+(&c3-&c2)/2 &c3+2
 .bx
-›LOGICAL›4
-›LOGICAL*1›1›(extension)
-›LOGICAL*4›4›(extension)
-›INTEGER›4
-›INTEGER*1›1›(extension)
-›INTEGER*2›2›(extension)
-›INTEGER*4›4›(extension)
-›REAL›4
-›REAL*4›4›(extension)
-›REAL*8›8›(extension)
-›DOUBLE PRECISION›8
-›COMPLEX›8
-›COMPLEX*8›8›(extension)
-›COMPLEX*16›16›(extension)
-›DOUBLE COMPLEX›16›(extension)
-›CHARACTER›1
-›CHARACTER*n›n
+$LOGICAL$4
+$LOGICAL*1$1$(extension)
+$LOGICAL*4$4$(extension)
+$INTEGER$4
+$INTEGER*1$1$(extension)
+$INTEGER*2$2$(extension)
+$INTEGER*4$4$(extension)
+$REAL$4
+$REAL*4$4$(extension)
+$REAL*8$8$(extension)
+$DOUBLE PRECISION$8
+$COMPLEX$8
+$COMPLEX*8$8$(extension)
+$COMPLEX*16$16$(extension)
+$DOUBLE COMPLEX$16$(extension)
+$CHARACTER$1
+$CHARACTER*n$n
 .bx off
 .keep end
+.tb set
+.tb
 .*
 .section LOGICAL*1 Data Type
 .*
@@ -154,13 +156,15 @@ first and the most significant byte last.
 .sr c1=&c0+3
 .sr c2=&c1+14
 .sr c3=&c2+22
-.tb set ›
+.tb set $
 .tb &c0+1 &c1+3 &c2+6
 .bx on &c0 &c1 &c2 &c3
-›S›Biased›Significand
-››Exponent
+$S$Biased$Significand
+$$Exponent
 .bx off
-›31›30-23›22-0
+$31$30-23$22-0
+.tb set
+.tb
 .begnote
 .note S
 S = Sign bit (0=positive, 1=negative)
@@ -207,7 +211,8 @@ is an approximate representation of a real number, occupies 8 bytes
 that of an item of type
 .bd REAL
 or
-.bd REAL*4.
+.bd REAL*4
+.ct .li .
 If
 .id m
 is the magnitude of a real number
@@ -237,13 +242,15 @@ first and the most significant byte last.
 .sr c1=&c0+3
 .sr c2=&c1+15
 .sr c3=&syscl-3
-.tb set ›
+.tb set $
 .tb &c0+1 &c1+3 &c2+12
 .bx on &c0 &c1 &c2 &c3
-›S›Biased›Significand
-››Exponent
+$S$Biased$Significand
+$$Exponent
 .bx off
-›63›62-52›51-0
+$63$62-52$51-0
+.tb set
+.tb
 .begnote
 .note S
 S = Sign bit (0=positive, 1=negative)
@@ -297,7 +304,8 @@ occupies 8 bytes (two consecutive numeric storage units), the first
 being the real part and the second the imaginary part.
 The approximation of the real and imaginary parts of a complex number
 is the same degree of approximation used for items of type
-.bd REAL.
+.bd REAL
+.ct .li .
 .*
 .section COMPLEX*16 Data Type
 .*
@@ -316,7 +324,8 @@ occupies 16 bytes (four consecutive numeric storage units), the first
 two being the real part and the last two the imaginary part.
 The approximation of the real and imaginary parts of a complex number
 is the same degree of approximation used for items of type
-.bd DOUBLE PRECISION.
+.bd DOUBLE PRECISION
+.ct .li .
 .*
 .section CHARACTER Data Type
 .*
@@ -353,14 +362,16 @@ A string descriptor has the following format.
 .sr oc=&sysin+4
 .sr c0=&oc+6
 .sr c1=&c0+15
-.tb set ›
+.tb set $
 .tb &oc &c0+2
-›Offset
+$Offset
 .bx &c0 &c1
-›0›pointer to data
+$0$pointer to data
 .bx
-›4›length of data
+$4$length of data
 .bx off
+.tb set
+.tb
 .keep end
 .pc
 .if '&machine' eq '8086' .do begin
@@ -381,17 +392,20 @@ The following illustrates the relative size of the data types in terms
 of bytes.
 .bd LOGICAL
 is equivalent to
-.bd LOGICAL*4,
+.bd LOGICAL*4
+.ct ,
 .bd INTEGER
 is equivalent to
-.bd INTEGER*4,
+.bd INTEGER*4
+.ct ,
 .bd DOUBLE PRECISION
 is equivalent to
-.bd REAL*8,
-and
+.bd REAL*8
+.ct , and
 .bd COMPLEX
 is equivalent to
-.bd COMPLEX*8.
+.bd COMPLEX*8
+.ct .li .
 .ix 'short option'
 If the "short" option is used,
 .bd LOGICAL
@@ -400,7 +414,8 @@ is equivalent to
 and
 .bd INTEGER
 is equivalent to
-.bd INTEGER*2.
+.bd INTEGER*2
+.ct .li .
 .pc
 .sr c0=&sysin+11
 .sr bs=2
@@ -420,10 +435,10 @@ is equivalent to
 .sr c14=&c13+&bs
 .sr c15=&c14+&bs
 .sr c16=&c15+&bs
-.tb set ›
+.tb set $
 .tb &c0 &c1 &c2 &c3 &c4 &c5 &c6 &c7 &c8 &c9 &c10 &c11 &c12 &c13 &c14 &c15 &c16
 .keep 24
-Offset›0›1›2›3›4›5›6›7›8›9›10›11›12›13›14›15
+Offset$0$1$2$3$4$5$6$7$8$9$10$11$12$13$14$15
 .bx on &c0 &c1 &c2 &c3 &c4 &c5 &c6 &c7 &c8 &c9 &c10 &c11 &c12 &c13 &c14 &c15 &c16
 in bytes
 .bx on &c0 &c1
@@ -442,12 +457,14 @@ REAL*4
 REAL*8
 .tb &c2-1 &c6-2
 .bx on &c0 &c4 &c8
-COMPLEX*8›real›imaginary
+COMPLEX*8$real$imaginary
 .tb &c4-2 &c12-3
 .bx on &c0 &c8 &c16
-COMPLEX*16›real part›imaginary part
+COMPLEX*16$real part$imaginary part
 .bx off
 .keep end
+.tb set
+.tb
 .*
 .section Floating-point Accuracy On x86-based Platforms
 .*

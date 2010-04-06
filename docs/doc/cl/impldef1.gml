@@ -12,7 +12,7 @@ section of the standard that discusses the behavior.
 .*
 .bigterms
 .bigterm
-.ix diagnostic
+.ix 'diagnostic'
 How a diagnostic is identified (5.1.1.3).
 .bigdesc
 .pp
@@ -78,14 +78,14 @@ The semantics of the arguments to main (5.1.2.2.1).
 .pp
 Each blank-separated token, except within quoted strings,
 on the command line is made into a string that is an element of
-.ix argv
+.ix 'argv'
 .ix 'parameter' 'to main' 'argv'
 .mono argv.
 Quoted strings are maintained as one element.
 .pp
 For example, for the command line,
 .millust pgm 2+ 1 tokens "one token"
-.ix argc
+.ix 'argc'
 .ix 'parameter' 'to main' 'argc'
 .mono argc
 would have the value
@@ -151,12 +151,12 @@ except as explicitly specified in the standard (5.2.1).
 .bigdesc
 .pp
 The full IBM PC character set is available in both the
-.ix 'character set' source
+.ix 'character set' 'source'
 source and
-.ix 'character set' execution
+.ix 'character set' 'execution'
 execution character sets. The set of values between 0x20 and 0x7F
 are the
-.ix 'character set' ASCII
+.ix 'character set' 'ASCII'
 ASCII character set.
 .bigterm
 The shift states used for the encoding of multibyte characters (5.2.1.2).
@@ -194,61 +194,61 @@ execution character set.
 .  .boxcol 20
 ..do end
 .boxbeg
-›Escape  ›Hex
-›Sequence›Value›Meaning
+$Escape  $Hex
+$Sequence$Value$Meaning
 .boxline
 .monoon
-›\a›07
+$\a$07
 .monooff
-..ct ›Bell or alert
+..ct $Bell or alert
 .monoon
-›\b›08
+$\b$08
 .monooff
-..ct ›Backspace
+..ct $Backspace
 .monoon
-›\f›0C
+$\f$0C
 .monooff
-..ct ›Form feed
+..ct $Form feed
 .monoon
-›\n›0A
+$\n$0A
 .monooff
-..ct ›New-line
+..ct $New-line
 .monoon
-›\r›0D
+$\r$0D
 .monooff
-..ct ›Carriage return
+..ct $Carriage return
 .monoon
-›\t›09
+$\t$09
 .monooff
-..ct ›Horizontal tab
+..ct $Horizontal tab
 .monoon
-›\v›0B
+$\v$0B
 .monooff
-..ct ›Vertical tab
+..ct $Vertical tab
 .monoon
-›\'›27
+$\'$27
 .monooff
-..ct ›Apostrophe or single quote
+..ct $Apostrophe or single quote
 .monoon
-›\"›22
+$\"$22
 .monooff
-..ct ›Double quote
+..ct $Double quote
 .monoon
-›\?›3F
+$\?$3F
 .monooff
-..ct ›Question mark
+..ct $Question mark
 .monoon
-›\\›5C
+$\\$5C
 .monooff
-..ct ›Backslash
+..ct $Backslash
 .monoon
-›\:HP1.ddd:eHP1.›
+$\:HP1.ddd:eHP1.$
 .monooff
-..ct ›Octal value
+..ct $Octal value
 .monoon
-›\x:HP1.ddd:eHP1.›
+$\x:HP1.ddd:eHP1.$
 .monooff
-..ct ›Hexadecimal value
+..ct $Hexadecimal value
 .boxend
 .do end
 .el .do begin
@@ -315,7 +315,7 @@ has the same range of values as
 or
 .kw unsigned char
 (6.2.1.1).
-.ix type char
+.ix 'type' 'char'
 .ix 'character type'
 .bigdesc
 .pp
@@ -468,10 +468,10 @@ The value is rounded to the nearest value in the smaller type.
 .bigterm
 The type of integer required to hold the maximum size of an array ~-
 that is, the type of the
-.ix operator sizeof
+.ix 'operator' 'sizeof'
 .kw sizeof
 operator,
-.ix size_t
+.ix 'size_t'
 .kw size_t
 (6.3.3.4, 7.1.1).
 .bigdesc
@@ -496,16 +496,16 @@ The result of casting an integer to a pointer or vice versa (6.3.4).
 .  .boxcol 20
 ..do end
 .boxbeg
-›Pointer›:MONO.short int:eMONO.
-›Type   ›:MONO.int                ›long int:eMONO.
+$Pointer$:MONO.short int:eMONO.
+$Type   $:MONO.int                $long int:eMONO.
 .boxline
-›near›result is pointer value     ›result is DS register in
-›    ›                            ›high-order 2 bytes, pointer
-›    ›                            ›value in low-order 2 bytes
+$near$result is pointer value     $result is DS register in
+$    $                            $high-order 2 bytes, pointer
+$    $                            $value in low-order 2 bytes
 .boxline
-›far ›segment is discarded, result›result is segment in high-
-›huge›is pointer offset (low-order›order 2 bytes, offset in
-›    ›2 bytes of pointer)         ›low-order 2 bytes
+$far $segment is discarded, result$result is segment in high-
+$huge$is pointer offset (low-order$order 2 bytes, offset in
+$    $2 bytes of pointer)         $low-order 2 bytes
 .boxend
 .do end
 .el .do begin
@@ -540,19 +540,19 @@ huge       is pointer offset (low-order order 2 bytes, offset in
 .  .boxcol 20
 ..do end
 .boxbeg
-›Integer  ›             ›far pointer
-›Type     ›near pointer ›huge pointer
+$Integer  $             $far pointer
+$Type     $near pointer $huge pointer
 .boxline
 .monoon
-›short int›:HP0.result is integer value     ›result segment is DS:eHP0.
-›int      ›:HP0.                            ›register, offset is:eHP0.
-›         ›:HP0.                            ›integer value:eHP0.
+$short int$:HP0.result is integer value     $result segment is DS:eHP0.
+$int      $:HP0.                            $register, offset is:eHP0.
+$         $:HP0.                            $integer value:eHP0.
 .monooff
 .boxline
 .monoon
-›long int ›:HP0.result is low-order 2 bytes ›result segment is high-:eHP0.
-›         ›:HP0.of integer value            ›order 2 bytes, offset is:eHP0.
-›         ›:HP0.                            ›low-order 2 bytes:eHP0.
+$long int $:HP0.result is low-order 2 bytes $result segment is high-:eHP0.
+$         $:HP0.of integer value            $order 2 bytes, offset is:eHP0.
+$         $:HP0.                            $low-order 2 bytes:eHP0.
 .monooff
 .boxend
 .do end
@@ -587,15 +587,15 @@ long int    result is low-order 2       result segment is high-
 .  .boxcol 20
 ..do end
 .boxbeg
-›Pointer›            ›:MONO.int:eMONO.
-›Type   ›:MONO.short ›long int:eMONO.
+$Pointer$            $:MONO.int:eMONO.
+$Type   $:MONO.short $long int:eMONO.
 .boxline
-›near›result is low-order 2 bytes ›result is pointer value
-›    ›of pointer value            ›
+$near$result is low-order 2 bytes $result is pointer value
+$    $of pointer value            $
 .boxline
-›far ›segment is discarded, result›segment is discarded, result
-›huge›is low-order 2 bytes of     ›is pointer offset
-›    ›pointer value               ›
+$far $segment is discarded, result$segment is discarded, result
+$huge$is low-order 2 bytes of     $is pointer offset
+$    $pointer value               $
 .boxend
 .do end
 .el .do begin
@@ -628,20 +628,20 @@ huge        result is low-order 2       result is pointer offset
 .  .boxcol 20
 ..do end
 .boxbeg
-›Integer  ›                             ›far pointer
-›Type     ›near pointer                 ›huge pointer
+$Integer  $                             $far pointer
+$Type     $near pointer                 $huge pointer
 .boxline
 .monoon
-›short int›:HP0.result is integer value,  ›result segment is DS:eHP0.
-›         ›:HP0.with zeroes for high-order›register, offset is integer:eHP0.
-›         ›:HP0.2 bytes                   ›value, with zeroes for:eHP0.
-›         ›:HP0.                          ›high-order 2 bytes:eHP0.
+$short int$:HP0.result is integer value,  $result segment is DS:eHP0.
+$         $:HP0.with zeroes for high-order$register, offset is integer:eHP0.
+$         $:HP0.2 bytes                   $value, with zeroes for:eHP0.
+$         $:HP0.                          $high-order 2 bytes:eHP0.
 .monooff
 .boxline
 .monoon
-›int      ›:HP0.result is integer value   ›result segment is DS:eHP0.
-›long int ›:HP0.                          ›register, offset is:eHP0.
-›         ›:HP0.                          ›integer value:eHP0.
+$int      $:HP0.result is integer value   $result segment is DS:eHP0.
+$long int $:HP0.                          $register, offset is:eHP0.
+$         $:HP0.                          $integer value:eHP0.
 .monooff
 .boxend
 .do end
@@ -664,7 +664,7 @@ long int                                register, offset is
 .bigterm
 The type of integer required to hold the difference between two
 pointers to elements of the same array,
-.ix ptrdiff_t
+.ix 'ptrdiff_t'
 .kw ptrdiff_t
 (6.3.6, 7.1.1).
 .bigdesc
@@ -673,14 +673,14 @@ If the
 .ix 'huge memory model'
 .ix 'memory model' 'huge'
 huge memory model is being used,
-.ix ptrdiff_t
+.ix 'ptrdiff_t'
 .kw ptrdiff_t
 has type
 .kw long int
 ..ct ..li .
 .pp
 For all other memory models,
-.ix ptrdiff_t
+.ix 'ptrdiff_t'
 .kw ptrdiff_t
 has type
 .kw int
@@ -691,7 +691,7 @@ not being used,
 then the result type will be
 .kw long int
 even though
-.ix ptrdiff_t
+.ix 'ptrdiff_t'
 .kw ptrdiff_t
 is
 .kw int
@@ -746,7 +746,7 @@ See the &userguide. for default values and other details.
 .bigterm
 Whether a "plain"
 .kw int
-.ix bit-field
+.ix 'bit-field'
 bit-field
 is treated as a
 .kw signed int
@@ -823,7 +823,7 @@ The maximum number of
 .kw case
 values in a
 .ix 'switch statement'
-.ix statement switch
+.ix 'statement' 'switch'
 .kw switch
 statement (6.6.4.2).
 .bigdesc
@@ -883,8 +883,8 @@ The date and time are always available.
 .*
 .bigterms
 .bigterm
-.ix null pointer
-.ix pointer null
+.ix 'null pointer'
+.ix 'pointer' 'null'
 .ix 'NULL macro'
 The null pointer constant to which the macro
 .mkw NULL

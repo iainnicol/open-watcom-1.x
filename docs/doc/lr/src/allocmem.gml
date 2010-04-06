@@ -10,8 +10,6 @@ unsigned _dos_allocmem( unsigned size,
                         unsigned *segment);
 #endif
 .ixfunc2 '&DosFunc' &func
-.ixfunc2 '&Trig' &func
-.ixfunc2 '&Hyper' &func
 .funcend
 .desc begin
 The &func function uses system call 0x48 to allocate
@@ -21,7 +19,8 @@ The size of a paragraph is 16 bytes.
 The allocated memory is always paragraph aligned.
 The segment descriptor for the allocated memory is returned in the
 word pointed to by
-.arg segment.
+.arg segment
+.ct .li .
 If the allocation request fails, the maximum number of paragraphs that
 can be allocated is returned in this word instead.
 .np

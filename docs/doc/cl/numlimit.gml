@@ -14,7 +14,7 @@
 .  .boxcol &numboxcol1.
 .  .boxcol &numboxcol2.
 .  .boxbeg
-›Macro: :SF font=4.&*:eSF.›Value
+$Macro: :SF font=4.&*:eSF.$Value
 .  .do end
 .  .el .do begin
 .  .millust begin
@@ -25,7 +25,7 @@ Macro: &*       Value
 .*
 .dm numterm begin
 .  .if &e'&nobox eq 0 .do begin
-›&*1›:SF font=4.&*2:eSF.
+$&*1.$:SF font=4.&*2:eSF.
 .  .do end
 .  .el .do begin
 &*1             &*2
@@ -38,7 +38,7 @@ Macro: &*       Value
 .*
 .dm noansi begin
 .  .if &e'&nobox eq 0 .do begin
-›ISO›no value specified
+$ISO$no value specified
 .  .do end
 .  .el .do begin
 ISO             no value specified
@@ -101,7 +101,7 @@ characteristics of the various floating-point types.
 .*
 .section Numerical Limits for Integer Types
 .*
-.ix 'numerical limits' integer
+.ix 'numerical limits' 'integer'
 .ix 'integer' 'limits'
 .pp
 The following macros are replaced by constant expressions that may be
@@ -355,7 +355,7 @@ the maximum value for an object of type
 .  ..sr numboxcol2=26
 ..do end
 .*
-.ix 'numerical limits' floating-point
+.ix 'numerical limits' 'floating-point'
 .ix 'floating-point' 'limits'
 .pp
 The following macros are replaced by expressions which are not

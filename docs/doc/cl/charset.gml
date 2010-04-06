@@ -84,7 +84,7 @@ a string or a comment, otherwise the behavior is undefined.
 .pp
 If the character set of the computer being used to compile the program
 does not contain a certain character, a
-.ix trigraphs
+.ix 'trigraphs'
 .us trigraph
 sequence may be used to represent it.
 Refer to the section
@@ -116,14 +116,17 @@ character sequences as substitutes for certain standard characters:
 .*               Steve
 ..bx new &SYSIN.+5 +10 +8
 ..sr firsttab=&SYSIN.+10
+..tb set $
 ..tb &firsttab.c +9c
-›Character
-›Sequence›Replaces
+$Character
+$Sequence$Replaces
 ..bx
-›(:›[
-› :)›]
-›|›|
-›&turnstile.›^
+$(:$[
+$ :)$]
+$|$|
+$&turnstile.$^
+..tb set
+..tb
 ..bx off
 .shade end
 ..do end
@@ -144,7 +147,7 @@ found in the one-byte character set.
 Multibyte characters are generally restricted to:
 .begbull $compact
 .bull
-.ix comment
+.ix 'comment'
 comments,
 .bull
 .ix 'string literal'
@@ -153,7 +156,7 @@ string literals,
 .ix 'character constant'
 character constants,
 .bull
-.ix header
+.ix 'header'
 header names.
 .endbull
 ..sk 1 c

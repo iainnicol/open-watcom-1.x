@@ -98,7 +98,7 @@ are interpreted according to the following:
 .termhd1 Value
 .termhd2 Meaning
 .note CHAR_MAX
-.ix CHAR_MAX
+.ix 'CHAR_MAX'
 No further grouping is to be performed.
 .note 0
 The previous element is to be repeatedly used for the remainder of
@@ -119,19 +119,24 @@ is interpreted as follows:
 .termhd2 Meaning
 .note 0
 Parentheses surround the quantity and
-.kw currency_symbol.
+.kw currency_symbol
+.ct .li .
 .note 1
 The sign string precedes the quantity and
-.kw currency_symbol.
+.kw currency_symbol
+.ct .li .
 .note 2
 The sign string follows the quantity and
-.kw currency_symbol.
+.kw currency_symbol
+.ct .li .
 .note 3
 The sign string immediately precedes the quantity and
-.kw currency_symbol.
+.kw currency_symbol
+.ct .li .
 .note 4
 The sign string immediately follows the quantity and
-.kw currency_symbol.
+.kw currency_symbol
+.ct .li .
 .endnote
 .desc end
 .return begin

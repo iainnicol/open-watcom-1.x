@@ -1,5 +1,5 @@
 .func begin
-.funct   tmpnam_s   TR 24371
+.funct   tmpnam_s   TR 24731
 .funct_w _wtmpnam_s
 .func gen
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -19,7 +19,8 @@ errno_t _wtmpnam_s( wchar_t * s, rsize_t maxsize );
 shall not be a null pointer.
 .arg maxsize
 shall be less than or equal to
-.kw RSIZE_MAX.
+.kw RSIZE_MAX
+.ct .li .
 .arg maxsize
 shall be greater than the length of the generated file name string.
 .rtconst end

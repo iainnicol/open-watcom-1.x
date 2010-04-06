@@ -179,16 +179,10 @@ int main( int argc, char * const argv[] )
          */
         env = environ;
         while( env ) {
-            if( *env ) {
-                if( !strncmp( *env, "PATH=", 5 ) ) {
-                    path = *env;
-                    break;
-                }
-            } else {
-                path = "";
+            if( !strncmp( *env, "PATH=", 5 ) ) {
+                path = *env;
                 break;
             }
-            
             ++env;
         }
 
@@ -251,7 +245,7 @@ int main( int argc, char * const argv[] )
 
         status = unlink( "test.fil" );
         VERIFY( status == 0 );
-
+        
         signal_count = 0;
         signal_number = 0;
         /* Install SIGBREAK handler */
