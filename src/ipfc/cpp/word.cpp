@@ -38,8 +38,6 @@
 Lexer::Token Word::parse( Lexer* lexer )
 {
     std::wstring txt( lexer->text() );  //get text from lexer
-    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
-    text = document->addWord( word );   //insert into global dictionary
     Lexer::Token tok( document->getNextToken() );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC) ) {
         if( tok == Lexer::WORD )
@@ -69,13 +67,15 @@ Lexer::Token Word::parse( Lexer* lexer )
             break;
         tok = document->getNextToken();
     }
-    if( document->autoSpacing() ) {
+    if( whiteSpace != Tag::SPACES && document->autoSpacing() ) {
         Lexer::Token t( document->lastToken() );
         if( t == Lexer::WORD || t == Lexer::ENTITY || t == Lexer::PUNCTUATION ) {
             document->toggleAutoSpacing();
             document->lastText()->setToggleSpacing();
         }
     }
+    GlobalDictionaryWord* word( new GlobalDictionaryWord( txt ) );
+    text = document->addWord( word );   //insert into global dictionary
     document->setLastPrintable( Lexer::WORD, this );
     return tok;
 }

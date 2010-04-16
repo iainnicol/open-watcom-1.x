@@ -24,6 +24,7 @@ opt_cmdln02 = /d+ /dXXX=0+1
 opt_cmdln03 = /dX /DXX /uXX /DXXX /uXXX /UXXX /dXXX /DXXXX /uXXXX /DXXXX /uXXXX
 opt_cmdln04 = /dCMDMAC -DCMD1= /DCMD2$#
 opt_cmdln05 = -dXN2=2 -dXS1="a-/ b"-dXN1=2 -dXS2#"a-/ b"
+opt_cmp02 = -za99
 opt_init21  = -za99
 opt_init22  = -za99
 opt_opt09 = -za
@@ -109,6 +110,7 @@ positive_tests = &
     expr02.$(exe) &
     far1601.$(exe) &
     float01.$(exe) &
+    float02.$(exe) &
     float03.$(exe) &
     float04.$(exe) &
     i64cmp.$(exe) &
@@ -145,6 +147,7 @@ positive_tests = &
     init23.$(exe) &
     inline01.$(exe) &
     inline04.$(exe) &
+    int01.$(exe) &
     intel01.$(exe) &
     opt01.$(exe) &
     opt02.$(exe) &

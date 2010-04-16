@@ -28,6 +28,7 @@
 *
 *   :ol / :eol
 *       compact (else blank line between items)
+*       verycompact (no extra lines at all; a wipfc extension)
 *   If nested, indent 4 spaces
 *
 ****************************************************************************/
@@ -54,6 +55,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
 {
     Lexer::Token tok( parseAttributes( lexer ) );
     unsigned int itemCount( 0 );
+    bool needLine( true );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
             switch( lexer->tagId() ) {
@@ -64,6 +66,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
                         indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = true;
                 }
                 break;
             case Lexer::OL:
@@ -73,15 +76,18 @@ Lexer::Token Ol::parse( Lexer* lexer )
                         nestLevel + 1, indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = true;
                 }
                 break;
             case Lexer::LI:
                 {
                     Element* elt( new OlLi( document, this, document->dataName(),
                         document->dataLine(), document->dataCol(),
-                        itemCount++, nestLevel, indent, compact ) );
+                        itemCount++, nestLevel, indent, veryCompact ||
+                        ( compact && !needLine ) ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = false;
                 }
                 break;
             case Lexer::LP:
@@ -90,6 +96,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
                         document->dataLine(), document->dataCol(), indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = true;
                 }
                 break;
             case Lexer::EOL:
@@ -110,6 +117,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
                         indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = true;
                 }
                 break;
             case Lexer::SL:
@@ -119,6 +127,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
                         0, indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = true;
                 }
                 break;
             case Lexer::UL:
@@ -128,6 +137,7 @@ Lexer::Token Ol::parse( Lexer* lexer )
                         0, indent == 1 ? 4 : indent + 3 ) );
                     appendChild( elt );
                     tok = elt->parse( lexer );
+                    needLine = true;
                 }
                 break;
             default:
@@ -149,6 +159,8 @@ Lexer::Token Ol::parseAttributes( Lexer* lexer )
         else if( tok == Lexer::FLAG ) {
             if( lexer->text() == L"compact" )
                 compact = true;
+            else if( lexer->text() == L"verycompact" )
+                veryCompact = true;
             else
                 document->printError( ERR1_ATTRNOTDEF );
         }
@@ -210,13 +222,15 @@ Lexer::Token OlLi::parse( Lexer* lexer )
         document->dataCol(), indent + 3 ) );
     while( tok != Lexer::END && !( tok == Lexer::TAG && lexer->tagId() == Lexer::EUSERDOC ) ) {
         if( parseInline( lexer, tok ) ) {
-            if( lexer->tagId() == Lexer::LP ) {
+            if( lexer->tagId() == Lexer::LI )
+                break;
+            else if( lexer->tagId() == Lexer::LP ) {
                 Element* elt( new P( document, this, document->dataName(),
                     document->dataLine(), document->dataCol() ) );
                 appendChild( elt );
                 tok = elt->parse( lexer );
             }
-            else
+            else if( parseBlock( lexer, tok ) )
                 break;
         }
     }

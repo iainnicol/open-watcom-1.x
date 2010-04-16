@@ -21,9 +21,16 @@ void set_vec( void ( __interrupt *p )( void ) )
 }
 
 void __far *Ptr;
+long long Llp;
 
 // verify that far pointer <-> long long conversions can generate code
 // and test other fun pointer <-> integer conversions
+
+long long llptr( void )
+{
+    return( (long long)&Ptr );  // should generate 'mov edx,ds'
+}
+
 void ptr_cvt( int __near *np )
 {
 #ifdef _M_I86
@@ -70,6 +77,23 @@ void ptr_cvt( int __near *np )
 
     if( n_ptr < (void __near *)~0x0f ) fail( __LINE__ );
     if( (void __far *)0x10000 > np ) fail( __LINE__ );
+    if( (void __far *)0x10000 > np ) fail( __LINE__ );
+#endif
+
+    f_ptr = &Ptr;
+    Llp = f_ptr;
+#ifdef __FLAT__
+    /* In flat model, we want (long long)&foo to be equivalent to (long)&foo. 
+     * However, explicit __near/__far keywords still apply. In other models, 
+     * (long long)&foo will convert to far pointer first.
+     */
+    if( Llp == llptr() ) fail( __LINE__ );
+    if( (long)&Ptr != llptr() ) fail( __LINE__ );
+#else
+    if( Llp != llptr() ) fail( __LINE__ );
+#ifdef __386__  /* In 16-bit mode, long already contains the full address. */
+    if( (long)&Ptr == llptr() ) fail( __LINE__ );
+#endif
 #endif
 }
 

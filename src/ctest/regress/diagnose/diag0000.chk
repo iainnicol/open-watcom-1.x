@@ -243,7 +243,7 @@ source\diag0018.c(7): Note! I2002: 'foo' defined in: source\diag0018.c(4)
 source\diag0018.c(13): Warning! W113: Pointer type mismatch
 source\diag0018.c(13): Note! I2003: source conversion type is 'enum foo_enum *'
 source\diag0018.c(13): Note! I2004: target conversion type is 'char *'
-source\diag0018.c(14): Warning! W113: Pointer type mismatch
+source\diag0018.c(14): Error! E1010: Type mismatch
 source\diag0018.c(14): Note! I2003: source conversion type is 'enum foo_enum *'
 source\diag0018.c(14): Note! I2004: target conversion type is 'char *'
 source\diag0018.c(16): Warning! W113: Pointer type mismatch
@@ -254,3 +254,7 @@ source\diag0019.c(9): Warning! W124: Comparison result always 0
 source\diag0019.c(14): Warning! W124: Comparison result always 1
 source\diag0019.c(19): Warning! W124: Comparison result always 0
 source\diag0019.c(25): Warning! W126: Constant must be zero for pointer compare
+source\diag0020.c(4): Error! E1040: Field width too large
+source\diag0020.c(9): Error! E1040: Field width too large
+source\diag0021.c(12): Error! E1089: Missing ) for expansion of 'VERIFY' macro
+source\diag0021.c(12): Error! E1077: Missing '}'
