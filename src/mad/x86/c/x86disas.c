@@ -776,7 +776,7 @@ char *CnvRadix( unsigned long value, unsigned radix, char base,
  * JmpLabel -- process a label
  */
 
-char *JmpLabel( unsigned long addr, addr_off off )
+char *JmpLabel( uint_32 addr, addr_off off )
 {
     address             memaddr;
     mad_type_handle     th;
