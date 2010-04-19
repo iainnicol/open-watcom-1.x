@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 extended threading routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 

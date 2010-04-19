@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  TLS segment definitions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 

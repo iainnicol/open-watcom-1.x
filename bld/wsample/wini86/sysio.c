@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  System functions for 16-bit Windows.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -32,7 +33,7 @@
 #include <malloc.h>
 #include "tinyio.h"
 
-void SysInit( void )
+void SysInit()
 {
 }
 

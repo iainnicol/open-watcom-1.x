@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Multithreaded support extended function registration.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 

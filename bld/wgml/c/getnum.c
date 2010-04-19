@@ -330,7 +330,7 @@ static  int evaluate( char * * line, long *val )
 
             push_val( arg );
 
-            ptr += endptr - str;        // to the next unprocessed char
+            ptr += strlen( str );
 
             expr_oper = 1;              // look for operator next
             break;

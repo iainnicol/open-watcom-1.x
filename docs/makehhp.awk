@@ -7,7 +7,6 @@ BEGIN {
     }
     print "Create CHI file=Yes"
     print "Default Window=Main"
-    print "Full-text search=Yes"
     if( length( hhkfile ) > 0 ) {
         print "Index file=" hhkfile
     }
@@ -27,7 +26,7 @@ BEGIN {
     if( length( hhkfile ) > 0 ) {
         hhkfile = "\"" hhkfile "\""
     }
-    print "Main=\"" title "\"," hhcfile "," hhkfile ",,,,,,,0x2420,,0x60300e,,,,,,,,0"
+    print "Main=\"" title "\"," hhcfile "," hhkfile ",,,,,,,0x2020,,0x60300e,,,,,,,,0"
     print ""
     print "[FILES]"
 }

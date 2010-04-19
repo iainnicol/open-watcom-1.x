@@ -87,7 +87,7 @@ static void sysf( var )( symvar * entry );
 static char syss( var )[2];             // for single char values as string
 
 #define picl( var, next, flag )         \
-static char syss( var )[MAX_L_AS_STR];  // for long as string and sysbxchar
+static char syss( var )[MAX_L_AS_STR];  // for long as string
 
 #define pics( var, next, flag )         \
 static char syss( var )[60];            // for special string $docnum
@@ -303,7 +303,7 @@ static void sysbxfun( symvar * e )
     return;
 };
 
-static void sysbxcharfun( symvar * e )  // box char always UNDefined TBD
+static void sysbxcharfun( symvar * e )
 {
     var_wng( e->name );
     return;
@@ -1212,10 +1212,7 @@ void    init_sys_dict( symvar * * dict )
     *(sysbsstr + 1)  = 0;
     *sysbxstr  = 'N';
     *(sysbxstr + 1)  = 0;
-    *sysbxcharstr       = 'U';
-    *(sysbxcharstr + 1) = 'N';
-    *(sysbxcharstr + 2) = 'D';
-    *(sysbxcharstr + 3) = 0;
+//  *sysbxcharstr =
     *sysccstr  = 'N';
     *(sysccstr +1) = 0;
 //  *syscccstr =

@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Define the maximum number of threads.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 

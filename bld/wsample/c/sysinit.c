@@ -24,11 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  A dummy SysInit() implementation.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-void SysInit( void )
+void SysInit()
 {
 }

@@ -75,7 +75,7 @@ int SampSeek( unsigned long loc )
     return( 0 );
 }
 
-int SampClose( void )
+int SampClose()
 {
     SampOffset = 0;
     return( SysClose( SampleHandle ) );

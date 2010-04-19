@@ -121,7 +121,7 @@ void    lay_backbod( const gmltag * entry )
     lay_att             curr;
     att_args            l_args;
     int                 cvterr;
-    lay_sub             x_tag;
+    int                 x_tag;
     backbod_lay_tag *   ap;
 
     p = scan_start;

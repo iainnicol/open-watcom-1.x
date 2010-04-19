@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Thread list and thread data management.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -61,7 +62,7 @@ thread_data *__GetThreadData( void )
             tdata = __AllocInitThreadData( tdata );
             if( tdata != NULL ) {
                 if( __initthread( tdata ) ) {
-                    __FreeInitThreadData( tdata );
+                    lib_free( tdata );
                     tdata = NULL;
                 } else {
                     __ThreadData[tid].data = tdata;
@@ -86,7 +87,7 @@ thread_data *__GetThreadData( void )
                 tdata = __AllocInitThreadData( tdata );
                 if( tdata != NULL ) {
                     if( !__AddThreadData( tid, tdata ) ) {
-                        __FreeInitThreadData( tdata );
+                        lib_free( tdata );
                         tdata = NULL;
                     }
                 }
