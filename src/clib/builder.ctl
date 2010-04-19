@@ -26,6 +26,13 @@ cdsay .
     <CCCMD> library/msdos.086/mm/clibm.lib                  <RELROOT>/lib286/dos/
     <CCCMD> library/msdos.086/mm_ov/clibom.lib              <RELROOT>/lib286/dos/
     <CCCMD> library/msdos.086/ms/clibs.lib                  <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/mc/doslfnc.lib         <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/mh/doslfnh.lib         <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/ml/doslfnl.lib         <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/ml_ov/doslfnol.lib     <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/mm/doslfnl.lib         <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/mm_ov/doslfnom.lib     <RELROOT>/lib286/dos/
+    <CCCMD> doslfn/library/msdos.086/ms/doslfns.lib         <RELROOT>/lib286/dos/
     <CCCMD> startup/library/msdos.086/ml/d16msels.obj       <RELROOT>/lib286/dos/
     <CCCMD> startup/library/msdos.086/ml/dos16m.obj         <RELROOT>/lib286/dos/
     <CCCMD> startup/library/msdos.086/ms/binmode.obj        <RELROOT>/lib286/dos/
@@ -34,6 +41,8 @@ cdsay .
 
     <CCCMD> library/msdos.386/ms_r/clib3r.lib               <RELROOT>/lib386/dos/
     <CCCMD> library/msdos.386/ms_s/clib3s.lib               <RELROOT>/lib386/dos/
+    <CCCMD> doslfn/library/msdos.386/ms_r/doslfn3r.lib      <RELROOT>/lib386/dos/
+    <CCCMD> doslfn/library/msdos.386/ms_s/doslfn3s.lib      <RELROOT>/lib386/dos/
     <CCCMD> startup/library/msdos.386/ms_r/binmode.obj      <RELROOT>/lib386/dos/
     <CCCMD> startup/library/msdos.386/ms_r/commode.obj      <RELROOT>/lib386/dos/
     <CCCMD> startup/library/msdos.386/ms_r/cstrtx32.obj     <RELROOT>/lib386/dos/cstrtx3r.obj

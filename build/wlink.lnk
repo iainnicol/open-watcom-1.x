@@ -10,6 +10,10 @@ system begin dos
     libpath %OWROOT%/src/mathlib/library/msdos.287/mc
     libpath %OWROOT%/src/mathlib/library/msdos.287/mm
     libpath %OWROOT%/src/mathlib/library/msdos.287/ml
+    libpath %OWROOT%/src/clib/doslfn/library/msdos.086/ms
+    libpath %OWROOT%/src/clib/doslfn/library/msdos.086/mc
+    libpath %OWROOT%/src/clib/doslfn/library/msdos.086/mm
+    libpath %OWROOT%/src/clib/doslfn/library/msdos.086/ml
     libpath %OWROOT%/src/emu87/dosi86
     format dos ^
 end
@@ -49,6 +53,7 @@ end
 system begin dos4g
     option osname='DOS/4G'
     libpath %OWROOT%/src/clib/library/msdos.386/ms_r
+    libpath %OWROOT%/src/clib/doslfn/library/msdos.386/ms_r
     libpath %OWROOT%/src/cpplib/generic.386/ms_r
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/dos386
@@ -59,6 +64,7 @@ end
 system begin causeway
     option osname='CauseWay'
     libpath %OWROOT%/src/clib/library/msdos.386/ms_r
+    libpath %OWROOT%/src/clib/doslfn/library/msdos.386/ms_r
     libpath %OWROOT%/src/cpplib/generic.386/ms_r
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/dos386
@@ -186,6 +192,18 @@ system begin osi
     libpath %OWROOT%/src/mathlib/library/msdos.387/ms_r
     libpath %OWROOT%/src/emu387/stub386
     format pharlap rex ^
+end
+
+system begin dos16m
+    option osname='DOS/16M'
+    libpath %OWROOT%/src/clib/library/msdos.086/ms
+    libpath %OWROOT%/src/clib/library/msdos.086/ml
+    libpath %OWROOT%/src/mathlib/library/msdos.287/ms
+    libpath %OWROOT%/src/mathlib/library/msdos.287/ml
+    libfile %OWROOT%/src/clib/startup/library/msdos.086/ms/dos16m.obj
+    libfile %OWROOT%/src/clib/startup/library/msdos.086/ms/d16msels.obj
+    libpath %OWROOT%/src/emu87/dosi86
+    format dos16m runtime auto ^
 end
 
 system begin rdos

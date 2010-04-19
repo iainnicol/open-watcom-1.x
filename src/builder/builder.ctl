@@ -33,6 +33,8 @@ cdsay .
     rm -f <OWBINDIR>/wsplice<CMDEXT> <OWBINDIR>/sweep<CMDEXT>
     echo rm -f <OWBINDIR>/cdsay<CMDEXT> <OWBINDIR>/comstrip<CMDEXT>
     rm -f <OWBINDIR>/cdsay<CMDEXT> <OWBINDIR>/comstrip<CMDEXT>
+    echo rm -f <OWBINDIR>/diff<CMDEXT> <OWBINDIR>/aliasgen<CMDEXT>
+    rm -f <OWBINDIR>/diff<CMDEXT> <OWBINDIR>/aliasgen<CMDEXT>
 
 [ BLOCK . . ]
 #============

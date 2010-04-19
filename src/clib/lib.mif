@@ -38,7 +38,10 @@ libsuffix = d
 !endif
 
 # Final name
-libname =clib$(libinfix)$(libname_$(processor)_$(model))$(libsuffix)
+!ifndef base_libname
+base_libname = clib
+!endif
+libname = $(base_libname)$(libinfix)$(libname_$(processor)_$(model))$(libsuffix)
 
 lib_flags  = -b-c-n-pa$(extra_libflags)
 !ifeq release 1
