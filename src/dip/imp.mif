@@ -44,11 +44,12 @@ objs = dipimp.obj $(imp_objs)
 
 .c: ../c;../../c;$(extra_srcs)
 
-extra_c_flags     = -s -D__DIP__ $(extra_cflags) $(cflags_shared)
+extra_c_flags     = -D__DIP__ $(extra_cflags) $(cflags_shared)
+!ifndef bootstrap
 extra_c_flags    += -s
-extra_c_flags_i86 = -zc -zu
-
 extra_c_flags_dipimp = -zlf
+!endif
+extra_c_flags_i86 = -zc -zu
 
 inc_dirs = -I"../h" $(extra_incs) -I"$(dig_dir)/h"
 

@@ -56,6 +56,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/parsedlg/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/ctl/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/bind/builder.ctl ]
+[ INCLUDE <SRCDIR>/graphlib/builder.ctl ]
 
 # The following tools are not required during build
 [ INCLUDE <SRCDIR>/disasm/builder.ctl ]
@@ -63,6 +64,9 @@ cdsay .
 [ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
 [ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
 [ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
+# Debugger/profiler libraries
+[ INCLUDE <SRCDIR>/dip/builder.ctl ]
+[ INCLUDE <SRCDIR>/mad/builder.ctl ]
 
 [ IFDEF <BLD_HOST> UNIX ]
 #========================
@@ -99,6 +103,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <SRCDIR>/rtdll/builder.ctl ]
 [ INCLUDE <SRCDIR>/win386/builder.ctl ]
+[ INCLUDE <SRCDIR>/graphlib/builder.ctl ]
 # Now we have enough to start cross building everything else
 
 # Start with the libs used by various tools
