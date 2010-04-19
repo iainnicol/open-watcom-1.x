@@ -137,8 +137,8 @@ extern char *DoWildCard( char *base )
             return( base );
         }
         // create directory name and pattern
-        path = malloc( _MAX_PATH );
-        pattern = malloc( _MAX_PATH );
+        path = malloc( FILENAME_MAX );
+        pattern = malloc( FILENAME_MAX );
         strcpy( path, base );
         FixName( path );
 

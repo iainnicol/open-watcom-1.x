@@ -39,7 +39,7 @@ typedef struct PathGroup {
     char    *dir;
     char    *fname;
     char    *ext;
-    char    buffer[PATH_MAX + 4];
+    char    buffer[FILENAME_MAX + 4];
 } PGROUP;
 
 #endif /* !_MPATHGRP_H */

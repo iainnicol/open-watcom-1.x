@@ -24,13 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  symbol hash function.
+* Description:  Symbol hash function.
 *
 ****************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "hashtab.h"
 
 #define HASH_TABLE_SIZE 211
@@ -59,7 +60,7 @@ void AddSymbol( sym_table sym_tbl, char *name, char *value )
 
     sym_ptr = &sym_tbl[ hashpjw( name ) ];
     for( sym = *sym_ptr; sym; sym = sym->next ) {
-        if( stricmp( name, sym->name ) == 0 ) {
+        if( strcasecmp( name, sym->name ) == 0 ) {
             return;
         }
     }
@@ -85,7 +86,7 @@ char *SymbolExists( sym_table sym_tbl, char *name )
     symbol      *sym;
 
     for( sym = sym_tbl[ hashpjw( name ) ]; sym; sym = sym->next ) {
-        if( stricmp( name, sym->name ) == 0 ) {
+        if( strcasecmp( name, sym->name ) == 0 ) {
             if( sym->value != NULL ) {
                 return( sym->value );
             } else {
