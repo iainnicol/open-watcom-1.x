@@ -1409,10 +1409,10 @@ static  opcode_entry    PushFS[] = {
 /**************************/
 /*       op    res   eq          verify          gen             reg fu*/
 _UnPP(  C,    ANY,  NONE ),      V_NO,           R_MAKEU4CONS,   RG_DBL,FU_NO,
-};
 
-
-static  opcode_entry    Push4[] = {
+/* fall through into Push4 table */
+/**** NB. Push4 points here ****/
+/* static  opcode_entry    Push4[] */
 /*************************/
 /*       op    res   eq          verify          gen             reg fu*/
 _UnPP(  R,    ANY,  NONE ),     V_NO,           G_WORDR1,       RG_DBL,FU_ALUX,
@@ -1423,6 +1423,10 @@ _UnPP(  C,    ANY,  NONE ),     V_NO,           G_C1,           RG_,FU_ALUX,
 
 _Un(    ANY,  ANY,  NONE ),     V_NO,           G_UNKNOWN,      RG_DBL,FU_NO,
 };
+
+/* Point at where Push4 used to start */
+/*************************/
+#define Push4 &PushFS[1]
 
 
 static  opcode_entry    Pop4[] = {
