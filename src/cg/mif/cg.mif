@@ -116,6 +116,7 @@ cg_objs = &
     zoiks.obj
 
 cg_dump_objs = &
+    dmpinc.obj &
     dumpan.obj &
     dumpblk.obj &
     dumpconf.obj &

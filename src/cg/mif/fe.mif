@@ -91,10 +91,10 @@ cg_libs = &
 !endif
 
 cg_debug_deps = &
-    $(cg_deps)
+    $(cg_deps) $(o_dir)/dmpinc.obj
 
 cg_debug_libs = &
-    $(cg_libs)
+    $(o_dir)/dmpinc.obj $(cg_libs)
 
 !ifndef cg_dll
 owl_debug_refs_axp_axp = , OWLDumpSymTab

@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Reference cg dump routines.
 *
 ****************************************************************************/
 
@@ -47,19 +46,20 @@ extern void DumpCurrLoop();
 extern void DumpIVList();
 extern void DumpInvariants();
 
-extern void (*__DmpRef[])(void) = {
-        &DumpFPUIns,
-        &Dumpan,
-        &DumpBlk,
-        &DumpConflicts,
-        &DumpCurrLoop,
-        &DumpIns,
-        &DumpOpcodeName,
-        &DumpRegTree,
-        &DumpSc,
-        &DumpGen,
-        &DumpTree,
-        &DumpCurrLoop,
-        &DumpIVList,
-        &DumpInvariants,
-        0 };
+void (*DmpRefCg[])( void ) = {
+    &DumpFPUIns,
+    &Dumpan,
+    &DumpBlk,
+    &DumpConflicts,
+    &DumpCurrLoop,
+    &DumpIns,
+    &DumpOpcodeName,
+    &DumpRegTree,
+    &DumpSc,
+    &DumpGen,
+    &DumpTree,
+    &DumpCurrLoop,
+    &DumpIVList,
+    &DumpInvariants,
+    0
+};

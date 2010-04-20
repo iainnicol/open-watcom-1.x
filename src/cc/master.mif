@@ -154,7 +154,7 @@ $(exe_name).exe : $(drv_objs) $(dll_name).lib drv.lnk
 
 $(exe_name).exe: $(depends_exe) exe.lnk
 !ifdef bootstrap
-        $(cc) $(clflags) $(comp_objs_exe) $(xlibs) $(libs) $(cg_deps)
+        $(cc) $(clflags) $(comp_objs_exe) $(external_dependencies) #$(xlibs) $(libs) $(cg_deps)
 !else ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
         $(osibind) $^&.rex $@ $(osildr)
