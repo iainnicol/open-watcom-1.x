@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Allocate and free thread data.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -126,3 +127,4 @@ void __FiniThreadProcessing( void )
         __FreeThreadDataList();
     #endif
 }
+

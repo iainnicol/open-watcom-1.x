@@ -56,7 +56,7 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
-int VersionCheck( void )
+int VersionCheck()
 {
     return( TRUE );
 }
@@ -83,7 +83,7 @@ void RecordSample( unsigned long offset, unsigned short segment )
 }
 
 
-void GetCommArea( void )
+void GetCommArea()
 {
     if( CommonAddr.segment == 0 ) {     /* can't get the common region yet */
         Comm.cgraph_top = 0;
@@ -99,7 +99,7 @@ void GetCommArea( void )
 }
 
 
-void GetNextAddr( void )
+void GetNextAddr()
 {
     seg_offset  addr;
     struct {
@@ -123,7 +123,7 @@ void GetNextAddr( void )
 }
 
 
-void ResetCommArea( void )
+void ResetCommArea()
 {
     if( CommonAddr.segment != 0 ) {     /* reset common variables */
         Comm.pop_no = 0;
@@ -136,7 +136,7 @@ void ResetCommArea( void )
 }
 
 
-void StopProg( void )
+void StopProg()
 {
 }
 

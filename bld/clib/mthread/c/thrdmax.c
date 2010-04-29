@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Get maximum number of threads (used by FORTRAN runtime).
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -39,5 +40,7 @@ extern  unsigned        __MaxThreads;
 _WCRTLINK unsigned __GetMaxThreads( void )
 /****************************************/
 {
+// Get maximum number of threads (functional interface required for FORTRAN).
+
     return( __MaxThreads );
 }

@@ -531,7 +531,7 @@ BOOL __NTAddThread( thread_data *tdata )
         return( FALSE );
     }
     if( !__AddThreadData( tdata->thread_id, tdata ) ) {
-        __FreeInitThreadData( tdata );
+        lib_free( tdata );
         return( FALSE );
     }
     TlsSetValue( __TlsIndex, tdata );
@@ -582,7 +582,7 @@ int __OS2AddThread( TID tid, thread_data *tdata )
     if( tdata == NULL ) return( 0 );
     if( tid <= __MaxThreads ) {
         if( __initthread( tdata ) ) {
-            __FreeInitThreadData( tdata );
+            lib_free( tdata );
             return( 0 );
         } else {
             __ThreadData[tid].data = tdata;
@@ -591,7 +591,7 @@ int __OS2AddThread( TID tid, thread_data *tdata )
     } else {
         if( !__AddThreadData( tid, tdata ) ) {
             // unable to setup storage
-            __FreeInitThreadData( tdata );
+            lib_free( tdata );
             return( 0 );
         }
     }
@@ -696,7 +696,7 @@ int __RdosAddThread( thread_data *tdata )
         return( 0 );
     }
     if( !__AddThreadData( tdata->thread_id, tdata ) ) {
-        __FreeInitThreadData( tdata );
+        lib_free( tdata );
         return( 0 );
     }
     __tls_set_value( __TlsIndex, tdata );

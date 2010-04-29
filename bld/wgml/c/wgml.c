@@ -57,7 +57,7 @@
 void g_banner( void )
 {
     if( !(GlobalFlags.bannerprinted | GlobalFlags.quiet) ) {
-        out_msg( banner1w( "Script/GML", _WGML_VERSION_ ) CRLF );
+        out_msg( banner1w( "WGML Script/GML", _WGML_VERSION_ ) CRLF );
         out_msg( banner2a() CRLF );
         out_msg( banner3 CRLF );
         out_msg( banner3a CRLF );
@@ -389,7 +389,7 @@ static  void    proc_input( char * filename )
                 }
             }
 
-            if( !get_line( true ) ) {
+            if( !get_line() ) {
                 if( ProcFlags.goto_active ) {
                     char    linestr[MAX_L_AS_STR];
 
@@ -586,7 +586,6 @@ int main( int argc, char * argv[] )
     clock_t     start_time;
     clock_t     end_time;
 
-
     environment = &env;
     if( setjmp( env ) ) {               // if fatal error has occurred
         my_exit( 16 );
@@ -613,7 +612,7 @@ int main( int argc, char * argv[] )
     g_info( INF_CMDLINE, cmdline );
 
     tok_count = proc_options( cmdline );
-    init_sysparm( cmdline, banner1w( "Script/GML", _WGML_VERSION_ ) );
+    init_sysparm( cmdline, banner1w( "WGML Script/GML", _WGML_VERSION_ ) );
     /* don't mem_free cmdline now it is used for sysparm variable */
     g_banner();
     if( tok_count < 4 ) {               // file ( device xyz   is minimum
@@ -657,11 +656,11 @@ int main( int argc, char * argv[] )
                 process_line_full( &t_line, false );
 
             }
-            while( n_cb != NULL ) {
-                tag_cb  *   cb = n_cb->prev;
+            while( wk_cb != NULL ) {
+                tag_cb  *   cb = wk_cb->prev;
 
-                add_tag_cb_to_pool( n_cb );
-                n_cb = cb;
+                add_tag_cb_to_pool( wk_cb );
+                wk_cb = cb;
             }
             if( GlobalFlags.research && (pass < passes) ) {
                 print_sym_dict( global_dict );
@@ -674,7 +673,7 @@ int main( int argc, char * argv[] )
 //          }
 
             if( !GlobalFlags.lastpass && (err_count > 0) ) {
-                g_info( inf_error_stop, passes - pass > 1 ? "es" : "" );
+                g_info( inf_error_stop );
                 break;                  // errors found stop now
             }
         }
@@ -694,12 +693,6 @@ int main( int argc, char * argv[] )
         free_SCR_tags_research();
 
         print_macro_dict( macro_dict, true );
-
-        print_single_funcs_research();
-        free_single_funcs_research();
-
-        print_multi_funcs_research();
-        free_multi_funcs_research();
 
         if( global_dict != NULL ) {
             print_sym_dict( global_dict );
@@ -726,6 +719,7 @@ int main( int argc, char * argv[] )
 
     g_trmem_prt_list();            // all memory freed if no output from call
     g_trmem_close();
+
 
     my_exit( err_count ? 8 : wng_count ? 4 : 0 );
     return( 0 );                    // never reached, but makes compiler happy

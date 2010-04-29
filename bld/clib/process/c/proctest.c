@@ -170,18 +170,21 @@ int main( int argc, char * const argv[] )
     } else {
         int         rc;
         char        **env;
-        const char  *path = "PATH=.";   /* Default PATH if none is found */
+        const char  *path = NULL;
         const char  *child_args[] = { ProgramName, ARG1, ARG2, ARG3, NULL };
         const char  *child_envp[] = { NULL, VAR_NAME "=" VAR_TEXT, "DOS4G=QUIET", NULL };
 
         /* We need to pass PATH down to the child because DOS/4GW style stub
          * programs rely on it to function properly.
          */
-        for( env = environ; *env; ++env )
+        env = environ;
+        while( env ) {
             if( !strncmp( *env, "PATH=", 5 ) ) {
                 path = *env;
                 break;
             }
+            ++env;
+        }
 
         child_envp[0] = path;
 
@@ -200,7 +203,6 @@ int main( int argc, char * const argv[] )
 
         /* Modify our environment that child will inherit */
         VERIFY( !setenv( VAR_NAME, VAR_TEXT, 1 ) );
-        VERIFY( !setenv( "DOS4G", "QUIET", 1 ) );
         
         rc = spawnl( P_WAIT, ProgramName, ProgramName, ARG1, ARG2, ARG3, NULL );
         VERIFY( rc == CHILD_RC );
@@ -243,7 +245,7 @@ int main( int argc, char * const argv[] )
 
         status = unlink( "test.fil" );
         VERIFY( status == 0 );
-
+        
         signal_count = 0;
         signal_number = 0;
         /* Install SIGBREAK handler */

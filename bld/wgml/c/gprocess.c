@@ -152,14 +152,13 @@ static void split_at_GML_tag( void )
             pchar++;                    // handle repeated GML_chars
         }
         for( p2 = pchar + 1; (p2 < (buff2 + buf_size))
-            && is_id_char( *p2 ); p2++ )
-            /* empty */ ;
+             && is_id_char( *p2 ); p2++ )
+            ;                           // empty
 
         if( (p2 > pchar + 1) && ((*p2 == '.') || (*p2 == ' ')
 
      /* the following compare is logically ok, but would require to verify */
      /* that the found tag is really a (user) tag  TBD                     */
-
      /*      || (*p2 == GML_char)                                          */
              ) ) {                      // 'good' tag end
 
@@ -178,14 +177,14 @@ static void split_at_GML_tag( void )
 /*  take the contents of the input line in buff2 and try to make the best  */
 /*  of it                                                                  */
 /*  Processing as specified in wgmlref.pdf chapter 8.1 processing rules    */
-/*  and results from testing with wgml 4                                   */
-/*                                        imcomplete               TBD     */
+/*   incomplete                                                    TBD     */
 /*                                                                         */
 /***************************************************************************/
 
 void        process_line( void )
 {
     static const char   ampchar = '&';
+    char            *   workbuf;
     char            *   pw;
     char            *   pwend;
     char            *   p2;
@@ -245,52 +244,51 @@ void        process_line( void )
             }
 
             /***************************************************************/
-            /*  for records starting  .' ignore control word separator     */
-            /*  or if control word separator is 0x00                       */
+            /*  for lines starting  .' ignore control word seperator       */
             /***************************************************************/
-            if( (*(buff2 + k) == '\'') || (CW_sep_char == '\0') ) {
+            if( *(buff2 + k) == '\'' ) {
                 ProcFlags.CW_sep_ignore = true;
             } else {
                 ProcFlags.CW_sep_ignore = false;
+            }
 
-                /***********************************************************/
-                /*  if 2 CW_sep_chars follow, don't split line             */
-                /*  ... this is NOWHERE documented, but wgml 4.0 tested    */
-                /*  also don't split if last char of record                */
-                /***********************************************************/
+            /***************************************************************/
+            /*  if 2 CW_sep_chars follow, don't split line                 */
+            /*  ... this is NOWHERE documented, but wgml 4.0 tested        */
+            /***************************************************************/
 
-                if( !(*(buff2 + 1) == '\'') ) {
-                    pchar = strchr( buff2 + 2, CW_sep_char );
+            if( !(*(buff2 + 1) == '\'') ) {
+                pchar = strchr( buff2 + 2, CW_sep_char );
+                if( (pchar != NULL) ) {
+                    if( *(pchar + 1) != CW_sep_char ) {
+                        split_input( buff2, pchar + 1 );// split after CW_sep_char
 
-                    if( (pchar != NULL) && (*(pchar + 1) != '\0') ) {
-                        if( *(pchar + 1) != CW_sep_char ) {
-                            split_input( buff2, pchar + 1 );// split after CW_sep_char
-
-                            buff2_lg = strnlen_s( buff2, buf_size ) - 1;
-                            *(buff2 + buff2_lg) = '\0'; // terminate 1. part
+                        buff2_lg = strnlen_s( buff2, buf_size );// new length of first part
+                        buff2_lg--;     // ignore CW_sep_char
+                        *(buff2 + buff2_lg) = '\0';
 #if 0
-                        } else {        // ignore 1 CW_sep_char TBD
-                            memmove_s( pchar, pchar - buff2 + buff2_lg + 1,
-                                       pchar + 1, pchar - buff2 + buff2_lg );
-                            buff2_lg = strnlen_s( buff2, buf_size );
+                    } else {            // ignore 1 CW_sep_char
+                        memmove_s( pchar, pchar - buff2 + buff2_lg + 1,
+                                   pchar + 1, pchar - buff2 + buff2_lg );
+                        buff2_lg = strnlen_s( buff2, buf_size );
 #endif
-                        }
                     }
                 }
             }
         }
     }
 
+    workbuf = mem_alloc( buf_size );
 
 /*
  * look for symbolic variables and single letter functions,
- *  ignore multi letter function for now, but remember there was one
+ *  ignore multi letter functions for now, but remember there was one
  */
     ProcFlags.substituted = false;
     anything_substituted = false;
     ProcFlags.late_subst = false;
-    ProcFlags.unresolved  = false;
     var_unresolved = NULL;
+    ProcFlags.unresolved  = false;
     functions_found = false;
     do {                                // until no more substitutions
         strcpy_s( workbuf, buf_size, buff2 );   // copy input buffer
@@ -321,37 +319,32 @@ void        process_line( void )
             /*  functions used within the OW doc build system:         */
             /*   &e'  existance of variable 0 or 1                     */
             /*   &l'  length of variable content                       */
-            /*        or if undefined variable length of name          */
+            /*        or if undefined length of name                   */
             /*   &u'  upper                                            */
             /*                                                         */
-            /*   &s'  subscript                                        */
-            /*   &S'  superscript                                      */
+            /*   &s'  subscript    These are recognized,   TBD         */
+            /*   &S'  superscript  ... but processed as &u'            */
             /*                                                         */
             /*   other single letter functions are not used AFAIK      */
             /*                                                         */
             /***********************************************************/
             if( isalpha( *(pchar + 1) ) && *(pchar + 2) == '\''
                 && *(pchar + 3) > ' ' ) {
-                                        // not for .if '&*' eq '' .th ...
-                                        // only    .if '&x'foo' eq '' .th
+                // not for .if '&*' eq '' .th ...
+                // only    .if '&x'foo' eq '' .th
+
                 char * * ppval = &p2;
 
-                if( GlobalFlags.firstpass && input_cbs->fmflags & II_research ) {
-                    add_single_func_research( pchar + 1 );
-                }
                 pw = scr_single_funcs( pchar, pwend, ppval );
-                pchar = strchr( pw, ampchar );  // look for next & in buffer
-
+                pchar = strchr( pw, ampchar );// look for next & in buffer
                 continue;
             }
 
             if( *(pchar + 1) == '\'' ) {// multi letter function
-                functions_found = true; // remember there is a function
-
-                *p2++ = *pw++;          // copy &
+                *p2++ = *pw++;          // over & and copy
                 pchar = strchr( pw, ampchar );  // look for next & in buffer
-
-                continue;               // and ignore function for now
+                functions_found = true; // remember there is a function
+                continue;               // and ignore function
             }
 
             varstart = pw;              // remember start of var
@@ -374,7 +367,6 @@ void        process_line( void )
                 p2 += pchar - varstart;
                 pw = pchar;
                 pchar = strchr( pw, ampchar );  // look for next & in buffer
-
                 continue;
             }
 
@@ -387,13 +379,11 @@ void        process_line( void )
                 rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
                                   &symsubval );
                 if( rc == 2 && (symsubval->base->flags & late_subst) ) {
-                    if( !functions_found ) {// TBD functions and late subst
-                        ProcFlags.late_subst = true;// remember special for : &
-                        rc = 0;
-                    }
+                    ProcFlags.late_subst = true;// remember special for : &
+                    rc = 0;
                 }
             }
-            if( rc == 2 ) {             // variable found + resolved
+            if( rc == 2 ) {             // variable found
                 ProcFlags.substituted = true;
                 if( !ProcFlags.CW_sep_ignore &&
                     symsubval->value[0] == CW_sep_char &&
@@ -409,9 +399,7 @@ void        process_line( void )
                     split_input_var( buff2, pchar, &symsubval->value[1] );
                     pw = pwend + 1;     // stop substitution for this record
                     varstart = NULL;
-
                     break;
-
                 } else {
                     pw = symsubval->value;
                     if( symsubval->value[0] == CW_sep_char &&
@@ -425,7 +413,7 @@ void        process_line( void )
                     }
                     pw = pchar;
                 }
-            } else {                    // variable not found
+            } else {
                 if( (symvar_entry.flags & local_var )  // local var not found
                     && (input_cbs->fmflags & II_macro) ) {// .. and inside macro
                     if( (symvar_entry.name[0] == '\0') &&
@@ -445,7 +433,6 @@ void        process_line( void )
                         while( pw < pchar ) {   // treat var name as text
                             *p2++ = *pw++;  // and copy
                         }
-
                         continue;       // pchar points already to next &
 
                     } else {
@@ -542,13 +529,26 @@ void        process_line( void )
                 /*                                                         */
                 /*  functions used within the OW doc build system:         */
                 /*                                                         */
-                /*   &'delstr(          &'d2c(              &'index(       */
-                /*   &'insert(          &'left(             &'length(      */
-                /*   &'lower(           &'min(              &'pos(         */
-                /*   &'right(           &'strip(            &'substr(      */
-                /*   &'subword(         &'translate(        &'upper(       */
-                /*   &'veclastpos(      &'vecpos(           &'word(        */
-                /*   &'wordpos(         &'words(                           */
+                /*   &'delstr(                                             */
+                /*   &'d2c(                                                */
+                /*   &'index(                                              */
+                /*   &'insert(                                             */
+                /*   &'left(                                               */
+                /*   &'length(                                             */
+                /*   &'lower(                                              */
+                /*   &'min(                                                */
+                /*   &'pos(                                                */
+                /*   &'right(                                              */
+                /*   &'strip(                                              */
+                /*   &'substr(                                             */
+                /*   &'subword(                                            */
+                /*   &'translate(                                          */
+                /*   &'upper(                                              */
+                /*   &'veclastpos(                                         */
+                /*   &'vecpos(                                             */
+                /*   &'word(                                               */
+                /*   &'wordpos(                                            */
+                /*   &'words(                                              */
                 /*                                                         */
                 /*   Others are recognized but not processed               */
                 /*   &'c2x(    is used for test output                     */
@@ -559,9 +559,7 @@ void        process_line( void )
 
                     pw = scr_multi_funcs( pchar, pwend, ppval, valsize );
                     pchar = strchr( pw, ampchar );// look for next & in buffer
-
                     continue;
-
                 } else {
                     *p2++ = *pw++;      // over &
                     pchar = strchr( pw, ampchar );// look for next & in buffer
@@ -584,6 +582,7 @@ void        process_line( void )
         anything_substituted ) {
         g_info( inf_subst_line, buff2 );// show line with substitution(s)
     }
+    mem_free( workbuf );
 
     scan_start = buff2;
     scan_stop  = buff2 + buff2_lg;
@@ -598,6 +597,7 @@ void        process_line( void )
 void        process_late_subst( void )
 {
     static const char   ampchar = '&';
+    char            *   workbuf;
     char            *   pw;
     char            *   pwend;
     char            *   p2;
@@ -650,6 +650,7 @@ void        process_late_subst( void )
         }
     }
 
+    workbuf = mem_alloc( buf_size );
 
     /***********************************************************************/
     /*  Look for late-subst variables, ignore all others                   */
@@ -703,7 +704,6 @@ void        process_late_subst( void )
                 p2 += pchar - varstart;
                 pw = pchar;
                 pchar = strchr( pw, ampchar );  // look for next & in buffer
-
                 continue;
             }
 
@@ -716,14 +716,14 @@ void        process_late_subst( void )
                 rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
                                   &symsubval );
             }
-            if( rc == 2 && (symsubval->base->flags & late_subst) ) {
+            if( rc == 2 ) {             // variable found
                 ProcFlags.substituted = true;
                 if( !ProcFlags.CW_sep_ignore &&
                     symsubval->value[0] == CW_sep_char &&
                     symsubval->value[1] != CW_sep_char ) {
 
-                                    // split record at control word separator if
-                                    // variable starts with SINGLE cw separator
+                                        // split record at control word separator
+                                        // if variable starts with SINGLE cw separator
 
                     if( *pchar == '.' ) {
                         pchar++;        // skip optional terminating dot
@@ -732,9 +732,7 @@ void        process_late_subst( void )
                     split_input_var( buff2, pchar, &symsubval->value[1] );
                     pw = pwend + 1;     // stop substitution for this record
                     varstart = NULL;
-
                     break;
-
                 } else {
                     pw = symsubval->value;
                     if( symsubval->value[0] == CW_sep_char &&
@@ -767,7 +765,6 @@ void        process_late_subst( void )
                         while( pw < pchar ) {   // treat var name as text
                             *p2++ = *pw++;  // and copy
                         }
-
                         continue;       // pchar points already to next &
 
                     } else {
@@ -779,7 +776,7 @@ void        process_late_subst( void )
                         pw = pchar;
                     }
                 } else {                // global var not found
-                                        // .. or local var outside of macro
+
                     /*******************************************************/
                     /*  keep trying for constructs such as                 */
                     /*                                                     */
@@ -835,6 +832,7 @@ void        process_late_subst( void )
         anything_substituted ) {
         g_info( inf_subst_line, buff2 );// show line with substitution(s)
     }
+    mem_free( workbuf );
 
     scan_start = buff2;
     scan_stop  = buff2 + buff2_lg;
