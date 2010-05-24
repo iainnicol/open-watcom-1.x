@@ -108,7 +108,13 @@ Lexer::Token Nt::parse( Lexer* lexer )
                 lexer->tagId() == Lexer::H5 ||
                 lexer->tagId() == Lexer::H6 ||
                 lexer->tagId() == Lexer::ACVIEWPORT ||
-                lexer->tagId() == Lexer::FN )
+                lexer->tagId() == Lexer::CAUTION ||
+                lexer->tagId() == Lexer::ECAUTION ||
+                lexer->tagId() == Lexer::FN ||
+                lexer->tagId() == Lexer::NOTE ||
+                lexer->tagId() == Lexer::NT ||
+                lexer->tagId() == Lexer::WARNING ||
+                lexer->tagId() == Lexer::EWARNING )
                     parseCleanup( lexer, tok );
             else if( parseBlock( lexer, tok ) ) {
                 if( parseListBlock( lexer, tok ) )

@@ -51,6 +51,12 @@ WEXPORT WMdiChild::WMdiChild( WMdiWindow* parent, const char* text,
 }
 
 
+WEXPORT WMdiChild::~WMdiChild() {
+/*******************************/
+
+}
+
+
 bool WMdiChild::reallyClose() {
 /*****************************/
 
@@ -60,14 +66,4 @@ bool WMdiChild::reallyClose() {
 
     GUIMinimizeWindow( handle() );
     return( FALSE );
-}
-
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-WEXPORT WMdiChild::~WMdiChild() {
-/*******************************/
-
 }

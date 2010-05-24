@@ -162,7 +162,11 @@ Write8087 PROC
         push    bx
         mov     ds,dx
         mov     bx,ax
+ifdef REAL_MODE
+        fnrstor [bx]
+else
         frstor  [bx]
+endif
         fwait
         pop     bx
         pop     ds
@@ -172,7 +176,7 @@ Write8087 ENDP
 comment ~
     These routines read/write the FPU or emulator state when we're on a 386
     or better. They're a bit wierd so here's a explanation. There are operand
-    size overrides on the fnsave and frstor so that a real FPU will save the
+    size overrides on the fnsave and fnrstor so that a real FPU will save the
     full 32-bit state (this code is in a 16-bit segment). The emulator does
     not respect the operand size, but since it always stores the full state
     anyway that's OK. However, the 32-bit emulator does not know how to decode
@@ -184,21 +188,18 @@ comment ~
 
 ifndef REAL_MODE
 
-        .386
-
 Read387 PROC
         public  "C",Read387
         push    ds
         push    bx
-	push    edi
         mov     ds,dx
         mov     bx,ax
-	movzx   edi,bx
-        fsaved  ds:[bx]
-	fwait
-        frstord ds:[bx]
+        db      66H
+        fnsave  ds:[bx]
         fwait
-	pop     edi
+        db      66H
+        fnrstor ds:[bx]
+        fwait
         pop     bx
         pop     ds
         ret
@@ -208,14 +209,11 @@ Write387 PROC
         public  "C",Write387
         push    ds
         push    bx
-	push    edi
         mov     ds,dx
         mov     bx,ax
-	movzx   edi,bx
-	fwait
-        frstord ds:[bx]
+        db      66h
+        fnrstor ds:[bx]
         fwait
-	pop     edi
         pop     bx
         pop     ds
         ret

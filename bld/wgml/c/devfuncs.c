@@ -92,7 +92,7 @@
 *                   df_bad_code()
 *                   df_binary()
 *                   df_cancel()
-*                   df_clearpc()
+*                   df_clearPC()
 *                   df_date()
 *                   df_decimal()
 *                   df_default_width()
@@ -711,14 +711,14 @@ static void * df_bad_code( void )
  * always be "0x00" for the functions in this section. 
  */
 
-/* Function df_clearpc().
- * Implements device function %clearpc(). This is one of several
+/* Function df_clearPC().
+ * Implements device function %clearPC(). This is one of several
  * solutions suggested on the developer's newsgroup. Better solutions
  * may exist. The Linux solution is based on information on what does
  * and does not work in the developer's newsgroup.
  */
 
-static void * df_clearpc( void )
+static void * df_clearPC( void )
 {
     if( current_df_data.parameter_type != 0x00 ) format_error();
 
@@ -2209,7 +2209,7 @@ static df_function device_function_table[0x3D] = {
     &df_ifnen,              // 0x1B %ifnen()
     &df_endif,              // 0x1C %endif()
     &df_do_nothing_num,     // 0x1D %flushpage()
-    &df_clearpc,            // 0x1E %clearpc()
+    &df_clearPC,            // 0x1E %clearPC()
     &df_do_nothing_num,     // 0x1F %clear3270()
     &df_do_nothing_num,     // 0x20 %textpass()
     &df_do_nothing_num,     // 0x21 %ulineon()
@@ -2278,7 +2278,7 @@ static df_function driver_function_table[0x3D] = {
     &df_ifnen,              // 0x1B %ifnen()
     &df_endif,              // 0x1C %endif()
     &df_do_nothing_num,     // 0x1D %flushpage()
-    &df_do_nothing_num,     // 0x1E %clearpc()
+    &df_do_nothing_num,     // 0x1E %clearPC()
     &df_do_nothing_num,     // 0x1F %clear3270()
     &df_textpass,           // 0x20 %textpass()
     &df_ulineon,            // 0x21 %ulineon()
@@ -2847,11 +2847,8 @@ static void fb_first_text_chars( text_chars * in_chars, \
         ob_insert_block( in_chars->text, in_chars->count, true, true, \
                                                         in_chars->font_number);
 
-        /* Checking htab_done here causes discrepancies between our output
-         * and wgml 4.0's output.
-         */
-
-        if( undo_shift && text_out_open ) post_text_output();
+        if( (undo_shift || htab_done) && text_out_open ) post_text_output();
+///        if( htab_done && text_out_open ) post_text_output();
     }
 
     /* If uline is "true", then emit the underscore characters. %dotab() must
@@ -2861,12 +2858,8 @@ static void fb_first_text_chars( text_chars * in_chars, \
     if( uline ) {
         if( !text_out_open ) pre_text_output();
         output_uscores( in_chars );
-
-        /* Checking htab_done here causes discrepancies between our output
-         * and wgml 4.0's output.
-         */
-
-        if( undo_shift && text_out_open ) post_text_output();
+        if( (undo_shift || htab_done) && text_out_open ) post_text_output();
+///        if( htab_done && text_out_open ) post_text_output();
     }
 
     /* Update variables and interpret the post-output function block. */
@@ -2957,12 +2950,8 @@ static void fb_new_font_text_chars( text_chars * in_chars, \
         if( !text_out_open ) pre_text_output();
         ob_insert_block( in_chars->text, in_chars->count, true, true, \
                                                         in_chars->font_number);
-
-        /* Checking htab_done here causes discrepancies between our output
-         * and wgml 4.0's output.
-         */
-
-        if( undo_shift && text_out_open ) post_text_output();
+        if( (undo_shift || htab_done) && text_out_open ) post_text_output();
+///        if( htab_done && text_out_open ) post_text_output();
     }
 
     /* If uline is "true", then emit the underscore characters. %dotab() must
@@ -2972,12 +2961,8 @@ static void fb_new_font_text_chars( text_chars * in_chars, \
     if( uline ) {
         if( !text_out_open ) pre_text_output();
         output_uscores( in_chars );
-
-        /* Checking htab_done here causes discrepancies between our output
-         * and wgml 4.0's output.
-         */
-
-        if( undo_shift && text_out_open ) post_text_output();
+        if( (undo_shift || htab_done) && text_out_open ) post_text_output();
+///        if( htab_done && text_out_open ) post_text_output();
     }
 
     /* Update variables and interpret the post-output function block. */
@@ -3295,12 +3280,8 @@ static void fb_subsequent_text_chars( text_chars * in_chars, \
         if( !text_out_open ) pre_text_output();
         ob_insert_block( in_chars->text, in_chars->count, true, true, \
                                                         in_chars->font_number);
-
-        /* Checking htab_done here causes discrepancies between our output
-         * and wgml 4.0's output.
-         */
-
-        if( undo_shift && text_out_open ) post_text_output();
+        if( (undo_shift || htab_done) && text_out_open ) post_text_output();
+///        if( htab_done && text_out_open ) post_text_output();
     }
 
     /* If uline is "true", then emit the underscore characters. %dotab() must
@@ -3310,12 +3291,8 @@ static void fb_subsequent_text_chars( text_chars * in_chars, \
     if( uline ) {
         if( !text_out_open ) pre_text_output();
         output_uscores( in_chars );
-
-        /* Checking htab_done here causes discrepancies between our output
-         * and wgml 4.0's output.
-         */
-
-        if( undo_shift && text_out_open ) post_text_output();
+        if( (undo_shift || htab_done) && text_out_open ) post_text_output();
+///        if( htab_done && text_out_open ) post_text_output();
     }
 
     /* Update variables and interpret the post-output function block. */

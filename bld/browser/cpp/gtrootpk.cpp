@@ -42,6 +42,11 @@ TreeRootElement::TreeRootElement( TreeRoot * root )
 {
 }
 
+TreeRootElement::~TreeRootElement()
+//---------------------------------
+{
+}
+
 void TreeRootElement::okPressed()
 //-------------------------------
 {
@@ -60,6 +65,11 @@ TreeRootSelect::TreeRootSelect( WWindow * prt, TreeRootList * roots )
                     : EditModuleList( prt, "Select Root Nodes", FALSE )
                     , _roots( roots )
 //---------------------------------------------------------------------
+{
+}
+
+TreeRootSelect::~TreeRootSelect()
+//-------------------------------
 {
 }
 
@@ -109,6 +119,11 @@ OutlineRootElement::OutlineRootElement( OutlineElement * elm )
 {
 }
 
+OutlineRootElement::~OutlineRootElement()
+//---------------------------------
+{
+}
+
 void OutlineRootElement::okPressed()
 //-------------------------------
 {
@@ -123,6 +138,11 @@ OutlineRootSelect::OutlineRootSelect( WWindow * prt, OutlineElement * root )
                     : EditModuleList( prt, "Select Root Nodes", FALSE )
                     , _root( root )
 //---------------------------------------------------------------------
+{
+}
+
+OutlineRootSelect::~OutlineRootSelect()
+//-------------------------------------
 {
 }
 
@@ -162,25 +182,3 @@ void OutlineRootSelect::loadBox()
     }
 }
 
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-TreeRootElement::~TreeRootElement()
-//---------------------------------
-{
-}
-
-TreeRootSelect::~TreeRootSelect()
-//-------------------------------
-{
-}
-OutlineRootElement::~OutlineRootElement()
-//---------------------------------
-{
-}
-
-OutlineRootSelect::~OutlineRootSelect()
-//-------------------------------------
-{
-}

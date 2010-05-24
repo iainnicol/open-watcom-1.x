@@ -88,16 +88,10 @@ void FTSElement::build()
             ++firstPage;
         }
         score[ 3 ] = ( score[ 2 ] - firstPage ) * sizeof( STD1::uint8_t ) + sizeof( STD1::uint16_t );
+        //run length encode the truncated bitstring
         std::vector< STD1::uint8_t > rle;
-        if( pages.size() > 3 ) {
-            //run length encode the truncated bitstring
-            //but only if data > 3 bytes because minimum size of
-            //rle encoding is 3 bytes
-            encode( rle );
-            score[ 4 ] = ( rle.size() + 1 ) * sizeof( STD1::uint8_t );
-        }
-        else
-            score[ 4 ] = static_cast< size_t >( -1 );
+        encode( rle );
+        score[ 4 ] = ( rle.size() + 1 ) * sizeof( STD1::uint8_t );
         size_t index = 0;
         size_t value = score[ 0 ];
         for( size_t count = 1; count < sizeof( score ) / sizeof( size_t ); ++count ) {
@@ -125,13 +119,13 @@ void FTSElement::build()
 /***************************************************************************/
 //The number of pages can never exceed 65535 because the count is stored in
 //an STD1::uint16_t (unsigned short int)
-//only runs of 3 or more are considered to be "same"
+//TODO: Rework so only runs of 3 or more are done
 void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
 {
     std::vector< STD1::uint8_t > dif;
     ConstPageIter tst( pages.begin() );
     ConstPageIter itr( pages.begin() + 1 );
-    bool same( *itr == *tst  && *( itr + 1) == *tst  );
+    bool same( *itr == *tst );
     size_t sameCount( 2 );
     while( itr != pages.end() ) {
         if( same ) {
@@ -156,7 +150,7 @@ void FTSElement::encode( std::vector< STD1::uint8_t >& rle )
                 ++sameCount;
         }
         else {
-            if( *itr == *tst && itr + 1 != pages.end() && *( itr + 1 ) == *tst ) {
+            if( *itr == *tst ) {
                 std::vector< STD1::uint8_t >::const_iterator byte( dif.begin() );
                 size_t difSize( dif.size() );
                 STD1::uint8_t code( 0xFF );

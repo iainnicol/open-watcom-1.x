@@ -50,6 +50,11 @@ BlipCount::BlipCount( const char * str )
     start( str );
 }
 
+BlipCount::~BlipCount()
+//---------------------
+{
+}
+
 void BlipCount::start( const char * startMessage )
 //------------------------------------------------
 {
@@ -114,13 +119,4 @@ void BlipCount::end( const char * endMsg )
     puts( endMsg );
     fflush( stdout );
 #endif
-}
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 657 9
-
-BlipCount::~BlipCount()
-//---------------------
-{
 }

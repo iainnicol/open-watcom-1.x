@@ -111,6 +111,11 @@ HotSpotList::HotSpotList( WWindow * win, bool infinite )
 {
 }
 
+HotSpotList::~HotSpotList()
+//-------------------------
+{
+}
+
 bool HotSpotList::HLPaint()
 //-------------------------
 {
@@ -553,13 +558,3 @@ bool HotSpotList::HLKeyDown(  WKeyCode key, WKeyState state )
 
     return FALSE;
 }
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 657 9
-
-HotSpotList::~HotSpotList()
-//-------------------------
-{
-}
-

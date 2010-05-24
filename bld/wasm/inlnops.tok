@@ -267,6 +267,9 @@ fndisi
 fneni
 fninit
 fnop
+fnrstor
+fnrstord
+fnrstorw
 fnsave
 fnsaved
 fnsavew

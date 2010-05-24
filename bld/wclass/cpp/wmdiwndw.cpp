@@ -65,6 +65,12 @@ WEXPORT WMdiWindow::WMdiWindow( const char *text, WStyle style )
 }
 
 
+WEXPORT WMdiWindow::~WMdiWindow() {
+/*********************************/
+
+}
+
+
 WPopupMenu * WEXPORT WMdiWindow::getMdiPopup() {
 /**********************************************/
 
@@ -95,13 +101,3 @@ WRect WEXPORT WMdiWindow::defaultRectangle() {
     }
     return( r );
 }
-
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-WEXPORT WMdiWindow::~WMdiWindow() {
-/*********************************/
-}
-

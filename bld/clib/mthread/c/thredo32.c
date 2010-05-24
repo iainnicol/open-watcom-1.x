@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  OS/2 32-bit threading routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 

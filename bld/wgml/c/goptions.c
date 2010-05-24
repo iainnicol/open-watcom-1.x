@@ -258,9 +258,7 @@ static  long    get_num_value( char * p )
 static void ign_option( option * opt )
 {
 
-    if( strcmp( opt->option, "wscript" ) ) {// ignore wscript without msg
-        g_warn( wng_ign_option, opt->option );
-    }
+    g_warn( wng_ign_option, opt->option );
     wng_count++;
     if( opt->parmcount > 0 ) {
         int     k;

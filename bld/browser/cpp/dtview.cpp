@@ -44,6 +44,16 @@
 #  include "strcview.h"
 #endif
 
+DetailView::DetailView()
+//----------------------
+{
+}
+
+DetailView::~DetailView()
+//-----------------------
+{
+}
+
 bool DetailView::aboutToClose()
 //-----------------------------
 {
@@ -92,18 +102,3 @@ static DetailView * DetailView::createView( const Symbol * sym, ViewType vt )
         return NULL;
     }
 }
-
-// Complain about defining trivial constructor/destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-DetailView::DetailView()
-//----------------------
-{
-}
-
-DetailView::~DetailView()
-//-----------------------
-{
-}
-

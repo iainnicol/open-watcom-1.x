@@ -42,6 +42,10 @@ VAbout::VAbout( WWindow* parent )
 {
 }
 
+VAbout::~VAbout()
+{
+}
+
 void VAbout::initialize()
 {
     int fw = WSystemMetrics::dialogFrameWidth();
@@ -81,12 +85,3 @@ void VAbout::okButton( WWindow* )
 {
     quit( TRUE );
 }
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-  
-VAbout::~VAbout()
-{
-}
-

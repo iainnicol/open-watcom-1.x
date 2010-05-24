@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  System functions for 16-bit DOS.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -33,7 +34,7 @@
 #include "tinyio.h"
 
 
-void SysInit( void )
+void SysInit()
 {
 }
 

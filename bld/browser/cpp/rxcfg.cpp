@@ -57,6 +57,11 @@ RegExpCfg::RegExpCfg( WWindow * parent, const RXOptions & def,
 {
 }
 
+RegExpCfg::~RegExpCfg()
+//---------------------
+{
+}
+
 void RegExpCfg::initialize()
 //--------------------------
 {
@@ -278,13 +283,4 @@ void RegExpCfg::setValues( const RXOptions & opt )
             NODEFAULT;
         }
     }
-}
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-RegExpCfg::~RegExpCfg()
-//---------------------
-{
 }

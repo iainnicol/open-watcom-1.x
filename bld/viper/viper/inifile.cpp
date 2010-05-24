@@ -114,6 +114,8 @@
         _path = path;
     }
     
+    IniFile::~IniFile( ) { }
+    
     int IniFile::read( const char *section, const char *key, const char *deflt,
                   char *buffer, int len )
     {
@@ -124,13 +126,6 @@
     {
         return( WritePrivateProfileString( section, key, string, _path) );
     }
-
-    // Complain about defining trivial destructor inside class
-    // definition only for warning levels above 8 
-#pragma warning 657 9
-
-   IniFile::~IniFile( ) { }
-    
 #else
     #error UNSUPPORTED OS
 #endif

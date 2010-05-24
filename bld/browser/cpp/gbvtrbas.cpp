@@ -61,6 +61,11 @@ GlobalViewTree::GlobalViewTree( MenuManager * mgr )
 {
 }
 
+GlobalViewTree::~GlobalViewTree()
+//-------------------------------
+{
+}
+
 void GlobalViewTree::setMenus( MenuManager * mgr )
 //------------------------------------------------
 {
@@ -220,13 +225,3 @@ ViewEvent GlobalViewTree::wantEvents()
 {
     return VENoEvent;
 }
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-GlobalViewTree::~GlobalViewTree()
-//-------------------------------
-{
-}
-

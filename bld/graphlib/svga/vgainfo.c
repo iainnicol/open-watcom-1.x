@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Display the detected SuperVGA type.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
@@ -54,8 +55,8 @@ char                    *SVGANames[] = {
 };
 
 
-void main( void )
-//===============
+void main()
+//=========
 
 {
     struct videoconfig  vc;

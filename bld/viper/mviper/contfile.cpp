@@ -39,6 +39,10 @@ ContFile::ContFile( char contChar, int maxLine )
 {
 }
 
+ContFile::~ContFile()
+{
+}
+
 char ContFile::getByte()
 {
     return WFile::getByte();
@@ -59,12 +63,3 @@ bool ContFile::putByte( char ch )
     }
     return WFile::putByte( ch );
 }
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-ContFile::~ContFile()
-{
-}
-

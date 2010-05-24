@@ -743,7 +743,7 @@ boolean SymIsComdatData(        // TEST IF DATA SYMBOL IS COMDAT
     SYMBOL fn_sym;
 
     symGetScope( sym, scope );
-    if( !scope || ScopeEnclosedInUnnamedNameSpace( scope ) ) {
+    if( ScopeEnclosedInUnnamedNameSpace( scope ) ) {
         return( FALSE );
     }
     var_type = TypeModFlags( sym->sym_type, &flag );

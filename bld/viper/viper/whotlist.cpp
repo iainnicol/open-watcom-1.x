@@ -55,6 +55,11 @@ WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, W
     changeBackground( WPaintAttrControlBackground );
 }
 
+WHotSpotList::~WHotSpotList()
+//-------------------------
+{
+}
+
 bool WHotSpotList::gettingFocus( WWindow* )
 //-----------------------
 {
@@ -485,14 +490,3 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
     }
     return FALSE;
 }
-
-
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-WHotSpotList::~WHotSpotList()
-//-------------------------
-{
-}
-

@@ -58,6 +58,11 @@ EdModule::EdModule( WWindow * prnt, const char * name,
 {
 }
 
+EdModule::~EdModule()
+//-------------------
+{
+}
+
 void EdModule::initialize()
 //-------------------------
 {
@@ -207,11 +212,3 @@ void EdModule::cancelButton( WWindow * )
     quit( FALSE );
 }
 
-// Complain about defining trivial destructor inside class
-// definition only for warning levels above 8 
-#pragma warning 656 9
-
-EdModule::~EdModule()
-//-------------------
-{
-}
