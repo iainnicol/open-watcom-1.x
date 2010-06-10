@@ -36,6 +36,7 @@
 #include "wlnkmsg.h"
 #include "virtmem.h"
 #include "obj2supp.h"
+#include "omfreloc.h"
 #include "dbgall.h"
 #include "mapio.h"
 #include "overlays.h"
@@ -59,7 +60,7 @@ void ObjPass2( void )
     CurrSect = Root;/*  TAI */
     PModList( Root->mods );
     OvlPass2();
-    if( ( FmtData.type & MK_OVERLAYS ) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         ProcDistMods();
     } else {
         CurrSect = Root;
@@ -85,11 +86,12 @@ void PModList( mod_entry *head )
 void PModule( mod_entry *obj )
 /***********************************/
 {
-    if( !( obj->modinfo & MOD_NEED_PASS_2 ) )
+    if( !(obj->modinfo & MOD_NEED_PASS_2) )
         return;
     DEBUG(( DBG_BASE, "2 : processing module %s", obj->name ));
     CurrMod = obj;
     IterateModRelocs( CurrMod->relocs, CurrMod->sizerelocs, IncExecRelocs );
+    DoBakPats();
     DBIGenModule();
     CheckStop();
 }
