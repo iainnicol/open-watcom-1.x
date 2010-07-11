@@ -120,7 +120,7 @@ static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *arglist 
     if( arglist ) {
         vfprintf( fp, AsResBuffer, *arglist );
     } else {
-        fprintf( fp, AsResBuffer );
+        fputs( AsResBuffer, fp );
     }
     fputc( '\n', fp );
 }

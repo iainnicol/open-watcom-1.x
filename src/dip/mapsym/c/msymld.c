@@ -375,7 +375,7 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
     sym_segdef      seg;
     char            name[256];
     unsigned        name_len;
-    unsigned_32     seg_start;
+    unsigned long   seg_start;
     int             i;
     int             is_code;
 
@@ -403,7 +403,7 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
         if( ds != DS_OK )
             return( ds );
 
-        LoadSymTable( h, ii, seg.num_syms, seg_start, seg.sym_tab_ofs,
+        LoadSymTable( h, ii, seg.num_syms, (unsigned_32)seg_start, seg.sym_tab_ofs,
             seg.load_addr, (seg.sym_type & SYM_FLAG_32BIT) != 0 );
 
         if( BSeek( h, SYM_PTR_TO_OFS( seg.next_ptr ), DIG_ORG ) == -1UL ) {

@@ -929,7 +929,7 @@ void ProcFile( FILE *fp, bool is_intel )
             /* something bailed out... */
             if( raw_dump ) {
                 Output( INDENT "Error at offset %x" CRLF,
-                        (unsigned_32)RecOffset );
+                        (unsigned_32)RecOffset() );
             } else if( !EndRec() ) {
                 Output( INDENT "Remainder of record follows:" CRLF );
                 OutputData( (unsigned_32)RecOffset(), 0L );

@@ -197,7 +197,7 @@ static void doReloc( asm_reloc *reloc, ins_operand *op, owl_reloc_type rtype, ui
     if( op == NULL ) return;
     if( !( OP_HAS_RELOC( op ) ) ) return;
     addReloc( reloc, op->reloc.target, relocType( op->reloc.type, rtype ),
-              (unsigned)offset - (unsigned)result, ( op->flags & RELOC ) );
+              (char *)offset - (char *)result, ( op->flags & RELOC ) );
 }
 
 /*
