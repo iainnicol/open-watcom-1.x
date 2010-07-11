@@ -37,7 +37,6 @@
 #include "cgdata.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
-#include "asminlin.h"
 #include "fnovload.h"
 #include "cgswitch.h"
 #include "initdefs.h"
@@ -159,30 +158,40 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
 {
     int         cpu;
     int         fpu;
-    int         use32;
 
     defn = defn;
-#if _CPU == 386
-    use32 = 1;
-    cpu = 3;
-#else
-    use32 = 0;
-    cpu = 0;
-#endif
     switch( GET_CPU( CpuSwitches ) ) {
-      case CPU_86:        cpu = 0; break;
-      case CPU_186:       cpu = 1; break;
-      case CPU_286:       cpu = 2; break;
-      case CPU_386:       cpu = 3; break;
-      case CPU_486:       cpu = 4; break;
-      case CPU_586:       cpu = 5; break;
-      case CPU_686:       cpu = 6; break;
+    case CPU_86:    cpu = 0; break;
+    case CPU_186:   cpu = 1; break;
+    case CPU_286:   cpu = 2; break;
+    case CPU_386:   cpu = 3; break;
+    case CPU_486:   cpu = 4; break;
+    case CPU_586:   cpu = 5; break;
+    case CPU_686:   cpu = 6; break;
+#if _CPU == 8086
+    default:        cpu = 0; break;
+#else
+    default:        cpu = 3; break;
+#endif
     }
-    switch( GET_FPU( CpuSwitches ) ) {
-    case FPU_NONE:      fpu = 0; break;
-    default:            fpu = 1; break;
+    switch( GET_FPU_LEVEL( CpuSwitches ) ) {
+    case FPU_NONE:  fpu = 0; break;
+    case FPU_87:    fpu = 1; break;
+//    case FPU_287:   fpu = 2; break;
+    case FPU_387:   fpu = 3; break;
+    case FPU_586:   fpu = 3; break;
+    case FPU_686:   fpu = 3; break;
+#if _CPU == 8086
+    default:        fpu = 1; break;
+#else
+    default:        fpu = 3; break;
+#endif
     }
-    AsmInit( cpu, fpu, use32, 1 );
+#if _CPU == 8086
+    AsmInit( 0, cpu, fpu, GET_FPU_EMU( CpuSwitches ) );
+#else
+    AsmInit( 1, cpu, fpu, FALSE );
+#endif
 }
 
 
@@ -648,7 +657,7 @@ static enum sym_type AsmType(
         return( CodePtrType( mod_flags ) );
         break;
       default:
-        return( AsmDataType[ type->id ] );
+        return( AsmDataType[type->id] );
         break;
     }
 }
@@ -741,24 +750,39 @@ static int insertFixups( VBUF *src_code )
                 }
                 /* insert fixup information */
                 skip = 0;
-                dst[ len++ ] = FLOATING_FIXUP_BYTE;
+                dst[len++] = FLOATING_FIXUP_BYTE;
                 mutate_to_segment = 0;
 #if _CPU == 8086
                 fixup_padding = 0;
 #endif
                 switch( fix->fixup_type ) {
+                case FIX_FPPATCH:
+                    *dst++ = fix->offset;
+                    break;
                 case FIX_SEG:
                     if( name == NULL ) {
-                        /* special case for floating point fixup */
-                        if( src[0] == 0x9b ) {
-                           // FWAIT instruction as first byte
-                        } else if( ( src[0] == 0x90 ) && ( src[1] == 0x9B ) ) {
+                        // special case for floating point fixup
+                        if( ( src[0] == 0x90 ) && ( src[1] == 0x9B ) ) {
                            // inline assembler FWAIT instruction 0x90, 0x9b
-                        } else if( ( src[0] & 0xd8 ) == 0xd8 ) {
-                           // FPU instruction, add FWAIT before it
-                            dst[ len++ ] = 0x9b;
+                            *dst++ = FIX_FPP_WAIT;
+                        } else if( src[0] == 0x9b && (src[1] & 0xd8) == 0xd8 ) {
+                           // FWAIT as first byte and FPU instruction opcode as second byte
+                            *dst++ = FIX_FPP_NORMAL;
+                        } else if( src[0] == 0x9b && (src[2] & 0xd8) == 0xd8 ) {
+                           // FWAIT as first byte and FPU instruction opcode as third byte
+                           // second byte should be segment override prefix
+                            switch( src[1] ) {
+                            case PREFIX_ES: *dst++ = FIX_FPP_ES;    break;
+                            case PREFIX_CS: *dst++ = FIX_FPP_CS;    break;
+                            case PREFIX_SS: *dst++ = FIX_FPP_SS;    break;
+                            case PREFIX_DS: *dst++ = FIX_FPP_DS;    break;
+                            case PREFIX_GS: *dst++ = FIX_FPP_GS;    break;
+                            case PREFIX_FS: *dst++ = FIX_FPP_FS;    break;
+                            default: --dst; break;  // skip FP patch
+                            }
                         } else {
-                            // FIXME - probably wrong use of float !!!!
+                            // skip FP patch
+                            --dst;
                         }
                     } else {
                         skip = 2;
@@ -798,10 +822,10 @@ static int insertFixups( VBUF *src_code )
                     break;
                 }
                 if( skip != 0 ) {
-                    dst[ len++ ] = cg_fix;
-                    *((unsigned long *)&dst[ len ]) = (unsigned long)sym;
+                    dst[len++] = cg_fix;
+                    *((unsigned long *)&dst[len]) = (unsigned long)sym;
                     len += sizeof( long );
-                    *((unsigned long *)&dst[ len ]) = fix->offset;
+                    *((unsigned long *)&dst[len]) = fix->offset;
                     len += sizeof( long );
                     src += skip;
                 }
@@ -809,8 +833,8 @@ static int insertFixups( VBUF *src_code )
                 if( fixup_padding ) {
                     // add offset fixup padding to 32-bit
                     // cg create only 16-bit offset fixup
-                    dst[ len++ ] = 0;
-                    dst[ len++ ] = 0;
+                    dst[len++] = 0;
+                    dst[len++] = 0;
                     //
                 }
 #endif
@@ -838,9 +862,9 @@ static int insertFixups( VBUF *src_code )
                 }
             } else {
                 if( *src == FLOATING_FIXUP_BYTE ) {
-                    dst[ len++ ] = FLOATING_FIXUP_BYTE;
+                    dst[len++] = FLOATING_FIXUP_BYTE;
                 }
-                dst[ len++ ] = *src++;
+                dst[len++] = *src++;
             }
             VbufSetLen( &out_code, len );
         }
@@ -1029,10 +1053,8 @@ void AsmSysPCHWriteCode( AUX_INFO *info )
                     d = copyCodeLen( d, p, sizeof( unsigned long ) );
                     p += sizeof( unsigned long );
                     break;
-                case 0x9B: // FWAIT
-                    break;
                 default:
-                    DbgNever();
+                    break;
                 }
             }
         } else {
@@ -1084,16 +1106,24 @@ void AsmSysPCHReadCode( AUX_INFO *info )
                     copyCodeLen( p, &sym, sizeof( sym ) );
                     p += sizeof( SYMBOL ) + sizeof( unsigned long );
                     break;
-                case 0x9B: // FWAIT
-                    break;
                 default:
-                    DbgNever();
+                    break;
                 }
             }
         } else {
             ++p;
         }
     }
+}
+
+void AsmSysLine( char *buf )
+/**************************/
+{
+#if _CPU == 8086
+    AsmLine( buf, GET_FPU_EMU( CpuSwitches ) );
+#else
+    AsmLine( buf, FALSE );
+#endif
 }
 
 static int GetByteSeq( void )
@@ -1104,6 +1134,9 @@ static int GetByteSeq( void )
     unsigned        fixword;
     int             uses_auto;
     VBUF            code_buffer;
+#if _CPU == 8086
+    bool            use_fpu_emu = FALSE;
+#endif
 
     VbufInit( &code_buffer );
     AsmSysInit();
@@ -1115,20 +1148,37 @@ static int GetByteSeq( void )
         if( CurToken == T_STRING ) {
             AsmCodeAddress = len;
             AsmCodeBuffer = VbufBuffer( &code_buffer );
-            AsmLine( Buffer );
+#if _CPU == 8086
+            AsmLine( Buffer, use_fpu_emu );
+            use_fpu_emu = FALSE;
+#else
+            AsmLine( Buffer, FALSE );
+#endif
             len = AsmCodeAddress;
             NextToken();
-            if( CurToken == T_COMMA )  NextToken();
+            if( CurToken == T_COMMA ) {
+                NextToken();
+            }
         } else if( CurToken == T_CONSTANT ) {
+#if _CPU == 8086
+            if( use_fpu_emu ) {
+                AddAFix( len, NULL, FIX_SEG, 0 );
+                use_fpu_emu = FALSE;
+            }
+#endif
             VbufBuffer( &code_buffer )[ len++ ] = U32Fetch( Constant64 );
             NextToken();
         } else {
+#if _CPU == 8086
+            use_fpu_emu = FALSE;
+#endif
             fixword = FixupKeyword();
-            if( fixword == FIXWORD_NONE ) break;
+            if( fixword == FIXWORD_NONE )
+                break;
             if( fixword == FIXWORD_FLOAT ) {
 #if _CPU == 8086
                 if( GET_FPU_EMU( CpuSwitches ) ) {
-                    AddAFix( len, NULL, FIX_SEG, 0 );
+                    use_fpu_emu = TRUE;
                 }
 #endif
             } else { /* seg or offset */

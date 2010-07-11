@@ -588,24 +588,24 @@ static void dbg_output( void )
         DebugMsg(("Line: %lu ", LineNumber ));
         DebugMsg(("Output :"));
         for( i = 0; i < Token_Count; i++ ) {
-            switch( AsmBuffer[i]->token ) {
-            case T_NUM:
+            switch( AsmBuffer[i]->class ) {
+            case TC_NUM:
                 DebugMsg(( " %d ", AsmBuffer[i]->u.value ));
                 break;
-            case T_STRING:
+            case TC_STRING:
                 DebugMsg(( " '%s' ", AsmBuffer[i]->string_ptr));
                 break;
-            case T_OP_SQ_BRACKET:
+            case TC_OP_SQ_BRACKET:
                 DebugMsg(( " %s ", "[" ));
                 break;
-            case T_CL_SQ_BRACKET:
+            case TC_CL_SQ_BRACKET:
                 DebugMsg(( " %s ", "]" ));
                 break;
-            case T_COLON:
+            case TC_COLON:
                 DebugMsg(( " %s ", ":" ));
                 break;
-            case T_RES_ID:
-                switch( AsmBuffer[i]->u.value ) {
+            case TC_RES_ID:
+                switch( AsmBuffer[i]->u.token ) {
                 case T_PTR:
                     DebugMsg(( " %s ", "Ptr" ));
                     break;
@@ -684,10 +684,11 @@ void AsmByte( unsigned char byte )
 #endif
 }
 
+#if defined( _STANDALONE_ )
+
 void AsmLine( char *string )
 /**************************/
 {
-#if defined( _STANDALONE_ )
     int             count;
 
     // Token_Count is the number of tokens scanned
@@ -722,11 +723,25 @@ void AsmLine( char *string )
   #ifdef DEBUG_OUT
     dbg_output();               // for debuggin only
   #endif
+}
+
 #else
+
+void AsmLine( char *string, bool use_emu )
+/****************************************/
+{
+    enum fpe    old_floating_point;
+
+    old_floating_point = floating_point;
+    if( old_floating_point != NO_FP_ALLOWED ) {
+        floating_point = ( use_emu ) ? DO_FP_EMULATION : NO_FP_EMULATION;
+    }
     // Token_Count is the number of tokens scanned
     Token_Count = AsmScan( string );
     if( Token_Count > 0 ) {
         AsmParse();
     }
-#endif
+    floating_point = old_floating_point;
 }
+
+#endif

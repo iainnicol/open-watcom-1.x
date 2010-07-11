@@ -60,6 +60,7 @@ extern void             ObjRecInit( void );
 extern void             DelErrFile( void );
 extern void             PrintfUsage( int first_ln );
 extern void             MsgPrintf1( int resourceid, char *token );
+extern void             AsmBufferInit( void );
 
 extern const char       *FingerMsg[];
 
@@ -98,7 +99,6 @@ global_options Options = {
     FALSE,              // quiet
     FALSE,              // banner_printed
     FALSE,              // debug_flag
-    DO_FP_EMULATION,    // floating_point
     TRUE,               // output_comment_data_in_code_records
 
     0,                  // error_count
@@ -254,13 +254,13 @@ static void SetFPU( void )
 {
     switch( OptValue ) {
     case 'i':
-        Options.floating_point = DO_FP_EMULATION;
+        floating_point = DO_FP_EMULATION;
         break;
     case '7':
-        Options.floating_point = NO_FP_EMULATION;
+        floating_point = NO_FP_EMULATION;
         break;
     case 'c':
-        Options.floating_point = NO_FP_ALLOWED;
+        floating_point = NO_FP_ALLOWED;
         break;
     case 0:
     case 2:
@@ -1148,7 +1148,7 @@ static void do_init_stuff( char **cmdline )
     if( !MsgInit() )
         exit(1);
 
-    AsmInit( -1, -1, -1, -1 );                // initialize hash table
+    AsmBufferInit();
     strcpy( buff, "__WASM__=" BANSTR( _BANVER ) );
     add_constant( buff );
     ForceInclude = getenv( "FORCE" );
@@ -1217,7 +1217,7 @@ int main( void )
 void set_cpu_parameters( void )
 /*****************************/
 {
-    int token;
+    asm_token   token;
 
     // Start in masm mode
     Options.mode &= ~MODE_IDEAL;
@@ -1258,7 +1258,7 @@ void set_cpu_parameters( void )
 void set_fpu_parameters( void )
 /*****************************/
 {
-    switch( Options.floating_point ) {
+    switch( floating_point ) {
     case DO_FP_EMULATION:
         add_constant( "__FPI__" );
         break;
@@ -1307,6 +1307,9 @@ void set_fpu_parameters( void )
 void CmdlParamsInit( void )
 /*************************/
 {
+    Code->use32 = 0;                // default is 16-bit segment
+    Code->info.cpu = P_86 | P_87;   // default is 8086 CPU and 8087 FPU
+
     if( ForceInclude != NULL )
         InputQueueFile( ForceInclude );
 
