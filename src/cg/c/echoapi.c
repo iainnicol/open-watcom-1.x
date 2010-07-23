@@ -197,14 +197,14 @@ void verifyNotUserType   // VERIFY NOT A USER-DEFINED TYPE
 #define case_str( a ) case a : EchoAPIString( #a ); break;
 #define case_prt( a, b ) case a : EchoAPIString( #b ); break;
 
-static void EchoAPIHandle        // EchoAPI A HANDLE
-    ( int handle                // - handle
+static void EchoAPIHandle       // EchoAPI A HANDLE
+    ( void *handle              // - handle
     , char const *lab )         // - label for handle
 {
     char buffer[16];
     EchoAPIString( lab );
     EchoAPIChar( '[' );
-    itoa( handle, buffer, 16 );
+    lltoa( (uintptr_t)handle, buffer, 16 );
     EchoAPIString( buffer );
     EchoAPIChar( ']' );
 }
@@ -235,7 +235,7 @@ void EchoAPI              // EchoAPI ROUTINE
                 ++text;
                 switch( *text ) {
                   case 'B' : {
-                    EchoAPIHandle( (int)va_arg( args, back_handle ), "bh" );
+                    EchoAPIHandle( va_arg( args, back_handle ), "bh" );
                     break;
                   }
                   case 'c' : {
@@ -244,7 +244,7 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'C' : {
-                    EchoAPIHandle( (int)va_arg( args, call_handle ), "ch" );
+                    EchoAPIHandle( va_arg( args, call_handle ), "ch" );
                     break;
                   }
                   case 'i' : {
@@ -254,7 +254,7 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'L' : {
-                    EchoAPIHandle( (int)va_arg( args, label_handle ), "lh" );
+                    EchoAPIHandle( va_arg( args, label_handle ), "lh" );
                     break;
                   }
                   case 'o' : {
@@ -378,28 +378,28 @@ void EchoAPI              // EchoAPI ROUTINE
                     break;
                   }
                   case 'n' : {
-                    EchoAPIHandle( (int)va_arg( args, cg_name ), "cg" );
+                    EchoAPIHandle( va_arg( args, cg_name ), "cg" );
                     break;
                   }
                   case 'P' : {
-                    EchoAPIHandle( (int)va_arg( args, patch_handle ), "ph" );
+                    EchoAPIHandle( va_arg( args, patch_handle ), "ph" );
                     break;
                   }
                   case 's' : {
                     cg_sym_handle handle = va_arg( args, cg_sym_handle );
                     EchoAPIString( FEName( handle ) );
                     EchoAPIChar( '[' );
-                    itoa( (int)handle, buffer, 16 );
+                    lltoa( (uintptr_t)handle, buffer, 16 );
                     EchoAPIString( buffer );
                     EchoAPIChar( ']' );
                     break;
                   }
                   case 'S' : {
-                    EchoAPIHandle( (int)va_arg( args, sel_handle ), "sh" );
+                    EchoAPIHandle( va_arg( args, sel_handle ), "sh" );
                     break;
                   }
                   case 'T' : {
-                    EchoAPIHandle( (int)va_arg( args, temp_handle ), "th" );
+                    EchoAPIHandle( va_arg( args, temp_handle ), "th" );
                     break;
                   }
                   case 't' : {

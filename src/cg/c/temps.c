@@ -139,15 +139,15 @@ static  void    TellTempLocs( void )
 */
 {
     name        *temp;
-    int         ans;
+    pointer     ans;
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->v.symbol != NULL && !(temp->t.temp_flags & ALIAS) ) {
-            ans = (int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
-            if( ans == TEMP_LOC_QUIT ) break;
+            ans = FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
+            if( ans == (pointer)TEMP_LOC_QUIT ) break;
             if( temp->t.location == NO_LOCATION ) continue;
-            if( ans == TEMP_LOC_YES ) {
-                FEAuxInfo( (pointer)TempLocation( temp ), TEMP_LOC_TELL );
+            if( ans == (pointer)TEMP_LOC_YES ) {
+                FEAuxInfo( (pointer)(uintptr_t)TempLocation( temp ), TEMP_LOC_TELL );
             }
         }
     }

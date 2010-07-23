@@ -82,7 +82,6 @@ cg_objs = &
     propind.obj &
     redefby.obj &
     regalloc.obj &
-    regassgn.obj &
     regsave.obj &
     regtree.obj &
     revcond.obj &

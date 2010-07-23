@@ -143,7 +143,7 @@ static void MarkSymbol( void *sym )
 static void *GetString( perm_write_info *info, char *str )
 /*********************************************************/
 {
-    unsigned idx;
+    uintptr_t   idx;
 
     idx = GetStringTableSize( &info->strtab );
     AddStringStringTable( &info->strtab, str );
@@ -492,16 +492,16 @@ static void PrepStartValue( inc_file_header *hdr )
 /************************************************/
 {
     if( StartInfo.mod != NULL && !StartInfo.user_specd ) {
-        hdr->startmodidx = (unsigned_32) CarveGetIndex( CarveModEntry,
-                                                        StartInfo.mod );
+        hdr->startmodidx = (uintptr_t)CarveGetIndex( CarveModEntry,
+                                                     StartInfo.mod );
         if( StartInfo.type == START_IS_SDATA ) {
             hdr->flags |= INC_FLAG_START_SEG;
-            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSegData,
-                                                        StartInfo.targ.sdata );
+            hdr->startidx = (uintptr_t)CarveGetIndex( CarveSegData,
+                                                      StartInfo.targ.sdata );
         } else {
             DbgAssert( StartInfo.type == START_IS_SYM );
-            hdr->startidx = (unsigned_32) CarveGetIndex( CarveSymbol,
-                                                        StartInfo.targ.sym );
+            hdr->startidx = (uintptr_t)CarveGetIndex( CarveSymbol,
+                                                      StartInfo.targ.sym );
         }
         hdr->startoff = StartInfo.off;
     } else {
@@ -556,10 +556,10 @@ void WritePermData( void )
     AddCharStringTable( &info.strtab, '\0' );   // make 0 idx not valid
     info.incfhdl = QOpenRW( IncFileName );
     hdr.flags = 0;
-    hdr.exename = (unsigned_32) GetString( &info, Root->outfile->fname );
+    hdr.exename = (uintptr_t)GetString( &info, Root->outfile->fname );
     QModTime( Root->outfile->fname, &hdr.exemodtime );
     if( SymFileName != NULL ) {
-        hdr.symname = (unsigned_32) GetString( &info, SymFileName );
+        hdr.symname = (uintptr_t)GetString( &info, SymFileName );
         QModTime( SymFileName, &hdr.symmodtime );
     } else {
         hdr.symname = 0;
@@ -593,9 +593,9 @@ void WritePermData( void )
     FiniStringBlock( &info.strtab, (unsigned *) &hdr.strtabsize, &info, WriteStringBlock );
     QWrite( info.incfhdl, ReadRelocs, SizeRelocs, IncFileName );
     memcpy( hdr.signature, INC_FILE_SIG, INC_FILE_SIG_SIZE );
-    hdr.rootmodidx = (unsigned_32) CarveGetIndex( CarveModEntry, Root->mods );
-    hdr.headsymidx = (unsigned_32) CarveGetIndex( CarveSymbol, HeadSym );
-    hdr.libmodidx = (unsigned_32) CarveGetIndex( CarveModEntry, LibModules );
+    hdr.rootmodidx = (uintptr_t)CarveGetIndex( CarveModEntry, Root->mods );
+    hdr.headsymidx = (uintptr_t)CarveGetIndex( CarveSymbol, HeadSym );
+    hdr.libmodidx = (uintptr_t)CarveGetIndex( CarveModEntry, LibModules );
     hdr.linkstate = LinkState & ~CLEAR_ON_INC;
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
@@ -610,6 +610,7 @@ void ReadPermFile( perm_read_info *info, void *data, unsigned len )
     QRead( info->incfhdl, data, len, IncFileName );
 }
 
+/* TODO: These should probably be pointer-sized, not 32-bit */
 static unsigned_32 BufPeekU32( perm_read_info *info )
 /***************************************************/
 {
@@ -638,7 +639,7 @@ static char *MapString( char *off )
 {
     if( off == 0 )
         return( NULL );
-    return( IncStrTab + (unsigned)off );
+    return( IncStrTab + (uintptr_t)off );
 }
 
 static void ReadGroups( unsigned count, perm_read_info *info )
@@ -669,7 +670,7 @@ static void ReadLibList( unsigned count, libnamelist **head,
     libnamelist         *list;
     char                *name;
     unsigned            namelen;
-    unsigned_32         nameidx;
+    uintptr_t           nameidx;
 
     while( count > 0 ) {
         nameidx = BufReadU32( info );
@@ -837,8 +838,8 @@ static void PurgeRead( perm_read_info *info )
     }
 }
 
-static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
-/***********************************************************************/
+static void ReadBinary( char **buf, uintptr_t nameidx, time_t modtime )
+/*********************************************************************/
 {
     char                *fname;
     f_handle            hdl;

@@ -174,7 +174,7 @@ static int CountRegs( hw_reg_set regs )
     hw_reg_set          *curr;
     int                 count;
 
-    curr = &PushRegs;
+    curr = PushRegs;
     count = 0;
     while( !HW_CEqual( *curr, HW_EMPTY ) ) {
         if( HW_Ovlap( *curr, regs ) ) count++;
@@ -290,7 +290,7 @@ void FlowSave( hw_reg_set *preg )
     reg_info = CGAlloc( num_regs * sizeof( reg_flow_info ) );
     num_blocks = CountBlocks();
     InitBlockArray();
-    curr_push = &PushRegs;
+    curr_push = PushRegs;
     for( curr_reg = 0; curr_reg < num_regs; curr_reg++ ) {
         while( !HW_Ovlap( *curr_push, *preg ) ) curr_push++;
         HW_Asgn( reg_info[ curr_reg ].reg, *curr_push );
