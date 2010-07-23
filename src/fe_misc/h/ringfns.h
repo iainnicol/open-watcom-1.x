@@ -136,7 +136,7 @@ void *RingFirst(                // RETURN FIRST ELEMENT OF RING
     if( 0 != ((i) = (h)) ) { \
         void* _T = (void*)(i); \
         do { \
-            *&(i) = *(void **)(i);
+            (i) = *(void **)(i);
 
 #define RingIterEnd( i ) \
         } while( (void*)(i) != _T ); \
@@ -149,8 +149,8 @@ void *RingFirst(                // RETURN FIRST ELEMENT OF RING
         void* _T1 = (void*)(i1); \
         void* _T2 = (void*)(i2); \
         do { \
-            *(void**)&(i1) = * (void**)(i1); \
-            *(void**)&(i2) = * (void**)(i2);
+            (i1) = *(void**)(i1); \
+            (i2) = *(void**)(i2);
 
 #define RingIterEndPair( i1, i2 ) \
         } while( ( (void*)(i1) != _T1 ) && ( (void*)(i2) != _T2 ) ); \
@@ -166,7 +166,7 @@ void *RingFirst(                // RETURN FIRST ELEMENT OF RING
 
 #define RingIterEndTo( i, to ) \
             if( (i) == (to) ) break;\
-            *&(i) = * (void**)(i); \
+            (i) = *(void**)(i); \
         } \
     }
 
@@ -177,7 +177,7 @@ void *RingFirst(                // RETURN FIRST ELEMENT OF RING
         void* _T = (void*)(i); \
         void* _N = * (void**) _T; \
         do { \
-            *&(i) = _N; \
+            (i) = _N; \
             _N = * (void**) (i);
 
 #define RingIterEndSafe( i ) \
@@ -226,7 +226,7 @@ void *RingFirst(                // RETURN FIRST ELEMENT OF RING
         void* _T = (void*)(i); \
         void* _N = (void*)(i)->f; \
         do { \
-            *(void**)&(i) = _N; \
+            (i) = _N; \
             _N = (i)->f;
 
 #define _RingThreadIterEndSafe( i ) \
