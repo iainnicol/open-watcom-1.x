@@ -19,14 +19,6 @@ incl_msgtext = 1
 !ifdef wlib_rtdll
 !undef wlib_rtdll
 !endif
-!else ifdef prebuild
-incl_msgtext = 1
-!ifdef wlib_dll
-!undef wlib_dll
-!endif
-!ifdef wlib_rtdll
-!undef wlib_rtdll
-!endif
 !endif
 
 !include cproj.mif
@@ -65,23 +57,9 @@ common_objs = &
     $(trmem_objs)
 
 
-!ifdef prebuild
-
-!include $(orl_dir)/orlobjs.mif
-!ifdef incl_msgtext
-common_objs += $(orl_objs)
-!else
-!include $(wres_dir)/wrobjs.mif
-common_objs += $(orl_objs) $(wres_core_objs)
-!endif
-
-!else
-
 !include $(orl_dir)/client.mif
 !ifndef incl_msgtext
 !include wres.mif
-!endif
-
 !endif
 
 drv_objs = maindrv.obj idedrv.obj idemsgfm.obj
@@ -164,13 +142,6 @@ inc_dirs=-I. -I../h -I$(orl_dir)/h -I$(trmem_dir) -I$(lib_misc_dir)/h -I..
 defines = -DIDE_PGM
 comp_objs_exe += clibext.obj
 
-!else ifdef prebuild
-
-inc_dirs = -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(wres_dir)/h" &
-  -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h" -I..
-.c: $(trmem_dir);../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;$(wres_dir)/c;
-.h: ../h;$(watcom_dir)/h;$(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
-
 !else
 
 inc_dirs = -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
@@ -179,9 +150,7 @@ inc_dirs = -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 
 !endif
 
-!ifdef prebuild
-xlibs = 
-!else ifdef incl_msgtext
+!ifdef incl_msgtext
 xlibs = $(orl_lib)
 !else
 xlibs = $(orl_lib) $(wres_lib)
@@ -250,13 +219,5 @@ msg.gh : ./mkstr.exe
 wlib.res : ../wlib.rc ../wlib.msg msg.gh
     $(rc_aui) $(extra_rc_flags) $[@ -fo=$@
 
-./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-    $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $[@
-
-!ifndef patch_level
-patch_level=0
-!endif
-
-version.res : ./genverrc.exe ../h/version.rc $(fe_misc_dir)/c/genverrc.c
-    $[@ ../h/version.rc version.rc $$ wlibd $(patch_level)
-    $(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
+verrc_exe = wlibd
+!include verrc.mif

@@ -106,21 +106,11 @@ $(name).dll: rcstr.gh $(object) $(name).res $(xlibs) $(res_objs)
 $(name).res: ../h/$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -r -ad -zk0 $(inc_path) $[@ -fo=$^@
 
-version.res: version.rc
-        $(rc) $(rc_flags) -r $(inc_path) $[@ -fo=$^@
-
 rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
 rcstrmsg.gh: ../h/master.msg $(msgfiles)
         $(cc) $(cflags) $(inc_path) -zk0 -p $[@ -fo=$^@
 
-./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-        $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $[@
-
-!ifndef patch_level
-patch_level=0
-!endif
-
-version.rc : ./genverrc.exe ../h/version.rc $(fe_misc_dir)/c/genverrc.c
-        $[@ ../h/version.rc version.rc $$ $(name).dll $(patch_level)
+verrc_exe = $(name)
+!include verrc.mif

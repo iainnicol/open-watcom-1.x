@@ -123,13 +123,4 @@ auistr.gh : $(aui_dir)/h/aui.msg ./auimkstr.exe
 _guimsgs.gh: ./guimkstr.exe $(gui_dir)/h/gui.msg
         $[@ $^@ $(gui_msg_id_modifier)
 
-./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-        $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $<
-
-!ifndef patch_level
-patch_level=0
-!endif
-
-version.res: ./genverrc.exe ../h/exever.rc $(fe_misc_dir)/c/genverrc.c
-        $[@ ../h/exever.rc version.rc $$ $(proj_name) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
+!include verrc.mif

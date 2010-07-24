@@ -50,14 +50,4 @@ rcstrmsg.gh : ../ddespy.msg $(msgfiles)
 $(name).res : ../$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@
 
-./genverrc.exe : $(fe_misc_dir)/c/genverrc.c
-        $(host_cl) $(host_cl_opts) -D_VERSION=$(bld_ver) $<
-
-!ifndef patch_level
-patch_level=0
-!endif
-
-version.res: ./genverrc.exe ../exever.rc $(fe_misc_dir)/c/genverrc.c
-        $[@ ../exever.rc version.rc $$ $(name) $(patch_level)
-        $(rc) $(rc_flags) $(inc_path) version.rc -fo=$^@
-
+!include verrc.mif
