@@ -34,80 +34,80 @@
 #include "drpriv.h"
 #include "drutils.h"
 
-extern unsigned_16 const FunctionTags[] = {
+unsigned_16 const FunctionTags[] = {
     DW_TAG_subprogram, 0
 };
 
-extern unsigned_16 const ClassTags[] = {
+unsigned_16 const ClassTags[] = {
     DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-extern unsigned_16 const TypedefTags[] = {
+unsigned_16 const TypedefTags[] = {
     DW_TAG_typedef, 0
 };
 
-extern unsigned_16 const EnumTags[] = {
+unsigned_16 const EnumTags[] = {
     DW_TAG_enumeration_type, 0
 };
 
-extern unsigned_16 const LabelTags[] = {
+unsigned_16 const LabelTags[] = {
     DW_TAG_label, 0
 };
 
-extern unsigned_16 const VariableTags[] = {
+unsigned_16 const VariableTags[] = {
     DW_TAG_common_block, DW_TAG_variable,
     DW_TAG_formal_parameter, DW_TAG_member, 0
 };
 
-extern unsigned_16 const MacroTags[] = { 0 };
+unsigned_16 const MacroTags[] = { 0 };
 
-extern unsigned_16 const * const SearchTags[] = {
+unsigned_16 const * const SearchTags[] = {
     FunctionTags, ClassTags, EnumTags,
     TypedefTags, VariableTags,
     MacroTags, LabelTags
 };
 
-extern unsigned_16 const SearchSymbolTags[] = {
+unsigned_16 const SearchSymbolTags[] = {
     DW_TAG_class_type, DW_TAG_common_block, DW_TAG_enumeration_type,
     DW_TAG_subprogram, DW_TAG_variable, DW_TAG_member, DW_TAG_structure_type,
     DW_TAG_typedef, DW_TAG_union_type, DW_TAG_label, 0
 };
 
-extern unsigned_16 const SearchFunctionTags[] = {
+unsigned_16 const SearchFunctionTags[] = {
     DW_TAG_subprogram, 0
 };
 
-extern unsigned_16 const SearchClassTags[] = {
+unsigned_16 const SearchClassTags[] = {
     DW_TAG_class_type, DW_TAG_union_type, DW_TAG_structure_type, 0
 };
 
-extern unsigned_16 const SearchTypeTags[] = {
+unsigned_16 const SearchTypeTags[] = {
     DW_TAG_typedef, DW_TAG_enumeration_type, 0
 };
 
-extern unsigned_16 const SearchVariableTags[] = {
+unsigned_16 const SearchVariableTags[] = {
     DW_TAG_common_block, DW_TAG_variable, DW_TAG_member, 0
 };
 
-extern unsigned_16 const SearchFriendTags[] = {
+unsigned_16 const SearchFriendTags[] = {
     DW_TAG_friend, 0
 };
 
-extern unsigned_16 const SearchBaseTags[] = {
+unsigned_16 const SearchBaseTags[] = {
     DW_TAG_inheritance, 0
 };
 
-extern unsigned_16 const ScanKidsTags[] = {
+unsigned_16 const ScanKidsTags[] = {
     DW_TAG_compile_unit,  DW_TAG_lexical_block, 0
 };
 
-extern unsigned_16 const DeclarationTags[] = {
+unsigned_16 const DeclarationTags[] = {
     DW_TAG_array_type, DW_TAG_class_type, DW_TAG_common_block, DW_TAG_constant,
     DW_TAG_enumeration_type, DW_TAG_member, DW_TAG_structure_type,
     DW_TAG_subprogram, DW_TAG_union_type, DW_TAG_variable, 0
 };
 
-extern unsigned_16 const * const SearchTypes[] = {
+unsigned_16 const * const SearchTypes[] = {
     SearchSymbolTags, SearchFunctionTags, SearchClassTags,
     SearchTypeTags, SearchVariableTags, SearchFriendTags, SearchBaseTags
 };
