@@ -333,27 +333,30 @@ pick(   USAGE_MSG_6,
 pick(   USAGE_MSG_7,
         "-ad            - generate auto dependency information for use by wmake",
         "-ad            - generate auto dependency information for use by wmake" )
-pick(   USAGE_MSG_8,
 #if defined( __OSI__ ) || defined( __NT__ )
+pick(   USAGE_MSG_8,
         "-bt=windows    - build a Win16 resource file",
         "-bt=windows    - build a Win16 resource file" )
 #else
+pick(   USAGE_MSG_8,
         "-bt=windows    - build a Win16 resource file (default)",
         "-bt=windows    - build a Win16 resource file (default)" )
 #endif
-pick(   USAGE_MSG_9,
 #if defined( __NT__ )
+pick(   USAGE_MSG_9,
         "-bt=nt         - build a Win32 resource file (default)",
         "-bt=nt         - build a Win32 resource file (default)" )
 #else
+pick(   USAGE_MSG_9,
         "-bt=nt         - build a Win32 resource file",
         "-bt=nt         - build a Win32 resource file" )
 #endif
-pick(   USAGE_MSG_10,
 #if defined( __OS2__ )
+pick(   USAGE_MSG_10,
         "-bt=os2        - build an OS/2 resource file (default)",
         "-bt=os2        - build an OS/2 resource file (default)" )
 #else
+pick(   USAGE_MSG_10,
         "-bt=os2        - build an OS/2 resource file",
         "-bt=os2        - build an OS/2 resource file" )
 #endif
