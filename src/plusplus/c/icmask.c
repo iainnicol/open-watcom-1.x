@@ -235,7 +235,7 @@ static void outputIMASK_H( char **argv )
     out_h = fopen( "ic_mask.gh", "w" );
     if( out_h == NULL ) fail( "cannot open 'icmask.gh' for output\n" );
     dumpHeader( argv );
-    for( h = &icMaskTable; h <= &icMaskTable[IC_END]; ++h ) {
+    for( h = icMaskTable; h <= &icMaskTable[IC_END]; ++h ) {
         if( *h != NULL ) {
             for( m = *h; m != NULL; m = n ) {
                 n = m->next;
