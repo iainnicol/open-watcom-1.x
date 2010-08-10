@@ -268,7 +268,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     unsigned            op_len;
     imp_sym_handle      *scope_is;
 
-    if( *li->name.start == SH_ESCAPE ) {
+    if( *li->name.start == (char)SH_ESCAPE ) {
         CollectSymHdl( (byte *)li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
     }

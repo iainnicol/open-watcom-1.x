@@ -76,7 +76,7 @@
 #define LOP_DUP         0x0a
 #define LOP_NOP         0x0b
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 /* no location, class 0x */
 
@@ -88,7 +88,7 @@ typedef struct {
 
 typedef struct {
     unsigned char       class;
-    unsigned long       offset;
+    unsigned_32         offset;
 } _WCUNALIGNED loc_bp_off;
 
 /* memory, class 2x */
@@ -102,7 +102,7 @@ typedef struct {
 
 typedef struct {
     unsigned char       class;
-    unsigned long       val;
+    unsigned_32         val;
 } _WCUNALIGNED loc_const;
 
 /* multiple registers, class 3x */
@@ -146,7 +146,7 @@ typedef union {
     loc_operator        op;
 } loc_entry;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 typedef byte            *loc_expr;
 
