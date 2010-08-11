@@ -6,10 +6,10 @@
 # Expects POSIX tools.
 
 if [ -f setvars ]; then
-    source setvars
+    source ./setvars
     echo setvars found
 else
-    source setvars.sh
+    source ./setvars.sh
     echo setvars not found, running setvars.sh
 fi
 mkdir src/make/$OBJDIR
