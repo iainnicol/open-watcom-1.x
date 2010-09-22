@@ -237,7 +237,7 @@ typedef struct type_definition {
         struct {                        /* TYPE_FIELD or TYPE_UFIELD */
             unsigned char field_width;  /* # of bits */
             unsigned char field_start;  /* # of bits to << by */
-            unsigned char field_type;   /* TYPE_xxxx of field */
+            DATA_TYPE     field_type;   /* TYPE_xxxx of field */
         } f;
         union {
             struct array_info *array;   /* TYPE_ARRAY */
@@ -685,6 +685,7 @@ struct comp_flags {
     unsigned track_includes         : 1;    /* report opens of include files */
     unsigned ignore_fnf             : 1;    /* ignore file not found errors */
     unsigned disable_ialias         : 1;    /* supress inclusion of _ialias.h */
+    unsigned cpp_ignore_env         : 1;    /* ignore *INCLUDE env var(s) */
 };
 
 struct global_comp_flags {  // things that live across compiles
