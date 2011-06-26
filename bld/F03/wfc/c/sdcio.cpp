@@ -44,8 +44,8 @@
 #include <string.h>
 
 extern  file_handle             Openf(char *,int);
-extern  int                     FGetRec(file_handle,char *,int);
-extern  void                    FPutRec(file_handle,char *,int);
+extern uint                     FGetRec( b_file *, char *, uint);
+extern void                     FPutRec( b_file *, char *, int);
 extern  void                    FSeekRec(file_handle,unsigned_32,int);
 extern  void                    FRewind(file_handle);
 extern  void                    Closef(file_handle);
@@ -127,7 +127,7 @@ void    SDClose( file_handle fp ) {
 uint    SDRead( file_handle fp, byte *buff, uint len ) {
 //======================================================
 
-    return( FGetRec( fp, buff, len ) );
+    return( FGetRec( (b_file *)fp, (char *)buff, len ) );
 }
 
 
@@ -137,7 +137,7 @@ void    SDWrite( file_handle fp, byte *buff, int len ) {
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRec( fp, buff, len );
+    FPutRec( (b_file *)fp, (char *)buff, len );
 }
 
 
