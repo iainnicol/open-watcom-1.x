@@ -30,7 +30,7 @@ extra_c_flags_386 = -zp1
 
 .h: ../h;../../h
 .c: ../c;../../c;$(asminline_c);$(trmem_dir);
-.cpp:../c
+.cpp:../c;../../c
 
 !ifeq host_cpu axp
 extra_a_flags  = -oc 
