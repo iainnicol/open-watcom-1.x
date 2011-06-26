@@ -24,52 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  MKNAME File Name Processing Header 
 *
 ****************************************************************************/
 
-
-//
-// MKNAME       : file name processing
-//
-
-#include "ftnstd.h"
-#include "sdfile.h"
-#include "mkname.h"
-
-#include <string.h>
+int CopyMaxStr( char *str, char *buff, int max_len );
 
 
-int     MakeName( char *fn, char *extn, char *buff ) {
-//====================================================
-
-    int         len;
-
-    len = CopyMaxStr( fn, buff, MAX_FILE );
-    if( extn != NULL ) {
-        buff += len;
-        if( EXTN_MARKER != NULLCHAR ) {
-            *buff = EXTN_MARKER;
-            ++buff;
-            ++len;
-        }
-        len += CopyMaxStr( extn, buff, MAX_FILE - len );
-    }
-    return( len );
-}
-
-
-int     CopyMaxStr( char *str, char *buff, int max_len ) {
-//========================================================
-
-    int         len;
-
-    len = strlen( str );
-    if( len > max_len ) {
-        len = max_len;
-    }
-    memcpy( buff, str, len );
-    buff[ len ] = NULLCHAR;
-    return( len );
-}
