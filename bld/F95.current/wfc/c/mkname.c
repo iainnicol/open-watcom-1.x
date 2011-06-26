@@ -36,6 +36,7 @@
 
 #include "ftnstd.h"
 #include "sdfile.h"
+#include "mkname.h"
 
 #include <string.h>
 
