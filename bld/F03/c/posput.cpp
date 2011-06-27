@@ -33,6 +33,7 @@
 #include "fio.h"
 #include "posio.h"
 #include "sysbuff.h"
+#include "posput.h"
 
 #include <stdlib.h>
 #include <string.h>
