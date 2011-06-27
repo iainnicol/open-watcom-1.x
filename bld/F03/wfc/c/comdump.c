@@ -40,7 +40,7 @@
 #include "ecflags.h"
 #include "brseinfo.h"
 #include "insert.h"
-
+#include "comdump.h"
 
 extern  void            Extension(int,...);
 extern  void            SetComBlkSize(sym_id,intstar4);
