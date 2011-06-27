@@ -45,7 +45,7 @@
 #include "types.h"
 #include "utility.h"
 #include "upscan.h"
-
+#include "data.h"
 
 
 extern  label_id        GDataProlog(void);
@@ -66,6 +66,13 @@ extern  void            TermDo(void);
 extern  int             HSToB(char *,uint,char *);
 extern  bool            CalcStructSize(sym_id);
 
+static void DoData(void);
+static void DumpDataSets(int num, itnode *node);
+static void Free2CIT(itnode *node);
+static void VarList(void);
+static void ConList(void);
+static void CkFlags(void);
+static void GetSConst(void);
 
 void    CpData() {
 //================
