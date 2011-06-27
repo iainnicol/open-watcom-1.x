@@ -53,6 +53,7 @@
 #include "frl.h"
 #include "inout.h"
 #include "utility.h"
+#include "compstmt.h"
 
 
 extern  sym_id          LkSym(void);
@@ -75,6 +76,18 @@ extern  void            TDStmtFini(void);
 extern  char                    *StmtKeywords[];
 extern  void                    (* const __FAR ProcTable[])();
 extern  const unsigned_16       __FAR CFTable[];
+
+static  void            InitStatement(void);
+static  void            GetStmtType(void);
+
+static  void            SetCtrlFlgs(void);
+static  void            DefStmtType(void);
+static  void            RemCheck(void);
+static  void            CheckOrder(void);
+static  void            ProcStmt(void);
+static  void            CheckDoEnd(void);
+static  void            FiniDo(void);
+static  void            FiniStatement(void);
 
 //GUT
 void DumpLex();
