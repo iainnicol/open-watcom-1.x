@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include "fio.h"
 #include "posio.h"
+#include "posseek.h"
 
 extern  void            FSetErr(int,b_file *);
 extern  void            FSetSysErr(b_file *);
