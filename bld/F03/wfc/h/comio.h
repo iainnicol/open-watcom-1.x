@@ -41,8 +41,5 @@ extern void     LinePrint(void);
 extern void     ComPrint(void);
 extern void     FmtInteger( char *, int, int );
 
-static  void    PrintLineInfo( char *buffer );
-static  void    Comment(void);
-
 
 #endif

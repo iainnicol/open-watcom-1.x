@@ -55,8 +55,10 @@
 extern  char            *SkipBlanks(char *);
 extern  void            SrcOption(void);
 extern  bool            CompileDebugStmts(void);
-
 extern  character_set   CharSetInfo;
+
+static  void            PrintLineInfo( char *buffer );
+static  void            Comment(void);
 
 /*
 * Process comments in source file
