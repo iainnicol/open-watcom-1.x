@@ -40,6 +40,7 @@
 #include "insert.h"
 #include "recog.h"
 #include "utility.h"
+#include "csloops.h"
 
 extern  void            CkTypeDeclared(void);
 extern  void            AddCSNode(byte);
@@ -62,6 +63,8 @@ extern  void            GDoEnd(void);
 extern  void            FreeLabel(label_id);
 extern  void            RemKeyword(itnode *,int);
 extern  void            BIOutSymbol(sym_id);
+
+static  void            BadDoEnd(void);
 
 
 static  void    InitLoop( int loop_type ) {
