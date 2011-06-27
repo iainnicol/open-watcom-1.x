@@ -51,6 +51,8 @@ extern  int             SysSeek(b_file *,long int,int);
 
 extern  b_file          *FStdIn;
 
+#define min(a,b)  (((a) < (b)) ? (a) : (b))
+
 
 uint    readbytes( b_file *io, char *buff, uint len ) {
 //=====================================================
