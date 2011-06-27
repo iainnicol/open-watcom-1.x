@@ -46,6 +46,10 @@
 
 extern  bool            OptimalChSize(uint);
 
+static  void            SubStrArgs(itnode *cit);
+static  void            Detach(itnode *cit);
+static  void            CkScrStr(void);
+
 
 static  bool    CheckColon() {
 //============================
