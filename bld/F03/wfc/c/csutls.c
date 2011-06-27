@@ -38,6 +38,7 @@
 #include "insert.h"
 #include "recog.h"
 #include "utility.h"
+#include "csutls.h"
 
 extern  void            FreeITNodes(itnode *);
 extern  void            GBoolExpr(void);
