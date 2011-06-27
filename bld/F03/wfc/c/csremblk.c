@@ -63,6 +63,8 @@ extern  void            GEndBlock(void);
 extern  void            ClearRem(void);
 extern  void            FreeLabel(label_id);
 
+static  void            CkRemBlkRec(void);
+
 #define RB_FLAGS (SY_USAGE | SY_SUBPROGRAM | SY_REMOTE_BLOCK)
 
 
