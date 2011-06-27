@@ -48,6 +48,7 @@
 #include "recog.h"
 #include "types.h"
 #include "utility.h"
+#include "cpsubpgm.h"
 
 extern  TYPE            MapTypes(TYPE,int);
 extern  TYPE            ImplType(char);
@@ -79,6 +80,13 @@ extern  void            BIStartRBorEP( sym_id );
 extern  void            BIStartBlockData( sym_id );
 extern  void            BIStartSubroutine( void );
 extern  void            GSetSrcLine(void);
+
+static void CkSubEnd(void);
+static void StartProg(void);
+static void ParmList(bool star_ok, entry_pt *entry);
+static void CkRemBlock(void);
+static void InitParms(void);
+static void DoWarps(void);
 
 
 void    CpProgram() {
