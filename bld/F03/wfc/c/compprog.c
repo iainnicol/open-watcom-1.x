@@ -41,6 +41,7 @@
 #include "comio.h"
 #include "inout.h"
 #include "frl.h"
+#include "compprog.h"
 
 extern  void            BIInit();
 extern  void            BIEnd();
