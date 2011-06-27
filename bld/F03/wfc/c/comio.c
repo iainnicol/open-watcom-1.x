@@ -128,7 +128,7 @@ void    ComRead(void)
             // scan through src record/line
             for(;;) {
                 // get character class for cursor target
-                chtype = CharSetInfo.character_set[ ch ];
+                chtype = CharSetInfo.character_set[ (uint)ch ];
                 
                 // It is EOL. Exit 
                 if( chtype == C_EL ) break;
@@ -268,7 +268,7 @@ bool            doneScan = FALSE;   // Indicator scan for non comment finished
         // scan through src record/line
         for( ;; ) {
             // get character class under cursor 
-            chtype = CharSetInfo.character_set[ ch ];
+            chtype = CharSetInfo.character_set[ (uint)ch ];
             
             // not a comment line or comment 
             if( C_CM != chtype ){
