@@ -46,6 +46,7 @@
 #include "recog.h"
 #include "utility.h"
 #include "ioprockw.h"
+#include "csgoto.h"
 
 
 extern  sym_id          CkAssignOk(void);
@@ -69,6 +70,10 @@ extern  void            FreeLabel(label_id);
 extern  void            GStmtAddr(sym_id);
 extern  void            GEndBrTab(void);
 extern  void            BIOutSymbol(sym_id);
+
+static  void            UnCondGoto(void);
+static  void            CompGoto(void);
+static  void            AsgnGoto(void);
 
 
 void    CpGoto() {
