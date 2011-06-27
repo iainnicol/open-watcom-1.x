@@ -41,7 +41,7 @@
 #include "recog.h"
 #include "types.h"
 #include "utility.h"
-
+#include "csselect.h"
 
 
 extern  void            AddCSNode(byte);
@@ -56,6 +56,8 @@ extern  void            FiniSelect(void);
 extern  void            InitSelect(void);
 extern  void            GBranch(label_id);
 extern  void            FreeLabel(label_id);
+
+static  void            CaseHandler(void);
 
 
 case_entry      *NewCase() {
