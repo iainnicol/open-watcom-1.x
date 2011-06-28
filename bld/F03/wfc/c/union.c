@@ -42,11 +42,11 @@
 #include "insert.h"
 #include "recog.h"
 #include "utility.h"
+#include "union.h"
 
 extern  void            STUnion(void);
 extern  void            STMap(void);
 extern  void            CSExtn(void);
-
 
 extern  char            *StmtKeywords[];
 
