@@ -33,6 +33,7 @@
 #include "errcod.h"
 #include "global.h"
 #include "fmemmgr.h"
+#include "rstalloc.h"
 
 #include <string.h>
 
@@ -41,6 +42,9 @@ extern  sym_id          STFree(sym_id);
 extern  void            FreeChain(void **);
 extern  void            *FreeLink(void *);
 extern  void            FreeRList( sym_id sym );
+
+static  void            FreeList(sym_id sym_ptr);
+static  void            FreeMList(sym_id sym_ptr);
 
 
 grp_entry       *STGroupEntry() {
@@ -137,7 +141,7 @@ void    FreeNmList( sym_id sym ) {
 // Free a symbol table list of name lists.
 
     while( sym != NULL ) {
-        FreeChain( &sym->nl.group_list );
+        FreeChain( (void **)&sym->nl.group_list );
         sym = FreeLink( sym );
     }
 }
