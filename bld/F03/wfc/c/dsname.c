@@ -45,7 +45,7 @@
 #include "recog.h"
 #include "types.h"
 #include "utility.h"
-
+#include "dsname.h"
 
 
 extern  void            BIOutSymbol( sym_id ste_ptr );
@@ -55,6 +55,14 @@ extern  sym_id          LkSym(void);
 extern  sym_id          LkField(sym_id);
 extern  sym_id          FindShadow(sym_id);
 extern  sym_id          FindStruct(char *,int);
+
+static void CkFieldNoList(void);
+static void ChkStructName(void);
+static void CkNameNoList(void);
+static void SetTypeUsage(unsigned_16 type_usage);
+static void Function(void);
+static void SubProg(void);
+static void CkIntrinsic(void);
 
 
 bool    SubStrung() {
