@@ -41,6 +41,7 @@
 #include "recog.h"
 #include "utility.h"
 #include "ioprockw.h"
+#include "ioiolist.h"
 
 extern  void            TermDo(void);
 extern  void            ImpDo(void);
