@@ -40,6 +40,7 @@
 #include "fmemmgr.h"
 #include "fhash.h"
 #include "iflookup.h"
+#include "rstglist.h"
 
 #include <string.h>
 
