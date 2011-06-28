@@ -53,6 +53,20 @@ extern  sym_id                  LkSym(void);
                          SY_DATA_INIT | SY_SAVED | SY_IN_EQUIV | SY_REFERENCED)
 
 
+static  void    Save( sym_id sym_ptr ) {
+//======================================
+
+// Check that item has not been saved twice.
+
+    if( ( ( sym_ptr->ns.flags & SY_SAVED ) == 0 ) &&
+        ( ( SgmtSw & SG_BIG_SAVE ) == 0 ) ) {
+        sym_ptr->ns.flags |= SY_SAVED;
+        SgmtSw |= SG_LITTLE_SAVE;
+    } else {
+        Error( SA_SAVED );
+    }
+}
+
 void    CpSave() {
 //================
 
@@ -100,16 +114,3 @@ void    CpSave() {
 }
 
 
-static  void    Save( sym_id sym_ptr ) {
-//======================================
-
-// Check that item has not been saved twice.
-
-    if( ( ( sym_ptr->ns.flags & SY_SAVED ) == 0 ) &&
-        ( ( SgmtSw & SG_BIG_SAVE ) == 0 ) ) {
-        sym_ptr->ns.flags |= SY_SAVED;
-        SgmtSw |= SG_LITTLE_SAVE;
-    } else {
-        Error( SA_SAVED );
-    }
-}
