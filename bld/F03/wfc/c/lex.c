@@ -52,6 +52,11 @@
 extern  char            *StmtKeywords[];
 extern  char            *LogTab[];
 
+static  void            GetOpnd(void);
+static  void            FlushStatement(void);
+static  void            GetOpr(void);
+static  void            SetSwitch(void);
+
 #define LOG_OPS         11
 #define XLOG_OPS        11
 
