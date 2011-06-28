@@ -47,13 +47,13 @@ extern  char            *IOKeywords[];
 stmtproc    RecStmtKW( void ) {
 //=============================
 
-    return( KwLookUp( StmtKeywords, PR_KW_MAX, CITNode->opnd,
+    return( KwLookUp( (void **)StmtKeywords, PR_KW_MAX, CITNode->opnd,
                       CITNode->opnd_size, FALSE ) );
 }
 
 int     RecIOKW( void ) {
 //=======================
 
-    return( KwLookUp( IOKeywords, IO_KW_MAX - 1, CITNode->opnd,
+    return( KwLookUp( (void **)IOKeywords, IO_KW_MAX - 1, CITNode->opnd,
                       CITNode->opnd_size, TRUE ) );
 }
