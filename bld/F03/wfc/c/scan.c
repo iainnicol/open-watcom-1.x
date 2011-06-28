@@ -51,6 +51,9 @@
 
 extern  character_set   CharSetInfo;
 
+static  void            ScanNum(void);
+static  void            LkUpLog(void);
+
 #define COLUMNS 17
 
 static  const token_state __FAR StateTable[][COLUMNS] = {
@@ -157,7 +160,7 @@ void    Scan() {
         LexToken.line  = Line;
         for(;;) {
             ch = *Cursor;
-            ch_class = CharSetInfo.character_set[ ch ];
+            ch_class = CharSetInfo.character_set[ (int)ch ];
             wasextch |= ch_class;
             state2 = StateTable[ State ][ ch_class & C_MASK ];
             switch( state2 ) {
