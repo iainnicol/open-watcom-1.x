@@ -40,13 +40,13 @@
 #include "global.h"
 #include "ferror.h"
 #include "insert.h"
+#include "ioperm.h"
+
 
 #define NO      0
 #define YES     1
 
-
 extern  uint            IOIndex();
-
 extern  char            *IOKeywords[];
 
 // This table is used to determine if a control list item is permissible in
