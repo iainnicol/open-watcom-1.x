@@ -51,6 +51,9 @@ extern  void            EndFmt(void);
 
 extern  void            (* const __FAR CFmtTab[])();
 
+static  void            FInit(int fmt_length, char *fmt_string);
+static  void            FFinish(void);
+
 
 void    FScan( int fmt_length, char *fmt_string, cs_label fmt_label ) {
 //=====================================================================
