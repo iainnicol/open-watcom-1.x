@@ -46,6 +46,7 @@
 #include "ferror.h"
 #include "recog.h"
 #include "inout.h"
+#include "error.h"
 
 #include <stdarg.h>
 #include <string.h>
@@ -59,6 +60,8 @@ extern  void            MsgFormat(char *,char *,...);
 extern  char            *STGetName(sym_id,char *);
 
 extern  void            (* __BldErrMsg)(unsigned int,char *,va_list);
+
+static void ErrHandler(char *err_type, int error, va_list args);
 
 
 void    Extension( int code, ... ) {
