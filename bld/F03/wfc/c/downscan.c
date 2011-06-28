@@ -54,6 +54,10 @@ extern  sym_id          LkUpStmtNo(void);
 extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 extern  int             FmtS2F(char *,int,int,bool,int,int,double *,bool,int *,bool);
 
+static void ConstBase(uint base);
+static void BuildCplx(int real_sign, int imag_sign);
+static void AltReturn(void);
+
 
 static  void    LitC() {
 //======================
