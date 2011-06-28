@@ -55,6 +55,11 @@ extern  bool            Permission(int);
 extern  void            GStartIO(void);
 extern  void            GNullEofStmt(void);
 
+static  void            UnitOrList(void);
+static  void            JustList(void);
+static  void            Form(void);
+static  void            DoKWList(void);
+
 
 void    CpBackSp() {
 //==================
