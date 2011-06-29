@@ -42,8 +42,12 @@
 #include "types.h"
 #include "emitobj.h"
 #include "types.h"
+#include "binops.h"
 
 extern  bool            TypeCmplx(int);
+
+static  void            Unary(TYPE typ, OPTR opr);
+static  void            Binary(TYPE typ1, TYPE typ2, OPTR opr);
 
 
 static bool UnaryMul( TYPE typ1, TYPE typ2 ) {
