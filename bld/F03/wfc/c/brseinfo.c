@@ -84,6 +84,7 @@ static dw_handle        BIGetHandle(sym_id);
 static void             BISetHandle(sym_id,dw_handle);
 static char *           BIMKFullPath(const char *);
 static void             BIInitBaseTypes(void);
+static void             BIRefSymbol(dw_handle handle);
 
 extern char             BrowseExtn[];
 
@@ -141,7 +142,7 @@ void    BIInit() {
         cu.model = DW_MODEL_NONE;
         cu.inc_list = NULL;
         cu.inc_list_len = 0;
-        cu.dbg_pch = NULL;
+        cu.dbg_pch = (dw_sym_handle)NULL;
         DWBeginCompileUnit( cBIId, &cu );
         BISetSrcFile();
     } else {
@@ -532,7 +533,7 @@ static void BIOutSP( sym_id ste_ptr ) {
         if( ste_ptr->ns.flags & SY_SENTRY ) {
             fret = subProgTyHandle;
         } else {
-            if ( ste_ptr->ns.typ == TY_STRUCTURE ) {
+            if ( ste_ptr->ns.typ == FT_STRUCTURE ) {
                 fret = BIStartStructType( ste_ptr, FALSE );
             } else {
                 fret = DWHandle( cBIId, DW_ST_NONE );
@@ -565,18 +566,18 @@ static int BIMapType( TYPE typ ) {
 // Map our type to a DWARF fundamental type
 
     switch( typ ) {
-    case( TY_LOGICAL_1 ):
-    case( TY_LOGICAL ):         return( DW_FT_BOOLEAN );
-    case( TY_INTEGER_1 ):
-    case( TY_INTEGER_2 ):
-    case( TY_INTEGER ):         return( DW_FT_SIGNED );
-    case( TY_REAL ):
-    case( TY_DOUBLE ):
-    case( TY_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
-    case( TY_COMPLEX ):
-    case( TY_DCOMPLEX ):
-    case( TY_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
-    case( TY_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
+    case( FT_LOGICAL_1 ):
+    case( FT_LOGICAL ):         return( DW_FT_BOOLEAN );
+    case( FT_INTEGER_1 ):
+    case( FT_INTEGER_2 ):
+    case( FT_INTEGER ):         return( DW_FT_SIGNED );
+    case( FT_REAL ):
+    case( FT_DOUBLE ):
+    case( FT_TRUE_EXTENDED ):   return( DW_FT_FLOAT );
+    case( FT_COMPLEX ):
+    case( FT_DCOMPLEX ):
+    case( FT_TRUE_XCOMPLEX ):   return( DW_FT_COMPLEX_FLOAT );
+    case( FT_CHAR ):            return( DW_FT_UNSIGNED_CHAR );
     }
     return( 0 );
 }
@@ -596,7 +597,7 @@ static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
 
 //  solidify the function type;
 
-    if ( ste_ptr->ns.typ != TY_STRUCTURE ) {
+    if ( ste_ptr->ns.typ != FT_STRUCTURE ) {
         DWHandleSet( cBIId, handle );
     }
     if( _isFundamentalType( ste_ptr->ns.typ ) ) {
@@ -693,7 +694,7 @@ static void BIOutConst( sym_id ste_ptr ) {
     char                name[MAX_SYMLEN+1];
     void                *value;
 
-    if ( ste_ptr->ns.typ == TY_CHAR ) {
+    if ( ste_ptr->ns.typ == FT_CHAR ) {
         value = &(ste_ptr->ns.si.pc.value->lt.value);
     } else {
         value = &(ste_ptr->ns.si.pc.value->cn.value);
@@ -733,7 +734,7 @@ static dw_handle BIGetSPType( sym_id ste_ptr ) {
     case( SY_PROGRAM ) :
     case( SY_STMT_FUNC ) :
     case( SY_FN_OR_SUB ) :
-        if ( ( ste_ptr->ns.typ == TY_STRUCTURE ) &&
+        if ( ( ste_ptr->ns.typ == FT_STRUCTURE ) &&
             !( ste_ptr->ns.xt.record ) ) {
             return( BIStartStructType( ste_ptr, TRUE ) );
         }
@@ -752,27 +753,27 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
     dw_handle   ret = 0;
 
     switch( typ ) {
-    case( TY_LOGICAL_1 ):
-    case( TY_LOGICAL ):
-    case( TY_INTEGER_1 ):
-    case( TY_INTEGER_2 ):
-    case( TY_INTEGER ):
-    case( TY_HEX ):
-    case( TY_REAL ):
-    case( TY_DOUBLE ):
-    case( TY_TRUE_EXTENDED ):
-    case( TY_COMPLEX ):
-    case( TY_DCOMPLEX ):
-    case( TY_TRUE_XCOMPLEX ):
+    case( FT_LOGICAL_1 ):
+    case( FT_LOGICAL ):
+    case( FT_INTEGER_1 ):
+    case( FT_INTEGER_2 ):
+    case( FT_INTEGER ):
+    case( FT_HEX ):
+    case( FT_REAL ):
+    case( FT_DOUBLE ):
+    case( FT_TRUE_EXTENDED ):
+    case( FT_COMPLEX ):
+    case( FT_DCOMPLEX ):
+    case( FT_TRUE_XCOMPLEX ):
         ret = baseTypes[ typ ];
         break;
-    case( TY_CHAR ):
+    case( FT_CHAR ):
         ret = DWString(cBIId, 0, ste_ptr->ns.xt.size, "", 0, 0);
         break;
-    case( TY_UNION ):
+    case( FT_UNION ):
         ret = BIGetUnionType( ste_ptr );
         break;
-    case( TY_STRUCTURE ):
+    case( FT_STRUCTURE ):
         ret = BIGetStructType( ste_ptr, 0 );
         break;
     }
@@ -802,7 +803,7 @@ static dw_handle BIGetArrayType( sym_id ste_ptr ) {
     intstar4    *sub;
     dw_handle   ret;
 
-    data.index_type = BIGetBaseType( TY_INTEGER );
+    data.index_type = BIGetBaseType( FT_INTEGER );
     sub = &( ste_ptr->ns.si.va.dim_ext->subs_1_lo );
 
     ret = DWBeginArray( cBIId, BIGetType( ste_ptr ), 0, NULL, 0, 0 );
@@ -856,7 +857,7 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
         data->ns.typ = fields->typ;
         data->ns.xt.record = fields->xt.record;
         name = NULL;
-        if ( fields->typ == TY_UNION ) {
+        if ( fields->typ == FT_UNION ) {
             data->ns.si.va.dim_ext = NULL;
             data->ns.name_len = 0;
             data->ns.name[0] = 0;
@@ -914,7 +915,7 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
         memset( data.ns.xt.record, 0, sizeof( fstruct ) );
         memcpy( data.ns.xt.record, fs, sizeof( fmap ) );
         data.ns.si.va.dim_ext = NULL;
-        data.ns.typ = TY_STRUCTURE;
+        data.ns.typ = FT_STRUCTURE;
         strcpy( data.ns.name, "MAP" );
         strcat( data.ns.name, itoa( map, buff, 10 ) );
         data.ns.name_len = strlen( data.ns.name );

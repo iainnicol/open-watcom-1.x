@@ -49,4 +49,7 @@ extern void     BIStartRBorEP( sym_id ste_ptr );
 extern void     BIEndRBorEP( void );
 extern void     BIStartComBlock( sym_id ste_ptr );
 extern void     BIEndComBlock( void );
+
+       void     BIEndBlockData(void);
+
 #endif
