@@ -42,22 +42,22 @@
 // NOTE: These constants should stay in the following order.
 //       ( routines rely on them being sequential )
 
-pick( PT_NOTYPE,      TY_NO_TYPE   )    // type of statement #'s and subroutine return values
-pick( PT_LOG_1,       TY_LOGICAL_1 )    // LOGICAL*1
-pick( PT_LOG_4,       TY_LOGICAL   )    // LOGICAL*4
-pick( PT_INT_1,       TY_INTEGER_1 )    // INTEGER*1
-pick( PT_INT_2,       TY_INTEGER_2 )    // INTEGER*2
-pick( PT_INT_4,       TY_INTEGER   )    // INTEGER*4
-pick( PT_REAL_4,      TY_REAL      )    // REAL*4
-pick( PT_REAL_8,      TY_DOUBLE    )    // REAL*8
-pick( PT_REAL_16,     TY_EXTENDED  )    // REAL*16
-pick( PT_CPLX_8,      TY_COMPLEX   )    // COMPLEX*8
-pick( PT_CPLX_16,     TY_DCOMPLEX  )    // COMPLEX*16
-pick( PT_CPLX_32,     TY_XCOMPLEX  )    // COMPLEX*32
-pick( PT_CHAR,        TY_CHAR      )    // CHARACTER
-pick( PT_STRUCT,      TY_STRUCTURE )    // STRUCTURE
-pick( PT_ARRAY,       TY_NO_TYPE   )    // ARRAY
-pick( PT_END_DATASET, TY_NO_TYPE   )    // indicates the end of a data set in DATA statement
-pick( PT_NOT_STARTED, TY_NO_TYPE   )    // IOCB->typ is initialized to this for i/o statements
+pick( PT_NOTYPE,      FT_NO_TYPE   )    // type of statement #'s and subroutine return values
+pick( PT_LOG_1,       FT_LOGICAL_1 )    // LOGICAL*1
+pick( PT_LOG_4,       FT_LOGICAL   )    // LOGICAL*4
+pick( PT_INT_1,       FT_INTEGER_1 )    // INTEGER*1
+pick( PT_INT_2,       FT_INTEGER_2 )    // INTEGER*2
+pick( PT_INT_4,       FT_INTEGER   )    // INTEGER*4
+pick( PT_REAL_4,      FT_REAL      )    // REAL*4
+pick( PT_REAL_8,      FT_DOUBLE    )    // REAL*8
+pick( PT_REAL_16,     FT_EXTENDED  )    // REAL*16
+pick( PT_CPLX_8,      FT_COMPLEX   )    // COMPLEX*8
+pick( PT_CPLX_16,     FT_DCOMPLEX  )    // COMPLEX*16
+pick( PT_CPLX_32,     FT_XCOMPLEX  )    // COMPLEX*32
+pick( PT_CHAR,        FT_CHAR      )    // CHARACTER
+pick( PT_STRUCT,      FT_STRUCTURE )    // STRUCTURE
+pick( PT_ARRAY,       FT_NO_TYPE   )    // ARRAY
+pick( PT_END_DATASET, FT_NO_TYPE   )    // indicates the end of a data set in DATA statement
+pick( PT_NOT_STARTED, FT_NO_TYPE   )    // IOCB->typ is initialized to this for i/o statements
                                         // so that the i/o list may be flushed in halt when an
                                         // error occurs
