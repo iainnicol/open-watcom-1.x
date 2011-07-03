@@ -148,6 +148,6 @@ static  int    ClassifyType( int typ ) {
 
 // Classify the specified type into CHARACTER or NON-CHARACTER.
 
-    if( typ == TY_CHAR ) return( CT_CHAR );
+    if( typ == FT_CHAR ) return( CT_CHAR );
     return( CT_NOT_CHAR );
 }
