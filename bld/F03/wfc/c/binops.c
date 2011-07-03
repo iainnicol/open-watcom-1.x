@@ -53,7 +53,7 @@ static  void            Binary(TYPE typ1, TYPE typ2, OPTR opr);
 static bool UnaryMul( TYPE typ1, TYPE typ2 ) {
 //============================================
 
-    if( typ1 > TY_EXTENDED )
+    if( typ1 > FT_EXTENDED )
         return( FALSE );
     if( !_IsTypeInteger( typ2 ) )
         return( FALSE );
@@ -89,7 +89,7 @@ void    BinOp( TYPE typ1, TYPE typ2, OPTR opr ) {
 
 // Generate code to perform a binary operation.
 
-    if( typ1 != TY_NO_TYPE ) {                // binary operator
+    if( typ1 != FT_NO_TYPE ) {                // binary operator
         Binary( typ1, typ2, opr );
     } else {                                  // unary operator.
         Unary( typ2, opr );
@@ -115,7 +115,7 @@ static void Unary( TYPE typ, OPTR opr ) {
         // convert INTEGER*1 or INTEGER*2 to INTEGER*4
         EmitOp( CONVERT );
         DumpTypes( CITNode->link->typ, CITNode->link->size,
-                             TY_INTEGER, sizeof( intstar4 ) );
+                             FT_INTEGER, sizeof( intstar4 ) );
     }
     SetOpn( CITNode, USOPN_SAFE );
 }
