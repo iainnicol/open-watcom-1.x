@@ -353,8 +353,8 @@ bool    ReqDoVar() {
 //==================
 
     if( IsVariable() ) {
-        if( ( CITNode->typ >= TY_INTEGER_1 ) &&
-            ( CITNode->typ <= TY_EXTENDED ) ) {
+        if( ( CITNode->typ >= FT_INTEGER_1 ) &&
+            ( CITNode->typ <= FT_EXTENDED ) ) {
             return( TRUE );
         }
     }
