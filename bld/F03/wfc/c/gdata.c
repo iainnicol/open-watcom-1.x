@@ -52,7 +52,7 @@ label_id        GDataProlog() {
     EmitOp( START_DATA_STMT );
     DtConstList = ObjTell();
     OutU16( 0 );
-    return( NULL );
+    return( (label_id)NULL );
 }
 
 
@@ -90,12 +90,12 @@ void    GDataItem( itnode *rpt ) {
 
     if( rpt == NULL ) {
         one = 1;
-        data = STConst( &one, TY_INTEGER, TypeSize( TY_INTEGER ) );
+        data = STConst( &one, FT_INTEGER, TypeSize( FT_INTEGER ) );
     } else {
         data = rpt->sym_ptr;
     }
     OutPtr( data );
-    if( CITNode->typ == TY_HEX ) {
+    if( CITNode->typ == FT_HEX ) {
         OutU16( PT_NOTYPE );
     } else {
         GenType( CITNode );
