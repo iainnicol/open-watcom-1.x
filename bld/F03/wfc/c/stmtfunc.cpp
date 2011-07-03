@@ -62,10 +62,10 @@ void    SFPrologue()
     StmtSw |= SS_SF_REFERENCED;
     CkTypeDeclared();
     SFSymId = CITNode->sym_ptr;
-    if( ( SFSymId->ns.typ == TY_CHAR ) && ( SFSymId->ns.xt.size == 0 ) )
+    if( ( SFSymId->ns.typ == FT_CHAR ) && ( SFSymId->ns.xt.size == 0 ) )
     {
         Error( SF_ILL_CHAR_LEN );
-    } else if( SFSymId->ns.typ == TY_STRUCTURE )
+    } else if( SFSymId->ns.typ == FT_STRUCTURE )
     {
         Error( SF_ILL_TYPE );
     }
@@ -93,9 +93,9 @@ void    SFPrologue()
                 CkTypeDeclared();
                 if( ( ( sym->ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
                     ( ( sym->ns.flags & SY_SUBSCRIPTED ) == 0 ) &&
-                    ( ( sym->ns.typ != TY_CHAR ) ||
+                    ( ( sym->ns.typ != FT_CHAR ) ||
                       ( sym->ns.xt.size != 0 ) ) &&
-                    ( sym->ns.typ != TY_STRUCTURE ) )
+                    ( sym->ns.typ != FT_STRUCTURE ) )
                 {
                     if( sym->ns.flags & SY_SPECIAL_PARM )
                     {
