@@ -89,7 +89,7 @@ void    InitFormatList() {
 
 // Initialize format list.
 
-    FormatList = NULL;
+    FormatList = (obj_ptr)NULL;
 }
 
 
