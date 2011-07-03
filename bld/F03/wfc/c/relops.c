@@ -52,7 +52,7 @@ static  int     CharLength( itnode *op ) {
 
     USOPN       opn;
 
-    if( op->typ != TY_CHAR ) return( 0 );
+    if( op->typ != FT_CHAR ) return( 0 );
     opn = op->opn.us;
     if( opn & USOPN_SS1 ) return( op->value.st.ss_size );
     if( ( opn & USOPN_WHERE ) == USOPN_SAFE ) return( 0 );
@@ -131,7 +131,7 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
         if( flip && !associative ) {
             EmitOp( FLIP );
         }
-        if( typ1 == TY_CHAR ) {
+        if( typ1 == FT_CHAR ) {
             if( char_1_cmp ) {
                 op_code += CHAR_1_RELOPS;
             } else {
@@ -144,13 +144,13 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     EmitOp( op_code );
     if( char_1_cmp ) {
         if( associative ) {
-            DumpType( MapTypes( TY_INTEGER, i ), i );
+            DumpType( MapTypes( FT_INTEGER, i ), i );
         } else {
             // Assert: comparing CHARACTER*1 with LT, LE, GT, or GE
             // Consider: CHARACTER A/'a'/
             //           IF( A .lt. CHAR(159) ) PRINT *, 'OK'
             // we must generate an unsigned comparison
-            DumpType( MapTypes( TY_LOGICAL, i ), i );
+            DumpType( MapTypes( FT_LOGICAL, i ), i );
         }
         if( flip && associative ) {
             GenChar1Op( CITNode->link );
@@ -159,7 +159,7 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
             GenChar1Op( CITNode );
             GenChar1Op( CITNode->link );
         }
-    } else if( typ1 != TY_CHAR ) {
+    } else if( typ1 != FT_CHAR ) {
         if( flip && associative ) {
             GenTypes( CITNode->link, CITNode );
         } else {
