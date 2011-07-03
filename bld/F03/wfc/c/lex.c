@@ -84,7 +84,7 @@ static  itnode  *NewITNode( lex_t lex ) {
         newNode->link       = NULL;
         newNode->list       = NULL;
         newNode->flags      = 0;
-        newNode->typ        = TY_NO_TYPE;
+        newNode->typ        = FT_NO_TYPE;
         newNode->chsize     = 0;
         newNode->isUnsigned = 0;
         newNode->isCatparen = 0;
