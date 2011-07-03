@@ -52,8 +52,10 @@ extern  int             CopyMaxStr(char *,char *,int);
 extern  void            SrcInclude(char *,file_handle );
 
 extern  char            ForExtn[];
-
 static  char            LibEnvStr[] = { "FINCLUDE" };
+
+static  int             Combine(char *path, char *name, char *buff,
+                                int buff_len);
 
 
 static  file_handle FindSrcFile( char *fname ) {
