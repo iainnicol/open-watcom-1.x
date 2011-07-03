@@ -153,7 +153,7 @@ void    DetSubList() {
         Error( SV_INV_SSCR );
     }
     // we must make sure the array isn't substrung before we can set OPN_SS1
-    if( !( cit->opn.us & USOPN_FLD ) && ( cit->sym_ptr->ns.typ == TY_CHAR ) ) {
+    if( !( cit->opn.us & USOPN_FLD ) && ( cit->sym_ptr->ns.typ == FT_CHAR ) ) {
         ch_size = cit->sym_ptr->ns.xt.size;
         if( ch_size > 0 ) {
             cit->opn.us |= USOPN_SS1;
@@ -181,7 +181,7 @@ static  void    SubStrArgs( itnode *cit ) {
 
     int         count;
 
-    if( cit->typ != TY_CHAR ) {
+    if( cit->typ != FT_CHAR ) {
         Error( SS_ONLY_IF_CHAR );
     }
     count = 1;
@@ -203,7 +203,7 @@ static  void    CkScrStr() {
 
     USOPN        opn;
 
-    ChkType( TY_INTEGER );
+    ChkType( FT_INTEGER );
     opn = CITNode->opn.us;
     if( (opn & USOPN_WHAT) != USOPN_ARR ) return;
     ClassErr( SV_NO_LIST, CITNode->sym_ptr );
