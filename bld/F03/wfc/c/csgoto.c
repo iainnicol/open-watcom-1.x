@@ -143,10 +143,10 @@ static  void    CompGoto() {
             GLabel( CSHead->cs_info.cases->label.g_label );
             AdvanceITPtr();
         } else {
-            TypeErr( SX_WRONG_TYPE, TY_INTEGER );
+            TypeErr( SX_WRONG_TYPE, FT_INTEGER );
         }
     } else {
-        TypeErr( SX_WRONG_TYPE, TY_INTEGER );
+        TypeErr( SX_WRONG_TYPE, FT_INTEGER );
     }
     FreeLabel( CSHead->branch );
     FreeLabel( CSHead->cs_info.cases->label.g_label );
