@@ -75,29 +75,29 @@ static  void    ChkEntryType( sym_id sym, sym_id entry )
     // matches the class of the main entry
     if( ( sym->ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) return;
 
-    if( (entry->ns.typ == TY_CHAR) || (entry->ns.typ == TY_STRUCTURE) )
-	{
+    if( (entry->ns.typ == FT_CHAR) || (entry->ns.typ == FT_STRUCTURE) )
+        {
         if( sym->ns.typ != entry->ns.typ )
-		{
+                {
             NamNamErr( EY_TYPE_MISMATCH, entry, sym );
         } else
-		{
-            if( entry->ns.typ == TY_STRUCTURE )
-			{
+                {
+            if( entry->ns.typ == FT_STRUCTURE )
+                        {
                 if( entry->ns.xt.record != sym->ns.xt.record )
-				{
+                                {
                     NamNamErr( EY_TYPE_MISMATCH, entry, sym );
                 }
             } else
-			{
+                        {
                 if( sym->ns.xt.size != entry->ns.xt.size )
-				{
+                                {
                     NamNamErr( EY_SIZE_MISMATCH, entry, sym );
                 }
             }
         }
-    } else if( (sym->ns.typ == TY_CHAR) || (sym->ns.typ == TY_STRUCTURE) )
-	{
+    } else if( (sym->ns.typ == FT_CHAR) || (sym->ns.typ == FT_STRUCTURE) )
+        {
         NamNamErr( EY_TYPE_MISMATCH, sym, SubProgId );
     }
 }
@@ -194,10 +194,10 @@ void    EnPurge()
 
     dum_lst = Entries;
     while( dum_lst != NULL )
-	{
+        {
         curr_parm = dum_lst->parms;
         while( curr_parm != NULL )
-		{
+                {
             next = curr_parm->link;
             FMemFree( curr_parm );
             curr_parm = (parameter*)next;
