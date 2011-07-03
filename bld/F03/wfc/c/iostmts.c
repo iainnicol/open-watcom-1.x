@@ -181,7 +181,7 @@ static  bool            ReadKWList() {
         return( FALSE );
     if( CITNode->opn.ds > DSOPN_LIT )
         return( TRUE );
-    if( LkSym()->ns.typ == TY_CHAR )
+    if( LkSym()->ns.typ == FT_CHAR )
         return( FALSE );
     return( TRUE );
 }
