@@ -223,7 +223,7 @@ static  void    VarList() {
             ++do_level;
         } else if( ReqName( NAME_VAR_OR_ARR ) ) {
             InitVar = LkSym();
-            if( InitVar->ns.typ == TY_STRUCTURE ) {
+            if( InitVar->ns.typ == FT_STRUCTURE ) {
                 // make sure structure size is calculated - normally
                 // structure size is calculated by StructResolve() which
                 // is not called until the first executable statement
@@ -282,7 +282,7 @@ static  bool    HexConst() {
     CITNode->opn.ds = DSOPN_LIT;
     GetConst();
     AddConst( CITNode );
-    CITNode->typ = TY_HEX;
+    CITNode->typ = FT_HEX;
     Extension( DA_HEX_CONST );
     return( TRUE );
 }
@@ -374,22 +374,22 @@ static  void    GetSConst() {
         AdvanceITPtr();
         ProcDataIExpr();
         switch( CITNode->typ ) {
-        case TY_INTEGER_1:
+        case FT_INTEGER_1:
             CITNode->value.intstar1 *= sign;
             break;
-        case TY_INTEGER_2:
+        case FT_INTEGER_2:
             CITNode->value.intstar2 *= sign;
             break;
-        case TY_INTEGER:
+        case FT_INTEGER:
             CITNode->value.intstar4 *= sign;
             break;
-        case TY_REAL:
+        case FT_REAL:
             CITNode->value.single *= sign;
             break;
-        case TY_DOUBLE:
+        case FT_DOUBLE:
             CITNode->value.dble *= sign;
             break;
-        case TY_TRUE_EXTENDED:
+        case FT_TRUE_EXTENDED:
             CITNode->value.extended *= sign;
             break;
         }
