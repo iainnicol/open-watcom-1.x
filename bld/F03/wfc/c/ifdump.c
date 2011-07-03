@@ -41,6 +41,9 @@
 #include "types.h"
 #include "utility.h"
 
+static  void    MakeComplex(TYPE if_type);
+static  void    GMath(uint ifn);
+
 
 void    GMakeCplx() {
 //===================
@@ -49,7 +52,7 @@ void    GMakeCplx() {
 // into complex number ( real( a1 ), real( a2 ) )
 
     EmitOp( MAKE_COMPLEX );
-    MakeComplex( TY_COMPLEX );
+    MakeComplex( FT_COMPLEX );
 }
 
 
@@ -60,7 +63,7 @@ void    GMakeDCplx() {
 // into double complex number ( double( a1 ), double( a2 ) )
 
     EmitOp( MAKE_DCOMPLEX );
-    MakeComplex( TY_DCOMPLEX );
+    MakeComplex( FT_DCOMPLEX );
 }
 
 
@@ -71,7 +74,7 @@ void    GMakeXCplx() {
 // into double complex number ( double( a1 ), double( a2 ) )
 
     EmitOp( MAKE_XCOMPLEX );
-    MakeComplex( TY_XCOMPLEX );
+    MakeComplex( FT_XCOMPLEX );
 }
 
 
