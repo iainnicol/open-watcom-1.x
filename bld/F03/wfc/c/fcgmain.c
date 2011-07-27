@@ -44,6 +44,7 @@
 #include "wf77labe.h"
 #include "compcfg.h"
 #include "emitobj.h"
+#include "fcgmain.h"
 
 #include <stdarg.h>
 
@@ -80,6 +81,9 @@ extern  char            *GetFullSrcName(void);
 
 extern  void            (* __FAR FCJmpTab[])(void);
 
+static  void            CGStart(void);
+static  void            InitCG(void);
+ 
 unsigned_8              CGFlags = { 0 };
 
 

@@ -45,9 +45,9 @@
 
 extern  void            CopyAuxInfo(aux_info *,aux_info *);
 extern  aux_info        *NewAuxEntry(char *,int);
+extern  aux_info        *RTAuxInfo(sym_id rtn);
 
 extern  aux_info        DefaultInfo;
-extern  rt_rtn          __FAR RtnTab[];
 extern  aux_info        IFVarInfo;
 extern  aux_info        IFCharInfo;
 extern  aux_info        IFChar2Info;
@@ -89,21 +89,6 @@ aux_info    *AuxLookupAdd( char *name, int name_len ) {
 }
 
 
-aux_info        *RTAuxInfo( sym_id rtn ) {
-//========================================
-
-// Return aux information for run-time routine.
-
-    rt_rtn      __FAR *rt_entry;
-
-    rt_entry = RtnTab;
-    while( rt_entry->sym_ptr != rtn ) {
-        rt_entry++;
-    }
-    return( rt_entry->aux );
-}
-
-
 aux_info    *AuxLookup( sym_id sym ) {
 //====================================
 
@@ -117,7 +102,7 @@ aux_info    *AuxLookup( sym_id sym ) {
             // check for character arguments must come first so that
             // IF@xxx gets generated for intrinsic functions with character
             // arguments (instead of XF@xxxx)
-            } else if( IFArgType( sym->ns.si.fi.index ) == TY_CHAR ) {
+            } else if( IFArgType( sym->ns.si.fi.index ) == FT_CHAR ) {
                 if( sym->ns.flags & SY_IF_ARGUMENT ) {
                     if( !(Options & OPT_DESCRIPTOR) ) {
                         return( &IFChar2Info );

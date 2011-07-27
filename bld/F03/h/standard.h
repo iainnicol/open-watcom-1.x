@@ -42,15 +42,13 @@
 typedef unsigned        char    byte;
 typedef void            *pointer;
 typedef float           real;
+typedef double          reallong;
 
 #if !defined( __AXP__ ) && !defined( __PPC__ )
-#ifndef __cplusplus
-//TODO: clarify what aux is doing in C++
 #pragma aux Suicide aborts;
 #endif
-#endif
 
-#ifdef M_I86
+#ifdef _M_I86
 #define __FAR far
 #else
 #define __FAR

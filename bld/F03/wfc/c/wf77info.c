@@ -57,6 +57,7 @@
   #error Unknown platform
 #endif
 #include "langenv.h"
+#include "wf77info.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -125,6 +126,15 @@ extern  void            PrintErr(char *);
 extern  void            InitEMS(void);
 extern  void            FiniEMS(void);
 #endif
+
+static  void    DefineGlobalSegs(void);
+static  void    DefineCommonSegs(void);
+static  void    AllocGlobalSegs(void);
+static  void    AllocCommonSegs(void);
+static  void    DefCodeSeg(void);
+static  void    BldCSName(char *buff);
+static  void    AllocComBlk(sym_id cb);
+static  void    SegBytes(unsigned_32 size);
 
 extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
@@ -777,9 +787,9 @@ segment_id      GetDataSegId( sym_id sym ) {
         id = GetComSeg( sym, 0 );
     } else if( sym->ns.flags & SY_SUBSCRIPTED ) {
         id = sym->ns.si.va.vi.seg_id;
-    } else if( sym->ns.typ == TY_CHAR ) {
+    } else if( sym->ns.typ == FT_CHAR ) {
         id = sym->ns.si.va.vi.seg_id;
-    } else if( sym->ns.typ == TY_STRUCTURE ) {
+    } else if( sym->ns.typ == FT_STRUCTURE ) {
         id = sym->ns.si.va.vi.seg_id;
     } else if( sym->ns.flags & SY_DATA_INIT ) {
         id = WF77_LDATA;
@@ -866,7 +876,7 @@ seg_offset      GetDataOffset( sym_id sym ) {
         seg_offset = GetComOffset( sym->ns.si.va.vi.ec_ext->offset );
     } else if( sym->ns.flags & SY_SUBSCRIPTED ) {
         seg_offset = DGBackTell( FEBack( sym ) );
-    } else if( sym->ns.typ == TY_CHAR ) {
+    } else if( sym->ns.typ == FT_CHAR ) {
         seg_offset = DGBackTell( sym->ns.si.va.bck_hdl );
     } else {
         seg_offset = DGBackTell( FEBack( sym ) );
@@ -895,68 +905,68 @@ void    DefTypes() {
 
 #if _CPU == 386 || _CPU == 8086
     if( _BigDataModel( CGOpts ) ) {
-        BEAliasType( T_LOCAL_POINTER, T_LONG_POINTER );
-        BEAliasType( T_GLOBAL_POINTER, T_LONG_POINTER );
+        BEAliasType( TY_LOCAL_POINTER, TY_LONG_POINTER );
+        BEAliasType( TY_GLOBAL_POINTER, TY_LONG_POINTER );
     } else {
-        BEAliasType( T_LOCAL_POINTER, T_NEAR_POINTER );
-        BEAliasType( T_GLOBAL_POINTER, T_NEAR_POINTER );
+        BEAliasType( TY_LOCAL_POINTER, TY_NEAR_POINTER );
+        BEAliasType( TY_GLOBAL_POINTER, TY_NEAR_POINTER );
     }
 #else
-    BEAliasType( T_LOCAL_POINTER, T_POINTER );
-    BEAliasType( T_GLOBAL_POINTER, T_POINTER );
+    BEAliasType( TY_LOCAL_POINTER, TY_POINTER );
+    BEAliasType( TY_GLOBAL_POINTER, TY_POINTER );
 #endif
-    BEAliasType( T_ADV_LO, T_INT_4 );
-    BEAliasType( T_ADV_HI, T_UNSIGNED );
-    BEAliasType( T_ADV_HI_CV, T_INT_4 );
+    BEAliasType( TY_ADV_LO, TY_INT_4 );
+    BEAliasType( TY_ADV_HI, TY_UNSIGNED );
+    BEAliasType( TY_ADV_HI_CV, TY_INT_4 );
 
-    BEDefType( T_COMPLEX, ALIGN_BYTE, 2*BETypeLength( T_SINGLE ) );
-    BEDefType( T_DCOMPLEX, ALIGN_BYTE, 2*BETypeLength( T_DOUBLE ) );
-    BEDefType( T_XCOMPLEX, ALIGN_BYTE, 2*BETypeLength( T_LONGDOUBLE ) );
-    BEDefType( T_CHAR, ALIGN_BYTE,
-               BETypeLength( T_UNSIGNED ) + BETypeLength( T_GLOBAL_POINTER ) );
+    BEDefType( TY_COMPLEX, ALIGN_BYTE, 2*BETypeLength( TY_SINGLE ) );
+    BEDefType( TY_DCOMPLEX, ALIGN_BYTE, 2*BETypeLength( TY_DOUBLE ) );
+    BEDefType( TY_XCOMPLEX, ALIGN_BYTE, 2*BETypeLength( TY_LONGDOUBLE ) );
+    BEDefType( TY_CHAR, ALIGN_BYTE,
+               BETypeLength( TY_UNSIGNED ) + BETypeLength( TY_GLOBAL_POINTER ) );
 #if _CPU == 386
-    BEDefType( T_CHAR16, ALIGN_BYTE,
-               BETypeLength( T_UINT_2 ) + BETypeLength( T_GLOBAL_POINTER ) );
+    BEDefType( TY_CHAR16, ALIGN_BYTE,
+               BETypeLength( TY_UINT_2 ) + BETypeLength( TY_GLOBAL_POINTER ) );
 #endif
-    BEDefType( T_CHAR_ALLOCATABLE, ALIGN_BYTE,
-               BETypeLength( T_CHAR ) + BETypeLength( T_UINT_2 ) );
+    BEDefType( TY_CHAR_ALLOCATABLE, ALIGN_BYTE,
+               BETypeLength( TY_CHAR ) + BETypeLength( TY_UINT_2 ) );
 
-    BEDefType( T_ADV_ENTRY_CV, ALIGN_BYTE,
-               BETypeLength( T_ADV_LO ) + BETypeLength( T_ADV_HI_CV ) );
+    BEDefType( TY_ADV_ENTRY_CV, ALIGN_BYTE,
+               BETypeLength( TY_ADV_LO ) + BETypeLength( TY_ADV_HI_CV ) );
 
-    BEDefType( T_ADV_ENTRY, ALIGN_BYTE,
-               BETypeLength( T_ADV_LO ) + BETypeLength( T_ADV_HI ) );
+    BEDefType( TY_ADV_ENTRY, ALIGN_BYTE,
+               BETypeLength( TY_ADV_LO ) + BETypeLength( TY_ADV_HI ) );
 
-    adv_size = BETypeLength( T_ADV_ENTRY );
+    adv_size = BETypeLength( TY_ADV_ENTRY );
     if( CGOpts & CGOPT_DI_CV ) {
-        adv_size += BETypeLength( T_ADV_ENTRY_CV );
+        adv_size += BETypeLength( TY_ADV_ENTRY_CV );
     }
     if( Options & OPT_BOUNDS ) {
-        total_size = BETypeLength( T_POINTER );
+        total_size = BETypeLength( TY_POINTER );
     } else {
         total_size = 0;
     }
     for( adv_cnt = 0; adv_cnt < MAX_DIM; adv_cnt++ ) {
         total_size += adv_size;
-        BEDefType( ( T_ADV_ENTRY_1 + adv_cnt ), ALIGN_BYTE, total_size );
+        BEDefType( ( TY_ADV_ENTRY_1 + adv_cnt ), ALIGN_BYTE, total_size );
     }
 
-    BEDefType( T_ARR_ALLOCATABLE, ALIGN_BYTE,
-               ( BETypeLength( T_UINT_2 ) + BETypeLength( T_POINTER ) ) );
+    BEDefType( TY_ARR_ALLOCATABLE, ALIGN_BYTE,
+               ( BETypeLength( TY_UINT_2 ) + BETypeLength( TY_POINTER ) ) );
 
 #if _CPU == 386
-    total_size = BETypeLength( T_LONG_POINTER );
+    total_size = BETypeLength( TY_LONG_POINTER );
 #elif _CPU == 8086
     if( CGOpts & CGOPT_M_LARGE ) {
-        total_size = BETypeLength( T_HUGE_POINTER );
+        total_size = BETypeLength( TY_HUGE_POINTER );
     } else { // if( CGOpts & CGOPT_M_MEDIUM ) {
-        total_size = BETypeLength( T_LONG_POINTER );
+        total_size = BETypeLength( TY_LONG_POINTER );
     }
 #else
-    total_size = BETypeLength( T_POINTER );
+    total_size = BETypeLength( TY_POINTER );
 #endif
-    BEDefType( T_ARR_ALLOCATABLE_EXTENDED, ALIGN_BYTE,
-                BETypeLength(T_UINT_2) + total_size );
+    BEDefType( TY_ARR_ALLOCATABLE_EXTENDED, ALIGN_BYTE,
+                BETypeLength(TY_UINT_2) + total_size );
 }
 
 
@@ -967,7 +977,7 @@ void    DefStructs() {
 
     sym_id      sym;
 
-    UserType = T_USER_DEFINED;
+    UserType = TY_USER_DEFINED;
     for( sym = RList; sym != NULL; sym = sym->sd.link ) {
         BEDefType( UserType, ALIGN_BYTE, sym->sd.size );
         sym->sd.cg_typ = UserType;
@@ -996,7 +1006,7 @@ void    DefStructs() {
                    _SymSize( sym ) * sym->ns.si.va.dim_ext->num_elts );
                 sym->ns.si.va.dim_ext->l.cg_typ = UserType;
                 ++UserType;
-            } else if( sym->ns.typ == TY_CHAR ) {
+            } else if( sym->ns.typ == FT_CHAR ) {
                 BEDefType( UserType, ALIGN_BYTE, sym->ns.xt.size );
                 sym->ns.si.va.vi.cg_typ = UserType;
                 ++UserType;
@@ -1004,7 +1014,7 @@ void    DefStructs() {
         }
         for( sym = MList; sym != NULL; sym = sym->ns.link ) {
             if( sym->ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) ) continue;
-            if( (sym->ns.typ == TY_CHAR) && (sym->ns.xt.size != 0) ) {
+            if( (sym->ns.typ == FT_CHAR) && (sym->ns.xt.size != 0) ) {
                 BEDefType( UserType, ALIGN_BYTE, sym->ns.xt.size );
                 sym->ns.si.ms.cg_typ = UserType;
                 ++UserType;
@@ -1077,11 +1087,11 @@ fe_attr FEAttr( sym_id sym ) {
                 } else {
                     attr |= FE_STATIC;
                 }
-            } else if( (flags & SY_SUBSCRIPTED) || (sym->ns.typ == TY_STRUCTURE) ) {
+            } else if( (flags & SY_SUBSCRIPTED) || (sym->ns.typ == FT_STRUCTURE) ) {
                 if( !(Options & OPT_AUTOMATIC) ) {
                     attr |= FE_STATIC;
                 }
-            } else if( sym->ns.typ == TY_CHAR ) {
+            } else if( sym->ns.typ == FT_CHAR ) {
                 // SCB's with length 0 are automatic temporaries
                 // We mustn't allow the codegen to blow away non magical symbols
                 if( (Options & OPT_AUTOMATIC ) && !_MgcIsMagic( sym ) ) {
@@ -1144,7 +1154,7 @@ segment_id      FESegID( sym_id sym ) {
                 if( !_Allocatable( sym ) ) {
                     id = GetDataSegId( sym );
                 }
-            } else if( sym->ns.typ != TY_CHAR ) {
+            } else if( sym->ns.typ != FT_CHAR ) {
                 id = GetDataSegId( sym );
             }
         }
@@ -1243,7 +1253,7 @@ static int GetParmsSize( sym_id sym )
         } else if( arg->info & ARG_SIZE_16 ) {
             args_size += 16;
         } else if( arg->info & PASS_BY_REFERENCE ) {
-            args_size += BETypeLength( T_POINTER );
+            args_size += BETypeLength( TY_POINTER );
         }
     }
     return( args_size );
@@ -1308,25 +1318,25 @@ cg_type FEParmType( sym_id fn, sym_id parm, cg_type tipe ) {
     parm = parm;
     switch( tipe ) {
 #if _CPU == 386
-    case T_UINT_2:
-    case T_INT_2:
+    case TY_UINT_2:
+    case TY_INT_2:
 #endif
-    case T_INT_1:
-    case T_UINT_1:
+    case TY_INT_1:
+    case TY_UINT_1:
 #if _CPU == 386
         {
             aux_info    *aux;
             aux = AuxLookup( fn );
             if( aux != NULL ) {
                 if( aux->cclass & FAR16_CALL ) {
-                    return( T_INT_2 );
+                    return( TY_INT_2 );
                 }
             }
         }
 #else
         fn = fn;
 #endif
-        tipe = T_INTEGER;
+        tipe = TY_INTEGER;
     }
     return( tipe );
 }
@@ -1461,7 +1471,7 @@ void    FEMessage( msg_class tipe, void *x ) {
 static  dbg_type        BaseDbgType( TYPE typ, uint size ) {
 //==========================================================
 
-    if( typ == TY_CHAR ) {
+    if( typ == FT_CHAR ) {
         return( DBCharBlock( size ) );
     } else {
         return( DBGTypes[ ParmType( typ, size ) ] );
@@ -1477,19 +1487,19 @@ static  dbg_type        GetDbgType( sym_id sym ) {
     dbg_loc     loc;
     dbg_type    type;
 
-    if( (sym->ns.typ == TY_CHAR) && (sym->ns.xt.size == 0) ) {
+    if( (sym->ns.typ == FT_CHAR) && (sym->ns.xt.size == 0) ) {
         if( (sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             // return value for character*(*) function
             loc = DBLocInit();
             if( Options & OPT_DESCRIPTOR ) {
                 loc = DBLocSym( loc, ReturnValue );
-                loc = DBLocOp( loc, DB_OP_POINTS, T_POINTER );
-                loc = DBLocConst( loc, BETypeLength( T_POINTER ) );
+                loc = DBLocOp( loc, DB_OP_POINTS, TY_POINTER );
+                loc = DBLocConst( loc, BETypeLength( TY_POINTER ) );
                 loc = DBLocOp( loc, DB_OP_ADD, 0 );
             } else {
                 loc = DBLocSym( loc, FindArgShadow( ReturnValue ) );
             }
-            type = DBLocCharBlock( loc, T_INTEGER );
+            type = DBLocCharBlock( loc, TY_INTEGER );
             DBLocFini( loc );
             return( type );
         } else {
@@ -1500,17 +1510,17 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             loc = DBLocInit();
             if( Options & OPT_DESCRIPTOR ) {
                 loc = DBLocSym( loc, sym );
-                loc = DBLocOp( loc, DB_OP_POINTS, T_POINTER );
-                loc = DBLocConst( loc, BETypeLength( T_POINTER ) );
+                loc = DBLocOp( loc, DB_OP_POINTS, TY_POINTER );
+                loc = DBLocConst( loc, BETypeLength( TY_POINTER ) );
                 loc = DBLocOp( loc, DB_OP_ADD, 0 );
             } else {
                 loc = DBLocSym( loc, FindArgShadow( sym ) );
             }
-            type = DBLocCharBlock( loc, T_INTEGER );
+            type = DBLocCharBlock( loc, TY_INTEGER );
             DBLocFini( loc );
             return( type );
         }
-    } else if( sym->ns.typ == TY_STRUCTURE ) {
+    } else if( sym->ns.typ == FT_STRUCTURE ) {
         return( sym->ns.xt.record->dbi );
     } else {
         return( BaseDbgType( sym->ns.typ, sym->ns.xt.size ) );
@@ -1529,7 +1539,7 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 
     dims = 1;
     bounds = &dim_ptr->subs_1_lo;
-    db_arr = DBBegArray( db_type, T_UNKNOWN, TRUE );
+    db_arr = DBBegArray( db_type, TY_UNKNOWN, TRUE );
     while( dims <= _DimCount( dim_ptr->dim_flags ) ) {
         lo = *bounds;
         ++bounds;
@@ -1556,7 +1566,7 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
         #error Unknown platform
 #endif
     } else if( (sym->ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-        if( sym->ns.typ == TY_CHAR ) {
+        if( sym->ns.typ == FT_CHAR ) {
             // for character*(*) functions, we want to pass 0 so that
             // the debugger can tell that it's a character*(*) function
             return( DBCharBlock( sym->ns.xt.size ) );
@@ -1594,30 +1604,30 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
     parameter   *arg;
     dbg_type    arg_type;
 
-    if( sym->ns.typ == TY_CHAR ) {
-        db_type = DBDereference( T_POINTER, db_type );
+    if( sym->ns.typ == FT_CHAR ) {
+        db_type = DBDereference( TY_POINTER, db_type );
     }
-    db_proc = DBBegProc( T_CODE_PTR, db_type );
+    db_proc = DBBegProc( TY_CODE_PTR, db_type );
     for( ep = Entries; ep != NULL; ep = ep->link ) {
         if( ep->id != sym ) continue;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( arg->flags & ARG_STMTNO ) continue;
             arg_type = GetDbgType( arg->id );
             if( ( arg->id->ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-                arg_type = DBDereference( T_CODE_PTR,
-                               DBEndProc( DBBegProc( T_CODE_PTR,
+                arg_type = DBDereference( TY_CODE_PTR,
+                               DBEndProc( DBBegProc( TY_CODE_PTR,
                                           GetDBGSubProgType( arg->id ) ) ) );
 
             } else {
-                if( arg->id->ns.typ == TY_CHAR ) {
+                if( arg->id->ns.typ == FT_CHAR ) {
                     if( !(arg->id->ns.flags & SY_VALUE_PARM) ) {
                         if( Options & OPT_DESCRIPTOR ) {
-                            arg_type = DBDereference( T_POINTER, arg_type );
+                            arg_type = DBDereference( TY_POINTER, arg_type );
                         }
                     }
                 } else {
                     if( !(arg->id->ns.flags & SY_VALUE_PARM) ) {
-                        arg_type = DBDereference( T_POINTER, arg_type );
+                        arg_type = DBDereference( TY_POINTER, arg_type );
                     }
                 }
             }
@@ -1640,7 +1650,7 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, unsigned_32 f_offset ) {
 
     field = sd->sd.fl.sym_fields;
     while( field != NULL ) {
-        if( field->fd.typ == TY_UNION ) {
+        if( field->fd.typ == FT_UNION ) {
             size = 0;
             map = field->fd.xt.sym_record;
             while( map != NULL ) {
@@ -1652,7 +1662,7 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, unsigned_32 f_offset ) {
             }
         } else {
             STFieldName( field, field_name );
-            if( field->fd.typ == TY_STRUCTURE ) {
+            if( field->fd.typ == FT_STRUCTURE ) {
                 DefDbgStruct( field->fd.xt.sym_record );
                 size = field->fd.xt.record->size;
                 db_type = field->fd.xt.record->dbi;
@@ -1705,7 +1715,7 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
     for(;;) {
         com_ext = sym->ns.si.va.vi.ec_ext;
         STGetName( sym, field_name );
-        if( sym->ns.typ == TY_STRUCTURE ) {
+        if( sym->ns.typ == FT_STRUCTURE ) {
             DefDbgStruct( sym->ns.xt.sym_record );
         }
         size = _SymSize( sym );
@@ -1749,7 +1759,7 @@ dbg_type        FEDbgRetType( sym_id sym ) {
 
     _UnShadow( sym );
     InitDBGTypes();
-    if( sym->ns.typ == TY_STRUCTURE ) {
+    if( sym->ns.typ == FT_STRUCTURE ) {
         DefDbgStruct( sym->ns.xt.sym_record );
     }
     return( GetDBGSubProgType( sym ) );
@@ -1766,7 +1776,7 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 
     idx = 0;
     dims = _DimCount( dim_ptr->dim_flags );
-    db_arr = DBBegArray( db_type, T_UNKNOWN, TRUE );
+    db_arr = DBBegArray( db_type, TY_UNKNOWN, TRUE );
     if( dim_ptr->adv == NULL ) {
         // ADV allocated on the stack (debugging API's can't support this)
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
@@ -1777,19 +1787,19 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
         }
         return( DBEndArray( db_arr ) );
     }
-    len = dims * BETypeLength( T_ADV_ENTRY );
+    len = dims * BETypeLength( TY_ADV_ENTRY );
     if( Options & OPT_BOUNDS ) {
-        len += BETypeLength( T_POINTER );
+        len += BETypeLength( TY_POINTER );
     }
     while( idx < dims ) {
         if( CGOpts & CGOPT_DI_CV ) {
             DBDimVar( db_arr, dim_ptr->adv,
-                      ( len + ( idx * BETypeLength( T_ADV_ENTRY_CV ) ) ),
-                      T_ADV_LO, T_ADV_HI_CV );
+                      ( len + ( idx * BETypeLength( TY_ADV_ENTRY_CV ) ) ),
+                      TY_ADV_LO, TY_ADV_HI_CV );
         } else {
             DBDimVar( db_arr, dim_ptr->adv,
-                      idx * BETypeLength( T_ADV_ENTRY ),
-                      T_ADV_LO, T_ADV_HI );
+                      idx * BETypeLength( TY_ADV_ENTRY ),
+                      TY_ADV_LO, TY_ADV_HI );
         }
         ++idx;
     }
@@ -1810,7 +1820,7 @@ dbg_type        FEDbgType( sym_id sym ) {
     if( (sym->ns.flags & SY_CLASS) == SY_COMMON ) {
         db_type = DefCommonStruct( sym );
     } else {
-        if( sym->ns.typ == TY_STRUCTURE ) {
+        if( sym->ns.typ == FT_STRUCTURE ) {
             DefDbgStruct( sym->ns.xt.sym_record );
         }
         if( (sym->ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
@@ -1819,16 +1829,16 @@ dbg_type        FEDbgType( sym_id sym ) {
             db_type = DefDbgSubprogram( sym, db_type );
             if( sym->ns.flags & SY_SUB_PARM ) {
                 // subprogram is an argument
-                db_type = DBDereference( T_CODE_PTR, db_type );
+                db_type = DBDereference( TY_CODE_PTR, db_type );
             }
         } else {
             if( sym->ns.flags & SY_PS_ENTRY ) {
                 // shadow symbols for all function entry points
                 // return value always points to the return value
                 db_type = GetDbgType( sym->ns.si.ms.sym );
-                db_type = DBDereference( T_POINTER, db_type );
-                if( SubProgId->ns.typ == TY_CHAR ) { // character function
-                    db_type = DBDereference( T_POINTER, db_type );
+                db_type = DBDereference( TY_POINTER, db_type );
+                if( SubProgId->ns.typ == FT_CHAR ) { // character function
+                    db_type = DBDereference( TY_POINTER, db_type );
                 }
             } else {
                 db_type = GetDbgType( sym );
@@ -1840,31 +1850,31 @@ dbg_type        FEDbgType( sym_id sym ) {
                         db_type = ArrayDbgType( dim_ptr, db_type );
                     }
                     if( sym->ns.flags & SY_SUB_PARM ) {
-                        db_type = DBDereference( T_POINTER, db_type );
-                        if( sym->ns.typ == TY_CHAR ) {
+                        db_type = DBDereference( TY_POINTER, db_type );
+                        if( sym->ns.typ == FT_CHAR ) {
                             if( !(sym->ns.flags & SY_VALUE_PARM) ) {
                                 if( Options & OPT_DESCRIPTOR ) {
-                                    db_type = DBDereference( T_POINTER, db_type );
+                                    db_type = DBDereference( TY_POINTER, db_type );
                                 }
                             }
                         }
                     }
                     if( _Allocatable( sym ) ) {
-                        db_type = DBDereference( T_POINTER, db_type );
+                        db_type = DBDereference( TY_POINTER, db_type );
                     }
-                } else if( sym->ns.typ == TY_CHAR ) {
+                } else if( sym->ns.typ == FT_CHAR ) {
                     // character variable
-                    db_type = DBDereference( T_POINTER, db_type );
+                    db_type = DBDereference( TY_POINTER, db_type );
                     if( sym->ns.flags & SY_SUB_PARM ) {
                         if( !(sym->ns.flags & SY_VALUE_PARM) ) {
                             if( Options & OPT_DESCRIPTOR ) {
-                                db_type = DBDereference( T_POINTER, db_type );
+                                db_type = DBDereference( TY_POINTER, db_type );
                             }
                         }
                     }
                 } else if( sym->ns.flags & SY_SUB_PARM ) {
                     if( !(sym->ns.flags & SY_VALUE_PARM) ) {
-                        db_type = DBDereference( T_POINTER, db_type );
+                        db_type = DBDereference( TY_POINTER, db_type );
                     }
                 }
             }

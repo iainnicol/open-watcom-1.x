@@ -39,10 +39,8 @@
 #include "global.h"
 #include "prmcodes.h"
 #include "utility.h"
+#include "parmcode.h"
 
-
-
-static PARAM_CODES     ParmClass( itnode *arg );
 
 PARAM_CODES ParmCode( itnode *arg ) {
 //===============================
@@ -71,7 +69,7 @@ PARAM_CODES ParmCode( itnode *arg ) {
 }
 
 
-static PARAM_CODES     ParmClass( itnode *arg ) {
+PARAM_CODES     ParmClass( itnode *arg ) {
 //===============================
 
 // Return the argument class.

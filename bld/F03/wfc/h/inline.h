@@ -33,6 +33,8 @@
 #ifndef _F77_INLINE_INCLUDED_
 #define _F77_INLINE_INCLUDED_
 
+void InitInlinePragmas(void);
+
 enum {
     INLINE_STRBLAST_EQ,
     INLINE_STRBLAST_NE

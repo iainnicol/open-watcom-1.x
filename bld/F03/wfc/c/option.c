@@ -64,8 +64,10 @@ extern  void            __UseJapaneseCharSet(void);
 extern  void            __UseKoreanCharSet(void);
 
 extern  character_set   CharSetInfo;
-
 extern  uint            DataThreshold;
+
+static  int             GetDirective(char *buff);
+static  void            ScanOpts(char *buff);
 
 // Compiler directives
 

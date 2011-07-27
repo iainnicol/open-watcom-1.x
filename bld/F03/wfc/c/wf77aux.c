@@ -63,7 +63,30 @@ extern  int             Spawn(void (*)());
 extern  void            ReadSrc(void);
 extern  aux_info        *AuxLookupName(char *,int);
 extern  sym_id          SymFind(char *,uint);
-extern  void            FreeChain(void **);
+extern  void            FreeChain(void *);
+
+static  void            FreeAuxEntry(aux_info *aux);
+static  void            FreeAuxElements(aux_info *aux);
+static  void            FreeArgList(aux_info *aux);
+static  void            ScanToken(void);
+static  void            ScanFnToken(void);
+static  void            SymbolId(void);
+static  void            TokUpper(void);
+static  void            ReqToken(char *tok);
+static  void            SymbolName(void);
+static  void            AliasName(void);
+static  void            ProcessAlias(void);
+static  void            ObjectName(void);
+static  void            GetParmInfo(void);
+static  void            GetByteSeq(void);
+static  void            GetRetInfo(void);
+static  void            GetSaveInfo(void);
+static  void            DupParmInfo(aux_info *dst, aux_info *src);
+static  void            DupCallBytes(aux_info *dst, aux_info *src);
+static  void            DupObjectName(aux_info *dst, aux_info *src);
+static  void            DupArgInfo(aux_info *dst, aux_info *src);
+static  void            GetArgList(void);
+static  void            GetSTRetInfo(void);
 
 static  aux_info        *CurrAux;
 static  char            *TokStart;
@@ -413,7 +436,7 @@ void    SubAuxFini() {
         next = ArrayInfo->link;
         arr = SymFind( ArrayInfo->arr, strlen( ArrayInfo->arr ) );
         if( ( arr != NULL ) && ( arr->ns.flags & SY_SUBSCRIPTED ) &&
-            ( arr->ns.typ != TY_CHAR ) &&
+            ( arr->ns.typ != FT_CHAR ) &&
             ( ( arr->ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
             arr->ns.si.va.dim_ext->dim_flags |= DIM_EXTENDED;
         }
@@ -1397,8 +1420,17 @@ static  void    GetByteSeq( void ) {
                 Suicide();
             *(char *)(TokEnd - sizeof( char )) = NULLCHAR;
             AsmCodeAddress = seq_len;
-            AsmCodeBuffer = buff;
+            AsmCodeBuffer = buff;            
+#if ( _CPU == 8086 || _CPU == 386 )
+  #if _CPU == 8086
+            AsmLine( &TokStart[1], use_fpu_emu );
+            use_fpu_emu = FALSE;
+  #else
+            AsmLine( &TokStart[1], FALSE );
+  #endif
+#else
             AsmLine( &TokStart[1] );
+#endif            
             if( AsmCodeAddress <= MAXIMUM_BYTESEQ ) {
                 seq_len = AsmCodeAddress;
             } else {

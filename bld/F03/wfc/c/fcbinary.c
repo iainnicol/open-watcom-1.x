@@ -69,6 +69,8 @@ extern  cg_type         ResCGType(cg_type,cg_type);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 extern  bool            TypeCGInteger(cg_type);
 
+static  void            XBinary(int op_code);
+
 
 void            FCFlip() {
 //========================
@@ -242,8 +244,8 @@ void    FCPow() {
     base = XPopValue( base_typ );
     power = XPopValue( power_typ );
     base_typ = ResCGType( base_typ, power_typ );
-    if( ( base_typ == T_INT_1 ) || ( base_typ == T_INT_2 ) ) {
-        base_typ = T_INT_4;
+    if( ( base_typ == TY_INT_1 ) || ( base_typ == TY_INT_2 ) ) {
+        base_typ = TY_INT_4;
     }
     XPush( CGBinary( O_POW, base, power, base_typ ) );
 }

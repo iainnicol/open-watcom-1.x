@@ -35,8 +35,13 @@
 #include "errcod.h"
 #include "cpopt.h"
 #include "fmemmgr.h"
+#include "fmacros.h"
 
 #include <string.h>
+
+static  void    FreeMacros(bool free_perm);
+static  void    IFCondition(bool cond);
+static  void    MacroCondition(bool cond);
 
 typedef struct macro_entry {
     struct macro_entry  *link;

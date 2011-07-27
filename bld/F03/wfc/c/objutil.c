@@ -79,6 +79,9 @@ extern  bool            SDEof(file_handle);
 extern  void            SDScratch(char *);
 extern  void            SDSetAttr(file_attr);
 
+static  void            ChkIOErr(file_handle fp, int error);
+static  void            DumpCurrPage(void);
+
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
 

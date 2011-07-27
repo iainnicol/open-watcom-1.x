@@ -79,6 +79,10 @@ extern  void            (* __FAR FCJmpTab[])();
 extern  void            (* __FAR DataJmpTab[])();
 extern  char            *StmtKeywords[];
 
+static  void            GetDataConst(void);
+static  void            FlushConsts(void);
+static  void            StructInitItem(sym_id fd);
+
 static  void            InitStructArr( sym_id fd, act_dim_list *dim );
 static  void            StructInit( sym_id fd );
 
@@ -88,7 +92,7 @@ static  void            StructInit( sym_id fd );
 #undef pick
 #endif
 
-#define pick(id,typ) typ,
+#define pick(id,type,dbgtype,cgtype,typnam) type,
 
 static  TYPE    MapType[] = {
 #include "ptypdefn.h"
@@ -890,33 +894,33 @@ static  void    DoDataInit( PTYPE var_type ) {
             if( (var_type == PT_REAL_4) || (var_type == PT_CPLX_8) ) {
                 CnvS2S( (single *)const_ptr, fmt_buff );
                 cf = CFCnvSF( fmt_buff, fmt_buff + strlen( fmt_buff ) );
-                CFCnvTarget( cf, const_buff, TypeLength( T_SINGLE ) );
+                CFCnvTarget( cf, const_buff, TypeLength( TY_SINGLE ) );
                 CFFree( cf );
             } else if( (var_type == PT_REAL_8) || (var_type == PT_CPLX_16) ) {
                 CnvD2S( (double *)const_ptr, fmt_buff );
                 cf = CFCnvSF( fmt_buff, fmt_buff + strlen( fmt_buff ) );
-                CFCnvTarget( cf, const_buff, TypeLength( T_DOUBLE ) );
+                CFCnvTarget( cf, const_buff, TypeLength( TY_DOUBLE ) );
                 CFFree( cf );
             } else if( (var_type == PT_REAL_16) || (var_type == PT_CPLX_32) ) {
                 CnvX2S( (extended *)const_ptr, fmt_buff );
                 cf = CFCnvSF( fmt_buff, fmt_buff + strlen( fmt_buff ) );
-                CFCnvTarget( cf, const_buff, TypeLength( T_LONGDOUBLE ) );
+                CFCnvTarget( cf, const_buff, TypeLength( TY_LONGDOUBLE ) );
                 CFFree( cf );
             }
             if( var_type == PT_CPLX_8 ) {
                 CnvS2S( (single *)(const_ptr + sizeof( single )), fmt_buff );
                 cf = CFCnvSF( fmt_buff, fmt_buff + strlen( fmt_buff ) );
-                CFCnvTarget( cf, const_buff + sizeof( single ), TypeLength( T_SINGLE ) );
+                CFCnvTarget( cf, const_buff + sizeof( single ), TypeLength( TY_SINGLE ) );
                 CFFree( cf );
             } else if( var_type == PT_CPLX_16 ) {
                 CnvD2S( (double *)(const_ptr + sizeof( double )), fmt_buff );
                 cf = CFCnvSF( fmt_buff, fmt_buff + strlen( fmt_buff ) );
-                CFCnvTarget( cf, const_buff + sizeof( double ), TypeLength( T_DOUBLE ) );
+                CFCnvTarget( cf, const_buff + sizeof( double ), TypeLength( TY_DOUBLE ) );
                 CFFree( cf );
             } else if( var_type == PT_CPLX_32 ) {
                 CnvX2S( (extended *)(const_ptr + sizeof( extended )), fmt_buff );
                 cf = CFCnvSF( fmt_buff, fmt_buff + strlen( fmt_buff ) );
-                CFCnvTarget( cf, const_buff + sizeof( extended ), TypeLength( T_LONGDOUBLE ) );
+                CFCnvTarget( cf, const_buff + sizeof( extended ), TypeLength( TY_LONGDOUBLE ) );
                 CFFree( cf );
             }
             if( (var_type >= PT_REAL_4) && (var_type <= PT_CPLX_32) ) {
@@ -1173,7 +1177,7 @@ void    DtPush() {
     } else { // must be variable to initialize
         InitVar = sym;
         DtOffset = 0;
-        if( sym->ns.typ != TY_STRUCTURE ) {
+        if( sym->ns.typ != FT_STRUCTURE ) {
             DtItemSize = InitVar->ns.xt.size;
         }
     }
@@ -1338,7 +1342,7 @@ void    DtSubscript() {
         NameStmtErr( EV_SSCR_INVALID, InitVar, PR_DATA );
     }
     DtOffset = offset * _SymSize( InitVar );
-    if( InitVar->ns.typ != TY_STRUCTURE ) {
+    if( InitVar->ns.typ != FT_STRUCTURE ) {
         DtItemSize = InitVar->ns.xt.size;
     }
 }
@@ -1387,7 +1391,7 @@ void    DtFieldSubscript() {
     base = DXPop();
     fd = GetPtr();
     if( Subscript( fd->fd.dim_ext, &offset ) ) {
-        if( fd->fd.typ == TY_STRUCTURE ) {
+        if( fd->fd.typ == FT_STRUCTURE ) {
             offset *= fd->fd.xt.record->size;
         } else {
             offset *= fd->fd.xt.size;
@@ -1503,7 +1507,7 @@ void    DtFieldOp() {
 
     InitVar = GetPtr();
     fd = GetPtr();
-    if( fd->fd.typ == TY_CHAR ) {
+    if( fd->fd.typ == FT_CHAR ) {
         // DtItemSize will be set if a field has been substrung
         if( DtItemSize == 0 ) {
             DtItemSize = fd->fd.xt.size;
@@ -1528,7 +1532,7 @@ static  void    StructInit( sym_id fd ) {
 //=======================================
 
     while( fd != NULL ) {
-        if( fd->fd.typ == TY_STRUCTURE ) {
+        if( fd->fd.typ == FT_STRUCTURE ) {
             StructInit( fd->fd.xt.record->fl.sym_fields );
         } else {
             StructInitItem( fd );
@@ -1550,7 +1554,7 @@ static  void    StructInitItem( sym_id fd ) {
     if( fd->fd.dim_ext == NULL ) {
         AsnVal( ParmType( fd->fd.typ, DtItemSize ) );
     } else {
-        if( fd->fd.typ == TY_STRUCTURE ) {
+        if( fd->fd.typ == FT_STRUCTURE ) {
             InitStructArr( fd, fd->fd.dim_ext );
         } else {
             InitArr( fd->fd.dim_ext, fd->fd.typ, DtItemSize );

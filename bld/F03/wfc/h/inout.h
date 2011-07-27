@@ -107,5 +107,6 @@ extern void    LFNewPage(void);
 extern void    LFSkip(void);
 #endif
 
+void GetLstName(char *buffer);
 
 #endif

@@ -40,6 +40,7 @@
 #include "cg.h"
 #include "fcodes.h"
 #include "emitobj.h"
+#include "fcsel.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -113,7 +114,7 @@ void    DoSelect( int kind ) {
     if( sel_sym->ns.typ == TY_CHAR ) {
         sel_expr = CGUnary( O_POINTS,
                             SCBPointer( SymAddr( sel_sym ) ),
-                            T_UINT_1 );
+                            TY_UINT_1 );
     } else {
         sel_expr = SymValue( sel_sym );
     }

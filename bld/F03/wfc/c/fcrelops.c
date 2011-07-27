@@ -63,6 +63,8 @@ extern  call_handle     InitCall(int);
 extern  cg_name         SCBPointer(cg_name);
 extern  cg_name         IntegerConstant(ftn_type *,uint);
 
+static  void            XChar1Compare(cg_op op);
+
 
 static  void    XCompare( cg_op op_code ) {
 //=========================================
@@ -150,10 +152,10 @@ static  void    XCharCompare( cg_op op ) {
     name1 = XPop();
     name2 = XPop();
     call = InitCall( RT_LEXCMP );
-    CGAddParm( call, name2, T_LOCAL_POINTER );
-    CGAddParm( call, name1, T_LOCAL_POINTER );
-    XPush( CGCompare( op, CGUnary( O_POINTS, CGCall( call ), T_INTEGER ),
-                      CGInteger( 0, T_INTEGER ), T_INTEGER ) );
+    CGAddParm( call, name2, TY_LOCAL_POINTER );
+    CGAddParm( call, name1, TY_LOCAL_POINTER );
+    XPush( CGCompare( op, CGUnary( O_POINTS, CGCall( call ), TY_INTEGER ),
+                      CGInteger( 0, TY_INTEGER ), TY_INTEGER ) );
 }
 
 

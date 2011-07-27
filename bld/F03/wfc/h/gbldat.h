@@ -38,7 +38,7 @@ gbl_defn itnode         *ITHead;        // head of stmt internal text
 gbl_defn itnode         *CITNode;       // current internal text node
 gbl_defn itnode         *SPtr1;         // 1st LZ right bracket
 gbl_defn itnode         *SPtr2;         // 2nd LZ right bracket
-gbl_defn stmtproc		StmtProc;       // statement processor code
+gbl_defn stmtproc       StmtProc;       // statement processor code
 gbl_defn unsigned_16    CtrlFlgs;       // statement control flags
 gbl_defn int            SrcRecNum;      // record # of initial line of statement
 gbl_defn unsigned_16    BlockNum;       // for controlling unstructured branches
@@ -91,7 +91,7 @@ gbl_defn char           *CmdPtr;        // pointer to command line
 gbl_defn uint           NumExtens;      // number of extens. during compilation
 gbl_defn uint           NumWarns;       // number of warnings during compilation
 gbl_defn char           *SrcExtn;       // pointer to source file extension
-gbl_defn int        RetCode;        // return code for Main()
+gbl_defn int            RetCode;        // return code for Main()
 
 
 gbl_defn sym_id         NList;          // start of name list
@@ -107,7 +107,7 @@ gbl_defn sym_id         IFList;         // start of intrinsic function list
 gbl_defn sym_id         CurrStruct;     // sym_id of structure being defined
 gbl_defn itnode         *FieldNode;     // I.T. node of current field
 
-//gbl_defn pointer        ITPool;         // head of free list of I.T. nodes
+gbl_defn pointer        ITPool;         // head of free list of I.T. nodes
 gbl_defn unsigned_32    CGOpts;         // code generator options
 gbl_defn unsigned_32    CPUOpts;        // code generator options (CPU target)
 gbl_defn unsigned_32    OZOpts;         // code generator options (optimizations)

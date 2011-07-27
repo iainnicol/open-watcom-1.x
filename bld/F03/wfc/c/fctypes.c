@@ -40,19 +40,21 @@
 #include "wf77defs.h"
 #include "symbol.h"
 
+static  int             CGIndex(cg_type typ);
+
 #define NUM_TYPES       12
-#define L1              T_UINT_1
-#define L4              T_UINT_4
-#define I1              T_INT_1
-#define I2              T_INT_2
-#define I4              T_INT_4
-#define R4              T_SINGLE
-#define R8              T_DOUBLE
-#define R10             T_LONGDOUBLE
-#define C8              T_COMPLEX
-#define C16             T_DCOMPLEX
-#define C20             T_XCOMPLEX
-#define CH              T_CHAR
+#define L1              TY_UINT_1
+#define L4              TY_UINT_4
+#define I1              TY_INT_1
+#define I2              TY_INT_2
+#define I4              TY_INT_4
+#define R4              TY_SINGLE
+#define R8              TY_DOUBLE
+#define R10             TY_LONGDOUBLE
+#define C8              TY_COMPLEX
+#define C16             TY_DCOMPLEX
+#define C20             TY_XCOMPLEX
+#define CH              TY_CHAR
 
 static  byte            MapCGTypes[] = {
 
@@ -72,40 +74,52 @@ static  byte            MapCGTypes[] = {
    0,   0,  0,   0,   0,   0,   0,   0,   0,   0,   0,   CH   // CH
 };
 
+#ifdef pick
+#undef pick
+#endif
+#define pick(id,type,dbgtype,cgtype,typnam) cgtype,
+
+static  cg_type         CGTypesMap[] = {
+#include "ptypdefn.h"
+};
 
 cg_type MkCGType( PTYPE typ ) {
 //===========================
 
-// Map FORTRAN type to CG-type.
+// Map FORTRAN parameter type to CG-type.
 
+    /*
     switch( typ ) {
     case PT_LOG_1 :
-        return( T_UINT_1 );
+        return( TY_UINT_1 );
     case PT_LOG_4 :
-        return( T_UINT_4 );
+        return( TY_UINT_4 );
     case PT_INT_1 :
-        return( T_INT_1 );
+        return( TY_INT_1 );
     case PT_INT_2 :
-        return( T_INT_2 );
+        return( TY_INT_2 );
     case PT_INT_4 :
-        return( T_INT_4 );
+        return( TY_INT_4 );
     case PT_REAL_4 :
-        return( T_SINGLE );
+        return( TY_SINGLE );
     case PT_REAL_8 :
-        return( T_DOUBLE );
+        return( TY_DOUBLE );
     case PT_REAL_16 :
-        return( T_LONGDOUBLE );
+        return( TY_LONGDOUBLE );
     case PT_CPLX_8 :
-        return( T_COMPLEX );
+        return( TY_COMPLEX );
     case PT_CPLX_16 :
-        return( T_DCOMPLEX );
+        return( TY_DCOMPLEX );
     case PT_CPLX_32 :
-        return( T_XCOMPLEX );
+        return( TY_XCOMPLEX );
     case PT_CHAR :
-        return( T_LOCAL_POINTER );
+        return( TY_LOCAL_POINTER );
     default : // PT_STRUCT
-        return( T_USER_DEFINED );
+        return( TY_USER_DEFINED );
     }
+    */
+
+    return( CGTypesMap[ typ] );
 }
 
 
@@ -135,7 +149,7 @@ cg_type         F772CGType( sym_id sym ) {
 
 // Map a WATFOR-77 type to a CG type.
 
-    if( sym->ns.typ == TY_STRUCTURE ) return( sym->ns.xt.record->cg_typ );
+    if( sym->ns.typ == FT_STRUCTURE ) return( sym->ns.xt.record->cg_typ );
     return( MkCGType( ParmType( sym->ns.typ, sym->ns.xt.size ) ) );
 }
 
@@ -155,18 +169,18 @@ static  int     CGIndex( cg_type typ ) {
 
 // Return index for a CG-type.
 
-    if( typ == T_UINT_1 ) return( 0 );
-    if( typ == T_UINT_2 ) return( 1 );
-    if( typ == T_INT_1 ) return( 2 );
-    if( typ == T_INT_2 ) return( 3 );
-    if( typ == T_INT_4 ) return( 4 );
-    if( typ == T_SINGLE ) return( 5 );
-    if( typ == T_DOUBLE ) return( 6 );
-    if( typ == T_LONGDOUBLE ) return( 7 );
-    if( typ == T_COMPLEX ) return( 8 );
-    if( typ == T_DCOMPLEX ) return( 9 );
-    if( typ == T_XCOMPLEX ) return( 10 );
-    return( 11 ); // typ == T_CHAR
+    if( typ == TY_UINT_1 ) return( 0 );
+    if( typ == TY_UINT_2 ) return( 1 );
+    if( typ == TY_INT_1 ) return( 2 );
+    if( typ == TY_INT_2 ) return( 3 );
+    if( typ == TY_INT_4 ) return( 4 );
+    if( typ == TY_SINGLE ) return( 5 );
+    if( typ == TY_DOUBLE ) return( 6 );
+    if( typ == TY_LONGDOUBLE ) return( 7 );
+    if( typ == TY_COMPLEX ) return( 8 );
+    if( typ == TY_DCOMPLEX ) return( 9 );
+    if( typ == TY_XCOMPLEX ) return( 10 );
+    return( 11 ); // typ == TY_CHAR
 }
 
 
@@ -175,11 +189,11 @@ bool                DataPointer( cg_type typ ) {
 
 // Is CG-type a pointer?
 
-    return( ( typ == T_NEAR_POINTER )  || ( typ == T_LONG_POINTER ) ||
-            ( typ == T_HUGE_POINTER )  || ( typ == T_LOCAL_POINTER ) ||
-            ( typ == T_COMPLEX )       || ( typ == T_DCOMPLEX ) ||
-            ( typ == T_XCOMPLEX )      ||
-            ( typ == T_CHAR )          || ( typ >= T_USER_DEFINED ) );
+    return( ( typ == TY_NEAR_POINTER )  || ( typ == TY_LONG_POINTER ) ||
+            ( typ == TY_HUGE_POINTER )  || ( typ == TY_LOCAL_POINTER ) ||
+            ( typ == TY_COMPLEX )       || ( typ == TY_DCOMPLEX ) ||
+            ( typ == TY_XCOMPLEX )      ||
+            ( typ == TY_CHAR )          || ( typ >= TY_USER_DEFINED ) );
 }
 
 
@@ -188,11 +202,11 @@ bool                TypeCGInteger( cg_type typ ) {
 
 // Is CG-type an integer?
 
-    return( ( typ == T_UINT_1 ) || ( typ == T_INT_1 ) ||
-            ( typ == T_UINT_2 ) || ( typ == T_INT_2 ) ||
-            ( typ == T_UINT_4 ) || ( typ == T_INT_4 ) ||
-            ( typ == T_UINT_8 ) || ( typ == T_INT_8 ) ||
-            ( typ == T_INTEGER ) );
+    return( ( typ == TY_UINT_1 ) || ( typ == TY_INT_1 ) ||
+            ( typ == TY_UINT_2 ) || ( typ == TY_INT_2 ) ||
+            ( typ == TY_UINT_4 ) || ( typ == TY_INT_4 ) ||
+            ( typ == TY_UINT_8 ) || ( typ == TY_INT_8 ) ||
+            ( typ == TY_INTEGER ) );
 }
 
 
@@ -201,20 +215,20 @@ bool                TypePointer( cg_type typ ) {
 
 // Is CG-type a pointer?
 
-    return( DataPointer( typ ) || ( typ == T_CODE_PTR ) ||
-            ( typ == T_LONG_CODE_PTR ) || ( typ == T_NEAR_CODE_PTR ) );
+    return( DataPointer( typ ) || ( typ == TY_CODE_PTR ) ||
+            ( typ == TY_LONG_CODE_PTR ) || ( typ == TY_NEAR_CODE_PTR ) );
 }
 
 
 cg_type             PromoteToBaseType( cg_type typ ) {
 //====================================================
 
-// if type is integer T_INT_1, T_INT_2 under the _AXP or _PPC, we must promote
+// if type is integer TY_INT_1, TY_INT_2 under the _AXP or _PPC, we must promote
 // it in order to make a call
 
 #if _CPU == _AXP || _CPU == _PPC
-    if( ( typ == T_INT_1 ) || ( typ == T_INT_2 )  ) {
-        typ = T_INT_4;
+    if( ( typ == TY_INT_1 ) || ( typ == TY_INT_2 )  ) {
+        typ = TY_INT_4;
     }
 #endif
     return( typ );

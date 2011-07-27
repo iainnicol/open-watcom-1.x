@@ -15,28 +15,26 @@ F03_autodepends = .AUTODEPEND
 !include ../files.mif
 
 !ifeq release 0
-#F03_trmem = 1 temporary
-F03_trmem = 0
-
+F03_trmem = 1 
 !endif
 
 inc_dirs=-I"../h" -I"../../h" $(cg_inc_dirs) -I"$(dwarf_dir)/dw/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs)
-
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
 extra_c_flags = -D_USE_RESOURCES_
 extra_c_flags_i86 = -zp1
 extra_c_flags_386 = -zp1
+!ifeq cg_dll 1
+extra_c_flags += -D_CGDLL
+!endif
 
 .h: ../h;../../h
 .c: ../c;../../c;$(asminline_c);$(trmem_dir);
-.cpp:../c;../../c
 
 !ifeq host_cpu axp
-extra_a_flags  = -oc 
+extra_a_flags = -oc
 .asm: ../../asmaxp
 !endif
-
 
 !ifeq F03_trmem 1
 extra_c_flags_fmemmgr = -DTRMEM -I$(trmem_dir)
@@ -50,7 +48,7 @@ exename_ppc = wfcppc
 target_exe  = $(exename_$(target_cpu))
 
 !ifdef mkstubs
-F03_cg_libs = $(cg_stub_libs);
+F03_cg_libs = $(cg_stub_libs)
 !else ifeq release 1
 F03_cg_libs = $(cg_libs)
 !else
@@ -67,7 +65,10 @@ extra_l_flags_nt = op stack=1024k commit stack=32k
 
 flibs = $(wres_lib) $(dwarf_dw_lib) $(asminline_lib)
 
-$(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(cg_deps) $(flibs)
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
+
+$(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(cg_deps) $(flibs) $(version_res_$(host_os)_$(host_cpu))
     %create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(flibs)) do @%append $^&.lnk lib %i
@@ -80,6 +81,9 @@ $(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(cg_deps) $(flibs)
 !else    
     @%append $^&.lnk name $@
     $(linker) $(lflags) @$^&.lnk
+!endif
+!ifdef version_res_$(host_os)_$(host_cpu)
+    $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
     wstrip -q -a -r $@ . errmsg.res
 
@@ -103,3 +107,5 @@ asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
 msg.gh : $(wasm_dir)/h/asmshare.msg
     $(awk) -v base=MSG_RC_BASE -f $(misc_dir)/makemsg.awk $[@ > $^@
 
+verrc_exe = $(target_exe)
+!include verrc.mif

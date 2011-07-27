@@ -42,6 +42,7 @@
 #include "cpopt.h"
 #include "global.h"
 #include "emitobj.h"
+#include "fccmplx.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -84,6 +85,10 @@ extern  tmp_handle      AllocTmp(cg_type);
 extern  cg_name         TmpPtr(tmp_handle,cg_type);
 extern  void            CloneCGName(cg_name,cg_name *,cg_name *);
 extern  cg_type         PromoteToBaseType(cg_type);
+
+static  void            XCmplx(int op);
+static  void            CCCmp(cg_op op, cg_name a, cg_name b, cg_name c, cg_name d);
+static  void            CXCompare(int op);
 
 
 void    FCCmplxFlip() {
@@ -162,9 +167,9 @@ void    FCXCFlip() {
 cg_type         CmplxBaseType( cg_type typ ) {
 //============================================
 
-    if( typ == T_COMPLEX ) return( T_SINGLE );
-    if( typ == T_DCOMPLEX ) return( T_DOUBLE );
-    return( T_LONGDOUBLE );
+    if( typ == TY_COMPLEX ) return( TY_SINGLE );
+    if( typ == TY_DCOMPLEX ) return( TY_DOUBLE );
+    return( TY_LONGDOUBLE );
 }
 
 
@@ -483,8 +488,8 @@ void    XCmplxOp( int rtn_id ) {
 static cg_type PromoteIntType( cg_type typ ) {
 //============================================
 
-    if( ( typ == T_INT_1 ) || ( typ == T_INT_2 ) ) {
-        typ = T_INT_4;
+    if( ( typ == TY_INT_1 ) || ( typ == TY_INT_2 ) ) {
+        typ = TY_INT_4;
     }
     return( typ );
 }
@@ -521,7 +526,7 @@ void    XCmplxMixOp( int rtn_id, bool cmplx_scalar ) {
         // operand is complex and the right operand is a scalar, is for
         // exponentiation
         s_typ = PromoteIntType( s_typ );
-        if( s_typ == T_INT_4 ) {
+        if( s_typ == TY_INT_4 ) {
             DoCmplxScalarOp( RT_C8POWI, x.realpart, x.imagpart, s );
         } else {
             DoCmplxOp( rtn_id, x.realpart, x.imagpart, s, CGInteger( 0, x_typ ) );
@@ -542,14 +547,14 @@ void    DoCmplxScalarOp( int rtn_id, cg_name a, cg_name b, cg_name s ) {
     cg_type     r_typ;
 
     typ = CGType( a );
-    if( typ == T_DOUBLE ) {
+    if( typ == TY_DOUBLE ) {
         rtn_id += C_DOUBLE;
-        r_typ = T_DCOMPLEX;
-    } else if( typ == T_LONGDOUBLE ) {
+        r_typ = TY_DCOMPLEX;
+    } else if( typ == TY_LONGDOUBLE ) {
         rtn_id += C_EXTENDED;
-        r_typ = T_XCOMPLEX;
+        r_typ = TY_XCOMPLEX;
     } else {
-        r_typ = T_COMPLEX;
+        r_typ = TY_COMPLEX;
     }
     handle = InitCall( rtn_id );
     CGAddParm( handle, a, typ );
@@ -569,14 +574,14 @@ void    DoCmplxOp( int rtn_id, cg_name a, cg_name b, cg_name c, cg_name d ) {
     cg_type     r_typ;
 
     typ = ResCGType( CGType( a ), CGType( c ) );
-    if( typ == T_DOUBLE ) {
+    if( typ == TY_DOUBLE ) {
         rtn_id += C_DOUBLE;
-        r_typ = T_DCOMPLEX;
-    } else if( typ == T_LONGDOUBLE ) {
+        r_typ = TY_DCOMPLEX;
+    } else if( typ == TY_LONGDOUBLE ) {
         rtn_id += C_EXTENDED;
-        r_typ = T_XCOMPLEX;
+        r_typ = TY_XCOMPLEX;
     } else {
-        r_typ = T_COMPLEX;
+        r_typ = TY_COMPLEX;
     }
     handle = InitCall( rtn_id );
     CGAddParm( handle, a, typ );
@@ -728,21 +733,21 @@ void            PushCmplxConst( sym_id sym ) {
 
     char        fmt_buff[80];
 
-    if( sym->cn.typ == TY_COMPLEX ) {
+    if( sym->cn.typ == FT_COMPLEX ) {
         CnvS2S( &sym->cn.value.complex.imagpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_SINGLE ) );
+        XPush( CGFloat( fmt_buff, TY_SINGLE ) );
         CnvS2S( &sym->cn.value.complex.realpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_SINGLE ) );
-    } else if( sym->cn.typ == TY_DCOMPLEX ) {
+        XPush( CGFloat( fmt_buff, TY_SINGLE ) );
+    } else if( sym->cn.typ == FT_DCOMPLEX ) {
         CnvD2S( &sym->cn.value.dcomplex.imagpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_DOUBLE ) );
+        XPush( CGFloat( fmt_buff, TY_DOUBLE ) );
         CnvD2S( &sym->cn.value.dcomplex.realpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_DOUBLE ) );
+        XPush( CGFloat( fmt_buff, TY_DOUBLE ) );
     } else {
         CnvX2S( &sym->cn.value.xcomplex.imagpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_LONGDOUBLE ) );
+        XPush( CGFloat( fmt_buff, TY_LONGDOUBLE ) );
         CnvX2S( &sym->cn.value.xcomplex.realpart, fmt_buff );
-        XPush( CGFloat( fmt_buff, T_LONGDOUBLE ) );
+        XPush( CGFloat( fmt_buff, TY_LONGDOUBLE ) );
     }
 }
 
@@ -784,7 +789,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
         // check for structure type before checking for array
         // Consider:    A(1).X = A(2).X
         //    where A is an array of structures containing complex field X
-        if( sym->ns.typ == TY_STRUCTURE ) {
+        if( sym->ns.typ == FT_STRUCTURE ) {
             dest = XPop();
             GetU16(); // ignore structure information
         } else if( flags & SY_SUBSCRIPTED ) {
@@ -794,8 +799,8 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
         }
     }
     typ = CmplxBaseType( dst_typ );
-    if( ( src_typ != T_COMPLEX ) && ( src_typ != T_DCOMPLEX ) &&
-                                                ( src_typ != T_XCOMPLEX ) ) {
+    if( ( src_typ != TY_COMPLEX ) && ( src_typ != TY_DCOMPLEX ) &&
+                                                ( src_typ != TY_XCOMPLEX ) ) {
         z.realpart = XPopValue( src_typ );
         z.imagpart = CGInteger( 0, typ );
     } else {
@@ -878,12 +883,12 @@ cg_name         CmplxAddr( cg_name real, cg_name imag ) {
     cg_type     c_type;
 
     typ = CGType( real );
-    if( typ == T_SINGLE ) {
-        c_type = T_COMPLEX;
-    } else if( typ == T_DOUBLE ) {
-        c_type = T_DCOMPLEX;
+    if( typ == TY_SINGLE ) {
+        c_type = TY_COMPLEX;
+    } else if( typ == TY_DOUBLE ) {
+        c_type = TY_DCOMPLEX;
     } else {
-        c_type = T_XCOMPLEX;
+        c_type = TY_XCOMPLEX;
     }
     tmp = AllocTmp( c_type );
     CGTrash( CGAssign( TmpPtr( tmp, c_type ), real, typ ) );

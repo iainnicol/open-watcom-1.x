@@ -51,7 +51,7 @@
 #include "recog.h"
 #include "types.h"
 #include "utility.h"
-
+#include "declare.h"
 
 
 extern  void            Function(int,uint,bool);
@@ -169,32 +169,32 @@ TYPE    MapTypes( TYPE typ, uint size ) {
 // Given a type and size, return an equivalent type.
 // For example REAL*8 is equivalent to DOUBLE PRECISION.
 
-    if( typ == TY_REAL ) {
+    if( typ == FT_REAL ) {
         switch( size ) {
-        case( sizeof( double ) ):       return( TY_DOUBLE );
+        case( sizeof( double ) ):       return( FT_DOUBLE );
         // kludge until long doubles are implemented.
-        case( 16 ):                     return( TY_EXTENDED );
+        case( 16 ):                     return( FT_EXTENDED );
         default:        return( typ );
         }
     }
-    if( typ == TY_COMPLEX ) {
+    if( typ == FT_COMPLEX ) {
         switch( size ) {
-        case( sizeof( dcomplex ) ):     return( TY_DCOMPLEX );
+        case( sizeof( dcomplex ) ):     return( FT_DCOMPLEX );
         // cludge until long doubles are implemented.
-        case( 32 ):                     return( TY_XCOMPLEX );
+        case( 32 ):                     return( FT_XCOMPLEX );
         default:        return( typ );
         }
     }
-    if( typ == TY_INTEGER ) {
+    if( typ == FT_INTEGER ) {
         switch( size ) {
-        case( sizeof( intstar2 ) ):     return( TY_INTEGER_2 );
-        case( sizeof( intstar1 ) ):     return( TY_INTEGER_1 );
+        case( sizeof( intstar2 ) ):     return( FT_INTEGER_2 );
+        case( sizeof( intstar1 ) ):     return( FT_INTEGER_1 );
         default:        return( typ );
         }
     }
-    if( typ == TY_LOGICAL ) {
+    if( typ == FT_LOGICAL ) {
         switch( size ) {
-        case( sizeof( logstar1 ) ):     return( TY_LOGICAL_1 );
+        case( sizeof( logstar1 ) ):     return( FT_LOGICAL_1 );
         default:        return( typ );
         }
     }
@@ -240,7 +240,7 @@ static  void    TypeDecl( TYPE typ ) {
                 }
                 len_spec = LenSpec( typ, &size );
                 if( RecOpenParen() ) {
-                    if( len_spec && ( typ == TY_CHAR ) ) {
+                    if( len_spec && ( typ == FT_CHAR ) ) {
                         Extension( TY_CHAR_BEFORE_PAREN );
                     }
                     ArrayDecl( sym );
@@ -257,7 +257,7 @@ static  void    TypeDecl( TYPE typ ) {
                     if( sym->fd.dim_ext != NULL ) {
                         size *= sym->fd.dim_ext->num_elts;
                     }
-                    if( (typ == TY_CHAR) && (size == 0) ) {
+                    if( (typ == FT_CHAR) && (size == 0) ) {
                         NameErr( CV_CHARSTAR_ILLEGAL, sym );
                     }
                 } else {
@@ -283,7 +283,7 @@ void    CpCharVar() {
 
 // Process CHARACTER variable declaration statement.
 
-    TypeDecl( TY_CHAR );
+    TypeDecl( FT_CHAR );
 }
 
 
@@ -292,7 +292,7 @@ void    CpIntVar() {
 
 // Process INTEGER variable declaration statement.
 
-    TypeDecl( TY_INTEGER );
+    TypeDecl( FT_INTEGER );
 }
 
 
@@ -301,7 +301,7 @@ void    CpRealVar() {
 
 // Process REAL variable declaration statement.
 
-    TypeDecl( TY_REAL );
+    TypeDecl( FT_REAL );
 }
 
 
@@ -310,7 +310,7 @@ void    CpDbleVar() {
 
 // Process DOUBLE PRECISION variable declaration statement.
 
-    TypeDecl( TY_DOUBLE );
+    TypeDecl( FT_DOUBLE );
 }
 
 
@@ -319,7 +319,7 @@ void    CpXDbleVar() {
 
 // Process EXTENDED PRECISION variable declaration statement.
 
-    TypeDecl( TY_EXTENDED );
+    TypeDecl( FT_EXTENDED );
 }
 
 
@@ -328,7 +328,7 @@ void    CpCmplxVar() {
 
 // Process COMPLEX variable declaration statement.
 
-    TypeDecl( TY_COMPLEX );
+    TypeDecl( FT_COMPLEX );
 }
 
 
@@ -337,7 +337,7 @@ void    CpDCmplxVar() {
 
 // Process DOUBLE COMPLEX variable declaration statement.
 
-    TypeDecl( TY_DCOMPLEX );
+    TypeDecl( FT_DCOMPLEX );
 }
 
 
@@ -346,7 +346,7 @@ void    CpXCmplxVar() {
 
 // Process EXTENDED COMPLEX variable declaration statement.
 
-    TypeDecl( TY_XCOMPLEX );
+    TypeDecl( FT_XCOMPLEX );
 }
 
 
@@ -355,7 +355,7 @@ void    CpLogVar() {
 
 // Process LOGICAL variable declaration statement.
 
-    TypeDecl( TY_LOGICAL );
+    TypeDecl( FT_LOGICAL );
 }
 
 

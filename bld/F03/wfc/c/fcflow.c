@@ -42,6 +42,7 @@
 #include "fmemmgr.h"
 #include "emitobj.h"
 #include "fmemmgr.h"
+#include "fcflow.h"
 
 //=================== Back End Code Generation Routines ====================
 
@@ -93,6 +94,9 @@ extern  cg_name         TmpPtr(tmp_handle,cg_type);
 extern  cg_name         TmpVal(tmp_handle,cg_type);
 extern  cg_type         CmplxBaseType(cg_type);
 
+static  void            RBReferenced(sym_id rb);
+static  void            RefStmtFunc(sym_id sf);
+
 extern  unsigned_8      CGFlags;
 
 static  obj_ptr         WarpReturn;
@@ -115,7 +119,7 @@ void    FiniLabels( int label_type ) {
     label_entry **owner;
     label_entry *curr;
 
-    owner = &LabelList;
+    owner = (label_entry **)&LabelList;
     for(;;) {
         curr = *owner;
         if( curr == NULL ) break;
@@ -268,12 +272,12 @@ void    FCAssign() {
     if( stmt->st.flags & SN_FORMAT ) {
         CGDone( CGAssign( SymAddr( GetPtr() ),
                           CGBackName( GetFmtLabel( stmt->st.address ),
-                                      T_LOCAL_POINTER ),
-                          T_LOCAL_POINTER ) );
+                                      TY_LOCAL_POINTER ),
+                          TY_LOCAL_POINTER ) );
     } else {
         CGDone( CGAssign( SymAddr( GetPtr() ),
-                          CGInteger( stmt->st.address, T_INTEGER ),
-                          T_INTEGER ) );
+                          CGInteger( stmt->st.address, TY_INTEGER ),
+                          TY_INTEGER ) );
         RefStmtLabel( stmt );
     }
 }
@@ -345,7 +349,7 @@ void    FCAssignedGOTOList() {
     }
     label = BENewLabel();
     CGSelOther( s, label );
-    CGSelect( s, CGUnary( O_POINTS, CGFEName( var, T_INTEGER ), T_INTEGER ) );
+    CGSelect( s, CGUnary( O_POINTS, CGFEName( var, TY_INTEGER ), TY_INTEGER ) );
     CGControl( O_LABEL, NULL, label );
     BEFiniLabel( label );
     FCodeSeek( curr_obj );
@@ -456,8 +460,8 @@ void    FCSFCall() {
     for(;;) {
         sf_arg = GetPtr();
         if( sf_arg == NULL ) break;
-        if( sf_arg->ns.typ == TY_CHAR ) {
-            value = Concat( 1, CGFEName( sf_arg, T_CHAR ) );
+        if( sf_arg->ns.typ == FT_CHAR ) {
+            value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
             sf_type = F772CGType( sf_arg );
             if( TypeCmplx( sf_arg->ns.typ ) ) {
@@ -475,19 +479,19 @@ void    FCSFCall() {
         if( arg_list == NULL ) {
             arg_list = value;
         } else {
-            arg_list = CGBinary( O_COMMA, arg_list, value, T_DEFAULT );
+            arg_list = CGBinary( O_COMMA, arg_list, value, TY_DEFAULT );
         }
     }
-    if( sf->ns.typ == TY_CHAR ) {
+    if( sf->ns.typ == FT_CHAR ) {
         tmp = GetPtr();
-        value = CGUnary( O_POINTS, CGFEName( tmp, T_CHAR ), T_CHAR );
-        value = CGAssign( CGFEName( sf, T_CHAR ), value, T_CHAR );
+        value = CGUnary( O_POINTS, CGFEName( tmp, TY_CHAR ), TY_CHAR );
+        value = CGAssign( CGFEName( sf, TY_CHAR ), value, TY_CHAR );
         if( arg_list == NULL ) {
             arg_list = value;
         } else {
-            arg_list = CGBinary( O_COMMA, arg_list, value, T_DEFAULT );
+            arg_list = CGBinary( O_COMMA, arg_list, value, TY_DEFAULT );
         }
-        value = CGFEName( tmp, T_CHAR );
+        value = CGFEName( tmp, TY_CHAR );
     } else {
         sf_type = F772CGType( sf );
         if( !(OZOpts & OZOPT_O_INLINE) ) {
@@ -502,7 +506,7 @@ void    FCSFCall() {
         GetObjPtr();
         FCodeSequence();
         FCodeSeek( curr_obj );
-        if( sf->ns.typ == TY_CHAR ) {
+        if( sf->ns.typ == FT_CHAR ) {
             CGTrash( XPop() );
             XPush( value );
         } else if( TypeCmplx( sf->ns.typ ) ) {
@@ -603,7 +607,7 @@ void    DoneLabel( label_id label ) {
     label_entry **owner;
     label_entry *curr;
 
-    owner = &LabelList;
+    owner = (label_entry **)&LabelList;
     for(;;) {
         curr = *owner;
         if( curr->label == label ) break;

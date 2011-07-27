@@ -37,6 +37,11 @@
 #include <string.h>
 #include <stdio.h>
 
+static  void    Record(void);
+static  void    Node(itnode * dumpNode, int count);
+static  void    DLine(void);
+static  void    SLine(void);
+
 static  char    *Opn[] = {
     "OPN_PHI",
     "OPN_NAM",
@@ -60,24 +65,24 @@ static const char   dline[] = "+============+===========+=============+\n";
 static char *Typ(byte typ) {
 //===========================
    switch(typ) {
-      case TY_LOGICAL_1 :     return( "TY_LOGICAL_1 " );
-      case TY_LOGICAL   :     return( "TY_LOGICAL   " );
-      case TY_INTEGER_1 :     return( "TY_INTEGER_1 " ); 
-      case TY_INTEGER_2 :     return( "TY_INTEGER_2 " ); 
-      case TY_INTEGER   :     return( "TY_INTEGER   " ); 
-      case TY_REAL      :     return( "TY_REAL      " ); 
-      case TY_DOUBLE    :     return( "TY_DOUBLE    " ); 
-      case TY_TRUE_EXTENDED:  return( "TY_T_EXTENDED" );  
-   // case TY_EXTENDED  :     return( "TY_EXTENDED  " ); same as TY_DOUBLE  
-      case TY_COMPLEX   :     return( "TY_COMPLEX   " );  
-      case TY_DCOMPLEX  :     return( "TY_DCOMPLEX  " ); 
-      case TY_TRUE_XCOMPLEX:  return( "TY_T_XCOMPLEX" ); 
-   // case TY_XCOMPLEX  :     return( "TY_XCOMPLEX  " ); same as TY_DCOMPLEX
-      case TY_CHAR      :     return( "TY_CHAR      " ); 
-      case TY_STRUCTURE :     return( "TY_STRUCTURE " ); 
-      case TY_UNION     :     return( "TY_UNION     " ); 
-      case TY_HEX       :     return( "TY_HEX       " );  
-      case TY_NO_TYPE   :     return( "TY_NO_TYPE   " );
+      case FT_LOGICAL_1 :     return( "FT_LOGICAL_1 " );
+      case FT_LOGICAL   :     return( "FT_LOGICAL   " );
+      case FT_INTEGER_1 :     return( "FT_INTEGER_1 " ); 
+      case FT_INTEGER_2 :     return( "FT_INTEGER_2 " ); 
+      case FT_INTEGER   :     return( "FT_INTEGER   " ); 
+      case FT_REAL      :     return( "FT_REAL      " ); 
+      case FT_DOUBLE    :     return( "FT_DOUBLE    " ); 
+      case FT_TRUE_EXTENDED:  return( "FT_T_EXTENDED" );  
+   // case FT_EXTENDED  :     return( "FT_EXTENDED  " ); same as FT_DOUBLE  
+      case FT_COMPLEX   :     return( "FT_COMPLEX   " );  
+      case FT_DCOMPLEX  :     return( "FT_DCOMPLEX  " ); 
+      case FT_TRUE_XCOMPLEX:  return( "FT_T_XCOMPLEX" ); 
+   // case FT_XCOMPLEX  :     return( "FT_XCOMPLEX  " ); same as FT_DCOMPLEX
+      case FT_CHAR      :     return( "FT_CHAR      " ); 
+      case FT_STRUCTURE :     return( "FT_STRUCTURE " ); 
+      case FT_UNION     :     return( "FT_UNION     " ); 
+      case FT_HEX       :     return( "FT_HEX       " );  
+      case FT_NO_TYPE   :     return( "FT_NO_TYPE   " );
       default           :     return( "UNKNOWN      " );
    }
   

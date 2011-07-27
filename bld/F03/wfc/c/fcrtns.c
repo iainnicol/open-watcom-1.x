@@ -44,6 +44,7 @@
 #include "rtentry.h"
 #include "cpopt.h"
 #include "types.h"
+#include "rtconst.h"
 
 #include <string.h>
 
@@ -67,7 +68,14 @@ extern  aux_info        RtStopInfo;
 extern  aux_info        CoRtnInfo;
 extern  unsigned_8      CGFlags;
 
-rt_rtn  __FAR RtnTab[] = {
+#ifdef pick
+#undef pick
+#endif
+#define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
+
+static rt_rtn  __FAR RtnTab[] = {
+#include "rtdefn.h"
+/*
         "Pause",        NULL,   &RtRtnInfo,     TY_NO_TYPE,
         "Stop",         NULL,   &RtStopInfo,    TY_NO_TYPE,
         NULL,           NULL,   NULL,           0,      // "SetIOCB"
@@ -171,6 +179,7 @@ rt_rtn  __FAR RtnTab[] = {
         "TCat",         NULL,   &RtVarInfo,     TY_NO_TYPE,
         "ADVFillHi",    NULL,   &RtRtnInfo,     TY_NO_TYPE,
         "ADVFillHiLo1", NULL,   &RtRtnInfo,     TY_NO_TYPE
+*/
 };
 
 #define MAX_RT_INDEX    ((sizeof( RtnTab ) / sizeof( RtnTab[0] ))-1)
@@ -200,8 +209,8 @@ call_handle     InitCall( int rtn_id ) {
         sym = STAdd( SymBuff, name_len );
         sym->ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION |
                         SY_RT_ROUTINE;
-        if( rt_entry->typ == TY_NO_TYPE ) {
-            sym->ns.typ = TY_INTEGER_TARG;
+        if( rt_entry->typ == FT_NO_TYPE ) {
+            sym->ns.typ = FT_INTEGER_TARG;
         } else {
             sym->ns.typ = rt_entry->typ;
         }
@@ -253,3 +262,20 @@ void    FreeRtRtns() {
         rt_index++;
     }
 }
+
+
+aux_info        *RTAuxInfo( sym_id rtn ) {
+//========================================
+
+// Return aux information for run-time routine.
+
+    rt_rtn      __FAR *rt_entry;
+
+    rt_entry = RtnTab;
+    while( rt_entry->sym_ptr != rtn ) {
+        rt_entry++;
+    }
+    return( rt_entry->aux );
+}
+
+

@@ -38,8 +38,9 @@
 #include "cpopt.h"
 #include "fmemmgr.h"
 
-global_seg              *GlobalSeg;
+static  void            NewGlobalSeg(void);
 
+global_seg              *GlobalSeg;
 static  global_seg      *CurrGSeg;
 
 

@@ -59,13 +59,13 @@ static const byte __FAR CharSet[] = {
 //   08 BS  09 HT  0A LF  0B VT  0C FF  0D CR  0E SO  0F SI
      C_BC,  C_TC,  C_BC,  C_BC,  C_SP,  C_BC,  C_BC,  C_BC, // BS  to SI
 
-//   10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17ETB
+//   10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17 ETB
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // DLE to ETB
 
-//   18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1FUS
+//   18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1F US
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // CAN to US
 
-//   20 SP  21 !   22 "   23 &   24 $   25 %   26 &   27'
+//   20 SP  21 !   22 "   23 #   24 $   25 %   26 &   27 '
      C_SP,  C_CM,  C_BC,  C_BC,  C_AL,  C_OP,  C_BC,  C_AP, // SP  to '
 
 //   28 (   29 )   2A *   2B +   2C ,   2D -   2E .   2F /
@@ -86,7 +86,7 @@ static const byte __FAR CharSet[] = {
 //   50 P   51 Q   52 R   53 S   54 T   55 U   56 V   57 W
      C_AL,  C_EX,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, // P   to W
 
-//   58 X   59 Y   5A Z   5B [   5C \   5D ]   5E @   5F _
+//   58 X   59 Y   5A Z   5B [   5C \   5D ]   5E ^   5F _
      C_HX,  C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC, XC_AL, // X   to _
 
 //   60 `   61 a   62 b   63 c   64 d   65 e   66 f   67 g
@@ -162,13 +162,13 @@ static const byte __FAR CharSet95[] = {
 //   08 BS  09 HT  0A LF  0B VT  0C FF  0D CR  0E SO  0F SI
      C_BC,  C_TC,  C_BC,  C_BC,  C_SP,  C_BC,  C_BC,  C_BC, // BS  to SI
 
-//   10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17ETB
+//   10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17 ETB
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // DLE to ETB
 
-//   18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1FUS
+//   18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1F US
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // CAN to US
 
-//   20 SP  21 !   22 "   23 #   24 $   25 %   26 &   27'
+//   20 SP  21 !   22 "   23 #   24 $   25 %   26 &   27 '
      C_SP,  C_CM,  C_QO,  C_BC,  C_AL,  C_OP,  C_CC,  C_AP, // SP  to '
 
 //   28 (   29 )   2A *   2B +   2C ,   2D -   2E .   2F /
@@ -266,13 +266,13 @@ static const byte __FAR CharSet03[] = {
 //   08 BS  09 HT  0A LF  0B VT  0C FF  0D CR  0E SO  0F SI
      C_BC,  C_TC,  C_BC,  C_BC,  C_SP,  C_BC,  C_BC,  C_BC, // BS  to SI
 
-//   10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17ETB
+//   10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17 ETB
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // DLE to ETB
 
-//   18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1FUS
+//   18 CAN 19 EM  1A SUB 1B ESC 1C FS  1D GS  1E RS  1F US
      C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // CAN to US
 
-//   20 SP  21 !   22 "   23 &   24 $   25 %   26 &   27'
+//   20 SP  21 !   22 "   23 #   24 $   25 %   26 &   27 '
      C_SP,  C_CM,  C_BC,  C_BC,  C_AL,  C_OP,  C_BC,  C_AP, // SP  to '
 
 //   28 (   29 )   2A *   2B +   2C ,   2D -   2E .   2F /
@@ -293,7 +293,7 @@ static const byte __FAR CharSet03[] = {
 //   50 P   51 Q   52 R   53 S   54 T   55 U   56 V   57 W
      C_AL,  C_EX,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL, // P   to W
 
-//   58 X   59 Y   5A Z   5B [   5C \   5D ]   5E @   5F _
+//   58 X   59 Y   5A Z   5B [   5C \   5D ]   5E ^   5F _
      C_HX,  C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC, XC_AL, // X   to _
 
 //   60 `   61 a   62 b   63 c   64 d   65 e   66 f   67 g

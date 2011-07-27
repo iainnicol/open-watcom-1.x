@@ -91,6 +91,17 @@ extern  file_handle     FStdOut;
 
 extern  character_set   CharSetInfo;
 
+static  void            Erase(char *extn);
+static  void            ErrNL(void);
+static  void            ErrOut(char *string);
+static  void            ChkErrErr(void);
+static  void            SendBuff(char *str, char *buff, int buff_size, int *cursor,
+                                 file_handle fp, void (*err_rtn)());
+static  void            PutLst(char *string);
+static  void            SetCtrlSeq(void);
+static  void            SendRec(void);
+static  void            ChkLstErr(void);
+
 #define _Copyright "1984"
 
 // TODO: Proper versioning setup
