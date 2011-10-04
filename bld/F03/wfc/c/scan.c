@@ -54,29 +54,110 @@ extern  character_set   CharSetInfo;
 static  void            ScanNum(void);
 static  void            LkUpLog(void);
 
-#define COLUMNS 17
+#define COLUMNS 20 // was 17 in F77
+
+// bit 8: Language extension character
+// bit 7: Lower case character. This is an extension to standard F77
+
+//#define C_EXT   0x80    //  extension to standard defined character set.
+//#define C_LOW   0x40    //  lower case character
+//#define C_MASK  ~( C_EXT | C_LOW )
+
+// the character classes known to the scanner
+//typedef enum {
+//    // primary character classes
+//    //
+//    C_AL,       // alphabetic characters and '$'
+//    C_EX,       // exponent ( 'E', 'D' or 'Q' )
+//    C_SG,       // sign ( '+' or '-' )
+//    C_DP,       // decimal point
+//    C_DI,       // digit ( 0..9 )
+//    C_HL,       // hollerith 'H'
+//    C_AP,       // apostrophe ( ' )
+//    C_OP,       // illegal operators, delimiters
+//    C_SP,       // blank
+//    C_TC,       // TAB character
+//    C_BC,       // illegal source input character
+//    C_EL,       // end-of-line
+//    C_CM,       // end-of-line comment character
+//    C_OL,       // octal constant indicator
+//    C_HX,       // hexadecimal constant indicator
+//    C_CS,       // C string constant indicator
+//    C_DB,       // 1st byte of a double-byte character
+//    //
+//    //-------------------------------------------------
+//    // new for F95
+//    //
+//    C_QO,       // quote ( " )
+//    C_SS,       // statement separator ';'
+//    C_CC,       // continuation character '&'
+//    //
+//    //-------------------------------------------------
+//    // extended character classes
+//    //
+//    XC_AL =  (C_AL | C_EXT),
+//    XC_EX =  (C_EX | C_EXT),
+//    XC_SG =  (C_SG | C_EXT),
+//    XC_DP =  (C_DP | C_EXT),
+//    XC_DI =  (C_DI | C_EXT),
+//    XC_HL =  (C_HL | C_EXT),
+//    XC_AP =  (C_AP | C_EXT),
+//    XC_OP =  (C_OP | C_EXT),
+//    XC_SP =  (C_SP | C_EXT),
+//    XC_TC =  (C_TC | C_EXT),
+//    XC_BC =  (C_BC | C_EXT),
+//    XC_EL =  (C_EL | C_EXT),
+//    XC_CM =  (C_CM | C_EXT),
+//    XC_OL =  (C_OL | C_EXT),
+//    XC_HX =  (C_HX | C_EXT),
+//    XC_CS =  (C_CS | C_EXT),
+//    XC_DB =  (C_DB | C_EXT),
+//    //
+//    //-------------------------------------------------
+//    // new for F95
+//    //
+//    XC_QO =  (C_QO | C_EXT),
+//    XC_SS =  (C_SS | C_EXT),
+//    XC_CC =  (C_CC | C_EXT),
+//    //             
+//    //-------------------------------------------------
+//    // lower case characters
+//    //
+//    LC_AL =  (XC_AL | C_LOW),
+//    LC_EX =  (XC_EX | C_LOW),
+//    LC_HL =  (XC_HL | C_LOW),
+//    LC_OL =  (XC_OL | C_LOW),
+//    LC_HX =  (XC_HX | C_LOW),
+//    LC_CS =  (XC_CS | C_LOW),
+//    //
+//    //-------------------------------------------------
+//    //
+//    C_MAX = UCHAR_MAX   // force enum to be unsigned
+//    //
+//} charClassType;
 
 static  const token_state __FAR StateTable[][COLUMNS] = {
 
-// AL  EX  SG  DP  DI  HL  AP  OP  SP  TC  BC  EL  CM  OL  HX  CS  DB
-  SAN,SAN,SSG,SLL,SNM,SAN,SFQ,SOP,SSP,STC,SBC,SNR,SCM,SAN,SAN,SAN,SDB, // NS
-  SSO,SEX,SSO,SML,SNM,SHL,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // NM
-  SAN,SAN,SSO,SSO,SAN,SAN,SSO,SSO,SSP,STC,SBC,SNR,SCM,SAN,SAN,SAN,SDB, // AN
-  SSO,SSO,SSO,SML,SNM,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // SG
-  SSO,SEX,SSO,SSO,SFT,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // FT
-  SLG,SLG,SEN,SSO,SEN,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB, // LX
-  SSO,SSO,SEN,SSO,SEN,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // EX
-  SSO,SSO,SSO,SSO,SEN,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // EN
-  SLG,SLG,SSO,SFL,SSO,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB, // LG
-  SLG,SLX,SSO,SSO,SFT,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB, // ML
-  SIQ,SIQ,SIQ,SIQ,SIQ,SIQ,SAP,SIQ,SIQ,SIQ,SIQ,SNR,SIQ,SIQ,SIQ,SIQ,SIQ, // IQ
-  SSO,SSO,SSO,SSO,SSO,SSO,SIQ,SSO,SSO,STC,SBC,SNR,SCM,SOL,SHX,SCS,SSO, // AP
-  SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SNR,SIH,SIH,SIH,SIH,SIH, // IH
-  SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SNR,SFM,SFM,SFM,SFM,SFM, // FM
-  SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // OL
-  SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // HX
-  SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SBC,SNR,SCM,SSO,SSO,SSO,SSO, // CS
-  SLG,SLG,SSO,SSO,SFT,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB, // LL
+// class {}=new for F95
+// AL  EX  SG  DP  DI  HL  AP  OP  SP  TC  BC  EL  CM  OL  HX  CS  DB {QO  SS  CC} // state                           example
+  SAN,SAN,SSG,SLL,SNM,SAN,SFQ,SOP,SSP,STC,SBC,SNR,SCM,SAN,SAN,SAN,SDB,SFQ,SNS,SNS, // NS no state determined
+  SSO,SEX,SSO,SML,SNM,SHL,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // NM number                       123
+  SAN,SAN,SSO,SSO,SAN,SAN,SSO,SSO,SSP,STC,SBC,SNR,SCM,SAN,SAN,SAN,SDB,SSO,SNS,SNS, // AN alpha-numeric                V1Q2
+  SSO,SSO,SSO,SML,SNM,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // SG sign                         + or -
+  SSO,SEX,SSO,SSO,SFT,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // FT floating point number        134.5
+  SLG,SLG,SEN,SSO,SEN,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB,SSO,SNS,SNS, // LX logical or exponent of float 134.e
+  SSO,SSO,SEN,SSO,SEN,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // EX exponent of float collected  134.5e
+  SSO,SSO,SSO,SSO,SEN,SSO,SSO,SSO,SSP,STC,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // EN exp number being collected   134.5e6
+  SLG,SLG,SSO,SFL,SSO,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB,SSO,SNS,SNS, // LG logical being collected      .tru or .junk
+  SLG,SLX,SSO,SSO,SFT,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB,SSO,SNS,SNS, // ML may be logical               134.
+  SIQ,SIQ,SIQ,SIQ,SIQ,SIQ,SAP,SIQ,SIQ,SIQ,SIQ,SNR,SIQ,SIQ,SIQ,SIQ,SIQ,SAP,SNS,SNS, // IQ in quotes                    'joh or 'jane''
+  SSO,SSO,SSO,SSO,SSO,SSO,SIQ,SSO,SSO,STC,SBC,SNR,SCM,SOL,SHX,SCS,SSO,SIQ,SNS,SNS, // AP apostrophe                   'jane'
+  SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SIH,SNR,SIH,SIH,SIH,SIH,SIH,SIH,SNS,SNS, // IH in hollerith                 35h the cow jum
+  SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SFM,SNR,SFM,SFM,SFM,SFM,SFM,SFM,SNS,SNS, // FM in FORMAT statement          FORMAT( 1X
+  SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // OL octal constant               '777'o
+  SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // HX hexadecimal constant         'fff'x
+  SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SSO,SBC,SNR,SCM,SSO,SSO,SSO,SSO,SSO,SNS,SNS, // CS C string (null terminated)   'abc'c
+  SLG,SLG,SSO,SSO,SFT,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB,SSO,SNS,SNS, // LL likely logical               x.
 };
 
 #define BAD_LOG         14

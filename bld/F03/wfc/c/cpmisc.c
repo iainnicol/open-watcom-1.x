@@ -119,7 +119,9 @@ void    CpEnd() {
 //===============
 
     LFSkip();
-    if( RecNOpn() ) {
+    
+    // Allow END operands for F90 and above
+    if((StrictF77 ? RecNOpn() : RecName())) {
         ProgSw |= PS_END_OF_SUBPROG;
         AdvanceITPtr();
         Remember.endstmt = TRUE;

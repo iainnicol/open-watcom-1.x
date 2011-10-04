@@ -111,7 +111,7 @@ typedef struct dep_info {
 } dep_info;
 
 
-extern void    DoPragma( char *ptr );
-extern void    CopyAuxInfo( aux_info *dst, aux_info *src );
-
+extern void DoPragma( char *ptr );
+extern void CopyAuxInfo( aux_info *dst, aux_info *src );
+extern void AsmInit( int use32, int cpu, int fpu, bool fpu_emu );
 

@@ -268,24 +268,38 @@ void            InitAuxInfo() {
     int         cpu;
     int         fpu;
     int         use32;
-
+    bool        fpu_emu;
+    
 #if _CPU == 8086
     use32 = 0;
 #elif _CPU == 386
     use32 = 1;
 #endif
+
     cpu = 0;
     fpu = 0;
+    
 #if _CPU == 8086
     if( CPUOpts & CPUOPT_80186 ) cpu = 1;
     if( CPUOpts & CPUOPT_80286 ) cpu = 2;
 #endif
+
     if( CPUOpts & CPUOPT_80386 ) cpu = 3;
     if( CPUOpts & CPUOPT_80486 ) cpu = 4;
     if( CPUOpts & CPUOPT_80586 ) cpu = 5;
     if( CPUOpts & CPUOPT_80686 ) cpu = 6;
+    
     if( CPUOpts & ( CPUOPT_FPI87 | CPUOPT_FPI ) ) fpu = 1;
-    AsmInit( cpu, fpu, use32, 1 );
+    
+    fpu_emu = FALSE;
+
+#if _CPU == 8086
+    if( CPUOpts & CPUOPT_FPI )   fpu_emu = TRUE;
+    if( CPUOpts & CPUOPT_FPI87 ) fpu_emu = FALSE;
+#endif
+
+    AsmInit(use32, cpu, fpu, fpu_emu );
+    
 #elif _CPU == _AXP || _CPU == _PPC
     AsmInit();
 #else
@@ -295,6 +309,7 @@ void            InitAuxInfo() {
     DefaultLibs = NULL;
     AuxInfo = NULL;
     DependencyInfo = NULL;
+    
 #if _CPU == 8086 || _CPU == 386
 
 #if _CPU == 8086

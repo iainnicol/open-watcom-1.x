@@ -113,3 +113,8 @@ gbl_defn unsigned_32    CPUOpts;        // code generator options (CPU target)
 gbl_defn unsigned_32    OZOpts;         // code generator options (optimizations)
 gbl_defn char           SymBuff[MAX_SYMLEN+1]; // buffer for symbol names
 gbl_defn bool           StmtNoFound;    // statement number found?
+
+gbl_defn bool           StrictF77;      // compile to Fortran 1977 standard
+gbl_defn bool           StrictF95;      // compile to Fortran 1995 standard
+gbl_defn bool           AllowDeprec;    // allow depreciated statements
+gbl_defn bool           AllowExtn;      // allow Watcom language extentions 

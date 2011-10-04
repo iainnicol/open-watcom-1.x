@@ -91,7 +91,7 @@ int     CompMain( char *parm ) {
 static  bool    ProcCmd() {
 //=======================================
 
-	char	*opt_array[MAX_OPTIONS+1] = {NULL};
+        char    *opt_array[MAX_OPTIONS+1] = {NULL};
    
    //TODO: find out what buffer might be good for
    // otherwise just remove parameter
@@ -213,11 +213,11 @@ void    FiniCompile() {
 ////////////////////////////////////
 static int  ProcName(char *srcName)
 {
-	if( NULL == srcName )
-		return RET_NOFILENAME;
+        if( NULL == srcName )
+                return RET_NOFILENAME;
 
    if( NULLCHAR == *srcName )
-	   return RET_NOFILENAME;
+           return RET_NOFILENAME;
 
    if( '?' == *srcName  ) 
       return RET_REQSYNTAX;
@@ -233,13 +233,11 @@ static int  ProcName(char *srcName)
 /////////////////////////////////////
 void  ProcOpts( char **opt_array )
 {
-   char *tempOption;  
-
    InitOptions();
    NewOptions = Options;
 
    // scan through command line options
-   for(tempOption = *opt_array; tempOption != NULL; ++opt_array)
+   for(; *opt_array != NULL; ++opt_array)
    {
       CmdOption( *opt_array );
    }

@@ -126,7 +126,8 @@ void    MakeITList()
     Lex.oprpos = ( LexToken.line << 8 ) + LexToken.col + 1;
     Scan();
     if( !(LexToken.flags & TK_EOL) ) {
-        if( LexToken.col < CONT_COL - 1 ) {
+        // Disallow free format text in StrictF77 Mode
+        if( ( LexToken.col < CONT_COL - 1 ) & StrictF77 ) { 
             Error( CC_NOT_DIGITS );
         }
     }

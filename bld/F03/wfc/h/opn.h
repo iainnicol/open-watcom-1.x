@@ -80,9 +80,7 @@ enum US_CODES {
 #define WHERE_SHIFT     4       // bits to shift to make OPN_WHERE origin 0
 #define USOPN_WHERE     0x30    // where is the operand?
 
-//typedef enum DS_CODES DSOPN; enums don't work this way in C++
-//typedef enum US_CODES USOPN;
-typedef int DSOPN;
-typedef int USOPN;
+typedef enum DS_CODES DSOPN;
+typedef enum US_CODES USOPN;
 
 #endif

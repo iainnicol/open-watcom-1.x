@@ -41,8 +41,17 @@
 
 #include <limits.h>
 
+// bit 8: Language extension character
+// bit 7: Lower case character. This is an extension to standard F77
+
+#define C_EXT   0x80    //  extension to standard defined character set.
+#define C_LOW   0x40    //  lower case character
+#define C_MASK  ~( C_EXT | C_LOW )
+
 // the character classes known to the scanner
 typedef enum {
+    // primary character classes
+    //
     C_AL,       // alphabetic characters and '$'
     C_EX,       // exponent ( 'E', 'D' or 'Q' )
     C_SG,       // sign ( '+' or '-' )
@@ -60,45 +69,57 @@ typedef enum {
     C_HX,       // hexadecimal constant indicator
     C_CS,       // C string constant indicator
     C_DB,       // 1st byte of a double-byte character
+    //
+    //-------------------------------------------------
+    // new for F95
+    //
     C_QO,       // quote ( " )
     C_SS,       // statement separator ';'
     C_CC,       // continuation character '&'
+    //
+    //-------------------------------------------------
+    // extended character classes
+    //
+    XC_AL =  (C_AL | C_EXT),
+    XC_EX =  (C_EX | C_EXT),
+    XC_SG =  (C_SG | C_EXT),
+    XC_DP =  (C_DP | C_EXT),
+    XC_DI =  (C_DI | C_EXT),
+    XC_HL =  (C_HL | C_EXT),
+    XC_AP =  (C_AP | C_EXT),
+    XC_OP =  (C_OP | C_EXT),
+    XC_SP =  (C_SP | C_EXT),
+    XC_TC =  (C_TC | C_EXT),
+    XC_BC =  (C_BC | C_EXT),
+    XC_EL =  (C_EL | C_EXT),
+    XC_CM =  (C_CM | C_EXT),
+    XC_OL =  (C_OL | C_EXT),
+    XC_HX =  (C_HX | C_EXT),
+    XC_CS =  (C_CS | C_EXT),
+    XC_DB =  (C_DB | C_EXT),
+    //
+    //-------------------------------------------------
+    // new for F95
+    //
+    XC_QO =  (C_QO | C_EXT),
+    XC_SS =  (C_SS | C_EXT),
+    XC_CC =  (C_CC | C_EXT),
+    //             
+    //-------------------------------------------------
+    // lower case characters
+    //
+    LC_AL =  (XC_AL | C_LOW),
+    LC_EX =  (XC_EX | C_LOW),
+    LC_HL =  (XC_HL | C_LOW),
+    LC_OL =  (XC_OL | C_LOW),
+    LC_HX =  (XC_HX | C_LOW),
+    LC_CS =  (XC_CS | C_LOW),
+    //
+    //-------------------------------------------------
+    //
     C_MAX = UCHAR_MAX   // force enum to be unsigned
+    //
 } charClassType;
-
-// bit 8: Language extension character
-// bit 7: Lower case character. This is an extension to standard F77
-
-#define C_EXT   0x80    //  extension to standard defined character set.
-#define C_LOW   0x40    //  lower case character
-#define C_MASK  ~( C_EXT | C_LOW )
-
-// extended character classes
-#define XC_AL   (C_AL | C_EXT)
-#define XC_EX   (C_EX | C_EXT)
-#define XC_SG   (C_SG | C_EXT)
-#define XC_DP   (C_DP | C_EXT)
-#define XC_DI   (C_DI | C_EXT)
-#define XC_HL   (C_HL | C_EXT)
-#define XC_AP   (C_AP | C_EXT)
-#define XC_OP   (C_OP | C_EXT)
-#define XC_SP   (C_SP | C_EXT)
-#define XC_TC   (C_TC | C_EXT)
-#define XC_BC   (C_BC | C_EXT)
-#define XC_EL   (C_EL | C_EXT)
-#define XC_CM   (C_CM | C_EXT)
-#define XC_OL   (C_OL | C_EXT)
-#define XC_HX   (C_HX | C_EXT)
-#define XC_CS   (C_CS | C_EXT)
-#define XC_DB   (C_DB | C_EXT)
-
-//lower case characters
-#define LC_AL   (XC_AL | C_LOW)
-#define LC_EX   (XC_EX | C_LOW)
-#define LC_HL   (XC_HL | C_LOW)
-#define LC_OL   (XC_OL | C_LOW)
-#define LC_HX   (XC_HX | C_LOW)
-#define LC_CS   (XC_CS | C_LOW)
 
 
 // state definitions for the scanner
@@ -124,11 +145,11 @@ typedef enum {
     SHX,        // hexadecimal constant         'fff'x
     SCS,        // C string (null terminated)   'abc'c
     SLL,        // likely logical               x.
-//----------------- end if states in table
+//----------------- end of states in table
     SFL,        // finished logical             .true.
     SOP,        // collected an operator        ,
     SHL,        // starting hollerith           35h
-    SFQ,        // first quote                  '
+    SFQ,        // first quote                  ' or "
     SSO,        // scanning is over             134.5e6+
     SSP,        // space character
     STC,        // TAB character
