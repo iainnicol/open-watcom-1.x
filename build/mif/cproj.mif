@@ -46,7 +46,7 @@ rcaui           = *wrc
 
 !ifdef $(proj_name)_release
 release = $($(proj_name)_release)
-!else ifeq debug_build 1
+!else ifeq %DEBUG_BUILD 1
 release = 0
 !else
 release = 1
@@ -438,8 +438,10 @@ rtdll_libpath = &
     $(rtdll_mathlib7_$(host_os)_$(host_cpu)) &
     $(rtdll_cpplib_$(host_os)_$(host_cpu))
 
+c_japan_charset = -zk0
+
 cc              = $(cc_$(host_cpu))
-cl              = *owcc
+cl              = owcc
 cpp             = $(cpp_$(host_cpu))
 clpp            = $(cl)
 linker          = $(linker_$(host_cpu))
@@ -449,7 +451,19 @@ vi              = vi -q -d -i
 sed             = sed
 awk             = awk
 yacc            = yacc
+re2c            = re2c
+wstrip          = wstrip
 rc_aui          = $(rcaui) -bt=windows -I"$(watcom_dir)/h" -zk0 -r
+
+linker_target   = $(linker_$(target_cpu))
+!ifeq target_cpu 386
+as_target       = $(as_$(target_cpu)) -3
+!else
+as_target       = $(as_$(target_cpu))
+!endif
+
+# command used for preprocessing source code only
+c_preproc       = $(cc) -p -zk0
 
 !include bhost.mif
 !include local.mif

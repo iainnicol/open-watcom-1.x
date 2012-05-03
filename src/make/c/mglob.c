@@ -73,6 +73,9 @@ const char FAR *BuiltIns = {
     "__MAKEOPTS__=%s\n"
     "__MAKEFILES__=\n"
     "__VERSION__=" BANSTR( _BANVER ) "\n"
+#if defined( BOOTSTRAP ) && defined( __WATCOMC__ )
+    "__WATCOM__=\n"
+#endif
 #ifdef DLLS_IMPLEMENTED
     "__LOADDLL__=\n"
 #endif
