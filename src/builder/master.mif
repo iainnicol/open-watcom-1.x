@@ -1,15 +1,17 @@
 proj_name = builder
 
+builder_autodepends = .autodepend
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe &
+all : cdsay.exe sweep.exe wsplice.exe comstrip.exe aliasgen.exe genverrc.exe &
 !ifndef __UNIX__
     diff.exe &
 !endif
 !ifndef bootstrap
-    langdat.exe mksetup.exe wgrep.exe builder.exe &
+    wgrep.exe builder.exe &
 !ifndef __UNIX__
     rm.exe
 !endif
@@ -27,9 +29,10 @@ sys_osx   = sys.obj sysposix.obj
 sys_sol   = sys.obj sysposix.obj
 
 extra_c_flags = -D__OS_$(host_os)__ -DSTANDALONE_RX
+extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
 
 !ifdef bootstrap
-inc_dirs += -I../h
+inc_dirs += -I"../h"
 .c : $(watcom_dir)/c
 builder.exe : clibext.obj
 sweep.exe : sweep.obj clibext.obj
@@ -60,6 +63,5 @@ builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals
 !endif
 
 cdsay.exe : cdsay.obj equals.obj
-langdat.exe : langdat.obj utils.obj $(sys_$(host_os))
 rm.exe: rm.obj getopt.obj quit.obj lineprt.obj alloc.obj filerx.obj &
         regexp.obj fnlower.obj die.obj isdotdot.obj
