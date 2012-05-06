@@ -1,5 +1,7 @@
 proj_name = objread
 
+objread_autodepends = .autodepend
+
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
@@ -20,9 +22,10 @@ extra_c_flags_trmem     = -DTRMEM -of+
 !endif
 
 objs = test.obj trmemcvr.obj
-
 !ifeq release 0
 objs += trmem.obj
 !endif
+
+libs = $(orl_lib)
 
 !include exetarg.mif

@@ -24,16 +24,44 @@
 *
 *  ========================================================================
 *
-* Description:  misc.c interfaces ( file search wildard function ).
+* Description:  RDOS executable headers.
 *
 ****************************************************************************/
 
+#ifndef _EXERDOS_H
 
-#ifndef __MISC_H
-#define __MISC_H
+#pragma pack( push, 1 )
 
-extern char         *FixName( char *name );
-extern char         *DoWildCard( char *base );
-extern void         DoWildCardClose( void );
+/* 16-bit RDOS .rdv device file header */
+/* =================== */
+
+typedef struct rdos_dev16_header {
+    unsigned_16         signature;      /* signature to mark valid RDV file */
+    unsigned_16         IP;             /* initial value for IP             */
+    unsigned_16         code_size;      /* number of bytes in code segment  */
+    unsigned_16         code_sel;       /* code selector allocated */
+    unsigned_16         data_size;      /* number of bytes in data segment  */
+    unsigned_16         data_sel;       /* data selector allocated */
+} rdos_dev16_header;
+
+#define RDOS_SIGNATURE_16    0x3652     /* R6 */
+
+/* 32-bit RDOS .rdv device file header */
+/* =================== */
+
+typedef struct rdos_dev32_header {
+    unsigned_16         signature;      /* signature to mark valid RDV file */
+    unsigned_32         EIP;            /* initial value for EIP            */
+    unsigned_32         code_size;      /* number of bytes in code segment  */
+    unsigned_16         code_sel;       /* code selector allocated */
+    unsigned_32         data_size;      /* number of bytes in code segment  */
+    unsigned_16         data_sel;       /* data selector allocated */
+} rdos_dev32_header;
+
+#define RDOS_SIGNATURE_32    0x3252     /* R2 */
+
+#define _EXERDOS_H
+
+#pragma pack( pop )
 
 #endif

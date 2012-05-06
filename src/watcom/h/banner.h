@@ -44,7 +44,7 @@
 #define _BETA_                  _BANEXTRA
 #endif
 
-#define CURR_YEAR       "2008"
+#define CURR_YEAR       "2012"
 
 #define banner1p1(p)  p
 #define banner1p2(v)  "Version " v
@@ -70,7 +70,7 @@
 #define banner4gui()    "Copyright © 2002-%s Open Watcom Contributors. All Rights Reserved."
 #define banner2agui() "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
 
-// the following macros define the delimeters used bythe resource
+// the following macros define the delimeters used by the resource
 // compiler when concatenating strings
 #define _RC_DELIM_LEFT_         [
 #define _RC_DELIM_RIGHT_        ]

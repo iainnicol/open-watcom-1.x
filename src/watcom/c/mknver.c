@@ -24,22 +24,33 @@
 *
 *  ========================================================================
 *
-* Description:  symbol hash functions header file
+* Description:  Generate netware version file.
 *
 ****************************************************************************/
 
-#ifndef __HASHTAB_H
-#define __HASHTAB_H
+#include <stdio.h>
+#include <banner.h>
 
-typedef struct symbol {
-        struct symbol   *next;
-        char            *name;
-        char            *value;
-} symbol, **sym_table;
+int     bannerver = _BANVER;
+char *  bannerstr = banner2a();
 
-extern  void        AddSymbol( sym_table, char *, char * );
-extern  char        *SymbolExists( sym_table, char * );
-extern  sym_table   SymbolInit( void );
-extern  void        SymbolFini( sym_table );
+int main ( int argc, char *argv[] )
+{
+    int majorver, minorver, revision;
 
+    if( argc <= 1 || freopen( argv[1], "w", stdout ) != stdout ) {
+        fprintf( stderr, "Can't open output file\n" );
+        return 1;
+    }
+
+    majorver = bannerver / 1000;
+    minorver = ( bannerver / 10 ) - ( majorver * 100 );
+    revision = bannerver - ( ( bannerver / 10 ) * 10 );
+#ifdef _BETAVER
+    revision = 'b' - 'a' + 1;   /* 2 = b for beta */
 #endif
+
+    printf( "OP VERSION = %u.%u.%u\n", majorver, minorver, revision);
+    printf( "OP COPYRIGHT '%s'\n", bannerstr);
+    return( 0 );
+}
