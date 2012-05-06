@@ -6,12 +6,21 @@ echo Cannot find builder - did you run boot.bat?
 goto end
 
 :builder
-cd src
+cd %OWROOT%\src
 builder bootclean
-del /q make\%OBJDIR%\*
-rmdir make\%OBJDIR%
-del %OWBINDIR%\wmake.exe
-del %OWBINDIR%\builder.exe
-del %OWBINDIR%\rm.exe
-cd ..
+cd %OWROOT%
 :end
+cd %OWROOT%\src\make
+if not exist %OWOBJDIR% goto cont1
+del /q %OWOBJDIR%\*
+rmdir %OWOBJDIR%
+:cont1
+cd %OWROOT%\src\builder
+if not exist %OWOBJDIR% goto cont2
+del /q %OWOBJDIR%\*
+rmdir %OWOBJDIR%
+:cont2
+cd %OWROOT%
+if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe
+if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe
+if exist %OWBINDIR%\rm.exe del %OWBINDIR%\rm.exe

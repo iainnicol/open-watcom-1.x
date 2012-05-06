@@ -1,13 +1,10 @@
 # Default actions Builder Control File 
 # ====================================
 
+cdsay <PROJDIR>
+
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!
-
-[ BLOCK . . ]
-#============
-    # required - including this file switched current dir!
-    cdsay <PROJDIR>
 
 [ BLOCK <1> build rel ]
 #======================
@@ -19,19 +16,14 @@
     
 [ BLOCK <1> boot ]
 #=================
-    echo **** Building the <PROJNAME> bootstrap
-    mkdir <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    cdsay <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    wmake -h -f ../bootmake
-    <BOOTCOPY>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
+    <BWMAKE> -h -f ../bootmake
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo **** BOOTCLEAN rule
-    echo rm -r -f <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    rm -r -f <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    echo <BOOTCLEAN>
-    <BOOTCLEAN>
+    echo rm -r -f <PROJDIR>/<OWOBJDIR>
+    rm -r -f <PROJDIR>/<OWOBJDIR>
 
 [ BLOCK . . ]
 #============

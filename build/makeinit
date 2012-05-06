@@ -12,11 +12,11 @@
 bld_ver      = $(%BLD_VER)
 patch_level  = 0
 lang_root    = $(%WATCOM)
-# todo: remove dev_dir
-dev_dir      = $(%OWROOT)/src
 src_dir      = $(%OWROOT)/src
 build_dir    = $(%OWROOT)/build
 contrib_dir  = $(%OWROOT)/contrib
+
+verbose      = $(%OWVERBOSE)
 
 mif_path     = $(%OWROOT)/build/local;$(%OWROOT)/build/mif
 

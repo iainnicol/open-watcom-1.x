@@ -1,12 +1,31 @@
-export WATCOM=$OWROOT/rel
+#!/bin/sh
+#
+# *****************************************************************
+# cmnvars.sh - common environment variables
+# *****************************************************************
+# NOTE: All script files to set the environment must call this script
+#       file at the end.
 
-export OWBINDIR=$OWROOT/build/bin
-export PATH=$OWBINDIR:$OWROOT/build:$PATH
-
-export OBJDIR=bootstrp
-
+# Set the version numbers
 export BLD_VER=20
 export BLD_VER_STR=2.0
 
-# For convenience...
-export EDPATH=$OWROOT/src/vi/dat
+# Save default path information variables
+if [ -z "$OWDEFPATH" ]; then
+    export OWDEFPATH=$PATH:
+    export OWDEFINCLUDE=$INCLUDE
+    export OWDEFWATCOM=$WATCOM
+fi
+
+# Subdirectory to be used for bootstrapping
+export OWOBJDIR=bootstrp
+
+# Subdirectory to be used for bootstrapping binaries
+export OWBINDIR=$OWROOT/build/bin
+
+# Set environment variables
+export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
+export INCLUDE=$OWDEFINCLUDE
+export WATCOM=$OWDEFWATCOM
+
+echo Open Watcom build environment

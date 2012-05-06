@@ -2,16 +2,19 @@
 #
 # Script to clean a bootstrap build of Open Watcom tools.
 
-if [ -f setvars ]; then
-    source ./setvars
-else
-    source ./setvars.sh
-fi
 if [ ! -f $OWBINDIR/builder ]; then
     echo Cannot find builder - did you run boot.sh?
 else
-    cd src
+    cd $OWROOT/src
+    builder clean
     builder bootclean
-    rm -rf make/$OBJDIR
-    rm -f $OWBINDIR/wmake $OWBINDIR/builder
+    cd $OWROOT
 fi
+cd $OWROOT/src/builder
+rm -rf $OBJDIR
+cd $OWROOT/src/make
+rm -rf $OBJDIR
+cd $OWROOT
+rm -f $OWBINDIR/wmake
+rm -f $OWBINDIR/builder
+

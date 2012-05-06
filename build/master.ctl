@@ -6,9 +6,9 @@
 #====================
     error OWROOT must be set!
 
-[ BLOCK .<OBJDIR> . ]
-#====================
-    error OBJDIR must be set!
+[ BLOCK .<OWOBJDIR> . ]
+#======================
+    error OWOBJDIR must be set!
 
 [ BLOCK .<BLD_HOST> . ]
 ====================
@@ -22,19 +22,14 @@
 [ BLOCK . . ]
 #============
 
-# Default to bld.log
-set LOGFNAME=bld
+# Default to build.log
+set LOGFNAME=build
 set LOGEXT=log
 set CPCMD=acopy
 set CCCMD=accopy
 
 # Set up directories
 set SRCDIR=<OWROOT>/src
-
-# Clear variables possibly set by previously included control files
-set BOOTSUBDIR=
-set BOOTCOPY=
-set BOOTCLEAN=
 
 [ BLOCK .<1> . ]
 #===============
@@ -48,58 +43,89 @@ set BOOTCLEAN=
 
 [ BLOCK <1> cprel ]
 #==================
-    echo **** CPREL rule
     set LOGFNAME=cprel
+    echo **** CPREL rule
     # with 'cprel', we want to force the copy to occur
     set CPCMD=copy
     set CCCMD=ccopy
 
 [ BLOCK <1> build ]
 #==================
+    set LOGFNAME=build
     echo **** BUILD rule
-    set LOGFNAME=bld
 
 [ BLOCK <1> rel ]
 #================
+    set LOGFNAME=build
     echo **** REL rule
-    set LOGFNAME=bld
 
 [ BLOCK <1> clean ]
 #==================
-    echo **** CLEAN rule
     set LOGFNAME=clean
+    echo **** CLEAN rule
 
 [ BLOCK <1> install ]
-#==================
+#====================
     set LOGFNAME=install
 
 [ BLOCK <1> boot ]
-#==================
+#=================
     set LOGFNAME=boot
+    echo **** Building the <PROJNAME> bootstrap
+
+[ BLOCK <1> boot1 ]
+#==================
+    set LOGFNAME=boot1
+    echo **** Building the <PROJNAME> bootstrap
+    set 1=boot
+
+[ BLOCK <1> boot2 ]
+#==================
+    set LOGFNAME=boot2
+    echo **** Building the <PROJNAME> bootstrap
+    set 1=boot
+
+[ BLOCK <1> bootclean ]
+#======================
+    set LOGFNAME=btclean
+    echo **** BOOTCLEAN rule
 
 [ BLOCK <1> pass1 ]
 #==================
-    echo **** REL rule
     set LOGFNAME=pass1
+    echo **** REL rule
     set 1=rel
 
 [ BLOCK <1> pass2 ]
 #==================
-    echo **** REL rule
     set LOGFNAME=pass2
+    echo **** REL rule
     set 1=rel
+
+[ BLOCK <1> test ]
+#==================
+    set LOGFNAME=test
+    echo **** TEST rule
+
+[ BLOCK <1> testclean ]
+#======================
+    set LOGFNAME=tstclean
+    echo **** TESTCLEAN rule
 
 # Configure extensions: For executables, DOS, OS/2 and Windows use .exe, others
 # nothing. For dynamic libraries, DOS, OS/2 and Windows use .dll, UNIX uses .so.
 
-[ BLOCK <BUILD_PLATFORM> nt386 ntaxp os2386 dos386 ]
-#===================================================
+[ BLOCK <BLD_HOST> NT OS2 DOS ]
+#==============================
     set CMDEXT=.exe
     set DYLEXT=.dll
+    set BWMAKE=<OWBINDIR>\wmake
 
 [ BLOCK <BLD_HOST> UNIX ]
 #========================
     set CMDEXT=
     set DYLEXT=.so
+    set BWMAKE=<OWBINDIR>/wmake
 
 [ BLOCK . . ]
+#============

@@ -1,16 +1,38 @@
 @echo off
 rem Batch to build a subset of the Open Watcom tools
-rem using the host platform's native C/C++ compiler tools.
 
-cd src\make
-if not exist %OBJDIR% mkdir %OBJDIR%
-cd %OBJDIR%
+if "%OWBOOTSTRAP%" == "" goto cont1
+set WATCOM=%OWBOOTSTRAP%
+set PATH=%OWBOOTSTRAP%\binnt;%OWBOOTSTRAP%\binw;%PATH%
+set INCLUDE=%OWBOOTSTRAP%\h;%OWBOOTSTRAP%\h\nt
+:cont1
+cd %OWROOT%\src\make
+if not exist %OWOBJDIR% mkdir %OWOBJDIR%
+cd %OWOBJDIR%
+if "%OWBOOTSTRAP%" == "" goto nowatcom
+wmake -h -f ..\wmake
+goto cont2
+:nowatcom
 nmake -nologo -f ..\nmkmake
-cd ..\..\builder
-if not exist %OBJDIR% mkdir %OBJDIR%
-cd %OBJDIR%
-wmake -h -f ..\bootmake builder.exe rm.exe
-cd ..\..
+:cont2
+cd %OWROOT%\src\builder
+if not exist %OWOBJDIR% mkdir %OWOBJDIR%
+cd %OWOBJDIR%
+%OWBINDIR%\wmake -h -f ..\bootmake builder.exe rm.exe
+cd %OWROOT%\src
 builder boot
-rem builder build
-cd ..
+if errorlevel == 1 goto cont4
+if "%OWBOOTSTRAP%" == "" goto cont3
+set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
+set INCLUDE=%OWDEFINCLUDE%
+set WATCOM=%OWDEFWATCOM%
+:cont3
+builder build
+goto finish
+:cont4
+if "%OWBOOTSTRAP%" == "" goto finish
+set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
+set INCLUDE=%OWDEFINCLUDE%
+set WATCOM=%OWDEFWATCOM%
+:finish
+cd %OWROOT%

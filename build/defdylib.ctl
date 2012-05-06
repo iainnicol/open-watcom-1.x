@@ -7,13 +7,10 @@
 # included this one.
 # NB: PROJNAME must be the library's base name.
 
+cdsay <PROJDIR>
+
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!
-
-[ BLOCK . . ]
-#============
-    # required - including this file switched current dir!
-    cdsay <PROJDIR>
 
 [ BLOCK <1> build rel ]
 #======================
@@ -25,17 +22,15 @@
     
 [ BLOCK <1> boot ]
 #=================
-    echo **** Building the <PROJNAME> bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../bootmake
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
+    <BWMAKE> -h -f ../bootmake
     <CPCMD> <PROJNAME><DYLEXT> <OWBINDIR>/<PROJNAME><DYLEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo **** BOOTCLEAN rule
-    echo rm -r -f <PROJDIR>/<OBJDIR>
-    rm -r -f <PROJDIR>/<OBJDIR>
+    echo rm -r -f <PROJDIR>/<OWOBJDIR>
+    rm -r -f <PROJDIR>/<OWOBJDIR>
     echo rm -f <OWBINDIR>/<PROJNAME><DYLEXT>
     rm -f <OWBINDIR>/<PROJNAME><DYLEXT>
 

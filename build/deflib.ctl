@@ -3,21 +3,14 @@
 #
 # Build libraries in place, do not copy any files around.
 
+cdsay <PROJDIR>
+
 [ BLOCK .<PROJNAME> . ]
     error PROJNAME must be set!
-
-[ BLOCK . . ]
-#============
-    # required - including this file switched current dir!
-    cdsay <PROJDIR>
 
 [ BLOCK <1> build rel ]
 #======================
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
-
-[ BLOCK <1> rel ]
-#================
-    cdsay <PROJDIR>
 
 [ BLOCK <1> clean ]
 #==================
@@ -25,16 +18,14 @@
     
 [ BLOCK <1> boot ]
 #=================
-    echo **** Building the <PROJNAME> bootstrap
-    mkdir <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    cdsay <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    wmake -h -f ../bootmake
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
+    <BWMAKE> -h -f ../bootmake
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo **** BOOTCLEAN rule
-    echo rm -r -f <PROJDIR>/<BOOTSUBDIR><OBJDIR>
-    rm -r -f <PROJDIR>/<BOOTSUBDIR><OBJDIR>
+    echo rm -r -f <PROJDIR>/<OWOBJDIR>
+    rm -r -f <PROJDIR>/<OWOBJDIR>
 
 [ BLOCK . . ]
 #============

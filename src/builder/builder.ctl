@@ -7,34 +7,32 @@ set PROJNAME=build utilities
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
-[ BLOCK <1> build rel2 ]
-#=======================
-    [ INCLUDE prereq.ctl ]
-
-[ BLOCK <1> clean ]
-#==================
-    pmake -d all -h clean
-
 [ BLOCK <1> boot ]
 #=================
-    echo Building the build utilities bootstrap
-    mkdir <PROJDIR>/<OBJDIR>
-    cdsay <PROJDIR>/<OBJDIR>
-    wmake -h -f ../bootmake
-    cdsay <PROJDIR>
+    mkdir <PROJDIR>/<OWOBJDIR>
+    cdsay <PROJDIR>/<OWOBJDIR>
+    <BWMAKE> -h -f ../bootmake
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo rm -f -r <PROJDIR>/<OBJDIR>
-    rm -f -r <PROJDIR>/<OBJDIR>
-    echo rm -f <OWBINDIR>/wsplice<CMDEXT> <OWBINDIR>/sweep<CMDEXT>
-    rm -f <OWBINDIR>/wsplice<CMDEXT> <OWBINDIR>/sweep<CMDEXT>
-    echo rm -f <OWBINDIR>/cdsay<CMDEXT> <OWBINDIR>/comstrip<CMDEXT>
-    rm -f <OWBINDIR>/cdsay<CMDEXT> <OWBINDIR>/comstrip<CMDEXT>
-    echo rm -f <OWBINDIR>/diff<CMDEXT> <OWBINDIR>/aliasgen<CMDEXT>
-    rm -f <OWBINDIR>/diff<CMDEXT> <OWBINDIR>/aliasgen<CMDEXT>
+    cdsay <PROJDIR>
+    echo rm -f -r <PROJDIR>/<OWOBJDIR>
+    rm -f -r <PROJDIR>/<OWOBJDIR>
+    echo rm -f <OWBINDIR>/wsplice<CMDEXT> 
+    rm -f <OWBINDIR>/wsplice<CMDEXT> 
+    echo rm -f <OWBINDIR>/sweep<CMDEXT>
+    rm -f <OWBINDIR>/sweep<CMDEXT>
+    echo rm -f <OWBINDIR>/cdsay<CMDEXT> 
+    rm -f <OWBINDIR>/cdsay<CMDEXT> 
+    echo rm -f <OWBINDIR>/comstrip<CMDEXT>
+    rm -f <OWBINDIR>/comstrip<CMDEXT>
+    echo rm -f <OWBINDIR>/diff<CMDEXT> 
+    rm -f <OWBINDIR>/diff<CMDEXT> 
+    echo rm -f <OWBINDIR>/aliasgen<CMDEXT>
+    rm -f <OWBINDIR>/aliasgen<CMDEXT>
+    echo rm -f <OWBINDIR>/genverrc<CMDEXT>
+    rm -f <OWBINDIR>/genverrc<CMDEXT>
+
 
 [ BLOCK . . ]
 #============

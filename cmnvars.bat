@@ -9,18 +9,25 @@ REM Set the version numbers
 set BLD_VER=20
 set BLD_VER_STR=2.0
 
-REM Set up default path information variable
-if "%DEFPATH%" == "" set DEFPATH=%PATH%
+REM Set up default path information variables
+if not "%OWDEFPATH%" == "" goto cont1
+set OWDEFPATH=%PATH%;
+set OWDEFINCLUDE=%INCLUDE%
+set OWDEFWATCOM=%WATCOM%
+:cont1
 
-REM Stuff for the Open Watcom build environment
-set BUILD_PLATFORM=nt386
-REM Subdirectory to be used for bootstrapping/prebuild binaries
-set OWBINDIR=%OWROOT%\build\binnt
-set RELROOT=%OWROOT%\rel
-set EDPATH=%WATCOM%\eddat
-set PATH=%OWBINDIR%;%OWROOT%\build;%WATCOM%\binnt;%WATCOM%\binw;%DEFPATH%
+REM Subdirectory to be used for bootstrapping
+set OWOBJDIR=bootstrp
 
-echo Open Watcom compiler build environment
+REM Subdirectory to be used for bootstrapping binaries
+set OWBINDIR=%OWROOT%\build\bin
+
+REM Set environment variables
+set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
+set INCLUDE=%OWDEFINCLUDE%
+set WATCOM=%OWDEFWATCOM%
+
+echo Open Watcom build environment
 
 REM OS specifics
 
