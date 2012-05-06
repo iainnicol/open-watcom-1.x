@@ -23,14 +23,16 @@ mkdir $OWOBJDIR
 cd $OWOBJDIR
 $OWBINDIR/wmake -h -f ../bootmake builder.exe
 cd $OWROOT/src
-rc = builder boot 
+builder boot 
+RC=$?
 if [ -n "$OWBOOTSTRAP" ]; then
     export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
     export INCLUDE=$OWDEFINCLUDE
     export WATCOM=$OWDEFWATCOM
 fi
-if [ $rc eq 0 ]; then
-    rc = builder build
+if [ $RC -eq 0 ]; then
+    builder build
+    RC=$?
 fi
 cd $OWROOT
-return $rc
+exit $RC
