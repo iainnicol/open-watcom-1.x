@@ -11,7 +11,7 @@ set PROJNAME=wcc
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OBJDIR>/wcci86.exe <OWBINDIR>/wcc<CMDEXT>
+    <CPCMD> <OWOBJDIR>/wcci86.exe <OWBINDIR>/wcc<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

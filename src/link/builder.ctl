@@ -11,7 +11,7 @@ set PROJNAME=wlink
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OBJDIR>/wl.exe <OWBINDIR>/wlink<CMDEXT>
+    <CPCMD> <OWOBJDIR>/wl.exe <OWBINDIR>/wlink<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

@@ -11,7 +11,7 @@ set PROJNAME=wstrip
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OBJDIR>/strip.exe <OWBINDIR>/wstrip<CMDEXT>
+    <CPCMD> <OWOBJDIR>/strip.exe <OWBINDIR>/wstrip<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
