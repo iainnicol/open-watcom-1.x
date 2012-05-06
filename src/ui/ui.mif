@@ -107,7 +107,7 @@ sample.exe : samplew.obj sampdial.obj swap.obj $(name).lib
         wlink @sample.lnk
 !else
 !ifdef bootstrap
-ncurses_lib = $(ncurses_dir)/$(%OBJDIR)/ncurses.lib
+ncurses_lib = $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 !endif
 sample.exe : sample.obj sampdial.obj $(name).lib $(ncurses_lib)
         $(cl) $(clflags) $<

@@ -48,5 +48,5 @@ asminline_lib = $(asminline_$(target_cpu)_lib_$(host_cpu))
 !endif
 
 !ifdef bootstrap
-asminline_lib = $(as_dir)/$(asname)/inline/$(%OBJDIR)/asinline.lib
+asminline_lib = $(as_dir)/$(asname)/inline/$(%OWOBJDIR)/asinline.lib
 !endif

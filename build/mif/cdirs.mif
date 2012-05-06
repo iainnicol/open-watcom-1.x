@@ -1,39 +1,39 @@
 # todo: remove unused macros
 !ifndef awk_dir
-awk_dir         = $(dev_dir)/awk
+awk_dir         = $(src_dir)/awk
 !endif
 !ifndef bench_dir
-bench_dir       = $(dev_dir)/bench
+bench_dir       = $(src_dir)/bench
 !endif
 !ifndef brinfo_dir
-brinfo_dir      = $(dev_dir)/brinfo
+brinfo_dir      = $(src_dir)/brinfo
 !endif
 !ifndef fe_misc_dir
-fe_misc_dir     = $(dev_dir)/fe_misc
+fe_misc_dir     = $(src_dir)/fe_misc
 !endif
 !ifndef cg_dir
-cg_dir          = $(dev_dir)/cg
+cg_dir          = $(src_dir)/cg
 !endif
 !ifndef cc_dir
-cc_dir          = $(dev_dir)/cc
+cc_dir          = $(src_dir)/cc
 !endif
 !ifndef cfloat_dir
-cfloat_dir      = $(dev_dir)/cfloat
+cfloat_dir      = $(src_dir)/cfloat
 !endif
 !ifndef plusplus_dir
-plusplus_dir    = $(dev_dir)/plusplus
+plusplus_dir    = $(src_dir)/plusplus
 !endif
 !ifndef cpplib_dir
-cpplib_dir      = $(dev_dir)/cpplib
+cpplib_dir      = $(src_dir)/cpplib
 !endif
 !ifndef dwarf_dir
-dwarf_dir       = $(dev_dir)/dwarf
+dwarf_dir       = $(src_dir)/dwarf
 !endif
 !ifndef wrc_dir
-wrc_dir         = $(dev_dir)/rc/rc
+wrc_dir         = $(src_dir)/rc/rc
 !endif
 !ifndef sdk_dir
-sdk_dir         = $(dev_dir)/sdk
+sdk_dir         = $(src_dir)/sdk
 !endif
 !ifndef wzoom_dir
 wzoom_dir       = $(sdk_dir)/zoom
@@ -57,196 +57,196 @@ misc_dir        = $(sdk_dir)/misc
 wheapwlk_dir    = $(sdk_dir)/heapwalk
 !endif
 !ifndef owl_dir
-owl_dir         = $(dev_dir)/owl
+owl_dir         = $(src_dir)/owl
 !endif
 !ifndef as_dir
-as_dir          = $(dev_dir)/as
+as_dir          = $(src_dir)/as
 !endif
 !ifndef wpack_dir
-wpack_dir       = $(dev_dir)/wpack
+wpack_dir       = $(src_dir)/wpack
 !endif
 !ifndef wtouch_dir
-wtouch_dir      = $(dev_dir)/wtouch
+wtouch_dir      = $(src_dir)/wtouch
 !endif
 !ifndef wmake_dir
-wmake_dir       = $(dev_dir)/wmake
+wmake_dir       = $(src_dir)/wmake
 !endif
 !ifndef wdump_dir
-wdump_dir       = $(dev_dir)/wdump
+wdump_dir       = $(src_dir)/wdump
 !endif
 !ifndef disasm_dir
-disasm_dir      = $(dev_dir)/disasm
+disasm_dir      = $(src_dir)/disasm
 !endif
 !ifndef orl_dir
-orl_dir         = $(dev_dir)/orl
+orl_dir         = $(src_dir)/orl
 !endif
 !ifndef watcom_dir
-watcom_dir      = $(dev_dir)/watcom
+watcom_dir      = $(src_dir)/watcom
 !endif
 !ifndef comp_cfg_dir
-comp_cfg_dir    = $(dev_dir)/comp_cfg
+comp_cfg_dir    = $(src_dir)/comp_cfg
 !endif
 !ifndef wpi_dir
-wpi_dir         = $(dev_dir)/wpi
+wpi_dir         = $(src_dir)/wpi
 !endif
 !ifndef trmem_dir
-trmem_dir       = $(dev_dir)/trmem
+trmem_dir       = $(src_dir)/trmem
 !endif
 !ifndef diff_dir
-diff_dir        = $(dev_dir)/diff
+diff_dir        = $(src_dir)/diff
 !endif
 !ifndef bdiff_dir
-bdiff_dir       = $(dev_dir)/bdiff
+bdiff_dir       = $(src_dir)/bdiff
 !endif
 !ifndef cpp_dir
-cpp_dir         = $(dev_dir)/cpp
+cpp_dir         = $(src_dir)/cpp
 !endif
 !ifndef vi_dir
-vi_dir          = $(dev_dir)/vi
+vi_dir          = $(src_dir)/vi
 !endif
 !ifndef posix_dir
-posix_dir       = $(dev_dir)/posix
+posix_dir       = $(src_dir)/posix
 !endif
 !ifndef rcsdll_dir
-rcsdll_dir      = $(dev_dir)/rcsdll
+rcsdll_dir      = $(src_dir)/rcsdll
 !endif
 !ifndef ncurses_dir
-ncurses_dir     = $(dev_dir)/ncurses
+ncurses_dir     = $(src_dir)/ncurses
 !endif
 !ifndef ide_dir
-ide_dir         = $(dev_dir)/ide
+ide_dir         = $(src_dir)/ide
 !endif
 !ifndef wlink_dir
-wlink_dir       = $(dev_dir)/wl
+wlink_dir       = $(src_dir)/wl
 !endif
 !ifndef wasm_dir
-wasm_dir        = $(dev_dir)/wasm
+wasm_dir        = $(src_dir)/wasm
 !endif
 !ifndef wasmtest_dir
-wasmtest_dir    = $(dev_dir)/wasm/test
+wasmtest_dir    = $(src_dir)/wasm/test
 !endif
 !ifndef hdr_dir
-hdr_dir         = $(dev_dir)/hdr
+hdr_dir         = $(src_dir)/hdr
 !endif
 !ifndef os2api_dir
-os2api_dir      = $(dev_dir)/os2api
+os2api_dir      = $(src_dir)/os2api
 !endif
 !ifndef w32api_dir
-w32api_dir      = $(dev_dir)/w32api
+w32api_dir      = $(src_dir)/w32api
 !endif
 !ifndef w16api_dir
-w16api_dir      = $(dev_dir)/w16api
+w16api_dir      = $(src_dir)/w16api
 !endif
 !ifndef nwoss_dir
-nwoss_dir       = $(dev_dir)/os_supp/novell
+nwoss_dir       = $(src_dir)/os_supp/novell
 !endif
 !ifndef plustest_dir
-plustest_dir    = $(dev_dir)/plustest
+plustest_dir    = $(src_dir)/plustest
 !endif
 !ifndef ctest_dir
-ctest_dir       = $(dev_dir)/ctest
+ctest_dir       = $(src_dir)/ctest
 !endif
 !ifndef linktest_dir
-linktest_dir    = $(dev_dir)/linktest
+linktest_dir    = $(src_dir)/linktest
 !endif
 !ifndef f77_dir
-f77_dir         = $(dev_dir)/f77
+f77_dir         = $(src_dir)/f77
 !endif
 !ifndef ftest_dir
-ftest_dir       = $(dev_dir)/f77/regress
+ftest_dir       = $(src_dir)/f77/regress
 !endif
 !ifndef clib_dir
-clib_dir        = $(dev_dir)/clib
+clib_dir        = $(src_dir)/clib
 !endif
 !ifndef emu387_dir
-emu387_dir      = $(dev_dir)/emu387
+emu387_dir      = $(src_dir)/emu387
 !endif
 !ifndef emu87_dir
-emu87_dir       = $(dev_dir)/emu87
+emu87_dir       = $(src_dir)/emu87
 !endif
 !ifndef mathlib_dir
-mathlib_dir     = $(dev_dir)/mathlib
+mathlib_dir     = $(src_dir)/mathlib
 !endif
 !ifndef rtdll_dir
-rtdll_dir       = $(dev_dir)/rtdll
+rtdll_dir       = $(src_dir)/rtdll
 !endif
 !ifndef lib_misc_dir
-lib_misc_dir    = $(dev_dir)/lib_misc
+lib_misc_dir    = $(src_dir)/lib_misc
 !endif
 !ifndef womp_dir
-womp_dir        = $(dev_dir)/womp
+womp_dir        = $(src_dir)/womp
 !endif
 !ifndef cw_dir
-cw_dir          = $(dev_dir)/causeway
+cw_dir          = $(src_dir)/causeway
 !endif
 !ifndef win386_dir
-win386_dir      = $(dev_dir)/win386
+win386_dir      = $(src_dir)/win386
 !endif
 !ifndef wclass_dir
-wclass_dir      = $(dev_dir)/wclass
+wclass_dir      = $(src_dir)/wclass
 !endif
 !ifndef batch_dir
-batch_dir       = $(dev_dir)/idebatch
+batch_dir       = $(src_dir)/idebatch
 !endif
 !ifndef editdll_dir
-editdll_dir     = $(dev_dir)/editdll
+editdll_dir     = $(src_dir)/editdll
 !endif
 !ifndef gui_dir
-gui_dir         = $(dev_dir)/gui
+gui_dir         = $(src_dir)/gui
 !endif
 !ifndef trap_dir
-trap_dir        = $(dev_dir)/trap
+trap_dir        = $(src_dir)/trap
 !endif
 !ifndef browse_dir
-browse_dir      = $(dev_dir)/browser
+browse_dir      = $(src_dir)/browser
 !endif
 !ifndef wres_dir
-wres_dir        = $(dev_dir)/wres
+wres_dir        = $(src_dir)/wres
 !endif
 !ifndef dip_dir
-dip_dir         = $(dev_dir)/dip
+dip_dir         = $(src_dir)/dip
 !endif
 !ifndef dig_dir
-dig_dir         = $(dev_dir)/dig
+dig_dir         = $(src_dir)/dig
 !endif
 !ifndef mad_dir
-mad_dir         = $(dev_dir)/mad
+mad_dir         = $(src_dir)/mad
 !endif
 !ifndef dbg_dir
-dbg_dir         = $(dev_dir)/dbg
+dbg_dir         = $(src_dir)/dbg
 !endif
 !ifndef wdisasm_dir
-wdisasm_dir     = $(dev_dir)/wdisasm
+wdisasm_dir     = $(src_dir)/wdisasm
 !endif
 !ifndef yacc_dir
-yacc_dir        = $(dev_dir)/yacc
+yacc_dir        = $(src_dir)/yacc
 !endif
 !ifndef whpcvt_dir
-whpcvt_dir      = $(dev_dir)/whpcvt
+whpcvt_dir      = $(src_dir)/whpcvt
 !endif
 !ifndef aui_dir
-aui_dir         = $(dev_dir)/aui
+aui_dir         = $(src_dir)/aui
 !endif
 !ifndef sampler_dir
-sampler_dir     = $(dev_dir)/sampler
+sampler_dir     = $(src_dir)/sampler
 !endif
 !ifndef editdll_dir
-editdll_dir     = $(dev_dir)/editdll
+editdll_dir     = $(src_dir)/editdll
 !endif
 !ifndef ui_dir
-ui_dir          = $(dev_dir)/ui
+ui_dir          = $(src_dir)/ui
 !endif
 !ifndef hlpview_dir
-hlpview_dir     = $(dev_dir)/hlpview
+hlpview_dir     = $(src_dir)/hlpview
 !endif
 !ifndef dbg_dir
-dbg_dir         = $(dev_dir)/dbg
+dbg_dir         = $(src_dir)/dbg
 !endif
 !ifndef pil_dir
-pil_dir         = $(dev_dir)/pil
+pil_dir         = $(src_dir)/pil
 !endif
 !ifndef re2c_dir
-re2c_dir        = $(dev_dir)/re2c
+re2c_dir        = $(src_dir)/re2c
 !endif
 !ifndef libzip_dir
 libzip_dir      = $(contrib_dir)/libzip

@@ -18,7 +18,7 @@ target_as_comm_objs = &
     alphains.obj
 
 !ifdef bootstrap
-asi_dir = $(as_dir)/alpha/inline/$(%OBJDIR)
+asi_dir = $(as_dir)/alpha/inline/$(%OWOBJDIR)
 !else
 asi_dir = $(as_dir)/alpha/inline/osi$(host_cpu)
 !endif
