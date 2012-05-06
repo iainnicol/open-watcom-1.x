@@ -7,6 +7,7 @@ goto end
 
 :builder
 cd %OWROOT%\src
+builder clean
 builder bootclean
 cd %OWROOT%
 :end
