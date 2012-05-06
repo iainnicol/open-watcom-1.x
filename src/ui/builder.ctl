@@ -7,8 +7,6 @@ set PROJNAME=ui library
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-set BOOTSUBDIR=unix/
-
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK <1> rel cprel ]

@@ -7,12 +7,16 @@ set PROJNAME=wstrip
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
-set BOOTCOPY=<CPCMD> strip.exe <OWBINDIR>/wstrip<CMDEXT>
-set BOOTCLEAN=rm -f <OWBINDIR>/wstrip<CMDEXT>
-
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
+
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <OBJDIR>/strip.exe <OWBINDIR>/wstrip<CMDEXT>
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/wstrip<CMDEXT>
+    rm -f <OWBINDIR>/wstrip<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

@@ -7,12 +7,16 @@ set PROJNAME=wlink
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
-set BOOTCOPY=<CPCMD> wl.exe <OWBINDIR>/wlink<CMDEXT>
-set BOOTCLEAN=rm -f <OWBINDIR>/wlink<CMDEXT>
-
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
+
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <OBJDIR>/wl.exe <OWBINDIR>/wlink<CMDEXT>
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/wlink<CMDEXT>
+    rm -f <OWBINDIR>/wlink<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

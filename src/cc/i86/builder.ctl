@@ -7,12 +7,16 @@ set PROJNAME=wcc
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-cdsay .
-
-set BOOTCOPY=<CPCMD> wcci86.exe <OWBINDIR>/wcc<CMDEXT>
-set BOOTCLEAN=rm -f <OWBINDIR>/wcc<CMDEXT>
-
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
+
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <OBJDIR>/wcci86.exe <OWBINDIR>/wcc<CMDEXT>
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/wcc<CMDEXT>
+    rm -f <OWBINDIR>/wcc<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

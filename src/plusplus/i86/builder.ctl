@@ -7,10 +7,16 @@ set PROJNAME=wpp
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-set BOOTCOPY=<CPCMD> wppi86.exe <OWBINDIR>/<PROJNAME><CMDEXT>
-set BOOTCLEAN=rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
-
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
+
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <PROJDIR>/<OBJDIR>/wppi86.exe <OWBINDIR>/wpp<CMDEXT>
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/wpp<CMDEXT>
+    rm -f <OWBINDIR>/wpp<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
