@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  IDE tool interface for resource compiler.
 *
 ****************************************************************************/
 
@@ -33,7 +32,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <malloc.h>
 #ifdef __WATCOMC__
 #include <process.h>
 #else
@@ -179,7 +177,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     ImageName = _LpDllName;
 #endif
     InitGlobs();
-    rc = setjmp( &jmpbuf_RCFatalError );
+    rc = setjmp( jmpbuf_RCFatalError );
     if( rc == 0 ) {
         InitRcMsgs( ImageName );
         if( opts != NULL ) {
