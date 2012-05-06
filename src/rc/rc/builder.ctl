@@ -29,7 +29,7 @@ cdsay .
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OBJDIR>/wrce.exe <OWBINDIR>/wrc<CMDEXT>
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/wrce.exe <OWBINDIR>/wrc<CMDEXT>
     <CPCMD> <PROJDIR>/kanji.uni <OWBINDIR>/
 
 [ BLOCK <1> bootclean ]
