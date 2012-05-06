@@ -451,6 +451,9 @@ pick(   USAGE_MSG_38,
         "                 3: Chinese (Simplified, CP 936)",
         "                 3: Chinese (Simplified, CP 936)" )
 pick(   USAGE_MSG_39,
+        "-zku8          - Unicode UTF-8 char support",
+        "-zku8          - Unicode UTF-8 char support" )
+pick(   USAGE_MSG_40,
         "-zm            - output Microsoft/IBM format .res files",
         "-zm            - output Microsoft/IBM format .res files" )
 pick(   USAGE_MSG_LAST,

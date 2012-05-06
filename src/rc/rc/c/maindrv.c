@@ -24,27 +24,51 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  resource compiler mainline
 *
 ****************************************************************************/
 
 
-#ifndef RCDLL_INCLUDED
-#define RCDLL_INCLUDED
+#include <stdlib.h>
+#include <string.h>
+#ifdef __WATCOMC__
+#include <process.h>
+#else
+#include "clibext.h"
+#endif
+#include "idedrv.h"
 
-#include <setjmp.h>
-#include "idedll.h"
 
-#define RC_BUFFER_SIZE     1024
+static IDEDRV info = {
+    "wrcd.dll"
+};
 
-extern char     ImageName[ _MAX_PATH ];
-
-extern int Dllmain( int argc, char *argv[] );
-IDEBool IDEDLL_EXPORT IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
-IDEBool IDEDLL_EXPORT IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info );
-unsigned IDEDLL_EXPORT IDEGetVersion( void );
-void IDEDLL_EXPORT IDEFiniDLL( IDEDllHdl hdl );
-
+int main( int count, char *args[] )
+/*********************************/
+{
+    int retcode;
+#ifndef __UNIX__
+    int len;
+    char *cmd_line;
 #endif
 
+#ifndef __WATCOMC__
+    _argv = args;
+    _argc = count;
+#endif
+#ifndef __UNIX__
+    count = count;
+    args = args;
+    len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = malloc( len );
+    _bgetcmd( cmd_line, len );
+    retcode = IdeDrvExecDLL( &info, cmd_line );
+    free( cmd_line );
+#else
+    retcode = IdeDrvExecDLLArgv( &info, count, args );
+#endif
+    if( retcode != IDEDRV_ERR_INIT_EXEC ) {
+        IdeDrvUnloadDLL( &info );               // UNLOAD THE DLL
+    }
+    return( retcode );
+}

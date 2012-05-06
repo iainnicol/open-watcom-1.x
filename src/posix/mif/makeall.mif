@@ -8,31 +8,17 @@ bootstrap_posix_host = 1
 
 all : .symbolic
 clean : .symbolic
-clean_build : .symbolic
-
 !else
 
-!ifeq bootstrap 1
-make_file = ../../bootmake
-!include $(posix_dir)/mif/bld_cmds.mif
-!else
-make_file = makefile
 !include $(posix_dir)/mif/commands.mif
-!endif
 !include $(posix_dir)/mif/targos.mif
 !include $(posix_dir)/mif/common.mif
-
-!ifdef __UNIX__
-altposixlibdir=$(posix_dir)/misc/$(targos)/ms
-!else
-altposixlibdir=$(posix_dir)\misc\$(targos)\ms
-!endif
 
 all : lib $(commands) .symbolic
         @%null
 
 lib : .symbolic $(__MAKEFILES__)
-curr_dir_all=$+ $(%cwd) $-
+curr_dir_all=$+ $(%CWD) $-
         @cd $(posixlibdir)
         !@wmake -h -f $(make_file) release=$(release) bootstrap=$(bootstrap)
 !ifeq targos dos
@@ -46,21 +32,26 @@ curr_dir_all=$+ $(%cwd) $-
 
 $(commands) : .symbolic $(__MAKEFILES__)
         !@wmake -h -f $(posix_dir)/src/$^@/makefile targos=$(targos) make_all=1 release=$(release) bootstrap=$(bootstrap)
-!ifdef install
-        @wstrip $^@.exe $(install)/$^@.exe
-        @wtouch -f $^@.exe $(install)/$^@.exe
-!endif
 
 clean : .symbolic
-        !@wmake -h -f $(posixlibdir)/makefile clean clean_dir=$(posixlibdir)
-!ifeq targos dos
-        !@wmake -h -f $(altposixlibdir)/makefile clean clean_dir=$(altposixlibdir)
-!else ifeq targos dosos2
-        !@wmake -h -f $(altposixlibdir)/makefile clean clean_dir=$(altposixlibdir)
-!endif
+curr_dir_all=$+ $(%CWD) $-
+        @echo clean $(posixlibdir)
+        @cd $(posixlibdir)
         rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
-
-clean_build : .symbolic
+!ifeq targos dos
+        @echo clean $(altposixlibdir)
+        @cd $(altposixlibdir)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!else ifeq targos dosos2
+        @echo clean $(altposixlibdir)
+        @cd $(altposixlibdir)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!endif
+        @cd $(curr_dir_all)
+!ifdef bootstrap
         @for %i in ($(commands)) do rm -f $(%OWBINDIR)/%i.exe
-        %make clean
+!else
+        @echo clean $(curr_dir_all)
+        rm -f *.ex? *.?bj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+!endif
 !endif

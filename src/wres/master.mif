@@ -23,16 +23,19 @@ memory_model_386 = $(model)
 objs = $(wres_core_objs) $(wres_more_objs)
 
 # options to use
+extra_c_flags =
 !ifdef IS_GUI
-extra_c_flags = -DMICROSOFT -DWIN_GUI
-!else
-extra_c_flags = -DMICROSOFT
+extra_c_flags += -DWIN_GUI
+!endif
+
+!ifndef bootstrap
+extra_c_flags += -s
 !endif
 
 !ifeq convention stack
-extra_c_flags_386 = -3s -s
+extra_c_flags_386 = -3s
 !else
-extra_c_flags_386 = -3r -s
+extra_c_flags_386 = -3r
 !endif
 
 !ifeq host_os os2
@@ -40,8 +43,6 @@ extra_c_flags_i86 = -zdp
 !else ifeq host_os win
 extra_c_flags_i86 = -zw-zu
 !endif
-
-extra_lib_flags = -p=16
 
 # where to look for various files
 

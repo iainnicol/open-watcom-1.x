@@ -48,6 +48,7 @@
 #define DB_TRADITIONAL_CHINESE  2
 #define DB_WANSUNG_KOREAN       3
 #define DB_SIMPLIFIED_CHINESE   4
+#define MB_UTF8                 5
 
 typedef struct ExtraRes {
     struct ExtraRes     *next;

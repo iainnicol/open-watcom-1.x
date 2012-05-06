@@ -41,7 +41,6 @@
 #include "scan.h"
 #include "keyword2.h"
 #include "depend.h"
-//#include "rcdll.h"
 #include "errprt.h"
 
 #ifdef SCANDEBUG
@@ -51,7 +50,7 @@
 static void PutScanString( const char *string )
 {
     if( CmdLineParms.DebugScanner && string != NULL ) {
-        RcFprintf( stdout, NULL, "%s\n", string );
+        RcMsgFprintf( stdout, NULL, "%s\n", string );
     }
 } /* PutScanString */
 

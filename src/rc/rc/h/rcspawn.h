@@ -24,33 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RCSpawn() and RCSuicide() routines
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <setjmp.h>
 
-#include "errprt.h"
-
-#if !defined( DLL_COMPILE )
-// this function is in rcdll.c for the DLL version
-int RcFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
-{
-    int         err;
-    va_list     args;
-
-    info = info;
-    va_start( args, format );
-    err = vfprintf( fp, format, args );
-    va_end( args );
-
-    return( err );
-}
+extern int     RCSpawn( void (*fn)( void ) );
+#if defined(__WATCOMC__)
+#pragma aux RCSuicide aborts;
 #endif
+extern void    RCSuicide( int );
 
-void InitOutPutInfo( OutPutInfo *info ) {
-    info->flags = 0;
-}
+extern jmp_buf jmpbuf_RCFatalError;
+

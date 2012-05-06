@@ -24,33 +24,37 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  RCSpawn() and RCSuicide() routines
 *
 ****************************************************************************/
 
 
-#ifndef MRES_INCLUDED
-#define MRES_INCLUDED
+#include <stdlib.h>
+#include "rcspawn.h"
 
-#include "resfmt.h"
 
-#include "pushpck1.h"
-typedef struct MResResourceHeader {
-    ResNameOrOrdinal       *Type;
-    ResNameOrOrdinal       *Name;
-    uint_16                 MemoryFlags;
-    uint_32                 Size;
-    uint_16                 LanguageId;
-    uint_32                 Version;
-    uint_32                 DataVersion;
-    uint_32                 Characteristics;
-} _WCUNALIGNED MResResourceHeader;
+static  jmp_buf *RCSpawnStack = jmpbuf_RCFatalError;
 
-typedef struct M32ResResourceHeader {
-    MResResourceHeader      *head16;
-    uint_32                  HeaderSize;
-} M32ResResourceHeader;
-#include "poppck.h"
 
-#endif
+int     RCSpawn( void (*fn)( void ) )
+/***********************************/
+{
+    jmp_buf     *save_env;
+    jmp_buf     env;
+    int         status;
+
+    save_env = RCSpawnStack;
+    RCSpawnStack = &env;
+    status = setjmp( env );
+    if( status == 0 ) {
+        (*fn)();
+    }
+    RCSpawnStack = save_env;
+    return( status );
+}
+
+void    RCSuicide( int rc )
+/*************************/
+{
+    longjmp( *RCSpawnStack, rc );
+}
