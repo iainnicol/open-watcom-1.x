@@ -11,8 +11,8 @@ set PROJNAME=parsectl
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OBJDIR>/parsectl.exe <OWBINDIR>/parsectl<CMDEXT> 
-    <CPCMD> <PROJDIR>/<OBJDIR>/parsedyn.exe <OWBINDIR>/parsedyn<CMDEXT> 
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/parsectl.exe <OWBINDIR>/parsectl<CMDEXT> 
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/parsedyn.exe <OWBINDIR>/parsedyn<CMDEXT> 
     
 [ BLOCK <1> bootclean ]
 #======================

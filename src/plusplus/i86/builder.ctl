@@ -11,7 +11,7 @@ set PROJNAME=wpp
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <PROJDIR>/<OBJDIR>/wppi86.exe <OWBINDIR>/wpp<CMDEXT>
+    <CPCMD> <PROJDIR>/<OWOBJDIR>/wppi86.exe <OWBINDIR>/wpp<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
