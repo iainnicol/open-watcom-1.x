@@ -348,8 +348,8 @@ bool HaveEquals( tokcontrol ctrl )
     return( TRUE );
 }
 
-bool GetLong32( unsigned_32 *addr )
-/**************************************/
+bool GetLong( unsigned_32 *addr )
+/*******************************/
 {
     unsigned_32     value;
     ord_state       ok;

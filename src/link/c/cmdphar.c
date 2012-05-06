@@ -120,13 +120,13 @@ bool ProcPackExp( void )
 bool ProcMinData( void )
 /*****************************/
 {
-    return( GetLong32( &FmtData.u.phar.mindata ) );
+    return( GetLong( &FmtData.u.phar.mindata ) );
 }
 
 bool ProcMaxData( void )
 /*****************************/
 {
-    return( GetLong32( &FmtData.u.phar.maxdata ) );
+    return( GetLong( &FmtData.u.phar.maxdata ) );
 }
 
 bool ProcUnpriv( void )
@@ -148,7 +148,7 @@ bool ProcFlags( void )
     bool            ret;
     unsigned_32     num;
 
-    ret = GetLong32( &num );
+    ret = GetLong( &num );
     FmtData.u.phar.params->extender_flags = num;
     return( ret );
 }
@@ -159,7 +159,7 @@ bool ProcMinReal( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
@@ -177,7 +177,7 @@ bool ProcMaxReal( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         value >>= FmtData.SegShift;       // value specified in paragraphs
         if( value > 0xffff ) {
@@ -216,7 +216,7 @@ bool ProcCallBufs( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 ) {
@@ -234,7 +234,7 @@ bool ProcMiniBuf( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
@@ -252,7 +252,7 @@ bool ProcMaxiBuf( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {
@@ -270,7 +270,7 @@ bool ProcNIStack( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         if( value < 4 || value > 0xFFFF ) {
             LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "nistack" );
@@ -287,7 +287,7 @@ bool ProcIStkSize( void )
     unsigned_32 value;
     bool        ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
         if( value > 64 || value < 1 ) {

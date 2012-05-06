@@ -170,7 +170,7 @@ extern bool ProcBuffer( void )
 {
     unsigned_32 value;
 
-    if( !GetLong32( &value ) )
+    if( !GetLong( &value ) )
         return( FALSE );
     if( value < 1024 || value > 32768 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "buffer" );
@@ -185,7 +185,7 @@ extern bool ProcGDTSize( void )
 {
     unsigned_32 value;
 
-    if( !GetLong32( &value ) )
+    if( !GetLong( &value ) )
         return( FALSE );
     if( (value % 8) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "gdtsize" );
@@ -225,7 +225,7 @@ extern bool ProcSelStart( void )
 {
     unsigned_32 value;
 
-    if( !GetLong32( &value ) )
+    if( !GetLong( &value ) )
         return( FALSE );
     if( (value % 8) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "selstart" );
@@ -244,7 +244,7 @@ extern bool ProcExtended( void )
 {
     unsigned_32 value;
 
-    if( !GetLong32( &value ) )
+    if( !GetLong( &value ) )
         return( FALSE );
     value >>= 10;      // value should be in K.
     if( value > 65535 ) {
@@ -260,7 +260,7 @@ extern bool ProcDataSize( void )
 {
     unsigned_32 value;
 
-    if( !GetLong32( &value ) )
+    if( !GetLong( &value ) )
         return( FALSE );
     if( value > 65536 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "datasize" );

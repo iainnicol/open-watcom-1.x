@@ -381,13 +381,13 @@ bool ProcDescription( void )
 bool ProcCommitStack( void )
 /*********************************/
 {
-    return( GetLong32( &FmtData.u.pe.stackcommit ) );
+    return( GetLong( &FmtData.u.pe.stackcommit ) );
 }
 
 bool ProcCommitHeap( void )
 /********************************/
 {
-    return( GetLong32( &FmtData.u.pe.heapcommit ) );
+    return( GetLong( &FmtData.u.pe.heapcommit ) );
 }
 
 static bool AddCommit( void )

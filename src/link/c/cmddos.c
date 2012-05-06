@@ -367,7 +367,7 @@ bool ProcArea( void )
     unsigned_32     value;
     bool            ret;
 
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret ) {
         AreaSize = (value + FmtData.SegMask) >> FmtData.SegShift;
     }

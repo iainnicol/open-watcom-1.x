@@ -739,3 +739,53 @@ system begin rdos_dll
     format windows pe rdos dll ^
 :endsegment
 end
+system begin rdos_dev32
+:segment Pspecs
+    wcc -bt=rdosdev -zu
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdosdev
+    format rdos dev32 ^
+:endsegment
+end
+system begin rdos_dev16
+:segment Pspecs
+    wcc -bt=rdos_dev16
+:elsesegment Pwlsystem
+    format rdos dev16 ^
+:endsegment
+end
+system begin rdosdev
+:segment Pspecs
+    wcc -bt=rdosdev -zu
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdosdev
+    format rdos dev32 ^
+:endsegment
+end
+system begin rdos_bin32
+:segment Pspecs
+    wcc -bt=rdos_bin32
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    format rdos bin32 ^
+:endsegment
+end
+system begin rdos_bin16
+:segment Pspecs
+    wcc -bt=rdos_bin16
+:elsesegment Pwlsystem
+    format rdos bin16 ^
+:endsegment
+end
+system begin rdos_mboot
+:segment Pspecs
+    wcc -bt=rdos_mboot
+:elsesegment Pwlsystem
+    format rdos mboot ^
+:endsegment
+end

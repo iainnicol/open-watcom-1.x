@@ -54,6 +54,7 @@
 #include "loadnov.h"
 #include "loadelf.h"
 #include "loadzdos.h"
+#include "loadrdv.h"
 #include "symtrace.h"
 #include "objnode.h"
 #include "objio.h"
@@ -255,9 +256,14 @@ static void DoLink( char *cmdline )
     GetStkAddr();
     GetStartAddr();
     PostAddrCalcFormatSpec();
+#ifdef _RDOS
+    if( FmtData.type & MK_RDOS )
+        GetRdosSegs();
+#endif    
     CheckErr();
     InitLoadFile();
     ObjPass2();
+    FiniMap();
     CheckErr();
     FiniLoadFile();
     WritePermData();

@@ -112,7 +112,7 @@ bool ProcELFAlignment( void )
     unsigned_32         lessone;        // value without the lowest bit.
 
     if( !HaveEquals(0) ) return( FALSE );
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( FALSE );
     }
@@ -128,7 +128,7 @@ bool ProcELFAlignment( void )
 bool ProcExtraSections( void )
 /***********************************/
 {
-    return GetLong32( &FmtData.u.elf.extrasects );
+    return GetLong( &FmtData.u.elf.extrasects );
 }
 
 bool ProcELFNoRelocs( void )

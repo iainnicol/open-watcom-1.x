@@ -39,6 +39,7 @@
 #include "cmdphar.h"
 #include "cmddos.h"
 #include "cmdzdos.h"
+#include "cmdrdv.h"
 #include "cmdraw.h"
 #include "cmd16m.h"
 #include "cmdline.h"
@@ -153,6 +154,7 @@ parse_entry     Directives[] = {
 
 parse_entry     MainOptions[] = {
     "Map",          &ProcMap,           MK_ALL, 0,
+    "MAPLines",     &ProcMapLines,      MK_ALL, 0,
     "STack",        &ProcStack,         MK_ALL, 0,
     "NODefaultlibs",&ProcNoDefLibs,     MK_ALL, CF_NO_DEF_LIBS,
     "Quiet",        &ProcQuiet,         MK_ALL, 0,
@@ -243,6 +245,10 @@ parse_entry     MainOptions[] = {
     "DATASize",     &ProcDataSize,      MK_DOS16M, 0,
     "EXTended",     &ProcExtended,      MK_DOS16M, 0,
 #endif
+#ifdef _RDOS
+    "CODESelector", &ProcRdosCodeSel,   MK_RDOS, 0,
+    "DATASelector", &ProcRdosDataSel,   MK_RDOS, 0,
+#endif
     "NORelocs",     &ProcNoRelocs,      (MK_QNX | MK_DOS16M  | MK_PE | MK_ELF), 0,
     "LOnglived",    &ProcLongLived,     MK_QNX, 0,
     "PRIVilege",    &ProcQNXPrivilege,  MK_QNX, 0,
@@ -307,6 +313,9 @@ parse_entry    Models[] = {
 #endif
 #ifdef _ZDOS
     "ZDos",         &ProcZdos,          MK_ZDOS, 0,
+#endif
+#ifdef _RDOS
+    "RDos",         &ProcRdos,          MK_RDOS, 0,
 #endif
 #ifdef _RAW
     "Raw",          &ProcRaw,           MK_RAW, 0,
@@ -601,6 +610,16 @@ parse_entry ZdosOptions[] = {
     "SYS",          &ProcZdosSYS,           MK_ZDOS, 0,
     "HWD",          &ProcZdosHWD,           MK_ZDOS, 0,
     "FSD",          &ProcZdosFSD,           MK_ZDOS, 0,
+    NULL };
+#endif
+
+#ifdef _RDOS
+parse_entry RdosOptions[] = {
+    "DEV16",          &ProcRdosDev16,       MK_RDOS, 0,
+    "DEV32",          &ProcRdosDev32,       MK_RDOS, 0,
+    "BIN16",          &ProcRdosBin16,       MK_RDOS, 0,
+    "BIN32",          &ProcRdosBin32,       MK_RDOS, 0,
+    "MBOOT",          &ProcRdosMboot,       MK_RDOS, 0,
     NULL };
 #endif
 

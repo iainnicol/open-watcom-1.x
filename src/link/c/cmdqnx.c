@@ -179,7 +179,7 @@ bool ProcQNXHeapSize( void )
     unsigned_32         value;
 
     if( !HaveEquals(0) ) return( FALSE );
-    ret = GetLong32( &value );
+    ret = GetLong( &value );
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "heapsize" );
     } else {

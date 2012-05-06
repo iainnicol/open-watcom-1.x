@@ -123,4 +123,5 @@ typedef unsigned        f_handle;
     #define _ELF       6
     #define _ZDOS      7
     #define _RAW       8
+    #define _RDOS      9
  #endif

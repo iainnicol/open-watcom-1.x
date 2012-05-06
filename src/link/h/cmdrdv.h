@@ -29,26 +29,14 @@
 *
 ****************************************************************************/
 
+extern void SetRdosFmt( void );
+extern void FreeRdosFmt( void );
 
-#include "strtab.h"
-
-extern void     DwarfInit( void );
-extern void     DwarfInitModule( mod_entry * );
-extern void     DwarfP1ModuleScanned( void );
-extern void     DwarfP1ModuleFinished( mod_entry * );
-extern void     DwarfAddModule( mod_entry *, section * );
-extern void     DwarfGenModule( void );
-extern void     DwarfDefClass( class_entry *, unsigned_32 );
-extern void     DwarfAddGlobal( symbol * );
-extern void     DwarfGenGlobal( symbol *, section * );
-extern void     DwarfGenLines( lineinfo * );
-extern void     DwarfAddAddrInfo( seg_leader * );
-extern void     DwarfStoreAddrInfo( mod_entry * );
-extern void     DwarfGenAddrInfo( seg_leader * );
-extern void     DwarfAddrSectStart( section * );
-extern void     DwarfWrite( void );
-extern int      DwarfCountDebugSections( void );
-extern offset   DwarfWriteElf( offset curr_off, stringtable *strtab,
-                                Elf32_Shdr *dbgsecbegin );
-extern offset   DwarfWriteTrailer(offset);
-extern void *   DwarfGetLineInfo( unsigned_32 *size );
+extern bool ProcRdos( void );
+extern bool ProcRdosDev16( void );
+extern bool ProcRdosDev32( void );
+extern bool ProcRdosBin16( void );
+extern bool ProcRdosBin32( void );
+extern bool ProcRdosMboot( void );
+extern bool ProcRdosCodeSel( void );
+extern bool ProcRdosDataSel( void );
