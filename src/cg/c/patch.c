@@ -37,8 +37,9 @@
 #include "tree.h"
 #include "addrname.h"
 #include "cgmem.h"
-
+#include "types.h"
 #include "addrfold.h"
+#include "makeins.h"
 
 typedef struct {
 #ifndef NDEBUG
@@ -56,9 +57,7 @@ extern  tn              TGPatch( patch_handle, type_def * );
 extern  type_class_def  TypeClass( type_def *);
 extern  name            *AllocTemp( type_class_def );
 extern  name            *AllocS32Const( signed_32 );
-extern  instruction     *MakeMove( name *, name *, type_class_def );
 extern  void            AddIns( instruction * );
-extern  type_def        *TypeAddress(cg_type );
 
 extern  patch   *BGNewPatch() {
     patch               *p;

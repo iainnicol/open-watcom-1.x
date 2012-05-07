@@ -36,13 +36,13 @@
 #include "procdef.h"
 #include "cgdefs.h"
 #include "typedef.h"
+#include "types.h"
 #include "regset.h"
 #include "zoiks.h"
 #include "feprotos.h"
 
 
 extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
-extern  type_def        *TypeAddress(cg_type);
 extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
 
 extern    type_length   MaxStack;

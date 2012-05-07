@@ -43,9 +43,10 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "typedef.h"
+#include "types.h"
 #include "dbgstrct.h"
 #include "dbcue.h"
-#define BY_CG
+#include "makeins.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 #ifndef NDEBUG
@@ -53,8 +54,6 @@
 #endif
 #include <string.h>
 
-extern  type_def        *TypeAddress(cg_type);
-extern  instruction     *MakeNop(void);
 extern  void            AddIns(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  seg_id          SetOP(seg_id);

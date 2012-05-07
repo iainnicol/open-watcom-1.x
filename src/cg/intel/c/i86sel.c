@@ -38,8 +38,9 @@
 #include "addrname.h"
 #include "tree.h"
 #include "seldef.h"
+#include "types.h"
 #include "cgswitch.h"
-#define BY_CG
+#include "makeins.h"
 #include "cgprotos.h"
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
@@ -63,7 +64,6 @@
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
 
 extern  cg_type         SelType(unsigned_32);
-extern  type_def        *TypeAddress(cg_type);
 extern  seg_id          SetOP(seg_id);
 extern  label_handle    AskForNewLabel(void);
 extern  an              BGDuplicate(an);
@@ -82,7 +82,6 @@ extern  void            Gen1ByteValue(byte);
 extern  seg_id          AskCodeSeg(void);
 extern  signed_32       NumValues(select_list*,signed_32);
 extern  int             SelCompare(signed_32,signed_32);
-extern  instruction     *NewIns(int);
 extern  void            AddIns(instruction*);
 extern  an              BGInteger( signed_32, type_def * );
 extern  tn              TGBinary( cg_op, tn, tn, type_def * );

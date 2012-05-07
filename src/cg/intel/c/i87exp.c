@@ -46,6 +46,7 @@
 #include "funits.h"
 #include "feprotos.h"
 #include "x87.h"
+#include "makeins.h"
 
 
 extern  block           *HeadBlock;
@@ -63,13 +64,10 @@ extern  bool            DoesSomething(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  int             Count87Regs(hw_reg_set);
-extern  instruction     *MakeBinary(opcode_defs,name*,name*,name*,type_class_def);
 extern  name            *AllocIntConst(int);
 extern  void            PrefixIns(instruction*,instruction*);
-extern  instruction     *MakeMove(name*,name*,type_class_def);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            ReplIns(instruction*,instruction*);
-extern  instruction     *MakeUnary(opcode_defs,name*,name*,type_class_def);
 extern  void            SuffixIns(instruction*,instruction*);
 extern  void            DoNothing(instruction*);
 extern  name            *AllocTemp(type_class_def);
@@ -224,7 +222,7 @@ extern  name    *ST( int num ) {
 }
 
 extern  instruction     *PrefFLDOp( instruction *ins,
-                                    operand_types op, name *opnd ) {
+                                    operand_type op, name *opnd ) {
 /*****************************************************************/
 
     instruction *new_ins = NULL;
@@ -254,7 +252,7 @@ extern  instruction     *PrefFLDOp( instruction *ins,
 }
 
 
-static  void    PrefixFLDOp( instruction *ins, operand_types op, int i ) {
+static  void    PrefixFLDOp( instruction *ins, operand_type op, int i ) {
 /*************************************************************************
     Prefix the floating point instruction "ins" with an FLD instruction
     for one of its operands (ins->operands[i]).  That operand has
@@ -518,7 +516,7 @@ static  instruction     *ExpMove( instruction *ins,
 
 
 
-static  instruction     *ExpPush( instruction *ins, operand_types op ) {
+static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 /***********************************************************************
     expand a PUSH instruction.  On the 386 we generate FSTP 0[esp].  On
     the 8086..286 try MOV BP,SP  FSTP 0[bp].  If thats not possible,

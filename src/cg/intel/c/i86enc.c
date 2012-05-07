@@ -54,6 +54,8 @@
 #include "feprotos.h"
 #include "p5prof.h"
 #include "procdef.h"
+#include "addrname.h"
+#include "display.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);
@@ -70,8 +72,6 @@ extern  void            GenRJmp(instruction*);
 extern  void            GenICall(instruction*);
 extern  void            GenRCall(instruction*);
 extern  void            GenCall(instruction*);
-extern  abspatch_handle *NextFramePatch( void );
-extern  bool            AskIsFrameIndex(name*);
 extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
 extern  void            InputOC(any_oc*);
@@ -2328,6 +2328,59 @@ extern  void    GenCypWindowsEpilog( void ) {
     _Emit;
 }
 
+
+extern  void    GenRdosdevProlog( void ) {
+/****************************************/
+
+    _Code;
+    LayOpbyte( 0x1e );             /*      push    ds        */
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x6 );              /*      push    es        */
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0xf );              /*      push    fs        */
+    AddByte( 0xa0 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0xf );              /*      push    gs        */
+    AddByte( 0xa8 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x68 );             /*      push    DGROUP    */
+    ILen += WORD_SIZE;
+    DoSegRef( AskBackSeg() );
+    AddByte( 0x0 );
+    AddByte( 0x0 );
+    AddByte( 0x1F );               /*      pop     ds        */
+    _Emit;
+}
+
+extern  void    GenRdosdevEpilog( void ) {
+/****************************************/
+
+    _Code;
+    LayOpbyte( 0xf );              /*      pop     gs      */
+    AddByte( 0xa9 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0xf );              /*      pop     fs      */
+    AddByte( 0xa1 );
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x7 );              /*      pop     es      */
+    _Emit;
+
+    _Code;
+    LayOpbyte( 0x1f );             /*      pop     ds      */
+    _Emit;
+}
 
 extern  void    GenLoadDS( void )
 /*******************************/

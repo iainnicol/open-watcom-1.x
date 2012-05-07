@@ -37,12 +37,12 @@
 #include "symdbg.h"
 #include "model.h"
 #include "typedef.h"
+#include "types.h"
 #include "ocentry.h"
 #include "objrep.h"
 #include "zoiks.h"
 #include "cvdbg.h"
 #include "dbgstrct.h"
-#define BY_CG
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -59,7 +59,6 @@ static struct lf_info LFInfo[LFG_LAST] = {
 
 extern  void        FEPtrBase(sym_handle);
 extern  void        BuffWSLString(char*);
-extern  uint        Length(char*);
 extern  byte        *Copy(void*,void*,uint);
 extern  seg_id      SetOP(seg_id);
 extern  void        SetBigLocation( long_offset loc );
@@ -71,7 +70,6 @@ extern  dbg_loc     LocDupl( dbg_loc );
 extern  void        DBLocFini( dbg_loc loc );
 extern  offset      LocSimpField( dbg_loc );
 extern  void        DataBytes(unsigned_32,byte*);
-extern  type_def    *TypeAddress(cg_type);
 extern  void        CVSymIConst( char *nm, long val, dbg_type tipe );
 extern  void        CVSymIConst64( char *nm, signed_64 val, dbg_type tipe );
 extern  void        CVOutSymICon( cv_out *out, char *nm, long val, dbg_type tipe );

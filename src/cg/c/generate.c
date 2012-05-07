@@ -38,15 +38,17 @@
 #include "memcheck.h"
 #include "opcodes.h"
 #include "typedef.h"
+#include "types.h"
 #include "ptrint.h"
 #include "feprotos.h"
 #include "addrcnst.h"
 #include "addrname.h"
 #include "x87.h"
+#include "makeins.h"
+#include "foldins.h"
 
 
 extern  void            FreeAName( name * );
-extern  instruction*    MakeNop( void );
 extern  void            AddAnIns( block *, instruction * );
 extern  void            UnFixEdges( void );
 extern  void            AssignTemps( void );
@@ -80,7 +82,6 @@ extern  void            InitMakeAddr( void );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
 extern  void            InitRT( void );
-extern  void            InitIns( void );
 extern  void            InitSegment( void );
 extern  void            FiniSegment( void );
 extern  void            PushPostOps( void );
@@ -104,8 +105,6 @@ extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );
 extern  void            ScoreFini( void );
 extern  type_class_def  TypeClass( type_def * );
-extern  void            TypeInit( void );
-extern  void            TypeFini( void );
 extern  void            ObjInit( void );
 extern  void            ObjFini( void );
 extern  void            AbortObj( void );
@@ -132,7 +131,6 @@ extern  bool            CreateBreak( void );
 extern  void            FixBreak( void );
 extern  void            RemoveBreak( void );
 extern  instruction     *NeedIndex( instruction * );
-extern  bool            ConstFold( block * );
 extern  void            DeadInstructions( void );
 extern  void            Schedule( void );
 extern  bool            CharsAndShortsToInts( void );

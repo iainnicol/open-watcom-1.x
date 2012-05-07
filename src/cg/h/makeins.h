@@ -24,35 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Base routine for instruction creation prototypes
 *
 ****************************************************************************/
 
 
-static char CopyRite[] = {
-        'W','A','T','C','O','M',
-        ' ','C','o','d','e',
-        ' ','G','e','n','e','r','a','t','o','r',
-        ' ','V','e','r','s','i','o','n',
-        ' ','7','.','0',' ',
-        'B','e','t','a',
-        '\r','\n',
-        'C','o','p','y','r','i','g','h','t',
-        ' ','b','y',
-        ' ','W','A','T','C','O','M',
-        ' ','S','y','s','t','e','m','s',
-        ' ','I','n','c','.',
-        ' ','1','9','8','4',',',
-        ' ','1','9','8','8','.',
-        ' ',' ','A','l','l',
-        ' ','r','i','g','h','t','s',
-        ' ','r','e','s','e','r','v','e','d','.',
-        '\r','\n',
-        NULLCHAR
-        };
-
-extern int Length(char *str);
-
-#define _COPYRITE_MSG CopyRite
-#define _COPYRITE_MSG_LENGTH ( sizeof( CopyRite ) - 1 )
+extern  void            InitIns( void );
+extern  bool            InsFrlFree( void );
+extern  void            FreeIns( instruction * );
+extern  instruction     *NewIns( int );
+extern  instruction     *MakeNop( void );
+extern  instruction     *MakeNary( opcode_defs, name *, name *, name *, type_class_def, type_class_def, int );
+extern  instruction     *MakeMove( name *, name *, type_class_def );
+extern  instruction     *MakeUnary( opcode_defs, name *, name *, type_class_def );
+extern  instruction     *MakeConvert( name *, name *, type_class_def, type_class_def );
+extern  instruction     *MakeRound( name *, name *, type_class_def, type_class_def );
+extern  instruction     *MakeBinary( opcode_defs, name *, name *, name *, type_class_def );
+extern  instruction     *MakeCondition( opcode_defs, name *, name *, int, int, type_class_def );

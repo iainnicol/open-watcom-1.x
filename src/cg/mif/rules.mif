@@ -5,8 +5,9 @@ extra_c_flags_386       = -zp4
 cg_autodepends = .AUTODEPEND
 !endif
 
+extra_c_flags   = -DBY_CG
 !ifeq sys_dll 1
-extra_c_flags   = -D_CGDLL
+extra_c_flags  += -D_CGDLL
 !endif
 
 track_flags_i86 = -D_TRACK -of+
@@ -30,13 +31,6 @@ inc_dirs += -I. $(inc_dirs_targ) -I"$(dwarf_dir)/dw/h" $(mem_include)
 .h: $(include_path)
 .asm: $(asm_path)
 
-# TODO: use common preprocessing rules/macros
-!ifdef bootstrap
-protos_opts = -E
-!else
-protos_opts = -p
-!endif
-
 ./bitset.exe : $(watcom_dir)/c/bitset.c
     $(host_cl) $(host_cl_opts) $[@
 
@@ -50,7 +44,7 @@ dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(dbit_size) _DBit dom_bit_set $@
 
 cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
-    $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h" > $@
+    $(cc) $(preproc_opts) -I"$(cg_dir)/h" $[@ >$@
 
 feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
-    $(cc) $(protos_opts) $[@ -I"$(cg_dir)/h" > $@
+    $(cc) $(preproc_opts) -I"$(cg_dir)/h" $[@ >$@

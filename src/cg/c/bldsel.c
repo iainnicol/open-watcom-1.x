@@ -38,18 +38,17 @@
 #include "seldef.h"
 #include "tree.h"
 #include "zoiks.h"
-
+#include "types.h"
 #include "bldins.h"
+#include "makeins.h"
 
 extern  label_handle    AskForNewLabel(void);
-extern  type_def        *TypeAddress(cg_type);
 extern  void            AddTarget(label_handle,bool);
 extern  signed_32       IfCost(select_node*,int);
 extern  void            EnLink(label_handle,bool);
 extern  name            *ScanCall(tbl_control*,name*,type_class_def);
 extern  void            AddIns(instruction*);
 extern  signed_32       JumpCost(select_node*);
-extern  instruction     *NewIns(int);
 extern  void            Generate(bool);
 extern  signed_32       ScanCost(select_node*);
 extern  void            GenBlock( block_class, int );
