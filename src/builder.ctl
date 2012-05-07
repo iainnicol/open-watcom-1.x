@@ -24,11 +24,12 @@ cdsay .
 [ INCLUDE <SRCDIR>/posix/builder.ctl ]
 [ INCLUDE <SRCDIR>/awk/builder.ctl ]
 [ ENDIF ]
+# Build wsplice and genverrc
+[ INCLUDE <SRCDIR>/builder/builder.ctl ]
 # Next build wres and the resource compiler
 [ INCLUDE <SRCDIR>/wres/builder.ctl ]
 [ INCLUDE <SRCDIR>/rc/rc/builder.ctl ]
-# Build wstrip and wsplice
-[ INCLUDE <SRCDIR>/builder/builder.ctl ]
+# Build wstrip
 [ INCLUDE <SRCDIR>/strip/builder.ctl ]
 # Continue with the linker
 [ INCLUDE <SRCDIR>/dwarf/dw/builder.ctl ]
@@ -56,17 +57,16 @@ cdsay .
 [ INCLUDE <SRCDIR>/parsedlg/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/ctl/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/bind/builder.ctl ]
-[ INCLUDE <SRCDIR>/graphlib/builder.ctl ]
 
-# The following tools are not required during build
-[ INCLUDE <SRCDIR>/disasm/builder.ctl ]
-[ INCLUDE <SRCDIR>/dump/builder.ctl ]
-[ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
-[ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
-[ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
-# Debugger/profiler libraries
-[ INCLUDE <SRCDIR>/dip/builder.ctl ]
-[ INCLUDE <SRCDIR>/mad/builder.ctl ]
+## The following tools are not required during build
+#[ INCLUDE <SRCDIR>/disasm/builder.ctl ]
+#[ INCLUDE <SRCDIR>/dump/builder.ctl ]
+#[ INCLUDE <SRCDIR>/dmpobj/builder.ctl ]
+#[ INCLUDE <SRCDIR>/orl/test/builder.ctl ]
+#[ INCLUDE <SRCDIR>/dwarf/util/builder.ctl ]
+## Debugger/profiler libraries
+#[ INCLUDE <SRCDIR>/dip/builder.ctl ]
+#[ INCLUDE <SRCDIR>/mad/builder.ctl ]
 
 #[ IFDEF <BLD_HOST> UNIX ]
 ##========================
