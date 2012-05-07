@@ -11,7 +11,7 @@ set PROJNAME=wstrip
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/strip.exe <OWBINDIR>/wstrip<CMDEXT>
+    <CPCMD> <OWOBJDIR>/wstripx.exe <OWBINDIR>/wstrip<CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================
@@ -20,12 +20,12 @@ set PROJNAME=wstrip
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> <PROJDIR>/dosi86/strip.exe    <RELROOT>/binw/wstrip.exe
-    <CCCMD> <PROJDIR>/os2386/strip.exe    <RELROOT>/binp/wstrip.exe
-    <CCCMD> <PROJDIR>/nt386/strip.exe     <RELROOT>/binnt/wstrip.exe
-    <CCCMD> <PROJDIR>/linux386/strip.exe  <RELROOT>/binl/wstrip
-    <CCCMD> <PROJDIR>/ntaxp/strip.exe     <RELROOT>/axpnt/wstrip.exe
-    <CCCMD> <PROJDIR>/qnx386/strip.exe    <RELROOT>/qnx/binq/wstrip.
+    <CCCMD> <PROJDIR>/dosi86/wstripx.exe    <RELROOT>/binw/wstrip.exe
+    <CCCMD> <PROJDIR>/os2386/wstripx.exe    <RELROOT>/binp/wstrip.exe
+    <CCCMD> <PROJDIR>/nt386/wstripx.exe     <RELROOT>/binnt/wstrip.exe
+    <CCCMD> <PROJDIR>/linux386/wstripx.exe  <RELROOT>/binl/wstrip
+    <CCCMD> <PROJDIR>/ntaxp/wstripx.exe     <RELROOT>/axpnt/wstrip.exe
+    <CCCMD> <PROJDIR>/qnx386/wstripx.exe    <RELROOT>/qnx/binq/wstrip
 
 [ BLOCK . . ]
 #============
