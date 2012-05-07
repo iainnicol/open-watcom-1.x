@@ -5,17 +5,6 @@ dll_name = wrcd
 
 !ifdef bootstrap
 incl_msgtext = 1
-!else ifdef prebuild
-incl_msgtext = 1
-!endif
-
-!ifdef incl_msgtext
-!ifdef wrc_dll
-!undef wrc_dll
-!endif
-!ifdef wrc_rtdll
-!undef wrc_rtdll
-!endif
 !endif
 
 !ifndef wrc_autodepends
@@ -58,7 +47,7 @@ common_objs =  ytabw.obj ytab2.obj keyword.obj keyword2.obj errors.obj  &
         rcldstr.obj rcalloc1.obj rcalloc0.obj sharedio.obj semresfl.obj &
         semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj
 
-!ifdef bootstrap
+!ifndef build_by_watcom
 common_objs += clibext.obj
 !endif
 
@@ -85,9 +74,9 @@ rc_defines    += -DINCL_MSGTEXT
 
 # cflags stuff
 ###############
-extra_c_flags   = $(rc_defines)
+extra_c_flags   = $(rc_defines) $(cc_japan_charset)
 !ifeq host_os nt
-extra_c_flags    += -DNT_HOSTED
+extra_c_flags   += -DNT_HOSTED
 !endif
 !ifndef wrc_dll
 extra_c_flags   += -DIDE_PGM
@@ -98,7 +87,7 @@ extra_c_flags_ideentry = -bd
 !endif
 extra_c_flags_rcalloc0 = $(TRACK_MEM_OPTS)
 extra_c_flags_rcalloc1 = $(TRACK_MEM_OPTS)
-extra_c_flags_rcmem = $(TRACK_MEM_OPTS)
+extra_c_flags_rcmem    = $(TRACK_MEM_OPTS)
 extra_c_flags_idedrv   = -DSTATIC_LINKAGE
 
 # lflags stuff
@@ -113,12 +102,10 @@ extra_l_flags_dll_nt  += option modname='$(dll_name).dll', offset=0x69800000
 extra_l_flags_dll_os2 += option modname='$(dll_name)'
 
 # systems where version resources must be added to .DLL
-!ifndef prebuild
 version_res_nt_386 = version.res
-!endif
 
 # systems where version resources must be added to .EXE
-!ifndef prebuild
+!ifndef bootstrap
 exe_version_res_nt_386 = exever.res
 !endif
 
@@ -163,7 +150,8 @@ $(name)e.exe : $(depends_drv) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKE
 $(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifdef bootstrap
         $(cl) $(clflags) $(objs_exe) $(wres_lib)
-!else ifeq host_os osi
+!else
+!ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
         $(w32bind) $^&.rex $@ $(os2ldr)
         @rm -f $^&e.rex
@@ -175,6 +163,7 @@ $(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKE
 !endif
 !ifndef incl_msgtext
         wstrip -q -a -r $@ . $(name).res
+!endif
 !endif
 
 !endif
@@ -243,7 +232,7 @@ weights2.gh keyword2.gh : ./findhash.exe ../hash/rcos2.key
         @cp weights.gh weights2.gh
         @rm -f weights.gh
 
-rcmsg1.gh : ../h/rcmsg.h ../h/rc.msg
+rcmsg1.gh : ../h/rc.msg
         $(cc) $(preproc_opts) $(cflags) $[@ -fo=$@
 
 rcmsg.gh : rcmsg1.gh

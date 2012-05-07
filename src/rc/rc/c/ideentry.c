@@ -34,6 +34,7 @@
 #include <string.h>
 #ifdef __WATCOMC__
 #include <process.h>
+#include <malloc.h>
 #else
 #include "clibext.h"
 #endif
