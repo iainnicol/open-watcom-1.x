@@ -308,7 +308,8 @@ static void initFILE( FILE **f, char *n, char *m ) {
     }
 }
 
-static void processOptions( char **argv ) {
+static void processOptions( char **argv )
+{
     if( strcmp( *argv, "-w" ) == 0 ) {
         flags.warnings_always_rebuild = 1;
         ++argv;
