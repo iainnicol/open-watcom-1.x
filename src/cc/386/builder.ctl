@@ -9,7 +9,16 @@ set PROJNAME=wcc386
 
 cdsay .
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
+
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <OWOBJDIR>/wcc386c.exe <OWBINDIR>/<PROJNAME><CMDEXT>
+
+[ BLOCK <1> bootclean ]
+#======================
+    echo rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
+    rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

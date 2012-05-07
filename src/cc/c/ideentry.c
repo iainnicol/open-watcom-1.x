@@ -40,7 +40,6 @@
 #include "cgdefs.h"
 #include "cgmisc.h"
 #include "cgdllcli.h"
-#define BY_CLI
 #include "feprotos.h"
 
 extern  void    SetNoCurrInc( void ); // no curr inc
@@ -354,11 +353,3 @@ IDEBool IDEDLL_EXPORT IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     }
     return( FALSE );
 }
-
-#ifdef CAUSEWAY
-void main( void )
-{
-    // Causeway DLL initialization
-}
-#endif
-

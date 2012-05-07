@@ -21,20 +21,17 @@ cc_nosymfile = 1
 !include ../../ccobjs.mif
 
 # final executable names
-!ifdef bootstrap
-exe_name = wcc$(target_cpu)
-dll_name = wccd$(target_cpu)
-!else
 exe_name = wcc$(target_cpu)c
 dll_name = wccd$(target_cpu)c
-!endif
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
 !ifeq target_cpu i86
 realdllname = wccd
+realexename = wcc
 !else
 realdllname = wccd$(target_cpu)
+realexename = wcc$(target_cpu)
 !endif
 
 # international data file name
@@ -130,10 +127,9 @@ depends_drv = $(pre_obj_deps) $(drv_objs)
 # systems where version resources must be added to .DLL
 version_res_nt_386 = version.res
 
-!ifdef bootstrap
-
-exe_objs += clibext.obj
-
+# systems where version resources must be added to .EXE
+!ifndef bootstrap
+exe_version_res_nt_386 = exever.res
 !endif
 
 inc_dirs  = -I. -I"../../h" -I.. $(cg_inc_dirs) $(asminline_inc_dirs)
@@ -147,20 +143,26 @@ comp_objs_dll = $(common_objs) $(dll_objs)
 
 !ifdef cc_dll
 
-$(exe_name).exe : $(drv_objs) $(dll_name).lib drv.lnk
+$(exe_name).exe : $(drv_objs) $(dll_name).lib $(exe_version_res_$(host_os)_$(host_cpu)) drv.lnk
         $(linker) name $@ @drv.lnk
+!ifdef exe_version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
+!endif
 
 !else
 
-$(exe_name).exe: $(depends_exe) exe.lnk
+$(exe_name).exe: $(depends_exe) $(cl_objs) exe.lnk $(exe_version_res_$(host_os)_$(host_cpu))
 !ifdef bootstrap
-        $(cc) $(clflags) $(comp_objs_exe) $(external_dependencies) #$(xlibs) $(libs) $(cg_deps)
+        $(cl) $(clflags) $(comp_objs_exe) $(external_dependencies) $(cl_objs)
 !else ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
         $(osibind) $^&.rex $@ $(osildr)
         @rm -f $^&.rex
 !else	
         $(linker) name $@ @exe.lnk
+!ifdef exe_version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(exe_version_res_$(host_os)_$(host_cpu)) $^@
+!endif
 !ifeq host_os qnx
         serialize $@ wcc
 !endif
@@ -237,15 +239,10 @@ code$(target_cpu).gh : xcode$(target_cpu).tmp ./mkcode.exe
         $]@ $[@ $@
 !endif
 
-target_as_axp   = $(bas) -zq -w4
-target_as_i86   = $(bas) -zq -w4
-target_as_386   = $(bas) -zq -w4 -3
-target_as_ppc   = $(bas) -zq -w4
-target_as_mps   = $(bas) -zq -w4
 
 xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
-        $(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
-        $(linker_$(target_cpu)) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+        $(as_target) -I"$(watcom_dir)/h" -fo=.obj $[@
+        $(linker_target) format dos com op nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
         $(host_cl) $(host_cl_opts) $[@
@@ -263,6 +260,10 @@ usage01.int : ./usageenc.exe ../../jusage.sp
         wsplice -k T$(target_cpu) -k H$(host_cpu) -k OS_$(host_os) $]@ usageenc.int
         $[@ usageenc.int usage01.int
 
+verrc_dll = $(realdllname)
+verrc_exe = $(realexename)
+!include verrc.mif
+
 ./msgencod.exe: $(fe_misc_dir)/c/msgencod.c $(cl_objs)
         $(host_cl) $(host_cl_opts) -I"$(fe_misc_dir)/h" $[@ $(cl_libs) $(cl_objs)
 
@@ -274,10 +275,6 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ./msgencod.exe ../../gml/cerrs.gm
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
         $[@ $(intname)
-
-verrc_skel = ../../rc/r_$(host_os)$(host_cpu).rc
-verrc_exe  = $(dll_name)
-!include verrc.mif
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(cl_objs)
         $(host_cl) -I"$(wasm_dir)/h" $[@ $(host_cl_opts) $(cl_libs) $(cl_objs)

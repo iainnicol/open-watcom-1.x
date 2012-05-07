@@ -328,13 +328,15 @@ enum    conv_types {
     P2A,    /* pointer to arithmetic*/
     A2P,    /* arithmetic to pointer*/
     S2B,    /* scalar to _Bool      */
+    B2S,    /* _Bool to scalar      */
     CER,    /* conversion error     */
 };
 
 /* matches enum DATA_TYPE in ctypes.h */
+/* When indexing, row is the source type, column is the target. */
 static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /*          BOL,CHR,UCH,SHT,USH,INT,UIN,LNG,ULN,LN8,UL8,FLT,DBL,LDB,FIM,DIM,LIM,PTR,ARR,STC,UNI,FNC,FLD,VOD,ENM,TDF,UFD,...,PCH,WCH,FCX,DCX,LCX, */
-/* BOL */ { NIL,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* BOL */ { NIL,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,B2S,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* CHR */ { S2B,NIL,C2U,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* UCH */ { S2B,U2C,NIL,C2S,C2S,C2I,C2U,C2L,C2L,C2M,C2M,C2F,C2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* SHT */ { S2B,S2C,S2C,NIL,S2U,S2I,S2U,S2L,S2L,S2M,S2M,S2F,S2D,CER,CER,CER,CER,A2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
@@ -351,7 +353,7 @@ static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 /* FIM */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* DIM */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* LIM */ { S2B,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
-/* PTR */ { CER,P2A,P2A,P2A,P2A,P2A,P2A,P2A,P2A,P2A,P2A,CER,CER,CER,CER,CER,CER,P2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
+/* PTR */ { S2B,P2A,P2A,P2A,P2A,P2A,P2A,P2A,P2A,P2A,P2A,CER,CER,CER,CER,CER,CER,P2P,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* ARR */ { CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* STC */ { CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
 /* UNI */ { CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER,CER, },
@@ -1433,9 +1435,9 @@ TREEPTR AsgnOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         SetSymAssigned( op1 );
         typ = TypeOf( op1 );
         op2 = RValue( op2 );
+        ParmAsgnCheck( typ, op2, 0 );
         op2 = BaseConv( typ, op2 );
         op2 = BoolConv( typ, op2 );
-        ParmAsgnCheck( typ, op2, 0 );
         if( opr == T_ASSIGN_LAST ) opr = T_EQUAL;
         op1_class = ExprTypeClass( typ );
         op2_class = ExprTypeClass( op2->expr_type );
@@ -1753,6 +1755,10 @@ convert:                                /* moved here 30-aug-89 */
                     // Conversion to/from a pointer may need special treatment
                     opnd = BaseConv( newtyp, opnd );
                 }
+            }
+            if( cnv == S2B ) {
+                // Conversion to _Bool needs special treatment
+                opnd = BoolConv( newtyp, opnd );
             }
             if( cast_op  ||  cnv != P2P ) {
 /* convert: moved 30-aug-89 */
