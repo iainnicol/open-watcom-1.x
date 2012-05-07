@@ -6,10 +6,13 @@
 !error cl must be defined!
 !endif
 
-$(proj_name).exe : $(objs) $(libs) $(cl_objs)
+$(proj_name).exe : $(objs) $(libs) $(cl_objs) $(version_res_$(host_os)_$(host_cpu))
 !ifeq verbose 1
-        $(cl) $(clflags) $< $(cl_libs)
+        $(cl) $(clflags) $(objs) $(libs) $(cl_objs) $(cl_libs)
 !else
         @echo cl $@
-        @$(cl) $(clflags) $< $(cl_libs)
+        @$(cl) $(clflags) $(objs) $(libs) $(cl_objs) $(cl_libs)
+!endif
+!ifdef version_res_$(host_os)_$(host_cpu)
+        $(rc) -k $(version_res_$(host_os)_$(host_cpu)) $^@
 !endif
