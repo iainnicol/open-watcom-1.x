@@ -1,7 +1,7 @@
 /*
- *  sys/time.h      Time functions
+ *  sys/time.h      POSIX Time functions
  *
-:include crwat.sp
+:include crwatcnt.sp
  */
 #ifndef _SYS_TIME_H_INCLUDED
 #define _SYS_TIME_H_INCLUDED
@@ -16,6 +16,7 @@
 
 :include cpluspro.sp
 
+:segment LINUX
 :include lnxkpack.sp
 
 /* I am not sure where this should go, so I am putting it here for now.
@@ -51,6 +52,9 @@ typedef struct {
 #define FD_CLR(d, set)      (__FDS_BITS (set)[__FDELT (d)] &= ~__FDMASK (d))
 #define FD_ISSET(d, set)    (__FDS_BITS (set)[__FDELT (d)] & __FDMASK (d))
 
+:elsesegment
+:include pshpackl.sp
+:endsegment
 /*
  * Structure returned by gettimeofday() system call,
  * and used in other calls.
@@ -102,11 +106,13 @@ struct itimerval {
 
 _WCRTLINK extern int gettimeofday( struct timeval *__tv, struct timezone *__tz );
 _WCRTLINK extern int settimeofday( const struct timeval *__tv, const struct timezone *__tz );
+:segment LINUX
 _WCRTLINK extern int select( int __width, fd_set *__readfds, fd_set *__writefds, fd_set *__exceptfds, struct timeval *__timeout );
+:endsegment
 _WCRTLINK extern int getitimer( int __which, struct itimerval *__value );
 _WCRTLINK extern int setitimer( int __which, const struct itimerval *__value, struct itimerval *__ovalue );
-//_WCRTLINK extern int adjtime( struct timeval *__itv, struct timeval *__otv );
-//_WCRTLINK extern int utimes( char *__path, struct timeval *tvp );
+::_WCRTLINK extern int adjtime( struct timeval *__itv, struct timeval *__otv );
+::_WCRTLINK extern int utimes( char *__path, struct timeval *tvp );
 
 :include poppack.sp
 

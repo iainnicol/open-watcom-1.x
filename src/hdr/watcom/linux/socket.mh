@@ -93,7 +93,7 @@ struct linger {
 typedef unsigned int socklen_t;
 
 _WCRTLINK extern int socket( int __domain, int __type, int __protocol );
-_WCRTLINK extern int bind( int __sockfd, struct sockaddr *__my_addr, socklen_t __addrlen );
+_WCRTLINK extern int bind( int __sockfd, const struct sockaddr *__my_addr, socklen_t __addrlen );
 _WCRTLINK extern int getsockopt( int __s, int __level, int __optname, void *__optval, socklen_t *__optlen );
 _WCRTLINK extern int setsockopt( int __s, int __level, int __optname, const void *__optval, socklen_t __optlen );
 _WCRTLINK extern int recv(int __s, void *__buf, size_t __len, int __flags);
@@ -104,8 +104,10 @@ _WCRTLINK extern int sendto( int __s, const void *__msg, size_t __len, int __fla
 _WCRTLINK extern int sendmsg( int __s, const struct msghdr *__msg, int __flags );
 _WCRTLINK extern int accept( int __s, struct sockaddr *__addr, socklen_t *__addrlen );
 _WCRTLINK extern int listen( int __s, int __backlog );
+_WCRTLINK extern int getpeername( int __s, struct sockaddr *__name, socklen_t *__namelen );
 _WCRTLINK extern int getsockname( int __s , struct sockaddr *__name, socklen_t *__namelen );
 _WCRTLINK extern int connect( int __sockfd, const struct sockaddr *__serv_addr, socklen_t __addrlen );
+_WCRTLINK extern int shutdown( int __s, int __how );
 
 :include poppack.sp
 

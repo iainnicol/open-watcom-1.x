@@ -2,9 +2,11 @@
  _WCRTLINK extern void  *alloca(_w_size_t __size);
  _WCRTLINK extern void  *_alloca(_w_size_t __size);
  _WCRTLINK extern unsigned stackavail( void );
+ _WCRTLINK extern unsigned _stackavail( void );
  #ifdef _M_IX86
   extern void  *__doalloca(_w_size_t __size);
   #pragma aux stackavail __modify __nomemory;
+  #pragma aux _stackavail __modify __nomemory;
 
   #define __ALLOCA_ALIGN( s )   (((s)+(sizeof(int)-1))&~(sizeof(int)-1))
   #define __alloca( s )         __doalloca(__ALLOCA_ALIGN(s))
@@ -24,9 +26,17 @@
 :endsegment
 
   #if defined(__386__)
-   #pragma aux __doalloca = \
+   #if defined(__SMALL__) || defined(__MEDIUM__) || defined(__FLAT__) /* small data models */
+     #pragma aux __doalloca = \
             "sub esp,eax"   \
             __parm __nomemory [__eax] __value [__esp] __modify __exact __nomemory [__esp];
+   #else            
+     #pragma aux __doalloca = \
+            "sub esp,eax"   \
+            "mov eax,esp"   \
+            "mov dx,ss"     \
+            __parm __nomemory [__eax] __value [__dx __eax] __modify __exact __nomemory [__dx __eax __esp];
+   #endif            
   #elif defined(__SMALL__) || defined(__MEDIUM__) /* small data models */
    #pragma aux __doalloca = \
             "sub sp,ax"     \
