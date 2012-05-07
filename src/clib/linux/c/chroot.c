@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Copyright (c) 2002-2012 Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _stprintf().
+* Description:  Implementation of chroot() for Linux.
 *
 ****************************************************************************/
 
+#include <unistd.h>
+#include <errno.h>
+#include "linuxsys.h"
 
-#include "variety.h"
-#define _UNICODE
-#include <stdarg.h>
-#include <stdio.h>
-#include <tchar.h>
-#include <limits.h>
-
-
-_WCRTLINK int _stprintf( wchar_t *dest, const wchar_t *format, ... )
+_WCRTLINK int chroot( const char *__path )
 {
-    va_list             args;
-    int                 rc;
-
-    va_start( args, format );
-    rc = vswprintf( dest, INT_MAX, format, args );
-    va_end( args );
-    return( rc );
+    u_long res = sys_call1( SYS_chroot, (u_long)__path );
+    __syscall_return( int, res );
 }

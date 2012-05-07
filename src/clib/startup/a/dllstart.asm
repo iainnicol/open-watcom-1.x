@@ -24,25 +24,23 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  DOS 32-bit DLL startup code.
+;* Description:  CauseWay DLL startup code.
 ;*
 ;*****************************************************************************
 
         name    dllstart
 
-.387
-.386p
+.386
 
 include xinit.inc
 
+FLG_NO87    equ 1
+FLG_LFN     equ 100h
+
         assume  nothing
 
-        extrn   __CMain                 : near
-        extrn   __InitRtns              : near
-        extrn   __FiniRtns              : near
-        extrn   "C",_heapwalk           : near
-        extrn   "C",_heapshrink         : near
-        extrn   "C",free                : near
+        extrn   __LibMain               : near
+        extrn   "C",__CommonTerm        : near
 
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
         extrn   _end                    : byte  ; end of BSS (start of STACK)
@@ -54,14 +52,13 @@ include xinit.inc
         extrn   "C",_osminor            : byte
         extrn   "C",_STACKLOW           : dword
         extrn   "C",_STACKTOP           : dword
-        extrn   __no87                  : word
+        extrn   __no87                  : byte
+        extrn   "C",__uselfn            : byte
         extrn   "C",_Extender           : byte
         extrn   "C",_ExtenderSubtype    : byte
         extrn   "C",_Envptr             : fword
-        extrn   "C",__FPE_handler       : dword
         extrn   "C",_LpCmdLine          : dword
         extrn   "C",_LpPgmName          : dword
-        extrn   "C",___Argc             : dword
 
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS,PRIVATE_STACK,STACK
 
@@ -70,13 +67,6 @@ DPMIGetSegmentBaseAddress   equ     6
 X_RATIONAL                  equ     1
 XS_RATIONAL_ZEROBASE        equ     0
 XS_RATIONAL_NONZEROBASE     equ     1
-
-HeapInfo struc
-offs           dd 0
-segm           dw 0
-len            dd 0
-flags          dd 0
-HeapInfo ends
 
         .dosseg
 
@@ -150,15 +140,18 @@ _DATA    segment dword public 'DATA'
 
         public  __D16Infoseg
         public  __x386_zero_base_selector
+        public  __init_387_emulator
+        public  "C",__int23_exit
 
 __D16Infoseg                dw  0020h   ; DOS/4G kernel segment
 __x386_zero_base_selector   dw  0       ; base 0 selector for X-32VM
 
+__init_387_emulator         dd  0       ; prevent emulator even with -fpi
+__int23_exit                dd  __null_int23_exit
+
 caller_stack    label   fword
 caller_esp      dd      0
 caller_ss       dw      0
-
-HeapEntry    HeapInfo <>
 
 _DATA    ends
 
@@ -172,7 +165,8 @@ STACK_SIZE      equ     1000h
 
 ; STACK segment can not be used in DLLs because linker sets stack length
 ; to zero for DLLs (as it should). Stack space for init/exit DLL routines
-; is added to the end of BSS class
+; is added to the end of BSS class. Note that the stack will contain
+; a copy of the environment and the program name.
 
 PRIVATE_STACK  segment word public 'BSS'
         db      (STACK_SIZE) dup(?)
@@ -221,12 +215,13 @@ around: mov     si,DGROUP               ; set DS to DGROUP
         or      eax,eax                 ; check if init/exit DLL
         je      init_DLL
 
-        mov     es,esi                  ; - call DLL exit code
-        xor     ebp,ebp
-        mov     ___Argc,1
-        call    __CMain
+        mov     es,esi                  ; necessary?
+        sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
+        push    1                       ; indicate termination
+        call    __LibMain               ; call DLL exit code
+        add     esp,4
         xor     eax,eax
-        jmp     exit_code_eax
+        jmp     do_exit
 
 init_DLL:
         mov     dx,78h                  ; - see if Rational DOS/4G
@@ -254,9 +249,7 @@ rat10:                                  ; - endif
         mov     _Extender,al            ; record extender type
         mov     _ExtenderSubtype,ah     ; record extender subtype
 
-        assume  es:DGROUP
-
-        xor     esi,esi
+        xor     esi,esi                 ; offset 0 for environment strings
         mov     ebx,ds
         mov     es,ebx                  ; get access to code segment
         mov     es:__saved_DS,ds        ; save DS value
@@ -297,17 +290,25 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         push    edx                     ; save ds(stored in dx)
         mov     ds,es:word ptr _Envptr+4 ; get segment addr of environment area
-        sub     ebp,ebp                 ; assume "no87" env. var. not present
+        mov     ebp,FLG_LFN             ; assume 'no87=' and 'lfn=n' env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
         or      eax,20202020h           ; map to lower case
-        cmp     eax,'78on'              ; check for "no87"
-        jne     short L2                ; skip if not "no87"
-        cmp     byte ptr 4[esi],'='     ; make sure next char is "="
-        jne     short L2                ; no
-        inc     ebp                     ; - indicate "no87" was present
-L2:     cmp     byte ptr [esi],0        ; end of string ?
+        cmp     eax,37386f6eh           ; check for 'no87'
+        jne     short L2                ; skip to next test if not 'no87'
+        cmp     byte ptr 4[esi],'='     ; make sure next char is '='
+        jne     short L3                ; no
+        or      ebp,FLG_NO87            ; - indicate 'no87' was present
+        jmp     L3
+L2:     cmp     eax,3d6e666ch           ; check for 'lfn='
+        jne     short L3                ; skip if not 'lfn='
+        mov     al,byte ptr 4[esi]      ; get next character
+        or      al,20h                  ; map to lower case
+        cmp     al,'n'                  ; make sure next char is 'n'
+        jne     short L3                ; no
+        and     ebp,not FLG_LFN         ; indicate no 'lfn=n' present
+L3:     cmp     byte ptr [esi],0        ; end of string ?
         lodsb
-        jne     L2                      ; until end of string
+        jne     L3                      ; until end of string
         cmp     byte ptr [esi],0        ; end of all strings ?
         jne     L1                      ; if not, then skip next string
         lodsb
@@ -316,16 +317,19 @@ L2:     cmp     byte ptr [esi],0        ; end of string ?
 ;
 ;       copy the program name into bottom of stack
 ;
-L3:     cmp     byte ptr [esi],0        ; end of pgm name ?
+L4:     cmp     byte ptr [esi],0        ; end of pgm name ?
         movsb                           ; copy a byte
-        jne     L3                      ; until end of pgm name
+        jne     L4                      ; until end of pgm name
         pop     ds                      ; restore ds
         pop     esi                     ; restore address of pgm name
         mov     ebx,esp                 ; end of stack in data segment
 
         assume  ds:DGROUP
+        mov     eax,ebp
+        and     ebp,FLG_NO87            ; only leave the NO87 bit in ebp
+        mov     __no87,al               ; set state of "NO87" enironment var
+        and     __uselfn,ah             ; set "LFN" support status
 
-        mov     __no87,bp               ; set state of "no87" enironment var
         mov     _STACKLOW,edi           ; save low address of stack
         mov     _dynend,ebx             ; set top of dynamic memory area
 
@@ -351,29 +355,23 @@ zerobss:mov     dl,cl                   ; save bottom 2 bits of count in edx
         and     al,0F0H
         mov     _LpCmdLine,eax          ; save command line address
         mov     _LpPgmName,esi          ; save program name address
-        mov     eax,0FFH                ; run all initalizers
-        call    __InitRtns              ; call initializer routines
         sub     ebp,ebp                 ; ebp=0 indicate end of ebp chain
-        mov     ___Argc,0               ; call DLL init code
-        call    __CMain
-__DLLstart_ endp
+        push    0                       ; indicate initialization
+        call    __LibMain               ; call DLL init code
+        add     esp,4
 
-;       don't touch AL in __exit, it has the return code
-
-__exit  proc    far
-        public  "C",__exit
-ifdef __STACK__
-        pop     eax                     ; get return code into eax
-endif
+;       don't touch AL here, it has the return code
         jmp     exit_code_eax
 
 error_exit:
         or      eax,-1                  ; exit code -1
-        jmp     error_exit_code_eax
+        jmp     do_exit
 
         public  __do_exit_with_msg__
 
 ; input: ( char *msg, int rc )  always in registers
+; may be only called from startup code, after that there is
+; nowhere to exit to!
 
 __do_exit_with_msg__:
         push    edx                     ; save return code
@@ -400,48 +398,17 @@ nextc:  lodsb                           ; get char
         pop     eax                     ; restore return code
 exit_code_eax:
         or      eax,eax
-        je      L13
-error_exit_code_eax:
-        push    eax                     ; save return code
-        mov     eax,00H                 ; run finalizers
-        mov     edx,FINI_PRIORITY_EXIT-1; less than exit
-        call    __FiniRtns              ; call finializer routines
+        je      do_exit
+        push    eax                     ; don't destroy error code
+        call    __CommonTerm            ; terminate the runtime
+        pop     eax
 
-L10:
-        mov     HeapEntry.offs,0
-        mov     HeapEntry.segm,0
-L11:
-        mov     eax,offset HeapEntry
-ifdef __STACK__
-        push    eax
-        call    _heapwalk
-        add     esp,4
-else
-        call    _heapwalk
-endif
-        or      eax,eax
-        jne     L12
-        cmp     HeapEntry.flags,0
-        jne     L11
-        mov     eax,HeapEntry.offs
-        add     eax,4
-ifdef __STACK__
-        push    eax
-        call    free
-        add     esp,4
-else
-        call    free
-endif
-        jmp     L10
-L12:
-        call    _heapshrink
-        pop     eax                     ; restore return code
-L13:
+do_exit:
         mov     si,DGROUP
         mov     ds,esi
         lss     esp,caller_stack
         ret
-__exit  endp
+__DLLstart_ endp
 
         public  __GETDS
         align   4
@@ -450,10 +417,16 @@ public "C",__GETDSStart_
 __GETDSStart_ label byte
         mov     ds,cs:__saved_DS        ; load saved DS value
         ret
+__saved_DS  dw  0               ; save area for DS for interrupt routines
 public "C",__GETDSEnd_
 __GETDSEnd_ label byte
-__saved_DS  dw  0               ; save area for DS for interrupt routines
 __GETDS endp
+
+        align   4
+__null_int23_exit proc near
+public "C",__null_int23_exit
+        ret
+__null_int23_exit endp
 
 _TEXT   ends
 

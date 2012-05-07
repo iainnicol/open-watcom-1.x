@@ -39,11 +39,10 @@
 #endif
 #include "errstr.h"
 
+#if !defined( __NETWARE__ ) && !defined( __WIDECHAR__ )
 
-#ifndef __WIDECHAR__
-
+_WCRTDATA char * _WCDATA _sys_errlist[] = {
 #ifdef __LINUX__
-char *_sys_errlist[] = {
     /*  0   EOK             */ "No error",
     /*  1   EPERM           */ "Operation not permitted",
     /*  2   ENOENT          */ "No such file or directory",
@@ -170,10 +169,7 @@ char *_sys_errlist[] = {
     /* 121                  */ "",
     /* 123  ENOMEDIUM       */ "No medium found",
     /* 124  EMEDIUMTYPE     */ "Wrong medium type"
-    /* if more are added, be sure to update _sys_nerr accordingly */
-};
 #else
-char *_sys_errlist[] = {
     /* 0    EZERO           */  "No error",
     /* 1    ENOENT          */  "No such file or directory",
     /* 2    E2BIG           */  "Arg list too big",
@@ -215,11 +211,10 @@ char *_sys_errlist[] = {
     /* 38   ENOSYS          */  "Unknown system call",
     /* 39   ENOTEMPTY       */  "Directory not empty",
     /* 40   EILSEQ          */  "Illegal multibyte sequence"
-    /* if more are added, be sure to update _sys_nerr accordingly */
-};
 #endif
+};
 
-int _WCNEAR _sys_nerr = ( sizeof( _sys_errlist ) / sizeof( *_sys_errlist ) );
+_WCRTDATA int _WCDATA _sys_nerr = ( sizeof( _sys_errlist ) / sizeof( *_sys_errlist ) );
 
 #endif
 

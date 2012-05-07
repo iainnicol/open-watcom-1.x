@@ -55,6 +55,13 @@ unload_exe_nr				= 46
 notify_pe_exception_nr		= 70
 show_exception_text_nr      = 375
 
+UserGate macro gate_nr
+	db 67h
+	db 9Ah
+	dd gate_nr
+	dw 3
+	    endm
+
 ; exception event status codes
 
 STATUS_BREAKPOINT		        EQU	080000003h
@@ -219,9 +226,7 @@ CPUExceptionHandler:
 	call RaiseException
 ;
     mov eax,-1
-	db 9Ah                  ; call to UnloadExe
-	dd unload_exe_nr
-	dw 2
+    UserGate unload_exe_nr
 
 ueSs    EQU 36
 ueEsp   EQU 32
@@ -252,9 +257,7 @@ UnwindException:
 	jmp short ChainDebugger
 
 TestDebugger:
-	db 9Ah                  ; call to RdosShowExceptionText
-	dd show_exception_text_nr
-	dw 2
+    UserGate show_exception_text_nr
 	or eax,eax
 	jz ChainDebugger
 ;
@@ -265,9 +268,7 @@ TestDebugger:
 ChainDebugger:
 	mov eax,[ebp].ueCode
 	mov eax,[4*eax].ECodeTab
-	db 9Ah                  ; call to NotifyPeException
-	dd notify_pe_exception_nr
-	dw 2
+    UserGate notify_pe_exception_nr
 	pop eax
 	pop ds
 	pop ebp
@@ -552,9 +553,7 @@ InitException   proc
 	xor al,al
 
 GetOldExc:
-	db 9Ah                  ; call to RdosGetException
-	dd get_exception_nr
-	dw 2
+    UserGate get_exception_nr
 	mov [edx], edi
 	mov [edx+4], es
 	add edx, 8
@@ -568,9 +567,7 @@ GetOldExc:
 	mov edi,OFFSET Exc00
 
 SetNewExc:
-	db 9Ah                  ; call to RdosSetException
-	dd set_exception_nr
-	dw 2
+    UserGate set_exception_nr
 	inc al
 	add edi,OFFSET Exc01 - OFFSET Exc00
 	cmp al, 01Fh

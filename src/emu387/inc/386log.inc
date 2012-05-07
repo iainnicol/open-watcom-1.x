@@ -186,10 +186,9 @@ __fyl2x endp
         mov     EAX,[EDI]                       ; load x
         mov     EDX,4[EDI]                      ; ...
         mov     SI,8[EDI]                       ; ...
-        dec     SI                              ; multiply by .5
-        _if     c                               ; but if overflowed (x was 0)
-         inc    SI                              ; - put the value back
-        _endif
+        sub     SI,1                            ; multiply by .5
+          ;                                     ; but if underflowed (x was 0)
+        adc     SI,0                            ; return the value to zero
         and     ESI,0000FFFFh                   ; load .5
         or      ESI,3FFE0000h                   ; ...
         mov     ECX,080000000h                  ; ...

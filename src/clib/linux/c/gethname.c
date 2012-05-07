@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Copyright (c) 2002-2012 Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,27 +24,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of gethostname() for Linux.
 *
 ****************************************************************************/
 
+#include <unistd.h>
+#include <string.h>
+#include <sys/utsname.h>
 
-#ifndef _WENVIRON_H_INCLUDED
-#define _WENVIRON_H_INCLUDED
+_WCRTLINK int gethostname( char *__name, size_t __len )
+{
+    struct utsname  uts;
+    int             rc = uname( &uts );
 
-#include <ctype.h>
-
-
-/*
- * These routines are meant to be used internally only, so should not
- * have a _WCRTLINK modifier.
- */
-
-extern void     __create_wide_environment( void );
-
-extern int      _putenv( const char *env_string );
-extern int      __wputenv( const wchar_t *env_string );
-
-
-#endif
+    if( rc < 0 )
+        return( rc );
+    strlcpy( __name, uts.nodename, __len );
+    return( 0 );
+}

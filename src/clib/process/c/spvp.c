@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <process.h>
 #include "rtdata.h"
-#include "wenviron.h"
+#include "_environ.h"
 
 
 _WCRTLINK int __F_NAME(spawnvp,_wspawnvp)( int mode, const CHAR_TYPE *file, const CHAR_TYPE *const argv[] )
