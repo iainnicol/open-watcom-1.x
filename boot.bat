@@ -3,8 +3,8 @@ rem Batch to build a subset of the Open Watcom tools
 
 if "%OWBOOTSTRAP%" == "" goto cont1
 set WATCOM=%OWBOOTSTRAP%
-set PATH=%OWBOOTSTRAP%\binnt;%OWBOOTSTRAP%\binw;%PATH%
-set INCLUDE=%OWBOOTSTRAP%\h;%OWBOOTSTRAP%\h\nt
+set PATH=%OWBOOTSTRAP_PATH%
+set INCLUDE=%OWBOOTSTRAP_INCLUDE%
 :cont1
 cd %OWROOT%\src\make
 if not exist %OWOBJDIR% mkdir %OWOBJDIR%

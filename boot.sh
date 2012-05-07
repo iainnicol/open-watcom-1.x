@@ -7,6 +7,8 @@
 
 if [ -n "$OWBOOTSTRAP" ]; then
     export WATCOM=$OWBOOTSTRAP
+    export PATH=$OWBOOTSTRAP_PATH
+    export INCLUDE=$OWBOOTSTRAP_INCLUDE
 fi
 cd $OWROOT/src/make
 mkdir $OWOBJDIR
@@ -25,6 +27,8 @@ builder boot
 RC=$?
 if [ -n "$OWBOOTSTRAP" ]; then
     export WATCOM=$OWDEFWATCOM
+    export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
+    export INCLUDE=$OWDEFINCLUDE
 fi
 if [ $RC -eq 0 ]; then
     builder build

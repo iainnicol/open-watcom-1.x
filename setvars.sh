@@ -28,11 +28,13 @@ export OW_DOC_BUILD=0
 # export OW_WIN95HC=hcrtf
 # export OW_HHC=hhc
 
+source $OWROOT/cmnvars.sh
+
 # Adjust to match the host platform
 export BOOTSTRAP_OS=linux
 export BOOTSTRAP_CPU=386
+export OWBOOTSTRAP_PATH=$OWBOOTSTRAP/binl:$OWBOOTSTRAP/binw:$PATH
+export OWBOOTSTRAP_INCLUDE=$OWBOOTSTRAP/lh
 
-source $OWROOT/cmnvars.sh
-
-cd %OWROOT%
+cd $OWROOT
 

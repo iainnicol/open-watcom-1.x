@@ -35,11 +35,13 @@ REM set appropriate variables to point Windows help compilers which you have ins
 rem set OW_WIN95HC=hcrtf
 rem set OW_HHC=hhc
 
+REM Invoke the batch file for the common environment
+call %OWROOT%\cmnvars.bat
+
 REM Adjust to match the host platform
 set BOOTSTRAP_OS=nt
 set BOOTSTRAP_CPU=386
-
-REM Invoke the batch file for the common environment
-call %OWROOT%\cmnvars.bat
+set OWBOOTSTRAP_PATH=%OWBOOTSTRAP%\binnt;%OWBOOTSTRAP%\binw;%PATH%
+set OWBOOTSTRAP_INCLUDE=%OWBOOTSTRAP%\h;%OWBOOTSTRAP%\h\nt
 
 cd %OWROOT%
