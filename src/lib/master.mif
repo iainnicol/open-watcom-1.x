@@ -13,6 +13,7 @@ wlib_nosymfile = 1
 
 !ifdef bootstrap
 incl_msgtext = 1
+no_libs = 1
 !ifdef wlib_dll
 !undef wlib_dll
 !endif
