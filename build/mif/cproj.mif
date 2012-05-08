@@ -10,9 +10,9 @@
 lang_root       = $(lang_root_$(host_cpu))
 !endif
 
-# define OW build windows version for Win32 platform
-# Now it is setup to 0x400
-# to be OK for Windows 95 and Windows NT
+# TODO: Why is this Windows specific junk here?
+# Define Windows version for Win32 target
+# It's 0x400 to support Windows 95 and Windows NT 4.0
 #
 !ifdef $(proj_name)_win32ver
 win32ver = $($(proj_name)_win32ver)
@@ -99,7 +99,7 @@ mode_aflags   = -d2
 mode_lflags   = $(ldebug_fmt) all
 mode_clflags  = $(cldebug_fmt)
 !endif
-mode_lflags  += op noredefsok
+mode_lflags  += option noredefsok
 mode_clflags += -Wl,option -Wl,noredefsok
 
 !ifndef $(proj_name)_nosymfile
@@ -491,11 +491,8 @@ as_target       = $(as_$(target_cpu)) -3
 as_target       = $(as_$(target_cpu))
 !endif
 
-# options used for setup source code Japanese DBCS character set
+# options used for processing DBCS (Japanese) character set
 c_japan_charset = -zk0
-
-# options for preprocessing source code
-preproc_opts    = -p
 
 !include bhost.mif
 !include local.mif
