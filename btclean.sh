@@ -6,7 +6,6 @@ if [ ! -f $OWBINDIR/builder ]; then
     echo Cannot find builder - did you run boot.sh?
 else
     cd $OWROOT/src
-    builder clean
     builder bootclean
     cd $OWROOT
 fi
