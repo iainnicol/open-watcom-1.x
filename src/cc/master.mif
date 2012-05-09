@@ -132,10 +132,12 @@ depends_drv = $(pre_obj_deps) $(drv_objs)
 
 # systems where version resources must be added to .DLL
 version_res_nt_386 = version.res
+verrc_dll_skel     = ../../version.rc
 
 # systems where version resources must be added to .EXE
 !ifndef bootstrap
 exe_version_res_nt_386 = exever.res
+verrc_exe_skel         = ../../exever.rc
 !endif
 
 inc_dirs  = -I. -I"../../h" -I.. $(cg_inc_dirs) $(asminline_inc_dirs)
