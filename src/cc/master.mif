@@ -21,8 +21,14 @@ cc_nosymfile = 1
 !include ../../ccobjs.mif
 
 # final executable names
+#TODO: Review executable renaming and think about how to avoid it!
+!ifdef bootstrap
+exe_name = wcc$(target_cpu)
+dll_name = wccd$(target_cpu)
+!else
 exe_name = wcc$(target_cpu)c
 dll_name = wccd$(target_cpu)c
+!endif
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.

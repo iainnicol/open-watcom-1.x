@@ -13,7 +13,7 @@ cdsay .
 
 [ BLOCK <1> boot ]
 #=================
-    <CPCMD> <OWOBJDIR>/wcci86c.exe <OWBINDIR>/<PROJNAME><CMDEXT>
+    <CPCMD> <OWOBJDIR>/wcci86.exe <OWBINDIR>/<PROJNAME><CMDEXT>
 
 [ BLOCK <1> bootclean ]
 #======================

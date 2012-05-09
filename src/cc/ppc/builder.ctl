@@ -9,16 +9,7 @@ set PROJNAME=wccppc
 
 cdsay .
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
-
-[ BLOCK <1> boot ]
-#=================
-    <CPCMD> <OWOBJDIR>/wccppcc.exe <OWBINDIR>/<PROJNAME><CMDEXT>
-
-[ BLOCK <1> bootclean ]
-#======================
-    echo rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
-    rm -f <OWBINDIR>/<PROJNAME><CMDEXT>
+[ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel cprel ]
 #======================
