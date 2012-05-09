@@ -12,6 +12,10 @@ bas        += -q
 blib       += -q
 brc        += -q
 
+#TODO: The Watcom and non-Watcom specific options should really be in separate files...
+# Preprocessing option (NB: Overridden later for other compilers)
+preproc_opts = -p
+
 # redirect standard tools to pre-build versions
 as = $(bas)
 vi = $(bvi)
@@ -60,8 +64,6 @@ host_cl = cc
 host_cl_opts = $(clflags_$(host_cpu)) -D__UNIX__ -I$(watcom_dir)/h $(inc_dirs) -o $^@ 
 host_cl_objs = clibext.obj
 
-preproc_opts = -E
-
 .c : $(watcom_dir)/c
 
 !ifdef bootstrap
@@ -72,7 +74,9 @@ libflags = crs $^@
 clflags = $(clflags_$(host_cpu)) -o $@
 cl_objs = clibext.obj
 
-shrlib_ext     = .so
+preproc_opts = -E
+shrlib_ext   = .so
+
 !endif
 
 !endif
@@ -139,7 +143,7 @@ clflags_shared = -dynamiclib
 
 #common definitions for building on Solaris (using SunPro tools)
 !ifdef __SOLARIS__
-# Solaris sticks to crappy old awk as the default
+# Solaris 10 sticks to crappy old awk as the default
 awk = nawk
 
 !ifdef bootstrap
