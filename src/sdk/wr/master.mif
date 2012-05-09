@@ -112,7 +112,7 @@ extra_l_flags_win = op rwr,stack=16k export WEP RESIDENT
 build_rc_nt_386 = nt
 
 !ifdef build_rc_$(host_os)_$(host_cpu)
-res_objs = version.res
+res_objs = exever.res
 !endif
 
 $(name).dll: $(__MAKEFILES__) ytab.gh wrcmsg.gh $(object) $(wres_lib) $(name).res $(res_objs)

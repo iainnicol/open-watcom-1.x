@@ -113,10 +113,3 @@ sample.exe : sample.obj sampdial.obj $(name).lib $(ncurses_lib)
         $(cl) $(clflags) $<
 !endif
 
-make: .SYMBOLIC
-    %create mkmk.cmd
-    @%append mkmk.cmd  -c & -m objfiles.mif -q 50
-    @%append mkmk.cmd  nopath ../c/*.c c/*.c h/*.h ../h/*.h  path
-    @%append mkmk.cmd  -i.h -isample.c -isampdial.c -isamplew.c
-    mkmk @mkmk.cmd
-    erase mkmk.cmd

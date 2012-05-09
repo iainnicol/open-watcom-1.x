@@ -402,8 +402,8 @@ asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
  
-verrc_skel = ../../rc/r_$(host_os)$(host_cpu).rc
-verrc_exe  = $(dll_name)
+verrc_dll_skel = ../../rc/r_$(host_os)$(host_cpu).rc
+verrc_dll      = $(dll_name)
 !include verrc.mif
  
 !ifeq target_cpu axp

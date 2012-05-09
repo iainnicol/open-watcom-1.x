@@ -69,7 +69,7 @@ rcinclude= -I. -I"../h" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gu
 inc_dirs = -I"../h" -I"$(sampler_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(trmem_dir)" -I"$(dig_dir)/h"
 
 # systems where version resource must be added to .EXE
-version_res_nt_386 = version.res
+version_res_nt_386 = exever.res
 
 # explicit rules
 #################

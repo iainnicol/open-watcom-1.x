@@ -8,7 +8,7 @@ wddespy_autodepends = .AUTODEPEND
 sys_windowed = 1
 
 # systems where version resource must be added to .EXE
-version_res_nt_386 = version.res
+version_res_nt_386 = exever.res
 
 !include cproj.mif
 !include deftarg.mif
