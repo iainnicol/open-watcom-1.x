@@ -51,6 +51,7 @@ cdsay .
 [ INCLUDE <SRCDIR>/re2c/builder.ctl ]
 [ INCLUDE <SRCDIR>/as/builder.ctl ]
 # Now miscellaneous utilities required during build
+[ INCLUDE <SRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <SRCDIR>/ssl/builder.ctl ]
 [ INCLUDE <SRCDIR>/win386/wbind/builder.ctl ]
 [ INCLUDE <SRCDIR>/causeway/cwc/builder.ctl ]
