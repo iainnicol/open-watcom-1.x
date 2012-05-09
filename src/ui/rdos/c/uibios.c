@@ -35,9 +35,6 @@
 #include "uidef.h"
 #include <stdio.h>
 
-#define __B000  0x263
-#define __B800  0x26B
-
 static MONITOR ui_data = {
     25,
     80,
@@ -57,6 +54,9 @@ bool global uiset80col( void )
 
 int intern initbios( void )
 {
+    short int *bufptr;
+    int i;
+
     if( UIData == NULL ) {
         UIData = &ui_data;
     }
@@ -64,6 +64,13 @@ int intern initbios( void )
     UIData->colour = M_VGA;
 
     UIData->screen.origin = malloc( UIData->width * UIData->height * sizeof( PIXEL ) );
+
+    bufptr = (short int *)UIData->screen.origin;
+    for( i = 0; i < UIData->width * UIData->height; i++ ) {
+        *bufptr = 0x720;
+        bufptr++;
+    }
+            
     UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();
@@ -89,34 +96,18 @@ void intern finibios( void )
 
 void intern physupdate( SAREA *area )
 {
-    __segment screen = __B800;
-    short int __based( void ) * scrptr;
     int i;
-    int j;
     int pos;
-    short int ach;
     short int *bufptr = (short int *)UIData->screen.origin;
 
     for( i = 0; i < area->height; i++ ) {
         pos = UIData->width * (i + area->row) + area->col;
-        scrptr = (short int __based( void ) *)(2 * pos);
         bufptr = (short int *)UIData->screen.origin + pos;
-
-        for( j = 0; j < area->width; j++ ) {
-            ach = *bufptr;
-            *(screen:>scrptr) = ach;
-            bufptr++;
-            scrptr++;
-        }
+        RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
     }    
 }
 
 int global uiisdbcs( void )
-{
-    return( FALSE );
-}
-
-int global uionnec( void )
 {
     return( FALSE );
 }
