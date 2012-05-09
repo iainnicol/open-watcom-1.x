@@ -94,8 +94,8 @@ $(dllname).lnk : $(dll_def) $(__MAKEFILES__)
     @for %i in ($(dll_libs) $(extra_libs)) do @%append $@ lib %i
     @%append $@ $(lnk_alias)
 
-verrc_skel = ../verinfo.rc
-verrc_exe  = $(dllname)
+verrc_dll_skel = ../verinfo.rc
+verrc_dll      = $(dllname)
 !include verrc.mif
 
 !include $(rtdll_dir)/clean.mif
