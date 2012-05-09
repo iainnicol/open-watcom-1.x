@@ -32,7 +32,7 @@ cdsay .
 # Build wstrip
 [ INCLUDE <SRCDIR>/strip/builder.ctl ]
 # Continue with the linker
-[ INCLUDE <SRCDIR>/dwarf/builder.ctl ]
+[ INCLUDE <SRCDIR>/dwarf/dw/builder.ctl ]
 [ INCLUDE <SRCDIR>/link/builder.ctl ]
 [ INCLUDE <SRCDIR>/link/exe2bin/builder.ctl ]
 # Now we also have everything to build wasm and owcc
@@ -74,11 +74,11 @@ cdsay .
 # 
 # Build our vi editor and the libs it requires
 [ INCLUDE <SRCDIR>/ncurses/builder.ctl ]
-[ INCLUDE <SRCDIR>/ui/builder.ctl ]
+[ INCLUDE <SRCDIR>/ui/unix/builder.ctl ]
 [ INCLUDE <SRCDIR>/vi/builder.ctl ]
 [ INCLUDE <SRCDIR>/hlpview/builder.ctl ]
 # Build gui/aui lib and the profiler
-[ INCLUDE <SRCDIR>/gui/builder.ctl ]
+[ INCLUDE <SRCDIR>/gui/ui/builder.ctl ]
 [ INCLUDE <SRCDIR>/aui/builder.ctl ]
 [ INCLUDE <SRCDIR>/profiler/builder.ctl ]
 [ ENDIF ]
