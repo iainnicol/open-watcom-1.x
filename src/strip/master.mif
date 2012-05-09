@@ -22,9 +22,6 @@ rc_defines_linux = -DRC_UNIX
 rc_defines_qnx   = -DRC_UNIX
 
 objs = strip.obj output.obj
-!ifndef build_by_watcom
-objs += clibext.obj
-!endif
 
 !ifndef incl_msgtext
 dependants = msg.gh wstrip.res $(wres_lib)
@@ -41,7 +38,7 @@ extra_c_flags += -DINCL_MSGTEXT $(c_japan_charset)
 version_res_nt_386 = exever.res
 !endif
 
-$(name).exe : $(dependants) $(objs) $(version_res_$(host_os)_$(host_cpu))
+$(name).exe : $(dependants) $(objs) $(cl_objs) $(version_res_$(host_os)_$(host_cpu))
 !ifdef bootstrap
         $(cl) $(clflags) $(objs) $(cl_objs) $(wres_lib)
 !else

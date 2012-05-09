@@ -47,10 +47,6 @@ common_objs =  ytabw.obj ytab2.obj keyword.obj keyword2.obj errors.obj  &
         rcldstr.obj rcalloc1.obj rcalloc0.obj sharedio.obj semresfl.obj &
         semutil.obj leadbyte.obj ideentry.obj idemsgpr.obj rcspawn.obj
 
-!ifndef build_by_watcom
-common_objs += clibext.obj
-!endif
-
 !ifeq release 0
 !ifeq WRC_USE_TRMEM 1
 common_objs += trmem.obj
@@ -147,9 +143,9 @@ $(name)e.exe : $(depends_drv) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKE
 
 !else
 
-$(name)e.exe : $(depends_exe) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(name)e.exe : $(depends_exe) $(cl_objs) $(exe_version_res_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifdef bootstrap
-        $(cl) $(clflags) $(objs_exe) $(wres_lib)
+        $(cl) $(clflags) $(objs_exe) $(wres_lib) $(cl_objs) $(cl_libs)
 !else
 !ifeq host_os osi
         $(linker) name $^&.rex @exe.lnk
