@@ -24,36 +24,38 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Memory aliases interface.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _ALIAS_H_INCLUDED
+#define _ALIAS_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#define ALIAS_TEXT                  102
+#define ALIAS_DO_MORE               108
+#define ALIAS_CUR_ID                103
+#define ALIAS_ID_LIST               105
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+typedef struct analias {
+    unsigned long       id;
+    char                *name;
+    struct analias      *next;
+} AnAlias;
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+typedef struct {
+    AnAlias             *data;
+    void                (*updatefn)( unsigned long, char *, char *, void * );
+    void                *userdata;
+} AliasList;
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
+typedef AliasList       *AliasHdl;
 
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+void    InitAliasHdl( AliasHdl *hdl, void (*updatefn)( unsigned long, char *, char *, void * ), void *userdata );
+void    AddAlias( AliasHdl hdl, char *text, unsigned long id );
+void    FreeAlias( AliasHdl hdl );
+char    *LookupAlias( AliasHdl hdl, unsigned long id );
+void    Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title );
+void    EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ), void *userdata );
+
+#endif /* _ALIAS_H_INCLUDED */

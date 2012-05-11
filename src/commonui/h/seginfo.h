@@ -24,36 +24,30 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Segment information.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _SEGINFO_H_INCLUDED
+#define _SEGINFO_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#define SEGINFO_ADDR            700
+#define SEGINFO_BLOCKSIZE       701
+#define SEGINFO_LOCKCOUNT       702
+#define SEGINFO_PAGELOCKCOUNT   703
+#define SEGINFO_HANDLE          704
+#define SEGINFO_TYPE            705
+#define SEGINFO_OK              706
+#define SEGINFO_SCROLL          707
+#define SEGINFO_LINE1           711
+#define SEGINFO_LINE2           712
+#define SEGINFO_LINE3           713
+#define SEGINFO_LINE4           714
+#define SEGINFO_LINE5           715
+#define SEGINFO_LINE6           716
+#define SEGINFO_LINE7           717
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+void    DoSegInfo( HWND hwnd, WORD seg, BOOL isdpmi, HANDLE inst );
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
-
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _SEGINFO_H_INCLUDED */

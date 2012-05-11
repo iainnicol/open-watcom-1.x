@@ -24,36 +24,52 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Fault context structure for Windows 3.x.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _INTDATA_H_INCLUDED
+#define _INTDATA_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#pragma pack( __push, 1 )
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+typedef struct {
+    unsigned short      SS;
+    unsigned short      GS;
+    unsigned short      FS;
+    unsigned short      ES;
+    unsigned short      DS;
+    unsigned long       EDI;
+    unsigned long       ESI;
+    unsigned long       EBP;
+    unsigned long       ESP;
+    unsigned long       EBX;
+    unsigned long       EDX;
+    unsigned long       ECX;
+    unsigned long       oldEAX;
+    unsigned long       oldEBP;
+    unsigned short      retIP;
+    unsigned short      retCS;
+    unsigned short      AX;
+    unsigned short      intnumber;
+    unsigned short      handle;
+    unsigned short      IP;
+    unsigned short      CS;
+    unsigned short      FLAGS;
+} fault_frame;
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+#pragma pack( __pop )
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
+enum {
+    KILL_APP = 0,
+    RESTART_APP,
+    CHAIN
+};
 
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#define EXCESS_CRAP_ON_STACK    0x14
+
+void    RestoreState( interrupt_struct *idata, fault_frame *ff );
+void    SaveState( interrupt_struct *idata, fault_frame *ff );
+
+#endif /* _INTDATA_H_INCLUDED */

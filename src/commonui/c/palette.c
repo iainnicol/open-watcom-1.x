@@ -24,36 +24,51 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Create DIB palette (HPALETTE) from a bitmap (BITMAPINFO).
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
+#include "precomp.h"
+#include <stdlib.h>
+#include "mem.h"
+
+/*
+ * CreateDIBPalette - create a palette for a bitmap
  */
+HPALETTE CreateDIBPalette( BITMAPINFO *info )
+{
+    unsigned            num_colours;
+    unsigned            i;
+    LOGPALETTE          *palette;
+    HPALETTE            palette_handle;
+    RGBQUAD             *quads;
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+    num_colours = info->bmiHeader.biClrUsed;
+    if( num_colours == 0 && info->bmiHeader.biBitCount != 24 ) {
+        num_colours = 1 << info->bmiHeader.biBitCount;
+    }
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+    palette_handle = (HPALETTE)0;
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+    if( num_colours != 0 ) {
+        palette = MemAlloc( sizeof( LOGPALETTE ) + num_colours * sizeof( PALETTEENTRY ) );
+        if( palette == NULL ) {
+            return( (HPALETTE)0 );
+        }
+        palette->palNumEntries = num_colours;
+        palette->palVersion = 0x300;
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
+        quads = &info->bmiColors[0];
+        for( i = 0; i < num_colours; i++ ) {
+            palette->palPalEntry[i].peRed = quads[i].rgbRed;
+            palette->palPalEntry[i].peGreen = quads[i].rgbGreen;
+            palette->palPalEntry[i].peBlue = quads[i].rgbBlue;
+            palette->palPalEntry[i].peFlags = 0;
+        }
+        palette_handle = CreatePalette( palette );
+        MemFree( palette );
+    }
+    return( palette_handle );
 
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+} /* CreateDIBPalette */

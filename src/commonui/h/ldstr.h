@@ -24,36 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Prototypes for resource strings helper routines.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
+#ifndef _LDSTR_H_INCLUDED
+#define _LDSTR_H_INCLUDED
+
+#include <stdio.h>
+#include <stdarg.h>
+
+
+/************************************************************************
+ * SetInstance - must be called before any other routine in this file
+ ***********************************************************************/
+void    SetInstance( HANDLE inst );
+char    *AllocRCString( DWORD id );
+void    FreeRCString( char *str );
+char    *GetRCString( DWORD msgid );
+DWORD   CopyRCString( DWORD id, char *buf, DWORD bufsize );
+
+/*
+ * All functions below this point obtain strings using AllocRCString and
+ * FreeRCString
  */
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+int     RCMessageBox( HWND hwnd , DWORD msgid, char *title, UINT type );
+void    RCfprintf( FILE *fp, DWORD strid, ...  );
+int     RCsprintf( char *buf, DWORD fmtid, ... );
+void    RCvfprintf( FILE *fp, DWORD strid, va_list al );
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
-
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
-
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _LDSTR_H_INCLUDED */

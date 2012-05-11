@@ -24,36 +24,43 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Search message list interface.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
+#ifndef _SRCHMSG_H_INCLUDED
+#define _SRCHMSG_H_INCLUDED
+
+/*
+ * Here is an example of how to set up a message list.
+ * Notice the 0, NULL entry used to delimit the end of the list.
+ *
+ *   static msglist StrActionMsgs[] = {
+ *          MH_CLEANUP,         "DELETED",
+ *          MH_CREATE,          "CREATED",
+ *          MH_DELETE,          "DELETED",
+ *          MH_KEEP,            "KEPT",
+ *          0,                  NULL
+ *   };
+ *
+ * or for one to be used with InitSrchTable (here 0, -1 delimits the end)
+ *
+ *   static msglist StrActionMsgs[] = {
+ *          MH_CLEANUP,         (char *)STR_DELETED,
+ *          MH_CREATE,          (char *)STR_CREATED,
+ *          MH_DELETE,          (char *)STR_DELETED,
+ *          MH_KEEP,            (char *)STR_KEPT,
+ *          0,                  (char *)-1
+ *   };
  */
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+typedef struct {
+     unsigned   msgno;
+     char       *msg;
+} msglist;
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+char    *SrchMsg( unsigned msgno, msglist *tbl, char *dflt );
+BOOL    InitSrchTable( HANDLE inst, msglist *tbl );
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
-
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _SRCHMSG_H_INCLUDED */

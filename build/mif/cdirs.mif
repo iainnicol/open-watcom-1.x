@@ -20,6 +20,9 @@ cc_dir          = $(src_dir)/cc
 !ifndef cfloat_dir
 cfloat_dir      = $(src_dir)/cfloat
 !endif
+!ifndef cmnui_dir
+cmnui_dir       = $(src_dir)/commonui
+!endif
 !ifndef plusplus_dir
 plusplus_dir    = $(src_dir)/plusplus
 !endif
@@ -254,3 +257,4 @@ libzip_dir      = $(contrib_dir)/libzip
 !ifndef zlib_dir
 zlib_dir        = $(contrib_dir)/zlib
 !endif
+

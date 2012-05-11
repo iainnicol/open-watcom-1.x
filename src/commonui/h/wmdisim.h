@@ -24,36 +24,46 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Portable MDI interface.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _WMDISIM_H_INCLUDED
+#define _WMDISIM_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#include "wpi.h"
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+typedef struct {
+    HWND        root;
+    HWND        container;
+    DWORD       reg_style;
+    DWORD       max_style;
+    UINT        data_off;
+    char        *main_name;
+    void        (*start_max_restore)( HWND );
+    void        (*end_max_restore)( HWND );
+    void        (*set_window_title)( HWND );
+    void        (*set_style)( HWND, int );
+    WPI_INST    hinstance;
+} mdi_info;
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+void    MDIInit( mdi_info * );
+void    MDIInitMenu( void );
+int     MDINewWindow( HWND hwnd );
+void    MDISetMainWindowTitle( char *fname );
+void    MDIClearMaximizedMenuConfig( void );
+int     MDIIsMaximized( void );
+int     MDIIsWndMaximized( HWND );
+int     MDIUpdatedMenu( void );
+void    MDISetMaximized( int setting );
+void    MDITile( int is_horz );
+void    MDICascade( void );
+int     MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *lrc );
+int     MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+int     MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+void    MDIResizeContainer( void );
+void    MDIContainerResized( void );
+void    MDISetOrigSize( HWND hwnd, WPI_RECT *rect );
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _WMDISIM_H_INCLUDED */

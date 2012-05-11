@@ -24,36 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  ToolHelp wrappers.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _MYTHELP_H_INCLUDED
+#define _MYTHELP_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+BOOL    MyModuleFindHandle( MODULEENTRY *me, HMODULE h );
+BOOL    MyStackTraceNext( STACKTRACEENTRY *se );
+BOOL    MyTaskFindHandle( TASKENTRY *te, HTASK h );
+BOOL    MyTaskFirst( TASKENTRY *te );
+BOOL    MyTaskNext( TASKENTRY *te );
+BOOL    MyStackTraceCSIPFirst( STACKTRACEENTRY *se, WORD ss, WORD cs, WORD ip, WORD bp );
+BOOL    MyStackTraceFirst( STACKTRACEENTRY *se, HANDLE h );
+BOOL    MyGlobalFirst( GLOBALENTRY *ge, WORD flags );
+BOOL    MyGlobalNext( GLOBALENTRY *ge, WORD flags );
+BOOL    MyGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
+BOOL    MyGlobalEntryHandle( GLOBALENTRY *ge, HMODULE hmem );
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
-
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
-
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _MYTHELP_H_INCLUDED */

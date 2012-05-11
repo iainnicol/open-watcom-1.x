@@ -24,36 +24,58 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Get actual CS:IP of a stopped Windows task.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
+#include "precomp.h"
+#include <stdio.h>
+
+#define MAKECSIP( cs, ip ) (((DWORD)(cs) << 16L) + (DWORD)(ip))
+
+/*
+ * GetRealCSIP - get the CS:IP of a stopped task, cuz microsoft only tells
+ *               you that the task is stopped in the kernel (gee, that's
+ *               useful!!)
  */
+DWORD GetRealCSIP( HTASK htask, HMODULE *mod )
+{
+    DWORD               csip;
+    STACKTRACEENTRY     se;
+    GLOBALENTRY         ge;
+    TASKENTRY           te;
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+    te.dwSize = sizeof( te );
+    if( TaskFindHandle( &te, htask ) == NULL ) {
+        return( 0L );
+    }
+    if( mod != NULL ) {
+        *mod = te.hModule;
+    }
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+    csip = TaskGetCSIP( htask );
+    if( csip == 0L ) {
+        return( 0L );
+    }
+    se.dwSize = sizeof( se );
+    if( !StackTraceFirst( &se, htask ) ) {
+        return( csip );
+    }
+    csip = MAKECSIP( se.wCS, se.wIP );
+    while( 1 ) {
+        se.dwSize = sizeof( se );
+        if( !StackTraceNext( &se ) ) {
+            break;
+        }
+        csip = MAKECSIP( se.wCS, se.wIP );
+        ge.dwSize = sizeof( ge );
+        if( GlobalEntryHandle( &ge, (HGLOBAL)se.wCS ) ) {
+            if( ge.hOwner == te.hModule ) {
+                break;
+            }
+        }
+    }
+    return( csip );
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
-
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+} /* GetRealCSIP */

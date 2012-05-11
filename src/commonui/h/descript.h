@@ -24,36 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Intel x86 descriptor prototype.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _DESCRIPT_H_INCLUDED
+#define _DESCRIPT_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+typedef struct {
+    unsigned short  limit_15_0;
+    unsigned short  base_15_0;
+    unsigned char   base_23_16;
+    unsigned char   available                : 1;
+    unsigned char   writeable_or_readable    : 1;
+    unsigned char   expanddown_or_conforming : 1;
+    unsigned char   type                     : 2;
+    unsigned char   dpl                      : 2;
+    unsigned char   present                  : 1;
+    unsigned char   limit_19_16              : 4;
+    unsigned char   avl                      : 1;
+    unsigned char   reserved                 : 1;
+    unsigned char   big_or_default           : 1;
+    unsigned char   granularity              : 1;
+    unsigned char   base_31_24;
+} descriptor;
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+#define GET_DESC_BASE( desc ) \
+    ((DWORD)(desc).base_15_0 + ((DWORD)(desc).base_23_16 << 16L) + \
+    ((DWORD)(desc).base_31_24 << 24L))
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+#define GET_DESC_LIMIT( desc ) \
+    ((desc).granularity ? \
+    ((((DWORD)(desc).limit_15_0 + ((DWORD)(desc).limit_19_16 << 16L)) << 12L) + 0xfffL) : \
+    ((DWORD)(desc).limit_15_0 + ((DWORD)(desc).limit_19_16 << 16L)))
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _DESCRIPT_H_INCLUDED */

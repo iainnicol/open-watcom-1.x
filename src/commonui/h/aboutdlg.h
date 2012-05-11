@@ -24,36 +24,31 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  About dialog interface.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _ABOUTDLG_H_INCLUDED
+#define _ABOUTDLG_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#include "banner.h"
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+typedef struct {
+    HINSTANCE   inst;
+    HWND        owner;
+    LPSTR       title;
+    LPSTR       name;
+    LPSTR       version;
+    LPSTR       first_cr_year;
+} about_info;
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+#ifdef __386__
+typedef about_info *LPABOUTINFO;
+#else
+typedef about_info __far *LPABOUTINFO;
+#endif
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
+extern void DoAbout( LPABOUTINFO ai );
 
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _ABOUTDLG_H_INCLUDED */

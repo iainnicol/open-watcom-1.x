@@ -127,8 +127,10 @@ cdsay .
 [ INCLUDE <SRCDIR>/cg/risc/mps/builder.ctl ]
 [ INCLUDE <SRCDIR>/cc/builder.ctl ]
 [ INCLUDE <SRCDIR>/plusplus/builder.ctl ]
-# Continue with SDK tools
+# Libraries which the SDK tools use
 [ INCLUDE <SRCDIR>/wpi/builder.ctl ]
+[ INCLUDE <SRCDIR>/commonui/builder.ctl ]
+# Continue with SDK tools
 [ INCLUDE <SRCDIR>/sdk/builder.ctl ]
 [ INCLUDE <SRCDIR>/rc/rc/builder.ctl ]
 [ INCLUDE <SRCDIR>/rc/builder.ctl ]

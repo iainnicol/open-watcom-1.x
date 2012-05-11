@@ -24,36 +24,61 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Save/restore register state.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
+#include "precomp.h"
+#include "wdebug.h"
+#include "intdata.h"
+
+/*
+ * SaveState - save current register state
  */
+void SaveState( interrupt_struct *idata, fault_frame *ff )
+{
+    idata->SS = ff->SS;
+    idata->GS = ff->GS;
+    idata->FS = ff->FS;
+    idata->ES = ff->ES;
+    idata->DS = ff->DS;
+    idata->EDI = ff->EDI;
+    idata->ESI = ff->ESI;
+    idata->EBP = ff->EBP;
+    idata->ESP = ff->ESP + EXCESS_CRAP_ON_STACK;
+    idata->EBX = ff->EBX;
+    idata->EDX = ff->EDX;
+    idata->ECX = ff->ECX;
+    idata->EAX = (ff->oldEAX & 0xFFFF0000) + ff->AX;
+    idata->EBP = ff->oldEBP;
+    idata->EFlags = ff->FLAGS;
+    idata->EIP = ff->IP;
+    idata->CS = ff->CS;
+    idata->InterruptNumber = ff->intnumber;
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+} /* SaveState */
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+/*
+ * RestoreState - restore register state
+ */
+void RestoreState( interrupt_struct *idata, fault_frame *ff )
+{
+    ff->SS = idata->SS;
+    ff->GS = idata->GS;
+    ff->FS = idata->FS;
+    ff->ES = idata->ES;
+    ff->DS = idata->DS;
+    ff->EDI = idata->EDI;
+    ff->ESI = idata->ESI;
+    ff->oldEBP = idata->EBP;
+    ff->ESP = idata->ESP - EXCESS_CRAP_ON_STACK;
+    ff->EBX = idata->EBX;
+    ff->EDX = idata->EDX;
+    ff->ECX = idata->ECX;
+    ff->AX = idata->EAX;
+    ff->IP = idata->EIP;
+    ff->CS = idata->CS;
+    ff->FLAGS = idata->EFlags;
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
-
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+} /* RestoreState */

@@ -24,36 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  CTL3D cover function prototypes.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _CTL3DCVR_H_INCLUDED
+#define _CTL3DCVR_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#include <ctl3d.h>
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+#define C3D_EXPORT  WINAPI
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+extern int C3D_EXPORT       CvrCtl3DInit( HINSTANCE );
+extern void C3D_EXPORT      CvrCtl3DFini( HINSTANCE );
+extern BOOL C3D_EXPORT      CvrCtl3dSubclassDlg( HWND, WORD );
+extern BOOL C3D_EXPORT      CvrCtl3dSubclassDlgEx( HWND, DWORD );
+extern WORD C3D_EXPORT      CvrCtl3dGetVer( void );
+extern BOOL C3D_EXPORT      CvrCtl3dEnabled( void );
+extern HBRUSH C3D_EXPORT    CvrCtl3dCtlColor( HDC, LONG );
+extern HBRUSH C3D_EXPORT    CvrCtl3dCtlColorEx( UINT, WPARAM, LPARAM );
+extern BOOL C3D_EXPORT      CvrCtl3dColorChange( void );
+extern BOOL C3D_EXPORT      CvrCtl3dSubclassCtl( HWND );
+extern LONG C3D_EXPORT      CvrCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
+extern BOOL C3D_EXPORT      CvrCtl3dAutoSubclass( HANDLE );
+extern BOOL C3D_EXPORT      CvrCtl3dRegister( HANDLE );
+extern BOOL C3D_EXPORT      CvrCtl3dUnregister( HANDLE );
+extern VOID C3D_EXPORT      CvrCtl3dWinIniChange( void );
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _CTL3DCVR_H_INCLUDED */

@@ -24,36 +24,63 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Search a list of messages for given message.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
+#include "precomp.h"
+#include <string.h>
+#include "mem.h"
+#include "srchmsg.h"
+#include "ldstr.h"
+
+/*
+ * SrchMsg - searchs tbl for a message corresponding to msgno
+ *         - if one exists a pointer to it is returned
+ *           otherwise a pointer to dflt is returned
  */
+char *SrchMsg( unsigned msgno, msglist *tbl, char *dflt )
+{
+    msglist             *curmsg;
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+    curmsg = tbl;
+    for( ;; ) {
+        if( curmsg->msg == NULL ) {
+            return( dflt );
+        }
+        if( curmsg->msgno == msgno ) {
+            return( curmsg->msg );
+        }
+        curmsg++;
+    }
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+} /* SrchMsg */
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+/*
+ * InitSrchTable - load the strings for a search table from the resource
+ *                 file
+ *               - WARNING: this function must not be called more
+ *                 than once for each table
+ *               - buf must be large enough to hold any message in the table
+ */
+BOOL InitSrchTable( HANDLE inst, msglist *tbl )
+{
+    msglist             *curmsg;
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
+    curmsg = tbl;
+    inst = inst;
+    for( ;; ) {
+        if( (DWORD)curmsg->msg == (DWORD)-1 ) {
+            break;
+        }
+        curmsg->msg = AllocRCString( (DWORD)curmsg->msg );
+        if( curmsg->msg == NULL ) {
+            return( FALSE );
+        }
+        curmsg++;
+    }
+    curmsg->msg = NULL;
+    return( TRUE );
 
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+} /* InitSrchTable */

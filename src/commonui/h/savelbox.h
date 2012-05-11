@@ -24,36 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Save file listbox interface.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _SAVELBOX_H_INCLUDED
+#define _SAVELBOX_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#include <stdio.h>
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+#define SLB_SAVE_AS     1
+#define SLB_SAVE_TMP    2
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+void    SaveListBox( int how, void (*writefn)( FILE * ), char *tmpname, char *appname, HWND mainhwnd, HWND listbox );
+void    ReportSave( HWND parent, char *fname, char *appname, BOOL save_ok );
+BOOL    GetSaveFName( HWND mainhwnd, char *fname );
+BOOL    GenTmpFileName( char *tmpname, char *buf );
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
-
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+#endif /* _SAVELBOX_H_INCLUDED */

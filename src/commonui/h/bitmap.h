@@ -24,36 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  Constants for 3D controls.
+* Description:  Bitmap file loader interface.
 *
 ****************************************************************************/
 
 
-/* This header is included to provide definitions of these constants for building
- * the source tree with OW 1.8 and earlier, which do not include a standard
- * implementation of ctl3d.h in w32api.
- */
+#ifndef _BITMAP_H_INCLUDED
+#define _BITMAP_H_INCLUDED
 
-/* Ctl3dSubclassDlg() flags */
-#define CTL3D_BUTTONS           0x0001
-#define CTL3D_LISTBOXES         0x0002
-#define CTL3D_EDITS             0x0004
-#define CTL3D_COMBOS            0x0008
-#define CTL3D_STATICTEXTS       0x0010
-#define CTL3D_STATICFRAMES      0x0020
-#define CTL3D_ALL               0xffff
+#define BITMAP_TYPE     ((((WORD)'M') << 8) + 'B')
 
-/* Ctl3dSubclassDlgEx() flags */
-#define CTL3D_NODLGWINDOW       0x00010000
+/* This macro determines the number of bytes of storage needed by a bitmap. */
+#define BITS_TO_BYTES( x, y )   ((((x) + 31) / 32) * 4 * (y))
 
-/* 3D control messages */
-#define WM_DLGBORDER    (WM_USER + 3567)
-#define WM_DLGSUBCLASS  (WM_USER + 3568)
+#define DIB_INFO_SIZE( bc ) \
+    ((bc) < 9 ? sizeof( BITMAPINFO ) + sizeof( RGBQUAD ) * ((1 << (bc)) - 1) : \
+    sizeof( BITMAPINFOHEADER ))
 
-/* WM_DLGBORDER return codes */
-#define CTL3D_NOBORDER  0
-#define CTL3D_BORDER    1
+#define CORE_INFO_SIZE( bc ) \
+    (sizeof( BITMAPCOREINFO ) + sizeof( RGBTRIPLE ) * ((1 << (bc)) - 1))
 
-/* WM_DLGSUBCLASS return codes */
-#define CTL3D_NOSUBCLASS    0
-#define CTL3D_SUBCLASS      1
+typedef struct {
+    char                is_core;
+    union {
+        BITMAPCOREINFO  *bm_core;
+        BITMAPINFO      *bm_info;
+    };
+} bitmap_info;
+
+extern HBITMAP  ReadBitmapFile( HWND, char *, bitmap_info * );
+
+#endif /* _BITMAP_H_INCLUDED */
