@@ -29,14 +29,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "preproc.h"
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
-#include "preproc.h"
 
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     #include "clibext.h"
@@ -797,7 +794,7 @@ void PP_Ifndef( char *ptr )
 
 int PPConstExpr( char *ptr )
 {
-    PPVALUE     value;
+    PREPROC_VALUE   value;
 
     PPTokenPtr = ptr;
     PPFlags |= PPFLAG_PREPROCESSING;
