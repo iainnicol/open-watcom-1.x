@@ -37,3 +37,9 @@
 #define TB_HEIGHTCC             158
 #define TB_WIDTHCC              64
 
+typedef struct {
+    const char  *pszToolBmp;
+    const char  *pszToolDep;
+    HBITMAP     hToolBmp;
+    HBITMAP     hToolDep;
+} button_bitmaps;

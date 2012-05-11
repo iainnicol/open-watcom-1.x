@@ -30,109 +30,61 @@ TRMEM           += -of+
 !endif
 !endif
 
-extra_c_flags     = -DWIN_GUI -s
+extra_c_flags     = -DWIN_GUI -s -fh
 
 extra_c_flags_win = -zu-zw-zc
 extra_c_flags_nt  = -DNOUSE3D
 
-extra_c_flags_preproc = -zm
-extra_c_flags_ppexpr  = -zm
-extra_c_flags_ppmacro = -zm
+extra_c_flags_preproc = -zm -fh=preproc.pch
+extra_c_flags_ppexpr  = -zm -fh=preproc.pch
+extra_c_flags_ppmacro = -zm -fh=preproc.pch
 
-OBJS =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
+objs =  wremain.obj wremem.obj wremsg.obj wreresin.obj wrestat.obj &
         wregetfn.obj wrestrdp.obj wreselft.obj wreres.obj wrehints.obj &
         wrelist.obj wrenames.obj wreopts.obj wretoolb.obj wreribbn.obj &
         wreseted.obj wreftype.obj wregcres.obj wrerenam.obj wrefres.obj &
         wrememf.obj wredel.obj wrewait.obj wresvobj.obj wrectl3d.obj &
         wreaccel.obj wremenu.obj wrestr.obj wrenew.obj wre_wres.obj &
         wredlg.obj wreimg.obj wredde.obj wresvmlt.obj wreimage.obj &
-        wreclip.obj wresym.obj about.obj &
-        preproc.obj ppexpr.obj ppmacro.obj &
-        toolbr.obj statwnd.obj ldstr.obj wwinhelp.obj jdlg.obj inipath.obj
-
-extra_c_flags_wremain= -fh
-extra_c_flags_wremem= -fh
-extra_c_flags_wremsg= -fh
-extra_c_flags_wreresin= -fh
-extra_c_flags_wrestat= -fh
-extra_c_flags_wregetfn= -fh
-extra_c_flags_wrestrdp= -fh
-extra_c_flags_wreselft= -fh
-extra_c_flags_wreres= -fh
-extra_c_flags_wrehints= -fh
-extra_c_flags_wrelist= -fh
-extra_c_flags_wrenames= -fh
-extra_c_flags_wreopts= -fh
-extra_c_flags_wretoolb= -fh
-extra_c_flags_wreribbn= -fh
-extra_c_flags_wreseted= -fh
-extra_c_flags_wreftype= -fh
-extra_c_flags_wregcres= -fh
-extra_c_flags_wrerenam= -fh
-extra_c_flags_wrefres= -fh
-extra_c_flags_wrememf= -fh
-extra_c_flags_wredel= -fh
-extra_c_flags_wrewait= -fh
-extra_c_flags_wresvobj= -fh
-extra_c_flags_wrectl3d= -fh
-extra_c_flags_wreaccel= -fh
-extra_c_flags_wremenu= -fh
-extra_c_flags_wrestr= -fh
-extra_c_flags_wrenew= -fh
-extra_c_flags_wre_wres= -fh
-extra_c_flags_wredlg= -fh
-extra_c_flags_wreimg= -fh
-extra_c_flags_wredde= -fh
-extra_c_flags_wresvmlt= -fh
-extra_c_flags_wreimage= -fh
-extra_c_flags_wreclip= -fh
-extra_c_flags_wresym=
-
-extra_c_flags_toolbr= -fh
-extra_c_flags_statwnd= -fh
-extra_c_flags_ldstr= -fh
-extra_c_flags_wwinhelp= -fh
-extra_c_flags_jdlg= -fh
-extra_c_flags_about= -DWRCTL3D -fh
+        wreclip.obj wresym.obj &
+        preproc.obj ppexpr.obj ppmacro.obj
 
 !ifeq wre_trmem 1
-OBJS += trmem.tbj trmemcvr.tbj
+objs += trmem.tbj trmemcvr.tbj
 !endif
 
 # where to look for various files
 .c         : ../c;$(misc_dir);$(cpp_dir);$(trmem_dir)
 .rc        : ../h
 
-inc_dirs  = -Ih -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
+inc_dirs  = -I"../h" -I"$(wstring_dir)/h" -I"$(wmenu_dir)/h" -I"$(wacc_dir)/h"
 inc_dirs += -I"$(wr_dir)/h" -I"$(trmem_dir)" -I"$(wres_dir)/h" -I"$(cpp_dir)" -I"$(misc_dir)"
+inc_dirs += -I"$(cmnui_dir)/h" -I"$(cmnui_dir)/$(host_os)$(host_cpu)" -I"$(wpi_dir)/h"
 
-msgfiles  = $(sdk_dir)/misc/about.msg
-
-xlibs = $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
+xlibs = $(cmnui_dir)/$(host_os)$(host_cpu)/commonui.lib &
+        $(wacc_dir)/$(host_os)$(host_cpu)/wacc.lib &
         $(wmenu_dir)/$(host_os)$(host_cpu)/wmenu.lib &
         $(wstring_dir)/$(host_os)$(host_cpu)/wstring.lib &
         $(wr_dir)/$(host_os)$(host_cpu)/wr.lib &
-        $(wres_lib)
+        $(wres_lib) $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
 
 extra_l_flags     = op map, verbose
-extra_l_flags_nt  = op stack=32k,heap=16k commit heap=8k
 extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
+
+# systems where version resource must be added to .EXE
+vesion_res_nt_386 = exever.res
 
 # explicit rules
 #################
-$(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs) $(res_objs)
-        @%create tmp.lnk
-        @%append tmp.lnk $(lflags)
-        @for %i in ($(OBJS)) do @%append tmp.lnk file %i
-        @for %i in ($(xlibs)) do @%append tmp.lnk lib %i
-        $(linker) name $^@ @tmp.lnk
-        $(rc) -k $(name).res $^@
+$(name).exe: rcstr.gh $(objs) $(name).res $(xlibs) $(version_res)
+        $(linker) $(lflags) name $^@ file { $(objs) } lib { $(xlibs) }
+        $(rc) -k $(name).res $^@ $(bind_version_res)
 
 rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh: ../h/wre.msg $(msgfiles)
-        $(cc) $(cflags) $(inc_path) -zk0 -p $[@ -fo=$^@
+rcstrmsg.gh: ../h/wre.msg
+        $(cc) $(preproc_opts) $(c_japan_charset) $(cflags) $(inc_path) $[@ -fo=$^@
 
 # implicit rules
 #################

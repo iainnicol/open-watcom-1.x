@@ -1,4 +1,4 @@
-WMainMenu MENU
+"WMainMenu" MENU
 BEGIN
     POPUP      sp( "&File",
                    "&File" )
@@ -53,7 +53,7 @@ BEGIN
         MENUITEM sp( "Insert &After",
                      "Insert &After" )          IDM_MENU_INSERTAFTER
         MENUITEM SEPARATOR
-        #if 0
+#if 0
         MENUITEM sp( "Insert New as Sub&Items",
                      "Insert New as Sub&Items" )        IDM_MENU_INSERTSUBITEMS
         MENUITEM SEPARATOR
@@ -63,22 +63,28 @@ BEGIN
                      "Insert New &Item" )       IDM_MENU_NEWITEM
         MENUITEM sp( "Insert New &Separator",
                      "Insert New &Separator" )  IDM_MENU_NEWSEPARATOR
-        #else
+#else
         MENUITEM sp( "Insert New &Item",
                      "Insert New &Item" )       IDM_MENU_NEWITEM
-        #endif
+#endif
     END
     POPUP      sp( "&Help",
                    "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-                     "&Help" )                  IDM_HELP
+        MENUITEM sp( "&Contents",
+                     "&Contents" )              IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ) IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" )       IDM_HELP_ON_HELP
+        MENUITEM SEPARATOR
         MENUITEM sp( "&About...",
                      "&About..." )              IDM_MENU_ABOUT
     END
 END
 
-WSOMenu MENU
+"WSOMenu" MENU
 BEGIN
     POPUP      sp( "&File",
                    "&File" )
@@ -134,7 +140,7 @@ BEGIN
         MENUITEM sp( "Insert &After",
                      "Insert &After" )          IDM_MENU_INSERTAFTER
         MENUITEM SEPARATOR
-        #if 0
+#if 0
         MENUITEM sp( "Insert New as Sub&Items",
                      "Insert New as Sub&Items" )        IDM_MENU_INSERTSUBITEMS
         MENUITEM SEPARATOR
@@ -144,18 +150,23 @@ BEGIN
                      "Insert New &Item" )       IDM_MENU_NEWITEM
         MENUITEM sp( "Insert New &Separator",
                      "Insert New &Separator" )  IDM_MENU_NEWSEPARATOR
-        #else
+#else
         MENUITEM sp( "Insert New &Item",
                      "Insert New &Item" )       IDM_MENU_NEWITEM
-        #endif
+#endif
     END
     POPUP      sp( "&Help",
                    "&Help" )
     BEGIN
-        MENUITEM sp( "&Help",
-                     "&Help" )                  IDM_HELP
+        MENUITEM sp( "&Contents",
+                     "&Contents" )              IDM_HELP
+        MENUITEM sp( "&Search for Help On...",
+                     "&Search for Help On..." ) IDM_HELP_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM sp( "&How to Use Help",
+                     "&How to Use Help" )       IDM_HELP_ON_HELP
+        MENUITEM SEPARATOR
         MENUITEM sp( "&About...",
                      "&About..." )              IDM_MENU_ABOUT
     END
 END
-

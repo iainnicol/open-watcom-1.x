@@ -20,7 +20,7 @@ WINDOWS=1
 fmedit_dir      = $(sdk_dir)/fmedit
 !endif
 
-extra_c_flags     = -DWIN_GUI -s
+extra_c_flags     = -DWIN_GUI -s -fh
 
 extra_c_flags_win = -zu-zw-zc
 extra_c_flags_nt  = -DNOUSE3D
@@ -36,9 +36,9 @@ TRMEM   += -DTRMEM
 extra_c_flags_trmem = $(TRMEM)
 extra_c_flags_trmemcvr = $(TRMEM)
 
-extra_c_flags_preproc = -zm
-extra_c_flags_ppexpr  = -zm
-extra_c_flags_ppmacro = -zm
+extra_c_flags_preproc = -zm -fh=preproc.pch
+extra_c_flags_ppexpr  = -zm -fh=preproc.pch
+extra_c_flags_ppmacro = -zm -fh=preproc.pch
 
 OBJS =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
@@ -55,130 +55,37 @@ OBJS =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
         wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
         wdestken.obj wdectl3d.obj wdesvdlg.obj wdedde.obj &
-        wdeclear.obj wdecurr.obj wdegoto.obj wdecctl.obj &
+        wdeclear.obj wdecurr.obj wdegoto.obj &
         wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
         wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
-        windlg.obj windlg32.obj about.obj &
-        preproc.obj ppexpr.obj ppmacro.obj &
-        toolbr.obj statwnd.obj ldstr.obj wwinhelp.obj jdlg.obj inipath.obj
-
-extra_c_flags_wde_wres= -fh
-extra_c_flags_wdealign= -fh
-extra_c_flags_wdecsize= -fh
-extra_c_flags_wdecust= -fh
-extra_c_flags_wdedebug= -fh
-extra_c_flags_wdedefin= -fh
-extra_c_flags_wdeedit= -fh
-extra_c_flags_wdefbase= -fh
-extra_c_flags_wdefbutt= -fh
-extra_c_flags_wdefcbox= -fh
-extra_c_flags_wdefcntl= -fh
-extra_c_flags_wdefcust= -fh
-extra_c_flags_wdefdiag= -fh
-extra_c_flags_wdefdlg= -fh
-extra_c_flags_wdefedit= -fh
-extra_c_flags_wdefinit= -fh
-extra_c_flags_wdeflbox= -fh
-extra_c_flags_wdefmenu= -fh
-extra_c_flags_wdefont= -fh
-extra_c_flags_wdefordr= -fh
-extra_c_flags_wdefscrl= -fh
-extra_c_flags_wdefstat= -fh
-extra_c_flags_wdefutil= -fh
-extra_c_flags_wdegeted= -fh
-extra_c_flags_wdegetfn= -fh
-extra_c_flags_wdehash= -fh
-
-extra_c_flags_wdehints= -fh
-extra_c_flags_wdeinfo= -fh
-extra_c_flags_wdelist= -fh
-extra_c_flags_wdemain= -fh
-extra_c_flags_wdemsgbx= -fh
-extra_c_flags_wdeopts= -fh
-extra_c_flags_wderes= -fh
-
-extra_c_flags_wderesin= -fh
-extra_c_flags_wdesdlg= -fh
-
-extra_c_flags_wdesdup= -fh
-extra_c_flags_wdestat= -fh
-
-extra_c_flags_wdestyle= -fh
-extra_c_flags_wdesym=
-
-extra_c_flags_wdetest= -fh
-extra_c_flags_wdetfile= -fh
-extra_c_flags_wdetoolb= -fh
-extra_c_flags_wdeppmem= -fh
-extra_c_flags_wdemem= -fh
-extra_c_flags_wdewait= -fh
-extra_c_flags_wdedefsz= -fh
-extra_c_flags_wdetxtsz= -fh
-extra_c_flags_wdetmenu= -fh
-extra_c_flags_wdectool= -fh
-extra_c_flags_wdezordr= -fh
-extra_c_flags_wderibbn= -fh
-extra_c_flags_wdeselft= -fh
-extra_c_flags_wdei2mem= -fh
-extra_c_flags_wdeldres= -fh
-extra_c_flags_wdesvres= -fh
-extra_c_flags_wdesvobj= -fh
-extra_c_flags_wdestken= -fh
-extra_c_flags_wdectl3d= -fh
-extra_c_flags_wdesvdlg= -fh
-extra_c_flags_wdedde= -fh
-extra_c_flags_wdeclear= -fh
-extra_c_flags_wdecurr= -fh
-extra_c_flags_wdegoto= -fh
-extra_c_flags_wdecctl= -fh
-extra_c_flags_wdefsbar= -fh
-extra_c_flags_wdeflvw= -fh
-extra_c_flags_wdeftvw= -fh
-extra_c_flags_wdefhdr= -fh
-extra_c_flags_wdeftabc= -fh
-extra_c_flags_wdefani= -fh
-extra_c_flags_wdefupdn= -fh
-extra_c_flags_wdeftrak= -fh
-extra_c_flags_wdefprog= -fh
-extra_c_flags_wdefhtky= -fh
-extra_c_flags_windlg= -fh
-extra_c_flags_windlg32= -fh
-
-extra_c_flags_toolbr= -fh
-extra_c_flags_statwnd= -fh
-extra_c_flags_ldstr= -fh
-extra_c_flags_wwinhelp= -fh
-extra_c_flags_jdlg= -fh
-extra_c_flags_about= -DWRCTL3D -fh
+        windlg.obj windlg32.obj &
+        preproc.obj ppexpr.obj ppmacro.obj
 
 fmedit_lib = $(fmedit_dir)/$(host_os)$(host_cpu)/fmedit.lib
 wr_lib = $(wr_dir)/$(host_os)$(host_cpu)/wr.lib
 
 # where to look for various files
-.c : c;../c;$(misc_dir);$(cpp_dir)
+.c  : c;../c;$(cpp_dir)
 .rc : ../h
 
 inc_dirs  = -Ih -I"../h" -I"$(fmedit_dir)/dev" -I"$(wres_dir)/h"
-inc_dirs += -I"$(wr_dir)/h" -I"$(misc_dir)" -I"$(cpp_dir)"
-
-msgfiles  = $(sdk_dir)/misc/about.msg
-
-all : $(name).exe
+inc_dirs += -I"$(wr_dir)/h" -I"$(cpp_dir)" -I"$(wpi_dir)/h" -I"$(misc_dir)"
+inc_dirs += -I"$(cmnui_dir)/h" -I"$(cmnui_dir)/$(host_os)$(host_cpu)"
 
 extra_l_flags      = op map, verbose, symfile
-extra_l_flags_nt   = op stack=32k, heap=16k commit heap=8k
 extra_l_flags_win  = op stack=32k, rwr
 extra_l_flags_win += library commdlg, ddeml
 
-xlibs = $(wres_lib) $(fmedit_lib) $(wr_lib)
+xlibs = $(wres_lib) $(fmedit_lib) $(wr_lib) &
+        $(cmnui_dir)/$(host_os)$(host_cpu)/commonui.lib &
+	$(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
 
-$(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs)
-        @%create tmp.lnk
-        @%append tmp.lnk $(lflags)
-        @for %i in ($(OBJS)) do @%append tmp.lnk file %i
-        @for %i in ($(xlibs)) do @%append tmp.lnk lib %i
-        $(linker) name $^@ @tmp.lnk
-        $(rc) -k $(name).res $^@
+# systems where version resource must be added to .EXE
+version_res_nt_386 = exever.res
+
+$(name).exe: rcstr.gh $(objs) $(name).res $(xlibs) $(version_res)
+        $(linker) $(lflags) name $^@ file { $(objs) } lib { $(xlibs) }
+        $(rc) -k $(name).res $^@ $(bind_version_res)
 
 # implicit rules
 #################
@@ -190,5 +97,7 @@ $(name).exe: rcstr.gh $(OBJS) $(name).res $(xlibs)
 rcstr.gh: rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh: ../h/wde.msg $(msgfiles)
-        $(cc) $(cflags) $(inc_path) -zk0 -p $[@ -fo=$^@
+rcstrmsg.gh: ../h/wde.msg
+        $(cc) $(preproc_opts) $(c_japan_charset) $(inc_path) $[@ -fo=$^@
+
+!include verrc.mif

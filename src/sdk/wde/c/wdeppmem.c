@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include <stdlib.h>
 
 #include "wrdll.h"
@@ -54,7 +54,7 @@ void *PP_Malloc( unsigned size )
 {
     void        *p;
 
-    p = WdeMemAlloc ( size );
+    p = WdeMemAlloc( size );
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -63,7 +63,5 @@ void *PP_Malloc( unsigned size )
 
 void PP_Free( void *p )
 {
-    WdeMemFree ( p );
+    WdeMemFree( p );
 }
-
-

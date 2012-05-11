@@ -7,21 +7,14 @@ wddespy_autodepends = .AUTODEPEND
 
 sys_windowed = 1
 
-# systems where version resource must be added to .EXE
-version_res_nt_386 = exever.res
-
 !include cproj.mif
 !include deftarg.mif
 !include defrule.mif
 
-objs =  savelbox.obj mem.obj font.obj fontstr.obj srchmsg.obj log.obj &
-        pushwin.obj alias.obj toolbr.obj mark.obj ldstr.obj hint.obj &
-        mstatwnd.obj wwinhelp.obj jdlg.obj ctl3dcvr.obj &
-        dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
-        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj about.obj inipath.obj
+objs =  dde.obj ddeproc.obj ddeglob.obj ddemsg.obj ddebox.obj ddetrack.obj &
+        ddeflter.obj ddecfg.obj ddemisc.obj ddetool.obj
 
-
-extra_c_flags_mem = -DNO_WPI
+extra_c_flags     = -fh
 extra_c_flags_nt  = -DNOUSE3D
 
 extra_l_flags     = option map
@@ -29,23 +22,26 @@ extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib
 
 #extra_l_flags_nt_axp  = lib ctl3d32.lib
 
-.c: ..;$(sdk_dir)/misc
-.h: ..;$(sdk_dir)/misc
+.c: ..
+.h: ..
 
-inc_dirs  = -I.. -I"$(sdk_dir)/misc"
+inc_dirs  = -I.. -I"$(cmnui_dir)/$(host_os)$(host_cpu)"
+inc_dirs += -I"$(cmnui_dir)/h" -I"$(wpi_dir)/h"
 
-msgfiles  = $(sdk_dir)/misc/about.msg $(sdk_dir)/misc/log.msg &
-            $(sdk_dir)/misc/savelbox.msg $(sdk_dir)/misc/alias.msg
+xlibs = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib $(cmnui_dir)/$(host_os)$(host_cpu)/commonui.lib
 
-$(name).exe : rcstr.gh $(objs) $(name).res $(version_res_$(host_os)_$(host_cpu))
-        $(linker) $(lflags) name $^@ file { $(objs) }
+# systems where version resource must be added to .EXE
+version_res_nt_386 = exever.res
+
+$(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res)
+        $(linker) $(lflags) name $^@ file { $(objs) } lib { $(xlibs) }
         $(rc) -k $(name).res $^@ $(bind_version_res)
 
 rcstr.gh : rcstrmsg.gh
         $(awk) -f $(build_dir)/msgtoh.awk $[@ > $^@
 
-rcstrmsg.gh : ../ddespy.msg $(msgfiles)
-        $(cc) -zk0 -p -I"$(sdk_dir)/misc" $(inc_path) $[@ -fo=$^@
+rcstrmsg.gh : ../ddespy.msg
+        $(cc) $(preproc_opts) $(c_japan_charset) -I"$(sdk_dir)/misc" $(inc_path) $[@ -fo=$^@
 
 $(name).res : ../$(name).rc .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 -I"../res" $(inc_path) $[@ -fo=$^@

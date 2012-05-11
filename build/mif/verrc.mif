@@ -82,6 +82,10 @@ verrcppc_exe_out = verppc.res
 verrcppc_exe = $(proj_name)ppc
 !endif
 
+!ifndef version_res
+version_res = $((version_res_$(host_os)_$(host_cpu))
+!endif
+
 !ifndef patch_level
 patch_level = 0
 !endif

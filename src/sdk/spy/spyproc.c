@@ -36,43 +36,41 @@
 #include "mark.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"
-#ifdef __NT__
-    #include <commctrl.h>
-#endif
 
 static BOOL     spyAll;
 static WORD     statusHite = 25;
 
 static MenuItemHint menuHints[] = {
-        SPY_SAVE,                       STR_HINT_SAVE,
-        SPY_SAVE_AS,                    STR_HINT_SAVE_AS,
-        SPY_LOG,                        STR_HINT_LOG,
-        SPY_PAUSE_LOG,                  STR_HINT_PAUSE_LOG,
-        SPY_CONFIG_LOG,                 STR_HINT_CONFIG_LOG,
-        SPY_SET_FONT,                   STR_HINT_SET_FONT,
-        SPY_TOP,                        STR_HINT_TOP,
-        SPY_EXIT,                       STR_HINT_EXIT,
-        SPY_CLEAR_MESSAGES,             STR_HINT_CLEAR_MESSAGES,
-        SPY_AUTO_SCROLL,                STR_HINT_AUTO_SCROLL,
-        SPY_MARK,                       STR_HINT_MARK,
-        SPY_WINDOW,                     STR_HINT_WINDOW,
-        SPY_ADD_WINDOW,                 STR_HINT_ADD_WINDOW,
-        SPY_ANOTHER_WINDOW,             STR_HINT_ADD_WINDOW,
-        SPY_ALL_WINDOWS,                STR_HINT_ALL_WINDOWS,
-        SPY_OFFON,                      STR_HINT_OFFON,
-        SPY_STOP,                       STR_HINT_STOP,
-        SPY_PEEK_WINDOW,                STR_HINT_PEEK_WINDOW,
-        SPY_SHOW_SELECTED_WINDOWS,      STR_HINT_SHOW_SELECTED_WINDOWS,
-        SPY_MESSAGES_WATCH,             STR_HINT_MESSAGES_WATCH,
-        SPY_MESSAGES_STOP,              STR_HINT_MESSAGES_STOP,
-        SPY_MESSAGES_ASCFG,             STR_HINT_MESSAGES_ASCFG,
-        SPY_MESSAGES_SAVE,              STR_HINT_MESSAGES_SAVE,
-        SPY_MESSAGES_LOAD,              STR_HINT_MESSAGES_LOAD,
-        SPY_ABOUT,                      STR_HINT_ABOUT,
-        SPY_SHOW_HELP,                  STR_HINT_SHOW_HELP,
-        SPY_HELP_CONTENTS,              STR_HINT_HELP_CONTENTS,
-        SPY_HELP_SRCH,                  STR_HINT_HELP_SRCH,
-        SPY_HELP_ON_HELP,               STR_HINT_HELP_ON_HELP
+    SPY_SAVE,                       STR_HINT_SAVE,
+    SPY_SAVE_AS,                    STR_HINT_SAVE_AS,
+    SPY_LOG,                        STR_HINT_LOG,
+    SPY_PAUSE_LOG,                  STR_HINT_PAUSE_LOG,
+    SPY_CONFIG_LOG,                 STR_HINT_CONFIG_LOG,
+    SPY_SET_FONT,                   STR_HINT_SET_FONT,
+    SPY_TOP,                        STR_HINT_TOP,
+    SPY_EXIT,                       STR_HINT_EXIT,
+    SPY_CLEAR_MESSAGES,             STR_HINT_CLEAR_MESSAGES,
+    SPY_AUTO_SCROLL,                STR_HINT_AUTO_SCROLL,
+    SPY_MARK,                       STR_HINT_MARK,
+    SPY_WINDOW,                     STR_HINT_WINDOW,
+    SPY_ADD_WINDOW,                 STR_HINT_ADD_WINDOW,
+    SPY_ANOTHER_WINDOW,             STR_HINT_ADD_WINDOW,
+    SPY_ALL_WINDOWS,                STR_HINT_ALL_WINDOWS,
+    SPY_OFFON,                      STR_HINT_OFFON,
+    SPY_STOP,                       STR_HINT_STOP,
+    SPY_PEEK_WINDOW,                STR_HINT_PEEK_WINDOW,
+    SPY_SHOW_SELECTED_WINDOWS,      STR_HINT_SHOW_SELECTED_WINDOWS,
+    SPY_MESSAGES_WATCH,             STR_HINT_MESSAGES_WATCH,
+    SPY_MESSAGES_STOP,              STR_HINT_MESSAGES_STOP,
+    SPY_MESSAGES_ASCFG,             STR_HINT_MESSAGES_ASCFG,
+    SPY_MESSAGES_SAVE,              STR_HINT_MESSAGES_SAVE,
+    SPY_MESSAGES_LOAD,              STR_HINT_MESSAGES_LOAD,
+    SPY_ABOUT,                      STR_HINT_ABOUT,
+    SPY_SHOW_TOOLBAR,               STR_HINT_SHOW_TOOLBAR,
+    SPY_SHOW_HELP,                  STR_HINT_SHOW_HELP,
+    SPY_HELP_CONTENTS,              STR_HINT_HELP_CONTENTS,
+    SPY_HELP_SRCH,                  STR_HINT_HELP_SRCH,
+    SPY_HELP_ON_HELP,               STR_HINT_HELP_ON_HELP
 };
 
 
@@ -252,6 +250,10 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         CreateSpyBox( hwnd );
         SetWindowLong( hwnd, 0, (DWORD)SpyListBox );
         CreateSpyTool( hwnd );
+        ShowSpyTool( SpyMainWndInfo.show_toolbar );
+        if( SpyMainWndInfo.show_toolbar ) {
+            CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_CHECKED | MF_BYCOMMAND );
+        }
         LogInit( hwnd, Instance, SpyLogTitle );
         CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, MF_CHECKED );
         EnableMenuItem( SpyMenu, SPY_ADD_WINDOW, MF_GRAYED );
@@ -306,15 +308,25 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             hinthwnd = GetHintHwnd( StatusHdl );
             if( SpyMainWndInfo.show_hints ) {
                 CheckMenuItem( mh, SPY_SHOW_HELP, MF_CHECKED | MF_BYCOMMAND );
-                ShowWindow( hinthwnd, SW_SHOW );
-            } else{
-                CheckMenuItem( mh, SPY_SHOW_HELP,
-                               MF_UNCHECKED | MF_BYCOMMAND );
+                showHintBar( hwnd );
+            } else {
+                CheckMenuItem( mh, SPY_SHOW_HELP, MF_UNCHECKED | MF_BYCOMMAND );
                 ShowWindow( hinthwnd, SW_HIDE );
             }
             GetClientRect( hwnd, &area );
             ResizeSpyBox( area.right - area.left, area.bottom - area.top );
-            showHintBar( hwnd );
+            break;
+        case SPY_SHOW_TOOLBAR:
+            SpyMainWndInfo.show_toolbar = !SpyMainWndInfo.show_toolbar;
+            mh = GetMenu( hwnd );
+            if( SpyMainWndInfo.show_toolbar ) {
+                CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_CHECKED | MF_BYCOMMAND );
+            } else {
+                CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_UNCHECKED | MF_BYCOMMAND );
+            }
+            ShowSpyTool( SpyMainWndInfo.show_toolbar );
+            GetClientRect( hwnd, &area );
+            ResizeSpyBox( area.right - area.left, area.bottom - area.top );
             break;
         case SPY_TOP:
             SpyMainWndInfo.on_top = !SpyMainWndInfo.on_top;
@@ -555,11 +567,7 @@ LONG CALLBACK SpyWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         hinthwnd = GetHintHwnd( StatusHdl );
         MoveWindow( hinthwnd, area.left, area.top,
                     area.right - area.left, statusHite, TRUE );
-        if( SpyMainWndInfo.show_hints ) {
-            ResizeSpyBox( LOWORD( lparam ), HIWORD( lparam ) );
-        } else {
-            ResizeSpyBox( LOWORD( lparam ), HIWORD( lparam ) );
-        }
+        ResizeSpyBox( LOWORD( lparam ), HIWORD( lparam ) );
         ResizeSpyTool( LOWORD( lparam ), HIWORD( lparam ) );
         showHintBar( hwnd );
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );

@@ -35,10 +35,11 @@
     #define _WIN32_IE   0x0600
 #endif
 
-#include <windows.h>
+#include "precomp.h"
 #include "bool.h"
 #define MSG_RC_BASE     0
 #include "rcstr.gh"
+#include "uistr.gh"
 #include "ldstr.h"
 #include "hint.h"
 
@@ -169,7 +170,8 @@ typedef struct {
     int                 last_ypos;
     BOOL                on_top;
     BOOL                show_hints;
-}WndConfigInfo;
+    BOOL                show_toolbar;
+} WndConfigInfo;
 
 /*
  * globals
@@ -276,6 +278,8 @@ void CreateSpyTool( HWND parent );
 void DestroySpyTool( void );
 void SetOnOffTool( spystate ss );
 void ResizeSpyTool( WORD width, WORD height );
+void ShowSpyTool( BOOL show );
+void GetSpyToolRect( RECT *prect );
 
 /* spylog.c */
 void SpyLogTitle( int f );

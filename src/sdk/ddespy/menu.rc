@@ -15,12 +15,14 @@ BEGIN
         MENUITEM sp( "C&onfigure Log...",
                      "ログの設定(&o)..." ), DDEMENU_LOG_CONFIG
         MENUITEM SEPARATOR
-        MENUITEM sp( "&Font...",
+        MENUITEM sp( "Set &Font...",
                      "フォント(&F)..." ), DDEMENU_FONT
-        MENUITEM sp( "S&how Toolbar",
+        MENUITEM sp( "Show &Toolbar",
                      "ツ－ルバ－の表示(&h)" ), DDEMENU_TOOLBAR
         MENUITEM sp( "Show &Hint Bar",
                      "ヒントバ－の表示(&H)" ), DDEMENU_HINTBAR
+        MENUITEM sp( "Always On &Top",
+                     "Always On &Top" ), DDEMENU_TOP
         MENUITEM SEPARATOR
         MENUITEM sp( "E&xit",
                      "終了(&x)" ), DDEMENU_EXIT
@@ -94,7 +96,7 @@ BEGIN
     BEGIN
         sp( MENUITEM "&Contents",
                      "目次(&C)" ), DDEMENU_HELP_CONTENTS
-        MENUITEM sp( "&Search for Help on...",
+        MENUITEM sp( "&Search for Help On...",
                      "キ－ワ－ドで検索(&S)" ), DDEMENU_HELP_SRCH
         MENUITEM SEPARATOR
         MENUITEM sp( "&How to Use Help",

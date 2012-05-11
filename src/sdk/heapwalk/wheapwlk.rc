@@ -12,7 +12,7 @@
  #define sp( s1, s2 ) s1
 #endif
 
-"APPLICON" ICON 10hw.ico
+"APPLICON" ICON "wheapwlk.ico"
 
 #include "menu.rc"
 
@@ -21,6 +21,7 @@
 STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 END
 
 NUMBER_OF_STRINGS RCDATA

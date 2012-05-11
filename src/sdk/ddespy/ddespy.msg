@@ -219,12 +219,6 @@ pick(   STR_ABOUT_NAME,
         "Open Watcom DDE Spy for Windows",
         "Open Watcom DDE Spy Windows版" )
 
-#include "savelbox.msg"
-#include "log.msg"
-#include "alias.msg"
-#include "about.msg"
-#include "hint.msg"
-
 pick(   STR_HINT_SAVE,
         "Save information in the event list to a file.",
         "イベントリストの情報のファイルへの保存." )
@@ -234,11 +228,11 @@ pick(   STR_HINT_SAVE_AS,
         "イベントリストの情報を名前を付けてファイルに保存." )
 
 pick(   STR_HINT_LOG_FILE,
-        "Start/Stop logging monitored events to a file.",
+        "Start/stop logging monitored events to a file.",
         "モニタ－するイベントのファイルへのログの開始/終了." )
 
 pick(   STR_HINT_LOG_PAUSE,
-        "Pause/Resume logging monitored events to a file.",
+        "Pause/resume logging monitored events to a file.",
         "モニタ－するイベントのファイルへのログの停止/続行." )
 
 pick(   STR_HINT_LOG_CONFIG,
@@ -250,8 +244,12 @@ pick(   STR_HINT_FONT,
         "DDE Spyウィンドウのフォントの設定." )
 
 pick(   STR_HINT_TOOLBAR,
-        "Display/Hide the toolbar.",
+        "Display/hide the toolbar.",
         "ツ－ルバ－の表示." )
+
+pick(   STR_HINT_TOP,
+        "Ensure DDE Spy is never covered by other windows.",
+        "Ensure DDE Spy is never covered by other windows." )
 
 pick(   STR_HINT_EXIT,
         "Exit DDE Spy.",
@@ -266,7 +264,7 @@ pick(   STR_HINT_MARK,
         "イベントリストにテキストを入れます." )
 
 pick(   STR_HINT_SCREEN_OUT,
-        "Enable/Disable writting output to the screen.",
+        "Enable/disable writing output to the screen.",
         "スクリ－ンへの出力書き込みの許可メッセ－ジ情報のモニタ－の許可/禁止." )
 
 pick(   STR_HINT_SCROLL,
@@ -274,31 +272,31 @@ pick(   STR_HINT_SCROLL,
         "最新イベントの表示のためのスクロ－ル." )
 
 pick(   STR_HINT_MON_POST,
-        "Enable/Disable monitoring of posted message information.",
+        "Enable/disable monitoring of posted message information.",
         "ポストメッセ－ジ情報のモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MON_SENT,
-        "Enable/Disable monitoring of sent message information.",
+        "Enable/disable monitoring of sent message information.",
         "送信メッセ－ジ情報のモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MON_STR,
-        "Enable/Disable monitoring of string management events.",
+        "Enable/disable monitoring of string management events.",
         "文字列管理イベントのモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MON_CB,
-        "Enable/Disable monitoring of callback events.",
+        "Enable/disable monitoring of callback events.",
         "コ－ルバックイベントのモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MON_ERR,
-        "Enable/Disable monitoring of error events.",
+        "Enable/disable monitoring of error events.",
         "エラ－イベントのモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MON_CONV,
-        "Enable/Disable monitoring of conversation management events.",
+        "Enable/disable monitoring of conversation management events.",
         "対話管理イベントのモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MON_LNK,
-        "Enable/Disable monitoring of link management events.",
+        "Enable/disable monitoring of link management events.",
         "リンク管理イベントのモニタ－の許可/禁止." )
 
 pick(   STR_HINT_MSG_FILTER,
@@ -338,31 +336,31 @@ pick(   STR_HINT_HWND_ALIAS,
         "HWNDの値を意味のあるテキストに置き換えます." )
 
 pick(   STR_HINT_TASK_ALIAS,
-        "Replace task id's with meaningful text.",
+        "Replace task identifiers with meaningful text.",
         "タスクidを意味のあるテキストに置き換えます." )
 
 pick(   STR_HINT_CONV_ALIAS,
-        "Replace conversation id's with meaningful text.",
+        "Replace conversation identifiers with meaningful text.",
         "対話idを意味のあるテキストに置き換えます." )
 
 pick(   STR_HINT_ABOUT,
-        "Display program information",
+        "Display program information.",
         "プログラム情報の表示" )
 
 pick(   STR_HINT_HINTBAR,
-        "Show/Hide this hint bar",
+        "Show/hide the hint bar.",
         "ヒントバ－の表示/非表示" )
 
 pick(   STR_HINT_HELP_CONTENTS,
-        "Display help",
+        "List Open Watcom DDE Spy help topics.",
         "ヘルプの表示" )
 
 pick(   STR_HINT_HELP_SRCH,
-        "Search for help on a specific topic",
+        "Search for help on a specific topic.",
         "特定のトピックに関するヘルプの検索" )
 
 pick(   STR_HINT_HELP_ON_HELP,
-        "Show information on using help",
+        "Display information on how to use help.",
         "ヘルプの使用方法に関する情報の表示" )
 
 pick(   STR_TIP_TRK_STR,

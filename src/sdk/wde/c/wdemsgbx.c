@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 
 #include "wdeglbl.h"
 #include "wdemain.h"
@@ -65,12 +65,12 @@ void WdeDisplayMsgBox( const char *msg )
 
     title = WdeAllocRCString( WDE_MSGBOXTITLE );
 
-    if( !MessageBox( (HWND) NULL, msg, title,
+    if( !MessageBox( (HWND)NULL, msg, title,
                      MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep(-1);
+        MessageBeep( -1 );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WdeFreeRCString( title );
     }
 }
@@ -101,13 +101,12 @@ void WdeDisplayErrorMsg( DWORD msg )
 
     title = WdeAllocRCString( WDE_MSGBOXTITLE );
 
-    if( !RCMessageBox( (HWND)NULL , msg, title,
+    if( !RCMessageBox( (HWND)NULL, msg, title,
                        MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep(-1);
+        MessageBeep( -1 );
     }
 
-    if( title ) {
+    if( title != NULL ) {
         WdeFreeRCString( title );
     }
 }
-

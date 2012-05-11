@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "precomp.h"
 #include "wdeglbl.h"
 #include "wderesin.h"
 #include "wderes.h"
@@ -110,9 +110,8 @@ Bool WdeClearCurrentResource( void )
 #else
         is32bit = FALSE;
 #endif
-        ok = ( WdeCreateNewDialog( NULL, is32bit ) != NULL );
+        ok = (WdeCreateNewDialog( NULL, is32bit ) != NULL);
     }
 
     return( ok );
 }
-

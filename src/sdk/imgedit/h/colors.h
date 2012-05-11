@@ -30,3 +30,12 @@
 ****************************************************************************/
 
 
+/*
+ * Define one palette for 16 color, one for 2 color, one for 8 color,
+ * and one for 256 color.
+ */
+#define NUM_PALETTES    4
+#define COLOR_16        0
+#define COLOR_2         1
+#define COLOR_256       2
+#define PALETTE_FILE    (WORD)0x1C43

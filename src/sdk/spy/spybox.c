@@ -34,24 +34,19 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#ifdef __NT__
-    #include <commctrl.h>
-#endif
+#include "loadcc.h"
 
 #if defined( __NT__ )
     #define LISTBOX_X       6
-    #define LISTBOX_Y       ((TOOLBAR_HEIGHT) + 6)
+    #define LISTBOX_Y       6
 #else
     #define LISTBOX_X       10
-    #define LISTBOX_Y       ((TOOLBAR_HEIGHT) + 8)
+    #define LISTBOX_Y       10
 #endif
 
 static int          xChar, yChar;
+
 #ifdef __NT__
-static HINSTANCE    hInstCommCtrl;
-
-typedef VOID (WINAPI *PFNICC)( VOID );
-
 typedef struct column_info {
     int string_id;
     int width;
@@ -112,7 +107,7 @@ void SpyOut( char *msg, LPMSG pmsg )
     SpyLogOut( res );
 
 #ifdef __NT__
-    if( hInstCommCtrl != NULL ) {
+    if( IsCommCtrlLoaded() ) {
         lvi.mask = LVIF_TEXT;
         lvi.iItem = SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0L );
         lvi.iSubItem = 0;
@@ -161,7 +156,6 @@ void SpyOut( char *msg, LPMSG pmsg )
 void CreateSpyBox( HWND parent )
 {
 #ifdef __NT__
-    PFNICC      pfnICC;
     LVCOLUMN    lvc;
     int         i;
 #endif
@@ -169,10 +163,8 @@ void CreateSpyBox( HWND parent )
     setCharSize( parent );
 
 #ifdef __NT__
-    if( (hInstCommCtrl = GetModuleHandle( "COMCTL32.DLL" )) != NULL ) {
+    if( LoadCommCtrl() ) {
         AllowVariableFonts();
-        pfnICC = (PFNICC)GetProcAddress( hInstCommCtrl, "InitCommonControls" );
-        pfnICC();
         SpyListBox = CreateWindowEx( WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
                                      WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SINGLESEL,
                                      LISTBOX_X, LISTBOX_Y, 0, 0, parent,
@@ -221,7 +213,7 @@ void CreateSpyBox( HWND parent )
     SetMonoFont( SpyListBox );
 
 #ifdef __NT__
-    if( hInstCommCtrl == NULL ) {
+    if( !IsCommCtrlLoaded() ) {
 #endif
         SpyListBoxTitle = CreateWindow(
             "STATIC",                   /* Window class name */
@@ -250,7 +242,7 @@ void CreateSpyBox( HWND parent )
 void ClearSpyBox( void )
 {
 #ifdef __NT__
-    if( hInstCommCtrl != NULL ) {
+    if( IsCommCtrlLoaded() ) {
         SendMessage( SpyListBox, LVM_DELETEALLITEMS, 0, 0L );
     } else {
 #endif
@@ -291,13 +283,25 @@ void ResizeSpyBox( WORD width, WORD height )
     RECT        area;
     HWND        hinthwnd;
 
-    ypos = LISTBOX_Y + yChar + 3;
+    ypos = LISTBOX_Y;
+#ifdef __NT__
+    if( !IsCommCtrlLoaded() ) {
+#endif
+        ypos += yChar + 3;
+#ifdef __NT__
+    }
+#endif
     width -= 2 * LISTBOX_X;
-    nheight = height - ypos - LISTBOX_X;
+    nheight = height - (ypos + LISTBOX_Y);
 
     if( SpyMainWndInfo.show_hints ) {
         hinthwnd = GetHintHwnd( StatusHdl );
         GetWindowRect( hinthwnd, &area );
+        nheight -= area.bottom - area.top;
+    }
+    if( SpyMainWndInfo.show_toolbar ) {
+        GetSpyToolRect( &area );
+        ypos += area.bottom - area.top;
         nheight -= area.bottom - area.top;
     }
     if( nheight < 0 ) {
@@ -319,7 +323,7 @@ void ResizeSpyBox( WORD width, WORD height )
 /*
  * ResetSpyListBox - reset the current spy list box
  */
-void ResetSpyListBox( void  )
+void ResetSpyListBox( void )
 {
     RECT        r;
 
@@ -348,7 +352,7 @@ BOOL GetSpyBoxSelection( char *str )
 {
     LRESULT sel;
 #ifdef __NT__
-    if( hInstCommCtrl == NULL ) {
+    if( !IsCommCtrlLoaded() ) {
 #endif
         sel = SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
         if( sel == (WORD)LB_ERR ) {
