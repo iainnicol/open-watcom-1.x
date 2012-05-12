@@ -120,8 +120,6 @@ nlm_imports = &
     ImportSymbol &
     Free
 
-description = 'Open Watcom Sampler V2.2'
-
 extra_l_flags = op symfile,map
 extra_l_flags_os2_i86 = lib os2.lib op stack=4k, newfiles
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
@@ -130,7 +128,7 @@ extra_l_flags_win = option heap=10k, stack=10k segment class 'CODE' preload fixe
 !ifeq target nov
 inc_dirs = -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(nwsrc)"
 !else ifeq target win
-inc_dirs = -I"$(sdk_dir)/misc"
+inc_dirs = -I"$(sdk_dir)/misc" -I"$(cmnui_dir)/h"
 !else ifeq target rsi
 inc_dirs = -I"../rsii86" -I"$(rsilib)"
 !else ifeq target pls
@@ -143,7 +141,7 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !ifeq target dos
 .c: ../dosi86;../c
 !else ifeq target win
-.c: ../c;$(sdk_dir)/misc
+.c: ../c;$(sdk_dir)/misc;$(cmnui_dir)/c
 !else ifeq target rsi
 .c: ../rsii86;../c;$(rsilib)
 !else ifeq target pls
@@ -155,12 +153,15 @@ inc_dirs += -I"$(dig_dir)/h" -I"../h"
 !endif
 
 !ifeq target win
-.asm: ../asm;$(sdk_dir)/misc
+.asm: ../asm;$(sdk_dir)/misc;$(cmnui_dir)/asm
 !else ifeq target rsi
 .asm: ../rsii86;../asm;$(rsilib)
 !else
 .asm: ../asm
 !endif
+
+# systems where version resources must be added to .EXE
+version_res_nt_386 = exever.res
 
 rsidir = $(tools_root)
 
@@ -178,10 +179,7 @@ $(xname).exe : $(xname).exp $(xname).res
     wstrip -q -a -r $^@ . $(xname).res
 !else
 $(xname).exe : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
-    @%write tmp.lnk $(lflags)
-    @for %i in ($(objects)) do @%append tmp.lnk file %i
-    @for %i in ($(libs)) do @%append tmp.lnk lib %i
-    $(linker) name $^@ @tmp.lnk
+    $(linker) $(lflags) name $^@ file { $(objects) } lib { $(libs) }
     wstrip -q -a -r $^@ . $(xname).res
 !endif
 
@@ -201,15 +199,16 @@ $(xname).exp : $(objects) $(libs) $(__MAKEFILES__)
 libs = ../../clib/library/nw_clib.386/ms_s/clib3s.lib &
     $(wres_lib)
 
-$(xname).nlm : $(xname).res $(objects) $(libs) $(__MAKEFILES__)
+$(xname).nlm : $(xname).res $(objects) $(libs) nversion.tmp $(__MAKEFILES__)
     @%write $(%debug) tmp.lnk name $^@
     @%append tmp.lnk option osname='Novell NLM'
-    @%append tmp.lnk format novell nlm $(description)
+    @%append tmp.lnk format novell nlm 'Open Watcom Sampler'
     @%append tmp.lnk debug novell
     @%append tmp.lnk debug all
     @%append tmp.lnk option map
     @%append tmp.lnk option stack=10k
     @%append tmp.lnk option nodefault
+    @%append tmp.lnk @nversion.tmp
     @for %i in ($objects) do @%append tmp.lnk file %i
     @for %i in ($(nlm_imports)) do @%append tmp.lnk import %i
     @%append tmp.lnk import @$(nwoss_dir)/common/imp/owclib.imp
@@ -242,24 +241,29 @@ $(xname).exp : $(objects) $(xname).res $(libs) $(__MAKEFILES__)
     wstrip -q -a -r $^@ . $(xname).res
 !else
 
+libs = $(wres_lib)
+
 !ifdef bootstrap
-$(xname).exe : $(objects) $(cl_objs) $(xname).res $(wres_lib) $(__MAKEFILES__)
-    $(cl) $(clflags) $(objects) $(cl_objs) $(cl_libs) $(wres_lib)
+$(xname).exe : $(objects) $(cl_objs) $(xname).res $(libs) $(__MAKEFILES__)
+    $(cl) $(clflags) $(objects) $(cl_objs) $(libs) $(cl_libs)
     wstrip -q -a -r $^@ . $(xname).res
 !else
-$(xname).exe : $(objects) $(xname).res $(wres_lib) $(__MAKEFILES__)
-    @%write tmp.lnk $(lflags)
-    @for %i in ($(objects)) do @%append tmp.lnk file %i
-    @%append tmp.lnk lib $(wres_lib)
-    $(linker) name $^@ @tmp.lnk
+$(xname).exe : $(objects) $(xname).res $(libs) $(version_res) $(__MAKEFILES__)
+    $(linker) $(lflags) name $^@ file { $(objects) } lib { $(libs) }
 !ifeq host_os win
     $(rc) $(xname).res $^@
 !else
-    wstrip -q -a -r $^@ . $(xname).res
+    wstrip -q -a -r $^@ . $(xname).res $(bind_version_res)
 !endif
 !endif
 
 !endif
+
+./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
+        $(host_cl) $(host_cl_opts) $[@
+
+nversion.tmp: ./mknver.exe
+    	$[@ $^@
 
 !ifeq host_os win
 $(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg
@@ -267,3 +271,5 @@ $(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.
 $(xname).res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg
 !endif
     $(rc_aui) $(extra_rc_flags) $[@ -fo=$^@
+
+!include verrc.mif

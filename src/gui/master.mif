@@ -62,7 +62,7 @@ mem_objs = &
 objs = $(dbg_objs) $(mem_objs)
 
 !ifeq sys_windowed 1
-wpi_lib = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib
+libs = $(wpi_dir)/$(host_os)$(host_cpu)/wpi.lib $(cmnui_dir)/$(host_os)$(host_cpu)/commonui.lib
 !endif
 
 !ifndef bootstrap
@@ -86,10 +86,8 @@ extra_c_flags_os2 = -D__OS2_PM__
 extra_c_flags_trmem = $(trmem_cflags) -fh=$^&.pch
 
 # memory tracker cover routines
-extra_c_flags_guimem = $(trmem_cover_cflags) -fh=$^&.pch
+extra_c_flags_guimem = $(trmem_cover_cflags) -fh=guimem.pch
 
-extra_c_flags_guisdef += -fh=$^&.pch
-extra_c_flags_guifcrck += -fh=$^&.pch
 extra_c_flags_help += -fh=$^&.pch
 extra_c_flags_vvscroll += -fh=$^&.pch
 extra_c_flags_helpmenu += -fh=$^&.pch
@@ -103,29 +101,20 @@ extra_c_flags_search += -fh=gui02.pch
 extra_c_flags_guiextnm += -fh=gui03.pch
 extra_c_flags_helpopen += -fh=gui03.pch
 extra_c_flags_helpio += -fh=gui03.pch
-extra_c_flags_guirdlg += -fh=gui04.pch
-extra_c_flags_guirmenu += -fh=gui04.pch
-extra_c_flags_wstatus += -fh=gui05.pch
-extra_c_flags_wptoolbr += -fh=gui05.pch
-extra_c_flags_wmdisim += -fh=gui06.pch
-extra_c_flags_guifdlg += -fh=gui06.pch
-extra_c_flags_guihelp += -fh=gui07.pch
-extra_c_flags_guixmain += -fh=gui07.pch
-extra_c_flags_guidrain += -fh=gui07.pch
 !endif
 
 !ifeq sys_windowed 1
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" -I"$(wpi_dir)/h" -I"$(sdk_dir)/misc"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" -I"$(wpi_dir)/h" -I"$(cmnui_dir)/h"
 !else
 inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" -I"$(ui_dir)/h"
 !endif
 
-.c:     ../c;../../c;$(hlpview_dir)/c;$(sdk_dir)/misc;$(trmem_dir)
+.c:     ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
 .h:     ../h;../../h;$(wpi_dir)/h
 .msg:   ../../h
 
-$(name).lib : _guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(__MAKEFILES__) $(wpi_lib)
-        $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(wpi_lib)
+$(name).lib : _guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
+        $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
 
 ./mkstr.exe: $(gui_dir)/c/mkstr.c $(gui_dir)/h/gui.msg
         $(host_cl) $(host_cl_opts) -I"$(gui_dir)/h" $[@

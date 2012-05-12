@@ -21,11 +21,6 @@ lname = $(proj_name).rex
 lname = $(name)
 !endif
 
-# systems where version resources must be added to .EXE
-!ifdef sys_windowed
-version_res_nt_386 = version.res
-!endif
-
 PROJECT : $(name) .symbolic
 
 additional_cleanup = *.dh *.ch
@@ -56,11 +51,13 @@ videps =
 bindextra = -d$(vi_dir)\dat\winbind.dat
 !endif
 
+version_res_nt_386 = exever.res
+
 !ifdef bootstrap
 $(name) : $(special) $(objs) $(cl_objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(res_objs)
         $(cl) $(clflags) $< $(cl_libs)
 !else
-$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res_$(host_os)_$(host_cpu))
+$(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) version.obj $(version_res)
         $(linker) $(lflags) name $(lname) file version.obj file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) $(rcsdll)
 !ifdef sys_windowed
 !ifdef win_386
@@ -75,7 +72,7 @@ $(name) : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $
 !endif
 !endif
 
-verrc_skel = ../win/exever.rc
+verrc_exe_skel = ../win/exever.rc
 !include verrc.mif
 
 !ifeq host_os win

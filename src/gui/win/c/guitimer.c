@@ -24,14 +24,48 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI library timer callbacks
 *
 ****************************************************************************/
 
 
 #include "guiwind.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "guixutil.h"
 
-#undef guipick
-#define guipick( x, y, z ) char *__LIT##x;
-#include "gui.msg"
+/* include from the app */
+extern void GUITimer( void );
+
+#if defined(__NT__) || defined(WILLOWS)
+VOID CALLBACK GUITimerProc( HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime )
+{
+    gui_window *wnd;
+    gui_timer_event timer;
+
+    uMsg = uMsg; dwTime = dwTime;
+    wnd = GUIGetWindow( hwnd );
+    if( wnd == NULL ) {
+        GUITimer();
+    } else {
+        timer.id = idEvent;
+        GUIEVENTWND( wnd, GUI_TIMER_EVENT, &timer );
+    }
+}
+
+void GUIStartTimer( gui_window *wnd, int id, int msec )
+{
+    if( wnd )
+        SetTimer( wnd->hwnd, id, msec, GUITimerProc );
+    else
+        SetTimer( 0, id, msec, GUITimerProc );
+}
+
+void GUIStopTimer( gui_window *wnd, int id )
+{
+    if( wnd )
+        KillTimer( wnd->hwnd, id );
+    else
+        KillTimer( 0, id );
+}
+#endif

@@ -38,7 +38,6 @@ extra_c_flags_os2       = -D__OS2_PM__
 
 # lflags stuff
 ###############
-extra_l_flags_nt        = op stack=30k
 extra_l_flags_os2       = op stack=32k
 extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=../h/wprof.u
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
@@ -68,7 +67,7 @@ rcinclude= -I. -I"../h" -I"$(dig_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)" -I"$(gu
 
 inc_dirs = -I"../h" -I"$(sampler_dir)/h" -I"$(aui_dir)/h" -I"$(gui_dir)/h" -I"$(trmem_dir)" -I"$(dig_dir)/h"
 
-# systems where version resource must be added to .EXE
+# systems where version resourcs must be added to .EXE
 version_res_nt_386 = exever.res
 
 # explicit rules
@@ -77,19 +76,17 @@ version_res_nt_386 = exever.res
 $(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(cl_objs) $(wprof_libs) $(sys_libs) $(resfile)
     @rm -f finger.obj
     @%make finger.obj
-    $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(cl_objs) $(wprof_libs) $(sys_libs) $(cl_libs) $(wres_lib) -ldl
+    $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(cl_objs) $(wprof_libs) $(sys_libs) $(cl_libs) -ldl
     wstrip -q -a -r  $^@ . $(resfile)
 !else
-$(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile) $(version_res_$(host_os)_$(host_cpu))
+$(proj_name).$(exe) : _guimsgs.gh auistr.gh $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(resfile) $(version_res)
     @rm -f finger.obj
     @%make finger.obj
     $(linker) name $^@ $(lflags) op map file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(wprof_libs) $(sys_libs)}
 !ifneq sys_windowed 1
     wstrip -q -a -r  $^@ . $(resfile)
-!else ifdef version_res_$(host_os)_$(host_cpu)
-    $(rc) -k $(resfile) $^@ -fr=$(version_res_$(host_os)_$(host_cpu))
 !else
-    $(rc) -k $(resfile) $^@
+    $(rc) -k $(resfile) $^@ $(bind_version_res)
 !endif
 !endif
 

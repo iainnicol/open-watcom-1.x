@@ -38,6 +38,7 @@ sysobjs = guixscal.obj &
           guisysin.obj &
           guisysfi.obj &
           guisystr.obj &
+          guitimer.obj &
           guixwind.obj &
           guixmain.obj &
 	  guidrain.obj &
@@ -51,7 +52,6 @@ sysobjs = guixscal.obj &
           guispawn.obj &
           guigsysh.obj &
           guiwinlp.obj &
-          wstatus.obj  &
           guixutil.obj &
           guimouse.obj &
           guixhook.obj &
@@ -87,10 +87,7 @@ sysobjs = guixscal.obj &
           guirmenu.obj &
           guiclass.obj &
           guif1hk.obj  &
-          wmdisim.obj  &
-          wptoolbr.obj &
-          guiclen.obj  &
-          ctl3d32.obj
+          guiclen.obj
 
 !ifeq host_OS os2
 sysobjs +=             &
@@ -98,14 +95,12 @@ sysobjs +=             &
           os2dlg.obj
 !else
 sysobjs +=             &
-          fontstr.obj  &
-          windlg.obj   &
-	  wwinhelp.obj
+          windlg.obj
 !endif
 
 # memory tracker cover routines
-extra_c_flags_mem    = $(trmem_cover_cflags) -fh=$^&.pch
-extra_c_flags_os2mem = $(trmem_cover_cflags) -fh=$^&.pch
-extra_c_flags_wpimem = $(trmem_cover_cflags) -fh=$^&.pch
+extra_c_flags_mem    = $(trmem_cover_cflags) -fh=guimem.pch
+extra_c_flags_os2mem = $(trmem_cover_cflags) -fh=guimem.pch
+extra_c_flags_wpimem = $(trmem_cover_cflags) -fh=guimem.pch
 
 !include ../../master.mif
