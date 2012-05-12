@@ -59,8 +59,11 @@ extra_linker = &
 
 extra_srcs += ;$(trap_dir)/lcl/dos/c;$(sdk_dir)/misc
 inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(sdk_dir)/misc"
+inc_dirs += -I"$(cmnui_dir)/h" -I"$(wpi_dir)/h"
 
 extra_c_flags_i86 = -3
+
+.c: ../c;$(cmnui_dir)/c
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

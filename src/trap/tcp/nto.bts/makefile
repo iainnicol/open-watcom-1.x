@@ -9,27 +9,17 @@ os    = nto
 srv   = tcp
 cpu   = x86
 which = SERVER
+type  = remote_link
 
-extra_srcs = $(trap_dir)/lcl/nto/c;$(trap_dir)/lcl/c;$(clib_dir)/environ/c
-inc_dirs   = -I"$(trap_dir)/lcl/nto/h" -I"$(trap_dir)/lcl/h" -I"$(lib_misc_dir)/h"
+builtin_trap = 1
 
-extra_cflags = -DBUILTIN_TRAP_FILE #-DDEBUG_OUT
-
-extra_objs = $(remote_objs) &
-             gtcmdunx.obj &
-             x86cpu.obj &
-             ntostrt.obj &
-             ntoacc.obj &
-			 ntomap.obj &
-			 ntoutl.obj &
-             ntocomm.obj &
-             ntofile.obj &
-             supp.obj &
-             core.obj
+extra_objs = clibext.obj
+cl_libs = -lsocket
 
 !define substitute_linker
 
+!include $(trap_dir)/lcl/nto/trap.mif
 !include $(trap_dir)/master.mif
 
 $(target) : $(libs) $(objs) $(__MAKEFILES__)
-    $(cl) $(clflags) $(objs) -lsocket #$(cl_libs)
+    $(cl) $(clflags) $(objs) $(cl_libs)

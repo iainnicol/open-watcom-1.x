@@ -85,6 +85,19 @@ static unsigned (* const ThreadRequests[])(void) = {
 };
 #endif
 
+#if defined(WANT_RUN_THREAD)
+static unsigned (* const RunThreadRequests[])(void) = {
+        ReqRunThread_info,
+        ReqRunThread_get_next,
+        ReqRunThread_get_runtime,
+        ReqRunThread_poll,
+        ReqRunThread_set,
+        ReqRunThread_get_name,
+        ReqRunThread_stop,
+        ReqRunThread_signal_stop,
+};
+#endif
+
 #if defined(WANT_RFX)
 static unsigned (* const RFXRequests[])(void) = {
         ReqRfx_rename,
@@ -115,6 +128,15 @@ static unsigned (* const CapabilitiesRequests[])(void) = {
 };
 #endif
 
+#if defined(WANT_ASYNC)
+static unsigned (* const AsyncRequests[])(void) = {
+        ReqAsync_go,
+        ReqAsync_step,
+        ReqAsync_poll,
+        ReqAsync_stop,
+};
+#endif
+
 typedef struct {
     const char *name;
     const void *vectors;
@@ -136,11 +158,17 @@ static const service_entry Services[] = {
 #if defined(WANT_THREAD)
     { THREAD_SUPP_NAME, ThreadRequests },
 #endif
+#if defined(WANT_RUN_THREAD)
+    { RUN_THREAD_SUPP_NAME, RunThreadRequests },
+#endif
 #if defined(WANT_RFX)
     { RFX_SUPP_NAME,    RFXRequests },
 #endif
 #if defined(WANT_CAPABILITIES)
     { CAPABILITIES_SUPP_NAME,    CapabilitiesRequests },
+#endif
+#if defined(WANT_ASYNC)
+    { ASYNC_SUPP_NAME, AsyncRequests },
 #endif
     { NULL,             NULL }
 };

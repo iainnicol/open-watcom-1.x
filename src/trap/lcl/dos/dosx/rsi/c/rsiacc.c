@@ -59,12 +59,12 @@
 
 #include "x86cpu.h"
 #include "misc7086.h"
+#include "dosredir.h"
 
 TSF32   Proc;
 char    Break;
 
 extern  unsigned        ExceptionText( unsigned, char * );
-extern  void            InitRedirect(void);
 
 bool                    FakeBreak;
 bool                    AtEnd;
@@ -77,7 +77,6 @@ struct {
 static unsigned_8       RealNPXType;
 #define BUFF_SIZE       256
 char                    UtilBuff[BUFF_SIZE];
-#define NIL_DOS_HANDLE  ((short)0xFFFF)
 #define IsDPMI          (_d16info.swmode == 0)
 
 typedef struct watch {
@@ -105,12 +104,18 @@ int     WatchCount;
 #define _DBG( x )
 #endif
 
-extern void SetUsrTask() {}
-extern void SetDbgTask() {}
+int SetUsrTask( void )
+{
+    return( 1 );
+}
 
-static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,char far*,unsigned short), addr48_ptr *addr, byte far *data, unsigned short req ) {
+void SetDbgTask( void )
+{
+}
 
-    unsigned short    len;
+static unsigned short ReadWrite( int (*r)(OFFSET32,SELECTOR,int,void far*,unsigned int), addr48_ptr *addr, byte far *data, unsigned short req ) {
+
+    unsigned short  len;
 
     _DBG(("checking %4.4x:%8.8lx for 0x%x bytes -- ",
             addr->segment, addr->offset, req ));
@@ -542,20 +547,19 @@ unsigned ReqProg_load()
     dst = UtilBuff;
     src = name = GetInPtr( sizeof( prog_load_req ) );
     ret = GetOutPtr( 0 );
-    while( *src != '\0' ) ++src;
-    ++src;
+    while( *src++ != '\0' ) {};
     len = GetTotalSize() - (src - name) - sizeof( prog_load_req );
-    for( ;; ) {
-        if( len == 0 ) break;
-        ch = *src;
-        if( ch == '\0' ) ch = ' ';
-        *dst = ch;
-        ++src;
-        ++dst;
-        --len;
+    if( len > 126 )
+        len = 126;
+    for( ; len > 0; --len ) {
+        ch = *src++;
+        if( ch == '\0' ) {
+            if( len == 1 )
+                break;
+            ch = ' ';
+        }
+        *dst++ = ch;
     }
-    if( dst > UtilBuff ) --dst;
-
     *dst = '\0';
     _DBG1(( "about to debugload\r\n" ));
     _DBG1(( "Name :" ));
@@ -585,7 +589,7 @@ unsigned ReqProg_kill()
 
     _DBG1(( "AccKillProg\n" ));
     ret = GetOutPtr( 0 );
-    InitRedirect();
+    RedirectFini();
     AtEnd = TRUE;
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -961,7 +965,7 @@ trap_version TRAPENTRY TrapInit( char *parm, char *err, bool remote )
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     ver.remote = FALSE;
-    InitRedirect();
+    RedirectInit();
     RealNPXType = NPXType();
     WatchCount = 0;
     FakeBreak = FALSE;

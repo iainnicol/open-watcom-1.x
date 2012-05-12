@@ -5,31 +5,34 @@
 description = 'Open Watcom Debugger Trap File'
 
 !ifdef test
+
 sys_x86_os2   = sys os2
 sys_x86_os2v2 = sys os2v2
 sys_x86_win   = sys windows
 sys_x86_nt    = sys nt
 sys_x86_dos   = sys dos
+sys_x86_rdos  = sys rdos_dll
 sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 
 sys_axp_nt    = sys ntaxp
 
-targ_x86_os2   = $(name)cli1.exe
-targ_x86_os2v2 = $(name)cli.exe
-targ_x86_qnx   = $(name)cli.qnx
-targ_x86_linux = $(name)cli.exe
-targ_x86_win   = $(name)cliw.exe
-targ_x86_dos   = $(name)cli.exe
-targ_x86_nt    = $(name)cli.exe
-targ_x86_nto   = $(name)cli.exe
+targ_x86_os2   = $(xname)cli1.exe
+targ_x86_os2v2 = $(xname)cli.exe
+targ_x86_qnx   = $(xname)cli.qnx
+targ_x86_linux = $(xname)cli.exe
+targ_x86_win   = $(xname)cliw.exe
+targ_x86_dos   = $(xname)cli.exe
+targ_x86_rdos  = $(xname)cli.exe
+targ_x86_nt    = $(xname)cli.exe
+targ_x86_nto   = $(xname)cli.exe
 
-targ_axp_nt    = $(name)cli.exe
+targ_axp_nt    = $(xname)cli.exe
 
-targ_ppc_linux = $(name)cli.exe
-targ_mips_linux = $(name)cli.exe
+targ_ppc_linux = $(xname)cli.exe
+targ_mips_linux = $(xname)cli.exe
 
-TRAP_objs     = testcli.obj
+TRAP_common_objs = testcli.obj
 TRAP_remote_objs =
 
 !else
@@ -78,6 +81,15 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
 !endif
 
 sys_x86_dos  = sys dos
+
+
+sys_x86_rdos = sys rdos_dll &
+               export TrapInit_ &
+               export TrapFini_ &
+               export TrapRequest_ &
+               op offset=0xdb000000 &
+               libpath $(clib_dir)/library/rdos.386/mf_r
+
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 
 # For now Linux is linked as a PE DLL file since we have code to load
@@ -108,42 +120,44 @@ sys_ppc_nt   = sys ntppc_dll initinstance &
             option description $(description) &
             op modname=$^&
 
-targ_x86_os2    = $(name).dll
-targ_x86_os2v2  = $(name).d32
-targ_x86_qnx    = $(name).trp
+targ_x86_os2    = $(xname).dll
+targ_x86_os2v2  = $(xname).d32
+targ_x86_qnx    = $(xname).trp
 !ifdef bootstrap
-targ_x86_linux  = $(name).so
+targ_x86_linux  = $(xname).so
 !else
-targ_x86_linux  = $(name).trp
+targ_x86_linux  = $(xname).trp
 !endif
-targ_x86_win    = $(name).dll
-targ_x86_dos    = $(name).trp
-targ_x86_nt     = $(name).dll
+targ_x86_win    = $(xname).dll
+targ_x86_dos    = $(xname).trp
+targ_x86_rdos   = $(xname).dll
+targ_x86_nt     = $(xname).dll
 !ifdef bootstrap
-targ_x86_nto    = $(name).so
+targ_x86_nto    = $(xname).so
 !else
-targ_x86_nto    = $(name).trp
+targ_x86_nto    = $(xname).trp
 !endif
 
-targ_axp_nt     = $(name).dll
+targ_axp_nt     = $(xname).dll
 
-targ_ppc_nt     = $(name).dll
+targ_ppc_nt     = $(xname).dll
 
-targ_ppc_linux  = $(name).so
-targ_mips_linux = $(name).so
+targ_ppc_linux  = $(xname).so
+targ_mips_linux = $(xname).so
 
 !ifeq os linux
-TRAP_objs   = lnxstrt.obj
+TRAP_common_objs = lnxstrt.obj
 !else ifeq os os2v2
-TRAP_objs   = os2strt2.obj
+TRAP_common_objs = os2strt2.obj
 !else
-TRAP_objs   = $(os)strt.obj
-!endif
-TRAP_remote_objs = remote.obj
+TRAP_common_objs = $(os)strt.obj
 !endif
 
+TRAP_remote_objs = remote.obj
 !ifeq os win
 TRAP_remote_objs += winstub.obj
 !else ifeq os nt
 TRAP_remote_objs += ntstub.obj
+!endif
+
 !endif

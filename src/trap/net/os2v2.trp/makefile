@@ -7,8 +7,8 @@ os    = os2v2
 srv   = net
 cpu   = x86
 which = TRAP
+type  = remote_link
 
-extra_objs = $(remote_objs)
 extra_libs = $(os2api_dir)/os2386/lib/os2386.lib
 
 !include $(trap_dir)/master.mif
