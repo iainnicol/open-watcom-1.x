@@ -245,6 +245,8 @@ cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_rel) -Fo$@
 cflags = -c -nologo $(extra_c_flags) $(cppflags) $(cflags_dbg) -Fo$@
 !endif
 
+preproc_opts = -E
+
 # options for linking via cl
 clflags = -nologo -Fe$@
 cl_objs = clibext.obj
