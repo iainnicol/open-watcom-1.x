@@ -34,8 +34,9 @@ extra_linker = &
         imp DoOpen_ wdsplice, DoWritePgmScrn_ wdsplice &
         imp DoReadXMMRegs_ wdsplice                    &
         imp DoWriteXMMRegs_ wdsplice                   &
-        imp _XferBuff wdsplice, DoDupFile_ wdsplice    &
-        lib os2
+        imp _XferBuff wdsplice, DoDupFile_ wdsplice
+
+extra_libs = $(os2286)
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif

@@ -157,6 +157,7 @@ extra_libs += dbgstr.lib
 !endif
 
 os2386 = $(os2api_dir)/os2386/lib/os2386.lib
+os2286 = $(os2api_dir)/os2286/lib/os2.lib
 
 !ifeq release 0
 default_targ    = d
