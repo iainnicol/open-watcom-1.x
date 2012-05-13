@@ -1,0 +1,81 @@
+
+ The Open Watcom Build System
+ ============================
+
+ This document provides a brief overview of the build system used by Open
+Watcom.	The build system is designed to be portable across DOS-like operating
+systems (Windows, OS/2, even DOS), as well as UNIX-like systems (Linux, OS X,
+Solaris). The build system is intended to have only a minimum number of
+dependencies beyond the tools commonly found on a host operating system.
+
+ Two-Stage Cross Building
+ ------------------------
+
+ The build system is designed for cross compilation and works even on
+platforms which Open Watcom does not target.
+
+ The build tools -- wmake, pmake, builder
+ ----------------------------------------
+
+ The build system is hierarchically structured. At the lowest levels, wmake
+(Watcom's make utility) processes traditional makefiles. Each makefile
+typically produces a single executable or a library.
+
+ On a higher level, the pmake utility invokes wmake multiple times to build
+all components of a given project, such as executables for all supported
+host platforms. The pmake utility is controlled by special comments in
+makefiles.
+
+ On the highest level, the builder utility drives the build process. Builder
+is used to ensure that projects are built in the correct order, and also to
+include or exclude certain projects depending on the host OS. In addition,
+builder writes console output to a log file. The builder utility can also
+optionally copy files to a separate output directory structure. The builder
+utility is essentially a batch processor controller by builder.ctl files.
+
+ The boot stage
+ --------------
+
+ The 'boot' build stage, invoked by running 'builder boot', uses a bootstrap
+compiler (typically Open Watcom or GCC) to create the bootstrap versions of
+all requisite build tools. In addition to wmake/pmake/builder, that includes
+the C and C++ compilers, assemblers, linker, and librarian.
+
+ The build tools should therefore be written to be maximally portable, using
+only standard ISO C constructs whenever possible. It is assumed that the build
+tools could be used on an operating system and CPU architecture neither of
+which is supported by Open Watcom.
+
+ The build/rel stage
+ -------------------
+
+ Once the boot stage completes, the 'build' stage can start. The build stage
+produces the final versions of all executables, libraries, and ancillary
+files shipped as part of the Open Watcom package. It starts with run-time
+library and OS API headers, C/C++/math/graph libraries, and continues to
+build all other Open Watcom tools.
+
+ The build stage creates new versions of nearly all tools used as part of the
+boot stage, but cross compiled using Open Watcom tools rather than built for
+the host platform.
+
+ The 'rel' target is a superset of 'build' and additionally copies all
+delivered files to the release directory tree. The release directory tree is
+intended to contain an exact image of a fully installed Open Watcom package.
+
+
+ Advantages and Disadvantages
+ ----------------------------
+
+ The advantage of the two-stage build process is that updated tools can be
+immediately used. For example, compiler fixes and enhancements are immediately
+reflected in the final executables and libraries.
+
+ This is also a disadvantage; any new bugs will be likewise propagated to the
+final binaries.
+
+ The two-stage build process is also somewhat longer, but not significantly
+so because only a small subset of the tools and libraries is built twice.
+
+ This may also be an advantage; the boot phase produces produces working
+cross-development tools for host platforms which are not natively supported.
