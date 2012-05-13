@@ -252,13 +252,14 @@ clflags = -nologo -Fe$@
 cl_objs = clibext.obj
 .c : $(watcom_dir)/c
 
-host_cl = cl
-host_cl_opts = -nologo -I"$(watcom_dir)/h" $(inc_dirs) -Fe$^@
-
 # Flags for building DLLs
 cflags_shared  =
 clflags_shared = -LD
 shrlib_ext     = .dll
-
 !endif
+
+# Host compile and link utility used for both bootstrap and regular builds
+host_cl = cl
+host_cl_opts = -nologo -I"$(watcom_dir)/h" $(inc_dirs) -Fe$^@
+
 !endif
