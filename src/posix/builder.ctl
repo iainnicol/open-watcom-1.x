@@ -9,4 +9,10 @@ set PROJNAME=build POSIX tools
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
+[ BLOCK <1> boot ]
+#=================
+    <CPCMD> <OWOBJDIR>/*.exe <OWBINDIR>/
+
+[ BLOCK . . ]
+#============
 cdsay <PROJDIR>
