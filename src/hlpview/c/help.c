@@ -764,7 +764,7 @@ static EVENT hlpwait( VTAB *tab )
     return( curEvent );
 }
 
-static int getline( void )
+static int get_line( void )
 {
     int                 l;
 
@@ -1053,7 +1053,7 @@ static void seek_line( int line )
         for( i = lastHelpLine; ; ++i ) {
             save_line( i, HelpTell( helpFileHdl ) );
             if( i == line ) break;
-            if( !getline() || strnicmp( helpInBuf, "::::", 4 ) == 0 ) {
+            if( !get_line() || strnicmp( helpInBuf, "::::", 4 ) == 0 ) {
                 maxLine = i;
                 break;
             }
@@ -1080,7 +1080,7 @@ static void handleFooter( int *startline, SAREA *use, SAREA *line )
     if( strnicmp( helpInBuf, ":t", 2 ) == 0 ) {
         ++start;        /* leave room for line */
         for( ;; ) {
-            if( !getline() ) break;
+            if( !get_line() ) break;
             if( strnicmp( helpInBuf, ":et", 3 ) == 0 ) break;
             processLine( helpInBuf, helpOutBuf, start, FALSE );
             putline( helpOutBuf, start );
@@ -1106,7 +1106,7 @@ static void handleHeader( int *start, SAREA *line )
     cur = 0;
     if( strnicmp( helpInBuf, ":h", 2 ) == 0 ) {
         for( ;; ) {
-            if( !getline() ) break;
+            if( !get_line() ) break;
             if( strnicmp( helpInBuf, ":t", 2 ) == 0 ) break;
             if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) break;
             processLine( helpInBuf, helpOutBuf, cur, FALSE );
@@ -1118,7 +1118,7 @@ static void handleHeader( int *start, SAREA *line )
         cur++;
         topPos = HelpTell( helpFileHdl );
         if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) {
-            getline();
+            get_line();
         }
     }
     *start = cur;
@@ -1167,7 +1167,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
     seek_line( start );
     for( ;; ++start ) {
         save_line( start, HelpTell( helpFileHdl ) );
-        if( !getline()  ||  strncmp( helpInBuf, "::::", 4 ) == 0  ) {
+        if( !get_line()  ||  strncmp( helpInBuf, "::::", 4 ) == 0  ) {
             maxLine = start;
             break;
         }
@@ -1222,7 +1222,7 @@ static int dispHelp( char *str, VTAB *tab )
     line.col = 0;
 
     topPos = HelpTell( helpFileHdl );
-    getline();
+    get_line();
 
     handleHeader( &start, &line );
     use.row = start;
