@@ -68,8 +68,8 @@ pick( MSG_USAGE_6,		"" ,
 pick( MSG_USAGE_7,		"        input_file:  executable file" ,
 				"        input_file:  実行可能ファイル" )
 pick( MSG_USAGE_8,		"        output_file: optional output executable or '.'" ,
-				"        output_file: オプションで出力実行可能ファイルまたは '.'を指定可能" )
+				"        output_file: オプションで出力実行可能ファイルまたは '.'を指定可能 " )
 pick( MSG_USAGE_9,		"        info_file:   optional output debugging or resource information file" ,
 				"        info_file:   オプションでデバッグまたはリソース情報ファイルの出力又は" )
 pick( MSG_USAGE_LAST,		"                     or input debugging or resource information file" ,
-				"                     入力を指定可能" )
+				"                     入力を指定可能 " )
