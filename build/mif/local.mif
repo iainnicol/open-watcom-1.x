@@ -148,8 +148,13 @@ awk = nawk
 
 !ifdef bootstrap
 
+!ifdef sunstudio
 cc = cc
 cpp = CC
+!else
+cc = gcc
+cpp = g++
+!endif
 cl = $(cc)
 clpp = $(cpp)
 
@@ -168,6 +173,11 @@ cflags_shared  = -fPIC
 clflags_shared = -shared
 
 !endif
+
+!ifndef sunstudio
+host_cl = gcc
+!endif
+
 !endif
 
 #common definitions for targeting QNX Neutrino
