@@ -186,7 +186,7 @@ static int scanDFA( ScanValue *value )
     VarString           *newstring; /* a new value */
     int                 token;
 #ifdef SCANDEBUG
-    char                debugstring[10];
+    char                debugstring[20];
 #endif
     char                *stringFromFile;
 
