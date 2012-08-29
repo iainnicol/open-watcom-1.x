@@ -21,12 +21,12 @@ inc_dirs = -I"../../pmake" -I"../../posix/h"
 
 .c : ../c;../../pmake;../../posix/src/rm;../../posix/src/sed;../../posix/misc;../../lib_misc/c;
 
-sys_dos   = sys.obj sysdos.obj sysdoscd.obj
-sys_os2   = sys.obj sysos2.obj sysdoscd.obj
-sys_nt    = sys.obj sysnt.obj  sysdoscd.obj
-sys_linux = sys.obj sysposix.obj
-sys_osx   = sys.obj sysposix.obj
-sys_sol   = sys.obj sysposix.obj
+sys_dos     = sys.obj sysdos.obj sysdoscd.obj
+sys_os2     = sys.obj sysos2.obj sysdoscd.obj
+sys_nt      = sys.obj sysnt.obj  sysdoscd.obj
+sys_linux   = sys.obj sysposix.obj
+sys_osx     = sys.obj sysposix.obj
+sys_solaris = sys.obj sysposix.obj
 
 extra_c_flags = -D__OS_$(host_os)__ -DSTANDALONE_RX
 extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
@@ -42,6 +42,11 @@ diff.exe : diff.obj clibext.obj
 
 !ifdef __MSDOS__
 __DOS__=1
+!endif
+
+# Make sure the system specific bits are defined
+!ifndef sys_$(host_os)
+!   error System speficic objects undefined! Is the host_os macro correct?
 !endif
 
 builder.exe : builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj

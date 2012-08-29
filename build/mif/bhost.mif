@@ -45,7 +45,7 @@ lang_dll        = $(lang_root)/binl
 nlang_dll       = $(nlang_root)/binl
 nulldevice      = /dev/null
 !else ifdef __SOLARIS__
-bld_sys         = sol
+bld_sys         = solaris
 nulldevice      = /dev/null
 !else ifdef __OSX__
 bld_sys         = osx

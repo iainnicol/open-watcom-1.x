@@ -77,7 +77,7 @@ extra_l_flags_dll_win     = op modname=$(name)
 extra_l_flags_dll_rdos    = op modname=$(name) $(lflags_rdos_386_$(name))
 
 !ifdef bootstrap
-$(lib_name) : $(objs) $(imp_libs) $(cl_libs) $(__MAKEFILES__)
+$(lib_name) : $(objs) $(imp_libs) $(__MAKEFILES__)
         $(cl) $(clflags_shared) $(clflags) $(objs) $(imp_libs) $(cl_libs)
 !else
 $(lib_name) : $(objs) $(imp_libs) $(__MAKEFILES__)

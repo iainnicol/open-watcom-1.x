@@ -118,14 +118,19 @@ common_objs += idedrv.obj
 #
 # target OS dependent files
 #
-wlink_objs_dos   = linkio.obj
-wlink_objs_qnx   = posixio.obj
-wlink_objs_linux = posixio.obj
-wlink_objs_osx   = posixio.obj
-wlink_objs_sol   = posixio.obj
-wlink_objs_bsd   = posixio.obj
-wlink_objs_nt    = ntio.obj
-wlink_objs_os2   = ntio.obj
-wlink_objs_zdos  = zdosio.obj
+wlink_objs_dos     = linkio.obj
+wlink_objs_qnx     = posixio.obj
+wlink_objs_linux   = posixio.obj
+wlink_objs_osx     = posixio.obj
+wlink_objs_solaris = posixio.obj
+wlink_objs_bsd     = posixio.obj
+wlink_objs_nt      = ntio.obj
+wlink_objs_os2     = ntio.obj
+wlink_objs_zdos    = zdosio.obj
+
+# Make sure the system specific bits are defined
+!ifndef wlink_objs_$(host_os)
+!   error System speficic objects undefined! Is the host_os macro correct?
+!endif
 
 common_objs += $(wlink_objs_$(host_os))

@@ -87,7 +87,7 @@ objs =  madimp.obj $(dis_objs) $(imp_objs)
 # explicit rules
 ##################
 !ifdef bootstrap
-$(lib_name) : $(dis_prereq) $(objs) $(cl_libs) $(__MAKEFILES__)
+$(lib_name) : $(dis_prereq) $(objs) $(__MAKEFILES__)
         $(cl) $(clflags_shared) $(clflags) $(objs) $(cl_libs)
 !else
 $(lib_name) : $(dis_prereq) $(objs) $(__MAKEFILES__)

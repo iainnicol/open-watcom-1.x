@@ -148,15 +148,24 @@ awk = nawk
 
 !ifdef bootstrap
 
+!ifdef %OW_SUNSTUDIO
+sunstudio = 1
+!endif
+
 !ifdef sunstudio
 cc = cc
 cpp = CC
+# Sun Studio 12 (cc 5.9) needs this to grok xfloat.h
+cflags_comp = -features=extensions
 !else
 cc = gcc
 cpp = g++
 !endif
 cl = $(cc)
 clpp = $(cpp)
+
+# On Solaris 10, librt is required for nanosleep() used by ncurses
+cl_libs = -lrt
 
 cppflags_386  = -m32 -D__386__ -D_M_IX86
 cppflags_x64  = -m64 -D__X64__ -DLONG_IS_64BITS

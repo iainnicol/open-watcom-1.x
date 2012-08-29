@@ -48,11 +48,16 @@ unix_objs = &
     doblips.obj &
     stack.obj
 
-linux_objs = $(unix_objs)
-qnx_objs   = $(unix_objs)
-bsd_objs   = $(unix_objs)
-osx_objs   = $(unix_objs)
-sol_objs   = $(unix_objs)
+linux_objs   = $(unix_objs)
+qnx_objs     = $(unix_objs)
+bsd_objs     = $(unix_objs)
+osx_objs     = $(unix_objs)
+solaris_objs = $(unix_objs)
+
+# Make sure system specific bits are defined
+!ifndef $(host_os)_objs
+!   error System specific objects not defined! Is the host_os macro correct?
+!endif
 
 !ifeq cg_trmem 1
 mem_include = -I$(trmem_dir)

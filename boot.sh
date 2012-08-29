@@ -33,6 +33,26 @@ if [ ! -d $OWBINDIR ]; then
     exit 12
 fi
 
+# On Solaris, support boostrapping with both gcc and Sun Studio
+if [ `uname` = "SunOS" ]; then
+    unset OW_SUNSTUDIO # In case user switched compilers
+    echo "Bootstrapping on Solaris"
+    if [ -x /opt/sfw/bin/gcc -o -x /usr/sfw/bin/gcc ]; then
+            echo "Using GCC compiler"
+    else
+        # No gcc, look for cc
+        if [ -x /usr/bin/cc ]; then
+            echo "Using Sun Studio compiler"
+            OW_SUNSTUDIO=1
+            export OW_SUNSTUDIO
+        else
+            # No Sun Studio either, bail
+            echo "No compiler found!"
+            exit 20
+        fi
+    fi 
+fi
+
 # First build 'wmake', unless it already exists
 if [ ! -x $OWBINDIR/wmake ]; then
     cd $OWROOT/src/make
@@ -41,7 +61,7 @@ if [ ! -x $OWBINDIR/wmake ]; then
     make -f ../posmake
     if [ $? -ne 0 ]; then
         echo "Failed to build wmake!"
-        exit 20
+        exit 30
     fi
 fi
 
@@ -52,7 +72,7 @@ cd $OWOBJDIR
 $OWBINDIR/wmake -h -f ../bootmake builder.exe
 if [ $? -ne 0 ]; then
     echo "Failed to build builder!"
-    exit 30
+    exit 31
 fi
 
 # Use 'builder' to build bootstrap tools

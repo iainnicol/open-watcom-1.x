@@ -43,23 +43,24 @@ gui_lib = $(gui_dir)/ui/$(%OWOBJDIR)/gui.lib
 gui_lib = $(gui_dir_$(host_os))
 !endif
 
-extra_lib_dos   = $(ui_dir)/dos/dos386/ui.lib
+# TODO: The ui/ncurses library selection should be handled elsewhere?
+extra_lib_dos     = $(ui_dir)/dos/dos386/ui.lib
 !ifeq sys_windowed 1
-extra_lib_os2   = $(os2386)
+extra_lib_os2     = $(os2386)
 !else
-extra_lib_nt    = $(ui_dir)/nt/nt$(host_cpu)/ui.lib
-extra_lib_os2   = $(ui_dir)/os2/os2386/ui.lib $(os2386)
+extra_lib_nt      = $(ui_dir)/nt/nt$(host_cpu)/ui.lib
+extra_lib_os2     = $(ui_dir)/os2/os2386/ui.lib $(os2386)
 !endif
-extra_lib_qnx   = $(ui_dir)/qnx/qnx386/ui.lib
+extra_lib_qnx     = $(ui_dir)/qnx/qnx386/ui.lib
 !ifdef bootstrap
-extra_lib_linux = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
-extra_lib_bsd   = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
-extra_lib_osx   = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
-extra_lib_sol   = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
+extra_lib_linux   = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
+extra_lib_bsd     = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
+extra_lib_osx     = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
+extra_lib_solaris = $(ui_dir)/unix/$(%OWOBJDIR)/ui.lib $(ncurses_dir)/$(%OWOBJDIR)/ncurses.lib
 !else
-extra_lib_linux = $(ui_dir)/unix/linux386/ui.lib $(ncurses_dir)/linux386/ncurses.lib
+extra_lib_linux   = $(ui_dir)/unix/linux386/ui.lib $(ncurses_dir)/linux386/ncurses.lib
 !endif
 
-extra_lib       = $(extra_lib_$(host_os)) $(wres_lib)
+extra_lib  = $(extra_lib_$(host_os)) $(wres_lib)
 
-wprof_libs      = $(aui_lib) $(gui_lib) $(extra_lib)
+wprof_libs = $(aui_lib) $(gui_lib) $(extra_lib)

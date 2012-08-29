@@ -6,7 +6,12 @@ dig_os_win      = win
 dig_os_linux    = linux
 dig_os_bsd      = unix
 dig_os_osx      = unix
-dig_os_sol      = unix
+dig_os_solaris  = unix
+
+# Make sure we know which host specific dig interface to use.
+!ifndef dig_os_$(host_os)
+!   error Host OS not defined! Is the host_os macro correct?
+!endif
 
 dig_os          = $(dig_os_$(host_os))
 
