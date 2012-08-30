@@ -37,7 +37,7 @@ fi
 if [ `uname` = "SunOS" ]; then
     unset OW_SUNSTUDIO # In case user switched compilers
     echo "Bootstrapping on Solaris"
-    if [ -x /opt/sfw/bin/gcc -o -x /usr/sfw/bin/gcc ]; then
+    if [ -x /opt/sfw/bin/gcc -o -x /usr/sfw/bin/gcc -o -x /usr/bin/gcc ]; then
             echo "Using GCC compiler"
     else
         # No gcc, look for cc
