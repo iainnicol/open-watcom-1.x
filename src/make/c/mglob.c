@@ -120,6 +120,8 @@ const char FAR *BuiltIns = {
     "__UNIX__=\n"
     #if defined(__386__) || defined(__i386__) || defined(__i386)
         "__LINUX386__=\n"
+    #elif defined(__X64__) || defined(__AMD64__) || defined(__amd64)
+        "__LINUXX64__=\n"
     #elif defined(__PPC__) || defined(__ppc__) || defined(__powerpc__)
         "__LINUXPPC__=\n"
     #elif defined(__MIPS__)  || defined(__mips__)
