@@ -67,7 +67,7 @@ typedef struct recognized_struct recognized_struct;
 
 #define SEC_NAME_LEN 8
 #define OBJ_FILE_FLAGS O_RDONLY | O_BINARY
-#define LIST_FILE_FLAGS O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU
+#define LIST_FILE_FLAGS O_WRONLY | O_CREAT | O_TRUNC
 
 #define HANDLE_TO_SECTION_TABLE_SIZE 53
 #define HANDLE_TO_LIST_TABLE_SIZE 53
