@@ -123,7 +123,7 @@ unsigned ConfigScreen( void )
  */
 static void HupHandler( int signo )
 {
-    /* Xqsh has gone away -- nothing to do except die */
+    /* xterm has gone away -- nothing to do except die */
     signo = signo;
     ReleaseProgOvlay( TRUE );
     KillDebugger( 0 );
@@ -204,14 +204,27 @@ static bool TryXWindows( void )
     if (XTermPid == 0) { /* child */
         setpgid( 0, 0 );
         execvp( argv[0], (const char **)argv );
-        exit( 1 );
+        /* If we got this far, execvp() failed because xterm could not be
+         * started. Send a fake null window ID to the parent process so that
+         * it can detect this error.
+         */
+        buf = 0;
+        write( masterfd, &buf, 1 );
+        buf = '\n';
+        write( masterfd, &buf, 1 );
+        printf( "unable to start xterm\n" );
+        exit( -1 );
     }
     if( XTermPid == (pid_t)-1 ) {
         StartupErr( "unable to create console helper process" );
     }
     do { /* xterm transmits a window ID -- ignore */
-        res = read(slavefd, &buf, 1);
-    } while ( res != -1 && buf != '\n' );
+        res = read( slavefd, &buf, 1 );
+        /* A null char means launching xterm failed. */
+        if( res == 1 && buf == '\0' ) {
+            return( FALSE );
+        }
+    } while (res != -1 && buf != '\n');
     termio.c_lflag |= ECHO;
     tcsetattr(slavefd, TCSANOW, &termio);
 
