@@ -37,12 +37,14 @@ extern "C" {
 #define         DEP_LIST_TYPE   0x79
 #define         DEP_LIST_NAME   "EBWF_XFMMTUPPE"
 
+#define         DEP_LIST_NEXT_PTR(dp)   (DepInfo *)((char *)(dp) + sizeof( *(dp) ) + (dp)->len )
+
 #include "pushpck1.h"
 
 typedef struct {
     uint_32     time;           /* file's time taken from stat */
     uint_16     len;            /* sizeof the name array */
-    char        name[1];        /* dynamic array */
+    char        name[];         /* flexible array */
 } _WCUNALIGNED DepInfo;
 
 #include "poppck.h"

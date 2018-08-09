@@ -242,7 +242,7 @@ static dep_handle AutoORLNextDep( dep_handle hndl )
     orl_info    *hdl = hndl;
 
     p = hdl->curr;
-    p = (void *)((char *)p + sizeof( DepInfo ) + p->len - 1);
+    p = DEP_LIST_NEXT_PTR(p);
     if( p->len == 0 ) {
         hdl->curr = NULL;
         return( NULL );

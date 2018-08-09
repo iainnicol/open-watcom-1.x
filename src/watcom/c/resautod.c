@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource compiler autodependency walker.
 *
 ****************************************************************************/
 
@@ -59,7 +58,7 @@ walk_status WalkRESAutoDep( char *file_name, rtn_status (*rtn)( time_t, char *, 
                 wstatus = ADW_RTN_STOPPED;
                 break;
             }
-            p = (DepInfo *) ( (char *)p + sizeof( DepInfo ) + p->len - 1 );
+            p = DEP_LIST_NEXT_PTR(p);
         }
         free( depends );
     }

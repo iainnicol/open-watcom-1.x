@@ -92,7 +92,7 @@ STATIC handle RESNextDep( dep_handle f )
     res_info    *file = f;
 
     p = (void *)file->curr;
-    p = (void *)( (char *)p + sizeof( *p ) + p->len - 1 );
+    p = DEP_LIST_NEXT_PTR(p);
     if( p->len == 0 ) {
         file->curr = NULL;
         return( NULL );
