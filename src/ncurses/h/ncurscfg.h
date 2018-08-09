@@ -147,4 +147,9 @@
 #define TERMINFO_DIRS "/usr/share/lib/terminfo"
 #endif
 
+#ifdef __LINUX__
+#undef TERMINFO_DIRS
+#define TERMINFO_DIRS "/usr/share/terminfo:/lib/terminfo"
+#endif
+
 #endif /* NC_CONFIG_H */
